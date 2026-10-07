@@ -73,15 +73,18 @@ class PersistentWorldModel:
                    "weight": weight, "observed_at": at}
         with self._db() as db:
             db.execute("INSERT INTO world_evidence VALUES(?,?,?,?,?,?,?,?,?,?)",
-                       (eid, self.tenant_id, subject, predicate, json.dumps(value, sort_keys=True),
+                       (eid, self.tenant_id, subject, predicate, json.dumps(value, sort_keys=True, allow_nan=False),
                         source, reliability, weight, at, _hash(payload)))
         return eid
 
     def hypotheses(self, subject: str, predicate: str) -> list[dict[str, Any]]:
         with self._db() as db:
-            rows = db.execute("SELECT value_json,source,reliability,weight,observed_at,content_hash "
-                              "FROM world_evidence WHERE tenant=? AND subject=? AND predicate=?",
-                              (self.tenant_id, subject, predicate)).fetchall()
+            return self._hypotheses(db, subject, predicate)
+
+    def _hypotheses(self, db, subject, predicate):
+        rows = db.execute("SELECT value_json,source,reliability,weight,observed_at,content_hash "
+                          "FROM world_evidence WHERE tenant=? AND subject=? AND predicate=?",
+                          (self.tenant_id, subject, predicate)).fetchall()
         grouped: dict[str, dict[str, Any]] = {}
         for value_json, source, reliability, weight, at, digest in rows:
             item = grouped.setdefault(value_json, {"value": json.loads(value_json), "support": 0.0,
@@ -98,15 +101,22 @@ class PersistentWorldModel:
             result.append(item)
         return sorted(result, key=lambda x: (-x["supplied_support_share"], json.dumps(x["value"], sort_keys=True)))
 
+    def _state(self, db):
+        keys = db.execute("SELECT DISTINCT subject,predicate FROM world_evidence WHERE tenant=? ORDER BY 1,2",
+                          (self.tenant_id,)).fetchall()
+        return {json.dumps([s, p], ensure_ascii=False, separators=(",", ":")): self._hypotheses(db, s, p)
+                for s, p in keys}
+
     def state(self) -> dict[str, Any]:
         with self._db() as db:
-            keys = db.execute("SELECT DISTINCT subject,predicate FROM world_evidence WHERE tenant=? ORDER BY 1,2",
-                              (self.tenant_id,)).fetchall()
-        return {f"{s}.{p}": self.hypotheses(s, p) for s, p in keys}
+            db.execute("BEGIN")
+            return self._state(db)
 
     def snapshot(self) -> dict[str, str]:
-        state, created, sid = self.state(), _now(), str(uuid4())
+        created, sid = _now(), str(uuid4())
         with self._db() as db:
+            db.execute("BEGIN IMMEDIATE")
+            state = self._state(db)
             prior = db.execute("SELECT snapshot_hash FROM world_snapshots WHERE tenant=? ORDER BY rowid DESC LIMIT 1",
                                (self.tenant_id,)).fetchone()
             previous_hash = prior[0] if prior else "GENESIS"

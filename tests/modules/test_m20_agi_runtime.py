@@ -132,3 +132,25 @@ def test_improvement_apply_and_rollback_cannot_reuse_approvals_for_equal_content
  lab.rollback('p',1,approval_id=rollback)
  with pytest.raises(PermissionError):lab.rollback('p',1,approval_id=rollback)
  assert len(lab.history['p'])==3
+
+
+def test_world_state_preserves_dot_colliding_subject_predicate_pairs(tmp_path):
+ import json
+ world=PersistentWorldModel(str(tmp_path/'keys.sqlite'),'t')
+ world.observe(subject='a.b',predicate='c',value=1,source='fixture')
+ world.observe(subject='a',predicate='b.c',value=2,source='fixture')
+ state=world.state()
+ assert len(state)==2
+ assert {tuple(json.loads(key)):group[0]['value'] for key,group in state.items()}=={('a.b','c'):1,('a','b.c'):2}
+ with pytest.raises(ValueError):world.observe(subject='x',predicate='p',value=float('nan'),source='fixture')
+
+
+def test_concurrent_world_snapshots_never_fork_hash_chain(tmp_path):
+ from concurrent.futures import ThreadPoolExecutor
+ path=str(tmp_path/'concurrent.sqlite');world=PersistentWorldModel(path,'t')
+ world.observe(subject='x',predicate='p',value='fixture',source='fixture')
+ def snapshot(_):return PersistentWorldModel(path,'t').snapshot()
+ with ThreadPoolExecutor(max_workers=8) as pool:results=list(pool.map(snapshot,range(32)))
+ assert len({result['snapshot_hash'] for result in results})==32
+ assert world.verify_chain()
+ assert sum(result['previous_hash']=='GENESIS' for result in results)==1

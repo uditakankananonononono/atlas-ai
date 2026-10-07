@@ -612,3 +612,7 @@ Re-putting a chunk ID under another task previously left stale partition members
 ## Durable memory eviction alignment
 
 Durable working memory previously pruned only process-local chunks while leaving SQL rows, and saved newly submitted chunks even if capacity immediately rejected them. Restart could resurrect pruned memory. Eviction hook now deletes scoped SQL row and put persists only surviving chunk with actual requested partition.38 runtime/working-memory tests pass1warning incl immediately rejected weak chunk and later stronger replacement across reload. Memory update/eviction and DB calls are not one crash-atomic transaction or distributed synchronization; that remains unfinished. No production DB tested.
+
+## World state keys and snapshot consistency
+
+Dot-concatenated subject/predicate state keys silently collided ('a.b','c' vs 'a','b.c'). Keys now serialize JSON pair, an intentional state-key format change; old stored snapshots remain hashed as originally stored. State reads share SQLite read transaction; snapshot uses BEGIN IMMEDIATE spanning state read/prior-link/insert to prevent concurrent forks/mixed observations. Reject nonfinite JSON values.30 autonomy runtime/eval/routes tests pass1warning incl colliding pairs and32concurrent snapshots from8workers with intact chain. Hash chain is local mutable-store consistency, not independently anchored tamper-proofness or provenance truth.
