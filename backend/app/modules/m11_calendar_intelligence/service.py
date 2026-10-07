@@ -625,8 +625,9 @@ class Service:
                 and _aware(e.start) < day_end and _aware(e.end) > day_start
             ]
             todays.sort(key=lambda e: _aware(e.start))
-            minutes = sum(int((_aware(e.end) - _aware(e.start)).total_seconds() // 60) for e in todays)
-            longest = max((int((_aware(e.end) - _aware(e.start)).total_seconds() // 60) for e in todays), default=0)
+            durations = [int((min(_aware(e.end), day_end) - max(_aware(e.start), day_start)).total_seconds() // 60) for e in todays]
+            minutes = sum(durations)
+            longest = max(durations, default=0)
             short_gaps = 0
             for first, second in zip(todays, todays[1:]):
                 gap = (_aware(second.start) - _aware(first.end)).total_seconds() / 60.0
