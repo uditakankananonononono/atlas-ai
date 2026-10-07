@@ -825,6 +825,16 @@ class Service:
         deadline = row.deadline
         if deadline is not None and deadline.tzinfo is None:
             deadline = deadline.replace(tzinfo=timezone.utc)
+        # sqlite drops tzinfo on DateTime(timezone=True) reads. first_seen and
+        # last_seen have a single writer (_ingest) that stores
+        # datetime.now(timezone.utc), so the read side attaches the known-UTC
+        # zone - the same storage convention already applied to deadline.
+        first_seen = row.first_seen
+        if first_seen.tzinfo is None:
+            first_seen = first_seen.replace(tzinfo=timezone.utc)
+        last_seen = row.last_seen
+        if last_seen.tzinfo is None:
+            last_seen = last_seen.replace(tzinfo=timezone.utc)
         return OpportunityOut(
             id=row.id,
             source_id=row.source_id,
@@ -840,6 +850,6 @@ class Service:
             tags=list(row.tags or []),
             match_engine=row.match_engine or TOKEN_ENGINE,
             deadline_engine=row.deadline_engine or REGEX_DEADLINE_ENGINE,
-            first_seen=row.first_seen,
-            last_seen=row.last_seen,
+            first_seen=first_seen,
+            last_seen=last_seen,
         )
