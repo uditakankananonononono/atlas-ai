@@ -18,6 +18,25 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+_SENSITIVE_QUERY_KEYS = frozenset({"key", "api_key", "apikey", "token", "access_token"})
+
+
+def _redact_url(url: str) -> str:
+    """Redact credential query parameters before a URL is recorded.
+
+    Collector fetches need the real URL, but failure records are persisted
+    and reported - a provider key in the query string (e.g. the YouTube Data
+    API key, passed as ``?key=``) must not leak into them.
+    """
+    parts = urlsplit(url)
+    pairs = parse_qsl(parts.query, keep_blank_values=True)
+    if not any(key.lower() in _SENSITIVE_QUERY_KEYS for key, _ in pairs):
+        return url  # no credentials: keep the recorded URL byte-identical
+    query = [(key, "[REDACTED]" if key.lower() in _SENSITIVE_QUERY_KEYS else value)
+             for key, value in pairs]
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 from enum import Enum
 from typing import Any, Mapping, Optional
 from urllib.parse import urlsplit
@@ -166,6 +185,11 @@ class CollectionError:
     reason: str
     status: Optional[int] = None
     occurred_at: datetime = field(default_factory=utcnow)
+
+    def __post_init__(self) -> None:
+        # Recorded failure URLs never carry credential query parameters,
+        # whoever constructed the record.
+        object.__setattr__(self, "url", _redact_url(self.url))
 
 
 @dataclass(frozen=True)
