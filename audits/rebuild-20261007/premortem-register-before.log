@@ -1,0 +1,30 @@
+........................................................................ [ 62%]
+.........................................FF                              [100%]
+=================================== FAILURES ===================================
+_ test_premortem_evidence_register_prioritizes_supplied_risk_and_missing_controls _
+
+    def test_premortem_evidence_register_prioritizes_supplied_risk_and_missing_controls():
+>       report = PremortemEngine().assess_register(goal='Ship payroll export', risks=[
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            {'id': 'leak', 'cause': 'Export includes another tenant', 'severity': 10, 'occurrence': 2, 'detection': 9,
+             'owner': 'security lead', 'mitigation': 'Tenant isolation tests', 'test': 'Try a second-tenant export', 'evidence': []},
+            {'id': 'delay', 'cause': 'Batch misses cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+             'owner': 'ops lead', 'mitigation': 'Queue alert', 'test': 'Replay cutoff backlog', 'evidence': ['fixture receipt']}])
+E       AttributeError: 'PremortemEngine' object has no attribute 'assess_register'
+
+tests/modules/test_m20_foresight.py:684: AttributeError
+________ test_premortem_register_rejects_duplicates_and_boolean_ratings ________
+
+    def test_premortem_register_rejects_duplicates_and_boolean_ratings():
+        risk = {'id': 'fixture', 'cause': 'Delayed export', 'severity': True, 'occurrence': 2, 'detection': 3,
+                'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+        with pytest.raises(ValueError):
+>           PremortemEngine().assess_register(goal='fixture', risks=[risk])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'PremortemEngine' object has no attribute 'assess_register'
+
+tests/modules/test_m20_foresight.py:701: AttributeError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_premortem_evidence_register_prioritizes_supplied_risk_and_missing_controls
+FAILED tests/modules/test_m20_foresight.py::test_premortem_register_rejects_duplicates_and_boolean_ratings
+2 failed, 113 passed in 1.68s

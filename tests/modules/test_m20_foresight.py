@@ -678,3 +678,27 @@ def test_monte_carlo_equal_subnormal_median_and_mean_are_preserved():
     tiny = float.fromhex('0x0.0000000000001p-1022')
     result = monte_carlo_simulation(lambda rng: tiny, trials=10)
     assert result['mean'] == tiny and result['median'] == tiny and result['std'] == 0
+
+
+def test_premortem_evidence_register_prioritizes_supplied_risk_and_missing_controls():
+    report = PremortemEngine().assess_register(goal='Ship payroll export', risks=[
+        {'id': 'leak', 'cause': 'Export includes another tenant', 'severity': 10, 'occurrence': 2, 'detection': 9,
+         'owner': 'security lead', 'mitigation': 'Tenant isolation tests', 'test': 'Try a second-tenant export', 'evidence': []},
+        {'id': 'delay', 'cause': 'Batch misses cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+         'owner': 'ops lead', 'mitigation': 'Queue alert', 'test': 'Replay cutoff backlog', 'evidence': ['fixture receipt']}])
+    assert report['risks'][0]['id'] == 'leak'
+    assert report['risks'][0]['risk_priority_number'] == 180
+    assert report['risks'][0]['control_status'] == 'needs_evidence'
+    assert report['risks'][1]['control_status'] == 'supplied_evidence_unverified'
+    assert report['ready_for_owner_review'] is False
+    assert report['probabilities_inferred'] is False
+
+
+def test_premortem_register_rejects_duplicates_and_boolean_ratings():
+    risk = {'id': 'fixture', 'cause': 'Delayed export', 'severity': True, 'occurrence': 2, 'detection': 3,
+            'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+    with pytest.raises(ValueError):
+        PremortemEngine().assess_register(goal='fixture', risks=[risk])
+    risk['severity'] = 5
+    with pytest.raises(ValueError):
+        PremortemEngine().assess_register(goal='fixture', risks=[risk, risk])

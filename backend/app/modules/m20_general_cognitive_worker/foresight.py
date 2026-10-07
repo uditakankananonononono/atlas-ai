@@ -733,6 +733,50 @@ class PremortemEngine:
     with the goal) are scored likelihood x impact and paired with a
     prevention action."""
 
+    def assess_register(self, *, goal: str, risks: list[dict[str, Any]]) -> dict[str, Any]:
+        """FMEA-style supplied ordinal ratings and control completeness.
+
+        Evidence references are not independently verified; RPN is not probability.
+        """
+        if not isinstance(goal, str) or not goal.strip() or len(goal) > 2000:
+            raise ValueError("nonempty goal up to2000characters required")
+        if not isinstance(risks, list) or not 1 <= len(risks) <= 100:
+            raise ValueError("need1..100 risk records")
+        seen = set(); rows = []
+        for risk in risks:
+            if not isinstance(risk, dict):
+                raise ValueError("risk must be an object")
+            for key in ("id", "cause"):
+                if not isinstance(risk.get(key), str) or not risk[key].strip() or len(risk[key]) > 1000:
+                    raise ValueError("risk needs bounded id/cause")
+            if risk['id'] in seen:
+                raise ValueError("duplicate risk id")
+            seen.add(risk['id'])
+            for key in ("severity", "occurrence", "detection"):
+                if type(risk.get(key)) is not int or not 1 <= risk[key] <= 10:
+                    raise ValueError("ratings must be exact integers1..10")
+            for key in ("owner", "mitigation", "test"):
+                if not isinstance(risk.get(key), str) or len(risk[key]) > 2000:
+                    raise ValueError("risk needs bounded owner/mitigation/test strings")
+            evidence = risk.get("evidence")
+            if not isinstance(evidence, list) or len(evidence) > 50 or any(not isinstance(e, str) or not e.strip() or len(e) > 500 for e in evidence):
+                raise ValueError("bounded evidence reference strings required")
+            missing = [key for key in ("owner", "mitigation", "test") if not risk[key].strip()]
+            if not evidence: missing.append("evidence")
+            rows.append({"id": risk['id'], "cause": risk['cause'],
+                         "severity": risk['severity'], "occurrence": risk['occurrence'], "detection": risk['detection'],
+                         "risk_priority_number": risk['severity'] * risk['occurrence'] * risk['detection'],
+                         "owner": risk['owner'], "mitigation": risk['mitigation'], "test": risk['test'],
+                         "evidence": list(evidence), "missing_controls": missing,
+                         "control_status": "needs_controls" if any(k != 'evidence' for k in missing) else
+                                           ("needs_evidence" if missing else "supplied_evidence_unverified")})
+        rows.sort(key=lambda row: (-row['risk_priority_number'], -row['severity'], row['id']))
+        return {"goal": goal, "risks": rows, "ready_for_owner_review": not any(row['missing_controls'] for row in rows),
+                "probabilities_inferred": False, "evidence_verified": False, "external_actions_executed": False,
+                "status": "supplied_ordinal_risk_control_register", "rating_scale":
+                "1..10 supplied ordinal: severity consequence, occurrence frequency, detection difficulty; higher is worse",
+                "review_status_is_completeness_only": True}
+
     GENERIC = [
         ("under-resourcing: the effort was starved of time or people", "resources|budget|staff|time|deadline",
          "Ring-fence resources before starting"),
