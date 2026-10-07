@@ -825,10 +825,13 @@ class Service:
         deadline = row.deadline
         if deadline is not None and deadline.tzinfo is None:
             deadline = deadline.replace(tzinfo=timezone.utc)
-        # sqlite drops tzinfo on DateTime(timezone=True) reads. first_seen and
-        # last_seen have a single writer (_ingest) that stores
-        # datetime.now(timezone.utc), so the read side attaches the known-UTC
-        # zone - the same storage convention already applied to deadline.
+        # sqlite drops tzinfo on DateTime(timezone=True) reads. The read side
+        # attaches the known-UTC zone - the same storage convention already
+        # applied to deadline. Scope: rows written by _ingest (the only ORM
+        # writer, which stores datetime.now(timezone.utc)). The columns are
+        # not schema-constrained: a naive value written by direct SQL, another
+        # ORM path, or an unknown legacy row would be silently relabeled UTC;
+        # no migration or provenance validation distinguishes it.
         first_seen = row.first_seen
         if first_seen.tzinfo is None:
             first_seen = first_seen.replace(tzinfo=timezone.utc)
