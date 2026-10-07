@@ -1,0 +1,35 @@
+{
+  "revision": "a55a7255c7357fb9d28cd67499b331046d6acd73",
+  "file_count": 499,
+  "batches": 20,
+  "initial_run": {
+    "passed": 10164,
+    "failed": 0,
+    "skipped": 14,
+    "warnings": 26,
+    "summed_batch_seconds": 445.28,
+    "batch_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "scope": "Local isolated pytest batches at source revision; not production, broad cognition, or model quality acceptance"
+}
