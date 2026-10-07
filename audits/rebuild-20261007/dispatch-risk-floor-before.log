@@ -1,0 +1,18 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_plan_risk_escalation_requires_review_even_for_registered_read_tool ____
+
+    def test_plan_risk_escalation_requires_review_even_for_registered_read_tool():
+     loop,gate,calls=build_loop()
+     context=TaskContext(goal='fixture',plan=[PlanNode(title='elevated read',tool='web_search',risk=Risk.EXTERNAL)])
+     out=loop.start(context)
+>    assert out.state==TaskState.WAITING_APPROVAL and calls['research']==0
+E    AssertionError: assert (<TaskState.SU...: 'succeeded'> == <TaskState.WA...ing_approval'>
+E      
+E      - waiting_approval
+E      + succeeded)
+
+tests/modules/test_m20_executive.py:257: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_executive.py::test_plan_risk_escalation_requires_review_even_for_registered_read_tool
+1 failed, 26 deselected in 1.34s

@@ -248,3 +248,13 @@ def test_valid_reflection_remains_unverified_hypothesis_not_retry_execution():
  loop._reflect_on_failure(TaskContext(goal='fixture'),node,'fixture error')
  assert node.state==TaskState.FAILED and not loop.dispatcher.records
  assert any('model reflection hypothesis:' in t.detail and 'correctness unverified' in t.detail for t in loop.traces)
+
+
+def test_plan_risk_escalation_requires_review_even_for_registered_read_tool():
+ loop,gate,calls=build_loop()
+ context=TaskContext(goal='fixture',plan=[PlanNode(title='elevated read',tool='web_search',risk=Risk.EXTERNAL)])
+ out=loop.start(context)
+ assert out.state==TaskState.WAITING_APPROVAL and calls['research']==0
+ waiting=out.plan[0];gate.decide(waiting.approval_id,ApprovalGateDecision.APPROVED)
+ assert loop.resume_after_approval(out,waiting.id,True).state==TaskState.SUCCEEDED
+ assert calls['research']==1
