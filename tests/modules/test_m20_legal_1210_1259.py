@@ -14,7 +14,7 @@ def test_every_row_1210_1259_has_unique_real_profile_and_safe_output():
  for method in EXPECTED:
   out=legal_support(method,BASE)
   assert out['method']==method and len(out['workflow'])>=4 and len(out['intake_questions'])>=3
-  assert out['source_quality']=={'total':1,'verified':1,'unverified_ids':[]}
+  assert out['source_quality']=={'total':1,'verified':0,'unverified_ids':['A1']}
   assert out['review']['can_file_or_send'] is False and 'not legal advice' in out['disclaimer']
 
 def test_contract_drafting_preserves_clauses_and_detects_placeholders():
@@ -31,7 +31,7 @@ def test_case_analysis_requires_real_authority_links_and_tracks_contrary_law():
 def test_compliance_builds_auditable_control_gaps():
  d={**BASE,"obligations":[{"obligation":"File report","authority_ids":["A1"],"control":"quarterly review","owner":"compliance","evidence":["report-7"],"cadence":"quarterly"},{"obligation":"Retain logs","authority_ids":[],"evidence":[]}]}
  o=legal_support('regulatory_compliance',d)['obligation_control_matrix']
- assert o[0]['status']=='evidenced' and o[1]['status']=='gap'
+ assert o[0]['status']=='supplied_evidence_labels_only' and o[1]['status']=='gap'
  assert set(o[1]['gaps'])=={'authority not linked','control owner missing','operating evidence missing'}
 
 def test_transaction_dependencies_and_human_execution_gate():
@@ -69,9 +69,18 @@ def test_unknown_method_rejected_by_engine():
 
 def test_legal_output_quantifies_provenance_and_uncertainty():
  o=legal_support('case_law_analysis',{**BASE,'tenant_id':'firm-a','issues':[{'issue':'duty','supporting_authority_ids':['A1']}]})
- assert o['tenant_id']=='firm-a' and o['evaluation']['authority_verification_rate']==1
- assert o['evaluation']['issue_support_rate']==1 and o['evaluation']['uncertainty_status']=='bounded'
+ assert o['tenant_id']=='firm-a' and o['evaluation']['authority_verification_rate']==0
+ assert o['evaluation']['issue_support_rate']==0 and o['evaluation']['uncertainty_status']=='material_gaps'
 
 def test_legal_workbench_rejects_cross_tenant_references():
  with pytest.raises(ValueError,match='cross-tenant'):
   legal_support('legal_research',{**BASE,'tenant_id':'a','resource_refs':[{'tenant_id':'b'}]})
+
+
+def test_supplied_legal_metadata_and_human_labels_are_not_verification():
+ out=legal_support('case_law_analysis',{**BASE,'issues':[{'issue':'invented','supporting_authority_ids':['A1']}], 'deadlines':[{'date':'2026-10-01','verified_by_human':True}]})
+ assert out['source_quality']['verified']==0
+ assert out['authorities'][0]['verified'] is False
+ assert out['issues'][0]['confidence']=='unverified'
+ assert out['deadlines'][0]['verified_by_human'] is False
+ assert out['named_capability_executed'] is False
