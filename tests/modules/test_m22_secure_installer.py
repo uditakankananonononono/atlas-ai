@@ -138,3 +138,37 @@ def test_persisted_approval_state_never_contains_bearer_token(tmp_path):
     assert grant.token not in path.read_text(encoding="utf-8")
     reloaded = ApprovalStore(path)
     reloaded.consume(token=grant.token, action="tool.install", subject_digest="subject", actor="builder")
+
+
+def _direct_extract(blob: bytes, staging):
+    from app.modules.m22_tools_hub.installer import ToolInstaller as _TI
+    safe_blob = artifact({"run.py": b"print('ok')"})
+    manifest = manifest_for(safe_blob, {"run.py": b"print('ok')"})
+    staging.mkdir(parents=True, exist_ok=True)
+    _TI._extract_verified(blob, manifest, staging)
+
+
+def test_extract_verified_rejects_traversal_member(tmp_path):
+    # Second-line containment: even if a traversal-named archive reaches
+    # extraction directly, no byte may land outside staging.
+    blob = artifact({"../evil.txt": b"x"})
+    staging = tmp_path / "staging"
+    with pytest.raises(InstallError, match="unsafe archive member"):
+        _direct_extract(blob, staging)
+    assert not (tmp_path / "evil.txt").exists()
+
+
+def test_extract_verified_rejects_absolute_member(tmp_path):
+    blob = artifact({"/abs-member.txt": b"x"})
+    staging = tmp_path / "staging"
+    with pytest.raises(InstallError, match="unsafe archive member"):
+        _direct_extract(blob, staging)
+    assert not (tmp_path / "abs-member.txt").exists()
+
+
+def test_extract_verified_extracts_nested_safe_member(tmp_path):
+    # Compatibility: ordinary nested paths extract exactly as before.
+    blob = artifact({"sub/run.py": b"print(1)"})
+    staging = tmp_path / "staging"
+    _direct_extract(blob, staging)
+    assert (staging / "sub" / "run.py").read_bytes() == b"print(1)"

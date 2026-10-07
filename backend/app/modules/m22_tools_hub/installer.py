@@ -12,7 +12,7 @@ from pathlib import Path
 
 from .approvals import ApprovalStore
 from .models import InstallReceipt, ReviewDecision, ReviewRecord, ToolManifest
-from .security import ArtifactRejected, SecurityScanner
+from .security import ArtifactRejected, SecurityScanner, _safe_archive_path
 
 
 class InstallError(RuntimeError):
@@ -116,7 +116,17 @@ class ToolInstaller:
             for info in archive.infolist():
                 if info.is_dir():
                     continue
-                destination = staging / info.filename
+                # Second-line containment: the scan gate already rejects unsafe
+                # member names, but extraction must not trust that a prior
+                # check ran. Reject anything _safe_archive_path rejects and
+                # keep the resolved destination inside staging.
+                try:
+                    member = _safe_archive_path(info.filename)
+                except ArtifactRejected as exc:
+                    raise InstallError(f"unsafe archive member: {info.filename!r}") from exc
+                destination = staging / member
+                if not destination.resolve().is_relative_to(staging):
+                    raise InstallError(f"archive member escapes staging: {info.filename!r}")
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 with archive.open(info) as source, destination.open("wb") as output:
                     shutil.copyfileobj(source, output)
