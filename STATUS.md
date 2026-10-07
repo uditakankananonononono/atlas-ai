@@ -1038,3 +1038,7 @@ Oneactualmissingworkflowfailure retained. SQLtenant/register currentrevision plu
 ## Durable risk register discovery and failure rollback
 
 Oneactualmissinglistfailure retained: registeredriskIDmustbecarriedafterrestart. Addedtenant-boundGET/runtime/risk-registers boundedrecent1..100summarylist, opencontrolgapcount/highestsuppliedpriority/reviewcompleteness. IndependentfileSQLiteengineclose/reopenfixture listsoriginalregister; othertenantempty. Injectedrevisionhistoryinsertfailure rollsbackcurrentCASrevisionandhistorytogether.76runtimepass1warning; recorded87adjacent2455pass2warnings47.44s. LocalSQLitetransaction/restart evidence, notPostgresparallelwriters/deployedavailability. No liveevidence/assigneeverification/notifications. Latestfull10022source69d6262 predatessevencodefixes.
+
+## Additional risk revision parallel-writer evidence
+
+FileSQLite twoindependentengines/threads/barrier submitexpectedrevision1together: onecommit/oneconflict/history1,2/winnerownerretained.77runtimepass1warning. Testpassedfirstattempt, evidenceaddition notnewreproduceddefect orsourcefix. PostgreSQL/deployedparallelacceptanceremainsopen. Logrisk-parallel-writer retained.

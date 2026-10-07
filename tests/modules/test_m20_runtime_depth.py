@@ -1086,3 +1086,37 @@ def test_risk_revision_history_insert_failure_rolls_back_current_revision():
         event.remove(RiskRevisionRow, 'before_insert', fail_insert)
     assert register.get(first['id'])['revision'] == 1
     assert len(register.history(first['id'])) == 1
+
+
+def test_risk_revision_file_sqlite_simultaneous_writers_only_one_commits(tmp_path):
+    from app.modules.m20_general_cognitive_worker.risk_register import DurableRiskRegister
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    path = tmp_path / 'writers.sqlite'
+    engine = create_engine(f'sqlite:///{path}', connect_args={'timeout': 10})
+    repo = GCWRepository(engine, tenant_id='a'); repo.create_schema()
+    risk = {'id': 'fixture', 'cause': 'Miss cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+            'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+    first = DurableRiskRegister(repo).create(goal='fixture', risks=[risk])
+    barrier = Barrier(2)
+    def write(owner):
+        separate = create_engine(f'sqlite:///{path}', connect_args={'timeout': 10})
+        register = DurableRiskRegister(GCWRepository(separate, tenant_id='a'))
+        try:
+            barrier.wait(timeout=5)
+            try:
+                result = register.revise(first['id'], expected_revision=1, risks=[{**risk, 'owner': owner}])
+                return ('committed', result['report']['risks'][0]['owner'])
+            except ValueError as exc:
+                assert 'revision conflict' in str(exc)
+                return ('conflict', owner)
+        finally:
+            separate.dispose()
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(write, ['one', 'two']))
+    assert sorted(result[0] for result in results) == ['committed', 'conflict']
+    register = DurableRiskRegister(repo)
+    assert [row['revision'] for row in register.history(first['id'])] == [1, 2]
+    winner = next(owner for status, owner in results if status == 'committed')
+    assert register.get(first['id'])['report']['risks'][0]['owner'] == winner
+    engine.dispose()
