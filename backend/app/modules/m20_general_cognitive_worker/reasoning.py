@@ -120,17 +120,27 @@ def sensitivity_analysis(
 ) -> list[dict[str, Any]]:
     """Sensitivity Analysis + Tornado Diagram data: swing each parameter
     +/-swing and rank by impact on the output."""
-    base = evaluate(base_params)
-    rows = []
+    def finite(value):
+        if type(value) not in (int, float) or not math.isfinite(value):
+            raise ValueError("finite numeric sensitivity values required, not bool")
+        return value
+    finite(swing)
+    if swing < 0:
+        raise ValueError("swing must be nonnegative")
+    for value in base_params.values():
+        finite(value)
+    variations = []
     for name, value in base_params.items():
-        low_params = {**base_params, name: value * (1 - swing)}
-        high_params = {**base_params, name: value * (1 + swing)}
-        low, high = evaluate(low_params), evaluate(high_params)
-        rows.append({
-            "parameter": name, "base": base,
-            "low_output": low, "high_output": high,
-            "impact": abs(high - low),
-        })
+        low = finite(value * (1 - swing))
+        high = finite(value * (1 + swing))
+        variations.append((name, {**base_params, name: low}, {**base_params, name: high}))
+    base = finite(evaluate(dict(base_params)))
+    rows = []
+    for name, low_params, high_params in variations:
+        low, high = finite(evaluate(low_params)), finite(evaluate(high_params))
+        impact = finite(abs(high - low))
+        rows.append({"parameter": name, "base": base,
+                     "low_output": low, "high_output": high, "impact": impact})
     rows.sort(key=lambda r: r["impact"], reverse=True)
     return rows
 
