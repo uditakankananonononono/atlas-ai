@@ -194,6 +194,9 @@ def _draft_env(tmp_path, capturer):
     class DurableIds:
         items = []
 
+        def get(self,item_id,*,user_id=None):
+            return next((i for i in self.items if i.id==item_id and i.payload.get('tenant_id')==user_id),None)
+
         def put(self, item, *, user_id=None):
             stored = item.model_copy(update={"id": "m00-durable-id"})
             self.items.append(stored)

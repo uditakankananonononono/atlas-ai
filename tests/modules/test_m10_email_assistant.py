@@ -60,6 +60,9 @@ class ApprovalSpy:
     def __init__(self):
         self.items = []
 
+    def get(self,item_id,*,user_id=None):
+        return next((item for item,user in self.items if item.id==item_id and user==user_id),None)
+
     def put(self, item: ApprovalRequest, *, user_id=None) -> ApprovalRequest:
         self.items.append((item, user_id))
         return item
@@ -647,4 +650,26 @@ def test_draft_finalize_rejects_payload_substitution(tmp_path,monkeypatch):
  assert len(repo.list_drafts())==1
  with pytest.raises(ValueError,match='illegal'):
   repo.transition_draft_work(message.id,'a','complete','ready',{})
+ asyncio.run(client.aclose())
+
+
+@pytest.mark.parametrize('case',['fresh_sink','missing','wrong_body','wrong_account'])
+def test_saved_approval_requires_source_matching_receipt_no_refile(tmp_path,monkeypatch,case):
+ from app.modules.m10_email_assistant.service import DraftPipelineUnresolvedError
+ svc,repo,approvals,client=make_service(tmp_path)
+ repo.save_account(account_id='a',email_address='fixture-a@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ original=repo.finalize_draft_work;monkeypatch.setattr(repo,'finalize_draft_work',lambda *args:False)
+ assert asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply'))) is False
+ message=repo.list_messages()[0];assert len(approvals.items)==1
+ monkeypatch.setattr(repo,'finalize_draft_work',original)
+ if case=='fresh_sink':svc.approval_sink=ApprovalSpy()
+ elif case=='missing':monkeypatch.setattr(approvals,'get',lambda *args,**kwargs:None)
+ else:
+  item=approvals.items[0][0];payload={**item.payload}
+  payload['body' if case=='wrong_body' else 'account_id']='wrong'
+  monkeypatch.setattr(approvals,'get',lambda *args,**kwargs:item.model_copy(update={'payload':payload}))
+ with pytest.raises(DraftPipelineUnresolvedError,match='missing or mismatched'):
+  asyncio.run(svc.recover_draft_pipeline('a'))
+ assert repo.list_drafts()==[] and len(approvals.items)==1
+ assert repo.draft_work(message.id,'a')['phase']=='approval_done'
  asyncio.run(client.aclose())
