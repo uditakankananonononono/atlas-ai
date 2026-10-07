@@ -1,0 +1,51 @@
+........................................................................ [ 60%]
+..............................................FF                         [100%]
+=================================== FAILURES ===================================
+_ test_tool_ranking_and_supervision_use_sql_aggregates_not_full_action_payloads _
+
+    def test_tool_ranking_and_supervision_use_sql_aggregates_not_full_action_payloads():
+        runtime, repo = make_runtime()
+        for i, success in enumerate([True, True, False]):
+            repo.save_action(ActionRecord(tool='csv_summary', succeeded=success, result={'large': 'x'*10000}))
+        def forbidden(*args, **kwargs): raise AssertionError('full journal read forbidden')
+        repo.list_actions = forbidden
+>       selection = runtime.select_tool('summarize csv numeric').as_dict()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_runtime_depth.py:1687: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/runtime.py:496: in select_tool
+    self.selector.use_dispatch_records(self.repo.list_actions())
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (), kwargs = {}
+
+>   def forbidden(*args, **kwargs): raise AssertionError('full journal read forbidden')
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: full journal read forbidden
+
+tests/modules/test_m20_runtime_depth.py:1685: AssertionError
+_______________ test_dispatch_aggregate_counts_are_tenant_scoped _______________
+
+    def test_dispatch_aggregate_counts_are_tenant_scoped():
+        engine = make_engine()
+        a = GCWRepository(engine, tenant_id='a'); a.create_schema()
+        b = GCWRepository(engine, tenant_id='b')
+        a.save_action(ActionRecord(tool='csv_summary', succeeded=False))
+        b.save_action(ActionRecord(tool='csv_summary', succeeded=True))
+>       assert a.dispatch_outcome_counts() == {'csv_summary': {'successes': 0, 'failures': 1}}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'GCWRepository' object has no attribute 'dispatch_outcome_counts'
+
+tests/modules/test_m20_runtime_depth.py:1701: AttributeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_tool_ranking_and_supervision_use_sql_aggregates_not_full_action_payloads
+FAILED tests/modules/test_m20_runtime_depth.py::test_dispatch_aggregate_counts_are_tenant_scoped
+2 failed, 118 passed, 1 warning in 6.63s
