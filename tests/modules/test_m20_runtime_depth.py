@@ -1249,3 +1249,42 @@ def test_risk_control_patch_preserves_other_risks_and_rejects_stale_review(mount
     assert client.patch(path + 'missing', json={'expected_revision': 2, 'changes': {'owner': 'x'}}).status_code == 404
     assert runtime.risk_registers.get(created['id'])['revision'] == 2
     assert len(runtime.risk_registers.history(created['id'])) == 2
+
+
+def test_planning_retrieves_prior_retrospective_lessons_after_restart():
+    runtime, repo = make_runtime()
+    prior = runtime.retrospectives.write('past', went_well=[], went_poorly=['fixture failure'],
+        lessons=['check fixture input before retry'], execution_report={'external_outcomes_verified': False})
+    class CapturePlanner:
+        def __init__(self): self.context = None
+        def decompose(self, goal, *, context=''):
+            self.context = context
+            return [{'title': 'review fixture', 'tool': None}]
+    model = CapturePlanner()
+    restored = make_runtime(hydrate_repo=repo, model=model)
+    task = restored.submit_goal('fixture retry', run_immediately=True)
+    assert model.context and 'check fixture input before retry' in model.context
+    chunks = restored.working_memory.focused(partition=task.id)
+    lesson_chunks = [c for c in chunks if c.source == 'retrospective_retrieval']
+    assert len(lesson_chunks) == 1
+    assert lesson_chunks[0].type == ChunkType.HYPOTHESIS
+    assert prior.id in lesson_chunks[0].content
+    assert 'unverified review suggestion' in lesson_chunks[0].content
+
+
+def test_review_lessons_prepared_plan_deduplicates_and_stays_task_partitioned():
+    class CapturePlanner:
+        def __init__(self): self.context = ''
+        def decompose(self, goal, *, context=''):
+            self.context = context
+            return [{'title': 'review fixture', 'tool': None}]
+    model = CapturePlanner()
+    runtime, _ = make_runtime(model=model)
+    runtime.retrospectives.write('past', went_well=[], went_poorly=[], lessons=['fixture check'])
+    task = runtime.submit_goal('fixture', run_immediately=False)
+    assert 'fixture check' in model.context
+    runtime._retrieve_review_lessons(task)
+    runtime._retrieve_review_lessons(task)
+    chunks = [c for c in runtime.working_memory.focused(partition=task.id) if c.source == 'retrospective_retrieval']
+    assert len(chunks) == 1 and chunks[0].confidence == 0
+    assert runtime.working_memory.focused(partition='other') == []
