@@ -556,3 +556,10 @@ def test_decision_tree_rejects_invalid_branch_or_leaf(spec):
 def test_decision_tree_cycle_fails_with_controlled_error():
  spec={'kind':'decision','children':[]};spec['children'].append({'node':spec})
  with pytest.raises(ValueError,match='cyclic'):DecisionTreeBuilder().build(spec=spec)
+
+
+@pytest.mark.parametrize('expression,params',[
+ ('1/x',{'x':0}),('x',{}),('x',{'x':float('nan')}),('x',{'x':True}),('"x"',{'x':1}),('x ** 1001',{'x':2}),('bad +',{'x':1})
+])
+def test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs(expression,params):
+ with pytest.raises(ValueError):SensitivityExplorer().analyze(expression=expression,params=params)

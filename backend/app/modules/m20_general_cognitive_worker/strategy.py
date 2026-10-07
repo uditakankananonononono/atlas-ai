@@ -611,17 +611,53 @@ _ALLOWED_AST = (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Constant,
 
 
 def _safe_evaluator(expression: str, params: dict[str, float]):
-    tree = ast.parse(expression, mode="eval")
-    for node in ast.walk(tree):
-        if not isinstance(node, _ALLOWED_AST):
-            raise ValueError(f"disallowed expression element: {type(node).__name__}")
-        if isinstance(node, ast.Name) and node.id not in params:
-            raise ValueError(f"unknown parameter {node.id!r}")
-    code = compile(tree, "<expr>", "eval")
-
-    def evaluate(p: dict[str, float]) -> float:
-        return float(eval(code, {"__builtins__": {}}, dict(p)))
-
+    if not isinstance(expression, str) or not 1 <= len(expression) <= 4096:
+        raise ValueError("expression length must be1..4096")
+    if not isinstance(params, dict) or not 1 <= len(params) <= 128:
+        raise ValueError("need1..128 parameters")
+    if any(not isinstance(name, str) or not name.isidentifier() or type(value) not in (int, float) or not math.isfinite(value) for name, value in params.items()):
+        raise ValueError("finite numeric parameters required")
+    try:
+        tree = ast.parse(expression, mode="eval")
+    except (SyntaxError, RecursionError) as exc:
+        raise ValueError("invalid arithmetic expression") from exc
+    if sum(1 for _ in ast.walk(tree)) > 256:
+        raise ValueError("expression node bound exceeded")
+    def evaluate(p):
+        def visit(node, depth=0):
+            if depth > 32:
+                raise ValueError("arithmetic depth bound exceeded")
+            if isinstance(node, ast.Expression):return visit(node.body, depth+1)
+            if isinstance(node, ast.Constant):
+                if type(node.value) not in (int, float) or not math.isfinite(node.value):
+                    raise ValueError("finite numeric constants required")
+                value = float(node.value)
+            elif isinstance(node, ast.Name):
+                if node.id not in p:raise ValueError("unknown parameter")
+                value = p[node.id]
+                if type(value) not in (int, float) or not math.isfinite(value):raise ValueError("finite numeric parameter required")
+                value = float(value)
+            elif isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+                value = visit(node.operand, depth+1)
+                if isinstance(node.op, ast.USub):value = -value
+            elif isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, ast.Mod)):
+                left, right = visit(node.left, depth+1), visit(node.right, depth+1)
+                try:
+                    if isinstance(node.op, ast.Add):value = left + right
+                    elif isinstance(node.op, ast.Sub):value = left - right
+                    elif isinstance(node.op, ast.Mult):value = left * right
+                    elif isinstance(node.op, ast.Div):value = left / right
+                    elif isinstance(node.op, ast.Mod):value = left % right
+                    else:
+                        if abs(right) > 1000:raise ValueError("exponent bound exceeded")
+                        value = math.pow(left, right)
+                except (ArithmeticError, ValueError) as exc:
+                    raise ValueError("arithmetic domain/range error") from exc
+            else:raise ValueError("only bounded numeric arithmetic allowed")
+            if not math.isfinite(value):raise ValueError("nonfinite arithmetic result")
+            return value
+        return visit(tree)
+    evaluate(dict(params))
     return evaluate
 
 
