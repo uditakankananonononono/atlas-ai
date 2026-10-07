@@ -16,6 +16,8 @@ heuristic scoring, not fitted expected information gain or success probability.
 from __future__ import annotations
 
 import time
+from threading import Lock
+from functools import wraps
 import hashlib
 import os
 import tempfile
@@ -88,6 +90,16 @@ class StepReport:
     surprises: list[str] = field(default_factory=list)
 
 
+class RuntimeBusy(RuntimeError):pass
+
+def _exclusive_execution(method):
+    @wraps(method)
+    def guarded(self,*args,**kwargs):
+        if not self._execution_lock.acquire(blocking=False):raise RuntimeBusy("runtime execution already active")
+        try:return method(self,*args,**kwargs)
+        finally:self._execution_lock.release()
+    return guarded
+
 class GCWRuntime:
     """Durable executive runtime for one tenant."""
 
@@ -104,6 +116,7 @@ class GCWRuntime:
         seed: int | None = None,
         _hydrate: bool = True,
     ) -> None:
+        self._execution_lock=Lock()
         self.repo = repo
         self.tenant_id = repo.tenant_id
         self.working_memory = (
@@ -154,6 +167,7 @@ class GCWRuntime:
 
     # -- lifecycle -----------------------------------------------------------
 
+    @_exclusive_execution
     def submit_goal(
         self,
         goal: str,
@@ -194,6 +208,7 @@ class GCWRuntime:
     def list_tasks(self) -> list[TaskContext]:
         return self.repo.list_tasks()
 
+    @_exclusive_execution
     def step(self, *, quantum_seconds: float = 5.0, max_ticks: int = 10) -> StepReport:
         """One fair-scheduled quantum across contexts (rows M20-15, M20-24)."""
         started = time.monotonic()
@@ -214,6 +229,7 @@ class GCWRuntime:
             elapsed_seconds=round(elapsed, 4), surprises=surprises,
         )
 
+    @_exclusive_execution
     def run_task(self, task_id: str, *, max_ticks: int = 25) -> TaskContext | None:
         context = self.get_task(task_id)
         if context is None:
@@ -223,6 +239,7 @@ class GCWRuntime:
         self._evaluate_expectations(context)
         return context
 
+    @_exclusive_execution
     def resume(self, task_id: str, node_id: str, *, approved: bool) -> TaskContext | None:
         context = self.get_task(task_id)
         if context is None:
