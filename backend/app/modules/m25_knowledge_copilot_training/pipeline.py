@@ -54,6 +54,7 @@ class LocalKnowledgePipeline:
         # workspace. Residual, code-grounded: a pre-existing symlink inside
         # the workspace is followed by resolve() - symlink swap attacks are
         # not closed by this check.
+        if any(part in ('.','..') for part in parts): raise KnowledgeError('dot-segment source ids are not valid paths')
         p=self.workspace.joinpath(*parts).resolve()
         if p!=self.workspace and self.workspace not in p.parents: raise KnowledgeError('path escapes tenant workspace')
         return p
@@ -88,8 +89,14 @@ class LocalKnowledgePipeline:
         version=Version((len(prior.versions) if prior else 0)+1,digest,segments,self.clock(),request.mime_type)
         new_chunks=self._chunk(prior or Record(request.source,self.tenant_id),version)
         target=self._contained(request.source.source_id,f'v{version.number}')
+        if target.exists():
+            # In-memory versions are lost on restart while disk persists, so a
+            # fresh pipeline can recompute a version number whose directory
+            # already holds prior data. Refuse rather than overwrite, and never
+            # let failure cleanup remove data this attempt did not create.
+            raise KnowledgeError('version target already exists on disk; refusing to overwrite')
         try:
-            target.mkdir(parents=True,exist_ok=True); (target/'source.bin').write_bytes(raw)
+            target.mkdir(parents=True); (target/'source.bin').write_bytes(raw)
             (target/'segments.json').write_text(json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True),encoding='utf-8')
         except OSError:
             shutil.rmtree(target,ignore_errors=True); raise
