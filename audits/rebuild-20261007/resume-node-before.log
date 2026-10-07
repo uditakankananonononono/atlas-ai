@@ -1,0 +1,27 @@
+...............................FF                                        [100%]
+=================================== FAILURES ===================================
+____________ test_approval_resume_cannot_reset_completed_read_node _____________
+
+    def test_approval_resume_cannot_reset_completed_read_node():
+        loop, _, calls = build_loop()
+        context = loop.start(TaskContext(goal="research competitors and email the findings"))
+        done = next(n for n in context.plan if n.state == TaskState.SUCCEEDED)
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_executive.py:286: Failed
+____________ test_unknown_approval_resume_does_not_block_whole_task ____________
+
+    def test_unknown_approval_resume_does_not_block_whole_task():
+        loop, _, _ = build_loop()
+        context = loop.start(TaskContext(goal="research competitors and email the findings"))
+>       with pytest.raises(KeyError):
+             ^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE KeyError
+
+tests/modules/test_m20_executive.py:296: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_executive.py::test_approval_resume_cannot_reset_completed_read_node
+FAILED tests/modules/test_m20_executive.py::test_unknown_approval_resume_does_not_block_whole_task
+2 failed, 31 passed in 1.55s
