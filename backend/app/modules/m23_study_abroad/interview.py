@@ -74,16 +74,20 @@ class IdentityInterviewRepository:
             raise ValueError("student response must contain at least 10 characters")
         if modality not in {"chat", "voice"}:
             raise ValueError("modality must be chat or voice")
-        # Serialization contract: a (session_id, ordinal) unique collision -
-        # two concurrent answers reading the same question_index - retries
-        # with a re-read row in a fresh transaction, bounded to three
-        # attempts, then fails with a domain error. A raw IntegrityError
-        # never escapes. Deterministic handler-path contract only; no
-        # real-race closure is claimed. An identical-text resubmission after
-        # the first answer committed is treated as the answer to the NEXT
-        # question - it is NOT deduplicated (that would need client
-        # idempotency semantics, which are not invented here).
+        # Serialization contract: a (session_id, ordinal) unique collision
+        # means a concurrent answer committed first. The retry re-reads the
+        # row in a fresh transaction and proceeds ONLY while the interview is
+        # still on the question this response was written for; if the
+        # interview advanced, the stale answer is rejected, never shifted
+        # under a question it was not written for. Bounded to three attempts,
+        # then a domain error. A raw IntegrityError never escapes.
+        # Deterministic handler-path contract only; no real-race closure is
+        # claimed. An identical-text resubmission after the first answer
+        # committed is rejected as stale like any other late answer - it is
+        # NOT deduplicated and NOT re-filed (client idempotency semantics
+        # are not invented here).
         from sqlalchemy.exc import IntegrityError as _IE
+        expected_index: int | None = None
         last = None
         for _ in range(3):
             try:
@@ -95,6 +99,12 @@ class IdentityInterviewRepository:
                         raise LookupError(session_id)
                     if row.status != "active":
                         raise ValueError("interview is already complete")
+                    if expected_index is None:
+                        expected_index = row.question_index
+                    elif row.question_index != expected_index:
+                        raise ValueError(
+                            "the interview advanced while this answer was in flight; "
+                            "resubmit the answer to the current question")
                     question = QUESTIONS[row.question_index]
                     db.add(IdentityTurnRow(session_id=session_id, ordinal=row.question_index + 1,
                                            modality=modality, question=question,

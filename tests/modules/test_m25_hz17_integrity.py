@@ -91,7 +91,7 @@ def test_hz17_oversize_bytes_rejected_before_any_read(tmp_path, monkeypatch):
     # timing claim.
     p = pipe(tmp_path)
     ingest(p)
-    (tmp_path / 'tenant-a' / 's1' / 'v1' / 'source.bin').write_bytes(b'x' * 20001)
+    (tmp_path / 'tenant-a' / 's1' / 'v1' / 'source.bin').write_bytes(b'x' * 80001)
     from pathlib import Path
     monkeypatch.setattr(Path, 'read_bytes',
                         lambda self, *a, **k: (_ for _ in ()).throw(AssertionError('read attempted')))
