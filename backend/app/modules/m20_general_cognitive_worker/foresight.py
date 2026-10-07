@@ -9,6 +9,8 @@ investment-advice claims, and their outputs say so.
 from __future__ import annotations
 
 import math
+import copy
+from types import MappingProxyType
 import random
 import re
 from dataclasses import dataclass, field
@@ -164,35 +166,48 @@ class SimulationRecord:
 
 
 class SimulationFidelityTracker:
-    """Records predicted vs actual numeric outcomes of mental simulations
-    and scores fidelity = 1 - relative error, clamped to [0, 1]. The
-    running per-domain fidelity is the calibration factor future
-    simulation confidence should be multiplied by."""
+    """Supplied numeric prediction/outcome relative-error score.
+
+    No independent outcome verification or fitted confidence calibration.
+    """
 
     def __init__(self) -> None:
-        self.records: dict[str, SimulationRecord] = {}
+        self._records: dict[str, SimulationRecord] = {}
+
+    @property
+    def records(self):
+        return MappingProxyType(copy.deepcopy(self._records))
+
+    @staticmethod
+    def _finite(value):
+        if type(value) not in (int, float) or not math.isfinite(value):
+            raise ValueError("finite numeric prediction/outcome/confidence required, not bool")
 
     def record_prediction(self, domain: str, predicted: float, *, confidence: float = 0.5) -> SimulationRecord:
-        if not 0.0 <= confidence <= 1.0:
-            raise ValueError("confidence must be in [0, 1]")
+        self._finite(predicted)
+        self._finite(confidence)
+        if not 0 <= confidence <= 1:
+            raise ValueError("confidence must be in [0,1]")
         rec = SimulationRecord(record_id=_uid(), domain=domain, predicted=predicted, confidence=confidence)
-        self.records[rec.record_id] = rec
-        return rec
+        self._records[rec.record_id] = rec
+        return copy.deepcopy(rec)
 
     def resolve(self, record_id: str, actual: float) -> SimulationRecord:
-        rec = self.records[record_id]
-        rec.actual = actual
+        self._finite(actual)
+        rec = self._records[record_id]
         scale = max(abs(actual), abs(rec.predicted), 1e-9)
-        rec.fidelity = max(0.0, 1.0 - abs(rec.predicted - actual) / scale)
-        return rec
+        score = max(0.0, 1.0 - abs(rec.predicted / scale - actual / scale))
+        rec.actual = actual
+        rec.fidelity = score
+        return copy.deepcopy(rec)
 
     def fidelity(self, *, domain: str | None = None) -> float | None:
-        vals = [r.fidelity for r in self.records.values()
+        vals = [r.fidelity for r in self._records.values()
                 if r.fidelity is not None and (domain is None or r.domain == domain)]
         return mean(vals) if vals else None
 
     def confidence_adjustment(self, *, domain: str | None = None) -> float:
-        """Multiplier for future simulation confidence; 1.0 when uncalibrated."""
+        """Legacy heuristic multiplier, not empirically calibrated confidence."""
         f = self.fidelity(domain=domain)
         return 1.0 if f is None else f
 

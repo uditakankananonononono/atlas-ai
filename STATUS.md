@@ -906,3 +906,7 @@ Three reproduced failures retained: NaN becomesconfidence1, invalid/reversed thr
 ## Supplied scheduler aging rates
 
 Six actual failures retained: malformed/nonfinite/negative/bool aging rates accepted; finite aging multiplication overflow selects infinite priority. Finite nonnegative numeric/notbool rate and finite computed priority validate before selection mutates counters.72runtimepass1warning; recorded87adjacent2310pass2warnings38.01s. Same-clock base/aging calculation. Heuristic aging and local service counts, not unrestricted starvation/fairness guarantee with unbounded arrivals or zero rate. Latestfull9869passsource724c275 predatesfivelaterfixes.
+
+## Supplied simulation fidelity metric integrity
+
+Two reproduced failures retained: malformed/nonfinite/bool numeric predictions publish, returned/public records rewrite computed score. Strictfinite numeric prediction/actual/confidence, boundedconfidence, private records with detachedread-onlymapping/deepreturns. Scaled operands avoid unneeded difference overflow.81foresight/HTTPpass1warning; recorded87adjacent2312pass2warnings41.69s. Relativeerror arithmetic on supplied prediction/actual only; futureconfidence multiplier is legacy heuristic, not fitted calibration or independent outcome verification. Raw validation does not establish HTTP strict input types. Latestfull9869passsource724c275 predatessixlaterfixes. Original cognition/production incomplete.
