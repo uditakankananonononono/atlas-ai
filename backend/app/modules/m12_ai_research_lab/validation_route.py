@@ -2,6 +2,7 @@
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from starlette.responses import JSONResponse
+from .response_json import safe_workflow_json
 
 class ModelExecutionRoute(APIRoute):
     def get_route_handler(self):
@@ -14,5 +15,7 @@ class ModelExecutionRoute(APIRoute):
                 # Input and ctx can carry NaN or private prompt/body content.
                 # Preserve field/type/message evidence without echoing raw values.
                 errors=[{key:item[key] for key in ('type','loc','msg') if key in item} for item in error.errors()]
-                return JSONResponse(status_code=422,content={'detail':errors})
+                safe,invalid=safe_workflow_json(errors)
+                detail={'errors':safe,'invalid_json_paths':invalid} if invalid else safe
+                return JSONResponse(status_code=422,content={'detail':detail})
         return handle
