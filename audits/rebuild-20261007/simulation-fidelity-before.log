@@ -1,0 +1,31 @@
+....................................................FF                   [100%]
+=================================== FAILURES ===================================
+______ test_simulation_fidelity_invalid_numbers_reject_before_publication ______
+
+    def test_simulation_fidelity_invalid_numbers_reject_before_publication():
+        tracker = SimulationFidelityTracker()
+        for value in [float('nan'), float('inf'), True, '1']:
+>           with pytest.raises(ValueError):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:477: Failed
+________ test_simulation_fidelity_returned_record_cannot_rewrite_metric ________
+
+    def test_simulation_fidelity_returned_record_cannot_rewrite_metric():
+        tracker = SimulationFidelityTracker()
+        record = tracker.record_prediction('fixture', 10)
+        record.predicted = 20
+        resolved = tracker.resolve(record.record_id, 20)
+>       assert resolved.fidelity == pytest.approx(0.5)
+E       assert 1.0 == 0.5 ± 5.0e-07
+E         
+E         comparison failed
+E         Obtained: 1.0
+E         Expected: 0.5 ± 5.0e-07
+
+tests/modules/test_m20_foresight.py:494: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_simulation_fidelity_invalid_numbers_reject_before_publication
+FAILED tests/modules/test_m20_foresight.py::test_simulation_fidelity_returned_record_cannot_rewrite_metric
+2 failed, 52 passed in 1.46s

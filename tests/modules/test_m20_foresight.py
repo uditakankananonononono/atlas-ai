@@ -469,3 +469,29 @@ def test_beta_binomial_rejects_invalid_shapes_or_counts(alpha, beta, successes, 
 
 def test_beta_binomial_large_shapes_scaled_mean():
     assert BayesianUpdater.update_beta(1e308, 1e308, successes=0, failures=0)["mean"] == pytest.approx(0.5)
+
+
+def test_simulation_fidelity_invalid_numbers_reject_before_publication():
+    tracker = SimulationFidelityTracker()
+    for value in [float('nan'), float('inf'), True, '1']:
+        with pytest.raises(ValueError):
+            tracker.record_prediction('fixture', value)
+        with pytest.raises(ValueError):
+            tracker.record_prediction('fixture', 1, confidence=value)
+    assert tracker.records == {}
+    record = tracker.record_prediction('fixture', 1)
+    for value in [float('nan'), float('inf'), True, '1']:
+        with pytest.raises(ValueError):
+            tracker.resolve(record.record_id, value)
+        assert tracker.records[record.record_id].actual is None
+
+
+def test_simulation_fidelity_returned_record_cannot_rewrite_metric():
+    tracker = SimulationFidelityTracker()
+    record = tracker.record_prediction('fixture', 10)
+    record.predicted = 20
+    resolved = tracker.resolve(record.record_id, 20)
+    assert resolved.fidelity == pytest.approx(0.5)
+    resolved.fidelity = 1
+    tracker.records[record.record_id].fidelity = 1
+    assert tracker.fidelity() == pytest.approx(0.5)
