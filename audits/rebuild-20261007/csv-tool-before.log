@@ -1,0 +1,24 @@
+........................................................................ [ 70%]
+.............................F                                           [100%]
+=================================== FAILURES ===================================
+______ test_runtime_builtin_csv_summary_executes_real_data_without_model _______
+
+    def test_runtime_builtin_csv_summary_executes_real_data_without_model():
+        runtime, repo = make_runtime()
+        task = runtime.submit_goal('summarize supplied expenses', run_immediately=False)
+        runtime.prepare_supplied_plan(task.id, steps=[{'title':'summarize expenses','tool':'csv_summary',
+            'arguments':{'csv_text':'team,amount\nops,10\nops,20\nsales,5\n', 'value_column':'amount','group_column':'team'}}])
+        report = runtime.preflight_task(task.id)
+>       assert report['static_checks_passed'] is True
+E       assert False is True
+
+tests/modules/test_m20_runtime_depth.py:1571: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_builtin_csv_summary_executes_real_data_without_model
+1 failed, 101 passed, 1 warning in 5.92s

@@ -131,6 +131,8 @@ class GCWRuntime:
             repo, model=planner_model, require_review=require_method_review,
         )
         self.tools = ToolRegistry()
+        from .local_tools import register_local_tools
+        register_local_tools(self.tools)
         self.safety = SafetyGate(
             approvals=approval_gate or InMemoryApprovalGate(), sandbox=sandbox_policy,
         )
