@@ -337,7 +337,7 @@ class CalibrationEngine:
         return None  # Counts alone do not establish evidence-supported odds.
 
     def assess_claim(self, text: str, confidence: float, *, evidence_count: int = 0) -> Claim:
-        if not math.isfinite(confidence) or not 0 <= confidence <= 1 or evidence_count < 0:
+        if type(confidence) not in (int, float) or not math.isfinite(confidence) or not 0 <= confidence <= 1 or type(evidence_count) is not int or not 0 <= evidence_count <= 10**15:
             raise ValueError("finite confidence in [0,1] and nonnegative count required")
         flagged = None
         reason = "Knowledge-boundary assessment unavailable; confidence and evidence count are caller supplied"
@@ -347,12 +347,16 @@ class CalibrationEngine:
         return claim
 
     def resolve(self, claim_id: str, correct: bool) -> Claim:
+        if type(correct) is not bool:
+            raise ValueError("correctness must be exact bool")
         claim = self.claims[claim_id]
         claim.resolved = True
         claim.correct = correct
         return claim
 
     def calibration_curve(self, *, bins: int = 5) -> list[dict[str, float]]:
+        if type(bins) is not int or not 1 <= bins <= 1000:
+            raise ValueError("bins must be integer1..1000")
         resolved = [c for c in self.claims.values() if c.resolved]
         out = []
         for i in range(bins):
