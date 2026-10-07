@@ -38,6 +38,7 @@ class ResearchExecutor:
         for attempt in range(min(self.policy.max_attempts,len(choices))):
             model=choices[attempt]
             result=await self.provider.generate(model_id=model.model_id,prompt=prompt,context={**context,"attempt_history":history})
+            result.metadata["requested_model_id"]=model.model_id
             confidence=(result.confidence if valid_confidence(result.confidence) else None) if result.confidence is not None else confidence_from_logprobs(result.logprobs)
             if confidence is None:
                 result.confidence=None;result.logprobs=[]
