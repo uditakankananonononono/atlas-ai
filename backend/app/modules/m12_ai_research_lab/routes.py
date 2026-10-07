@@ -30,16 +30,19 @@ async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=De
 async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tenant),engine=Depends(get_dag_engine)):
     try:return await engine.run(Workflow.from_yaml(body.yaml),{**body.inputs,"tenant_id":tenant.tenant_id})
     except WorkflowNodeFailure as error:
-        detail={"node_id":error.node_id,"completed":error.completed,"retry_allowed":False,"failed_nodes":[node_id for node_id,_ in error.failures]}
-        if isinstance(error.error,ConfidenceUnavailable):
-            detail.update({"state":"review_required","result":asdict(error.error.result)})
-            raise HTTPException(422,detail) from error
-        if isinstance(error.error,ProviderOutcomeUnknown):
-            detail.update({"state":"unknown","reason":str(error.error)})
-            raise HTTPException(409,detail) from error
         import asyncio
-        detail.update({"state":"cancelled" if isinstance(error.error,asyncio.CancelledError) else "failed","reason":str(error.error)})
-        raise HTTPException(422,detail) from error
+        failures=[]
+        for node_id,cause in error.failures:
+            item={"node_id":node_id,"retry_allowed":False}
+            if isinstance(cause,ConfidenceUnavailable):item.update({"state":"review_required","result":asdict(cause.result)})
+            elif isinstance(cause,ProviderOutcomeUnknown):item.update({"state":"unknown","reason":str(cause)})
+            else:item.update({"state":"cancelled" if isinstance(cause,asyncio.CancelledError) else "failed","reason":str(cause)})
+            failures.append(item)
+        states={item["state"] for item in failures}
+        state="unknown" if "unknown" in states else "review_required" if "review_required" in states else failures[0]["state"]
+        primary=next(item for item in failures if item["state"]==state)
+        detail={**primary,"state":state,"completed":error.completed,"failed_nodes":[item["node_id"] for item in failures],"failures":failures}
+        raise HTTPException(409 if state=="unknown" else 422,detail) from error
     except WorkflowValidationError as error: raise HTTPException(422,str(error)) from error
 
 from pydantic import BaseModel,Field
