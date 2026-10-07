@@ -194,6 +194,8 @@ class HTNMethod(BaseModel):
     generated_goal: str | None = None
     generated_context_sha256: str | None = None
     times_used: int = 0
+    outcomes_recorded: int = Field(default=0, ge=0, strict=True)
+    successes_recorded: int = Field(default=0, ge=0, strict=True)
     success_rate: float = 0.0
 
 

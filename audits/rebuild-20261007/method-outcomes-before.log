@@ -1,0 +1,39 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_method_outcomes_count_observations_not_unfinished_plans_and_survive_reload _
+
+    def test_method_outcomes_count_observations_not_unfinished_plans_and_survive_reload():
+        runtime, repo = make_runtime()
+        planner = runtime.planner
+        planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='read')]))
+        reviewed = planner.method_review_hash(planner.methods['fixture'])
+        for _ in range(3): planner.decompose('fixture')
+        planner.record_outcome('fixture', True)
+        planner.record_outcome('fixture', False)
+        current = planner.methods['fixture']
+>       assert current.success_rate == .5
+E       AssertionError: assert 0.2222222222222222 == 0.5
+E        +  where 0.2222222222222222 = HTNMethod(id='467db9e5-d39c-4495-b333-387553305cbd', name='fixture', goal_pattern='fixture', subtasks=[PlanNode(id='dc...LIBRARY: 'library'>, generated_goal=None, generated_context_sha256=None, times_used=3, success_rate=0.2222222222222222).success_rate
+
+tests/modules/test_m20_runtime_depth.py:1963: AssertionError
+__ test_method_outcome_requires_boolean_and_does_not_use_legacy_unbacked_rate __
+
+    def test_method_outcome_requires_boolean_and_does_not_use_legacy_unbacked_rate():
+        from app.modules.m20_general_cognitive_worker.htn_planner import HTNPlanner
+        planner = HTNPlanner()
+        planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',times_used=100,success_rate=.99,subtasks=[PlanNode(title='read')]))
+>       with pytest.raises(ValueError): planner.record_outcome('fixture', 'false')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:1979: Failed
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_method_outcomes_count_observations_not_unfinished_plans_and_survive_reload
+FAILED tests/modules/test_m20_runtime_depth.py::test_method_outcome_requires_boolean_and_does_not_use_legacy_unbacked_rate
+2 failed, 136 deselected, 1 warning in 1.71s
