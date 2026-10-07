@@ -183,7 +183,7 @@ class SqlSocialRepository:
             ignored={'approval_id','status','decided_at','failure'}
             if {k:v for k,v in current.data.items() if k not in ignored}!={k:v for k,v in old.items() if k not in ignored}:return False
             if current.status in {'publishing','outcome_unknown','published','cancelled','failed'}:return False
-            source=db.get(ApprovalRequestRow,current.data.get('approval_id'))
+            source=db.scalar(select(ApprovalRequestRow).where(ApprovalRequestRow.id==current.data.get('approval_id')).with_for_update())
             if source is not None and source.user_id==tenant_id and source.module_id==6 and source.action_type=='schedule_post' and source.status=='pending' and source.payload==payload and source.expires_at is not None:
                 from datetime import timezone
                 expiry=source.expires_at.replace(tzinfo=timezone.utc) if source.expires_at.tzinfo is None else source.expires_at
