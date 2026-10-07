@@ -1,0 +1,116 @@
+[
+  {
+    "trial": 0,
+    "backend": "bubblewrap",
+    "exit": null,
+    "timed_out": true,
+    "seconds": 2.005,
+    "stderr": "",
+    "isolation": {
+      "network": "none (network namespace)",
+      "namespaces": "user,pid,ipc,uts,net,cgroup",
+      "filesystem": "read-only system, read-only /input, tmpfs /tmp, writable /output",
+      "environment": "cleared",
+      "rlimits": {
+        "address_space_mb": 1024,
+        "cpu_seconds": 2,
+        "file_size_mb": 64
+      }
+    }
+  },
+  {
+    "trial": 1,
+    "backend": "bubblewrap",
+    "exit": null,
+    "timed_out": true,
+    "seconds": 2.008,
+    "stderr": "",
+    "isolation": {
+      "network": "none (network namespace)",
+      "namespaces": "user,pid,ipc,uts,net,cgroup",
+      "filesystem": "read-only system, read-only /input, tmpfs /tmp, writable /output",
+      "environment": "cleared",
+      "rlimits": {
+        "address_space_mb": 1024,
+        "cpu_seconds": 2,
+        "file_size_mb": 64
+      }
+    }
+  },
+  {
+    "trial": 2,
+    "backend": "bubblewrap",
+    "exit": null,
+    "timed_out": true,
+    "seconds": 2.009,
+    "stderr": "",
+    "isolation": {
+      "network": "none (network namespace)",
+      "namespaces": "user,pid,ipc,uts,net,cgroup",
+      "filesystem": "read-only system, read-only /input, tmpfs /tmp, writable /output",
+      "environment": "cleared",
+      "rlimits": {
+        "address_space_mb": 1024,
+        "cpu_seconds": 2,
+        "file_size_mb": 64
+      }
+    }
+  },
+  {
+    "trial": 3,
+    "backend": "bubblewrap",
+    "exit": null,
+    "timed_out": true,
+    "seconds": 2.004,
+    "stderr": "",
+    "isolation": {
+      "network": "none (network namespace)",
+      "namespaces": "user,pid,ipc,uts,net,cgroup",
+      "filesystem": "read-only system, read-only /input, tmpfs /tmp, writable /output",
+      "environment": "cleared",
+      "rlimits": {
+        "address_space_mb": 1024,
+        "cpu_seconds": 2,
+        "file_size_mb": 64
+      }
+    }
+  },
+  {
+    "trial": 4,
+    "backend": "bubblewrap",
+    "exit": null,
+    "timed_out": true,
+    "seconds": 2.007,
+    "stderr": "",
+    "isolation": {
+      "network": "none (network namespace)",
+      "namespaces": "user,pid,ipc,uts,net,cgroup",
+      "filesystem": "read-only system, read-only /input, tmpfs /tmp, writable /output",
+      "environment": "cleared",
+      "rlimits": {
+        "address_space_mb": 1024,
+        "cpu_seconds": 2,
+        "file_size_mb": 64
+      }
+    }
+  },
+  {
+    "trial": 5,
+    "backend": "bubblewrap",
+    "exit": null,
+    "timed_out": true,
+    "seconds": 2.004,
+    "stderr": "",
+    "isolation": {
+      "network": "none (network namespace)",
+      "namespaces": "user,pid,ipc,uts,net,cgroup",
+      "filesystem": "read-only system, read-only /input, tmpfs /tmp, writable /output",
+      "environment": "cleared",
+      "rlimits": {
+        "address_space_mb": 1024,
+        "cpu_seconds": 2,
+        "file_size_mb": 64
+      }
+    }
+  }
+]
