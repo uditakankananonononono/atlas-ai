@@ -27,10 +27,13 @@ class ModelRouter:
         reasons=[]
         if not m.enabled or req.task_type not in m.task_types: return float("-inf"), ["unsupported"]
         if req.required_model_ids and m.model_id not in req.required_model_ids: return float("-inf"), ["not allow-listed"]
+        if type(req.output_tokens) is not int or req.output_tokens<=0 or type(m.max_output_tokens) is not int or m.max_output_tokens<=0:return float("-inf"), ["invalid output token limits"]
         if not _nonnegative_finite(req.budget_cents) or not _nonnegative_finite(m.cents_per_1k_tokens):return float("-inf"), ["invalid budget or unit price"]
         if not valid_confidence(m.quality):return float("-inf"), ["invalid catalog quality"]
-        estimated=(req.output_tokens/1000)*m.cents_per_1k_tokens
         if m.max_output_tokens < req.output_tokens: return float("-inf"), ["output limit"]
+        try:estimated=(req.output_tokens/1000)*m.cents_per_1k_tokens
+        except OverflowError:return float("-inf"), ["invalid estimated cost"]
+        if not isfinite(estimated):return float("-inf"), ["invalid estimated cost"]
         if estimated > req.budget_cents: return float("-inf"), ["budget"]
         if not _positive_finite_latency(req.latency_tolerance_ms) or not _positive_finite_latency(m.p95_latency_ms): return float("-inf"), ["invalid latency estimate or tolerance"]
         if m.p95_latency_ms > req.latency_tolerance_ms: return float("-inf"), ["latency estimate exceeds tolerance"]
