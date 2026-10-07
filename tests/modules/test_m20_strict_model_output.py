@@ -48,3 +48,22 @@ def test_executive_accepts_exact_purpose_schema(monkeypatch,purpose,body):
 def test_model_json_numeric_overflow_is_rejected(body):
     with pytest.raises(ValueError):
         ma.extract_json(body)
+
+
+@pytest.mark.parametrize("depth", [100, 1500])
+def test_model_json_depth_is_controlled_value_error(depth):
+    with pytest.raises(ValueError):
+        ma.extract_json('[' * depth + '0' + ']' * depth)
+
+
+def test_executive_deep_json_returns_unavailable(monkeypatch):
+    reply(monkeypatch, '[' * 1500 + '0' + ']' * 1500)
+    assert ma.FreeFirstExecutiveModel().complete('reason', {})['available'] is False
+
+
+def test_model_json_decoder_recursion_is_normalized(monkeypatch):
+    def fail(*args, **kwargs):
+        raise RecursionError('decoder recursion')
+    monkeypatch.setattr(ma.json, 'loads', fail)
+    with pytest.raises(ValueError, match='decoder boundary'):
+        ma.extract_json('{}')
