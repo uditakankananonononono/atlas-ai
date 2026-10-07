@@ -32,9 +32,12 @@ def _redact_url(url: str) -> str:
     userinfo (``https://user:password@host``). The fragment is left
     unchanged: recorded request URLs do not carry OAuth-style fragment
     tokens today. URLs with nothing to redact are returned byte-identical.
-    This is bounded redaction, not general credential hygiene: it does not
-    catch percent-encoded key names or every free-text secret shape (see
-    ``_scrub_text`` for the reason-text boundary).
+    Query key names are percent-decoded once by ``parse_qsl`` before
+    matching, so a single-encoded name such as ``api%5fkey`` IS redacted;
+    a double-encoded name is not. The fragment is left unchanged: recorded
+    request URLs do not carry OAuth-style fragment tokens today (documented
+    residual, not owner-accepted). This is bounded redaction, not general
+    credential hygiene; see ``_scrub_text`` for the reason-text boundary.
     """
     parts = urlsplit(url)
     pairs = parse_qsl(parts.query, keep_blank_values=True)
@@ -59,7 +62,16 @@ _USERINFO = re.compile(r"://[^/@\s]+:[^/@\s]+@")
 def _scrub_text(text: str) -> str:
     """Redact credential-shaped material inside free text (e.g. a reason
     string that embeds a failing URL). Arbitrary reasons are not trusted to
-    be secret-free."""
+    be secret-free, so they are scrubbed against a bounded pattern.
+
+    Covered: ``key|api_key|apikey|token|access_token=<value>`` assignments
+    (case-insensitive, value runs to whitespace or ``&``) and
+    ``://user:pass@`` userinfo. Documented residuals, NOT covered: spaced
+    assignments (``key = value``), Bearer or other scheme-prefixed tokens,
+    percent-encoded key names (no decoding here, unlike ``_redact_url``),
+    username-only userinfo, JSON/colon shapes (``"token": "v"``), and any
+    secret shape outside the enumerated patterns."""
+
     text = _SENSITIVE_ASSIGNMENT.sub(lambda m: f"{m.group(1)}=[REDACTED]", text)
     return _USERINFO.sub("://[REDACTED]@", text)
 from enum import Enum
