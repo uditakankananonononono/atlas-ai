@@ -246,6 +246,22 @@ async def execute_submit(
     return result
 
 
+@router.post(_BASE + '/sessions/{session_id}/reconcile-submit')
+async def reconcile_submit_source(session_id:str,tenant:TenantContext=Depends(require_tenant),
+    service:Service=Depends(get_service),flow:ApplicationFlow=Depends(get_application_flow)):
+    """Read-only browser observation and local bookkeeping, no retry or caller receipt."""
+    try:
+        result=await flow.reconcile_submit(tenant.tenant_id,tenant.actor_id,session_id)
+        record=flow.status(tenant.tenant_id,tenant.actor_id,session_id)
+        if result.get('submitted') is True and record.get('opportunity_kind')=='competition' and record.get('opportunity_id'):
+            confirmation=result['confirmation']
+            service.update_status(record['opportunity_id'],StatusEvidence(source='browser_readback',
+                reference=f"paired browser session {session_id} reconciled from {confirmation['final_url']} (approval {record['approval_id']})",
+                observed_at=datetime.fromtimestamp(confirmation['observed_at'],timezone.utc),status=SubmissionStatus.SUBMITTED))
+        return result
+    except Exception as error:raise _flow_errors(error) from error
+
+
 @router.get(_BASE + "/sessions/{session_id}")
 async def session_status(
     session_id: str,
