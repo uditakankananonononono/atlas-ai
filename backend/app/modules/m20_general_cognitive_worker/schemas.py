@@ -112,7 +112,9 @@ class MemoryChunk(BaseModel):
 
 
 class ActionRecord(BaseModel):
-    """One executed action inside an episode or plan step."""
+    """One reported local action inside an episode or plan step."""
+
+    id: str = Field(default_factory=new_id)
 
     tool: str
     task_id: str | None = None

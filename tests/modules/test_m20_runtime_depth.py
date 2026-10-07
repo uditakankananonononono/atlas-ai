@@ -749,3 +749,32 @@ def test_scheduler_quantum_yields_unfinished_work_and_completes_across_restart()
  assert third.state=='succeeded' and calls==[4,9,16]
  assert restarted.step().state=='idle'
  assert repo.load_task(context.id).state==TaskState.SUCCEEDED
+ assert [a.arguments['n'] for a in restarted.episodic.for_task(context.id)[0].actions]==[2,3,4]
+
+
+def test_action_journal_detaches_immutable_same_id_and_scopes_tenant():
+ repo=fresh_repo();other=GCWRepository(repo.engine,tenant_id='other')
+ action=ActionRecord(tool='fixture',task_id='fixture',arguments={'n':[2]},succeeded=False)
+ repo.save_action(action);repo.save_action(action)
+ assert len(repo.list_actions())==1 and not other.list_actions()
+ view=repo.list_actions()[0];view.arguments['n'].append(3)
+ assert repo.list_actions()[0].arguments=={'n':[2]}
+ with pytest.raises(PermissionError,match='differs'):repo.save_action(view)
+ with pytest.raises(PermissionError,match='another tenant'):other.save_action(action)
+
+
+def test_action_journal_additive_migration_on_local_sqlite():
+ import importlib.util
+ from alembic.migration import MigrationContext
+ from alembic.operations import Operations
+ from sqlalchemy import inspect
+ spec=importlib.util.spec_from_file_location('action_migration','migrations/versions/20261007_m20_action_records.py')
+ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+ engine=make_engine()
+ with engine.begin() as connection:
+  with Operations.context(MigrationContext.configure(connection)):
+   module.upgrade()
+   assert 'm20_action_records' in inspect(connection).get_table_names()
+   assert {idx['name'] for idx in inspect(connection).get_indexes('m20_action_records')}=={'ix_m20_action_records_task_id','ix_m20_action_records_tenant_id'}
+   module.downgrade()
+   assert 'm20_action_records' not in inspect(connection).get_table_names()
