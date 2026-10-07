@@ -25,13 +25,26 @@ def rules(value):
     return result
 
 
-def closure(facts,program):
-    known=set(facts);trace=[];changed=True
-    while changed:
-        changed=False
-        for rule in program:
-            if rule['if']<=known and rule['then'] not in known:
-                known.add(rule['then']);trace.append({'rule':rule['id'],'fact':rule['then']});changed=True
+def closure(facts,program,*,metrics=None):
+    """Indexed forward agenda preserving ordered-sweep first derivations."""
+    import heapq
+    known=set(facts);trace=[];watchers={};missing=[];agenda=[]
+    counts={'premise_notifications':0,'rules_processed':0}
+    for i,rule in enumerate(program):
+        missing.append(len(rule['if']))
+        for atom in rule['if']:watchers.setdefault(atom,[]).append(i)
+        if not rule['if']:heapq.heappush(agenda,(0,i))
+    def notify(atom,turn,index):
+        for i in watchers.get(atom,[]):
+            counts['premise_notifications']+=1;missing[i]-=1
+            if missing[i]==0:heapq.heappush(agenda,(turn if i>index else turn+1,i))
+    for atom in sorted(known):notify(atom,0,-1)
+    while agenda:
+        turn,i=heapq.heappop(agenda);counts['rules_processed']+=1;rule=program[i]
+        if rule['then'] in known:continue
+        known.add(rule['then']);trace.append({'rule':rule['id'],'fact':rule['then']})
+        notify(rule['then'],turn,i)
+    if metrics is not None:metrics.update(counts)
     return known,trace
 
 
