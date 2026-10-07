@@ -42,7 +42,7 @@ mapping alone does not acquire a lock; each mutation wrapper does.
 
 ## Peer M13 failure and collection discrepancy
 
-The original peer M13 combined-run failure remains unexplained. The peer reported 159 passed and 1 failed; the independent reproduction reported 159 passed, 1 skipped and 0 failed. Correction: the recovered independent original log and current collected list both contain 160 tests. The earlier 161 figure was a reporting arithmetic error, not evidence of an extra test. Exact cross-environment node-list parity remains to be compared. Do not treat the absence of a reproduced failure as clearance.
+The original peer M13 combined-run failure remains unexplained. The peer reported 159 passed and 1 failed; the independent reproduction reported 159 passed, 1 skipped and 0 failed. Correction: the recovered independent original log and current collected list both contain 160 tests. The earlier 161 figure was a reporting arithmetic error, not evidence of an extra test. Exact cross-environment node-list comparison now matches 160 node IDs in the same order. Default and two seeded-file combined runs plus ten exact-browser repeats pass locally; no connection/order root cause is established. Do not treat the absence of a reproduced failure as clearance.
 
 ## Scoped assessed surfaces
 
@@ -58,7 +58,7 @@ The following surfaces remain unassessed for combined semantic clearance, even w
 
 - `risk_register`
 - `htn_planner`: reviewed-payload TOCTOU found and locally fixed with durable hash checking plus exact JSON-snapshot compare-and-set in the activation UPDATE. Two SQLite cross-instance/check-to-write race canaries pass; PostgreSQL multi-writer CAS behavior remains untested. Broader planner comparison remains open.
-- `model_ideation`
+- `model_ideation`: additive response path assessed; typed unknown flattening to unavailable/503 corrected to ProviderOutcomeUnknown and 409 with retry_allowed=false. No durable cross-request hold/reconciliation is provided by this service API; that broader boundary remains open. Proposed ideas remain unverified.
 - `premortem`
 - `ActionRow` migration
 - `safety.py`

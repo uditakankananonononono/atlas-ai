@@ -6,6 +6,7 @@ All externally visible effects still flow through Module 0 inside the
 service - these endpoints only expose control and inspection.
 """
 from __future__ import annotations
+from app.core.providers import ProviderOutcomeUnknown
 
 from datetime import datetime
 import os
@@ -1622,6 +1623,8 @@ class ModelIdeationRequest(BaseModel):
 def generate_model_ideas(request: ModelIdeationRequest, service: Any = Depends(get_service)):
     try:
         return service.model_ideation.generate(request.objective, constraints=request.constraints, count=request.count)
+    except ProviderOutcomeUnknown as exc:
+        raise HTTPException(status_code=409, detail={"outcome": "unknown", "retry_allowed": False, "error": str(exc)})
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc))
     except ValueError as exc:

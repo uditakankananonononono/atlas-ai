@@ -156,6 +156,9 @@ class ModelIdeationEngine:
         response = self.model.complete("ideate", {"objective": objective, "constraints": list(constraints), "count": count})
         if not isinstance(response, dict):
             raise ValueError("ideation model must return an object")
+        if response.get("outcome") == "unknown":
+            from app.core.providers import ProviderOutcomeUnknown
+            raise ProviderOutcomeUnknown("ideation generation outcome unknown; no automatic retry")
         if response.get("available") is False:
             if response.get("failure_kind") == "invalid_output":
                 raise ValueError(str(response.get("error", "invalid model output")))
