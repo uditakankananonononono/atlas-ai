@@ -133,3 +133,22 @@ def test_unrepresentable_estimated_cost_rejected_without_crash(maximum,tokens,pr
 def test_small_output_limit_rejection_precedes_huge_cost_conversion():
  model=ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,1,100,.8)
  assert ModelRouter([model]).score(model,RouteRequest(TaskType.RESEARCH,10**1000,1,100,'fixture'))==(float('-inf'),['output limit'])
+
+@pytest.mark.parametrize('field,invalid',[
+ *[('min_confidence',x) for x in [float('nan'),float('inf'),-.1,1.1,True,'0.7',None]],
+ *[('max_attempts',x) for x in [0,-1,True,1.5,'3',None]],
+ *[('base_delay_seconds',x) for x in [float('nan'),float('inf'),-1,True,'0',None,10**1000]],
+ *[('enable_self_critique',x) for x in [0,1,'true',None]],
+])
+def test_invalid_retry_policy_rejected_before_provider(field,invalid):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ with pytest.raises(ValueError):
+  executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(**{field:invalid}))
+  asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert not calls
+
+@pytest.mark.parametrize('minimum',[0,1])
+def test_valid_policy_confidence_boundaries_remain_constructible(minimum):
+ assert RetryPolicy(min_confidence=minimum,max_attempts=1,base_delay_seconds=0,enable_self_critique=False).min_confidence==minimum

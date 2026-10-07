@@ -17,6 +17,14 @@ class RetryPolicy:
     max_attempts: int=3
     base_delay_seconds: float=.2
     enable_self_critique: bool=True
+    def __post_init__(self):
+        if not valid_confidence(self.min_confidence):raise ValueError("minimum confidence must be finite numeric 0..1")
+        if type(self.max_attempts) is not int or self.max_attempts<=0:raise ValueError("maximum attempts must be positive integer")
+        if type(self.base_delay_seconds) not in (int,float) or self.base_delay_seconds<0:raise ValueError("retry delay must be finite nonnegative number")
+        try:finite_delay=isfinite(self.base_delay_seconds)
+        except OverflowError:finite_delay=False
+        if not finite_delay:raise ValueError("retry delay must be finite nonnegative number")
+        if type(self.enable_self_critique) is not bool:raise ValueError("self critique must be boolean")
 
 class ResearchExecutor:
     def __init__(self, router:ModelRouter, provider:ModelProvider, policy:RetryPolicy=RetryPolicy()): self.router=router; self.provider=provider; self.policy=policy
