@@ -1,0 +1,136 @@
+...............F........................................................ [  5%]
+........................................................................ [ 11%]
+........................................................................ [ 16%]
+........................................................................ [ 22%]
+........................................................................ [ 28%]
+........................................................................ [ 33%]
+........................................................................ [ 39%]
+........................................................................ [ 45%]
+........................................................................ [ 50%]
+........................................................................ [ 56%]
+........................................................................ [ 62%]
+........................................................................ [ 67%]
+........................................................................ [ 73%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 90%]
+........................................................................ [ 96%]
+..........................ss......................                       [100%]
+=================================== FAILURES ===================================
+____ test_clean_database_upgrades_to_head_with_product_and_cognitive_tables ____
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-105/test_clean_database_upgrades_t0')
+
+    def test_clean_database_upgrades_to_head_with_product_and_cognitive_tables(tmp_path):
+        database=tmp_path/'clean.sqlite'
+        env={**os.environ,'ATLAS_DATABASE_URL':f'sqlite:///{database}'}
+        result=subprocess.run([sys.executable,'-m','alembic','upgrade','head'],env=env,
+                              text=True,capture_output=True,timeout=90)
+>       assert result.returncode==0,result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1943, in _exec_single_context
+E             self.dialect.do_execute(
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1192, in do_execute
+E             cursor.execute(statement, parameters)
+E         sqlite3.OperationalError: table m20_action_records already exists
+E         
+E         The above exception was the direct cause of the following exception:
+E         
+E         Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/__main__.py", line 4, in <module>
+E             main(prog="alembic")
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/config.py", line 1039, in main
+E             CommandLine(prog=prog).main(argv=argv)
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/config.py", line 1029, in main
+E             self.run_cmd(cfg, options)
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/config.py", line 963, in run_cmd
+E             fn(
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/command.py", line 487, in upgrade
+E             script.run_env()
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/script/base.py", line 550, in run_env
+E             util.load_python_file(self.dir, "env.py")
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 114, in load_python_file
+E             module = load_module_py(module_id, path)
+E                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 132, in load_module_py
+E             spec.loader.exec_module(module)  # type: ignore
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/home/sandbox/atlas-ai/migrations/env.py", line 23, in <module>
+E             run_migrations_offline() if context.is_offline_mode() else run_migrations_online()
+E                                                                        ^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/sandbox/atlas-ai/migrations/env.py", line 22, in run_migrations_online
+E             with context.begin_transaction():context.run_migrations()
+E                                              ^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<string>", line 8, in run_migrations
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/runtime/environment.py", line 970, in run_migrations
+E             self.get_context().run_migrations(**kw)
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/runtime/migration.py", line 616, in run_migrations
+E             step.migration_fn(**kw)
+E           File "/home/sandbox/atlas-ai/migrations/versions/20261007_m20_action_records.py", line 11, in upgrade
+E             op.create_table('m20_action_records',
+E           File "<string>", line 8, in create_table
+E           File "<string>", line 3, in create_table
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/operations/ops.py", line 1323, in create_table
+E             return operations.invoke(op)
+E                    ^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/operations/base.py", line 448, in invoke
+E             return fn(self, operation)
+E                    ^^^^^^^^^^^^^^^^^^^
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/operations/toimpl.py", line 139, in create_table
+E             operations.impl.create_table(table, **kw)
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/ddl/impl.py", line 434, in create_table
+E             self._exec(schema.CreateTable(table, **kw))
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/ddl/impl.py", line 252, in _exec
+E             return conn.execute(construct, params)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1448, in execute
+E             return meth(
+E                    ^^^^^
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py", line 203, in _execute_on_connection
+E             return connection._execute_ddl(
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1557, in _execute_ddl
+E             ret = self._execute_context(
+E                   ^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1822, in _execute_context
+E             return self._exec_single_context(
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1962, in _exec_single_context
+E             self._handle_dbapi_exception(
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2332, in _handle_dbapi_exception
+E             raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1943, in _exec_single_context
+E             self.dialect.do_execute(
+E           File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1192, in do_execute
+E             cursor.execute(statement, parameters)
+E         sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) table m20_action_records already exists
+E         [SQL: 
+E         CREATE TABLE m20_action_records (
+E         	id VARCHAR NOT NULL, 
+E         	tenant_id VARCHAR NOT NULL, 
+E         	task_id VARCHAR, 
+E         	payload_json JSON NOT NULL, 
+E         	started_at DATETIME NOT NULL, 
+E         	PRIMARY KEY (id)
+E         )
+E         
+E         ]
+E         (Background on this error at: https://sqlalche.me/e/21/e3q8)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'upgrade', 'head'], returncode=1, s...ed_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n]\n(Background on this error at: https://sqlalche.me/e/21/e3q8)\n').returncode
+
+tests/migrations/test_clean_database_upgrade.py:13: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/migrations/test_clean_database_upgrade.py::test_clean_database_upgrades_to_head_with_product_and_cognitive_tables
+1 failed, 1271 passed, 2 skipped, 1 warning in 30.07s
