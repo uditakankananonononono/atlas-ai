@@ -11,6 +11,11 @@ class ConfidenceUnavailable(RuntimeError):
         super().__init__("Model confidence unavailable; result requires review, no automatic retry")
         self.result=result
 
+class ConfidenceThresholdNotReached(ConfidenceUnavailable):
+    def __init__(self,result:ModelResult):
+        super().__init__(result)
+        self.args=("Model confidence threshold not reached; last candidate requires review, no automatic retry",)
+
 @dataclass(frozen=True)
 class RetryPolicy:
     min_confidence: float=.70
@@ -44,4 +49,5 @@ class ResearchExecutor:
             if self.policy.enable_self_critique:
                 prompt=f"Critique and improve the candidate. Return only the improved answer.\nCandidate:\n{result.text}\nOriginal task:\n{prompt}"
             await asyncio.sleep(self.policy.base_delay_seconds*(2**attempt))
-        raise RuntimeError(f"confidence threshold not reached: {history}")
+        result.metadata.update({"review_required":True,"review_reason":"confidence_threshold_not_reached","attempts":len(history),"history":history,**diagnostics})
+        raise ConfidenceThresholdNotReached(result)
