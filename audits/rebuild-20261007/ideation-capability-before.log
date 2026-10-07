@@ -1,0 +1,17 @@
+.............F                                                           [100%]
+=================================== FAILURES ===================================
+_ test_ideation_templates_do_not_claim_model_generation_or_creative_evaluation _
+
+    def test_ideation_templates_do_not_claim_model_generation_or_creative_evaluation():
+        engine = IdeationEngine(seed=3)
+        ideas = engine.diverge('fixture', count=12)
+        assert len(set(idea.text for idea in ideas)) == 6  # repeated fixed frames, not12independent ideas
+        for idea in ideas:
+>           assert idea.metadata['status'] == 'fixed_prompt_frame_only'
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'status'
+
+tests/modules/test_m20_reflection.py:168: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reflection.py::test_ideation_templates_do_not_claim_model_generation_or_creative_evaluation
+1 failed, 13 passed in 1.33s

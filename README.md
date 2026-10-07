@@ -46,6 +46,10 @@ Development infrastructure is available through `docker compose up --build`. The
 
 GCW planner and executive requests skip routes labeled hosted. LOCAL/SELF_HOSTED are declared route kinds, not verified network destinations: ATLAS_LOCAL_OPENAI_URL and the Ollama host can be configured to remote endpoints. Operators must keep every private-eligible endpoint under their own control; pointing one at a hosted third party sends private context there. No URL ownership or locality validation is currently enforced, and fixture tests do not prove that a live local model is running.
 
+## M20 ideation boundary
+
+The legacy IdeationEngine is thin: `diverge` repeats fixed prompt frames (12 requested entries give six unique default strings), `forced_analogy` formats supplied concept pairs, and `converge` ranks exact-True caller flags by supplied weights. No model-backed creative generation, independent constraint evaluation, novelty assessment or learned analogy runs in this class. Its outputs mark creative generation as not executed. This is unfinished work, not a completed divergent/convergent creativity feature.
+
 ## Models (free-first)
 
 Atlas routes text generation free-first: Ollama or any OpenAI-compatible server on your own PC (llama.cpp, vLLM, LM Studio), then the Hugging Face free tier. Paid providers (OpenAI, Anthropic, Gemini, DeepSeek, Sakana Fugu) are optional config and stay off unless `ATLAS_ALLOW_PAID=true`. If no free route works, Atlas stops and says why. Named models: Inkling and Inkling-Small are open weights and wired. Fugu is a paid hosted API, not open weights. "Ultron" isn't one model, so it isn't wired. Details, sources and setup are in [`docs/OPEN_MODELS.md`](docs/OPEN_MODELS.md).
