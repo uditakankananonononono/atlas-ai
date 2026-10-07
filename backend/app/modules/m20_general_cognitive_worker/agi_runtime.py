@@ -33,7 +33,10 @@ def _hash(value: Any) -> str:
 
 
 class PersistentWorldModel:
-    """Tenant-scoped beliefs, evidence and tamper-evident snapshots.
+    """Tenant-scoped supplied observations and local hash-chain snapshots.
+
+    Chain checks detect unrehashed changes only. Full database rewrite/deletion
+    is not detected without an independent anchor; evidence truth is unverified.
 
     Conflicting values coexist as hypotheses. A supplied support-share is recomputed from
     caller reliability and weight, not predictive confidence, so updating the model never erases
@@ -133,16 +136,19 @@ class PersistentWorldModel:
         with self._db() as db:
             rows = db.execute("SELECT created_at,previous_hash,state_hash,snapshot_hash,state_json "
                               "FROM world_snapshots WHERE tenant=? ORDER BY rowid", (self.tenant_id,)).fetchall()
-        previous = "GENESIS"
-        for created, linked, state_hash, snapshot_hash, state_json in rows:
-            if linked != previous or _hash(json.loads(state_json)) != state_hash:
-                return False
-            expected = _hash({"tenant": self.tenant_id, "created_at": created,
-                              "previous_hash": linked, "state_hash": state_hash})
-            if expected != snapshot_hash:
-                return False
-            previous = snapshot_hash
-        return True
+        try:
+            previous = "GENESIS"
+            for created, linked, state_hash, snapshot_hash, state_json in rows:
+                if linked != previous or _hash(json.loads(state_json)) != state_hash:
+                    return False
+                expected = _hash({"tenant": self.tenant_id, "created_at": created,
+                                  "previous_hash": linked, "state_hash": state_hash})
+                if expected != snapshot_hash:
+                    return False
+                previous = snapshot_hash
+            return True
+        except (ValueError, TypeError):
+            return False
 
 
 @dataclass

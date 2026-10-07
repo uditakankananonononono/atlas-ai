@@ -154,3 +154,9 @@ def test_concurrent_world_snapshots_never_fork_hash_chain(tmp_path):
  assert len({result['snapshot_hash'] for result in results})==32
  assert world.verify_chain()
  assert sum(result['previous_hash']=='GENESIS' for result in results)==1
+
+
+def test_world_chain_malformed_stored_snapshot_returns_false(tmp_path):
+ path=str(tmp_path/'malformed.sqlite');world=PersistentWorldModel(path,'t');snapshot=world.snapshot()
+ with sqlite3.connect(path) as db:db.execute("UPDATE world_snapshots SET state_json='not json' WHERE id=?",(snapshot['id'],))
+ assert world.verify_chain() is False

@@ -60,7 +60,10 @@ def snapshot(service: AGIRuntimeService = Depends(get_agi_service)):
 
 @router.get("/world/snapshots/verify")
 def verify_snapshots(service: AGIRuntimeService = Depends(get_agi_service)):
-    return {"valid": service.world.verify_chain()}
+    return {"valid": service.world.verify_chain(),
+            "status": "stored_snapshot_hash_chain_consistency_only",
+            "independent_anchor_verified": False, "evidence_truth_verified": False,
+            "completeness_verified": False}
 
 
 @router.post("/goals/proposals", status_code=201)
