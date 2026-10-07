@@ -56,12 +56,16 @@ def test_hz22_unexpected_write_failure_closes_fd_and_cleans_own_tmp(tmp_path, mo
     assert p.records['s1'].versions == []
 
 
-def test_hz22_unexpected_persist_failure_rolls_back_memory_and_cleans_own_target(tmp_path, monkeypatch):
+def test_hz22_unexpected_persist_failure_rolls_back_memory_and_preserves_unconfirmed_target(tmp_path, monkeypatch):
     # KILL: pre-hz22 an unexpected persist failure (not OSError /
     # ManifestOversizeError) escaped the rollback handler, so memory kept
-    # claiming a version the manifest never recorded and the renamed
-    # version dir stayed on disk. hz22 drops the unrecorded version claim
-    # and removes the (still owned) dir; the original exception propagates.
+    # claiming a version the manifest never recorded. hz22 drops the
+    # unrecorded claim; the original exception propagates. hz27 refined
+    # the on-disk outcome: this mock fails the claim persist AND the
+    # restore rewrite, so the restore is unconfirmed and the version's
+    # bytes are PRESERVED (a live manifest may still reference them) -
+    # deletion happens only after a confirmed restore. On hz26 and
+    # earlier this pin fails because the dir is wrongly deleted.
     p = pipe(tmp_path)
     real_persist = LocalKnowledgePipeline._persist_manifest
     state = {'calls': 0}
@@ -76,7 +80,9 @@ def test_hz22_unexpected_persist_failure_rolls_back_memory_and_cleans_own_target
         p.ingest(req())
     assert fd_count() == before
     assert p.records['s1'].versions == []
-    assert not (tmp_path / 'tenant-a' / 's1' / 'v1').exists()
+    kept = tmp_path / 'tenant-a' / 's1' / 'v1'
+    assert (kept / 'source.bin').read_bytes() == b'Alpha fact.'
+    assert (kept / 'segments.json').exists()
 
 
 def test_hz22_manifest_oserror_rollback_semantics_unchanged(tmp_path, monkeypatch):
