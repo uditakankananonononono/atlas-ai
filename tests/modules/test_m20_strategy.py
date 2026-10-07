@@ -487,3 +487,38 @@ def test_positive_probability_zero_multiplier_reports_json_safe_extinction_limit
 @pytest.mark.parametrize('outcomes',[[(1,-1)],[(1,float('nan'))],[(1,float('inf'))],[(True,2)],[(1,True)],[(1e-320,1e308)]])
 def test_growth_operator_rejects_invalid_or_unstable_inputs(outcomes):
  with pytest.raises(ValueError):ErgodicityAnalyzer().analyze(outcomes=outcomes)
+
+
+def test_nonlinear_selection_compares_all_candidates_on_original_y_scale():
+ model=NonLinearModeler();xs=[1,2,3,4,5];ys=[1,2,3,4,12]
+ out=model.classify(xs=xs,ys=ys)
+ assert out['selection_metric']=='original_y_r_squared'
+ assert out['best_fit']==max(out['all_r_squared'],key=out['all_r_squared'].get)
+ assert out['transformed_r_squared']
+
+
+@pytest.mark.parametrize('xs,ys',[
+ ([1,1,1],[2,3,4]),([1,2,float('nan')],[2,3,4]),([1,2,3],[2,3,float('inf')]),([True,2,3],[2,3,4])
+])
+def test_nonlinear_rejects_degenerate_nonfinite_or_bool_data(xs,ys):
+ with pytest.raises(ValueError):NonLinearModeler().classify(xs=xs,ys=ys)
+
+
+def test_nonlinear_large_finite_exact_line_remains_json_safe():
+ import json
+ out=NonLinearModeler().classify(xs=[1e150,2e150,3e150,4e150],ys=[2e150,4e150,6e150,8e150])
+ assert out['best_fit']=='linear' and out['r_squared']==pytest.approx(1)
+ json.dumps(out,allow_nan=False)
+
+
+def test_nonlinear_report_scores_match_independent_polyfit_original_residuals():
+ import numpy as np
+ x=np.array([1.,2.,3.,4.,5.]);y=np.array([1.,2.,3.,4.,12.])
+ out=NonLinearModeler().classify(xs=x.tolist(),ys=y.tolist())
+ sst=sum((y-y.mean())**2)
+ for name,fx,fy in [('linear',x,y),('exponential',x,np.log(y)),('logarithmic',np.log(x),y),('power_law',np.log(x),np.log(y))]:
+  slope,intercept=np.polyfit(fx,fy,1)
+  target=slope*fx+intercept
+  prediction=np.exp(target) if name in ('exponential','power_law') else target
+  expected=1-sum((y-prediction)**2)/sst
+  assert out['all_r_squared'][name]==pytest.approx(expected,abs=1e-12)

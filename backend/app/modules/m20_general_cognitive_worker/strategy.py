@@ -79,33 +79,63 @@ class NonLinearModeler:
     linear projection."""
 
     def classify(self, *, xs: list[float], ys: list[float]) -> dict[str, Any]:
-        if len(xs) != len(ys) or len(xs) < 3:
-            raise ValueError("need >= 3 paired samples")
-        if any(x <= 0 or y <= 0 for x, y in zip(xs, ys)):
-            raise ValueError("samples must be positive (log transforms)")
-        lnx, lny = [math.log(x) for x in xs], [math.log(y) for y in ys]
-
-        def r2(fx: list[float], fy: list[float]) -> tuple[float, float, float]:
-            mx, my = mean(fx), mean(fy)
-            sxx = sum((x - mx) ** 2 for x in fx)
-            sxy = sum((x - mx) * (y - my) for x, y in zip(fx, fy))
-            syy = sum((y - my) ** 2 for y in fy)
-            slope = sxy / sxx if sxx else 0.0
-            intercept = my - slope * mx
-            return (sxy * sxy / (sxx * syy) if sxx and syy else 0.0), slope, intercept
-
-        candidates = {
-            "linear": r2(xs, ys),
-            "exponential": r2(xs, lny),
-            "logarithmic": r2(lnx, ys),
-            "power_law": r2(lnx, lny),
-        }
-        best = max(candidates, key=lambda k: candidates[k][0])
-        r2v, slope, intercept = candidates[best]
-        return {"best_fit": best, "r_squared": r2v, "slope": slope, "intercept": intercept,
-                "all_r_squared": {k: v[0] for k, v in candidates.items()},
-                "assumptions": ["Positive samples only; ties broken by dict order",
-                                 "Classification is over 4 candidate forms, not all of math"]}
+        if len(xs) != len(ys) or not 3 <= len(xs) <= 10000:
+            raise ValueError("need3..10000 paired samples")
+        if any(type(value) not in (int, float) or not math.isfinite(value) or value <= 0 for value in xs + ys):
+            raise ValueError("samples must be finite positive numbers, not bool")
+        if len(set(xs)) < 2:
+            raise ValueError("distinct x values required")
+        import numpy as np
+        x, y = np.array(xs, dtype=float), np.array(ys, dtype=float)
+        lx, ly = np.log(x), np.log(y)
+        yscale = float(np.max(y)); normalized_y = y / yscale
+        centered_y = normalized_y - np.mean(normalized_y)
+        original_sst = float(np.dot(centered_y, centered_y))
+        candidates = {}; transformed_scores = {}; excluded = {}
+        for name, fx, fy in (("linear", x, y), ("exponential", x, ly),
+                             ("logarithmic", lx, y), ("power_law", lx, ly)):
+            sx = float(np.max(np.abs(fx))) or 1.0
+            sy = float(np.max(np.abs(fy))) or 1.0
+            nx, ny = fx / sx, fy / sy
+            mx, my = float(np.mean(nx)), float(np.mean(ny))
+            dx, dy = nx - mx, ny - my
+            denominator = float(np.dot(dx, dx))
+            if denominator == 0:
+                excluded[name] = "transformed_x_degenerate"; continue
+            normalized_slope = float(np.dot(dx, dy)) / denominator
+            normalized_intercept = my - normalized_slope * mx
+            slope = normalized_slope * (sy / sx)
+            intercept = normalized_intercept * sy
+            fitted_target = normalized_slope * nx + normalized_intercept
+            transformed_sst = float(np.dot(dy, dy))
+            transformed_sse = float(np.dot(ny - fitted_target, ny - fitted_target))
+            transformed_scores[name] = 1 - transformed_sse / transformed_sst if transformed_sst else (1.0 if transformed_sse < 1e-24 else 0.0)
+            if name in ("exponential", "power_law"):
+                # Compare predictions on common original y scale, not log scale.
+                exponents = fitted_target * sy - math.log(yscale)
+                if np.max(exponents) > 350:
+                    excluded[name] = "prediction_residual_exceeds_numeric_range"; continue
+                prediction = np.exp(exponents)
+            else:
+                prediction = fitted_target * (sy / yscale)
+            residual = normalized_y - prediction
+            sse = float(np.dot(residual, residual))
+            score = 1 - sse / original_sst if original_sst else (1.0 if sse < 1e-24 else 0.0)
+            if not all(math.isfinite(value) for value in (slope, intercept, score, transformed_scores[name])):
+                excluded[name] = "nonfinite_fit_or_score"; continue
+            candidates[name] = (score, slope, intercept)
+        if not candidates:
+            raise ValueError("no candidate fit within numeric range")
+        best = max(candidates, key=lambda name: candidates[name][0])
+        score, slope, intercept = candidates[best]
+        return {"best_fit": best, "r_squared": score, "slope": slope, "intercept": intercept,
+                "all_r_squared": {name: value[0] for name, value in candidates.items()},
+                "transformed_r_squared": {name:value for name,value in transformed_scores.items() if math.isfinite(value)},
+                "excluded_candidates": excluded, "selection_metric": "original_y_r_squared",
+                "status": "four_candidate_supplied_sample_curve_fit_only",
+                "assumptions": ["Fits least squares in each form's transformed axes; selects on common original y residuals",
+                                 "Positive finite samples; floating-point fits; numerically invalid candidates omitted",
+                                 "Dictionary order breaks numerical score ties; no all-form discovery or extrapolation guarantee"]}
 
     def extrapolate(self, *, model: str, slope: float, intercept: float, x: float) -> float:
         if x <= 0:
