@@ -902,3 +902,7 @@ Three actual initial failures retained: malformed/NaN weights accepted, truthy s
 ## Supplied uncertainty threshold validation
 
 Three reproduced failures retained: NaN becomesconfidence1, invalid/reversed thresholds accepted, stringfalsehighstakes accepted. Exactfinite0..1confidence/thresholds, highstakes thresholdnotlowerthanordinary, exactboolflag.79reflection/runtimepass1warning; recorded87adjacent2304pass2warnings39.10s. Question generation from supplied confidence/flag only, not empirically measured epistemic uncertainty or high-stakes safety certification. Latestfull9869passsource724c275 predatesfourlaterfixes.
+
+## Supplied scheduler aging rates
+
+Six actual failures retained: malformed/nonfinite/negative/bool aging rates accepted; finite aging multiplication overflow selects infinite priority. Finite nonnegative numeric/notbool rate and finite computed priority validate before selection mutates counters.72runtimepass1warning; recorded87adjacent2310pass2warnings38.01s. Same-clock base/aging calculation. Heuristic aging and local service counts, not unrestricted starvation/fairness guarantee with unbounded arrivals or zero rate. Latestfull9869passsource724c275 predatesfivelaterfixes.

@@ -990,3 +990,22 @@ def test_skill_version_history_and_exclusive_activation_survive_restart():
     third = restarted.register(Skill(name='fixture', goal_pattern='fixture'))
     assert third.version == second.version + 1
     assert [s.id for s in DurableSkillLibrary.load(repo).list(status=SkillStatus.ACTIVE)] == [third.id]
+
+
+@pytest.mark.parametrize('rate', [float('nan'), float('inf'), -1, True, '1'])
+def test_fair_scheduler_rejects_invalid_supplied_aging_rate(rate):
+    from app.modules.m20_general_cognitive_worker.scheduler import FairContextScheduler
+    with pytest.raises(ValueError):
+        FairContextScheduler(aging_bonus_per_minute=rate)
+
+
+def test_fair_scheduler_aging_overflow_is_reported_before_selection_mutation():
+    from datetime import datetime, timedelta, timezone
+    from app.modules.m20_general_cognitive_worker.scheduler import FairContextScheduler
+    now = datetime.now(timezone.utc)
+    scheduler = FairContextScheduler(aging_bonus_per_minute=1e308)
+    context = TaskContext(goal='fixture', created_at=now - timedelta(minutes=10))
+    scheduler.add(context)
+    with pytest.raises(ValueError):
+        scheduler.next_context(now=now)
+    assert context.last_run_at is None and context.ticks_served == 0
