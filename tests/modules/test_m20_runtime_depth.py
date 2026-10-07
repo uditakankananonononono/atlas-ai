@@ -2099,3 +2099,37 @@ def test_partial_trace_flush_keeps_only_uncommitted_entries(monkeypatch):
  runtime._persist_context(task)
  assert runtime.loop.traces==[]
  assert {t.id for t in repo.list_traces(task_id=task.id)}==set(pending_ids)
+
+
+def test_single_tick_failed_read_is_terminal_at_cooperative_boundary_without_extra_tick():
+ runtime,repo=make_runtime();task=runtime.submit_goal('fixture terminal failure',run_immediately=False)
+ runtime.prepare_supplied_plan(task.id,steps=[{'title':'bad','tool':'csv_summary','max_attempts':1,
+  'arguments':{'csv_text':'value\nbad\n','value_column':'value'}}])
+ result=runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+ assert result.state==TaskState.FAILED
+ assert result.plan[0].state==TaskState.FAILED
+ assert len(repo.list_actions(task_id=task.id))==1
+ assert repo.list_episodes()[-1].outcome==EpisodeOutcome.FAILED
+ assert any(t['task_id']==task.id for t in runtime.supervision()['attention_required'])
+
+
+def test_cooperative_boundary_retryable_failure_stays_running_and_independent_work_still_runs():
+ runtime,repo=make_runtime();task=runtime.submit_goal('fixture retryable failure',run_immediately=False)
+ runtime.prepare_supplied_plan(task.id,steps=[{'title':'bad','tool':'csv_summary','max_attempts':2,
+  'arguments':{'csv_text':'value\nbad\n','value_column':'value'}}])
+ result=runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+ assert result.state==TaskState.RUNNING and result.plan[0].state==TaskState.PENDING
+ assert repo.list_episodes()==[]
+
+
+def test_boundary_failed_predecessor_does_not_hide_independent_ready_branch():
+ runtime,repo=make_runtime();task=runtime.submit_goal('fixture independent branch',run_immediately=False)
+ runtime.prepare_supplied_plan(task.id,steps=[
+  {'id':'bad','title':'bad','tool':'csv_summary','max_attempts':1,'arguments':{'csv_text':'value\nbad\n','value_column':'value'}},
+  {'id':'good','title':'good','tool':'csv_summary','arguments':{'csv_text':'value\n42\n','value_column':'value'}}])
+ result=runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+ assert result.plan[0].state==TaskState.FAILED and result.plan[1].state==TaskState.PENDING
+ assert result.state==TaskState.RUNNING and repo.list_episodes()==[]
+ result=runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+ assert result.plan[1].state==TaskState.SUCCEEDED and result.state==TaskState.FAILED
+ assert len(repo.list_actions(task_id=task.id))==2

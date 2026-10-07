@@ -360,6 +360,10 @@ class DeliberativeLoop:
                 context.state = TaskState.SUCCEEDED
                 self._trace("evaluate", "plan complete at scheduler boundary", task_id=context.id)
                 self._close_episode(context, EpisodeOutcome.SUCCEEDED)
+            elif HTNPlanner.is_deadlocked(context.plan):
+                context.state = TaskState.FAILED
+                self._trace("evaluate", "plan deadlocked at scheduler boundary", task_id=context.id)
+                self._close_episode(context, EpisodeOutcome.FAILED)
             else:
                 context.state = TaskState.RUNNING
                 self._trace("evaluate", "cooperative scheduler quantum yielded; work remains", task_id=context.id)

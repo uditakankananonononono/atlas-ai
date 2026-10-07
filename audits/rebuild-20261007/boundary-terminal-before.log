@@ -1,0 +1,25 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_single_tick_failed_read_is_terminal_at_cooperative_boundary_without_extra_tick _
+
+    def test_single_tick_failed_read_is_terminal_at_cooperative_boundary_without_extra_tick():
+     runtime,repo=make_runtime();task=runtime.submit_goal('fixture terminal failure',run_immediately=False)
+     runtime.prepare_supplied_plan(task.id,steps=[{'title':'bad','tool':'csv_summary','max_attempts':1,
+      'arguments':{'csv_text':'value\nbad\n','value_column':'value'}}])
+     result=runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+>    assert result.state==TaskState.FAILED
+E    AssertionError: assert <TaskState.RUNNING: 'running'> == <TaskState.FAILED: 'failed'>
+E      
+E      - failed
+E      + running
+
+tests/modules/test_m20_runtime_depth.py:2109: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_single_tick_failed_read_is_terminal_at_cooperative_boundary_without_extra_tick
+1 failed, 1 passed, 146 deselected, 1 warning in 1.77s
