@@ -60,6 +60,20 @@ class LocalKnowledgePipeline:
         # delete target, however a part resolves.
         if p==self.workspace or self.workspace not in p.parents: raise KnowledgeError('path escapes tenant workspace')
         return p
+    @staticmethod
+    def _validate_disk_manifest(disk)->list:
+        # Exact schema: dict with tenant_id str, source dict, versions list of
+        # {number:int, hash:str}; anything else fails closed - [], null,
+        # dict-shaped or missing versions are never treated as zero versions.
+        if not isinstance(disk,dict): raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
+        if not isinstance(disk.get('tenant_id'),str): raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
+        versions=disk.get('versions')
+        if not isinstance(versions,list): raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
+        for entry in versions:
+            if not isinstance(entry,dict) or not isinstance(entry.get('number'),int) or not isinstance(entry.get('hash'),str):
+                raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
+        return versions
+
     def _check_consent(self,source:SourceRegistration)->None:
         # Caller-supplied consent metadata is a claimed record, not
         # authenticated authority; identity/evidence verification is a held
@@ -76,13 +90,24 @@ class LocalKnowledgePipeline:
         if old and old.tenant_id!=self.tenant_id: raise KnowledgeError('cross-tenant source access denied')
         manifest=self._contained(source.source_id)/'manifest.json'
         if manifest.exists():
-            # The disk may record versions from a prior process that this
-            # pipeline never loaded. Persisting now would silently erase
-            # them, so refuse instead; restart state recovery is a carried
-            # gap, not accepted.
-            try: disk_versions=len(json.loads(manifest.read_text(encoding='utf-8')).get('versions',[]))
+            # The disk may record state from a prior process or another actor
+            # of this tenant. Validate the manifest schema exactly, then
+            # require equivalence with what this pipeline is about to write;
+            # anything else fails closed rather than silently overwriting.
+            try: disk=json.loads(manifest.read_text(encoding='utf-8'))
             except (OSError,json.JSONDecodeError) as exc: raise KnowledgeError('unreadable on-disk manifest; refusing to overwrite prior state') from exc
-            if disk_versions>len(old.versions if old else ()): raise KnowledgeError('on-disk manifest records versions not loaded in this pipeline; refusing to overwrite prior state')
+            dv=self._validate_disk_manifest(disk)
+            mem_versions=old.versions if old else []
+            if len(dv)>len(mem_versions): raise KnowledgeError('on-disk manifest records versions not loaded in this pipeline; refusing to overwrite prior state')
+            for i,entry in enumerate(dv):
+                if entry['number']!=mem_versions[i].number or entry['hash']!=mem_versions[i].content_hash:
+                    raise KnowledgeError('on-disk manifest diverges from loaded version state; refusing to overwrite prior state')
+            disk_source=disk.get('source')
+            if not isinstance(disk_source,dict): raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
+            if disk.get('tenant_id')!=self.tenant_id: raise KnowledgeError('on-disk manifest tenant differs; refusing to overwrite prior state')
+            for field_name in ('kind','canonical_url','title','author'):
+                if disk_source.get(field_name)!=getattr(source,field_name):
+                    raise KnowledgeError(f'on-disk registration identity differs on {field_name}; refusing to overwrite prior state')
         rec=old or Record(source,self.tenant_id); self.records[source.source_id]=rec
         try: self._persist_manifest(rec)
         except OSError:
@@ -222,5 +247,9 @@ class LocalKnowledgePipeline:
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
         import os as _os, uuid as _uuid
         tmp=p/f'manifest.json.tmp-{_uuid.uuid4().hex}'
-        tmp.write_text(json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True),encoding='utf-8')
+        # O_EXCL|O_NOFOLLOW: never write through a preexisting link or file,
+        # uuid or not; a collision fails instead of truncating anything.
+        fd=_os.open(tmp,_os.O_WRONLY|_os.O_CREAT|_os.O_EXCL|_os.O_NOFOLLOW,0o600)
+        try:_os.write(fd,json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True).encode('utf-8'))
+        finally:_os.close(fd)
         _os.replace(tmp,p/'manifest.json')
