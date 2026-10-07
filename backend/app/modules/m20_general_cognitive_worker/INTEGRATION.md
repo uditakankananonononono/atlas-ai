@@ -30,11 +30,17 @@ persistence, and the FastAPI surface.
      `EmbeddingProvider` protocol; default is the offline deterministic one.
    - `sandbox`: SandboxPolicy with the deployment's allowed hosts and the
      per-project filesystem root (network is OFF by default).
-3. Persistence: create `GCWRepository(engine)` from the shared
-   `ATLAS_DATABASE_URL` engine and call `create_schema()`. Tables are
-   `m20_*`-prefixed. The service runs in-memory by default; sync points are
-   `save_task` after each state change, `save_episode`/`save_trace` at
-   episode close, `save_fact`/`save_skill` on write.
+3. Persistence is a separate `GCWRuntime` binding, not an automatic
+   conversion of `CognitiveWorkerService` stores. Create
+   `GCWRepository(engine, tenant_id="actual-tenant-id")`, then `GCWRuntime(repo, ...)`
+   and `bind_runtime(runtime)`. Alembic owns production schema changes;
+   `create_schema()` is for explicit local tests/development only. Existing
+   databases need the Oct7 action-record/task-metadata migrations before this
+   runtime. They have local SQLite tests, not a production rollout.
+   Normal context persistence writes task, reported action records and traces;
+   these are separate commits, not atomic effect receipts. Memory stores write
+   through separately. Clean restart is tested, crash-complete or exactly-once
+   effects are not. The action journal is unbounded and hydrates all tenant rows.
 4. Celery: a beat task calling `service.tick()` runs the time-sliced
    scheduler; a daily task posts `service.standup()` to the Executive
    Dashboard (spec 4.3). Resume waiting tasks from Module 0 webhooks via
@@ -46,8 +52,12 @@ persistence, and the FastAPI surface.
 
 ## Honest boundaries
 - LLM-driven steps (de novo planning, attention scoring in production,
-  reflections) are protocol-injected; offline they are deterministic
-  heuristics. Reasoning quality depends on the bound model.
+  reflections) are protocol-injected. Missing planning/reasoning fails closed;
+  no template is substituted as successful reasoning. Candidate ranking,
+  attention and idle ordering have explicitly heuristic implementations.
+  Configured model routes do not prove model availability/privacy/quality.
+  The bounded actual tiny Qwen CPU trial loaded weights and generated text,
+  but all sampled planner/executive responses failed intended schema.
 - `risk_of_ruin_ruin_probability` is the classic gambler's-ruin
   approximation, not a full stochastic model.
 - Category 1 judgment rows ship as prompt-chain skill scaffolds; they guide
@@ -55,14 +65,18 @@ persistence, and the FastAPI surface.
 
 ## Features-doc rows 10-34 (Executive Function & Meta-Cognition)
 
-`metacognition.py` implements each row as an exact typed capability; routes
+`metacognition.py` exposes typed request/result operators, not proof that
+all named cognitive capabilities are implemented at original spec depth. It
+mixes supplied-data arithmetic, heuristics, counters and templates; routes
 are mounted under `/api/modules/20/meta/*`; focused tests are
 `tests/modules/test_m20_metacognition.py` (row logic, named test_rowNN_*)
 and `tests/modules/test_m20_metacognition_routes.py` (mounted routes).
 
 - Row 10 (recursive self-improvement) is bounded: it rewrites only versioned
   entries in `PromptRegistry`, only after approval through the approval
-  gate. `ImprovementLoop.FORBIDDEN_TARGETS` blocks safety/tool/approval
+  gate. This versions supplied prompt strings, not trained model improvement.
+  Review snapshots/locks/consumption are process-local, not durable distributed
+  approvals. `ImprovementLoop.FORBIDDEN_TARGETS` blocks safety/tool/approval
   targets. No deployed code is self-modified.
 - Row 13 calibration, row 21 world models, row 32 epistemic calendar, and
   row 34 gap counters are in-memory in this package; add `m20_meta_*` tables
@@ -112,10 +126,13 @@ and `tests/modules/test_m20_metacognition_routes.py` (mounted routes).
   imports, calls, or attribute access; anything else is rejected with 422.
 - Valuation-shaped rows (63, 65, 66, 68, 78, 79, 80, 82, 84) return an
   explicit decision-support caveat; none claim business certainty.
-- Mechanism design (81) computes exact VCG allocations/payments by
-  exhaustive matching for up to 8 items (greedy beyond that) and checks
-  incentive compatibility only against caller-supplied deviations - both
-  limits are stated in the response assumptions.
+- Mechanism design (81) now solves bounded unit-demand assignment for
+  up to64agents/items and recomputes externality payments on optimal
+  leave-one-out assignments. Missing/zero valuations may stay unallocated.
+  Float arithmetic/tie behavior and nonnegative finite valuation bounds are
+  explicit.96 small reported-valuation fixtures match independent exhaustive
+  assignment/externality enumeration. This is not general combinatorial
+  mechanism design or empirical incentive/truthfulness verification.
 - Row 70 is the ongoing TOC management loop (release pacing, WIP cap,
   migration), distinct from row 52's one-shot bottleneck analysis.
 
