@@ -1,0 +1,2542 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+____ test_critical_path_parallel_equal_branches_are_all_zero_slack_critical ____
+
+    def test_critical_path_parallel_equal_branches_are_all_zero_slack_critical():
+     out=CriticalPathAnalyzer().analyze(tasks=[{'id':'a','duration':2},{'id':'b','duration':2},{'id':'end','duration':1,'depends_on':['a','b']}])
+     assert out['duration']==3
+>    assert all(row['critical'] and row['slack']==0 for row in out['tasks'])
+E    assert False
+E     +  where False = all(<generator object test_critical_path_parallel_equal_branches_are_all_zero_slack_critical.<locals>.<genexpr> at 0x7f05005a2cf0>)
+
+tests/modules/test_m20_strategy.py:530: AssertionError
+____________ test_critical_path_rejects_invalid_task_graph[tasks0] _____________
+
+tasks = [{'id': 'a', 'duration': 1}, {'id': 'a', 'duration': 2}]
+
+    @pytest.mark.parametrize('tasks',[
+     [{'id':'a','duration':1},{'id':'a','duration':2}],
+     [{'id':'a','duration':1,'depends_on':['missing']}],
+     [{'id':'a','duration':-1}], [{'id':'a','duration':float('inf')}],
+    ])
+    def test_critical_path_rejects_invalid_task_graph(tasks):
+>    with pytest.raises(ValueError):CriticalPathAnalyzer().analyze(tasks=tasks)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:539: Failed
+____________ test_critical_path_rejects_invalid_task_graph[tasks1] _____________
+
+tasks = [{'id': 'a', 'duration': 1, 'depends_on': ['missing']}]
+
+    @pytest.mark.parametrize('tasks',[
+     [{'id':'a','duration':1},{'id':'a','duration':2}],
+     [{'id':'a','duration':1,'depends_on':['missing']}],
+     [{'id':'a','duration':-1}], [{'id':'a','duration':float('inf')}],
+    ])
+    def test_critical_path_rejects_invalid_task_graph(tasks):
+>    with pytest.raises(ValueError):CriticalPathAnalyzer().analyze(tasks=tasks)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:539: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:571: in analyze
+    cp = critical_path(tasks)
+         ^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:156: in critical_path
+    total, path = max((resolve(t["id"], frozenset()) for t in tasks), key=lambda x: x[0])
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:156: in <genexpr>
+    total, path = max((resolve(t["id"], frozenset()) for t in tasks), key=lambda x: x[0])
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:150: in resolve
+    dep_cost, dep_path = max(
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:151: in <genexpr>
+    (resolve(d, seen | {task_id}) for d in deps), key=lambda x: x[0],
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+task_id = 'missing', seen = frozenset({'a'})
+
+    def resolve(task_id: str, seen: frozenset[str]) -> tuple[float, list[str]]:
+        if task_id in seen:
+            raise ValueError("cyclic dependency")
+        if task_id in best:
+            return best[task_id]
+>       task = by_id[task_id]
+               ^^^^^^^^^^^^^^
+E       KeyError: 'missing'
+
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:144: KeyError
+____________ test_critical_path_rejects_invalid_task_graph[tasks2] _____________
+
+tasks = [{'id': 'a', 'duration': -1}]
+
+    @pytest.mark.parametrize('tasks',[
+     [{'id':'a','duration':1},{'id':'a','duration':2}],
+     [{'id':'a','duration':1,'depends_on':['missing']}],
+     [{'id':'a','duration':-1}], [{'id':'a','duration':float('inf')}],
+    ])
+    def test_critical_path_rejects_invalid_task_graph(tasks):
+>    with pytest.raises(ValueError):CriticalPathAnalyzer().analyze(tasks=tasks)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:539: Failed
+____________ test_critical_path_rejects_invalid_task_graph[tasks3] _____________
+
+tasks = [{'id': 'a', 'duration': inf}]
+
+    @pytest.mark.parametrize('tasks',[
+     [{'id':'a','duration':1},{'id':'a','duration':2}],
+     [{'id':'a','duration':1,'depends_on':['missing']}],
+     [{'id':'a','duration':-1}], [{'id':'a','duration':float('inf')}],
+    ])
+    def test_critical_path_rejects_invalid_task_graph(tasks):
+>    with pytest.raises(ValueError):CriticalPathAnalyzer().analyze(tasks=tasks)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:539: Failed
+_________ test_critical_path_long_chain_avoids_python_recursion_limit __________
+
+    def test_critical_path_long_chain_avoids_python_recursion_limit():
+     tasks=[{'id':str(i),'duration':1,'depends_on':[str(i-1)] if i else []} for i in range(1200)]
+>    out=CriticalPathAnalyzer().analyze(tasks=tasks)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:544: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:605: in analyze
+    path_through = ef + forward_from(t["id"])
+                        ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in <genexpr>
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: in forward_from
+    value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+.0 = <list_iterator object at 0x7f05004ccd90>
+
+>   value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
+                                               ^^^^^^^^^^^^^^^
+                default=0.0)
+E   RecursionError: maximum recursion depth exceeded
+
+backend/app/modules/m20_general_cognitive_worker/strategy.py:590: RecursionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy.py::test_critical_path_parallel_equal_branches_are_all_zero_slack_critical
+FAILED tests/modules/test_m20_strategy.py::test_critical_path_rejects_invalid_task_graph[tasks0]
+FAILED tests/modules/test_m20_strategy.py::test_critical_path_rejects_invalid_task_graph[tasks1]
+FAILED tests/modules/test_m20_strategy.py::test_critical_path_rejects_invalid_task_graph[tasks2]
+FAILED tests/modules/test_m20_strategy.py::test_critical_path_rejects_invalid_task_graph[tasks3]
+FAILED tests/modules/test_m20_strategy.py::test_critical_path_long_chain_avoids_python_recursion_limit
+6 failed, 49 deselected in 7.32s

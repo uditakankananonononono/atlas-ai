@@ -131,30 +131,60 @@ def littles_law(*, wip: float | None = None, throughput: float | None = None,
 
 
 def critical_path(tasks: list[dict[str, Any]]) -> dict[str, Any]:
-    """Critical Path Analysis: longest dependency chain by duration.
-    tasks: [{id, duration, depends_on: [id]}]."""
-    by_id = {t["id"]: t for t in tasks}
-    best: dict[str, tuple[float, list[str]]] = {}
-
-    def resolve(task_id: str, seen: frozenset[str]) -> tuple[float, list[str]]:
-        if task_id in seen:
-            raise ValueError("cyclic dependency")
-        if task_id in best:
-            return best[task_id]
-        task = by_id[task_id]
-        duration = float(task["duration"])
+    """Bounded supplied DAG point-duration CPM; no resource constraints."""
+    from collections import deque
+    if not isinstance(tasks, list) or not 1 <= len(tasks) <= 10000:
+        raise ValueError("need1..10000 tasks")
+    by_id = {}; successors = {}; degrees = {}
+    for task in tasks:
+        if not isinstance(task, dict) or not isinstance(task.get("id"), str) or not task["id"]:
+            raise ValueError("nonempty string task id required")
+        name = task["id"]
+        if name in by_id:
+            raise ValueError("duplicate task id")
+        value = task.get("duration")
+        if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+            raise ValueError("finite nonnegative duration required")
         deps = task.get("depends_on", [])
-        if not deps:
-            best[task_id] = (duration, [task_id])
-        else:
-            dep_cost, dep_path = max(
-                (resolve(d, seen | {task_id}) for d in deps), key=lambda x: x[0],
-            )
-            best[task_id] = (duration + dep_cost, dep_path + [task_id])
-        return best[task_id]
-
-    total, path = max((resolve(t["id"], frozenset()) for t in tasks), key=lambda x: x[0])
-    return {"duration": total, "path": path}
+        if not isinstance(deps, list) or any(not isinstance(dep, str) for dep in deps) or len(set(deps)) != len(deps):
+            raise ValueError("unique dependency id list required")
+        by_id[name] = {"duration": float(value), "depends_on": list(deps)}
+        successors[name] = []; degrees[name] = len(deps)
+    for name, task in by_id.items():
+        for dep in task["depends_on"]:
+            if dep not in by_id:
+                raise ValueError("unknown task dependency")
+            successors[dep].append(name)
+    queue = deque(name for name in by_id if degrees[name] == 0)
+    order = []; finishes = {}; predecessors = {}
+    while queue:
+        name = queue.popleft(); order.append(name)
+        deps = by_id[name]["depends_on"]
+        predecessor = max(deps, key=finishes.get) if deps else None
+        finish = (finishes[predecessor] if predecessor is not None else 0) + by_id[name]["duration"]
+        if not math.isfinite(finish):
+            raise ValueError("path duration exceeds numeric range")
+        finishes[name] = finish; predecessors[name] = predecessor
+        for child in successors[name]:
+            degrees[child] -= 1
+            if degrees[child] == 0:queue.append(child)
+    if len(order) != len(by_id):
+        raise ValueError("cyclic dependency")
+    end = max(order, key=finishes.get); total = finishes[end]
+    path = []; current = end
+    while current is not None:
+        path.append(current); current = predecessors[current]
+    path.reverse()
+    forward = {}
+    for name in reversed(order):
+        forward[name] = max((by_id[child]["duration"] + forward[child] for child in successors[name]), default=0.0)
+    rows = []
+    for name, task in by_id.items():
+        slack = max(0.0, total - finishes[name] - forward[name])
+        critical = math.isclose(slack, 0.0, rel_tol=0, abs_tol=1e-12 * max(1.0, total))
+        rows.append({"task": name, "duration": task["duration"], "slack": slack, "critical": critical})
+    return {"duration": total, "path": path, "tasks": rows,
+            "status": "supplied_dag_point_duration_cpm_only"}
 
 
 def nash_equilibria_2x2(
