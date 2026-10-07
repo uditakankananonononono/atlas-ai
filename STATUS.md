@@ -640,3 +640,5 @@ record/get/for_task/recall/successful_patterns previously exposed same mutable h
 ## Semantic memory detached snapshots
 
 Caller/readback fact or graph metadata mutation previously rewrote in-process records without updating embeddings/SQL. Store/get/query/confirm/link/neighbors now detach deeply. Explicit store and confirm remain mutation paths; supplied provenance/confidence are not verified truth.58 memory/runtime/executive tests pass1warning incl fact/source and metadata mutation. No durable immutable receipt or causal fact verification claimed.
+
+Post-memory detachment adjacent rerun afterfd0310d:90 M20/atomic/ledger2215pass2warnings36.99s. Existing M20 SandboxRunner feasibility check executed print("synthetic isolation probe") in bubblewrap: return0, expectedstdout,0.04s,no network. No generated code executed in service process, no science backend modification. Synthesis test/admission remain unavailable pending M20 exact-source/case isolation implementation and review lifecycle; working isolation probe is not completed synthesis capability.
