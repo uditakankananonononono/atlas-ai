@@ -882,3 +882,7 @@ resume acceptedanynode, resetsucceededREADtoPENDING/reexecuted it; unknownnode r
 ## Skill revision bookkeeping
 
 register used active-only lookup: retiring all revisions reset next version to1; activating older revision left two active same-name entries. Two reproduced failures retained. Version now increments from maximum stored same-name revision; activation retires other same-name entries and durable adapter persists all changed entries.84memory/runtimepass1warning; recorded87adjacent2282pass2warnings38.78s. Restart fixture verifies retirement/version/activation continuity. Local registry bookkeeping only, not authenticated exact-revision approval, skill generality or multirow SQL crash atomicity. Full9813pass predatessixteenlaterfixes.
+
+## Full local regression after skill revision corrections
+
+Source 724c275: 496 files in 20 isolated batches, 9869passed/0failed/14skipped/26 summed warning occurrences, 417.2s summed process time; every exit0. Manifest, receipts, logs, runner and summary retained under full-regression-after-skill-revisions. This refresh includes the sixteen source corrections since e2fe166. Green local fixtures do not verify original cognition breadth, authenticated review authority, distributed effects or production provisioning. Historical full-regression evidence retained unchanged.
