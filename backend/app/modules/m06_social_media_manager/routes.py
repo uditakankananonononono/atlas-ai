@@ -99,9 +99,25 @@ class _ApprovalCenterLookup:
         status = request.status
         return getattr(status, "value", str(status))
 
+    def authorizes(self,entry,*,account_id):
+        request=self._approvals.get(entry.approval_id,user_id=self._tenant_id)
+        if request is None or not account_id:return False
+        if getattr(request.status,'value',request.status)!='approved' or request.action_type!='schedule_post':return False
+        expected={'tenant_id':self._tenant_id,'schedule_id':entry.id,'plan_id':entry.plan_id,
+            'platform':entry.platform.value,'format':entry.format,'copy':entry.text,
+            'publish_at':entry.publish_at.isoformat(),'sponsored':entry.sponsored,
+            'media_urls':list(entry.media_urls),'alt_texts':list(entry.alt_texts),
+            'thread_chunks':list(entry.thread_chunks),'link':entry.link,'account_id':account_id}
+        return all(key in request.payload and request.payload[key]==value for key,value in expected.items())
+
 
 class _EnvAdapterFactory:
     """Builds official adapters from the tenant's env-injected credentials."""
+
+    def account_id(self,platform):
+        # Env credentials alone are not verified account ownership/identity.
+        # Until a connected-account resolver exists, real publish fails closed.
+        return None
 
     def for_platform(self, platform) -> object:
         return build_adapter(platform.value, _env_credentials())

@@ -103,6 +103,14 @@ class PublishRecord:
     published_at: datetime
 
 
+def validate_publish_receipt(entry: ScheduleEntry,receipt: PublishRecord)->None:
+    if entry.status != STATUS_PUBLISHED or not entry.external_id:
+        raise ValueError('finalization requires published positive receipt')
+    expected=PublishRecord(schedule_id=entry.id,platform=entry.platform.value,external_id=entry.external_id,
+        external_url=entry.external_url,draft_only=entry.draft_only,published_at=entry.published_at)
+    if receipt != expected:raise ValueError('receipt does not match claim outcome')
+
+
 class ScheduleRepository(Protocol):
     """Persistence boundary for schedule entries and publish receipts."""
 
@@ -268,6 +276,15 @@ class Scheduler:
                     f"{entry.platform.value} requires rendered media; the asset render pipeline "
                     "must attach media URLs before execution"
                 )
+                self._repository.save_schedule(entry)
+                continue
+            authorizes = getattr(self._decisions, 'authorizes', None)
+            account = getattr(self._adapters, 'account_id', None)
+            account_id = account(entry.platform) if account else None
+            if authorizes is None or not authorizes(entry, account_id=account_id):
+                # Status alone is not a reviewed grant. Leave pending re-review, not due.
+                entry.status = STATUS_DENIED
+                entry.failure = 'approval does not bind exact content, media, schedule and verified account'
                 self._repository.save_schedule(entry)
                 continue
             entry = self._repository.claim_publish(entry)

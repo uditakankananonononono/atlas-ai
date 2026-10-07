@@ -30,6 +30,9 @@ class FakeApprovalStore:
 
 
 class FakeDecisions:
+    def authorizes(self, entry, *, account_id):
+        return account_id == "fixture-account" and self.status_of(entry.approval_id) == "approved"
+
     def status_of(self, approval_id: str) -> str | None:
         return None
 
@@ -40,6 +43,8 @@ class FakeAdapter:
 
 
 class FakeAdapterFactory:
+    def account_id(self, platform):return "fixture-account"
+
     def for_platform(self, platform):
         return FakeAdapter()
 

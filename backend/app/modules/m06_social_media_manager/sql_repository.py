@@ -20,7 +20,7 @@ from app.core.database import Base, SessionLocal, engine
 from .adapters import NormalizedMetrics
 from .marketing import MarketingArtifact
 from .analytics import ABTest, MetricsSnapshot
-from .scheduler import PublishRecord, ScheduleEntry
+from .scheduler import PublishRecord, ScheduleEntry, validate_publish_receipt
 from .service import AnalysisReport, AssetPrompt, ContentPlan, Platform, PlatformDraft
 
 
@@ -172,6 +172,7 @@ class SqlSocialRepository:
 
     # schedules + publish receipts
     def finalize_publish(self,x,receipt):
+        validate_publish_receipt(x,receipt)
         data=schedule_data(x)
         with self.sessions.begin() as db:
             row=db.scalar(select(SocialScheduleRow).where(SocialScheduleRow.tenant_id==self.tenant_id,SocialScheduleRow.item_id==x.id).with_for_update())

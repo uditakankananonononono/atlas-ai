@@ -29,6 +29,9 @@ from app.modules.m06_social_media_manager.service import MemorySocialRepository
 
 
 class FakeDecisions:
+    def authorizes(self, entry, *, account_id):
+        return account_id == "fixture-account" and self.status_of(entry.approval_id) == "approved"
+
     def __init__(self) -> None:
         self.statuses: dict[str, str] = {}
 
@@ -51,6 +54,8 @@ class FailingAdapter:
 
 
 class FakeAdapterFactory:
+    def account_id(self, platform):return "fixture-account"
+
     def __init__(self, adapter) -> None:
         self.adapter = adapter
 
@@ -265,3 +270,11 @@ def test_receipt_persistence_failure_leaves_claim_without_replay(monkeypatch):
  assert repository.get_schedule(entry.id).status=='publishing'
  assert repository.list_publish_records(entry.id)==[]
  assert scheduler.execute_due(NOW)==[] and len(adapter.published)==1
+
+
+def test_status_only_grant_and_unverified_account_do_not_publish():
+ adapter=FakeAdapter();scheduler,repository,decisions=make_scheduler(adapter)
+ entry=create_entry(scheduler,make_plan());decisions.statuses['approval-1']='approved';scheduler.sync_decisions()
+ decisions.authorizes=lambda *args,**kwargs:False
+ assert scheduler.execute_due(NOW)==[] and adapter.published==[]
+ assert repository.get_schedule(entry.id).status=='denied'
