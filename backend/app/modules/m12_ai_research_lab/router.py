@@ -28,6 +28,7 @@ class ModelRouter:
         if not m.enabled or req.task_type not in m.task_types: return float("-inf"), ["unsupported"]
         if req.required_model_ids and m.model_id not in req.required_model_ids: return float("-inf"), ["not allow-listed"]
         if not _nonnegative_finite(req.budget_cents) or not _nonnegative_finite(m.cents_per_1k_tokens):return float("-inf"), ["invalid budget or unit price"]
+        if not valid_confidence(m.quality):return float("-inf"), ["invalid catalog quality"]
         estimated=(req.output_tokens/1000)*m.cents_per_1k_tokens
         if m.max_output_tokens < req.output_tokens: return float("-inf"), ["output limit"]
         if estimated > req.budget_cents: return float("-inf"), ["budget"]
