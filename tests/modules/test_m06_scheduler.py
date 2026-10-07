@@ -278,3 +278,18 @@ def test_status_only_grant_and_unverified_account_do_not_publish():
  decisions.authorizes=lambda *args,**kwargs:False
  assert scheduler.execute_due(NOW)==[] and adapter.published==[]
  assert repository.get_schedule(entry.id).status=='denied'
+
+
+def test_rendered_media_final_review_snapshot_binds_current_payload_and_account():
+ scheduler,repository,decisions=make_scheduler()
+ entry=create_entry(scheduler,make_plan(platform=Platform.INSTAGRAM,format='carousel'))
+ with pytest.raises(ScheduleStateError,match='rendered media'):scheduler.final_review_payload(entry.id,'tenant-fixture')
+ scheduler.attach_media(entry.id,['https://fixture.invalid/image'],['Fixture alt'])
+ payload=scheduler.final_review_payload(entry.id,'tenant-fixture')
+ assert payload['account_id']=='fixture-account' and payload['tenant_id']=='tenant-fixture'
+ assert payload['media_urls']==['https://fixture.invalid/image'] and payload['alt_texts']==['Fixture alt']
+ assert payload['schedule_id']==entry.id and payload['copy']==entry.text
+ payload['media_urls'].append('https://wrong.invalid')
+ assert repository.get_schedule(entry.id).media_urls==['https://fixture.invalid/image']
+ scheduler._adapters.account_id=lambda platform:None
+ with pytest.raises(ScheduleStateError,match='identity unavailable'):scheduler.final_review_payload(entry.id,'tenant-fixture')

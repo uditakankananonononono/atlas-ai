@@ -223,6 +223,27 @@ class Scheduler:
         entry.alt_texts = list(alt_texts or [])
         return self._repository.save_schedule(entry)
 
+    def final_review_payload(self,schedule_id:str,tenant_id:str)->dict[str,Any]:
+        """Snapshot for a new owner review after rendering. Does not approve/publish.
+
+        Account identity comes only from a trusted connected-account resolver;
+        environment credentials alone cannot supply it.
+        """
+        entry=self._entry(schedule_id)
+        if entry.status in TERMINAL_STATUSES:
+            raise ScheduleStateError('cannot prepare final review for terminal/claimed schedule')
+        resolve=getattr(self._adapters,'account_id',None)
+        account_id=resolve(entry.platform) if resolve else None
+        if not tenant_id or not account_id:
+            raise ScheduleStateError('verified tenant/account identity unavailable for final review')
+        if entry.platform.value in MEDIA_REQUIRED_PLATFORMS and not entry.media_urls:
+            raise ScheduleStateError('rendered media required before final review')
+        return {'tenant_id':tenant_id,'schedule_id':entry.id,'plan_id':entry.plan_id,
+            'platform':entry.platform.value,'format':entry.format,'copy':entry.text,
+            'publish_at':entry.publish_at.isoformat(),'sponsored':entry.sponsored,
+            'media_urls':list(entry.media_urls),'alt_texts':list(entry.alt_texts),
+            'thread_chunks':list(entry.thread_chunks),'link':entry.link,'account_id':account_id}
+
     # -- decision sync ---------------------------------------------------------
 
     def sync_decisions(self) -> list[ScheduleEntry]:
