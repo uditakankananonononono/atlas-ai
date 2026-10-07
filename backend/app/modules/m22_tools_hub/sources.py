@@ -57,15 +57,23 @@ def _is_public_feed_url(url: str) -> bool:
     only - it does not establish the target is public: private-range IPs,
     internal hostnames and DNS-rebinding remain OPEN gaps (no repo policy),
     and injectable openers/fetch callables bypass it by design (test seam)."""
-    if not url or any(ch.isspace() or ord(ch) < 0x21 for ch in url):
+    if not url or any(ch.isspace() or ord(ch) < 0x21 or ord(ch) == 0x7F or ch == "\\" for ch in url):
         return False
     try:
         parts = urlsplit(url)
         if parts.scheme != "https":
             return False
-        if not parts.hostname:
+        host = parts.hostname
+        if not host or set(host) <= {"."}:
             return False
         if parts.username is not None or parts.password is not None:
+            return False
+        # Percent-encoded bytes in the authority decode to delimiters or
+        # whitespace downstream (urllib Request handling), so the parsed
+        # view would not match the requested host. Reject them outright;
+        # this also keeps redirect-target validation (which sees the
+        # percent-encoded Location form) consistent with entry validation.
+        if "%" in parts.netloc:
             return False
         _ = parts.port  # raises ValueError for invalid/out-of-range ports
     except ValueError:
@@ -261,6 +269,10 @@ class FeedCollector:
         self._opener = opener
 
     def _stream(self):
+        # Validate at the use point: the attribute is plain (mutable), so a
+        # post-construction change must not reach the opener unchecked.
+        if not _is_public_feed_url(self.feed_url):
+            raise SourceError(f"feed URL outside the https public-web contract: {self.feed_url!r}")
         if self._opener is not None:
             return self._opener(self.feed_url)
         request = Request(self.feed_url, headers={"User-Agent": USER_AGENT, "Accept": "application/rss+xml, application/atom+xml, application/xml, */*"})
