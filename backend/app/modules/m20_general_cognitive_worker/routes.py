@@ -737,7 +737,7 @@ class BaseRateRequest(BaseModel):
 
 class ReferenceCaseRequest(BaseModel):
     features: str = Field(min_length=1)
-    outcome: float
+    outcome: float = Field(strict=True, allow_inf_nan=False)
     label: str | None = None
 
 
@@ -746,8 +746,8 @@ class ReferenceForecastRequest(BaseModel):
 
 
 class OutsideViewRequest(BaseModel):
-    inside_estimate: float
-    outside_weight: float = Field(default=0.5, ge=0.0, le=1.0)
+    inside_estimate: float = Field(strict=True, allow_inf_nan=False)
+    outside_weight: float = Field(default=0.5, ge=0.0, le=1.0, strict=True, allow_inf_nan=False)
     subject: str = "this project"
 
 

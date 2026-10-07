@@ -1,0 +1,124 @@
+.................................................FFFFFF                  [100%]
+=================================== FAILURES ===================================
+_____ test_outside_view_http_does_not_coerce_numbers[inside_estimate-True] _____
+
+client = (<starlette.testclient.TestClient object at 0x7f6a541f10d0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f6a4f62e1b0>)
+field = 'inside_estimate', value = True
+
+    @pytest.mark.parametrize('field,value', [('inside_estimate', True), ('inside_estimate', '10'), ('outside_weight', True), ('outside_weight', '0.5')])
+    def test_outside_view_http_does_not_coerce_numbers(client, field, value):
+        c, _ = client
+        body = {'inside_estimate': 10, 'outside_weight': 0.5, 'subject': 'fixture'}
+        body[field] = value
+>       assert c.post('/api/modules/20/meta/outside-view', json=body).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/api/modules/20/meta/outside-view', json={'inside_estimate': True, 'outside_weight': 0.5, 'subject': 'fixture'})
+E        +      where post = <starlette.testclient.TestClient object at 0x7f6a541f10d0>.post
+
+tests/modules/test_m20_foresight_routes.py:411: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+______ test_outside_view_http_does_not_coerce_numbers[inside_estimate-10] ______
+
+client = (<starlette.testclient.TestClient object at 0x7f6a547bcc20>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f6a4f7aad50>)
+field = 'inside_estimate', value = '10'
+
+    @pytest.mark.parametrize('field,value', [('inside_estimate', True), ('inside_estimate', '10'), ('outside_weight', True), ('outside_weight', '0.5')])
+    def test_outside_view_http_does_not_coerce_numbers(client, field, value):
+        c, _ = client
+        body = {'inside_estimate': 10, 'outside_weight': 0.5, 'subject': 'fixture'}
+        body[field] = value
+>       assert c.post('/api/modules/20/meta/outside-view', json=body).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/api/modules/20/meta/outside-view', json={'inside_estimate': '10', 'outside_weight': 0.5, 'subject': 'fixture'})
+E        +      where post = <starlette.testclient.TestClient object at 0x7f6a547bcc20>.post
+
+tests/modules/test_m20_foresight_routes.py:411: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_____ test_outside_view_http_does_not_coerce_numbers[outside_weight-True] ______
+
+client = (<starlette.testclient.TestClient object at 0x7f6a5415a450>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f6a5422ad50>)
+field = 'outside_weight', value = True
+
+    @pytest.mark.parametrize('field,value', [('inside_estimate', True), ('inside_estimate', '10'), ('outside_weight', True), ('outside_weight', '0.5')])
+    def test_outside_view_http_does_not_coerce_numbers(client, field, value):
+        c, _ = client
+        body = {'inside_estimate': 10, 'outside_weight': 0.5, 'subject': 'fixture'}
+        body[field] = value
+>       assert c.post('/api/modules/20/meta/outside-view', json=body).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/api/modules/20/meta/outside-view', json={'inside_estimate': 10, 'outside_weight': True, 'subject': 'fixture'})
+E        +      where post = <starlette.testclient.TestClient object at 0x7f6a5415a450>.post
+
+tests/modules/test_m20_foresight_routes.py:411: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+______ test_outside_view_http_does_not_coerce_numbers[outside_weight-0.5] ______
+
+client = (<starlette.testclient.TestClient object at 0x7f6a4f731fd0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f6a54158e00>)
+field = 'outside_weight', value = '0.5'
+
+    @pytest.mark.parametrize('field,value', [('inside_estimate', True), ('inside_estimate', '10'), ('outside_weight', True), ('outside_weight', '0.5')])
+    def test_outside_view_http_does_not_coerce_numbers(client, field, value):
+        c, _ = client
+        body = {'inside_estimate': 10, 'outside_weight': 0.5, 'subject': 'fixture'}
+        body[field] = value
+>       assert c.post('/api/modules/20/meta/outside-view', json=body).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/api/modules/20/meta/outside-view', json={'inside_estimate': 10, 'outside_weight': '0.5', 'subject': 'fixture'})
+E        +      where post = <starlette.testclient.TestClient object at 0x7f6a4f731fd0>.post
+
+tests/modules/test_m20_foresight_routes.py:411: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+______________ test_reference_http_does_not_coerce_outcome[True] _______________
+
+client = (<starlette.testclient.TestClient object at 0x7f6a55138110>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f6a66f30380>)
+outcome = True
+
+    @pytest.mark.parametrize('outcome', [True, '10'])
+    def test_reference_http_does_not_coerce_outcome(client, outcome):
+        c, service = client
+        response = c.post('/api/modules/20/meta/reference-class/cases', json={'features': 'fixture', 'outcome': outcome})
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:418: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_______________ test_reference_http_does_not_coerce_outcome[10] ________________
+
+client = (<starlette.testclient.TestClient object at 0x7f6a551536b0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f6a55138ce0>)
+outcome = '10'
+
+    @pytest.mark.parametrize('outcome', [True, '10'])
+    def test_reference_http_does_not_coerce_outcome(client, outcome):
+        c, service = client
+        response = c.post('/api/modules/20/meta/reference-class/cases', json={'features': 'fixture', 'outcome': outcome})
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:418: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight_routes.py::test_outside_view_http_does_not_coerce_numbers[inside_estimate-True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_outside_view_http_does_not_coerce_numbers[inside_estimate-10]
+FAILED tests/modules/test_m20_foresight_routes.py::test_outside_view_http_does_not_coerce_numbers[outside_weight-True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_outside_view_http_does_not_coerce_numbers[outside_weight-0.5]
+FAILED tests/modules/test_m20_foresight_routes.py::test_reference_http_does_not_coerce_outcome[True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_reference_http_does_not_coerce_outcome[10]
+6 failed, 49 passed, 1 warning in 10.32s
