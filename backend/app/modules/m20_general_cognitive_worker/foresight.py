@@ -530,12 +530,15 @@ class OutsideView:
     def adopt(self, *, inside_estimate: float,
               reference_forecast: ReferenceClassForecast | None,
               outside_weight: float = 0.5, subject: str = "this project") -> OutsideViewReport:
+        SimulationFidelityTracker._finite(inside_estimate)
+        SimulationFidelityTracker._finite(outside_weight)
         if not 0.0 <= outside_weight <= 1.0:
             raise ValueError("outside_weight must be in [0, 1]")
         outside_median = reference_forecast.median if reference_forecast else None
         if outside_median is None:
             blended, effective_w = inside_estimate, 0.0
         else:
+            SimulationFidelityTracker._finite(outside_median)
             blended = outside_weight * outside_median + (1 - outside_weight) * inside_estimate
             effective_w = outside_weight
         notes = [
