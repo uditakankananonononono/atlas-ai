@@ -26,6 +26,7 @@ class TaskRow(Base):
     id = sa.Column(sa.String, primary_key=True)
     tenant_id = sa.Column(sa.String, nullable=False, default="default", index=True)
     goal = sa.Column(sa.Text, nullable=False)
+    model_outcome_unknown = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa.false())
     state = sa.Column(sa.String, nullable=False)
     importance = sa.Column(sa.Integer, nullable=False, default=3)
     deadline = sa.Column(sa.DateTime(timezone=True), nullable=True)
@@ -116,6 +117,7 @@ class GCWRepository:
                 row = TaskRow(id=context.id, goal=context.goal, tenant_id=self.tenant_id,
                               created_at=_aware(context.created_at))
                 session.add(row)
+            row.model_outcome_unknown = context.model_outcome_unknown
             row.goal = context.goal
             row.state = context.state.value
             row.importance = context.importance
@@ -133,7 +135,7 @@ class GCWRepository:
             if row is None or row.tenant_id != self.tenant_id:
                 return None
             context = TaskContext(
-                id=row.id, goal=row.goal, importance=row.importance,
+                id=row.id, goal=row.goal, importance=row.importance,model_outcome_unknown=row.model_outcome_unknown,
                 deadline=_aware(row.deadline) if row.deadline else None,
             )
             from .schemas import TaskState

@@ -226,6 +226,7 @@ class TaskContext(BaseModel):
 
     id: str = Field(default_factory=new_id)
     goal: str
+    model_outcome_unknown: bool = False
     state: TaskState = TaskState.PENDING
     importance: int = 3
     deadline: datetime | None = None

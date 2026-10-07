@@ -37,4 +37,4 @@ assert repo.checkpoint_history('account','100','101')
  assert result.returncode!=0 and 'Cannot remove ingestion ownership' in result.stderr
  with psycopg.connect(uri) as conn:
   assert conn.execute('SELECT phase FROM m10_ingest_work').fetchone()[0]=='complete'
-  assert conn.execute('SELECT version_num FROM alembic_version').fetchone()[0]=='20261007_m10_ingest_work'
+  assert conn.execute('SELECT version_num FROM alembic_version').fetchone()[0]=='20261007_m20_model_unknown'
