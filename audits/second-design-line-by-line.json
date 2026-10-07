@@ -1630,7 +1630,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only, not durable knowledge acceptance. Status unverified."
     },
     {
       "row": 148,
@@ -1641,7 +1641,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M20 episodic/semantic/skill stores and durable SQL adapters exist. All information ever encountered/generated retention and complete cross-module long-term knowledge are not established by scoped read. No memory/provider effects. Status unverified."
     },
     {
       "row": 149,
@@ -1652,7 +1652,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "EpisodicMemory stores typed episodes and similarity vectors, defaults DeterministicEmbedding; runtime durable adapters persist episodes. M09 node ingestion/background cluster summarization/analogical task success not established in scoped implementation. Input action outcomes can be supplied; stored success is not external acceptance. No live model/memory changes. Status unverified."
     },
     {
       "row": 150,
@@ -1663,7 +1663,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "SemanticMemory stores facts/vectors/links in dictionaries; durable SQL adapter exists. Neo4j triple database and continuous all-module source updates/contradiction resolution not established by scoped read. Provenance/confidence fields do not authenticate sources. Status unverified."
     },
     {
       "row": 151,
@@ -1674,7 +1674,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "SkillLibrary versions/registers action-sequence skills and repeated successful episode pattern proposals; facade seeds judgment prompt chains. Generic Python scripts/live send_email/search registrations/LLM generalization and accepted autonomous execution not established. Retired versions are mechanisms, not safe changed behavior proof. No send/code/provider effects. Status unverified."
     },
     {
       "row": 152,
@@ -1685,7 +1685,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only; no strategic reasoning acceptance. Status unverified."
     },
     {
       "row": 153,
@@ -1696,7 +1696,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "HTNPlanner and injected ExecutiveModel deliberative loop coexist. Hybrid mechanism presence not general novel-problem reasoning quality or fully integrated autonomous strategic decision acceptance. No model/tool work. Status unverified."
     },
     {
       "row": 154,
@@ -1707,7 +1707,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "HTNPlanner matches registered methods or asks injected model for task nodes, validates plan DAG; durable planner adapter persists methods/plans. Novel decompositions and domain feasibility/generalization need source-backed criteria, not schema success. No live LLM/method learning accepted. Status unverified."
     },
     {
       "row": 155,
@@ -1718,7 +1718,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Executive/runtime expose bounded steps, observations, reflection and public decision artifacts. Runtime explicitly omits chain-of-thought field; user-facing decision records must not expose private reasoning. Sense/plan/action flags and supplied predictions do not prove action quality/outcome. Counterfactual/scratchpad mechanisms are scoped tools, no continuous universal reasoning acceptance. Status unverified."
     },
     {
       "row": 156,
@@ -1729,7 +1729,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "MetaReasoner monitors patterns/bounds and can recommend intervention; runtime has bounded step reports/scheduler. Quality/confidence/success instrumentation and actual stuck recovery across strategy/provider/user interaction not established by source alone. No model/worker effects. Status unverified."
     },
     {
       "row": 157,
@@ -1740,7 +1740,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only, no actuator acceptance. Status unverified."
     },
     {
       "row": 158,
@@ -1751,7 +1751,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "ToolRegistry describes tools and ToolDispatcher applies SafetyGate; runtime/product bindings exist. Comprehensive all-module/files/email/API functionality requires specific registered tool/source permission/receipt tests; registry availability never establishes owner approval. No external dispatch executed. Status unverified."
     },
     {
       "row": 159,
