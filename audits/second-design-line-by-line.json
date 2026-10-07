@@ -1168,7 +1168,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M15 version/diff/preflight/render proposals, lane template/grounding/render/export and approved delivery/receipt paths exist. Professional semantic layout and final pipeline across all modules require artifact/visual acceptance, not function presence. No user artifact/render/publication/share performed. Status unverified."
     },
     {
       "row": 106,
@@ -1179,7 +1179,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service render_latex uses Jinja StrictUndefined; packaged template files and lane registry provide template mechanisms. Git-versioned collaborative template management and LLM lossless semantic field mapping not established by scoped M15 read. DOCX/PPTX renderers exist but are not automatically fidelity-accepted. Status unverified."
     },
     {
       "row": 107,
@@ -1190,7 +1190,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service preflight validates citation key uniqueness and warns missing URLs; lane grounding includes citation handling. Full local BibTeX ingestion from literature, bidirectional bibliography/citation consistency and specified biblatex/pandoc style pipeline not established by scoped read. No source/citation-quality or output typography acceptance. Status unverified."
     },
     {
       "row": 108,
@@ -1201,7 +1201,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service render_figure uses explicit FigureSpec matplotlib line/bar/scatter or Plotly charts, PNG output not all-vector. Automatic CSV semantic chart selection/LLM captions/confidence intervals/maps/field-specific libraries and embedded cross-reference fidelity not established in this method. Lane renderers exist separately. No actual figure pixels accepted. Status unverified."
     },
     {
       "row": 109,
@@ -1212,7 +1212,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Tenant SQL document versions hold structured content/hash/parent/citations/figures; Service.diff recursively compares dict/list/scalar structure, not DOCX XML/word-level diff. Restore UI/visual version comparisons and approval-derived generation preference learning not established. Concurrent version numbering also requires acceptance, not counter presence. Status unverified."
     },
     {
       "row": 110,
@@ -1223,7 +1223,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Approved delivery renders native DOCX/PPTX/PDF/LaTeX; PDF path invokes LaTeX with timeout and repeated passes, output validation exists. General DOCX-to-PDF/pandoc/unoconv lossless containerized semantic conversion not established by scoped read. Existing render paths are not erased by this gap. No artifact pixels/output typography/provider publication accepted. Status unverified."
     },
     {
       "row": 111,
@@ -1234,7 +1234,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Approved delivery paths include claim/render/private artifact serving; publication worker generic adapter route is explicitly unconfigured. Universal Celery-only cloud rendering/SSE notice/cache/precompiled headers and high-volume throughput not established. Existing delivery path must not be erased by unconfigured generic worker. No real deliver/publish/email effect. Status unverified. Celery routing includes atlas.m15 queue, but routing rule alone does not prove every document runs there."
     },
     {
       "row": 112,
