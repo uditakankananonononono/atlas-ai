@@ -1,0 +1,90 @@
+..................................................................FFFFFF [100%]
+=================================== FAILURES ===================================
+_________ test_fair_scheduler_rejects_invalid_supplied_aging_rate[nan] _________
+
+rate = nan
+
+    @pytest.mark.parametrize('rate', [float('nan'), float('inf'), -1, True, '1'])
+    def test_fair_scheduler_rejects_invalid_supplied_aging_rate(rate):
+        from app.modules.m20_general_cognitive_worker.scheduler import FairContextScheduler
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:998: Failed
+_________ test_fair_scheduler_rejects_invalid_supplied_aging_rate[inf] _________
+
+rate = inf
+
+    @pytest.mark.parametrize('rate', [float('nan'), float('inf'), -1, True, '1'])
+    def test_fair_scheduler_rejects_invalid_supplied_aging_rate(rate):
+        from app.modules.m20_general_cognitive_worker.scheduler import FairContextScheduler
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:998: Failed
+_________ test_fair_scheduler_rejects_invalid_supplied_aging_rate[-1] __________
+
+rate = -1
+
+    @pytest.mark.parametrize('rate', [float('nan'), float('inf'), -1, True, '1'])
+    def test_fair_scheduler_rejects_invalid_supplied_aging_rate(rate):
+        from app.modules.m20_general_cognitive_worker.scheduler import FairContextScheduler
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:998: Failed
+________ test_fair_scheduler_rejects_invalid_supplied_aging_rate[True] _________
+
+rate = True
+
+    @pytest.mark.parametrize('rate', [float('nan'), float('inf'), -1, True, '1'])
+    def test_fair_scheduler_rejects_invalid_supplied_aging_rate(rate):
+        from app.modules.m20_general_cognitive_worker.scheduler import FairContextScheduler
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:998: Failed
+__________ test_fair_scheduler_rejects_invalid_supplied_aging_rate[1] __________
+
+rate = '1'
+
+    @pytest.mark.parametrize('rate', [float('nan'), float('inf'), -1, True, '1'])
+    def test_fair_scheduler_rejects_invalid_supplied_aging_rate(rate):
+        from app.modules.m20_general_cognitive_worker.scheduler import FairContextScheduler
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:998: Failed
+___ test_fair_scheduler_aging_overflow_is_reported_before_selection_mutation ___
+
+    def test_fair_scheduler_aging_overflow_is_reported_before_selection_mutation():
+        from datetime import datetime, timedelta, timezone
+        from app.modules.m20_general_cognitive_worker.scheduler import FairContextScheduler
+        now = datetime.now(timezone.utc)
+        scheduler = FairContextScheduler(aging_bonus_per_minute=1e308)
+        context = TaskContext(goal='fixture', created_at=now - timedelta(minutes=10))
+        scheduler.add(context)
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:1009: Failed
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_fair_scheduler_rejects_invalid_supplied_aging_rate[nan]
+FAILED tests/modules/test_m20_runtime_depth.py::test_fair_scheduler_rejects_invalid_supplied_aging_rate[inf]
+FAILED tests/modules/test_m20_runtime_depth.py::test_fair_scheduler_rejects_invalid_supplied_aging_rate[-1]
+FAILED tests/modules/test_m20_runtime_depth.py::test_fair_scheduler_rejects_invalid_supplied_aging_rate[True]
+FAILED tests/modules/test_m20_runtime_depth.py::test_fair_scheduler_rejects_invalid_supplied_aging_rate[1]
+FAILED tests/modules/test_m20_runtime_depth.py::test_fair_scheduler_aging_overflow_is_reported_before_selection_mutation
+6 failed, 66 passed, 1 warning in 4.25s

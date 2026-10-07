@@ -5,6 +5,7 @@ user-assigned importance. Each context owns a working-memory partition.
 """
 from __future__ import annotations
 
+import math
 from datetime import datetime, timezone
 
 from .schemas import TaskContext, TaskState
@@ -82,21 +83,26 @@ class ContextScheduler:
 class FairContextScheduler(ContextScheduler):
     """Aging-fair time slicing (rows M20-23, M20-24): deadline/importance
     still dominate, but a context that has waited too long without a tick
-    accrues an aging bonus until it is served - no starvation under a busy
-    high-priority tier. Each selection records the service so quanta stay
-    measurable.
+    accrues a supplied aging bonus until it is served. No unrestricted
+    starvation guarantee (for example, arrivals can be unbounded or rate zero).
+    Each selection records local service counts.
     """
 
     def __init__(self, *, aging_bonus_per_minute: float = 1.0) -> None:
         super().__init__()
+        if type(aging_bonus_per_minute) not in (int, float) or not math.isfinite(aging_bonus_per_minute) or aging_bonus_per_minute < 0:
+            raise ValueError("aging rate must be finite nonnegative numeric, not bool")
         self.aging_bonus_per_minute = aging_bonus_per_minute
 
     def priority(self, context: TaskContext, *, now: datetime | None = None) -> float:
-        base = super().priority(context, now=now)
         now = now or datetime.now(timezone.utc)
+        base = super().priority(context, now=now)
         waited_from = context.last_run_at or context.created_at
         waited_minutes = max(0.0, (now - waited_from).total_seconds() / 60.0)
-        return base + self.aging_bonus_per_minute * waited_minutes
+        result = base + self.aging_bonus_per_minute * waited_minutes
+        if not math.isfinite(result):
+            raise ValueError("aging priority overflow")
+        return result
 
     def next_context(self, *, now: datetime | None = None) -> TaskContext | None:
         now = now or datetime.now(timezone.utc)
