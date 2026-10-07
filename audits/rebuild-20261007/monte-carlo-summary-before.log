@@ -1,0 +1,201 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_monte_carlo_summary_computes_mean_once_not_per_sample __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f00dada6ff0>
+
+    def test_monte_carlo_summary_computes_mean_once_not_per_sample(monkeypatch):
+     original=R.mean;calls=[]
+     def counted(values):calls.append(len(values));return original(values)
+     monkeypatch.setattr(R,'mean',counted)
+     out=R.monte_carlo_simulation(lambda rng:4,trials=100)
+>    assert out['mean']==4 and out['std']==0 and len(calls)<=1
+E    assert (4 == 4 and 0.0 == 0 and 101 <= 1)
+E     +  where 101 = len([100, 100, 100, 100, 100, 100, ...])
+
+tests/modules/test_m20_reasoning.py:161: AssertionError
+_________________ test_monte_carlo_invalid_samples_reject[nan] _________________
+
+sample = nan
+
+    @pytest.mark.parametrize('sample',[float('nan'),float('inf'),True,'4'])
+    def test_monte_carlo_invalid_samples_reject(sample):
+>    with pytest.raises(ValueError):R.monte_carlo_simulation(lambda rng:sample,trials=10)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:166: Failed
+_________________ test_monte_carlo_invalid_samples_reject[inf] _________________
+
+sample = inf
+
+    @pytest.mark.parametrize('sample',[float('nan'),float('inf'),True,'4'])
+    def test_monte_carlo_invalid_samples_reject(sample):
+>    with pytest.raises(ValueError):R.monte_carlo_simulation(lambda rng:sample,trials=10)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:166: Failed
+________________ test_monte_carlo_invalid_samples_reject[True] _________________
+
+sample = True
+
+    @pytest.mark.parametrize('sample',[float('nan'),float('inf'),True,'4'])
+    def test_monte_carlo_invalid_samples_reject(sample):
+>    with pytest.raises(ValueError):R.monte_carlo_simulation(lambda rng:sample,trials=10)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:166: Failed
+__________________ test_monte_carlo_invalid_samples_reject[4] __________________
+
+x = '4'
+
+    def _exact_ratio(x):
+        """Return Real number x to exact (numerator, denominator) pair.
+    
+        >>> _exact_ratio(0.25)
+        (1, 4)
+    
+        x is expected to be an int, Fraction, Decimal or float.
+        """
+    
+        # XXX We should revisit whether using fractions to accumulate exact
+        # ratios is the right way to go.
+    
+        # The integer ratios for binary floats can have numerators or
+        # denominators with over 300 decimal digits.  The problem is more
+        # acute with decimal floats where the default decimal context
+        # supports a huge range of exponents from Emin=-999999 to
+        # Emax=999999.  When expanded with as_integer_ratio(), numbers like
+        # Decimal('3.14E+5000') and Decimal('3.14E-5000') have large
+        # numerators or denominators that will slow computation.
+    
+        # When the integer ratios are accumulated as fractions, the size
+        # grows to cover the full range from the smallest magnitude to the
+        # largest.  For example, Fraction(3.14E+300) + Fraction(3.14E-300),
+        # has a 616 digit numerator.  Likewise,
+        # Fraction(Decimal('3.14E+5000')) + Fraction(Decimal('3.14E-5000'))
+        # has 10,003 digit numerator.
+    
+        # This doesn't seem to have been problem in practice, but it is a
+        # potential pitfall.
+    
+        try:
+            return x.as_integer_ratio()
+        except AttributeError:
+            pass
+        except (OverflowError, ValueError):
+            # float NAN or INF.
+            assert not _isfinite(x)
+            return (x, None)
+        try:
+            # x may be an Integral ABC.
+>           return (x.numerator, x.denominator)
+                    ^^^^^^^^^^^
+E           AttributeError: 'str' object has no attribute 'numerator'
+
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/statistics.py:327: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+sample = '4'
+
+    @pytest.mark.parametrize('sample',[float('nan'),float('inf'),True,'4'])
+    def test_monte_carlo_invalid_samples_reject(sample):
+>    with pytest.raises(ValueError):R.monte_carlo_simulation(lambda rng:sample,trials=10)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_reasoning.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:67: in monte_carlo_simulation
+    "mean": mean(samples),
+            ^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/statistics.py:484: in mean
+    T, total, n = _sum(data)
+                  ^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/statistics.py:193: in _sum
+    for n, d in map(_exact_ratio, values):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+x = '4'
+
+    def _exact_ratio(x):
+        """Return Real number x to exact (numerator, denominator) pair.
+    
+        >>> _exact_ratio(0.25)
+        (1, 4)
+    
+        x is expected to be an int, Fraction, Decimal or float.
+        """
+    
+        # XXX We should revisit whether using fractions to accumulate exact
+        # ratios is the right way to go.
+    
+        # The integer ratios for binary floats can have numerators or
+        # denominators with over 300 decimal digits.  The problem is more
+        # acute with decimal floats where the default decimal context
+        # supports a huge range of exponents from Emin=-999999 to
+        # Emax=999999.  When expanded with as_integer_ratio(), numbers like
+        # Decimal('3.14E+5000') and Decimal('3.14E-5000') have large
+        # numerators or denominators that will slow computation.
+    
+        # When the integer ratios are accumulated as fractions, the size
+        # grows to cover the full range from the smallest magnitude to the
+        # largest.  For example, Fraction(3.14E+300) + Fraction(3.14E-300),
+        # has a 616 digit numerator.  Likewise,
+        # Fraction(Decimal('3.14E+5000')) + Fraction(Decimal('3.14E-5000'))
+        # has 10,003 digit numerator.
+    
+        # This doesn't seem to have been problem in practice, but it is a
+        # potential pitfall.
+    
+        try:
+            return x.as_integer_ratio()
+        except AttributeError:
+            pass
+        except (OverflowError, ValueError):
+            # float NAN or INF.
+            assert not _isfinite(x)
+            return (x, None)
+        try:
+            # x may be an Integral ABC.
+            return (x.numerator, x.denominator)
+        except AttributeError:
+            msg = f"can't convert type '{type(x).__name__}' to numerator/denominator"
+>           raise TypeError(msg)
+E           TypeError: can't convert type 'str' to numerator/denominator
+
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/statistics.py:330: TypeError
+______ test_monte_carlo_large_finite_population_statistics_are_json_safe _______
+
+    def test_monte_carlo_large_finite_population_statistics_are_json_safe():
+     import json
+     values=iter([-1e300,1e300]*5)
+>    out=R.monte_carlo_simulation(lambda rng:next(values),trials=10)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_reasoning.py:172: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:73: in monte_carlo_simulation
+    "std": math.sqrt(sum((s - mean(samples)) ** 2 for s in samples) / n),
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+.0 = <list_iterator object at 0x7f00c9217130>
+
+>       "std": math.sqrt(sum((s - mean(samples)) ** 2 for s in samples) / n),
+                             ^^^^^^^^^^^^^^^^^^^^^^^^
+    }
+E   OverflowError: (34, 'Numerical result out of range')
+
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:73: OverflowError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reasoning.py::test_monte_carlo_summary_computes_mean_once_not_per_sample
+FAILED tests/modules/test_m20_reasoning.py::test_monte_carlo_invalid_samples_reject[nan]
+FAILED tests/modules/test_m20_reasoning.py::test_monte_carlo_invalid_samples_reject[inf]
+FAILED tests/modules/test_m20_reasoning.py::test_monte_carlo_invalid_samples_reject[True]
+FAILED tests/modules/test_m20_reasoning.py::test_monte_carlo_invalid_samples_reject[4]
+FAILED tests/modules/test_m20_reasoning.py::test_monte_carlo_large_finite_population_statistics_are_json_safe
+6 failed, 16 deselected in 1.51s
