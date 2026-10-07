@@ -171,3 +171,57 @@ def test_ideation_templates_do_not_claim_model_generation_or_creative_evaluation
     assert analogy.text == 'fixture <- analogy -> libraries'
     assert analogy.metadata['status'] == 'supplied_concept_pair_formatting_only'
     assert analogy.metadata['creative_generation_executed'] is False
+
+
+def test_model_ideation_generates_actionable_candidates_and_constraints_not_frames():
+    class Model:
+        def complete(self, purpose, payload):
+            assert purpose == 'ideate'
+            assert payload['constraints'] == ['no paid ads']
+            return {'ideas': [{'title': 'Library referral', 'proposal': 'Partner with librarians for student referrals',
+                              'first_test': 'Interview two librarians', 'risks': ['staff time'],
+                              'constraint_checks': {'no paid ads': 'No ad spend; staff time still needed'}}], 'route': 'fixture/model'}
+    from app.modules.m20_general_cognitive_worker.reflection import ModelIdeationEngine
+    result = ModelIdeationEngine(Model()).generate('Recruit students', constraints=['no paid ads'], count=1)
+    assert result['ideas'][0]['first_test'] == 'Interview two librarians'
+    assert result['model_called'] is True
+    assert result['constraint_checks_verified'] is False
+
+
+def test_model_ideation_unavailable_or_invalid_has_no_template_fallback():
+    import pytest
+    from app.modules.m20_general_cognitive_worker.reflection import ModelIdeationEngine
+    with pytest.raises(RuntimeError):
+        ModelIdeationEngine().generate('fixture', count=1)
+    class Model:
+        def complete(self, purpose, payload):
+            return {'ideas': [{'title': 'placeholder'}]}
+    with pytest.raises(ValueError):
+        ModelIdeationEngine(Model()).generate('fixture', count=1)
+
+
+def test_model_ideation_adapter_uses_private_route_and_task_specific_schema(monkeypatch):
+    from app.modules.m20_general_cognitive_worker.model_adapters import FreeFirstExecutiveModel
+    from app.modules.m20_general_cognitive_worker.reflection import ModelIdeationEngine
+    from app.core import model_catalog
+    import json
+    async def generate(prompt, model, **kwargs):
+        assert kwargs == {'private': True}
+        assert 'constraint_checks' in prompt and 'Recruit students' in prompt
+        return 'fixture', 'fixture', json.dumps({'ideas': [{'title': 'Student referral', 'proposal': 'Ask students to introduce one peer', 'first_test': 'Interview two students', 'risks': ['low response'], 'constraint_checks': {}}]})
+    monkeypatch.setattr(model_catalog, 'generate_free_first', generate)
+    result = ModelIdeationEngine(FreeFirstExecutiveModel()).generate('Recruit students', count=1)
+    assert result['route'] == 'fixture/fixture'
+
+
+def test_model_ideation_rejects_duplicate_candidates_and_missing_constraints():
+    import pytest
+    from app.modules.m20_general_cognitive_worker.reflection import ModelIdeationEngine
+    idea = {'title': 'a', 'proposal': 'b', 'first_test': 'c', 'risks': [], 'constraint_checks': {}}
+    class Model:
+        def complete(self, purpose, payload):
+            return {'ideas': [idea] * payload['count']}
+    with pytest.raises(ValueError, match='duplicate'):
+        ModelIdeationEngine(Model()).generate('fixture', count=2)
+    with pytest.raises(ValueError, match='every supplied constraint'):
+        ModelIdeationEngine(Model()).generate('fixture', count=1, constraints=['zero cash'])

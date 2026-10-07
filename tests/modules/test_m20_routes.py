@@ -114,3 +114,25 @@ def test_standup_health_ruminate_and_404s(client):
     assert c.post(f"/api/modules/20/tasks/{missing}/resume",
                   json={"node_id": "x", "approved": True}).status_code == 404
     assert c.post(f"/api/modules/20/tasks/{missing}/retrospective", json={}).status_code == 404
+
+
+def test_model_ideation_http_explicit_unavailable_not_fixed_frames(client):
+    c, service, _ = client
+    response = c.post('/api/modules/20/meta/ideation/generate', json={'objective': 'fixture', 'count': 1})
+    assert response.status_code == 503
+    assert 'no template fallback' in response.json()['detail']
+
+
+def test_model_ideation_http_actionable_output_and_strict_count(client):
+    c, service, _ = client
+    class Model:
+        def complete(self, purpose, payload):
+            return {'ideas': [{'title': 'Referral pilot', 'proposal': 'Test student referrals through librarians',
+                              'first_test': 'Ask two librarians for a15minute interview', 'risks': ['staff availability'],
+                              'constraint_checks': {'zero cash': 'Interviews require time but no payments'}}]}
+    service.model_ideation.model = Model()
+    response = c.post('/api/modules/20/meta/ideation/generate', json={'objective': 'Recruit students', 'constraints': ['zero cash'], 'count': 1})
+    assert response.status_code == 200
+    assert response.json()['ideas'][0]['title'] == 'Referral pilot'
+    assert response.json()['real_world_usefulness_verified'] is False
+    assert c.post('/api/modules/20/meta/ideation/generate', json={'objective': 'fixture', 'count': True}).status_code == 422

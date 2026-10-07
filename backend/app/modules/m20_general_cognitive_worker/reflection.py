@@ -134,6 +134,56 @@ class IdeationEngine:
         ]
 
 
+class ModelIdeationEngine:
+    """Model-backed actionable candidate proposals, never template fallback.
+
+    Model-written constraint checks and risks are unverified proposals.
+    """
+    def __init__(self, model=None):
+        self.model = model
+
+    def generate(self, objective: str, *, constraints: list[str] | None = None, count: int = 5):
+        import copy
+        if not isinstance(objective, str) or not objective.strip() or len(objective) > 2000:
+            raise ValueError("objective must be nonempty text up to2000characters")
+        if type(count) is not int or not 1 <= count <= 10:
+            raise ValueError("count must be integer1..10")
+        constraints = [] if constraints is None else constraints
+        if not isinstance(constraints, list) or len(constraints) > 20 or any(not isinstance(c, str) or not c.strip() or len(c) > 200 for c in constraints) or len(set(constraints)) != len(constraints):
+            raise ValueError("need up to20unique nonempty constraint strings, each up to200characters")
+        if self.model is None:
+            raise RuntimeError("ideation model not configured; no template fallback")
+        response = self.model.complete("ideate", {"objective": objective, "constraints": list(constraints), "count": count})
+        if not isinstance(response, dict):
+            raise ValueError("ideation model must return an object")
+        if response.get("available") is False:
+            raise RuntimeError("ideation model unavailable; no template fallback")
+        ideas = response.get("ideas")
+        if not isinstance(ideas, list) or len(ideas) != count:
+            raise ValueError("model must return requested candidate count")
+        seen = set()
+        for idea in ideas:
+            if not isinstance(idea, dict):
+                raise ValueError("candidate must be an object")
+            for key in ("title", "proposal", "first_test"):
+                if not isinstance(idea.get(key), str) or not idea[key].strip() or len(idea[key]) > 2000:
+                    raise ValueError("candidate needs bounded nonempty title/proposal/first_test")
+            signature = (idea['title'].strip().casefold(), idea['proposal'].strip().casefold())
+            if signature in seen:
+                raise ValueError("duplicate model candidates")
+            seen.add(signature)
+            risks = idea.get("risks")
+            checks = idea.get("constraint_checks")
+            if not isinstance(risks, list) or len(risks) > 20 or any(not isinstance(r, str) or not r.strip() or len(r) > 500 for r in risks):
+                raise ValueError("candidate needs bounded risk strings")
+            if not isinstance(checks, dict) or set(checks) != set(constraints) or any(not isinstance(v, str) or not v.strip() or len(v) > 500 for v in checks.values()):
+                raise ValueError("candidate must address every supplied constraint")
+        return {"objective": objective, "constraints": list(constraints), "ideas": copy.deepcopy(ideas),
+                "route": response.get("route"), "model_called": True,
+                "status": "model_candidate_proposals_only", "constraint_checks_verified": False,
+                "real_world_usefulness_verified": False, "external_actions_executed": False}
+
+
 class RetrospectiveEngine:
     """Self-critique and improvement (spec 4.2.7): write, embed, retrieve."""
 
