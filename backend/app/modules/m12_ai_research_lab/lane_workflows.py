@@ -331,8 +331,11 @@ class WorkflowEngine:
                 try:
                     self._ledger.commit(budget_key, cost)
                 except Exception as exc:
-                    # Do not spend what cannot be booked: fail the run and
-                    # do not checkpoint the step, so resume re-executes it.
+                    # Do not spend what cannot be booked: drop the reservation,
+                    # fail the run and do not checkpoint the step, so resume
+                    # can reserve and re-execute it instead of dying on the
+                    # leaked reservation.
+                    self._ledger.release(budget_key)
                     return self._fail(
                         run_id, workflow, records, journal, completed, total_cost,
                         step.step_id, f"budget commit failed: {exc}",
