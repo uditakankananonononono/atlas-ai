@@ -1390,3 +1390,9 @@ Evidence: 163 runtime tests passed with one warning; 2,503 M20 adjacent tests pa
 Two failing canaries showed failed claim writes entered live calibration and failed resolution changed the reported observed error despite unchanged SQL. Claim creation and resolution now stage their records, write durably, then publish to live metrics. Failed resolution leaves the prediction unresolved and calibration error null when no committed outcomes exist.
 
 Evidence: 165 runtime tests passed with one warning; 2,506 M20 adjacent tests passed with two warnings in 48.30 seconds. Claim and resolution write failures preserve live/SQL absence or unresolved state. This is sequential claim-store visibility, not independently verified outcome labels, predictive calibration, concurrent revision CAS or cross-store transactionality. Full 10,164 code a55a725 predates three changes including this one.
+
+## Full regression after review and calibration visibility
+
+All 499 test files at source 8780343 passed on their first run across 20 isolated batches: 10,173 passed, zero failed, 14 skipped, 26 summed warning occurrences, 430.28 seconds summed batch time. Every batch exit was zero; no recheck substitution. Covers the three changes since a55a725: related skill-row transactions, method review/statistics write visibility and calibration claim/resolution write visibility. Source manifest, raw outputs, receipts and summary are retained in audits/rebuild-20261007/full-regression-after-review-visibility.
+
+Local regression is not original broad cognition, model-quality or production acceptance. Actual ideation remains zero of two accepted trials; production provisioning, external effect reconciliation and broader cognition remain unfinished. Historical first-failure evidence remains intact. No spending, new model trial, account change or production migration was performed during this refresh.
