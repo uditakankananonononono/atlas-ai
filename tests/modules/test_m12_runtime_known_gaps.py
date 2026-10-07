@@ -285,3 +285,19 @@ async def test_policy_attempt_and_critique_replacement_preserves_original_run(mo
  assert [x[0] for x in calls]==['first','backup']
  assert calls[1][1].startswith('Critique and improve the candidate.') and sleeps==[.2]
  assert result.metadata['attempts']==2
+
+def test_reported_model_identity_mismatch_currently_accepted():
+ # Characterization, not authenticity advice: the shipped AtlasProvider maps the
+ # provider's raw response.model into ModelResult.model_id while catalog ids are
+ # namespaced ('openai:gpt-4o-mini'), so the executor records requested_model_id in
+ # metadata but never compares the two. A provider substituting another model is
+ # currently accepted as success; source authenticity is not established here.
+ calls=[]
+ class Provider:
+  async def generate(self,*,model_id,prompt,context):
+   calls.append(model_id);return ModelResult('fixture','substituted-unrequested-model',.95)
+ executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
+ result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
+ assert calls==['first']
+ assert result.model_id=='substituted-unrequested-model'
+ assert result.metadata['requested_model_id']=='first'
