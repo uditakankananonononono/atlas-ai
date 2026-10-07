@@ -608,3 +608,7 @@ Code revision b60c013: all495 test files partitioned into20 isolated pytest batc
 ## Working-memory task partition correction
 
 Re-putting a chunk ID under another task previously left stale partition membership, exposing replacement content to earlier task. Now cross-partition reuse rejects, stored/input/output chunk copies are detached, and default-partition capacity no longer evicts named tasks. Aggregate focused(partition=None) remains deliberate all-task read; named/empty-string reads are scoped.54 working-memory/runtime/executive tests pass1warning incl same-ID replacement, caller/readback mutation, default-capacity isolation. This is process-local task buffer isolation, not tenant-authorized storage or distributed concurrency guarantee. Attention remains explicit lexical heuristic.
+
+## Durable memory eviction alignment
+
+Durable working memory previously pruned only process-local chunks while leaving SQL rows, and saved newly submitted chunks even if capacity immediately rejected them. Restart could resurrect pruned memory. Eviction hook now deletes scoped SQL row and put persists only surviving chunk with actual requested partition.38 runtime/working-memory tests pass1warning incl immediately rejected weak chunk and later stronger replacement across reload. Memory update/eviction and DB calls are not one crash-atomic transaction or distributed synchronization; that remains unfinished. No production DB tested.

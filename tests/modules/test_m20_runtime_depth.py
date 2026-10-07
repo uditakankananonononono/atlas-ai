@@ -588,3 +588,19 @@ def test_tenant_isolation_across_repositories():
     assert repo_a.load_task(ctx.id) is not None
     with pytest.raises(PermissionError):
         repo_b.save_task(ctx)
+
+
+def test_durable_working_memory_eviction_and_rejected_weak_chunk_never_resurrect():
+ repo=fresh_repo();wm=DurableWorkingMemory(repo,capacity=1)
+ strong=MemoryChunk(type=ChunkType.GOAL,content='fixture high',salience=1,confidence=1)
+ weak=MemoryChunk(type=ChunkType.FACT,content='noise',salience=0,confidence=0)
+ wm.put(strong,active_goal='fixture high',partition='p')
+ wm.put(weak,active_goal='fixture high',partition='p')
+ assert wm.get(weak.id) is None
+ assert {x.id for x in repo.list_chunks()}=={strong.id}
+ loaded=DurableWorkingMemory.load(repo,capacity=1)
+ assert loaded.get(weak.id) is None and loaded.get(strong.id) is not None
+ newer=MemoryChunk(type=ChunkType.GOAL,content='new fixture',salience=1,confidence=1)
+ loaded.put(newer,active_goal='new fixture',partition='p')
+ assert {x.id for x in repo.list_chunks()}=={newer.id}
+ assert DurableWorkingMemory.load(repo,capacity=1).get(strong.id) is None
