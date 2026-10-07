@@ -1,0 +1,32 @@
+........................................................................ [ 96%]
+..F                                                                      [100%]
+=================================== FAILURES ===================================
+___________ test_risk_register_file_restart_lists_open_control_gaps ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-330/test_risk_register_file_restar0')
+
+    def test_risk_register_file_restart_lists_open_control_gaps(tmp_path):
+        from app.modules.m20_general_cognitive_worker.risk_register import DurableRiskRegister
+        path = tmp_path / 'risk.sqlite'
+        engine = create_engine(f'sqlite:///{path}')
+        repo = GCWRepository(engine, tenant_id='a'); repo.create_schema()
+        risk = {'id': 'fixture', 'cause': 'Miss cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+                'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+        first = DurableRiskRegister(repo).create(goal='fixture', risks=[risk])
+        engine.dispose()
+        restarted = create_engine(f'sqlite:///{path}')
+        register = DurableRiskRegister(GCWRepository(restarted, tenant_id='a'))
+>       summaries = register.list()
+                    ^^^^^^^^^^^^^
+E       AttributeError: 'DurableRiskRegister' object has no attribute 'list'
+
+tests/modules/test_m20_runtime_depth.py:1064: AttributeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_risk_register_file_restart_lists_open_control_gaps
+1 failed, 74 passed, 1 warning in 4.30s

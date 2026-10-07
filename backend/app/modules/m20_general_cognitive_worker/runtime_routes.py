@@ -229,6 +229,14 @@ def create_risk_register(request: RiskRegisterCreateRequest, runtime: GCWRuntime
         raise HTTPException(422, str(exc))
 
 
+@router.get("/risk-registers")
+def list_risk_registers(limit: int = 50, runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        return runtime.risk_registers.list(limit=limit)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc))
+
+
 @router.get("/risk-registers/{identifier}")
 def get_risk_register(identifier: str, runtime: GCWRuntime = Depends(get_runtime)):
     result = runtime.risk_registers.get(identifier)

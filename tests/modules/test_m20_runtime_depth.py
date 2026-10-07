@@ -1048,3 +1048,41 @@ def test_durable_risk_http_revision_conflict_and_history(mounted):
     assert stale.status_code == 409
     assert len(client.get(f'/api/modules/20/runtime/risk-registers/{identifier}/history').json()) == 2
     assert client.get('/api/modules/20/runtime/risk-registers/missing').status_code == 404
+
+
+def test_risk_register_file_restart_lists_open_control_gaps(tmp_path):
+    from app.modules.m20_general_cognitive_worker.risk_register import DurableRiskRegister
+    path = tmp_path / 'risk.sqlite'
+    engine = create_engine(f'sqlite:///{path}')
+    repo = GCWRepository(engine, tenant_id='a'); repo.create_schema()
+    risk = {'id': 'fixture', 'cause': 'Miss cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+            'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+    first = DurableRiskRegister(repo).create(goal='fixture', risks=[risk])
+    engine.dispose()
+    restarted = create_engine(f'sqlite:///{path}')
+    register = DurableRiskRegister(GCWRepository(restarted, tenant_id='a'))
+    summaries = register.list()
+    assert summaries[0]['id'] == first['id'] and summaries[0]['open_control_gaps'] == 4
+    assert summaries[0]['highest_priority'] == 30
+    assert DurableRiskRegister(GCWRepository(restarted, tenant_id='b')).list() == []
+    assert register.get(first['id'])['revision'] == 1
+    restarted.dispose()
+
+
+def test_risk_revision_history_insert_failure_rolls_back_current_revision():
+    from app.modules.m20_general_cognitive_worker.risk_register import DurableRiskRegister, RiskRevisionRow
+    from sqlalchemy import event
+    repo = fresh_repo(); register = DurableRiskRegister(repo)
+    risk = {'id': 'fixture', 'cause': 'Miss cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+            'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+    first = register.create(goal='fixture', risks=[risk])
+    def fail_insert(mapper, connection, target):
+        if target.revision == 2: raise RuntimeError('fixture insert failure')
+    event.listen(RiskRevisionRow, 'before_insert', fail_insert)
+    try:
+        with pytest.raises(RuntimeError, match='fixture insert failure'):
+            register.revise(first['id'], expected_revision=1, risks=[risk])
+    finally:
+        event.remove(RiskRevisionRow, 'before_insert', fail_insert)
+    assert register.get(first['id'])['revision'] == 1
+    assert len(register.history(first['id'])) == 1
