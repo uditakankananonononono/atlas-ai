@@ -8,6 +8,7 @@ from typing import Protocol
 from .schemas import *
 
 class KnowledgeError(ValueError): pass
+class ManifestOversizeError(KnowledgeError): pass
 class ConsentError(KnowledgeError): pass
 class UnsupportedSourceError(KnowledgeError): pass
 class DimensionMismatch(KnowledgeError): pass
@@ -154,9 +155,10 @@ class LocalKnowledgePipeline:
                     raise KnowledgeError(f'on-disk consent record differs on {field_name}; refusing to overwrite prior state')
         rec=old or Record(source,self.tenant_id); self.records[source.source_id]=rec
         try: self._persist_manifest(rec)
-        except OSError:
+        except (OSError, ManifestOversizeError):
             # A brand-new registration must not linger in memory when its
-            # manifest never reached disk.
+            # manifest never reached disk. An oversize refusal happens
+            # before any manifest mutation, so prior disk bytes are intact.
             if old is None: self.records.pop(source.source_id,None)
             raise
         return rec
@@ -209,7 +211,7 @@ class LocalKnowledgePipeline:
         rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
         try:
             self._persist_manifest(rec)
-        except OSError:
+        except (OSError, ManifestOversizeError) as persist_exc:
             # Persist failed AFTER memory mutation: roll the version state
             # back so memory never claims a version the manifest does not
             # record. The durable registration (its own manifest was written
@@ -217,11 +219,13 @@ class LocalKnowledgePipeline:
             # created by this attempt (rename from tmp), so removing it
             # cannot touch preexisting data; if that removal itself fails,
             # an untracked but complete version dir remains on disk with no
-            # false memory claim.
+            # false memory claim. An oversize refusal happens before any
+            # manifest mutation, so the recorded manifest bytes survive.
             rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
             shutil.rmtree(target,ignore_errors=True)
             try: self._persist_manifest(rec)
-            except OSError: pass
+            except (OSError, ManifestOversizeError): pass
+            if isinstance(persist_exc, ManifestOversizeError): raise persist_exc
             raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
         return version
     def _extract(self,raw:bytes,mime:str,kind:str)->list[Segment]:
@@ -308,20 +312,37 @@ class LocalKnowledgePipeline:
 
     @staticmethod
     def _read_bounded_file(blob:Path,limit:int,refusal:str,what:str,over:str)->bytes:
-        # Bounded, swap-resistant read: only regular files, and at most
-        # limit+1 bytes are ever pulled into memory, so a file grown or
-        # swapped after any earlier stat check cannot drive an unbounded
-        # allocation. O_NOFOLLOW refuses the file itself being swapped to a
-        # symlink between the containment check and the open. A swap of a
-        # PARENT component between check and open remains a carried TOCTOU
-        # residual; the CONTENT read may still differ from stat-time state.
+        # Bounded, swap-resistant read of a regular file. O_NOFOLLOW refuses
+        # a symlink swapped in as the FINAL component between containment and
+        # open; O_NONBLOCK makes the open itself non-blocking, so a node
+        # swapped to a fifo or device cannot hang the caller before the type
+        # check. The type contract is fstat on the OPENED descriptor: the
+        # file actually opened is what gets judged, so a stat-then-open swap
+        # cannot launder a non-regular node through a stale stat verdict. At
+        # most limit+1 bytes are ever pulled into memory, so growth after
+        # any earlier stat cannot drive an unbounded allocation. Every OS
+        # failure maps to the refusal contract, and the descriptor is closed
+        # on every path, including a failing fdopen. Carried residuals,
+        # explicitly NOT claimed: a swap of a PARENT component between
+        # containment and open (TOCTOU), content drift after open (the
+        # fd-stable read may differ from any earlier stat), and durability
+        # or fsync guarantees for bytes on disk.
         import os as _os, stat as _stat
-        try: st=blob.stat()
+        try: fd=_os.open(blob,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_NONBLOCK)
         except OSError as exc: raise KnowledgeError(f'{refusal}: {what} unreadable') from exc
-        if not _stat.S_ISREG(st.st_mode): raise KnowledgeError(f'{refusal}: {what} is not a regular file')
-        try: fd=_os.open(blob,_os.O_RDONLY|_os.O_NOFOLLOW)
-        except OSError as exc: raise KnowledgeError(f'{refusal}: {what} unreadable') from exc
-        with _os.fdopen(fd,'rb') as fh: data=fh.read(limit+1)
+        try:
+            try: mode=_os.fstat(fd).st_mode
+            except OSError as exc: raise KnowledgeError(f'{refusal}: {what} unreadable') from exc
+            if not _stat.S_ISREG(mode): raise KnowledgeError(f'{refusal}: {what} is not a regular file')
+            try:
+                with _os.fdopen(fd,'rb') as fh:
+                    fd=None  # ownership moves to the file object
+                    data=fh.read(limit+1)
+            except OSError as exc: raise KnowledgeError(f'{refusal}: {what} unreadable') from exc
+        finally:
+            if fd is not None:
+                try: _os.close(fd)
+                except OSError: pass
         if len(data)>limit: raise KnowledgeError(f'{refusal}: {what} {over}')
         return data
     def _persist_manifest(self,rec:Record):
@@ -331,6 +352,16 @@ class LocalKnowledgePipeline:
         # O_EXCL|O_NOFOLLOW: never write through a preexisting link or file,
         # uuid or not; a collision fails instead of truncating anything.
         blob=json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True).encode('utf-8')
+        # Write/read contract: the writer is bound by the same
+        # MANIFEST_MAX_BYTES the bounded reader enforces, so this pipeline
+        # never persists a manifest it would later refuse. The check runs
+        # BEFORE any mutation - no tmp file, no replace - so a refused write
+        # preserves the prior manifest bytes exactly. Unbounded metadata or
+        # version growth fails closed here instead of writing state the
+        # reader must reject. Durability beyond os.replace (fsync of file
+        # data and directory entries) is explicitly NOT claimed.
+        if len(blob)>self.MANIFEST_MAX_BYTES:
+            raise ManifestOversizeError(f'refusing to persist manifest: serialized manifest would exceed the manifest bound ({len(blob)} bytes)')
         fd=_os.open(tmp,_os.O_WRONLY|_os.O_CREAT|_os.O_EXCL|_os.O_NOFOLLOW,0o600)
         try:
             view=memoryview(blob)
