@@ -1,0 +1,58 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_ test_held_runtime_lock_blocks_nested_route_before_mutation[post-/methods/fixture/activate-payload0-planner-activate_method] _
+tests/modules/test_m20_nested_mutation_locks.py:35: in test_held_runtime_lock_blocks_nested_route_before_mutation
+    assert response.status_code==409
+E   assert 200 == 409
+E    +  where 200 = <Response [200 OK]>.status_code
+_ test_held_runtime_lock_blocks_nested_route_before_mutation[post-/risk-registers-payload1-risk_registers-create] _
+tests/modules/test_m20_nested_mutation_locks.py:35: in test_held_runtime_lock_blocks_nested_route_before_mutation
+    assert response.status_code==409
+E   assert 201 == 409
+E    +  where 201 = <Response [201 Created]>.status_code
+_ test_held_runtime_lock_blocks_nested_route_before_mutation[post-/risk-registers/fixture/revise-payload2-risk_registers-revise] _
+tests/modules/test_m20_nested_mutation_locks.py:35: in test_held_runtime_lock_blocks_nested_route_before_mutation
+    assert response.status_code==409
+E   assert 200 == 409
+E    +  where 200 = <Response [200 OK]>.status_code
+_ test_held_runtime_lock_blocks_nested_route_before_mutation[patch-/risk-registers/fixture/risks/r-payload3-risk_registers-patch_risk] _
+tests/modules/test_m20_nested_mutation_locks.py:35: in test_held_runtime_lock_blocks_nested_route_before_mutation
+    assert response.status_code==409
+E   assert 200 == 409
+E    +  where 200 = <Response [200 OK]>.status_code
+_ test_actual_execution_blocks_nested_route_then_allows_after_release[post-/methods/fixture/activate-payload0-planner-activate_method] _
+tests/modules/test_m20_nested_mutation_locks.py:53: in test_actual_execution_blocks_nested_route_then_allows_after_release
+    assert response.status_code==409 and calls==[]
+E   assert (200 == 409)
+E    +  where 200 = <Response [200 OK]>.status_code
+_ test_actual_execution_blocks_nested_route_then_allows_after_release[post-/risk-registers-payload1-risk_registers-create] _
+tests/modules/test_m20_nested_mutation_locks.py:53: in test_actual_execution_blocks_nested_route_then_allows_after_release
+    assert response.status_code==409 and calls==[]
+E   assert (201 == 409)
+E    +  where 201 = <Response [201 Created]>.status_code
+_ test_actual_execution_blocks_nested_route_then_allows_after_release[post-/risk-registers/fixture/revise-payload2-risk_registers-revise] _
+tests/modules/test_m20_nested_mutation_locks.py:53: in test_actual_execution_blocks_nested_route_then_allows_after_release
+    assert response.status_code==409 and calls==[]
+E   assert (200 == 409)
+E    +  where 200 = <Response [200 OK]>.status_code
+_ test_actual_execution_blocks_nested_route_then_allows_after_release[patch-/risk-registers/fixture/risks/r-payload3-risk_registers-patch_risk] _
+tests/modules/test_m20_nested_mutation_locks.py:53: in test_actual_execution_blocks_nested_route_then_allows_after_release
+    assert response.status_code==409 and calls==[]
+E   assert (200 == 409)
+E    +  where 200 = <Response [200 OK]>.status_code
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_held_runtime_lock_blocks_nested_route_before_mutation[post-/methods/fixture/activate-payload0-planner-activate_method]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_held_runtime_lock_blocks_nested_route_before_mutation[post-/risk-registers-payload1-risk_registers-create]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_held_runtime_lock_blocks_nested_route_before_mutation[post-/risk-registers/fixture/revise-payload2-risk_registers-revise]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_held_runtime_lock_blocks_nested_route_before_mutation[patch-/risk-registers/fixture/risks/r-payload3-risk_registers-patch_risk]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_actual_execution_blocks_nested_route_then_allows_after_release[post-/methods/fixture/activate-payload0-planner-activate_method]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_actual_execution_blocks_nested_route_then_allows_after_release[post-/risk-registers-payload1-risk_registers-create]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_actual_execution_blocks_nested_route_then_allows_after_release[post-/risk-registers/fixture/revise-payload2-risk_registers-revise]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_actual_execution_blocks_nested_route_then_allows_after_release[patch-/risk-registers/fixture/risks/r-payload3-risk_registers-patch_risk]
+8 failed, 1 warning in 2.66s

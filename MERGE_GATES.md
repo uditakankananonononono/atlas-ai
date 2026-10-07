@@ -8,12 +8,20 @@ The PostgreSQL unknown-hold migration path is untested. The PostgreSQL-specific 
 
 ## Nested-object mutation coverage
 
-Runtime public mutation methods have a nonblocking instance lock. This does not establish mutation-wide route coverage. Routes that mutate nested objects directly can bypass that lock:
+The four mounted runtime routes for method activation and risk-register create,
+revise, and risk-control patch now call locked runtime mutation wrappers instead
+of calling nested planner/risk-register mutators directly. Canaries first exposed
+eight failures, retained in `audits/rebuild-20261007/m20-nested-mutation-locks/`.
+After the fix, thirteen route/concurrency canaries pass, including held-lock
+rejection before mutation, actual concurrent model execution, reverse-direction
+execution rejection, exception release, and real risk-register write isolation.
+The affected runtime suite reports 216 passed and 0 failed.
 
-- `htn_planner`: method activation calls the nested planner directly.
-- `risk_register`: mutation routes call the nested risk-register object directly.
-
-The `RuntimeBusy` HTTP 409 mapping does not itself acquire a lock. These paths remain open for concurrency review and behavioral tests.
+This closes only the identified four-route instance-lock bypass. Direct callers
+of nested planner/risk-register objects still bypass the runtime lock. Broader
+`htn_planner` and `risk_register` semantic comparison remains open. Separate
+runtime instances and workers are not serialized by this lock. The HTTP 409
+mapping alone does not acquire a lock; each mutation wrapper does.
 
 ## Peer M13 failure and collection discrepancy
 

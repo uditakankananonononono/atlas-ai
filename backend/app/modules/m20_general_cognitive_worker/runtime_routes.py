@@ -220,7 +220,7 @@ class MethodReviewIn(BaseModel):
 @_busy_conflict
 def activate_method(name: str, body: MethodReviewIn, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     try:
-        if not runtime.planner.activate_method(name, expected_hash=body.expected_hash):
+        if not runtime.activate_method(name, expected_hash=body.expected_hash):
             raise HTTPException(status_code=404, detail="unknown method")
     except PermissionError as exc:
         raise HTTPException(409,str(exc)) from exc
@@ -241,7 +241,7 @@ class RiskRegisterRevisionRequest(BaseModel):
 @_busy_conflict
 def create_risk_register(request: RiskRegisterCreateRequest, runtime: GCWRuntime = Depends(get_runtime)):
     try:
-        return runtime.risk_registers.create(goal=request.goal, risks=request.risks)
+        return runtime.create_risk_register(goal=request.goal, risks=request.risks)
     except ValueError as exc:
         raise HTTPException(422, str(exc))
 
@@ -271,7 +271,7 @@ def risk_register_history(identifier: str, runtime: GCWRuntime = Depends(get_run
 @_busy_conflict
 def revise_risk_register(identifier: str, request: RiskRegisterRevisionRequest, runtime: GCWRuntime = Depends(get_runtime)):
     try:
-        return runtime.risk_registers.revise(identifier, expected_revision=request.expected_revision, risks=request.risks)
+        return runtime.revise_risk_register(identifier, expected_revision=request.expected_revision, risks=request.risks)
     except KeyError:
         raise HTTPException(404, "register not found")
     except ValueError as exc:
@@ -298,7 +298,7 @@ class RiskControlPatchRequest(BaseModel):
 def patch_risk_control(identifier: str, risk_id: str, request: RiskControlPatchRequest,
                        runtime: GCWRuntime = Depends(get_runtime)):
     try:
-        return runtime.risk_registers.patch_risk(identifier, risk_id,
+        return runtime.patch_risk_control(identifier, risk_id,
             expected_revision=request.expected_revision, changes=request.changes)
     except KeyError:
         raise HTTPException(404, 'register or risk not found')
