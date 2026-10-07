@@ -2010,3 +2010,30 @@ def test_method_inconsistent_reported_counts_reject_and_ratio_is_derived():
         planner.register_method(HTNMethod(name='bad',goal_pattern='fixture',outcomes_recorded=1,successes_recorded=2,subtasks=[PlanNode(title='read')]))
     planner.register_method(HTNMethod(name='good',goal_pattern='fixture',outcomes_recorded=2,successes_recorded=1,success_rate=.99,subtasks=[PlanNode(title='read')]))
     assert planner.methods['good'].success_rate == .5
+
+
+def test_failed_actual_read_step_keeps_node_diagnostic_in_supervision_after_reload():
+ runtime,repo=make_runtime()
+ task=runtime.submit_goal('fixture numeric failure',run_immediately=False)
+ runtime.prepare_supplied_plan(task.id,steps=[{'id':'bad','title':'bad summary','tool':'csv_summary','max_attempts':1,
+  'arguments':{'csv_text':'value\nnot-numeric\n','value_column':'value'}}])
+ result=runtime.run_task(task.id,max_ticks=4,yield_on_boundary=True)
+ assert result.plan[0].state==TaskState.FAILED
+ assert 'not numeric' in result.plan[0].result_summary
+ assert result.plan[0].output is None
+ reopened=GCWRuntime(repo)
+ report=reopened.supervision()
+ step=next(t for t in report['attention_required'] if t['task_id']==task.id)['steps'][0]
+ assert 'not numeric' in step['result_summary']
+ assert reopened.get_task(task.id).plan[0].result_summary==result.plan[0].result_summary
+
+
+def test_schema_blocked_step_persists_named_diagnostic_without_fake_action():
+ runtime,repo=make_runtime()
+ task=runtime.submit_goal('fixture schema failure',run_immediately=False)
+ runtime.prepare_supplied_plan(task.id,steps=[{'id':'bad','title':'bad summary','tool':'csv_summary','arguments':{}}])
+ result=runtime.run_task(task.id,max_ticks=3,yield_on_boundary=True)
+ assert result.plan[0].state==TaskState.BLOCKED
+ assert result.plan[0].result_summary.startswith('blocked: ')
+ assert result.plan[0].output is None and repo.list_actions(task_id=task.id)==[]
+ assert GCWRuntime(repo).get_task(task.id).plan[0].result_summary==result.plan[0].result_summary

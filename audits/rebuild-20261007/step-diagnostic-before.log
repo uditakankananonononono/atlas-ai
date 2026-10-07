@@ -1,0 +1,25 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_failed_actual_read_step_keeps_node_diagnostic_in_supervision_after_reload _
+
+    def test_failed_actual_read_step_keeps_node_diagnostic_in_supervision_after_reload():
+     runtime,repo=make_runtime()
+     task=runtime.submit_goal('fixture numeric failure',run_immediately=False)
+     runtime.prepare_supplied_plan(task.id,steps=[{'id':'bad','title':'bad summary','tool':'csv_summary','max_attempts':1,
+      'arguments':{'csv_text':'value\nnot-numeric\n','value_column':'value'}}])
+     result=runtime.run_task(task.id,max_ticks=4,yield_on_boundary=True)
+     assert result.plan[0].state==TaskState.FAILED
+>    assert 'not numeric' in result.plan[0].result_summary
+E    AssertionError: assert 'not numeric' in ''
+E     +  where '' = PlanNode(id='bad', title='bad summary', kind='task', tool='csv_summary', arguments={'csv_text': 'value\nnot-numeric\n'...ad'>, state=<TaskState.FAILED: 'failed'>, max_attempts=1, attempts=1, approval_id=None, result_summary='', output=None).result_summary
+
+tests/modules/test_m20_runtime_depth.py:2022: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_actual_read_step_keeps_node_diagnostic_in_supervision_after_reload
+1 failed, 140 deselected, 1 warning in 1.86s
