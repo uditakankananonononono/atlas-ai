@@ -24,19 +24,40 @@ _SENSITIVE_QUERY_KEYS = frozenset({"key", "api_key", "apikey", "token", "access_
 
 
 def _redact_url(url: str) -> str:
-    """Redact credential query parameters before a URL is recorded.
+    """Redact credentials before a URL is recorded.
 
     Collector fetches need the real URL, but failure records are persisted
-    and reported - a provider key in the query string (e.g. the YouTube Data
-    API key, passed as ``?key=``) must not leak into them.
+    and reported. Two credential carriers are stripped: sensitive query
+    parameters (e.g. the YouTube Data API key, passed as ``?key=``) and any
+    userinfo (``https://user:password@host``). The fragment is left
+    unchanged: recorded request URLs do not carry OAuth-style fragment
+    tokens today. URLs with nothing to redact are returned byte-identical.
     """
     parts = urlsplit(url)
     pairs = parse_qsl(parts.query, keep_blank_values=True)
-    if not any(key.lower() in _SENSITIVE_QUERY_KEYS for key, _ in pairs):
+    has_sensitive = any(key.lower() in _SENSITIVE_QUERY_KEYS for key, _ in pairs)
+    has_userinfo = parts.username is not None or parts.password is not None
+    if not has_sensitive and not has_userinfo:
         return url  # no credentials: keep the recorded URL byte-identical
     query = [(key, "[REDACTED]" if key.lower() in _SENSITIVE_QUERY_KEYS else value)
              for key, value in pairs]
-    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
+    netloc = parts.hostname or ""
+    if parts.port is not None:
+        netloc = f"{netloc}:{parts.port}"
+    return urlunsplit((parts.scheme, netloc, parts.path, urlencode(query), parts.fragment))
+
+
+_SENSITIVE_ASSIGNMENT = re.compile(
+    r"(?i)\b(key|api_key|apikey|token|access_token)=[^\s&]+")
+_USERINFO = re.compile(r"://[^/@\s]+:[^/@\s]+@")
+
+
+def _scrub_text(text: str) -> str:
+    """Redact credential-shaped material inside free text (e.g. a reason
+    string that embeds a failing URL). Arbitrary reasons are not trusted to
+    be secret-free."""
+    text = _SENSITIVE_ASSIGNMENT.sub(lambda m: f"{m.group(1)}=[REDACTED]", text)
+    return _USERINFO.sub("://[REDACTED]@", text)
 from enum import Enum
 from typing import Any, Mapping, Optional
 from urllib.parse import urlsplit
@@ -187,9 +208,11 @@ class CollectionError:
     occurred_at: datetime = field(default_factory=utcnow)
 
     def __post_init__(self) -> None:
-        # Recorded failure URLs never carry credential query parameters,
-        # whoever constructed the record.
+        # Recorded failures never carry credentials, whoever constructed the
+        # record: the URL is redacted and the free-text reason is scrubbed
+        # for credential-shaped assignments and userinfo.
         object.__setattr__(self, "url", _redact_url(self.url))
+        object.__setattr__(self, "reason", _scrub_text(self.reason))
 
 
 @dataclass(frozen=True)
