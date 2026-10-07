@@ -239,7 +239,7 @@ class Service:
             datetime.fromtimestamp(raw.received_at, tz=timezone.utc) if raw.received_at else None
         )
         message_id = str(uuid4())
-        self.repository.save_message(
+        inserted = self.repository.save_message(
             message_id=message_id, account_id=account_id, gmail_id=raw.gmail_id,
             thread_id=raw.thread_id, history_id=raw.history_id, subject=raw.subject,
             sender=raw.sender, recipients=raw.recipients, snippet=raw.snippet,
@@ -248,6 +248,8 @@ class Service:
             category_confidence=classification.confidence,
             embedding=embedding or None, unsubscribe_url=unsubscribe_url,
         )
+        if not inserted:
+            return False
         self.repository.save_action_items(
             message_id,
             [

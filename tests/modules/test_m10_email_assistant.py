@@ -446,3 +446,27 @@ def test_same_tenant_two_account_history_ingest_preserves_approvals_and_retries(
  assert len(repo.list_messages())==2
  assert [p.payload['account_id'] for p,_ in approvals.items]==['a','b']
  assert len(repo.list_drafts())==2
+
+def test_concurrent_ingest_requires_single_draft_and_approval(tmp_path):
+ from concurrent.futures import ThreadPoolExecutor
+ import threading,time
+ svc,repo,approvals,client=make_service(tmp_path,gmail=FakeGmailClient(history={'100':['g']},messages={'g':raw_message('g','Please reply',snippet='please reply')}))
+ repo.save_account(account_id='a',email_address='a@example.com',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ barrier=threading.Barrier(2);lock=threading.Lock();entered=[]
+ async def generate(prompt,provider,model):
+  if prompt.startswith('Extract action items'):
+   with lock:rank=len(entered);entered.append(rank)
+   barrier.wait(timeout=5)
+   if rank:time.sleep(.15)
+   return 'fixture','[]'
+  return 'fixture','Subject: Re: reply\nDraft only'
+ svc.llm_generate=generate
+ # Access-token exchange is replaced with a hermetic value to avoid sharing an async HTTP client across loops.
+ async def token(account):return 'fixture-access'
+ svc._access_token=token
+ with ThreadPoolExecutor(max_workers=2) as pool:
+  results=list(pool.map(lambda _:asyncio.run(svc.ingest_from_history('a@example.com','101')),[1,2]))
+ assert len(repo.list_messages())==1
+ assert len(repo.list_drafts())==1
+ assert len(approvals.items)==1
+ asyncio.run(client.aclose())
