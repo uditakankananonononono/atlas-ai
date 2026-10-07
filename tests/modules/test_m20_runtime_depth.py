@@ -920,3 +920,22 @@ def test_invalid_library_dag_never_persists_and_preset_success_does_execute():
  runtime.planner.register_method(HTNMethod(name='good',goal_pattern='fixture',subtasks=[PlanNode(title='compute',tool='fixture_reset',state=TaskState.SUCCEEDED,result_summary='fake')]))
  result=runtime.submit_goal('fixture')
  assert result.state==TaskState.SUCCEEDED and calls==[9] and result.plan[0].result_summary=="{'square': 9}"
+
+
+def test_mcts_rollout_failure_is_not_retried_and_sibling_remains_ready():
+    parent = PlanNode(id="p", title="parent", risk=Risk.READ)
+    child = PlanNode(id="c", title="child", depends_on=["p"], risk=Risk.READ)
+    sibling = PlanNode(id="s", title="sibling", risk=Risk.READ)
+    search = BoundedMCTS(max_depth=5)
+    class FailRng:
+        choices = []
+        def choice(self, ready):
+            node = ready[0]
+            self.choices.append(node.id)
+            return node
+        def random(self):
+            return 1.0
+    rng = FailRng()
+    search.random = rng
+    search._rollout([parent, child, sibling], set(), 0)
+    assert rng.choices == ["p", "s"]

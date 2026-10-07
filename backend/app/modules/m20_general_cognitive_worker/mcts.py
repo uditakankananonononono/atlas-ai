@@ -224,16 +224,20 @@ class BoundedMCTS:
     def _rollout(self, plan: list[PlanNode], completed: set[str], depth: int) -> float:
         """Simulate one plausible completion; reward blends progress and risk."""
         done = set(completed)
+        failed = set()
         risk_paid = 0.0
         steps = 0
         while depth + steps < self.max_depth:
-            ready = self._ready(plan, frozenset(done))
+            ready = [node for node in self._ready(plan, frozenset(done))
+                     if node.id not in failed and not any(dep in failed for dep in node.depends_on)]
             if not ready:
                 break
             node = self.random.choice(ready)
             risk_paid += RISK_COST.get(node.risk, 0.1)
             if self.random.random() < _success_probability(node):
                 done.add(node.id)
+            else:
+                failed.add(node.id)
             # a failed step blocks its descendants but not its siblings
             steps += 1
         total = len([n for n in plan if n.state != TaskState.CANCELLED]) or 1
