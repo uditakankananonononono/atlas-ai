@@ -48,6 +48,8 @@ class Service:
         html=f"<html><body><h1>Invoice {escape(data.invoice_number)}</h1><p>Due {data.due_on}</p><pre>{escape(str(data.line_items))}</pre><h2>Total {data.currency} {total:.2f}</h2></body></html>"
         content,ctype=self._pdf(html); return self._artifact("invoice",data.brand_id,content,ctype,{"invoice_number":data.invoice_number,"total":total,"currency":data.currency})
     def log_event(self,data:PartnershipEventIn)->PartnershipEventOut:
+        if data.occurred_at.tzinfo is None or data.occurred_at.utcoffset() is None:raise ValueError("occurred_at must include a timezone")
+        data=data.model_copy(update={"occurred_at":data.occurred_at.astimezone(timezone.utc)})
         self._brand(data.brand_id); out=PartnershipEventOut(id=str(uuid4()),created_at=datetime.now(timezone.utc),**data.model_dump()); self.repo.add_event(**out.model_dump()); return out
     def report(self,data:ReportIn)->ArtifactOut:
         if data.period_end<data.period_start: raise ValueError("invalid reporting period")

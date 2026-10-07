@@ -1,5 +1,5 @@
 """Tenant-isolated persistence for Module 7."""
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import JSON, DateTime, Float, LargeBinary, String, Text, select
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 from app.core.database import Base, SessionLocal, engine
@@ -30,6 +30,9 @@ class Repository:
     def artifact(self,artifact_id:str):
         with self.sessions() as db: return db.scalar(select(ArtifactRow).where(ArtifactRow.tenant_id==self.tenant_id,ArtifactRow.id==artifact_id))
     def add_event(self,**data):
+        at=data["occurred_at"]
+        if at.tzinfo is None or at.utcoffset() is None:raise ValueError("occurred_at must include a timezone")
+        data={**data,"occurred_at":at.astimezone(timezone.utc)}
         with self.sessions.begin() as db: db.add(EventRow(tenant_id=self.tenant_id,**data))
     def events(self,brand_id:str,*,start_at:datetime,end_before:datetime):
         with self.sessions() as db: return list(db.scalars(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.brand_id==brand_id,EventRow.occurred_at>=start_at,EventRow.occurred_at<end_before).order_by(EventRow.occurred_at)))
