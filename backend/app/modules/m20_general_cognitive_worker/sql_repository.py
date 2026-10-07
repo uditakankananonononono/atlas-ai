@@ -572,13 +572,27 @@ def _repository_extension(cls):
                 for row in query.all()
             ]
 
-    def set_method_status(self, method_id: str, status: str) -> bool:
+    def set_method_status(self, method_id: str, status: str, *, expected_hash: str | None = None) -> bool:
         with self._session() as session:
             row = session.get(MethodRow, method_id)
             if row is None or row.tenant_id != self.tenant_id:
                 return False
-            row.status = status
-            row.payload_json = {**row.payload_json, "review_status": status}
+            snapshot = dict(row.payload_json)
+            if expected_hash is not None:
+                from .persistence import DurableHTNPlanner
+                method = HTNMethod(**{k: v for k, v in snapshot.items() if k != "review_status"})
+                if DurableHTNPlanner.method_review_hash(method) != expected_hash:
+                    raise PermissionError("durable method revision differs from reviewed hash")
+            replacement = {**snapshot, "review_status": status}
+            # Compare the exact serialized JSON snapshot in the UPDATE itself.
+            # A separate read/hash check cannot prevent a writer from replacing
+            # the payload between the check and status update.
+            updated = session.execute(sa.update(MethodRow).where(
+                MethodRow.id == method_id, MethodRow.tenant_id == self.tenant_id,
+                sa.cast(MethodRow.payload_json, sa.Text) == sa.cast(sa.literal(snapshot, type_=sa.JSON), sa.Text)
+            ).values(status=status, payload_json=replacement).execution_options(synchronize_session=False))
+            if updated.rowcount != 1:
+                raise PermissionError("durable method revision changed during review activation")
             session.commit()
             return True
 

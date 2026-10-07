@@ -1,0 +1,10 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_reviewed_cached_method_cannot_activate_replacement_in_shared_store ____
+tests/modules/test_m20_stale_method_review.py:16: in test_reviewed_cached_method_cannot_activate_replacement_in_shared_store
+    with pytest.raises(PermissionError,match='revision'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE PermissionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_stale_method_review.py::test_reviewed_cached_method_cannot_activate_replacement_in_shared_store
+1 failed in 1.67s

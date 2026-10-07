@@ -57,7 +57,7 @@ These bounded comparisons are assessed as stated. They do not close broader prod
 The following surfaces remain unassessed for combined semantic clearance, even where existing local tests pass:
 
 - `risk_register`
-- `htn_planner`, including method review hash binding
+- `htn_planner`: reviewed-payload TOCTOU found and locally fixed with durable hash checking plus exact JSON-snapshot compare-and-set in the activation UPDATE. Two SQLite cross-instance/check-to-write race canaries pass; PostgreSQL multi-writer CAS behavior remains untested. Broader planner comparison remains open.
 - `model_ideation`
 - `premortem`
 - `ActionRow` migration

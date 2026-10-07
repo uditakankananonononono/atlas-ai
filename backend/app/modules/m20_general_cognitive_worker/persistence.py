@@ -278,7 +278,7 @@ class DurableHTNPlanner(HTNPlanner):
             return False
         if expected_hash != self.method_review_hash(self.methods[name]):
             raise PermissionError("method revision differs from reviewed hash")
-        if not self.repo.set_method_status(self.methods[name].id, "active"):
+        if not self.repo.set_method_status(self.methods[name].id, "active", expected_hash=expected_hash):
             return False
         self._review_status[name] = "active"
         return True
