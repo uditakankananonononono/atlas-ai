@@ -61,3 +61,16 @@ def test_low_confidence_fallback_cannot_invoke_over_tolerance_model():
  executor=ResearchExecutor(ModelRouter([*models(),slow]),Provider(),RetryPolicy(base_delay_seconds=0))
  result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
  assert result.model_id=='backup' and calls==['first','backup']
+
+@pytest.mark.parametrize('invalid',[float('nan'),float('inf'),float('-inf'),True,False,'100',None,10**1000])
+@pytest.mark.parametrize('field',['estimate','tolerance'])
+def test_direct_runtime_latency_rejects_nonfinite_and_wrong_types(invalid,field):
+ model=ModelCapability('invalid',frozenset({TaskType.RESEARCH}),1000,0,invalid if field=='estimate' else 100,.9)
+ req=RouteRequest(TaskType.RESEARCH,100,0,invalid if field=='tolerance' else 100,'fixture')
+ with pytest.raises(NoEligibleModel):ModelRouter([model]).route(req)
+ assert ModelRouter([model]).score(model,req)==(float('-inf'),['invalid latency estimate or tolerance'])
+
+def test_invalid_catalog_estimate_does_not_poison_valid_choice():
+ invalid=ModelCapability('nan',frozenset({TaskType.RESEARCH}),1000,0,float('nan'),1)
+ decision=ModelRouter([invalid,*models()]).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'))
+ assert decision.primary.model_id=='first' and [m.model_id for m in decision.fallbacks]==['backup']
