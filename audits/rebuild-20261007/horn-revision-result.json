@@ -1,0 +1,102 @@
+{
+  "before_facts": [
+    "a",
+    "b",
+    "x",
+    "y"
+  ],
+  "new_facts": [],
+  "retracted_facts": [
+    "a"
+  ],
+  "revision_mode": "full_closure_recomputation",
+  "before_closure_metrics": {
+    "premise_notifications": 3,
+    "rules_processed": 3
+  },
+  "closure_metrics": {
+    "premise_notifications": 2,
+    "rules_processed": 2
+  },
+  "proof_tree_limits": {
+    "depth": 64,
+    "nodes_per_query": 256
+  },
+  "facts": [
+    "b",
+    "x",
+    "y"
+  ],
+  "rule_trace": [
+    {
+      "rule": "via-b",
+      "fact": "x"
+    },
+    {
+      "rule": "next",
+      "fact": "y"
+    }
+  ],
+  "proofs": {
+    "b": {
+      "fact": "b",
+      "source": "supplied_fact"
+    },
+    "x": {
+      "fact": "x",
+      "source": "derived",
+      "rule_id": "via-b",
+      "premises": [
+        "b"
+      ]
+    },
+    "y": {
+      "fact": "y",
+      "source": "derived",
+      "rule_id": "next",
+      "premises": [
+        "x"
+      ]
+    }
+  },
+  "queries": [
+    {
+      "atom": "y",
+      "entailed": true,
+      "proof": {
+        "fact": "y",
+        "source": "derived",
+        "rule_id": "next",
+        "premises": [
+          "x"
+        ]
+      },
+      "proof_tree": {
+        "fact": "y",
+        "source": "derived",
+        "rule_id": "next",
+        "premises": [
+          "x"
+        ],
+        "premise_proofs": [
+          {
+            "fact": "x",
+            "source": "derived",
+            "rule_id": "via-b",
+            "premises": [
+              "b"
+            ],
+            "premise_proofs": [
+              {
+                "fact": "b",
+                "source": "supplied_fact"
+              }
+            ]
+          }
+        ]
+      },
+      "not_entailed_does_not_mean_false": false
+    }
+  ],
+  "boundary": "Actual finite positive Horn least fixed point. Supplied facts/rules are premises, not independently verified real-world truth. Unsupported cycles derive nothing. No negation, natural-language rule extraction or closed-world falsehood claim."
+}
