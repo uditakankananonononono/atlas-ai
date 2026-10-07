@@ -695,7 +695,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located review-first landing/deck/documentation archive generators, lane validation/GTM plans and experiment-board/import routes. Full ecosystem MVP-to-launch execution is not established by these artifacts. Scope: M08 code read only; no deploy/share/paid experimentation or provider calls. Status stays unverified."
     },
     {
       "row": 63,
@@ -706,7 +706,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.landing_page interpolates supplied product/hero/features into a fixed Next/Tailwind page plus Supabase waitlist route and stores a zip archive. No LLM copy, domain palette/type rule engine, complete standalone project build, built-in editor or one-click Vercel execution established in this method. Input text interpolation can affect TSX syntax; route table interpolation also needs validation before acceptance. Push/deploy is an approval proposal, not execution. No generated site build/pixels/deployment or signup run. Status stays unverified."
     },
     {
       "row": 64,
@@ -717,7 +717,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.pitch_deck creates six basic python-pptx text slides if available (Markdown fallback) and stores chart_series in sources.json. It does not render/embed those charts, export PDF or include slide scripts in this read. Questionnaire/template-audience variants and editable artifact visual fidelity not established here. Source inputs/traction remain supplied claims, not verified markets. No deck rendering/pixels/share or paid work. Status stays unverified."
     },
     {
       "row": 65,
@@ -728,7 +728,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.documentation regex-extracts explicit router/app decorators from supplied code and creates minimal OpenAPI/ReDoc plus feature-list manual and path-list blog/evidence hashes. It does not model parameters/request schemas/class/config structures or infer router prefixes. Paths dict comprehension overwrites methods sharing a URL, a code-read defect needing regression. Screenshot-captured MVP guides/LLM brand-voice docs not established in this method. No artifact build/pixels/publish performed. Status stays unverified."
     },
     {
       "row": 66,
@@ -739,7 +739,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Lane planning supplies reviewable GTM validation/pricing/channel/launch objects from explicit evidence and assumptions; experiment board records observations and paid proposals. Automatic M01/Browser live market research and successful-startup knowledge retrieval feeding a launched strategy not established in scoped M08 read. Plans/targets do not establish validation or revenue. No provider/browser/paid experiment or launch effect. Status stays unverified."
     },
     {
       "row": 67,
