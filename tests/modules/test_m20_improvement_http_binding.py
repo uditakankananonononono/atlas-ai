@@ -50,10 +50,10 @@ def test_mounted_route_snapshot_and_stale_target_checks(bound,attack):
  s.safety.approvals.decide(p['approval_id'],ApprovalGateDecision.APPROVED)
  if attack=='proposal_content':s.improvement.proposals[p['proposal_id']].proposed_content='unreviewed'
  if attack=='proposal_token':s.improvement.proposals[p['proposal_id']].approval_id='forged'
- if attack=='target_content':s.prompt_registry.get('orient').content='newer-current'
- if attack=='target_kind':s.prompt_registry.get('orient').kind='algorithm_parameter'
+ if attack=='target_content':s.prompt_registry.register(PromptTemplate(name='orient',content='newer-current'))
+ if attack=='target_kind':s.prompt_registry.register(PromptTemplate(name='orient',content='a-v1',kind='algorithm_parameter'))
  assert apply(c,a,p).status_code==403
- assert s.prompt_registry.get('orient').version==1
+ assert s.prompt_registry.get('orient').version==(2 if attack in ('target_content','target_kind') else 1)
  assert s.prompt_registry.get('orient').content!='unreviewed'
 
 def test_mounted_route_unauthenticated_request_never_applies(bound):

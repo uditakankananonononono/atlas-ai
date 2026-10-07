@@ -63,6 +63,6 @@ def test_parallel_apply_one_revision_and_reset_display_status_cannot_replay():
 
 def test_target_kind_changed_after_review_is_stale():
  r,g,loop=setup();a=propose(loop);g.decide(a.approval_id,ApprovalGateDecision.APPROVED)
- r.get('orient').kind='algorithm_parameter'
+ r.register(PromptTemplate(name='orient',content='v1',kind='algorithm_parameter'))
  with pytest.raises(PermissionError):loop.apply(a.id,approved=True,approval_id=a.approval_id)
  assert r.get('orient').content=='v1'

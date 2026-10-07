@@ -1,0 +1,36 @@
+.........................FF                                              [100%]
+=================================== FAILURES ===================================
+_____ test_prompt_registry_public_snapshots_do_not_rewrite_active_template _____
+
+    def test_prompt_registry_public_snapshots_do_not_rewrite_active_template():
+        registry = PromptRegistry()
+        supplied = PromptTemplate(name="p", content="original")
+        registered = registry.register(supplied)
+        supplied.content = "changed input"
+        registered.content = "changed return"
+        registry.get("p").content = "changed get"
+        registry.active()[0].content = "changed active"
+>       assert registry.get("p").content == "original"
+E       AssertionError: assert 'changed active' == 'original'
+E         
+E         - original
+E         + changed active
+
+tests/modules/test_m20_metacognition.py:375: AssertionError
+______ test_prompt_registry_same_input_replacement_does_not_mutate_caller ______
+
+    def test_prompt_registry_same_input_replacement_does_not_mutate_caller():
+        registry = PromptRegistry()
+        supplied = PromptTemplate(name="p", content="x")
+        registry.register(supplied)
+        row = registry.register(supplied)
+>       assert row.version == 2 and row.active is True
+E       AssertionError: assert (2 == 2 and False is True)
+E        +  where 2 = PromptTemplate(name='p', content='x', kind='prompt', version=2, active=False).version
+E        +  and   False = PromptTemplate(name='p', content='x', kind='prompt', version=2, active=False).active
+
+tests/modules/test_m20_metacognition.py:385: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_metacognition.py::test_prompt_registry_public_snapshots_do_not_rewrite_active_template
+FAILED tests/modules/test_m20_metacognition.py::test_prompt_registry_same_input_replacement_does_not_mutate_caller
+2 failed, 25 passed in 1.61s

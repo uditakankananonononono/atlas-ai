@@ -10,6 +10,7 @@ and algorithm parameters inside its own registry.
 from __future__ import annotations
 
 import math
+from copy import deepcopy
 import random
 import re
 import threading
@@ -75,6 +76,7 @@ class PromptRegistry:
         self.audit: list[dict[str, Any]] = []
 
     def register(self, template: PromptTemplate) -> PromptTemplate:
+        template = deepcopy(template)
         existing = self._templates.get(template.name)
         if existing is not None:
             existing.active = False
@@ -82,13 +84,14 @@ class PromptRegistry:
         self._templates[template.name] = template
         self.audit.append({"at": _now().isoformat(), "event": "register",
                            "name": template.name, "version": template.version})
-        return template
+        return deepcopy(template)
 
     def get(self, name: str) -> PromptTemplate | None:
-        return self._templates.get(name)
+        template = self._templates.get(name)
+        return deepcopy(template) if template is not None else None
 
     def active(self) -> list[PromptTemplate]:
-        return [t for t in self._templates.values() if t.active]
+        return [deepcopy(t) for t in self._templates.values() if t.active]
 
 
 class ImprovementLoop:
