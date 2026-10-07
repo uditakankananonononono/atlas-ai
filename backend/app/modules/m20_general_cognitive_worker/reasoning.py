@@ -116,14 +116,39 @@ class DecisionNode:
 
 
 def evaluate_decision_tree(node: DecisionNode) -> float:
-    """Roll back a decision tree: max at decision nodes, EV at chance nodes."""
-    if node.kind == "leaf" or not node.children:
-        return node.value
-    if node.kind == "chance":
-        return sum(prob * evaluate_decision_tree(child) for prob, child in node.children)
-    if node.kind == "decision":
-        return max(evaluate_decision_tree(child) for _, child in node.children)
-    raise ValueError(f"unknown node kind {node.kind!r}")
+    """Finite supplied-tree rollback; depth128/node10000 bounded."""
+    count = 0
+    def visit(current, active, depth):
+        nonlocal count
+        count += 1
+        if not isinstance(current, DecisionNode) or depth > 128 or count > 10000:
+            raise ValueError("invalid node or tree depth/node bound exceeded")
+        if id(current) in active:
+            raise ValueError("cyclic decision tree")
+        if current.kind not in ("leaf", "chance", "decision"):
+            raise ValueError("unknown node kind")
+        if current.kind == "leaf":
+            if current.children or type(current.value) not in (int, float) or not math.isfinite(current.value):
+                raise ValueError("finite numeric leaf without children required")
+            return float(current.value)
+        if not isinstance(current.children, list) or not current.children:
+            raise ValueError("branch needs nonempty child list")
+        probabilities = []
+        for branch in current.children:
+            if not isinstance(branch, (tuple, list)) or len(branch) != 2:
+                raise ValueError("branch must be probability/node pair")
+            prob, child = branch
+            if type(prob) not in (int, float) or not math.isfinite(prob) or prob < 0:
+                raise ValueError("finite nonnegative branch probability required")
+            probabilities.append(prob)
+        if current.kind == "chance" and (any(p > 1 for p in probabilities) or not math.isclose(math.fsum(probabilities),1,rel_tol=0,abs_tol=1e-6)):
+            raise ValueError("chance probabilities must sum to1")
+        values = [visit(child, active | {id(current)}, depth + 1) for _, child in current.children]
+        result = math.fsum(p * value for p, value in zip(probabilities, values)) if current.kind == "chance" else max(values)
+        if not math.isfinite(result):
+            raise ValueError("tree result exceeds numeric range")
+        return result
+    return visit(node, set(), 0)
 
 
 def littles_law(*, wip: float | None = None, throughput: float | None = None,

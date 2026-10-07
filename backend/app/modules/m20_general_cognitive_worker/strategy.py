@@ -687,7 +687,7 @@ class DecisionTreeBuilder:
             choices = [{"label": child.label or f"option {i}",
                         "value": evaluate_decision_tree(child)}
                        for i, (_, child) in enumerate(node.children)]
-        return {"value": value, "first_choices": choices,
+        return {"status": "bounded_supplied_tree_rollback_only", "value": value, "first_choices": choices,
                 "best_first_choice": (max(choices, key=lambda c: c["value"])["label"]
                                       if choices else None),
                 "assumptions": ["Chance-node probabilities must sum to 1 (validated)",
@@ -695,19 +695,33 @@ class DecisionTreeBuilder:
                                  DECISION_SUPPORT_CAVEAT]}
 
     def _parse(self, spec: dict[str, Any]) -> DecisionNode:
-        kind = spec.get("kind", "leaf")
-        if kind == "leaf":
-            return DecisionNode(kind="leaf", value=float(spec.get("value", 0.0)),
-                                label=spec.get("label", ""))
-        children = []
-        total_p = 0.0
-        for child in spec.get("children", []):
-            prob = float(child.get("prob", 1.0 if kind == "decision" else 0.0))
-            children.append((prob, self._parse(child["node"])))
-            total_p += prob
-        if kind == "chance" and abs(total_p - 1.0) > 1e-6:
-            raise ValueError(f"chance node probabilities sum to {total_p}, not 1")
-        return DecisionNode(kind=kind, children=children, label=spec.get("label", ""))
+        count = 0
+        def parse(value, active, depth):
+            nonlocal count
+            count += 1
+            if not isinstance(value, dict) or depth > 128 or count > 10000:
+                raise ValueError("invalid spec or tree bound exceeded")
+            if id(value) in active:
+                raise ValueError("cyclic decision tree spec")
+            kind = value.get("kind", "leaf")
+            if kind not in ("leaf", "chance", "decision"):
+                raise ValueError("unknown node kind")
+            if kind == "leaf":
+                raw = value.get("value", 0.0)
+                if value.get("children") or type(raw) not in (int, float) or not math.isfinite(raw):
+                    raise ValueError("finite numeric leaf without children required")
+                return DecisionNode(kind="leaf", value=float(raw), label=value.get("label", ""))
+            children = value.get("children")
+            if not isinstance(children, list) or not children:
+                raise ValueError("nonempty children required")
+            parsed = []
+            for child in children:
+                if not isinstance(child, dict) or "node" not in child:
+                    raise ValueError("branch node required")
+                probability = child.get("prob", 1.0 if kind == "decision" else 0.0)
+                parsed.append((probability, parse(child["node"], active | {id(value)}, depth + 1)))
+            return DecisionNode(kind=kind, children=parsed, label=value.get("label", ""))
+        return parse(spec, set(), 0)
 
 
 # ---------------------------------------------------------------- row 78 --

@@ -543,3 +543,16 @@ def test_critical_path_long_chain_avoids_python_recursion_limit():
  tasks=[{'id':str(i),'duration':1,'depends_on':[str(i-1)] if i else []} for i in range(1200)]
  out=CriticalPathAnalyzer().analyze(tasks=tasks)
  assert out['duration']==1200 and len(out['critical_path'])==1200
+
+
+@pytest.mark.parametrize('spec',[
+ {'kind':'chance','children':[{'prob':-1,'node':{'value':2}},{'prob':2,'node':{'value':4}}]},
+ {'kind':'decision','children':[]}, {'kind':'unknown'}, {'value':float('nan')}, {'value':True}
+])
+def test_decision_tree_rejects_invalid_branch_or_leaf(spec):
+ with pytest.raises(ValueError):DecisionTreeBuilder().build(spec=spec)
+
+
+def test_decision_tree_cycle_fails_with_controlled_error():
+ spec={'kind':'decision','children':[]};spec['children'].append({'node':spec})
+ with pytest.raises(ValueError,match='cyclic'):DecisionTreeBuilder().build(spec=spec)
