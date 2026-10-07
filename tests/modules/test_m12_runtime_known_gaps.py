@@ -355,3 +355,21 @@ def test_arbitrary_provider_metadata_flows_through_unfiltered():
  executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
  result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
  assert result.metadata['unvetted_provider_field']=={'nested':[1,2,3]}
+
+def test_failed_dag_rerun_reexecutes_completed_nodes_no_durable_replay():
+ # Characterization, not replay advice: DagEngine run state is in-memory only.
+ # WorkflowNodeFailure retains completed sibling outputs in the raised object, but a
+ # later run of the same workflow re-executes every node, including completed ones.
+ # Durable DAG resume/replay and rollback are not established here.
+ from app.modules.m12_ai_research_lab.workflow import DagEngine,Workflow,WorkflowNodeFailure
+ wf=Workflow.from_yaml("name: replay-check\nnodes:\n  - id: a\n    task: t\n  - id: b\n    task: t\n    depends_on: [a]\n")
+ calls=[]
+ async def runner(task,config,context):
+  node='b' if context['parents'] else 'a';calls.append(node)
+  if node=='b' and calls.count('b')==1:raise RuntimeError('first-run failure')
+  return {node:1}
+ engine=DagEngine(runner)
+ with pytest.raises(WorkflowNodeFailure) as failure:asyncio.run(engine.run(wf,{}))
+ assert sorted(failure.value.completed)==['a']
+ result=asyncio.run(engine.run(wf,{}))
+ assert calls==['a','b','a','b'] and sorted(result)==['a','b']
