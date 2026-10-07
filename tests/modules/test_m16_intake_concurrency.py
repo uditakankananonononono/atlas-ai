@@ -150,3 +150,13 @@ def test_read_boundary_coercion_pins():
     repo.heartbeat(AgentHeartbeat(module_id=16,agent_id="w1",state=AgentState.RUNNING,current_task=None,detail={}),aware)
     assert repo.list_agents()[0].last_heartbeat==aware
     assert repo.snapshot().generated_at.tzinfo is not None
+def test_direct_append_event_normalizes_aware_and_rejects_naive():
+    repo=SqlDashboardRepository("t","u",session_factory=factory())
+    offset=event("e-off").model_copy(update={"occurred_at":datetime(2026,10,7,15,0,tzinfo=timezone(timedelta(hours=5,minutes=30)))})
+    saved=repo.append_event(offset)
+    assert saved.occurred_at==datetime(2026,10,7,9,30,tzinfo=timezone.utc)
+    (read,)=repo.events_after(0)
+    assert read.occurred_at==datetime(2026,10,7,9,30,tzinfo=timezone.utc)
+    naive=event("e-naive").model_copy(update={"occurred_at":datetime(2026,10,7,15,0)})
+    with pytest.raises(ValueError,match="timezone-aware"):repo.append_event(naive)
+    assert [x.id for x in repo.events_after(0)]==["e-off"]
