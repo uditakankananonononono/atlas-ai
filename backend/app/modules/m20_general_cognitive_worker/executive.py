@@ -371,10 +371,20 @@ class DeliberativeLoop:
             confidence=1.0, source="reflection",
         ), active_goal=context.goal, partition=context.id)
         if self.model is not None and node.attempts >= node.max_attempts:
-            analysis = self.model.complete("reflect", {
-                "goal": context.goal, "failed_step": node.title, "error": error,
-            })
-            self._trace("reflect", f"model reflection: {str(analysis)[:200]}", task_id=context.id)
+            try:
+                analysis = self.model.complete("reflect", {
+                    "goal": context.goal, "failed_step": node.title, "error": error,
+                })
+            except Exception as exc:
+                self._trace("reflect", f"reflection model error: {type(exc).__name__}; original tool failure retained", task_id=context.id)
+                return
+            valid = (isinstance(analysis, dict) and analysis.get("available") is not False
+                     and all(isinstance(analysis.get(key), str) and analysis[key].strip() for key in ("cause", "fix"))
+                     and type(analysis.get("retry")) is bool)
+            if not valid:
+                self._trace("reflect", "reflection unavailable or invalid; no causal analysis inferred", task_id=context.id)
+                return
+            self._trace("reflect", f"model reflection hypothesis: {str(analysis)[:200]}; correctness unverified", task_id=context.id)
 
     def _close_episode(self, context: TaskContext, outcome: EpisodeOutcome) -> None:
         actions = [r.model_copy(deep=True) for r in self.dispatcher.records if r.task_id == context.id]

@@ -210,3 +210,41 @@ def test_scheduler_wall_quantum_yields_instead_of_false_failure(monkeypatch):
  loop.run(context,budget=Budget(seconds=.1),yield_on_boundary=True)
  assert calls['research']==1 and context.state==TaskState.RUNNING and loop.last_ticks_run==1
  assert not loop.episodic.for_task(context.id)
+
+
+def test_optional_reflection_error_never_overwrites_tool_failure_or_escapes():
+ loop,_,_=build_loop();calls=[]
+ class BrokenReflection:
+  def complete(self,purpose,payload):
+   calls.append(purpose);raise RuntimeError('synthetic model failure')
+ loop.model=BrokenReflection()
+ async def fail(args):raise RuntimeError('synthetic tool failure')
+ loop.dispatcher.registry.register(ToolSpec(name='fixture_fail',description='fixture',max_retries=1),fail)
+ context=TaskContext(goal='fixture',plan=[PlanNode(title='fail',tool='fixture_fail',max_attempts=1)])
+ result=loop.start(context)
+ assert result.state==TaskState.FAILED and calls==['reflect']
+ assert len(loop.dispatcher.records)==1 and 'synthetic tool failure' in loop.dispatcher.records[0].result_summary
+ assert any('reflection model error' in t.detail for t in loop.traces)
+ assert loop.episodic.for_task(context.id)[0].outcome.value=='failed'
+
+
+@pytest.mark.parametrize('response',[{'available':False,'cause':'x','fix':'y','retry':True}, {'cause':'','fix':'y','retry':True}, {'cause':'x','fix':'y','retry':'true'}, 'causal prose', None])
+def test_invalid_reflection_is_labeled_unavailable_not_causal_analysis(response):
+ loop,_,_=build_loop()
+ class Model:
+  def complete(self,*args,**kwargs):return response
+ loop.model=Model()
+ node=PlanNode(title='failure',tool='fixture',attempts=1,max_attempts=1)
+ loop._reflect_on_failure(TaskContext(goal='fixture'),node,'fixture error')
+ assert any('reflection unavailable or invalid' in t.detail for t in loop.traces)
+ assert not any('model reflection hypothesis:' in t.detail for t in loop.traces)
+
+
+def test_valid_reflection_remains_unverified_hypothesis_not_retry_execution():
+ loop,_,_=build_loop()
+ class Model:
+  def complete(self,purpose,payload):return {'cause':'synthetic hypothesis','fix':'synthetic suggestion','retry':True}
+ loop.model=Model();node=PlanNode(title='failure',tool='fixture',state=TaskState.FAILED,attempts=1,max_attempts=1)
+ loop._reflect_on_failure(TaskContext(goal='fixture'),node,'fixture error')
+ assert node.state==TaskState.FAILED and not loop.dispatcher.records
+ assert any('model reflection hypothesis:' in t.detail and 'correctness unverified' in t.detail for t in loop.traces)

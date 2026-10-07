@@ -1,0 +1,143 @@
+...................FFFFFF                                                [100%]
+=================================== FAILURES ===================================
+___ test_optional_reflection_error_never_overwrites_tool_failure_or_escapes ____
+
+self = <test_m20_executive.test_optional_reflection_error_never_overwrites_tool_failure_or_escapes.<locals>.BrokenReflection object at 0x7f1484d23020>
+purpose = 'reflect'
+payload = {'goal': 'fixture', 'failed_step': 'fail', 'error': 'failed after 1 attempt(s): synthetic tool failure'}
+
+    def complete(self,purpose,payload):
+>    calls.append(purpose);raise RuntimeError('synthetic model failure')
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    RuntimeError: synthetic model failure
+
+tests/modules/test_m20_executive.py:219: RuntimeError
+
+During handling of the above exception, another exception occurred:
+
+    def test_optional_reflection_error_never_overwrites_tool_failure_or_escapes():
+     loop,_,_=build_loop();calls=[]
+     class BrokenReflection:
+      def complete(self,purpose,payload):
+       calls.append(purpose);raise RuntimeError('synthetic model failure')
+     loop.model=BrokenReflection()
+     async def fail(args):raise RuntimeError('synthetic tool failure')
+     loop.dispatcher.registry.register(ToolSpec(name='fixture_fail',description='fixture',max_retries=1),fail)
+     context=TaskContext(goal='fixture',plan=[PlanNode(title='fail',tool='fixture_fail',max_attempts=1)])
+>    result=loop.start(context)
+            ^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_executive.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/executive.py:213: in start
+    return self.run(context, budget=budget, yield_on_boundary=yield_on_boundary)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/executive.py:316: in run
+    self._reflect_on_failure(context, node, str(exc))
+backend/app/modules/m20_general_cognitive_worker/executive.py:374: in _reflect_on_failure
+    analysis = self.model.complete("reflect", {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_m20_executive.test_optional_reflection_error_never_overwrites_tool_failure_or_escapes.<locals>.BrokenReflection object at 0x7f1484d23020>
+purpose = 'reflect'
+payload = {'goal': 'fixture', 'failed_step': 'fail', 'error': 'synthetic model failure'}
+
+    def complete(self,purpose,payload):
+>    calls.append(purpose);raise RuntimeError('synthetic model failure')
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    RuntimeError: synthetic model failure
+
+tests/modules/test_m20_executive.py:219: RuntimeError
+_ test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[response0] _
+
+response = {'available': False, 'cause': 'x', 'fix': 'y', 'retry': True}
+
+    @pytest.mark.parametrize('response',[{'available':False,'cause':'x','fix':'y','retry':True}, {'cause':'','fix':'y','retry':True}, {'cause':'x','fix':'y','retry':'true'}, 'causal prose', None])
+    def test_invalid_reflection_is_labeled_unavailable_not_causal_analysis(response):
+     loop,_,_=build_loop()
+     class Model:
+      def complete(self,*args,**kwargs):return response
+     loop.model=Model()
+     node=PlanNode(title='failure',tool='fixture',attempts=1,max_attempts=1)
+     loop._reflect_on_failure(TaskContext(goal='fixture'),node,'fixture error')
+>    assert any('reflection unavailable or invalid' in t.detail for t in loop.traces)
+E    assert False
+E     +  where False = any(<generator object test_invalid_reflection_is_labeled_unavailable_not_causal_analysis.<locals>.<genexpr> at 0x7f1484d1bb90>)
+
+tests/modules/test_m20_executive.py:239: AssertionError
+_ test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[response1] _
+
+response = {'cause': '', 'fix': 'y', 'retry': True}
+
+    @pytest.mark.parametrize('response',[{'available':False,'cause':'x','fix':'y','retry':True}, {'cause':'','fix':'y','retry':True}, {'cause':'x','fix':'y','retry':'true'}, 'causal prose', None])
+    def test_invalid_reflection_is_labeled_unavailable_not_causal_analysis(response):
+     loop,_,_=build_loop()
+     class Model:
+      def complete(self,*args,**kwargs):return response
+     loop.model=Model()
+     node=PlanNode(title='failure',tool='fixture',attempts=1,max_attempts=1)
+     loop._reflect_on_failure(TaskContext(goal='fixture'),node,'fixture error')
+>    assert any('reflection unavailable or invalid' in t.detail for t in loop.traces)
+E    assert False
+E     +  where False = any(<generator object test_invalid_reflection_is_labeled_unavailable_not_causal_analysis.<locals>.<genexpr> at 0x7f1484ad4ba0>)
+
+tests/modules/test_m20_executive.py:239: AssertionError
+_ test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[response2] _
+
+response = {'cause': 'x', 'fix': 'y', 'retry': 'true'}
+
+    @pytest.mark.parametrize('response',[{'available':False,'cause':'x','fix':'y','retry':True}, {'cause':'','fix':'y','retry':True}, {'cause':'x','fix':'y','retry':'true'}, 'causal prose', None])
+    def test_invalid_reflection_is_labeled_unavailable_not_causal_analysis(response):
+     loop,_,_=build_loop()
+     class Model:
+      def complete(self,*args,**kwargs):return response
+     loop.model=Model()
+     node=PlanNode(title='failure',tool='fixture',attempts=1,max_attempts=1)
+     loop._reflect_on_failure(TaskContext(goal='fixture'),node,'fixture error')
+>    assert any('reflection unavailable or invalid' in t.detail for t in loop.traces)
+E    assert False
+E     +  where False = any(<generator object test_invalid_reflection_is_labeled_unavailable_not_causal_analysis.<locals>.<genexpr> at 0x7f1484c0ea80>)
+
+tests/modules/test_m20_executive.py:239: AssertionError
+_ test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[causal prose] _
+
+response = 'causal prose'
+
+    @pytest.mark.parametrize('response',[{'available':False,'cause':'x','fix':'y','retry':True}, {'cause':'','fix':'y','retry':True}, {'cause':'x','fix':'y','retry':'true'}, 'causal prose', None])
+    def test_invalid_reflection_is_labeled_unavailable_not_causal_analysis(response):
+     loop,_,_=build_loop()
+     class Model:
+      def complete(self,*args,**kwargs):return response
+     loop.model=Model()
+     node=PlanNode(title='failure',tool='fixture',attempts=1,max_attempts=1)
+     loop._reflect_on_failure(TaskContext(goal='fixture'),node,'fixture error')
+>    assert any('reflection unavailable or invalid' in t.detail for t in loop.traces)
+E    assert False
+E     +  where False = any(<generator object test_invalid_reflection_is_labeled_unavailable_not_causal_analysis.<locals>.<genexpr> at 0x7f1484ad5d80>)
+
+tests/modules/test_m20_executive.py:239: AssertionError
+___ test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[None] ___
+
+response = None
+
+    @pytest.mark.parametrize('response',[{'available':False,'cause':'x','fix':'y','retry':True}, {'cause':'','fix':'y','retry':True}, {'cause':'x','fix':'y','retry':'true'}, 'causal prose', None])
+    def test_invalid_reflection_is_labeled_unavailable_not_causal_analysis(response):
+     loop,_,_=build_loop()
+     class Model:
+      def complete(self,*args,**kwargs):return response
+     loop.model=Model()
+     node=PlanNode(title='failure',tool='fixture',attempts=1,max_attempts=1)
+     loop._reflect_on_failure(TaskContext(goal='fixture'),node,'fixture error')
+>    assert any('reflection unavailable or invalid' in t.detail for t in loop.traces)
+E    assert False
+E     +  where False = any(<generator object test_invalid_reflection_is_labeled_unavailable_not_causal_analysis.<locals>.<genexpr> at 0x7f1484c0f780>)
+
+tests/modules/test_m20_executive.py:239: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_executive.py::test_optional_reflection_error_never_overwrites_tool_failure_or_escapes
+FAILED tests/modules/test_m20_executive.py::test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[response0]
+FAILED tests/modules/test_m20_executive.py::test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[response1]
+FAILED tests/modules/test_m20_executive.py::test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[response2]
+FAILED tests/modules/test_m20_executive.py::test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[causal prose]
+FAILED tests/modules/test_m20_executive.py::test_invalid_reflection_is_labeled_unavailable_not_causal_analysis[None]
+6 failed, 19 passed in 1.40s
