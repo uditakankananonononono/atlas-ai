@@ -37,4 +37,4 @@ assert len(repo.list_drafts())==1 and repo.draft_work('m','account')['phase']=='
  assert result.returncode!=0 and 'Cannot remove durable draft ownership' in result.stderr
  with psycopg.connect(uri) as conn:
   assert conn.execute('SELECT phase FROM m10_draft_work').fetchall()==[('complete',)]
-  assert conn.execute('SELECT version_num FROM alembic_version').fetchone()[0]=='20261007_m10_draft_work'
+  assert conn.execute('SELECT version_num FROM alembic_version').fetchone()[0]=='20261007_m10_ingest_work'

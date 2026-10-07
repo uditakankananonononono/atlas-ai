@@ -27,14 +27,14 @@ def test_source_query_excludes_missing_null_keys_before_limit_and_detects_duplic
 @pytest.mark.parametrize('kind',['sqlite','postgres'])
 def test_m10_atomic_finalize_rechecks_actual_m00_row_after_earlier_read(tmp_path,kind):
  from datetime import datetime,timezone
- from app.modules.m10_email_assistant.sql_repository import SqlEmailRepository,GmailAccountRow,DraftWorkRow,EmailEventRow,EmailMessageRow,EmailDraftRow
+ from app.modules.m10_email_assistant.sql_repository import SqlEmailRepository,GmailAccountRow,DraftWorkRow,EmailEventRow,EmailMessageRow,EmailDraftRow,IngestWorkRow
  from app.core.approvals import ApprovalStore
  if kind=='postgres':
   pgserver=pytest.importorskip('pgserver');server=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop')
   url=server.get_uri().replace('postgresql://','postgresql+psycopg://')
  else:url=f'sqlite:///{tmp_path}/atomic-source.db'
  engine=create_engine(url)
- for model in (GmailAccountRow,DraftWorkRow,EmailEventRow,EmailMessageRow,EmailDraftRow,ApprovalRequestRow,ApprovalEventRow):model.__table__.create(engine)
+ for model in (GmailAccountRow,DraftWorkRow,EmailEventRow,EmailMessageRow,EmailDraftRow,IngestWorkRow,ApprovalRequestRow,ApprovalEventRow):model.__table__.create(engine)
  sessions=sessionmaker(bind=engine,expire_on_commit=False);repo=SqlEmailRepository('a',sessions);m00=Service(session_factory=sessions)
  repo.save_account(account_id='account',email_address='fixture@example.invalid',encrypted_refresh_token='fixture',history_id='100',watch_expiration=None)
  data={'draft_id':'draft','approval_id':'temporary','to':'sender@example.invalid','subject':'Re: fixture','body':'Fixture draft','model':'fake'}

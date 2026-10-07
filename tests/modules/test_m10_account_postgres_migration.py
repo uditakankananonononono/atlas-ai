@@ -53,4 +53,4 @@ assert len(SqlEmailRepository('tenant-race').list_messages())==1
     assert 'losing account data' in blocked.stderr
     with psycopg.connect(uri) as conn:
         assert conn.execute('SELECT count(*) FROM m10_email_messages').fetchone()[0]==3
-        assert conn.execute('SELECT version_num FROM alembic_version').fetchone()[0]=='20261007_m10_draft_work'
+        assert conn.execute('SELECT version_num FROM alembic_version').fetchone()[0]=='20261007_m10_ingest_work'

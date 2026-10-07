@@ -459,8 +459,7 @@ def test_concurrent_ingest_requires_single_draft_and_approval(tmp_path):
  async def generate(prompt,provider,model):
   if prompt.startswith('Extract action items'):
    with lock:rank=len(entered);entered.append(rank)
-   barrier.wait(timeout=5)
-   if rank:time.sleep(.15)
+   time.sleep(.15)
    return 'fixture','[]'
   return 'fixture','Subject: Re: reply\nDraft only'
  svc.llm_generate=generate
@@ -468,8 +467,13 @@ def test_concurrent_ingest_requires_single_draft_and_approval(tmp_path):
  async def token(account):return 'fixture-access'
  svc._access_token=token
  with ThreadPoolExecutor(max_workers=2) as pool:
-  results=list(pool.map(lambda _:asyncio.run(svc.ingest_from_history('a@example.com','101')),[1,2]))
- assert sum(result.new_messages for result in results)==1
+  def ingest(_):
+   from app.modules.m10_email_assistant.service import DraftPipelineUnresolvedError
+   try:return asyncio.run(svc.ingest_from_history('a@example.com','101'))
+   except DraftPipelineUnresolvedError:return None
+  results=list(pool.map(ingest,[1,2]))
+ assert sum(result.new_messages for result in results if result is not None)==1
+ assert len(entered)==1
  assert len(repo.list_messages())==1
  assert len(repo.list_drafts())==1
  assert len(approvals.items)==1
@@ -712,4 +716,60 @@ def test_reconnect_returns_stable_account_id_and_retained_history(tmp_path):
  result=asyncio.run(svc._store_tokens(OAuthTokens(access_token='fixture-access',refresh_token='new-refresh',expires_in=3600)))
  assert result.id=='existing' and result.history_id=='100'
  assert svc.cipher.decrypt(repo.get_account('existing').encrypted_refresh_token)=='new-refresh'
+ asyncio.run(client.aclose())
+
+
+@pytest.mark.parametrize('phase',['extraction','embedding'])
+def test_preinsert_unknown_provider_effect_never_repeats(tmp_path,phase):
+ svc,repo,sink,client=make_service(tmp_path)
+ repo.save_account(account_id='a',email_address='fixture@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ calls=[]
+ async def generate(prompt,*args):
+  calls.append('extract')
+  if phase=='extraction':raise TimeoutError('fixture extraction unknown')
+  return 'fixture','[]'
+ class Embed:
+  async def embed(self,*args):calls.append('embed');raise TimeoutError('fixture embedding unknown')
+ svc.llm_generate=generate;svc.embedder=Embed();raw=raw_message('g','Please reply',snippet='please reply')
+ with pytest.raises(TimeoutError):asyncio.run(svc._ingest_message('a',raw))
+ expected='extraction_inflight' if phase=='extraction' else 'embedding_inflight'
+ assert repo.ingest_work('a','g')['phase']==expected
+ before=list(calls)
+ assert asyncio.run(svc._ingest_message('a',raw)) is None
+ assert calls==before and repo.list_messages()==[] and sink.items==[]
+ assert not repo.checkpoint_history('a','100','101')
+ asyncio.run(client.aclose())
+
+
+def test_saved_preinsert_results_resume_without_repeating_extraction_or_embedding(tmp_path,monkeypatch):
+ svc,repo,sink,client=make_service(tmp_path)
+ repo.save_account(account_id='a',email_address='fixture@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ calls=[]
+ async def generate(prompt,*args):
+  calls.append('extract' if prompt.startswith('Extract action items') else 'draft')
+  return await fake_generate(prompt,*args)
+ class Embed:
+  async def embed(self,*args):calls.append('embed');return [[.1,.2]]
+ svc.llm_generate=generate;svc.embedder=Embed();original=repo.save_message
+ def fail(*args,**kwargs):raise RuntimeError('fixture before insert')
+ monkeypatch.setattr(repo,'save_message',fail);raw=raw_message('g','Please reply',snippet='please reply')
+ with pytest.raises(RuntimeError):asyncio.run(svc._ingest_message('a',raw))
+ assert repo.ingest_work('a','g')['phase']=='effects_done' and calls==['extract','embed']
+ monkeypatch.setattr(repo,'save_message',original)
+ assert asyncio.run(svc._ingest_message('a',raw)) is True
+ assert calls==['extract','embed','draft'] and repo.ingest_work('a','g')['phase']=='complete'
+ assert len(repo.list_messages())==1 and len(sink.items)==1
+ asyncio.run(client.aclose())
+
+
+def test_safe_preinsert_work_recovered_even_if_provider_history_no_longer_lists_id(tmp_path,monkeypatch):
+ svc,repo,sink,client=make_service(tmp_path,gmail=FakeGmailClient(history={'100':[]}))
+ repo.save_account(account_id='a',email_address='fixture@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ original=repo.save_message
+ monkeypatch.setattr(repo,'save_message',lambda **kwargs:(_ for _ in ()).throw(RuntimeError('fixture save stopped')))
+ with pytest.raises(RuntimeError):asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply')))
+ monkeypatch.setattr(repo,'save_message',original)
+ result=asyncio.run(svc.ingest_from_history('fixture@example.invalid','101'))
+ assert result.fetched==0 and result.new_messages==1 and result.drafts_proposed==1
+ assert repo.get_account('a').history_id=='101' and len(repo.list_messages())==1 and len(repo.list_drafts())==1
  asyncio.run(client.aclose())

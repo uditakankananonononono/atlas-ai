@@ -204,13 +204,23 @@ class Service:
             raise AccountNotFoundError(email_address)
         access_token = await self._access_token(account)
         start = account.history_id or history_id
-        recovered = await self.recover_draft_pipeline(account.id)
+        pending_ingest=self.repository.pending_ingest_work(account.id)
+        if any(w['phase'] in {'extraction_inflight','embedding_inflight'} for w in pending_ingest):
+            raise DraftPipelineUnresolvedError('unresolved ingestion provider claim; no blind extraction/embedding retry')
+        recovered_messages=0;recovered_ingest_drafts=0
+        for work in pending_ingest:
+            if work['phase'] not in {'extraction_done','effects_done'}:continue
+            raw=GmailRawMessage(**work['data']['raw'])
+            drafted=await self._ingest_message(account.id,raw)
+            if drafted is not None:
+                recovered_messages+=1;recovered_ingest_drafts+=int(drafted)
+        recovered = await self.recover_draft_pipeline(account.id)+recovered_ingest_drafts
         unresolved=self.repository.unresolved_draft_work(account.id)
         if unresolved:
             raise DraftPipelineUnresolvedError(f'{len(unresolved)} unresolved draft pipeline claims; source reconciliation required, no blind retry or checkpoint advance')
         message_ids = await self.gmail.list_history(access_token, start)
         fetched = len(message_ids)
-        new_messages = 0
+        new_messages = recovered_messages
         drafts = recovered
         for message_id in message_ids:
             if self.repository.has_message(message_id, account_id=account.id):
@@ -240,14 +250,27 @@ class Service:
                 labels=raw.labels, headers=raw.headers,
             )
         )
-        actions = await extract_actions(
-            self.llm_generate,
-            provider=self.llm_provider,
-            model=self.llm_model,
-            subject=raw.subject,
-            body=raw.body_text,
-        )
-        embedding = (await self.embedder.embed([f"{raw.subject}\n{raw.body_text}"]))[0]
+        import hashlib
+        raw_digest=hashlib.sha256(json.dumps(raw.__dict__,sort_keys=True,default=str).encode()).hexdigest()
+        work=self.repository.ingest_work(account_id,raw.gmail_id)
+        if work is not None and work['data'].get('raw_digest')!=raw_digest:
+            raise DraftPipelineUnresolvedError('source message changed since ingestion claim; no effect replay')
+        if work is None:
+            if not self.repository.claim_ingest_work(account_id,raw.gmail_id,{'raw_digest':raw_digest,'raw':raw.__dict__}):return None
+            actions=await extract_actions(self.llm_generate,provider=self.llm_provider,model=self.llm_model,subject=raw.subject,body=raw.body_text)
+            data={'raw_digest':raw_digest,'raw':raw.__dict__,'actions':[a.model_dump(mode='json') for a in actions]}
+            if not self.repository.transition_ingest_work(account_id,raw.gmail_id,'extraction_inflight','extraction_done',data):return None
+            work={'phase':'extraction_done','data':data}
+        data=work['data']
+        if work['phase']=='extraction_done':
+            if not self.repository.transition_ingest_work(account_id,raw.gmail_id,'extraction_done','embedding_inflight',data):return None
+            embedding=(await self.embedder.embed([f'{raw.subject}\n{raw.body_text}']))[0]
+            data={**data,'embedding':embedding}
+            if not self.repository.transition_ingest_work(account_id,raw.gmail_id,'embedding_inflight','effects_done',data):return None
+            work={'phase':'effects_done','data':data}
+        if work['phase']!='effects_done':return None
+        actions=[ActionItem(**a) for a in data['actions']]
+        embedding=data['embedding']
         unsubscribe_url = self._unsubscribe_url(raw.headers)
         received_at = (
             datetime.fromtimestamp(raw.received_at, tz=timezone.utc) if raw.received_at else None
@@ -261,6 +284,7 @@ class Service:
             headers=raw.headers, category=classification.category.value,
             category_confidence=classification.confidence,
             embedding=embedding or None, unsubscribe_url=unsubscribe_url,
+            ingest_work_data=data,
             draft_work={'actions':[a.model_dump(mode='json') for a in actions]}
                 if classification.category in ACTIONABLE_CATEGORIES and 'SENT' not in raw.labels else None,
         )
