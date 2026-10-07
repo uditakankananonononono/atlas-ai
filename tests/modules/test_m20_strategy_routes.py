@@ -22,7 +22,7 @@ def test_row60_ergodicity_route(client):
                json={"outcomes": [[0.5, 1.5], [0.5, 0.6]]})
     assert r.status_code == 200
     body = r.json()
-    assert not body["ergodic"] and "ruins you" in body["verdict"]
+    assert not body["ergodic"] and "geometric growth is below1" in body["verdict"]
     bad = c.post("/api/modules/20/meta/ergodicity", json={"outcomes": [[1.5, 1.5]]})
     assert bad.status_code == 422
 
@@ -290,3 +290,13 @@ def test_row84_principal_agent_route(client):
     assert r.status_code == 200
     assert r.json()["recommended_share"] is not None
     assert "not business" in r.json()["caveat"]
+
+
+def test_geometric_growth_zero_probability_and_extinction_are_http_json_safe(client):
+ c,_=client
+ zero=c.post('/api/modules/20/meta/ergodicity',json={'outcomes':[[1,2],[0,0]]})
+ assert zero.status_code==200 and zero.json()['time_average_growth']==2
+ extinction=c.post('/api/modules/20/meta/ergodicity',json={'outcomes':[[.5,2],[.5,0]]})
+ assert extinction.status_code==200 and extinction.json()['log_growth_rate'] is None
+ negative=c.post('/api/modules/20/meta/ergodicity',json={'outcomes':[[1,-1]]})
+ assert negative.status_code==422

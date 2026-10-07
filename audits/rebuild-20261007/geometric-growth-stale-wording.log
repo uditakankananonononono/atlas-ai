@@ -1,0 +1,27 @@
+..........................................F........................      [100%]
+=================================== FAILURES ===================================
+_________________________ test_row60_ergodicity_route __________________________
+
+client = (<starlette.testclient.TestClient object at 0x7f9b1eeb3e90>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f9b1f192a80>)
+
+    def test_row60_ergodicity_route(client):
+        c, _ = client
+        r = c.post("/api/modules/20/meta/ergodicity",
+                   json={"outcomes": [[0.5, 1.5], [0.5, 0.6]]})
+        assert r.status_code == 200
+        body = r.json()
+>       assert not body["ergodic"] and "ruins you" in body["verdict"]
+E       AssertionError: assert (not False and 'ruins you' in 'supplied arithmetic growth exceeds1 while geometric growth is below1')
+
+tests/modules/test_m20_strategy_routes.py:25: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy_routes.py::test_row60_ergodicity_route
+1 failed, 66 passed, 1 warning in 8.62s
