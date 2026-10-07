@@ -1,0 +1,11 @@
+{
+  "revision": "857b51f3552290d91a3697e46d361971eb288abb",
+  "file_count": 496,
+  "batches": 20,
+  "passed": 10048,
+  "failed": 0,
+  "skipped": 14,
+  "warnings": 26,
+  "summed_batch_seconds": 436.13,
+  "scope": "Local isolated pytest batches, not cognition or production verification"
+}
