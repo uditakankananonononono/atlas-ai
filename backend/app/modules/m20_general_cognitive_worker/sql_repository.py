@@ -285,12 +285,20 @@ class GCWRepository:
             session.commit()
         return trace
 
-    def action_summary(self):
+    def dispatch_outcome_counts(self):
+        failed = ActionRow.payload_json['succeeded'].as_boolean() == sa.false()
         with self._session() as session:
-            rows = session.query(ActionRow).filter(ActionRow.tenant_id == self.tenant_id)
-            count = rows.count()
-            failures = sum(not row.payload_json.get('succeeded', True) for row in rows.all())
-            return {'local_action_count': count, 'local_failure_count': failures}
+            rows = session.execute(sa.select(ActionRow.payload_json['tool'].as_string(),
+                sa.func.count(), sa.func.sum(sa.case((failed, 1), else_=0)))
+                .where(ActionRow.tenant_id == self.tenant_id)
+                .group_by(ActionRow.payload_json['tool'].as_string())).all()
+            return {name: {'successes': count - failures, 'failures': failures}
+                    for name, count, failures in rows}
+
+    def action_summary(self):
+        counts = self.dispatch_outcome_counts()
+        return {'local_action_count': sum(row['successes'] + row['failures'] for row in counts.values()),
+                'local_failure_count': sum(row['failures'] for row in counts.values())}
 
     def task_evidence(self, task_id: str, *, limit: int = 50) -> dict:
         if type(limit) is not int or not 1 <= limit <= 100:

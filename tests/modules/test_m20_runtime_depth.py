@@ -1676,3 +1676,27 @@ def test_runtime_supervision_reports_actual_durable_blockers_after_restart(mount
     restored=make_runtime(hydrate_repo=repo)
     assert restored.supervision()['tasks_by_state']==report['tasks_by_state']
     assert 'production' in report['boundary']
+
+
+def test_tool_ranking_and_supervision_use_sql_aggregates_not_full_action_payloads():
+    runtime, repo = make_runtime()
+    for i, success in enumerate([True, True, False]):
+        repo.save_action(ActionRecord(tool='csv_summary', succeeded=success, result={'large': 'x'*10000}))
+    def forbidden(*args, **kwargs): raise AssertionError('full journal read forbidden')
+    repo.list_actions = forbidden
+    selection = runtime.select_tool('summarize csv numeric').as_dict()
+    candidate = next(c for c in selection['candidates'] if c['tool_name'] == 'csv_summary')
+    assert candidate['historical_success'] == 0.6
+    assert candidate['supplied_successes'] == 2 and candidate['supplied_failures'] == 1
+    summary = repo.action_summary()
+    assert summary == {'local_action_count': 3, 'local_failure_count': 1}
+
+
+def test_dispatch_aggregate_counts_are_tenant_scoped():
+    engine = make_engine()
+    a = GCWRepository(engine, tenant_id='a'); a.create_schema()
+    b = GCWRepository(engine, tenant_id='b')
+    a.save_action(ActionRecord(tool='csv_summary', succeeded=False))
+    b.save_action(ActionRecord(tool='csv_summary', succeeded=True))
+    assert a.dispatch_outcome_counts() == {'csv_summary': {'successes': 0, 'failures': 1}}
+    assert b.dispatch_outcome_counts() == {'csv_summary': {'successes': 1, 'failures': 0}}

@@ -101,6 +101,15 @@ class ToolSelector:
             history[record.tool] = (success + float(record.succeeded), failure + float(not record.succeeded))
         self._history = history
 
+    def use_dispatch_counts(self, counts) -> None:
+        history = {}
+        for tool, row in counts.items():
+            success, failure = row['successes'], row['failures']
+            if any(type(value) is not int or value < 0 for value in (success, failure)):
+                raise ValueError('dispatch counts must be nonnegative exact integers')
+            history[tool] = (success, failure)
+        self._history = history
+
     def historical_success(self, tool_name: str) -> float:
         successes, failures = self._history.get(tool_name, (0.0, 0.0))
         return (successes + 1.0) / (successes + failures + 2.0)
