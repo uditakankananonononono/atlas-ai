@@ -35,20 +35,26 @@ def transduce(p):
     if not np.isfinite(L).all():raise ValueError('graph arithmetic overflow')
     F=np.zeros((n,len(classes)))
     for i,cls,_ in known:F[i,classes.index(cls)]=1
-    residual=0.;condition=None
+    influence=np.zeros((n,len(labeled)))
+    influence[labeled]=np.eye(len(labeled))
+    residual=0.;influence_residual=0.;condition=None
     if unknown:
         A=L[np.ix_(unknown,unknown)];B=-L[np.ix_(unknown,labeled)]@F[labeled]
         condition=float(np.linalg.cond(A))
         if not np.isfinite(condition) or condition>1e12:raise ValueError('ill-conditioned unlabeled Laplacian; no reliable unique prediction')
-        try:F[unknown]=np.linalg.solve(A,B)
+        try:
+            influence[unknown]=np.linalg.solve(A,-L[np.ix_(unknown,labeled)])
+            F[unknown]=influence[unknown]@F[labeled]
         except np.linalg.LinAlgError as exc:raise ValueError('harmonic linear solve failed') from exc
         residual=float(np.max(np.abs(A@F[unknown]-B)))
+        influence_residual=float(np.max(np.abs(A@influence[unknown]+L[np.ix_(unknown,labeled)])))
     if not np.isfinite(F).all() or np.any(F < -1e-8) or np.any(F>1+1e-8) or np.max(np.abs(F.sum(axis=1)-1))>1e-8:raise ValueError('invalid harmonic class scores')
+    if not np.isfinite(influence).all() or np.any(influence < -1e-8) or np.any(influence>1+1e-8) or np.max(np.abs(influence.sum(axis=1)-1))>1e-8:raise ValueError('invalid harmonic evidence influence')
     predictions=[]
     for i in unknown:
         tied=[classes[j] for j in range(len(classes)) if abs(F[i,j]-F[i].max())<=1e-10]
-        predictions.append({'node_id':nodes[i],'class_scores':dict(zip(classes,F[i].tolist())),'candidate_labels':tied,'predicted_label':tied[0] if len(tied)==1 else None})
-    return {'predictions':predictions,'classes':classes,'observed_labels':labels,'harmonic_residual':residual,'laplacian_condition':condition,
+        predictions.append({'evidence_influence':[{'node_id':nodes[source],'evidence_id':ev,'label':cls,'weight':float(influence[i,j])} for j,(source,cls,ev) in enumerate(known)],'evidence_influence_is_not_source_reliability':True,'node_id':nodes[i],'class_scores':dict(zip(classes,F[i].tolist())),'candidate_labels':tied,'predicted_label':tied[0] if len(tied)==1 else None})
+    return {'evidence_influence_residual':influence_residual,'predictions':predictions,'classes':classes,'observed_labels':labels,'harmonic_residual':residual,'laplacian_condition':condition,
             'energy':float(.5*np.sum(F*(L@F))),'scope':'supplied target instance graph only; no population rule',
             'algorithm_source':'https://aaai.org/papers/icml03-118-semi-supervised-learning-using-gaussian-fields-and-harmonic-functions/',
             'boundary':'Actual harmonic graph solve on supplied similarities and labels. Scores are harmonic weights, not calibrated outcome probabilities. Ties preserved. Graph/label correctness not independently verified; no population generalization, semantic analogy or causal inference claim.'}
