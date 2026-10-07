@@ -42,6 +42,20 @@ def summarize_csv(arguments):
 
 
 def register_local_tools(registry):
+    from .temporal_network import temporal
+    async def temporal_handler(arguments): return temporal(arguments)
+    registry.register(ToolSpec(name='temporal_check',description='Check relative-time difference constraints and report contradictions or implied bounds',
+        capabilities=['temporal','constraints','timing','schedule','check'],risk=Risk.READ,max_retries=1,
+        parameters={'type':'object','properties':{
+            'temporal_events':{'type':'array','minItems':1,'maxItems':64,'uniqueItems':True,'items':{'type':'string','minLength':1}},
+            'time_unit':{'type':'string','minLength':1},
+            'time_constraints':{'type':'array','maxItems':1000,'items':{'type':'object','properties':{
+                'from':{'type':'string'},'to':{'type':'string'},'minimum_gap':{'type':'number'},'maximum_gap':{'type':'number'}},
+                'required':['from','to'],'additionalProperties':False}},
+            'time_queries':{'type':'array','maxItems':1000,'items':{'type':'object','properties':{
+                'from':{'type':'string'},'to':{'type':'string'},'at_least':{'type':'number'}},
+                'required':['from','to'],'additionalProperties':False}}},
+            'required':['temporal_events','time_unit','time_constraints'],'additionalProperties':False}),temporal_handler)
     async def filter_handler(arguments): return filter_csv(arguments)
     registry.register(ToolSpec(name='csv_filter',description='Select rows and columns from supplied CSV using exact field matches',
         capabilities=['csv','filter','select','records'],risk=Risk.READ,max_retries=1,

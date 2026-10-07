@@ -1766,3 +1766,21 @@ def test_runtime_tool_catalog_exposes_actual_local_capabilities_and_schemas(moun
     assert tools['csv_filter']['risk']=='read'
     assert result['external_availability_verified'] is False
     assert result['approval_granted'] is False
+
+
+def test_default_temporal_check_executes_actual_constraint_reasoning_in_plan():
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('check supplied approval delivery timing',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[{'title':'check timing','tool':'temporal_check',
+        'arguments':{'temporal_events':['draft','approval','delivery'],'time_unit':'hours',
+        'time_constraints':[{'from':'draft','to':'approval','minimum_gap':3},
+                            {'from':'approval','to':'delivery','minimum_gap':4},
+                            {'from':'draft','to':'delivery','maximum_gap':5}]}}])
+    result=runtime.run_task(task.id)
+    assert result.state==TaskState.SUCCEEDED
+    output=result.plan[0].output
+    assert output['status']=='inconsistent'
+    assert output['conflict_witness']['total_upper_bound']==-2
+    assert repo.list_actions(task_id=task.id)[0].result==output
+    # Successful execution of the checker never means the schedule is feasible.
+    assert output['witness_relative_times'] is None
