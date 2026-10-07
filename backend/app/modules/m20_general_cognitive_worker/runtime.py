@@ -423,7 +423,8 @@ class GCWRuntime:
         context = self.get_task(task_id)
         if context is None:
             return None
-        if self.repo.list_retrospectives(task_id=task_id):
+        if (self.repo.list_retrospectives(task_id=task_id)
+                or context.state in (TaskState.SUCCEEDED,TaskState.FAILED,TaskState.CANCELLED)):
             return context
         self.loop.max_ticks = max_ticks
         self._run_and_persist(context, budget=budget, yield_on_boundary=yield_on_boundary)
