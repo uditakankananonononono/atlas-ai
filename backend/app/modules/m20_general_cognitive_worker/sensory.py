@@ -62,20 +62,22 @@ class SensoryLayer:
         self.vision = vision
         self.document_parser = document_parser
         self.max_rows_preview = max_rows_preview
-        self._seen_external_ids: set[str] = set()
-        self._seen_hashes: set[str] = set()
+        self._seen_external_ids: set[tuple] = set()
+        self._seen_hashes: set[tuple] = set()
 
     def _accept(self, event: CognitiveEvent) -> CognitiveEvent | None:
         if self.allowed_sources is not None and event.source not in self.allowed_sources:
             return None
-        if event.external_id and event.external_id in self._seen_external_ids:
+        identity = (event.source, event.modality.value, event.external_id)
+        digest = (event.source, event.modality.value, event.content_hash)
+        if event.external_id and identity in self._seen_external_ids:
             return None
-        if event.content_hash and event.content_hash in self._seen_hashes:
+        if event.content_hash and digest in self._seen_hashes:
             return None
         if event.external_id:
-            self._seen_external_ids.add(event.external_id)
+            self._seen_external_ids.add(identity)
         if event.content_hash:
-            self._seen_hashes.add(event.content_hash)
+            self._seen_hashes.add(digest)
         return event
 
     def ingest_text(
@@ -98,7 +100,7 @@ class SensoryLayer:
         text = self.transcriber.transcribe(audio_bytes, media_type=media_type)
         event = CognitiveEvent(
             modality=Modality.AUDIO, text=text, source=source,
-            external_id=external_id, content_hash=content_hash(text),
+            external_id=external_id, content_hash=hashlib.sha256(audio_bytes).hexdigest(),
             metadata={**(metadata or {}), "media_type": media_type},
         )
         return self._accept(event)
@@ -112,7 +114,7 @@ class SensoryLayer:
         description = self.vision.describe(image_bytes, media_type=media_type)
         event = CognitiveEvent(
             modality=Modality.IMAGE, text=description, source=source,
-            external_id=external_id, content_hash=content_hash(description),
+            external_id=external_id, content_hash=hashlib.sha256(image_bytes).hexdigest(),
             metadata={**(metadata or {}), "media_type": media_type},
         )
         return self._accept(event)
@@ -154,7 +156,7 @@ class SensoryLayer:
         text = self.document_parser.parse(pdf_bytes)
         event = CognitiveEvent(
             modality=Modality.PDF, text=text, source=source,
-            external_id=external_id, content_hash=content_hash(text),
+            external_id=external_id, content_hash=hashlib.sha256(pdf_bytes).hexdigest(),
             metadata=metadata or {},
         )
         return self._accept(event)
