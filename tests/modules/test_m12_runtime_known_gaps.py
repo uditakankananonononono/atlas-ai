@@ -193,3 +193,17 @@ def test_catalog_enabled_flag_not_inferred_from_truthiness(enabled):
  with pytest.raises(NoEligibleModel):asyncio.run(ResearchExecutor(router,Provider()).execute(req,'fixture'))
  assert not calls
  assert ModelRouter([model,*models()]).route(req).primary.model_id=='first'
+
+@pytest.mark.parametrize('allow',['first-backup',['first'],{'first':True},None,frozenset({1}),frozenset({''})])
+def test_required_model_allowlist_does_not_use_substring_or_wrong_container(allow):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ req=RouteRequest(TaskType.RESEARCH,100,0,100,'fixture',required_model_ids=allow)
+ with pytest.raises(NoEligibleModel,match='set of nonempty text'):asyncio.run(ResearchExecutor(ModelRouter(models()),Provider()).execute(req,'fixture'))
+ assert not calls
+
+@pytest.mark.parametrize('allow',[{'backup'},frozenset({'backup'})])
+def test_valid_exact_allowlist_excludes_primary_and_other_fallbacks(allow):
+ decision=ModelRouter(models()).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture',required_model_ids=allow))
+ assert decision.primary.model_id=='backup' and decision.fallbacks==()
