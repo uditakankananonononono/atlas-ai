@@ -65,6 +65,11 @@ class SensoryLayer:
         self._seen_external_ids: set[tuple] = set()
         self._seen_hashes: set[tuple] = set()
 
+    def _known_or_disallowed(self, source, modality, external_id, digest):
+        return ((self.allowed_sources is not None and source not in self.allowed_sources)
+                or bool(external_id and (source, modality.value, external_id) in self._seen_external_ids)
+                or (source, modality.value, digest) in self._seen_hashes)
+
     def _accept(self, event: CognitiveEvent) -> CognitiveEvent | None:
         if self.allowed_sources is not None and event.source not in self.allowed_sources:
             return None
@@ -95,6 +100,8 @@ class SensoryLayer:
         self, audio_bytes: bytes, *, source: str, media_type: str = "",
         external_id: str | None = None, metadata: dict[str, Any] | None = None,
     ) -> CognitiveEvent | None:
+        if self._known_or_disallowed(source, Modality.AUDIO, external_id, hashlib.sha256(audio_bytes).hexdigest()):
+            return None
         if self.transcriber is None:
             raise RuntimeError("no transcriber bound for audio ingestion")
         text = self.transcriber.transcribe(audio_bytes, media_type=media_type)
@@ -109,6 +116,8 @@ class SensoryLayer:
         self, image_bytes: bytes, *, source: str, media_type: str = "",
         external_id: str | None = None, metadata: dict[str, Any] | None = None,
     ) -> CognitiveEvent | None:
+        if self._known_or_disallowed(source, Modality.IMAGE, external_id, hashlib.sha256(image_bytes).hexdigest()):
+            return None
         if self.vision is None:
             raise RuntimeError("no vision model bound for image ingestion")
         description = self.vision.describe(image_bytes, media_type=media_type)
@@ -123,6 +132,8 @@ class SensoryLayer:
         self, csv_text: str, *, source: str, external_id: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> CognitiveEvent | None:
+        if self._known_or_disallowed(source, Modality.CSV, external_id, content_hash(csv_text)):
+            return None
         reader = csv.reader(io.StringIO(csv_text))
         rows = list(reader)
         if not rows:
@@ -151,6 +162,8 @@ class SensoryLayer:
         self, pdf_bytes: bytes, *, source: str, external_id: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> CognitiveEvent | None:
+        if self._known_or_disallowed(source, Modality.PDF, external_id, hashlib.sha256(pdf_bytes).hexdigest()):
+            return None
         if self.document_parser is None:
             raise RuntimeError("no document parser bound for PDF ingestion")
         text = self.document_parser.parse(pdf_bytes)
