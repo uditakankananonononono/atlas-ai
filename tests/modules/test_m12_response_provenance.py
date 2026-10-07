@@ -353,3 +353,30 @@ def test_mounted_unrenderable_integer_evidence_is_loss_marked_not_500(workflow,r
  retained=detail['completed']['a'] if workflow and not review else detail['result']
  assert retained['text']=='retained' and retained['usage']=={'input_tokens':None}
  assert detail['invalid_json_paths'] and len(calls)==1
+
+@pytest.mark.parametrize('review',[True,False])
+@pytest.mark.parametrize('kind',['value','key'])
+def test_mounted_invalid_utf8_response_text_is_explicitly_loss_marked(review,kind):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Service:
+  async def execute(self,*args):
+   calls.append(args)
+   metadata={'normal':'অসমীয়া café 🌿'}
+   metadata['bad' if kind=='value' else '\ud800']='\udfff' if kind=='value' else 'kept elsewhere'
+   result=ModelResult('retained','fixture',None if review else .9,metadata=metadata)
+   if review:raise ConfidenceUnavailable(result)
+   return result
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service()
+ response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==422,response.text
+ detail=response.json()['detail'];assert detail['state']==('review_required' if review else 'invalid_output')
+ metadata=detail['result']['metadata'];assert metadata['normal']=='অসমীয়া café 🌿'
+ if kind=='value':assert metadata['bad'] is None
+ else:assert set(metadata)=={'normal'}
+ assert detail['invalid_json_paths'] and detail['result']['text']=='retained' and len(calls)==1
+ response.content.decode('utf-8')
