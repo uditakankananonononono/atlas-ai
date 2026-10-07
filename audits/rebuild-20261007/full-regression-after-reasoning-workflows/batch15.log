@@ -1,0 +1,30 @@
+......................................................................s. [ 30%]
+........F............................................................... [ 61%]
+........................................................................ [ 92%]
+..................                                                       [100%]
+=================================== FAILURES ===================================
+____________________ test_real_sandbox_timeout_is_enforced _____________________
+
+env = (<function env.<locals>.make at 0x7f5e7762ba60>, <app.modules.m00_approval_center.service.Service object at 0x7f5e7c19c290>)
+
+    @needs_bwrap
+    def test_real_sandbox_timeout_is_enforced(env):
+        make, center = env
+        p = make(smoke_limits=SmokeLimits(timeout_seconds=2))
+        entry = install(p, center, b"while True:\n    pass\n")
+        job = smoke(p, center, entry["operation_id"])
+>       assert job["state"] == "failed" and job["receipt"]["timed_out"] is True
+E       AssertionError: assert ('failed' == 'failed'
+E         
+E           failed and False is True)
+
+tests/modules/test_m22_smoke_run.py:134: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m22_smoke_run.py::test_real_sandbox_timeout_is_enforced
+1 failed, 232 passed, 1 skipped, 1 warning in 30.66s
