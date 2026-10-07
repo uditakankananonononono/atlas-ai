@@ -93,6 +93,40 @@ class WorkflowTests(unittest.TestCase):
         with self.assertRaisesRegex(PermissionError, "changed after approval"):
             self.manager.execute_action(staged.id, Browser())
 
+    def test_successful_execution_not_mislabeled_failed_when_workspace_moved(self):
+        # Browser submit completed, but the workspace left STAGED meanwhile (e.g.
+        # withdrawn). The browser effect honestly SUCCEEDED; relabeling the action
+        # FAILED would invite a duplicate submit on retry.
+        self.make_ready()
+        staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm": True})
+        self.manager.approve_action(staged.id, "approval-1", Verifier())
+        ws = self.repo.get_workspace(self.ws.id)
+        ws.status = ApplicationStatus.WITHDRAWN
+        self.repo.save_workspace(ws)
+        with self.assertRaises(ValueError):
+            self.manager.execute_action(staged.id, Browser())
+        action = self.repo.get_action(staged.id)
+        self.assertEqual(action.state, ActionState.SUCCEEDED)
+        self.assertEqual(action.result, {"receipt": "ABC123"})
+
+    def test_workspace_save_conflict_does_not_relabel_completed_execution(self):
+        # A concurrent workspace save (CAS conflict) after a successful browser
+        # effect likewise must not flip the action to FAILED.
+        self.make_ready()
+        staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {"confirm": True})
+        self.manager.approve_action(staged.id, "approval-1", Verifier())
+
+        original = self.repo.save_workspace
+        def conflicting_save(workspace, expected_version=None):
+            if expected_version is not None:
+                raise RuntimeError("simulated persistence conflict")
+            return original(workspace, expected_version)
+        self.repo.save_workspace = conflicting_save
+        with self.assertRaises(RuntimeError):
+            self.manager.execute_action(staged.id, Browser())
+        action = self.repo.get_action(staged.id)
+        self.assertEqual(action.state, ActionState.SUCCEEDED)
+
     def test_browser_failure_recorded(self):
         self.make_ready(); staged = self.manager.stage_browser_action(self.ws.id, "fill_form", "https://example.test/apply", {})
         self.manager.approve_action(staged.id, "approval-1", Verifier())

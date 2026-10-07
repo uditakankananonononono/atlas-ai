@@ -116,14 +116,18 @@ class CompetitionManager:
         action.state = ActionState.EXECUTING; action.updated_at = utcnow(); self.repo.save_action(action)
         try:
             action.result = executor.execute(action.action, action.target_url, action.payload)
-            action.state = ActionState.SUCCEEDED
-            if action.action == "submit_application":
-                ws = self.repo.get_workspace(action.application_id); version = ws.version
-                if ws.status != ApplicationStatus.STAGED: raise ValueError("workspace is no longer staged")
-                ws.status = ApplicationStatus.SUBMITTED; ws.updated_at = utcnow(); self.repo.save_workspace(ws, expected_version=version)
         except Exception as exc:
             action.state = ActionState.FAILED; action.error = str(exc); action.updated_at = utcnow(); self.repo.save_action(action); raise
-        action.updated_at = utcnow(); return self.repo.save_action(action)
+        # The executor completed: the browser effect happened. A later
+        # bookkeeping failure (workspace left STAGED, or a persistence conflict)
+        # must not relabel the completed effect as FAILED - that would invite a
+        # duplicate submit on retry. Persist SUCCEEDED before the bookkeeping.
+        action.state = ActionState.SUCCEEDED; action.updated_at = utcnow(); self.repo.save_action(action)
+        if action.action == "submit_application":
+            ws = self.repo.get_workspace(action.application_id); version = ws.version
+            if ws.status != ApplicationStatus.STAGED: raise ValueError("workspace is no longer staged; submission effect already executed")
+            ws.status = ApplicationStatus.SUBMITTED; ws.updated_at = utcnow(); self.repo.save_workspace(ws, expected_version=version)
+        return self.repo.save_action(action)
 
     def record_status_observation(self, observation: StatusObservation) -> ApplicationWorkspace:
         ws = self.repo.get_workspace(observation.application_id)
