@@ -204,7 +204,7 @@ class Service:
         new_messages = 0
         drafts = 0
         for message_id in message_ids:
-            if self.repository.has_message(message_id):
+            if self.repository.has_message(message_id, account_id=account.id):
                 continue
             raw = await self.gmail.get_message(access_token, message_id)
             drafted = await self._ingest_message(account.id, raw)
@@ -258,7 +258,7 @@ class Service:
             ],
         )
         if classification.category in ACTIONABLE_CATEGORIES and "SENT" not in raw.labels:
-            await self._draft_reply(message_id, raw, classification, actions)
+            await self._draft_reply(message_id, raw, classification, actions, account_id=account_id)
             return True
         return False
 
@@ -278,8 +278,9 @@ class Service:
         raw: GmailRawMessage,
         classification: Classification,
         actions: list[ActionItem],
+        *, account_id: str,
     ) -> EmailDraftView:
-        context = self._context_window(raw)
+        context = self._context_window(raw, account_id=account_id)
         action_lines = "\n".join(f"- {a.action}" for a in actions) or "- (none extracted)"
         graph_facts: list[str] = self.graph_context(raw.sender) if self.graph_context else []
         graph_block = "\n".join(f"- {fact}" for fact in graph_facts) or "- (none)"
@@ -302,6 +303,7 @@ class Service:
             action_type="send_email_reply",
             payload={
                 "tenant_id": self.tenant_id,
+                "account_id": account_id,
                 "draft_id": draft_id,
                 "message_id": message_id,
                 "gmail_id": raw.gmail_id,
@@ -331,14 +333,14 @@ class Service:
             subject=subject, body=body, model=model, created_at=datetime.now(timezone.utc),
         )
 
-    def _context_window(self, raw: GmailRawMessage, max_chars: int = 6000) -> str:
+    def _context_window(self, raw: GmailRawMessage, max_chars: int = 6000, *, account_id: str) -> str:
         """Recent related emails: same thread first, then same sender."""
         pieces: list[str] = []
         total = 0
         seen = {raw.gmail_id}
         rows: list[EmailMessageRow] = []
         if raw.thread_id:
-            rows.extend(self.repository.thread_messages(raw.thread_id, limit=5))
+            rows.extend(self.repository.thread_messages(raw.thread_id, limit=5, account_id=account_id))
         for row in rows:
             if row.gmail_id in seen:
                 continue
