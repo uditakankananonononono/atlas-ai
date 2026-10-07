@@ -223,7 +223,8 @@ class Service:
                 drafts += 1
         if self.repository.unresolved_draft_work(account.id):
             raise DraftPipelineUnresolvedError('draft pipeline still in flight; no checkpoint advance until source reconciliation or active owner completes')
-        self.repository.update_history_id(account.id, history_id)
+        if not self.repository.checkpoint_history(account.id,account.history_id,history_id):
+            raise DraftPipelineUnresolvedError('history checkpoint changed or unfinished pipeline; reload, no blind retry')
         return IngestResult(
             email_address=email_address, history_id=history_id,
             fetched=fetched, new_messages=new_messages, drafts_proposed=drafts,
