@@ -52,3 +52,14 @@ def test_authenticated_routes_expose_world_goal_and_evaluation(tmp_path):
       evaluation=client.post('/api/v1/agi-runtime/evaluations/cross-domain',json={'strategy':'sum_items','cases':[{'id':'a','domain':'math','problem':{'items':[1]},'expected':1},{'id':'b','domain':'ops','problem':{'items':[2]},'expected':2,'source_domain':'math'}]})
       assert evaluation.status_code==201 and evaluation.json()['worst_domain_accuracy']==1
     finally: app.dependency_overrides.clear()
+
+
+def test_hash_chain_api_does_not_claim_evidence_truth_or_independent_anchor(tmp_path):
+ service=AGIRuntimeService('t',data_dir=str(tmp_path),approval_gate=InMemoryApprovalGate())
+ app.dependency_overrides[get_agi_service]=lambda:service
+ try:
+  data=TestClient(app).get('/api/v1/agi-runtime/world/snapshots/verify').json()
+  assert data['valid'] is True
+  assert data['status']=='stored_snapshot_hash_chain_consistency_only'
+  assert data['independent_anchor_verified'] is data['evidence_truth_verified'] is data['completeness_verified'] is False
+ finally:app.dependency_overrides.clear()
