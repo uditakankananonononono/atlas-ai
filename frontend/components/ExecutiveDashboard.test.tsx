@@ -315,3 +315,10 @@ it("does not repopulate a rerun dialog from old-base detail completions",async()
  rerender(<ExecutiveDashboard apiBase="/new"/>);await settle();await act(async()=>{pending.resolve({id:"r1",status:"pending",payload:{}})});await settle();
  expect(screen.queryByRole("dialog",{name:"Re-run approval"})).toBeNull();
 });
+it("old detail cannot overwrite new base same-path dialog",async()=>{
+ const old=deferred<any>();apiMock.rerunSchedules.mockResolvedValue(card);apiMock.approvalAudit.mockResolvedValue([]);
+ apiMock.approvalRequest.mockReturnValueOnce(old.promise).mockResolvedValue({id:"r1",status:"pending",payload:{reason:"NEW DETAIL"}});
+ const {rerender}=render(<ExecutiveDashboard apiBase="/old"/>);await settle();await userEvent.click(screen.getByRole("button",{name:"Open approval for re-run of orig-7"}));
+ rerender(<ExecutiveDashboard apiBase="/new"/>);await settle();await userEvent.click(screen.getByRole("button",{name:"Open approval for re-run of orig-7"}));await settle();expect(screen.getByText(/NEW DETAIL/)).toBeTruthy();
+ await act(async()=>{old.resolve({id:"r1",status:"pending",payload:{reason:"OLD DETAIL"}})});await settle();expect(screen.queryByText(/OLD DETAIL/)).toBeNull();expect(screen.getByText(/NEW DETAIL/)).toBeTruthy();
+});
