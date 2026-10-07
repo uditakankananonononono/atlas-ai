@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_model_ideation_preserves_invoked_unknown_not_unavailable _________
+tests/modules/test_m20_ideation_unknown.py:13: in test_model_ideation_preserves_invoked_unknown_not_unavailable
+    ModelIdeationEngine(Model()).generate('fixture',count=1)
+backend/app/modules/m20_general_cognitive_worker/reflection.py:162: in generate
+    raise RuntimeError("ideation model unavailable; no template fallback")
+E   RuntimeError: ideation model unavailable; no template fallback
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_ideation_unknown.py::test_model_ideation_preserves_invoked_unknown_not_unavailable
+1 failed in 1.86s
