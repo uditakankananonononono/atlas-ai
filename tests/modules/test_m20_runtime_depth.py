@@ -2302,3 +2302,21 @@ def test_failed_method_replacement_keeps_active_review_status_and_old_content(mo
  assert runtime.planner.method_status('fixture')=='active'
  assert runtime.planner.methods['fixture']==original
  assert runtime.planner._match_method('fixture').subtasks[0].title=='old'
+
+
+def test_failed_calibration_claim_write_never_enters_live_claims(monkeypatch):
+ runtime,repo=make_runtime()
+ def fail(claim):raise RuntimeError('fixture claim write unavailable')
+ monkeypatch.setattr(repo,'save_claim',fail)
+ with pytest.raises(RuntimeError):runtime.calibration.assess_claim('uncommitted prediction',.9)
+ assert runtime.calibration.claims=={} and repo.list_claims()==[]
+
+
+def test_failed_calibration_resolution_keeps_prediction_unresolved(monkeypatch):
+ runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('prediction',.9)
+ def fail(claim):raise RuntimeError('fixture claim write unavailable')
+ monkeypatch.setattr(repo,'save_claim',fail)
+ with pytest.raises(RuntimeError):runtime.calibration.resolve(claim.id,False)
+ assert runtime.calibration.claims[claim.id].resolved is False
+ assert repo.list_claims()[0].resolved is False
+ assert runtime.calibration.calibration_error() is None
