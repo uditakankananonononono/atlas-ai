@@ -468,6 +468,7 @@ class ReferenceClassForecaster:
         self.cases: list[dict[str, Any]] = []
 
     def add_case(self, features: str, outcome: float, *, label: str | None = None) -> None:
+        SimulationFidelityTracker._finite(outcome)
         self.cases.append({"features": features, "tokens": set(tokenize(features)),
                            "outcome": outcome, "label": label or features})
 
@@ -485,7 +486,9 @@ class ReferenceClassForecaster:
         outcomes = sorted(c["outcome"] for c in matched)
         n = len(outcomes)
         return ReferenceClassForecast(
-            n_cases=n, mean=mean(outcomes), median=median(outcomes),
+            n_cases=n, mean=mean(outcomes),
+            median=(outcomes[n // 2] if n % 2 else
+                    (outcomes[n // 2 - 1] / 2 + outcomes[n // 2] / 2)),
             p25=outcomes[int(0.25 * (n - 1))], p75=outcomes[int(0.75 * (n - 1))],
             matched_cases=[c["label"] for c in matched],
             assumptions=["Outcomes are only as relevant as the reference class is similar",

@@ -934,3 +934,7 @@ Ten actual failures retained: malformedshrinkage/nonfinite/boolnumericinput/over
 ## Planning ratio history views
 
 One actual failure retained: publichistorylist permitsNaN/ratioedit bypassing validation. Privatehistory/detachedread-onlymappinglistviews.113foresightHTTPpass1warning; recorded87adjacent2344pass2warnings38.74s. Publicsnapshotmutationleavesmultiplier2/samplecount1. Localinputintegrityonly, not verified durations/validated forecasts or privatePythonsecurity. Latestfull9869passsource724c275 predatestwelvelaterfixes.
+
+## Supplied reference-case outcome arithmetic
+
+Five actual failures retained: invalidnumericoutcomespublish; evenfinite median overflows1.6e308/1.7e308. Finite numeric/notbool case outcomes; dividedoperandsforevenmedian.118foresightHTTPpass1warning; recorded87adjacent2349pass2warnings39.22s. Syntheticmean/median1.65e308 nowfinite. Lexicalcase matching/fallbackheuristic only, not verified relevance/predictive validity. Publiccases/configvalidation/transportcoercion remain separate. Latestfull9869passsource724c275 predatesthirteenlaterfixes.
