@@ -21,13 +21,14 @@ class SkillLibrary:
         self._skills: dict[str, Skill] = {}
 
     def register(self, skill: Skill) -> Skill:
+        skill = skill.model_copy(deep=True)
         existing = self.find_by_name(skill.name)
         if existing is not None:
             skill.version = existing.version + 1
-            existing.status = SkillStatus.RETIRED
+            self._skills[existing.id].status = SkillStatus.RETIRED
         skill.status = SkillStatus.ACTIVE
         self._skills[skill.id] = skill
-        return skill
+        return skill.model_copy(deep=True)
 
     def compile(
         self,
@@ -49,7 +50,7 @@ class SkillLibrary:
         ]
         if not candidates:
             return None
-        return max(candidates, key=lambda s: s.version)
+        return max(candidates, key=lambda s: s.version).model_copy(deep=True)
 
     def match(self, goal: str, *, limit: int = 3) -> list[Skill]:
         """Keyword-pattern match of a goal against active skills."""
@@ -67,7 +68,7 @@ class SkillLibrary:
             if overlap > 0.0:
                 scored.append((overlap, skill))
         scored.sort(key=lambda pair: pair[0], reverse=True)
-        return [skill for _, skill in scored[:limit]]
+        return [skill.model_copy(deep=True) for _, skill in scored[:limit]]
 
     def retire(self, name: str) -> bool:
         retired = False
@@ -122,17 +123,17 @@ class SkillLibrary:
                           "generalizable_skill_verified": False},
             )
             self._skills[skill.id] = skill
-            proposals.append(skill)
+            proposals.append(skill.model_copy(deep=True))
         return proposals
 
     def activate(self, skill_id: str) -> Skill:
         skill = self._skills[skill_id]
         skill.status = SkillStatus.ACTIVE
-        return skill
+        return skill.model_copy(deep=True)
 
     def list(self, *, status: SkillStatus | None = None) -> list[Skill]:
         return [
-            s for s in self._skills.values()
+            s.model_copy(deep=True) for s in self._skills.values()
             if status is None or s.status == status
         ]
 
