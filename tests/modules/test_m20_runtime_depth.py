@@ -1721,3 +1721,34 @@ def test_runtime_startup_avoids_all_tenant_action_payloads_but_episode_keeps_his
     assert result.state==TaskState.SUCCEEDED
     episode=repo.list_episodes()[-1]
     assert [a.tool for a in episode.actions]==['csv_filter','csv_summary']
+
+
+def test_persisted_action_buffer_is_drained_without_losing_sql_episode_history():
+    runtime,repo=make_runtime()
+    for i in range(10):
+        task=runtime.submit_goal(f'fixture summary {i}',run_immediately=False)
+        runtime.prepare_supplied_plan(task.id,steps=[{'title':'sum','tool':'csv_summary',
+            'arguments':{'csv_text':'amount\n42\n','value_column':'amount'}}])
+        runtime.run_task(task.id)
+        assert runtime.dispatcher.records==[]
+        assert repo.list_actions(task_id=task.id)[0].result['groups'][0]['sum']==42
+    assert len(repo.list_episodes())==10
+    assert all(len(e.actions)==1 for e in repo.list_episodes())
+
+
+def test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates(monkeypatch):
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('fixture',run_immediately=False)
+    runtime.dispatcher.records.extend([ActionRecord(tool='fixture',task_id=task.id) for _ in range(3)])
+    original=repo.save_action;calls=0
+    def flaky(action):
+        nonlocal calls
+        calls+=1
+        if calls==2:raise RuntimeError('fixture save unavailable')
+        return original(action)
+    monkeypatch.setattr(repo,'save_action',flaky)
+    with pytest.raises(RuntimeError):runtime._persist_context(task)
+    assert len(repo.list_actions(task_id=task.id))==1
+    runtime._persist_context(task)
+    assert len(repo.list_actions(task_id=task.id))==3
+    assert runtime.dispatcher.records==[]

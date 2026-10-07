@@ -1,0 +1,55 @@
+........................................................................ [ 58%]
+.................................................FF                      [100%]
+=================================== FAILURES ===================================
+__ test_persisted_action_buffer_is_drained_without_losing_sql_episode_history __
+
+    def test_persisted_action_buffer_is_drained_without_losing_sql_episode_history():
+        runtime,repo=make_runtime()
+        for i in range(10):
+            task=runtime.submit_goal(f'fixture summary {i}',run_immediately=False)
+            runtime.prepare_supplied_plan(task.id,steps=[{'title':'sum','tool':'csv_summary',
+                'arguments':{'csv_text':'amount\n42\n','value_column':'amount'}}])
+            runtime.run_task(task.id)
+>           assert runtime.dispatcher.records==[]
+E           AssertionError: assert [ActionRecord...imezone.utc))] == []
+E             
+E             Left contains one more item: ActionRecord(id='0fbae585-3772-4c55-ad10-fc9fdb38f50e', tool='csv_summary', task_id='8e344f80-df36-4bb7-86c7-23bc5a7a0...fo=datetime.timezone.utc), finished_at=datetime.datetime(2026, 10, 7, 9, 59, 17, 518505, tzinfo=datetime.timezone.utc))
+E             Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:1733: AssertionError
+___ test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f98b18be7b0>
+
+    def test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates(monkeypatch):
+        runtime,repo=make_runtime()
+        task=runtime.submit_goal('fixture',run_immediately=False)
+        runtime.dispatcher.records.extend([ActionRecord(tool='fixture',task_id=task.id) for _ in range(3)])
+        original=repo.save_action;calls=0
+        def flaky(action):
+            nonlocal calls
+            calls+=1
+            if calls==2:raise RuntimeError('fixture save unavailable')
+            return original(action)
+        monkeypatch.setattr(repo,'save_action',flaky)
+        with pytest.raises(RuntimeError):runtime._persist_context(task)
+        assert len(repo.list_actions(task_id=task.id))==1
+        runtime._persist_context(task)
+        assert len(repo.list_actions(task_id=task.id))==3
+>       assert runtime.dispatcher.records==[]
+E       AssertionError: assert [ActionRecord...shed_at=None)] == []
+E         
+E         Left contains 3 more items, first extra item: ActionRecord(id='47412224-c9af-43a5-add6-22a42b44d24d', tool='fixture', task_id='691bec31-f249-4f6d-9cfe-f661bebb3924'...ded=True, started_at=datetime.datetime(2026, 10, 7, 9, 59, 17, 630680, tzinfo=datetime.timezone.utc), finished_at=None)
+E         Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:1754: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_persisted_action_buffer_is_drained_without_losing_sql_episode_history
+FAILED tests/modules/test_m20_runtime_depth.py::test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates
+2 failed, 121 passed, 1 warning in 6.73s

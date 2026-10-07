@@ -1156,3 +1156,9 @@ Evidence: 120 runtime tests passed with one warning; 2,499 adjacent tests passed
 A failing restart canary showed runtime initialization loaded all tenant action payloads. Startup now begins with an empty process-local dispatcher record buffer. Episode completion reads that task's retained actions and merges current-run records by ID, preserving pre-restart work without duplicate action entries.
 
 Evidence: 121 runtime tests passed with one warning; 2,500 adjacent tests passed with two warnings in 48.88 seconds. The actual default filter-to-summary pipeline resumes with no global action read and its final episode includes both handlers. This removes one unbounded startup payload load, not all scaling limits: task/memory hydration, current-process action buffers and long single-task episode history still grow. SQL action history remains retained; no archival policy or distributed exactly-once guarantee is claimed. Full 10,081 at source 539fda3 predates four code changes.
+
+## Persisted action buffer draining
+
+Two failing canaries showed successfully saved action payloads accumulated in the process buffer. Runtime flush now drains only the committed prefix, including when a later save fails. Unsaved records remain for retry; SQL history is not deleted. Ten actual default-summary tasks retain their result and one-action episodes without a growing dispatcher buffer. Partial write failure and retry retains exactly three SQL records with no duplicate inserts.
+
+Evidence: 123 runtime tests passed with one warning; 2,502 adjacent tests passed with two warnings. This bounds the post-flush action buffer, not all memory or crash behavior. During one long run before flush, records still accumulate; trace/task/memory stores still grow. No concurrent runtime dispatch locking or exactly-once effect guarantee is added. Full 10,081 at source 539fda3 predates five code changes.
