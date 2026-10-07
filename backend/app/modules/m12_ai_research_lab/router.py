@@ -41,5 +41,12 @@ class ModelRouter:
         ranked.sort(key=lambda x:(x[0],x[1].model_id),reverse=True)
         return RouteDecision(ranked[0][1],tuple(x[1] for x in ranked[1:]),scores,reasons)
 
+def valid_confidence(value) -> bool:
+    return type(value) in (int,float) and 0 <= value <= 1 and isfinite(value)
+
 def confidence_from_logprobs(values: list[float]) -> float | None:
-    return None if not values else sum(exp(x) for x in values)/len(values)
+    # These are log probabilities, not arbitrary model scores. Invalid evidence
+    # is unavailable rather than converted into an apparent success.
+    if not isinstance(values,list) or not values:return None
+    if any(type(x) not in (int,float) or x > 0 or x < -1e308 or not isfinite(x) for x in values):return None
+    return sum(exp(x) for x in values)/len(values)

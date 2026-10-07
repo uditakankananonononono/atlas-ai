@@ -3,7 +3,7 @@ import asyncio
 from dataclasses import dataclass
 from typing import Any
 from .models import ModelProvider, ModelResult, RouteRequest
-from .router import ModelRouter, confidence_from_logprobs
+from .router import ModelRouter, confidence_from_logprobs, valid_confidence
 
 class ConfidenceUnavailable(RuntimeError):
     def __init__(self,result:ModelResult):
@@ -24,8 +24,9 @@ class ResearchExecutor:
         for attempt in range(min(self.policy.max_attempts,len(choices))):
             model=choices[attempt]
             result=await self.provider.generate(model_id=model.model_id,prompt=prompt,context={**context,"attempt_history":history})
-            confidence=result.confidence if result.confidence is not None else confidence_from_logprobs(result.logprobs)
+            confidence=(result.confidence if valid_confidence(result.confidence) else None) if result.confidence is not None else confidence_from_logprobs(result.logprobs)
             if confidence is None:
+                result.confidence=None;result.logprobs=[]
                 result.metadata.update({"review_required":True,"confidence_source":"unavailable","attempts":attempt+1,"history":history,"route_scores":decision.scores})
                 raise ConfidenceUnavailable(result)
             history.append({"model":model.model_id,"confidence":confidence})
