@@ -380,3 +380,25 @@ def test_mounted_invalid_utf8_response_text_is_explicitly_loss_marked(review,kin
  else:assert set(metadata)=={'normal'}
  assert detail['invalid_json_paths'] and detail['result']['text']=='retained' and len(calls)==1
  response.content.decode('utf-8')
+
+@pytest.mark.parametrize('unknown',[True,False])
+def test_single_run_unencodable_error_reason_preserves_hold_classification(unknown):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ from app.core.providers import ProviderOutcomeUnknown
+ calls=[]
+ class Service:
+  async def execute(self,*args):calls.append(args);raise (ProviderOutcomeUnknown if unknown else RuntimeError)('unencodable\ud800')
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service()
+ response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==(409 if unknown else 422),response.text
+ detail=response.json()['detail'];assert detail['reason'] is None and detail['invalid_json_paths'] and detail['retry_allowed'] is False
+ if unknown:assert detail['state']=='unknown'
+ assert len(calls)==1
+
+def test_safe_error_detail_keeps_valid_error_shapes_unchanged():
+ from app.modules.m12_ai_research_lab.response_json import safe_error_detail
+ for detail in ['normal error',{'state':'unknown','reason':'normal','retry_allowed':False}]:
+  assert safe_error_detail(detail)==detail
