@@ -4,7 +4,8 @@ from .models import RouteRequest
 from .executor import ConfidenceUnavailable
 from dataclasses import asdict
 from .schemas import RunIn,WorkflowIn
-from .workflow import Workflow,WorkflowValidationError
+from .workflow import Workflow,WorkflowValidationError,WorkflowNodeFailure
+from app.core.providers import ProviderOutcomeUnknown
 router=APIRouter(prefix="/ai-research-lab",tags=["ai-research-lab"])
 _service=None
 _dag=None
@@ -28,6 +29,16 @@ async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=De
 @router.post("/workflows/run")
 async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tenant),engine=Depends(get_dag_engine)):
     try:return await engine.run(Workflow.from_yaml(body.yaml),{**body.inputs,"tenant_id":tenant.tenant_id})
+    except WorkflowNodeFailure as error:
+        detail={"node_id":error.node_id,"completed":error.completed,"retry_allowed":False,"failed_nodes":[node_id for node_id,_ in error.failures]}
+        if isinstance(error.error,ConfidenceUnavailable):
+            detail.update({"state":"review_required","result":asdict(error.error.result)})
+            raise HTTPException(422,detail) from error
+        if isinstance(error.error,ProviderOutcomeUnknown):
+            detail.update({"state":"unknown","reason":str(error.error)})
+            raise HTTPException(409,detail) from error
+        detail.update({"state":"failed","reason":str(error.error)})
+        raise HTTPException(422,detail) from error
     except WorkflowValidationError as error: raise HTTPException(422,str(error)) from error
 
 from pydantic import BaseModel,Field
