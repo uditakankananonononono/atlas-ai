@@ -50,6 +50,7 @@ class ContextScheduler:
 
     def next_context(self, *, now: datetime | None = None) -> TaskContext | None:
         """Round-robin within the highest priority tier."""
+        now = now or datetime.now(timezone.utc)
         active = self.active()
         if not active:
             return None
@@ -60,6 +61,7 @@ class ContextScheduler:
         return tier[self._cursor]
 
     def order(self, *, now: datetime | None = None) -> list[TaskContext]:
+        now = now or datetime.now(timezone.utc)
         return sorted(self.active(), key=lambda c: self.priority(c, now=now), reverse=True)
 
     def cognitive_load(self) -> dict[str, float]:
@@ -68,7 +70,8 @@ class ContextScheduler:
         active = self.active()
         if not active:
             return {}
-        weights = {c.id: self.priority(c) for c in active}
+        now = datetime.now(timezone.utc)
+        weights = {c.id: self.priority(c, now=now) for c in active}
         total = sum(weights.values()) or 1.0
         return {cid: round(w / total, 4) for cid, w in weights.items()}
 
