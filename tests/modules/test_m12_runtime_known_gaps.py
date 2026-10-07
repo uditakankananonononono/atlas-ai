@@ -110,3 +110,26 @@ def test_invalid_catalog_quality_rejected_before_provider(quality):
 def test_valid_catalog_quality_retains_eligibility(quality):
  model=ModelCapability('fixture',frozenset({TaskType.RESEARCH}),1000,0,100,quality)
  assert ModelRouter([model]).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture')).primary==model
+
+@pytest.mark.parametrize('invalid',[float('nan'),float('inf'),0,-1,True,False,'100',None,1.5])
+@pytest.mark.parametrize('field',['requested','maximum'])
+def test_invalid_output_limits_rejected_before_provider(invalid,field):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ model=ModelCapability('first',frozenset({TaskType.RESEARCH}),invalid if field=='maximum' else 1000,0,100,.8)
+ req=RouteRequest(TaskType.RESEARCH,invalid if field=='requested' else 100,0,100,'fixture');router=ModelRouter([model])
+ assert router.score(model,req)==(float('-inf'),['invalid output token limits'])
+ with pytest.raises(NoEligibleModel):asyncio.run(ResearchExecutor(router,Provider()).execute(req,'fixture'))
+ assert not calls
+
+@pytest.mark.parametrize('maximum,tokens,price',[(10**1000,10**1000,0),(10**308,10**308,1e308)])
+def test_unrepresentable_estimated_cost_rejected_without_crash(maximum,tokens,price):
+ model=ModelCapability('first',frozenset({TaskType.RESEARCH}),maximum,price,100,.8)
+ req=RouteRequest(TaskType.RESEARCH,tokens,1e308,100,'fixture');router=ModelRouter([model])
+ assert router.score(model,req)==(float('-inf'),['invalid estimated cost'])
+ with pytest.raises(NoEligibleModel):router.route(req)
+
+def test_small_output_limit_rejection_precedes_huge_cost_conversion():
+ model=ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,1,100,.8)
+ assert ModelRouter([model]).score(model,RouteRequest(TaskType.RESEARCH,10**1000,1,100,'fixture'))==(float('-inf'),['output limit'])
