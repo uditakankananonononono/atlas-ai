@@ -646,3 +646,15 @@ def test_optimism_public_records_cannot_rewrite_signed_bias():
     assert cal.bias('fixture') == pytest.approx((0.8, 1))
     with pytest.raises(ValueError):
         cal.adjust(domain='fixture', confidence=True)
+
+
+@pytest.mark.parametrize('probabilities', [{'best': -0.2}, {'best': float('nan')}, {'best': float('inf')}, {'best': True}, {'unknown': 0.1}])
+def test_scenario_weights_validate_finite_nonnegative_known_names(probabilities):
+    with pytest.raises(ValueError):
+        ScenarioPlanner().plan(objective='fixture', drivers=['fixture'], probabilities=probabilities)
+
+
+def test_scenario_large_finite_weights_normalize_without_sum_overflow():
+    result = ScenarioPlanner().plan(objective='fixture', drivers=['fixture'],
+        probabilities={name: 1e308 for name in ScenarioPlanner.DEFAULTS})
+    assert [row['probability'] for row in result['scenarios']] == pytest.approx([0.25] * 4)
