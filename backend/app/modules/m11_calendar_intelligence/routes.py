@@ -251,9 +251,10 @@ def apply_reschedule(approval_id: str, service: Service = Depends(get_service)) 
 
 @router.get("/analytics/meeting-load", response_model=MeetingLoadReport)
 def meeting_load(
-    week_start: date = Query(), service: Service = Depends(get_service)
+    week_start: date = Query(), timezone_name: str = Query(min_length=1), service: Service = Depends(get_service)
 ) -> MeetingLoadReport:
-    return service.meeting_load(week_start)
+    try:return service.meeting_load(week_start, timezone_name=timezone_name)
+    except (ValueError, KeyError) as exc:raise HTTPException(422,"invalid timezone") from exc
 
 from .schedule_risk import ScheduleRiskRequest, analyze_schedule_risk
 

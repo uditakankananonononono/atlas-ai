@@ -948,7 +948,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "meeting_load computes event minutes/count/longest/short gaps; recon clips each duration to day/week boundaries, regression fails old cross-midnight counting. Concurrent events still sum meeting-minutes, not distinct occupied time. Configurable protected focus windows exist in solver. Actual vs planned automatic tracking, completion analytics, learned durations, weekly insights and provider booking protection remain unaccepted. No visual report/provider effect. Status unverified."
+      "notes": "meeting_load computes event minutes/count/longest/short gaps; recon clips each duration to day/week boundaries, regression fails old cross-midnight counting. Concurrent events still sum meeting-minutes, not distinct occupied time. Configurable protected focus windows exist in solver. Actual vs planned automatic tracking, completion analytics, learned durations, weekly insights and provider booking protection remain unaccepted. No visual report/provider effect. Status unverified. Recon local analytics now accepts IANA timezone, requires explicit timezone_name at HTTP boundary, labels response timezone, clips in local dates and measures elapsed durations in UTC (DST-safe). Asia/Calcutta Monday and New York fall-back fixtures/isolated HTTP tests pass; internal method retains labeled UTC default. No full-app auth/report pixels or distinct occupied-time acceptance."
     },
     {
       "row": 86,
