@@ -15,7 +15,9 @@ def sponsorship(data:SponsorshipPackageIn,service:Service=Depends(get_service)):
 @router.post("/invoices",response_model=ArtifactOut,status_code=201)
 def invoice(data:InvoiceIn,service:Service=Depends(get_service)): return service.invoice(data)
 @router.post("/events",response_model=PartnershipEventOut,status_code=201)
-def log_event(data:PartnershipEventIn,service:Service=Depends(get_service)): return service.log_event(data)
+def log_event(data:PartnershipEventIn,service:Service=Depends(get_service)):
+    try:return service.log_event(data)
+    except ValueError as e:raise HTTPException(422,str(e)) from e
 @router.post("/reports",response_model=ArtifactOut,status_code=201)
 def report(data:ReportIn,service:Service=Depends(get_service)): return service.report(data)
 @router.post("/artifacts/{artifact_id}/propose-send",response_model=ApprovalProposal,status_code=201)
