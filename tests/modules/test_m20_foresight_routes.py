@@ -417,3 +417,10 @@ def test_reference_http_does_not_coerce_outcome(client, outcome):
     response = c.post('/api/modules/20/meta/reference-class/cases', json={'features': 'fixture', 'outcome': outcome})
     assert response.status_code == 422
     assert service.reference_class.cases == []
+
+
+@pytest.mark.parametrize('probabilities', [{'best': True}, {'best': '0.2'}, {'best': -0.2}, {'unknown': 0.2}])
+def test_scenario_http_rejects_invalid_or_coerced_weights(client, probabilities):
+    c, _ = client
+    response = c.post('/api/modules/20/meta/scenarios', json={'objective': 'fixture', 'drivers': ['fixture'], 'probabilities': probabilities})
+    assert response.status_code == 422
