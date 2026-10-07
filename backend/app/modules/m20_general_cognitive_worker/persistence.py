@@ -34,20 +34,30 @@ class DurableWorkingMemory(WorkingMemory):
         super().__init__(**kwargs)
         self.repo = repo
 
-    def put(self, chunk: MemoryChunk, *, active_goal: str = "", partition: str = "") -> MemoryChunk:
-        result = super().put(chunk, active_goal=active_goal, partition=partition)
-        if self.get(result.id) is not None:
-            self.repo.save_chunk(result, partition=partition)
+    def _change(self, operation, *args, **kwargs):
+        staged = WorkingMemory(capacity=self.capacity, attention=self.attention)
+        staged._chunks = {cid:chunk.model_copy(deep=True) for cid,chunk in self._chunks.items()}
+        staged._partitions = {partition:list(ids) for partition,ids in self._partitions.items()}
+        result = getattr(staged, operation)(*args, **kwargs)
+        changed = [chunk for cid,chunk in staged._chunks.items()
+                   if cid not in self._chunks or chunk != self._chunks[cid]]
+        removed = [cid for cid in self._chunks if cid not in staged._chunks]
+        if changed or removed:
+            self.repo.change_chunks(changed, removed)
+        self._chunks, self._partitions = staged._chunks, staged._partitions
         return result
 
+    def put(self, chunk: MemoryChunk, *, active_goal: str = "", partition: str = "") -> MemoryChunk:
+        return self._change('put', chunk, active_goal=active_goal, partition=partition)
+
     def _remove(self, chunk_id: str) -> None:
-        super()._remove(chunk_id)
-        self.repo.delete_chunk(chunk_id)
+        self._change('_remove', chunk_id)
 
     def clear_partition(self, partition: str) -> int:
-        cleared = super().clear_partition(partition)
-        self.repo.clear_chunks(partition)
-        return cleared
+        return self._change('clear_partition', partition)
+
+    def refresh_attention(self, active_goal: str, *, partition: str | None = None) -> None:
+        self._change('refresh_attention', active_goal, partition=partition)
 
     @classmethod
     def load(
@@ -58,9 +68,10 @@ class DurableWorkingMemory(WorkingMemory):
         attention: AttentionController | None = None,
     ) -> "DurableWorkingMemory":
         memory = cls(repo, capacity=capacity, attention=attention)
+        staged = WorkingMemory(capacity=capacity, attention=memory.attention)
         for chunk in repo.list_chunks():
-            partition = chunk.context_id or ""
-            WorkingMemory.put(memory, chunk, partition=partition)
+            staged.put(chunk, partition=chunk.context_id or "")
+        memory._chunks, memory._partitions = staged._chunks, staged._partitions
         return memory
 
 

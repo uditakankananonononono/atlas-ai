@@ -1,0 +1,126 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_____ test_failed_working_memory_commit_keeps_live_and_sql_chunks[replace] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4fab344170>
+operation = 'replace'
+
+    @pytest.mark.parametrize('operation',['replace','remove','clear','prune'])
+    def test_failed_working_memory_commit_keeps_live_and_sql_chunks(monkeypatch,operation):
+     repo=fresh_repo();memory=DurableWorkingMemory(repo,capacity=1)
+     old=memory.put(MemoryChunk(type=ChunkType.FACT,content='committed',salience=.1),partition='p')
+     original=repo._session
+     def session():
+      result=original()
+      def fail():raise RuntimeError('fixture chunk commit unavailable')
+      result.commit=fail
+      return result
+     monkeypatch.setattr(repo,'_session',session)
+     with pytest.raises(RuntimeError):
+      if operation=='replace':memory.put(old.model_copy(update={'content':'uncommitted'}),partition='p')
+      elif operation=='remove':memory.remove(old.id)
+      elif operation=='clear':memory.clear_partition('p')
+      else:memory.put(MemoryChunk(type=ChunkType.GOAL,content='replacement',salience=1),partition='p')
+>    assert memory.focused(partition='p')==[old]
+E    AssertionError: assert [MemoryChunk(...ntext_id='p')] == [MemoryChunk(...ntext_id='p')]
+E      
+E      At index 0 diff: MemoryChunk(id='aa094f9f-ea38-42d5-b684-fd6e7612884e', type=<ChunkType.FACT: 'fact'>, content='uncommitted', confidence=1.0, source='', salience=0.1, attention_score=0.3739607593556415, created_at=datetime.datetime(2026, 10, 7, 14, 49, 27, 608543, tzinfo=datetime.timezone.utc), context_id='p') != MemoryChunk(id='aa094f9f-ea38-42d5-b684-fd6e7612884e', type=<ChunkType.FACT: 'fact'>, content='committed', confidence=1.0, source='', salience=0.1, attention_score=0.37498140345893277, created_at=datetime.datetime(2026, 10, 7, 14, 49, 27, 608543, tzinfo=datetime.timezone.utc), context_id='p')
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2394: AssertionError
+_____ test_failed_working_memory_commit_keeps_live_and_sql_chunks[remove] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4fab3b7440>
+operation = 'remove'
+
+    @pytest.mark.parametrize('operation',['replace','remove','clear','prune'])
+    def test_failed_working_memory_commit_keeps_live_and_sql_chunks(monkeypatch,operation):
+     repo=fresh_repo();memory=DurableWorkingMemory(repo,capacity=1)
+     old=memory.put(MemoryChunk(type=ChunkType.FACT,content='committed',salience=.1),partition='p')
+     original=repo._session
+     def session():
+      result=original()
+      def fail():raise RuntimeError('fixture chunk commit unavailable')
+      result.commit=fail
+      return result
+     monkeypatch.setattr(repo,'_session',session)
+     with pytest.raises(RuntimeError):
+      if operation=='replace':memory.put(old.model_copy(update={'content':'uncommitted'}),partition='p')
+      elif operation=='remove':memory.remove(old.id)
+      elif operation=='clear':memory.clear_partition('p')
+      else:memory.put(MemoryChunk(type=ChunkType.GOAL,content='replacement',salience=1),partition='p')
+>    assert memory.focused(partition='p')==[old]
+E    AssertionError: assert [] == [MemoryChunk(...ntext_id='p')]
+E      
+E      Right contains one more item: MemoryChunk(id='ba0e5229-d0af-4e31-aeb3-3b4d9289dc50', type=<ChunkType.FACT: 'fact'>, content='committed', confidence=...851476039, created_at=datetime.datetime(2026, 10, 7, 14, 49, 27, 724437, tzinfo=datetime.timezone.utc), context_id='p')
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2394: AssertionError
+______ test_failed_working_memory_commit_keeps_live_and_sql_chunks[clear] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4fab33d4f0>
+operation = 'clear'
+
+    @pytest.mark.parametrize('operation',['replace','remove','clear','prune'])
+    def test_failed_working_memory_commit_keeps_live_and_sql_chunks(monkeypatch,operation):
+     repo=fresh_repo();memory=DurableWorkingMemory(repo,capacity=1)
+     old=memory.put(MemoryChunk(type=ChunkType.FACT,content='committed',salience=.1),partition='p')
+     original=repo._session
+     def session():
+      result=original()
+      def fail():raise RuntimeError('fixture chunk commit unavailable')
+      result.commit=fail
+      return result
+     monkeypatch.setattr(repo,'_session',session)
+     with pytest.raises(RuntimeError):
+      if operation=='replace':memory.put(old.model_copy(update={'content':'uncommitted'}),partition='p')
+      elif operation=='remove':memory.remove(old.id)
+      elif operation=='clear':memory.clear_partition('p')
+      else:memory.put(MemoryChunk(type=ChunkType.GOAL,content='replacement',salience=1),partition='p')
+>    assert memory.focused(partition='p')==[old]
+E    AssertionError: assert [] == [MemoryChunk(...ntext_id='p')]
+E      
+E      Right contains one more item: MemoryChunk(id='2e01316c-9a0e-497f-9b70-f1b0ef40b8d5', type=<ChunkType.FACT: 'fact'>, content='committed', confidence=...013687339, created_at=datetime.datetime(2026, 10, 7, 14, 49, 27, 780944, tzinfo=datetime.timezone.utc), context_id='p')
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2394: AssertionError
+______ test_failed_working_memory_commit_keeps_live_and_sql_chunks[prune] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4fab33fc20>
+operation = 'prune'
+
+    @pytest.mark.parametrize('operation',['replace','remove','clear','prune'])
+    def test_failed_working_memory_commit_keeps_live_and_sql_chunks(monkeypatch,operation):
+     repo=fresh_repo();memory=DurableWorkingMemory(repo,capacity=1)
+     old=memory.put(MemoryChunk(type=ChunkType.FACT,content='committed',salience=.1),partition='p')
+     original=repo._session
+     def session():
+      result=original()
+      def fail():raise RuntimeError('fixture chunk commit unavailable')
+      result.commit=fail
+      return result
+     monkeypatch.setattr(repo,'_session',session)
+     with pytest.raises(RuntimeError):
+      if operation=='replace':memory.put(old.model_copy(update={'content':'uncommitted'}),partition='p')
+      elif operation=='remove':memory.remove(old.id)
+      elif operation=='clear':memory.clear_partition('p')
+      else:memory.put(MemoryChunk(type=ChunkType.GOAL,content='replacement',salience=1),partition='p')
+>    assert memory.focused(partition='p')==[old]
+E    AssertionError: assert [] == [MemoryChunk(...ntext_id='p')]
+E      
+E      Right contains one more item: MemoryChunk(id='4f83a0aa-08c8-454a-998a-5e44111caa37', type=<ChunkType.FACT: 'fact'>, content='committed', confidence=...013687339, created_at=datetime.datetime(2026, 10, 7, 14, 49, 27, 836476, tzinfo=datetime.timezone.utc), context_id='p')
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2394: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_working_memory_commit_keeps_live_and_sql_chunks[replace]
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_working_memory_commit_keeps_live_and_sql_chunks[remove]
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_working_memory_commit_keeps_live_and_sql_chunks[clear]
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_working_memory_commit_keeps_live_and_sql_chunks[prune]
+4 failed, 169 deselected, 1 warning in 2.17s
