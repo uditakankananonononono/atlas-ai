@@ -24,3 +24,19 @@ def test_evidence_feasibility_experiment_routes():
  dimension={"score":80,"confidence":.8,"notes":"measured"};feas=c.post(f"/idea-incubator/portfolio/ideas/{i}/feasibility-tests",json={k:dimension for k in ("desirability","technical","viability","strategic_fit","compliance")});assert feas.status_code==201 and feas.json()["outcome"]=="pass"
  exp=c.post(f"/idea-incubator/portfolio/ideas/{i}/experiments",json={"name":"Pilot","hypothesis":"Converts","method":"Run it","metric":"conversion","target":10});assert exp.status_code==201;e=exp.json()["id"]
  assert c.patch(f"/idea-incubator/portfolio/ideas/{i}/experiments/{e}",json={"status":"running"}).status_code==200
+
+def test_persist_luxury_venture_invalid_brief_is_422_not_500():
+    # A structurally valid brief that fails build_luxury_venture's semantic
+    # checks (duplicate source_id) must map to 422 like the sibling studio
+    # endpoints, not leak as an unhandled 500.
+    app=FastAPI();app.include_router(router)
+    app.dependency_overrides[get_ledger]=lambda:LedgerService(MemoryIdeaRepository(),"route-actor")
+    c=TestClient(app,raise_server_exceptions=False)
+    def source(sid,title):return {"source_id":sid,"url":"https://example.test/"+title,"title":title,"observed_at":"2026-01-01T00:00:00Z","finding":"finding "+title}
+    def signal(sid):return {"signal_id":sid,"statement":"signal statement","source_ids":["s1"],"importance":0.5}
+    brief={"brand_or_segment":"Segment","sector":"other","customer_job":"a real customer job","constraints":["c1"],
+           "sources":[source("s1","Alpha"),source("s1","Beta")],
+           "signals":[signal("g1"),signal("g2")],
+           "capabilities":[{"capability_id":"cap1","description":"capability","readiness":0.5}]}
+    r=c.post("/idea-incubator/luxury-venture-studio/portfolio",json={"brief":brief,"owner_id":"owner-1"})
+    assert r.status_code==422,r.status_code

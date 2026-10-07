@@ -97,7 +97,9 @@ class LuxuryPortfolioIn(BaseModel):
  owner_id:str=Field(min_length=1,max_length=200)
 @router.post('/luxury-venture-studio/portfolio',response_model=Idea,status_code=201)
 def persist_luxury_venture(data:LuxuryPortfolioIn,service:LedgerService=Depends(get_ledger)):
- studio=build_luxury_venture(data.brief);winner=next(x for x in studio['concepts'] if x['concept_id']==studio['recommended_concept_id'])
+ try:studio=build_luxury_venture(data.brief)
+ except ValueError as error:raise HTTPException(422,str(error)) from error
+ winner=next(x for x in studio['concepts'] if x['concept_id']==studio['recommended_concept_id'])
  return service.create_idea(IdeaCreate(title=winner['name'],problem=data.brief.customer_job,proposed_solution=winner['promise'],tags=['luxury-venture',data.brief.sector],metadata={'brand_or_segment':data.brief.brand_or_segment,'evidence_refs':winner['evidence_refs'],'scorecard':winner['scores'],'review_status':'pending'}))
 
 from .luxury_venture import OutreachPreview,validate_outreach_preview
