@@ -15,6 +15,7 @@ from app.auth.environment import insecure_development_auth_enabled
 from pydantic import BaseModel, Field
 
 from .runtime import GCWRuntime
+from .schemas import Budget
 from .sandbox import SandboxViolation
 
 router = APIRouter(prefix="/api/modules/20/runtime", tags=["m20_runtime"])
@@ -103,7 +104,8 @@ def get_task(task_id: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any
 def step_task(task_id: str, request: StepRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     if runtime.get_task(task_id) is None:
         raise HTTPException(status_code=404, detail="unknown task")
-    context = runtime.run_task(task_id, max_ticks=request.max_ticks)
+    context = runtime.run_task(task_id, max_ticks=request.max_ticks,
+                               budget=Budget(seconds=request.quantum_seconds), yield_on_boundary=True)
     return _task_dict(context)
 
 

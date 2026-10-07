@@ -805,3 +805,20 @@ def test_task_runtime_metadata_migration_preserves_legacy_rows():
    assert connection.execute(sa.text('SELECT runtime_metadata_json FROM m20_tasks')).scalar()=='{}'
    module.downgrade()
    assert connection.execute(sa.text('SELECT id FROM m20_tasks')).scalar()=='legacy'
+
+
+def test_http_task_step_honors_cooperative_quantum_and_keeps_work_active(mounted,monkeypatch):
+ from app.modules.m20_general_cognitive_worker import executive
+ client,runtime,repo,_=mounted;calls=[]
+ async def square(arguments):calls.append(arguments['n']**2);return {'square':calls[-1]}
+ runtime.tools.register(ToolSpec(name='fixture_square_http',description='fixture'),square)
+ context=runtime.submit_goal('fixture',run_immediately=False)
+ context.plan=[PlanNode(title='first',tool='fixture_square_http',arguments={'n':2}),PlanNode(title='second',tool='fixture_square_http',arguments={'n':3})]
+ runtime.repo.save_task(context)
+ original_clock=executive.monotonic
+ clock=iter([0,0,.2]);monkeypatch.setattr(executive,'monotonic',lambda:next(clock))
+ first=client.post(f'/api/modules/20/runtime/tasks/{context.id}/step',json={'quantum_seconds':.1,'max_ticks':10})
+ assert first.status_code==200 and first.json()['state']=='running' and calls==[4]
+ monkeypatch.setattr(executive,'monotonic',original_clock)
+ final=client.post(f'/api/modules/20/runtime/tasks/{context.id}/step',json={'quantum_seconds':1,'max_ticks':1})
+ assert final.status_code==200 and final.json()['state']=='succeeded' and calls==[4,9]
