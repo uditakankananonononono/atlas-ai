@@ -329,11 +329,21 @@ def planning_fallacy_correction(estimate_days: float, historical_overruns: list[
 
 
 def brier_score(predictions: list[tuple[float, bool]]) -> float:
-    """Optimism/Pessimism Calibration: mean squared error of probabilistic
-    predictions against outcomes. Lower is better calibrated."""
-    if not predictions:
-        raise ValueError("predictions required")
-    return mean([(p - (1.0 if outcome else 0.0)) ** 2 for p, outcome in predictions])
+    """Mean squared probability error against supplied exact-bool labels.
+
+    A lower proper score does not independently establish calibration or label truth.
+    """
+    if not isinstance(predictions, list) or not predictions:
+        raise ValueError("prediction pairs required")
+    errors = []
+    for pair in predictions:
+        if not isinstance(pair, (tuple, list)) or len(pair) != 2:
+            raise ValueError("probability/outcome pairs required")
+        probability, outcome = pair
+        if type(probability) not in (int, float) or not math.isfinite(probability) or not 0 <= probability <= 1 or type(outcome) is not bool:
+            raise ValueError("finite numeric probability in [0,1] and exact bool outcome required")
+        errors.append((probability - float(outcome)) ** 2)
+    return math.fsum(errors) / len(errors)
 
 
 def risk_of_ruin_ruin_probability(bankroll: float, bet: float, prob_loss: float) -> float:

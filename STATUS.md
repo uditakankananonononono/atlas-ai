@@ -994,3 +994,7 @@ Eight actual failures retained: invalidswing evaluatescallbackbeforevalidation, 
 ## Supplied Little law finite algebra
 
 Six actual failures retained: bool/negative/nonfiniteinput/undefinedzerodenominator/overflowresult. Exactlytwosuppliedfinite nonnegative numeric/notboolvalues, positive divisiondenominator, finiteresult.172reasoningforesightpass; recorded87adjacent2422pass2warnings43.83s. Steady-statealgebra only, not verifiedqueue stability/validthroughputmeasurement/production performance. Latestfull9944passsourcec5b11ab predatestwelvelaterfixes.
+
+## Brier supplied label score types
+
+Five actual failures retained: string/integeroutcomes/bool/outofrange/NaNprobabilities accepted. Malformedpair alreadyValueError, not countednewfailure. Finite numeric0..1notboolprobability/exactbooloutcome/validpairs/fsum meansquareerror.178reasoningforesightpass; recorded87adjacent2428pass2warnings42.47s. Proper score on supplied labels only; lowermeansquareerror not independent calibration or labeltruth. Latestfull9944passsourcec5b11ab predatesthirteenlaterfixes.
