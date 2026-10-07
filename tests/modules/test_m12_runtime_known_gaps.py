@@ -302,11 +302,11 @@ def test_reported_model_identity_mismatch_currently_accepted():
  assert result.model_id=='substituted-unrequested-model'
  assert result.metadata['requested_model_id']=='first'
 
-@pytest.mark.parametrize('bad_usage',[['not','a','dict'],'usage',900,None,{1:12},{'input_tokens':'900'},{'input_tokens':True},{'input_tokens':1.5}])
+@pytest.mark.parametrize('bad_usage',[['not','a','dict'],'usage',900,None,{1:12},{'input_tokens':'900'},{'input_tokens':True},{'input_tokens':1.5},{'input_tokens':-900}])
 def test_declared_usage_shape_violation_held_unknown_without_fallback(bad_usage):
  # Repair pin: the declared ModelResult usage shape is a string-to-integer mapping.
  # A provider returning any other shape (non-dict, non-string keys, non-integer or
- # boolean values) is held as ProviderOutcomeUnknown after the first call, with no
+ # boolean values, negative counts) is held as ProviderOutcomeUnknown after the first call, with no
  # fallback invocation, because the generation effect already happened. This replaces
  # the earlier characterization that such results were accepted as success.
  from app.core.providers import ProviderOutcomeUnknown
@@ -318,14 +318,15 @@ def test_declared_usage_shape_violation_held_unknown_without_fallback(bad_usage)
  with pytest.raises(ProviderOutcomeUnknown):asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
  assert calls==['first']
 
-def test_valid_usage_mapping_still_accepted_after_shape_guard():
+@pytest.mark.parametrize('valid_usage',[{'input_tokens':900,'output_tokens':100},{'input_tokens':0,'output_tokens':0},{}])
+def test_valid_usage_mapping_still_accepted_after_shape_guard(valid_usage):
  calls=[]
  class Provider:
   async def generate(self,*,model_id,prompt,context):
-   calls.append(model_id);return ModelResult('fixture',model_id,.95,usage={'input_tokens':900,'output_tokens':100})
+   calls.append(model_id);return ModelResult('fixture',model_id,.95,usage=valid_usage)
  executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
  result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
- assert result.usage=={'input_tokens':900,'output_tokens':100} and calls==['first']
+ assert result.usage==valid_usage and calls==['first']
 
 def test_per_request_budget_only_no_aggregate_spend_tracking():
  # Characterization, not billing advice: budget is enforced per request inside router
