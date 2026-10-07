@@ -11,3 +11,23 @@ async def test_engine_passes_declared_parent_outputs():
     wf=Workflow.from_yaml("nodes:\n- {id: a, task: x}\n- {id: b, task: x, depends_on: [a]}\n")
     out=await DagEngine(runner).run(wf,{})
     assert out["b"]["parents"]==["a"]
+
+@pytest.mark.parametrize('raw',['','[]','name: x','nodes: []','nodes: {}','nodes: [1]','nodes: [{task: x}]','nodes: [{id: 1, task: x}]','nodes: [{id: a, task: null}]','nodes: [{id: a, task: x, depends_on: a}]','nodes: [{id: a, task: x, config: []}]','nodes: [','name: []\nnodes: [{id: a, task: x}]','nodes: [{id: a, task: x, depends_on: [b,b]}, {id: b, task: x}]'])
+def test_invalid_yaml_shapes_rejected_with_contract_error(raw):
+ with pytest.raises(WorkflowValidationError):Workflow.from_yaml(raw)
+
+@pytest.mark.parametrize('raw',['[]','nodes: []','nodes: [','nodes: [{id: a, task: x, config: []}]'])
+def test_mounted_workflow_invalid_input_422_before_runner(raw):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ calls=[]
+ async def runner(*args):calls.append(args);return {}
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw,'inputs':{}})
+ assert response.status_code==422 and not calls
+
+@pytest.mark.parametrize('raw',['nodes: [{id: a, id: b, task: x}]','nodes: [{id: a, task: x, config: {budget: 1, budget: 999}}]','nodes: [{id: a, task: x}]\nnodes: [{id: b, task: x}]'])
+def test_duplicate_yaml_keys_not_silently_overwritten(raw):
+ with pytest.raises(WorkflowValidationError,match='duplicate YAML'):Workflow.from_yaml(raw)

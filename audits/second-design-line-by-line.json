@@ -992,7 +992,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Workflow.from_yaml checks IDs/dependencies/cycles; DagEngine asyncio-gathers ready independent nodes and passes declared parent outputs. Runtime wiring uses this engine, not Celery per-node execution. Recursive consensus merging and demonstrated multi-model blog pipeline not established in scoped read. Signed checkpoint machinery exists but is not live workflow receipt acceptance. No model/provider work. Status unverified."
+      "notes": "Workflow.from_yaml checks IDs/dependencies/cycles; DagEngine asyncio-gathers ready independent nodes and passes declared parent outputs. Runtime wiring uses this engine, not Celery per-node execution. Recursive consensus merging and demonstrated multi-model blog pipeline not established in scoped read. Signed checkpoint machinery exists but is not live workflow receipt acceptance. No model/provider work. Status unverified. LocalYAMLcontractrepair rejectsbadroot/node/id/task/dependency/config/emptyDAG, duplicateYAMLkeys, syntax asWorkflowValidationError beforedispatch; mounted422 zero fakecalls.52focusedpass; safeloadermutantkills3duplicatekeyfixtures. Nottypednodeconfig/durableDAG/retryeffectacceptance."
     },
     {
       "row": 90,
