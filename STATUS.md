@@ -1162,3 +1162,9 @@ Evidence: 121 runtime tests passed with one warning; 2,500 adjacent tests passed
 Two failing canaries showed successfully saved action payloads accumulated in the process buffer. Runtime flush now drains only the committed prefix, including when a later save fails. Unsaved records remain for retry; SQL history is not deleted. Ten actual default-summary tasks retain their result and one-action episodes without a growing dispatcher buffer. Partial write failure and retry retains exactly three SQL records with no duplicate inserts.
 
 Evidence: 123 runtime tests passed with one warning; 2,502 adjacent tests passed with two warnings. This bounds the post-flush action buffer, not all memory or crash behavior. During one long run before flush, records still accumulate; trace/task/memory stores still grow. No concurrent runtime dispatch locking or exactly-once effect guarantee is added. Full 10,081 at source 539fda3 predates five code changes.
+
+## Runtime tool discovery and executable local walkthrough
+
+A failing endpoint canary exposed no registered-tool discovery route. GET runtime/tools now returns the actual handler descriptions, risk, preconditions and input schemas without granting approval or claiming external availability. A supplemental fixture assertion was corrected because the mounted test runtime also registers a web_search fixture; its failed output is retained, and the catalog intentionally includes every registered handler.
+
+Evidence: 124 runtime tests passed with one warning; 2,503 adjacent tests passed with two warnings. A separate executable walkthrough with retained actual JSON output uses temporary file SQLite, real default filter and summary, engine reopen, structured dependency bindings, evidence readback and retrospective. Computed total is 15. No model or injected handler is used. The walkthrough documents its narrow scope and no external effects. Full 10,081 at source 539fda3 predates six code changes.

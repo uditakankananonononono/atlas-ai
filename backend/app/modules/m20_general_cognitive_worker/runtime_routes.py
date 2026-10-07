@@ -367,3 +367,12 @@ def task_preflight(task_id: str, request: TaskPreflightRequest,
 @router.get('/supervision')
 def runtime_supervision(runtime: GCWRuntime = Depends(get_runtime)):
     return runtime.supervision()
+
+
+@router.get('/tools')
+def runtime_tool_catalog(runtime: GCWRuntime = Depends(get_runtime)):
+    schemas = {item['function']['name']: item['function']['parameters']
+               for item in runtime.tools.function_schemas()}
+    return {'tools': [dict(item, parameters=schemas[item['name']]) for item in runtime.tools.describe()],
+            'status': 'registered_handlers_only', 'external_availability_verified': False,
+            'approval_granted': False}
