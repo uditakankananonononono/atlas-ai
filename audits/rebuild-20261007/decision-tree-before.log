@@ -1,0 +1,110 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+___________ test_decision_tree_rejects_invalid_branch_or_leaf[spec0] ___________
+
+spec = {'kind': 'chance', 'children': [{'prob': -1, 'node': {'value': 2}}, {'prob': 2, 'node': {'value': 4}}]}
+
+    @pytest.mark.parametrize('spec',[
+     {'kind':'chance','children':[{'prob':-1,'node':{'value':2}},{'prob':2,'node':{'value':4}}]},
+     {'kind':'decision','children':[]}, {'kind':'unknown'}, {'value':float('nan')}, {'value':True}
+    ])
+    def test_decision_tree_rejects_invalid_branch_or_leaf(spec):
+>    with pytest.raises(ValueError):DecisionTreeBuilder().build(spec=spec)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:553: Failed
+___________ test_decision_tree_rejects_invalid_branch_or_leaf[spec1] ___________
+
+spec = {'kind': 'decision', 'children': []}
+
+    @pytest.mark.parametrize('spec',[
+     {'kind':'chance','children':[{'prob':-1,'node':{'value':2}},{'prob':2,'node':{'value':4}}]},
+     {'kind':'decision','children':[]}, {'kind':'unknown'}, {'value':float('nan')}, {'value':True}
+    ])
+    def test_decision_tree_rejects_invalid_branch_or_leaf(spec):
+>    with pytest.raises(ValueError):DecisionTreeBuilder().build(spec=spec)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:553: Failed
+___________ test_decision_tree_rejects_invalid_branch_or_leaf[spec2] ___________
+
+spec = {'kind': 'unknown'}
+
+    @pytest.mark.parametrize('spec',[
+     {'kind':'chance','children':[{'prob':-1,'node':{'value':2}},{'prob':2,'node':{'value':4}}]},
+     {'kind':'decision','children':[]}, {'kind':'unknown'}, {'value':float('nan')}, {'value':True}
+    ])
+    def test_decision_tree_rejects_invalid_branch_or_leaf(spec):
+>    with pytest.raises(ValueError):DecisionTreeBuilder().build(spec=spec)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:553: Failed
+___________ test_decision_tree_rejects_invalid_branch_or_leaf[spec3] ___________
+
+spec = {'value': nan}
+
+    @pytest.mark.parametrize('spec',[
+     {'kind':'chance','children':[{'prob':-1,'node':{'value':2}},{'prob':2,'node':{'value':4}}]},
+     {'kind':'decision','children':[]}, {'kind':'unknown'}, {'value':float('nan')}, {'value':True}
+    ])
+    def test_decision_tree_rejects_invalid_branch_or_leaf(spec):
+>    with pytest.raises(ValueError):DecisionTreeBuilder().build(spec=spec)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:553: Failed
+___________ test_decision_tree_rejects_invalid_branch_or_leaf[spec4] ___________
+
+spec = {'value': True}
+
+    @pytest.mark.parametrize('spec',[
+     {'kind':'chance','children':[{'prob':-1,'node':{'value':2}},{'prob':2,'node':{'value':4}}]},
+     {'kind':'decision','children':[]}, {'kind':'unknown'}, {'value':float('nan')}, {'value':True}
+    ])
+    def test_decision_tree_rejects_invalid_branch_or_leaf(spec):
+>    with pytest.raises(ValueError):DecisionTreeBuilder().build(spec=spec)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:553: Failed
+_____________ test_decision_tree_cycle_fails_with_controlled_error _____________
+
+    def test_decision_tree_cycle_fails_with_controlled_error():
+     spec={'kind':'decision','children':[]};spec['children'].append({'node':spec})
+>    with pytest.raises(ValueError,match='cyclic'):DecisionTreeBuilder().build(spec=spec)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:558: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:683: in build
+    node = self._parse(spec)
+           ^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:706: in _parse
+    children.append((prob, self._parse(child["node"])))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:706: in _parse
+    children.append((prob, self._parse(child["node"])))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   RecursionError: maximum recursion depth exceeded
+!!! Recursion detected (same locals & position)
+_ test_raw_decision_tree_rejects_invalid_probabilities_unknown_kind_and_cycles _
+
+    def test_raw_decision_tree_rejects_invalid_probabilities_unknown_kind_and_cycles():
+     for node in [R.DecisionNode('unknown'),R.DecisionNode('decision'),R.DecisionNode('chance',children=[(-1,R.DecisionNode('leaf',2)),(2,R.DecisionNode('leaf',4))])]:
+>     with pytest.raises(ValueError):R.evaluate_decision_tree(node)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E     Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:179: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy.py::test_decision_tree_rejects_invalid_branch_or_leaf[spec0]
+FAILED tests/modules/test_m20_strategy.py::test_decision_tree_rejects_invalid_branch_or_leaf[spec1]
+FAILED tests/modules/test_m20_strategy.py::test_decision_tree_rejects_invalid_branch_or_leaf[spec2]
+FAILED tests/modules/test_m20_strategy.py::test_decision_tree_rejects_invalid_branch_or_leaf[spec3]
+FAILED tests/modules/test_m20_strategy.py::test_decision_tree_rejects_invalid_branch_or_leaf[spec4]
+FAILED tests/modules/test_m20_strategy.py::test_decision_tree_cycle_fails_with_controlled_error
+FAILED tests/modules/test_m20_reasoning.py::test_raw_decision_tree_rejects_invalid_probabilities_unknown_kind_and_cycles
+7 failed, 77 deselected in 1.62s

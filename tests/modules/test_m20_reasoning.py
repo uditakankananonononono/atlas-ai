@@ -172,3 +172,10 @@ def test_monte_carlo_large_finite_population_statistics_are_json_safe():
  out=R.monte_carlo_simulation(lambda rng:next(values),trials=10)
  assert out['mean']==0 and out['std']==pytest.approx(1e300)
  json.dumps(out,allow_nan=False)
+
+
+def test_raw_decision_tree_rejects_invalid_probabilities_unknown_kind_and_cycles():
+ for node in [R.DecisionNode('unknown'),R.DecisionNode('decision'),R.DecisionNode('chance',children=[(-1,R.DecisionNode('leaf',2)),(2,R.DecisionNode('leaf',4))])]:
+  with pytest.raises(ValueError):R.evaluate_decision_tree(node)
+ cycle=R.DecisionNode('decision',children=[]);cycle.children.append((1,cycle))
+ with pytest.raises(ValueError,match='cyclic'):R.evaluate_decision_tree(cycle)
