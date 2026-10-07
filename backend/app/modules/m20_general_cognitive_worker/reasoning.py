@@ -35,8 +35,8 @@ def expected_value(outcomes: list[tuple[float, float]]) -> float:
 
 def kelly_criterion(prob_win: float, win_odds: float) -> float:
     """Kelly Criterion Bet Sizing: optimal growth fraction f* = p - q/b."""
-    if not 0.0 <= prob_win <= 1.0 or win_odds <= 0:
-        raise ValueError("need 0<=p<=1 and positive odds")
+    if any(type(v) not in (int, float) or not math.isfinite(v) for v in (prob_win, win_odds)) or not 0.0 <= prob_win <= 1.0 or win_odds <= 0:
+        raise ValueError("need finite numeric0<=p<=1 and positive odds")
     fraction = prob_win - (1 - prob_win) / win_odds
     return max(0.0, fraction)
 
