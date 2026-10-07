@@ -13,6 +13,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Any, Awaitable, Callable, Literal, Protocol
 from uuid import uuid4
+from threading import RLock
 
 from pydantic import BaseModel, Field
 
@@ -27,6 +28,8 @@ MessageStatus = Literal[
     "draft",
     "pending_approval",
     "approved",
+    "sending",
+    "delivery_unknown",
     "denied",
     "sent",
     "replied",
@@ -39,7 +42,9 @@ MessageKind = Literal["initial", "follow_up", "survey", "proposal", "pr_pitch"]
 _ALLOWED_TRANSITIONS: dict[str, set[str]] = {
     "draft": {"pending_approval", "cancelled"},
     "pending_approval": {"approved", "denied", "cancelled"},
-    "approved": {"sent", "cancelled", "failed"},
+    "approved": {"sending", "sent", "cancelled", "failed"},
+    "sending": {"sent", "delivery_unknown"},
+    "delivery_unknown": set(),
     "denied": set(),
     "sent": {"replied", "bounced", "failed"},
     "replied": set(),
@@ -138,6 +143,7 @@ class CampaignRepository(Protocol):
     def get_campaign(self, campaign_id: str) -> Campaign | None: ...
     def list_campaigns(self, project_id: str | None = None) -> list[Campaign]: ...
     def save_message(self, message: OutreachMessage, event: MessageEvent) -> OutreachMessage: ...
+    def claim_delivery(self, message: OutreachMessage, event: MessageEvent) -> bool: ...
     def get_message(self, message_id: str) -> OutreachMessage | None: ...
     def list_messages(
         self,
@@ -155,6 +161,8 @@ class InMemoryCampaignRepository:
         self._campaigns: dict[str, Campaign] = {}
         self._messages: dict[str, OutreachMessage] = {}
         self._events: dict[str, list[MessageEvent]] = {}
+        self._delivery_claims: set[str] = set()
+        self._delivery_lock = RLock()
 
     def save_campaign(self, campaign: Campaign) -> Campaign:
         stored = campaign.model_copy(deep=True)
@@ -176,6 +184,15 @@ class InMemoryCampaignRepository:
         self._messages[stored.id] = stored
         self._events.setdefault(stored.id, []).append(event.model_copy(deep=True))
         return stored.model_copy(deep=True)
+
+    def claim_delivery(self, message: OutreachMessage, event: MessageEvent) -> bool:
+        with self._delivery_lock:
+            current = self._messages.get(message.id)
+            if message.id in self._delivery_claims or current is None or current.status != "approved" or current.version != message.version or current.approval_id != message.approval_id:
+                return False
+            self._delivery_claims.add(message.id)
+            self.save_message(message.model_copy(update={"status": "sending", "version": message.version + 1, "updated_at": event.at}), event)
+            return True
 
     def get_message(self, message_id: str) -> OutreachMessage | None:
         item = self._messages.get(message_id)

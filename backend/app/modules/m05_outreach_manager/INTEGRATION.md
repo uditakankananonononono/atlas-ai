@@ -96,3 +96,26 @@ equity/cap-table percentages with over-authorization rejection, fundraising
 runway math, financial projection arithmetic, single-multiple valuation with
 caveats, diligence coverage %, term-sheet give-for-must trade plan, M&A implied
 multiple, IPO readiness scorecard.
+
+## Durable delivery claim (reconstruction, 2026-10-07)
+
+`send_approved` claims the message before calling its sender. SQL stores an
+immutable `(tenant_id, message_id)` claim and conditionally changes the exact
+approved message/version/approval to `sending` in the same transaction. The
+memory implementation has an equivalent lock/claim guard. A claimed message
+cannot be sent again even if a legacy stale write restores `approved`.
+
+Sender exceptions or cancellation record `delivery_unknown` where persistence
+is available. A returned receipt followed by a persistence error leaves the
+claim active and reports reconciliation needed. Process death can leave
+`sending` with no receipt. None of these cases proves that the message was
+unsent; there is no automatic claim release or retry. Reconciliation requires
+provider/source evidence and is not implemented by this patch. Delivery claims
+are not a permission grant; recipient/content approval and sender account scope
+still apply. No external SMTP send was used to validate this change.
+
+Migrations add `m05_delivery_claims`; the regression covers fresh migration and
+downgrade/re-upgrade, two separate PostgreSQL claim processes, fake-sender
+concurrency, exceptions, cancellation, uncertain receipts and persistence errors.
+General campaign/contact edit CAS, provider-authenticated delivery reconciliation
+and a real SMTP integration remain outside this evidence.

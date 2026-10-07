@@ -23,7 +23,7 @@ from typing import Any, Protocol
 
 from pydantic import BaseModel, Field
 
-from .campaigns import CampaignService, MessageEvent, OutreachMessage
+from .campaigns import CampaignService, MessageEvent, OutreachMessage, KIND_TO_ACTION_TYPE
 
 
 class DeliveryError(RuntimeError):
@@ -177,6 +177,8 @@ class DeliveryService:
             raise DeliveryApprovalError("bound approval does not exist")
         if approval.status != "approved":
             raise DeliveryApprovalError(f"bound approval is {approval.status}, not approved")
+        if approval.action_type != KIND_TO_ACTION_TYPE[message.kind]:
+            raise DeliveryApprovalError("bound approval has a different action type")
         contact = self.campaigns._contact(message.contact_id)
         mismatch = self._payload_mismatch(message, approval, recipient=str(contact.email))
         if mismatch:
@@ -184,25 +186,34 @@ class DeliveryService:
             raise DeliveryApprovalError(
                 "message content changed after approval; re-approval required"
             )
+        event = MessageEvent(message_id=message.id, event="delivery_claimed", at=self.campaigns._clock(), details={"approval_id": message.approval_id})
+        if not self.campaigns.campaigns.claim_delivery(message, event):
+            raise DeliveryApprovalError("delivery already claimed or message changed; reconcile before any retry")
         try:
             receipt = await self.sender.send(
                 to=str(contact.email),
                 subject=message.subject,
                 body=message.body,
             )
-        except DeliverySendError as exc:
-            self.campaigns.record_delivery_failure(message.id, reason=str(exc))
+        except BaseException as exc:
+            # SMTP acceptance may precede a disconnect/cancellation. Never infer
+            # unsent and reopen a retry; the immutable claim remains in all cases.
+            try:
+                self.campaigns._transition(self.campaigns.get_message(message.id), "delivery_unknown", "delivery_unknown", {"reason": type(exc).__name__})
+            except Exception:
+                pass  # durable claim still blocks resending if audit/state write fails
             raise
-        sent = self.campaigns.mark_sent(
-            message.id,
-            thread_id=receipt.thread_id,
-            provider_message_id=receipt.provider_message_id,
-        )
-        return sent
+        if receipt.status != "sent":
+            self.campaigns._transition(self.campaigns.get_message(message.id), "delivery_unknown", "delivery_unknown", {"reason": "sender did not confirm sent"})
+            raise DeliverySendError("sender outcome uncertain; reconcile before any retry")
+        try:
+            return self.campaigns.mark_sent(message.id, thread_id=receipt.thread_id, provider_message_id=receipt.provider_message_id)
+        except Exception as exc:
+            raise DeliverySendError("sender returned a receipt but persistence failed; reconcile before any retry") from exc
 
     def delivery_audit(self, message_id: str) -> list[MessageEvent]:
         """Every delivery-relevant audit event for one message."""
-        relevant = {"sent", "failed", "bounced", "blocked_payload_mismatch"}
+        relevant = {"sent", "failed", "bounced", "blocked_payload_mismatch", "delivery_claimed", "delivery_unknown"}
         return [
             event
             for event in self.campaigns.message_events(message_id)

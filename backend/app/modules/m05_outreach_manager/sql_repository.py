@@ -2,7 +2,8 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
-from sqlalchemy import JSON, DateTime, Integer, String, Text, UniqueConstraint, select
+from sqlalchemy import JSON, DateTime, Integer, String, Text, UniqueConstraint, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 from app.core.database import Base, SessionLocal, engine
 from .campaigns import Campaign, MessageEvent, OutreachMessage
@@ -113,6 +114,14 @@ class MessageEventRow(Base):
     at: Mapped[datetime]=mapped_column(DateTime(timezone=True))
     details: Mapped[dict[str,Any]]=mapped_column(JSON)
 
+class DeliveryClaimRow(Base):
+    """Immutable once-per-message send claim; never cleared by status edits."""
+    __tablename__ = "m05_delivery_claims"
+    tenant_id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    message_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    approval_id: Mapped[str] = mapped_column(String(36))
+    claimed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
 def _campaign(row: CampaignRow) -> Campaign:
     return Campaign(id=row.id,project_id=row.project_id,name=row.name,goal=row.goal,audience=row.audience,status=row.status,max_follow_ups=row.max_follow_ups,follow_up_window_days=row.follow_up_window_days,created_at=_aware(row.created_at),updated_at=_aware(row.updated_at))
 
@@ -149,6 +158,20 @@ class SqlCampaignRepository:
             else:
                 row.sequence=message.sequence; row.kind=message.kind; row.subject=message.subject; row.body=message.body; row.status=message.status; row.approval_id=message.approval_id; row.provider=message.provider; row.model=message.model; row.thread_id=message.thread_id; row.sent_at=message.sent_at; row.updated_at=message.updated_at; row.version=message.version
             db.add(MessageEventRow(tenant_id=self.tenant_id,message_id=message.id,event=event.event,actor=event.actor,at=event.at,details=event.details)); db.flush(); return _message(row)
+    def claim_delivery(self,message:OutreachMessage,event:MessageEvent)->bool:
+        try:
+            with self.sessions.begin() as db:
+                db.add(DeliveryClaimRow(tenant_id=self.tenant_id,message_id=message.id,approval_id=message.approval_id,claimed_at=event.at))
+                db.flush()
+                result=db.execute(update(MessageRow).where(MessageRow.tenant_id==self.tenant_id,MessageRow.id==message.id,MessageRow.status=="approved",MessageRow.version==message.version,MessageRow.approval_id==message.approval_id).values(status="sending",version=message.version+1,updated_at=event.at))
+                if result.rowcount!=1:
+                    db.rollback()
+                    return False
+                db.add(MessageEventRow(tenant_id=self.tenant_id,message_id=message.id,event=event.event,actor=event.actor,at=event.at,details=event.details))
+            return True
+        except IntegrityError:
+            return False
+
     def get_message(self,message_id:str)->OutreachMessage|None:
         with self.sessions() as db:
             row=db.scalar(select(MessageRow).where(MessageRow.tenant_id==self.tenant_id,MessageRow.id==message_id)); return _message(row) if row else None

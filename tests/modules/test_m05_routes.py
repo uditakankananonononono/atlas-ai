@@ -137,10 +137,10 @@ def test_full_pipeline_over_http():
 
     events = client.get(f"/api/v1/outreach-manager/messages/{message['id']}/events").json()
     assert [row["event"] for row in events] == [
-        "drafted", "submitted_for_approval", "approved", "sent",
+        "drafted", "submitted_for_approval", "approved", "delivery_claimed", "sent",
     ]
     audit = client.get(f"/api/v1/outreach-manager/messages/{message['id']}/delivery-audit").json()
-    assert [row["event"] for row in audit] == ["sent"]
+    assert [row["event"] for row in audit] == ["delivery_claimed", "sent"]
     report = client.get(f"/api/v1/outreach-manager/campaigns/{campaign['id']}/delivery-report").json()
     assert report["counts"] == {"sent": 1}
 
