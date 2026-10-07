@@ -1,0 +1,19 @@
+.............F                                                           [100%]
+=================================== FAILURES ===================================
+______ test_supplied_legal_metadata_and_human_labels_are_not_verification ______
+
+    def test_supplied_legal_metadata_and_human_labels_are_not_verification():
+     out=legal_support('case_law_analysis',{**BASE,'issues':[{'issue':'invented','supporting_authority_ids':['A1']}], 'deadlines':[{'date':'2026-10-01','verified_by_human':True}]})
+>    assert out['source_quality']['verified']==0
+E    assert 1 == 0
+
+tests/modules/test_m20_legal_1210_1259.py:82: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_legal_1210_1259.py::test_supplied_legal_metadata_and_human_labels_are_not_verification
+1 failed, 13 passed, 1 warning in 1.45s

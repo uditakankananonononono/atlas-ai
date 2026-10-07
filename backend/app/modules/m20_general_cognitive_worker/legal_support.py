@@ -1,9 +1,8 @@
-"""Source-grounded legal workbench for additional-feature rows 1210-1259.
+"""Supplied legal review templates for rows1210-1259.
 
-This module prepares structured attorney work product.  It deliberately does not
-claim attorney-client status, decide a person's rights, file papers, contact a
-counterparty, or execute a transaction.  Every proposition remains traceable to
-the supplied authority and every missing fact remains visible.
+Formats caller clauses, authority metadata, issue text and checklist labels.
+No law retrieved, source checked, legal rule inferred or deadline verified.
+Named legal capabilities remain incomplete; licensed attorney review required.
 """
 from __future__ import annotations
 
@@ -89,7 +88,8 @@ def _authority(raw: dict[str, Any], index: int) -> dict[str, Any]:
             "citation":str(raw.get("citation", "")).strip(), "as_of":raw.get("as_of"),
             "authority_type":str(raw.get("authority_type", "unknown")),
             "treatment":str(raw.get("treatment", "unverified")), "url_valid":valid,
-            "verified":bool(valid and raw.get("title") and raw.get("jurisdiction") and raw.get("as_of"))}
+            "metadata_complete":bool(valid and raw.get("title") and raw.get("jurisdiction") and raw.get("as_of")),
+            "verified":False,"authority_independently_verified":False}
 
 
 def _issue(issue: dict[str, Any], authority_ids: set[str]) -> dict[str, Any]:
@@ -102,7 +102,7 @@ def _issue(issue: dict[str, Any], authority_ids: set[str]) -> dict[str, Any]:
             "facts":facts, "unknowns":unknowns, "supporting_authority_ids":supporting,
             "contrary_authority_ids":contrary, "missing_authority_ids":missing,
             "analysis":issue.get("analysis"),
-            "confidence":"blocked" if missing or not supporting else ("limited" if unknowns else "supported")}
+            "confidence":"blocked" if missing or not supporting else "unverified"}
 
 
 def _clauses(data: dict[str, Any]) -> list[dict[str, Any]]:
@@ -128,7 +128,7 @@ def _controls(data: dict[str, Any], authorities: list[dict[str, Any]]) -> list[d
         if not evidence: gaps.append("operating evidence missing")
         out.append({"obligation":row.get("obligation"),"authority_ids":aid,"owner":owner,
                     "control":row.get("control"),"evidence":evidence,"cadence":row.get("cadence"),
-                    "status":"gap" if gaps else "evidenced","gaps":gaps})
+                    "status":"gap" if gaps else "supplied_evidence_labels_only","evidence_verified":False,"gaps":gaps})
     return out
 
 
@@ -136,13 +136,13 @@ def _deadlines(data: dict[str, Any]) -> list[dict[str, Any]]:
     out=[]
     for d in data.get("deadlines", []):
         out.append({"name":d.get("name"),"date":d.get("date"),"source_authority_id":d.get("source_authority_id"),
-                    "calculation":d.get("calculation"),"verified_by_human":bool(d.get("verified_by_human")),
-                    "status":"verified" if d.get("verified_by_human") else "human verification required"})
+                    "calculation":d.get("calculation"),"verified_by_human":False,"caller_claimed_verified_by_human":bool(d.get("verified_by_human")),
+                    "status":"human verification required"})
     return out
 
 
 def legal_support(method: str, data: dict[str, Any]) -> dict[str, Any]:
-    """Build auditable legal work product for one exact ledger capability."""
+    """Format supplied legal-review metadata without certifying authority."""
     if method not in PROFILES:
         raise ValueError(f"unsupported legal method: {method}")
     p=PROFILES[method]
@@ -158,6 +158,7 @@ def legal_support(method: str, data: dict[str, Any]) -> dict[str, Any]:
     facts=[str(x) for x in data.get("facts", []) if str(x).strip()]
     unknowns=[str(x) for x in data.get("unknowns", []) if str(x).strip()]
     result: dict[str, Any]={
+        "status":"supplied_legal_review_template_only","named_capability_executed":False,"evidence_verified":False,
         "tenant_id":tenant_id,"method":method,"domain":p["domain"],"artifact":p["artifact"],
         "matter_name":data.get("matter_name"),"jurisdiction":data.get("jurisdiction"),
         "as_of":data.get("as_of") or date.today().isoformat(),"client_role":data.get("client_role"),
@@ -192,14 +193,15 @@ def legal_support(method: str, data: dict[str, Any]) -> dict[str, Any]:
     blockers=[]
     if not data.get("jurisdiction"): blockers.append("jurisdiction not confirmed")
     if not authorities: blockers.append("no legal authorities supplied")
-    if any(not a["verified"] for a in authorities): blockers.append("one or more authorities lack provenance fields")
+    if any(not a["metadata_complete"] for a in authorities): blockers.append("one or more authorities lack provenance fields")
+    blockers.append("Legal authorities, issue support and deadlines independently unverified")
     if unknowns: blockers.append("material facts remain unknown")
     blockers.extend(str(x) for x in data.get("blockers",[]))
     proposition_count=len(issues)
     supported=sum(x["confidence"]=="supported" for x in issues)
     result["evaluation"]={"authority_verification_rate":round(sum(a["verified"] for a in authorities)/max(1,len(authorities)),3),
                           "issue_support_rate":round(supported/max(1,proposition_count),3),
-                          "unknown_fact_count":len(unknowns),"uncertainty_status":"material_gaps" if unknowns or any(not a["verified"] for a in authorities) else "bounded"}
+                          "unknown_fact_count":len(unknowns),"uncertainty_status":"material_gaps" if unknowns or any(not a["verified"] for a in authorities) else "unverified"}
     result["review"]={"status":"blocked" if blockers else "ready_for_attorney_review",
                       "blockers":list(dict.fromkeys(blockers)),
                       "can_file_or_send":False,"can_sign_or_pay":False,
