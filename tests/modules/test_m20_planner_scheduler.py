@@ -188,3 +188,21 @@ def test_registered_library_rejects_invalid_or_ambiguous_dag(subtasks):
  planner=HTNPlanner()
  with pytest.raises(PlanError):planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=subtasks))
  assert not planner.methods
+
+
+def test_scheduler_deadline_selection_uses_one_clock_snapshot(monkeypatch):
+    from datetime import datetime, timedelta, timezone
+    from app.modules.m20_general_cognitive_worker import scheduler as module
+    base = datetime(2026, 10, 7, tzinfo=timezone.utc)
+    class TickingClock:
+        calls = 0
+        @classmethod
+        def now(cls, tz=None):
+            cls.calls += 1
+            return base + timedelta(seconds=cls.calls)
+    scheduler = ContextScheduler()
+    context = TaskContext(goal="deadline", deadline=base + timedelta(days=1))
+    scheduler.add(context)
+    monkeypatch.setattr(module, "datetime", TickingClock)
+    assert scheduler.next_context().id == context.id
+    assert TickingClock.calls == 1

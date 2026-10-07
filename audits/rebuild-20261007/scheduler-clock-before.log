@@ -1,0 +1,45 @@
+...........................F                                             [100%]
+=================================== FAILURES ===================================
+__________ test_scheduler_deadline_selection_uses_one_clock_snapshot ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff1f0e65a00>
+
+    def test_scheduler_deadline_selection_uses_one_clock_snapshot(monkeypatch):
+        from datetime import datetime, timedelta, timezone
+        from app.modules.m20_general_cognitive_worker import scheduler as module
+        base = datetime(2026, 10, 7, tzinfo=timezone.utc)
+        class TickingClock:
+            calls = 0
+            @classmethod
+            def now(cls, tz=None):
+                cls.calls += 1
+                return base + timedelta(seconds=cls.calls)
+        scheduler = ContextScheduler()
+        context = TaskContext(goal="deadline", deadline=base + timedelta(days=1))
+        scheduler.add(context)
+        monkeypatch.setattr(module, "datetime", TickingClock)
+>       assert scheduler.next_context().id == context.id
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_planner_scheduler.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.scheduler.ContextScheduler object at 0x7ff1f0e66930>
+now = None
+
+    def next_context(self, *, now: datetime | None = None) -> TaskContext | None:
+        """Round-robin within the highest priority tier."""
+        active = self.active()
+        if not active:
+            return None
+        active.sort(key=lambda c: self.priority(c, now=now), reverse=True)
+        top_priority = self.priority(active[0], now=now)
+        tier = [c for c in active if self.priority(c, now=now) == top_priority]
+>       self._cursor = (self._cursor + 1) % len(tier)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ZeroDivisionError: integer modulo by zero
+
+backend/app/modules/m20_general_cognitive_worker/scheduler.py:59: ZeroDivisionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_planner_scheduler.py::test_scheduler_deadline_selection_uses_one_clock_snapshot
+1 failed, 27 passed in 1.29s

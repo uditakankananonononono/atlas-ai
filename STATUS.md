@@ -806,3 +806,7 @@ Replacement stored new content before injected embedder; exception left old vect
 ## Retrospective embedding-failure publication correction
 
 Same content-before-embed ordering existed in retrospective snapshot loader/write, outside prior semantic/episodic fix. One failing replacement fixture retained. Compute embedding before publishing retrospective/vector.60reflection/runtimepass1warning; recorded87adjacent2224pass2warnings41.52s. Failed replacement preserves original and failed first write creates no extra record. Injected embedding exception consistency only, not malformed-vector checks, concurrent/store transaction, full close atomicity or lesson truth. No learned reflective cognition/production guarantee.
+
+## Scheduler per-operation clock snapshot correction
+
+Base next_context recomputed implicit wall time during sort/top/equality-tier; deadline priorities differed and empty tier caused modulozero. One initial failure retained via injected advancing clock. next_context/order/cognitive_load now use one timestamp per operation.81planner/scheduler/runtimepass1warning; recorded87adjacent2225pass2warnings39.68s. One deadline selection calls clockonce and returns actual context. This is local scheduling consistency, not starvation/deadline guarantee, measured parallel throughput or production clock reliability; active-context mutations/concurrency remain separate. Fair scheduler already passed explicit snapshot for selection.
