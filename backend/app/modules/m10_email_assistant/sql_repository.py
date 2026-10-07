@@ -213,7 +213,8 @@ class SqlEmailRepository:
                      category: str | None, category_confidence: float,
                      embedding: list[float] | None, unsubscribe_url: str | None, draft_work: dict | None = None) -> bool:
         with self.sessions.begin() as db:
-            self._lock_account(db,account_id)
+            locked=self._lock_account(db,account_id)
+            if draft_work is not None and locked is None:raise ValueError('draft work requires existing owning account')
             values=dict(
                 tenant_id=self.tenant_id, id=message_id, account_id=account_id,
                 gmail_id=gmail_id, thread_id=thread_id, history_id=history_id,
@@ -250,7 +251,7 @@ class SqlEmailRepository:
         allowed={'ready':'model_inflight','model_inflight':'model_done','model_done':'approval_inflight','approval_inflight':'approval_done'}
         if allowed.get(expected)!=target:raise ValueError('illegal draft ownership phase transition')
         with self.sessions.begin() as db:
-            self._lock_account(db,account_id)
+            if self._lock_account(db,account_id) is None:return False
             won=db.execute(update(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.message_id==message_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase==expected).values(phase=target,data=data).returning(DraftWorkRow.message_id)).first()
             if won:self._log(db,'draft_work',message_id,target,{})
             return won is not None
@@ -266,7 +267,7 @@ class SqlEmailRepository:
 
     def finalize_draft_work(self,message_id:str,account_id:str,data:dict)->bool:
         with self.sessions.begin() as db:
-            self._lock_account(db,account_id)
+            if self._lock_account(db,account_id) is None:return False
             from sqlalchemy.dialects.postgresql import JSONB
             matches=cast(DraftWorkRow.data,JSONB)==data if db.get_bind().dialect.name=='postgresql' else DraftWorkRow.data==data
             claimed=db.execute(update(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.message_id==message_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase=='approval_done',matches).values(phase='complete').returning(DraftWorkRow.message_id)).first()

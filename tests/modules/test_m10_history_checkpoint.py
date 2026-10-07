@@ -104,3 +104,14 @@ def test_work_mutation_and_checkpoint_share_account_lock(repo,monkeypatch):
   assert checkpoint.result(timeout=5) is False
  assert repo.get_account('account').history_id=='100'
  assert repo.draft_work('locked','account')['phase']=='ready'
+
+
+def test_orphan_account_work_mutations_fail_closed(repo):
+ with pytest.raises(ValueError,match='account'):
+  repo.save_message(message_id='orphan',account_id='missing',gmail_id='g',thread_id=None,history_id=None,subject='fixture',sender='s',recipients=[],snippet='',body_text='',received_at=None,labels=[],headers={},category='action_required',category_confidence=1,embedding=None,unsubscribe_url=None,draft_work={'actions':[]})
+ assert repo.list_messages()==[] and repo.draft_work('orphan','missing') is None
+ # Historical corrupted work cannot bypass the owning-account lock either.
+ with repo.sessions.begin() as db:db.add(DraftWorkRow(tenant_id='a',message_id='orphan',account_id='missing',phase='ready',data={}))
+ assert not repo.transition_draft_work('orphan','missing','ready','model_inflight',{})
+ assert not repo.finalize_draft_work('orphan','missing',{})
+ assert repo.draft_work('orphan','missing')['phase']=='ready'

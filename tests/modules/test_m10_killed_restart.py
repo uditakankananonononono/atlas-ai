@@ -9,6 +9,7 @@ import asyncio,os,runpy
 from pathlib import Path
 ns=runpy.run_path('tests/modules/test_m10_email_assistant.py')
 svc,repo,approvals,client=ns['make_service'](Path(os.environ['FIXTURE_DIR']))
+repo.save_account(account_id='a',email_address='fixture-a@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
 phase=os.environ['KILL_PHASE']
 mode=os.environ['MODE']
 original=repo.transition_draft_work
