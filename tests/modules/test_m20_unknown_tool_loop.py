@@ -51,3 +51,17 @@ def test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval(
  assert ctx.plan[0].approval_id!='unrelated-handler-token'
  svc.loop.resume_after_approval(ctx,ctx.plan[0].id,True)
  assert len(calls)==1 and ctx.state==TaskState.BLOCKED
+
+def test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save(tmp_path):
+ engine=create_engine(f'sqlite:///{tmp_path / "runtime-unknown.db"}');repo=GCWRepository(engine);repo.create_schema()
+ calls=[];gate=InMemoryApprovalGate();runtime=GCWRuntime(repo,approval_gate=gate);wire(runtime,calls)
+ ctx=TaskContext(goal='fixture',plan=[PlanNode(title='fixture effect',tool='fixture_effect')]);repo.save_task(ctx)
+ pending=runtime.run_task(ctx.id);assert pending.state==TaskState.WAITING_APPROVAL
+ gate.decide(pending.plan[0].approval_id,ApprovalGateDecision.APPROVED)
+ result=runtime.resume(ctx.id,pending.plan[0].id,approved=True)
+ assert result.state==TaskState.BLOCKED and repo.load_task(ctx.id).plan[0].outcome_unknown and len(calls)==1
+ engine.dispose();fresh_engine=create_engine(f'sqlite:///{tmp_path / "runtime-unknown.db"}');fresh=GCWRuntime(GCWRepository(fresh_engine),approval_gate=InMemoryApprovalGate());wire(fresh,calls)
+ assert fresh.run_task(ctx.id).plan[0].outcome_unknown
+ assert fresh.resume(ctx.id,pending.plan[0].id,approved=True).state==TaskState.BLOCKED
+ assert len(calls)==1
+ fresh_engine.dispose()
