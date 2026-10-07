@@ -320,3 +320,12 @@ async def test_custom_runner_top_level_config_mutation_does_not_edit_workflow():
  engine=DagEngine(runner)
  await engine.run(wf,{});await engine.run(wf,{})
  assert calls==[{'prompt':'original'},{'prompt':'original'}] and wf.nodes[0].config=={'prompt':'original'}
+
+@pytest.mark.asyncio
+async def test_validator_node_config_rebinding_does_not_change_execution_or_source():
+ seen=[]
+ def validator(node,inputs):node.config['prompt']='validator-changed'
+ async def runner(task,config,context):seen.append(config['prompt']);return {}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: fixture, config: {prompt: original}}]')
+ await DagEngine(runner,validator=validator).run(wf,{})
+ assert seen==['original'] and wf.nodes[0].config=={'prompt':'original'}
