@@ -52,6 +52,8 @@ These bounded comparisons are assessed as stated. They do not close broader prod
 - `function_schemas`: assessed-compatible for the two export methods against peer b944215; six new canaries pass. Preserve our stronger surrounding spec isolation/schema validation. Live provider compatibility is not established.
 - `retrospectives`: assessed-compatible by retaining our detached snapshots, stage/save/publish ordering, stable restart identity and local execution reports rather than the older peer implementation; focused comparison suite 16 passed. Lesson truth is not independently verified.
 
+- `premortem`: scoped assessed-compatible for AST-identical analyze; additive assess_register preserved with supplied ordinal/control-completeness labels, no verified evidence/probability/approval claim; focused suite 7 passed.
+
 ## Open comparison surfaces
 
 The following surfaces remain unassessed for combined semantic clearance, even where existing local tests pass:
@@ -59,7 +61,6 @@ The following surfaces remain unassessed for combined semantic clearance, even w
 - `risk_register`
 - `htn_planner`: reviewed-payload TOCTOU found and locally fixed with durable hash checking plus exact JSON-snapshot compare-and-set in the activation UPDATE. Two SQLite cross-instance/check-to-write race canaries pass; PostgreSQL multi-writer CAS behavior remains untested. Broader planner comparison remains open.
 - `model_ideation`: additive response path assessed; typed unknown flattening to unavailable/503 corrected to ProviderOutcomeUnknown and 409 with retry_allowed=false. No durable cross-request hold/reconciliation is provided by this service API; that broader boundary remains open. Proposed ideas remain unverified.
-- `premortem`
 - `ActionRow` migration
 - `safety.py`
 - Peer-derived provider/core surface `dd3ca6b2db`: generation POST retry and free-first fallback handling
