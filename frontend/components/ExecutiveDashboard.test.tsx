@@ -161,3 +161,12 @@ describe("Outreach approval card with contact timeline",()=>{
     expect(screen.queryByText(/failed: 500/)).toBeNull();
   });
 });
+
+describe("Dashboard freshness claim",()=>{
+ it.fails("does not call failed polling a live connection",async()=>{
+  apiMock.snapshot.mockRejectedValue(new Error("snapshot unavailable"));
+  render(<ExecutiveDashboard/>);
+  await screen.findByText("snapshot unavailable");
+  expect(screen.queryByText("Live")).toBeNull();
+ });
+});
