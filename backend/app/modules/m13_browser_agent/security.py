@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import ipaddress
+import re
 import json
 import socket
 from collections.abc import Iterable
@@ -62,6 +63,20 @@ def validate_public_url(url: str, allowed_hosts: Iterable[str] | None = None) ->
             raise NavigationBlocked("non-public destination forbidden")
     # Remove a fragment because it is never sent and must not affect approval identity.
     return urlunsplit((parsed.scheme.lower(), parsed.netloc, parsed.path or "/", parsed.query, ""))
+
+
+_SAFE_SEGMENT = re.compile(r"^[A-Za-z0-9_.-]{1,120}$")
+
+
+def safe_artifact_segment(value: str) -> str:
+    """Validate one tenant-controlled id before it becomes a filesystem path segment.
+
+    Rejects separators and the traversal segments "." / ".." so artifact paths
+    always stay inside the per-tenant directory.
+    """
+    if not isinstance(value, str) or not _SAFE_SEGMENT.fullmatch(value) or value in {".", ".."}:
+        raise ValueError("invalid path segment")
+    return value
 
 
 def values_digest(values: dict[str, str]) -> str:

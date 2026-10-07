@@ -79,14 +79,20 @@ def is_pc_session(session_id: str) -> bool:
 
 
 def split_pc_session(session_id: str) -> tuple[str, str]:
-    """Return (device_id, local session name) for a pc.<device>.<name> id."""
+    """Return (device_id, local session name) for a pc.<device>.<name> id.
+
+    Both parts must be safe artifact path segments: the pair is later joined
+    into the per-tenant artifact directory, so separators or traversal
+    segments in the local name would escape it.
+    """
     if not is_pc_session(session_id):
         raise ValueError("not a paired-PC session id")
     rest = session_id[len(PC_SESSION_PREFIX):]
     device_id, _, name = rest.partition(".")
     if not device_id or not name:
         raise ValueError("paired-PC session id must be pc.<device_id>.<name>")
-    return device_id, name
+    from ..security import safe_artifact_segment
+    return safe_artifact_segment(device_id), safe_artifact_segment(name)
 
 
 def make_pc_session(device_id: str, name: str) -> str:

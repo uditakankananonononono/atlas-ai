@@ -7,7 +7,7 @@ from typing import Any
 
 from .domain import ActionType, AuditEvent, RunStatus
 from .forms import FieldDescriptor, match_fields
-from .security import file_digest, validate_public_url, values_digest
+from .security import file_digest, safe_artifact_segment, validate_public_url, values_digest
 
 
 class Service:
@@ -42,7 +42,7 @@ class Service:
 
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
         """Full-page screenshot; masked selectors are covered so field values never land in the image."""
-        directory = self.root / tenant_id / session_id
+        directory = self.root / safe_artifact_segment(tenant_id) / safe_artifact_segment(session_id)
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / f"{secrets.token_hex(12)}.png"
         page = await self.sessions.page(tenant_id, session_id, False)
@@ -87,7 +87,10 @@ class Service:
         return {"status": RunStatus.AWAITING_APPROVAL, "approval_id": view["id"], "snapshot_path": snapshot, "values_digest": digest, "page_url": page_url}
 
     async def submit(self, tenant_id: str, session_id: str, selector: str, values: dict[str, str], approval_id: str) -> dict[str, str]:
-        view = self.approvals.get(approval_id)
+        try:
+            view = self.approvals.get(approval_id)
+        except KeyError as error:
+            raise PermissionError("approval not found") from error
         payload = view.get("payload", {})
         status = view.get("status")
         status = status.value if hasattr(status, "value") else status
