@@ -36,3 +36,11 @@ def safe_workflow_json(value):
 def model_result_fields(result):
     """Shallow projection: diagnostic traversal owns cycles, not asdict."""
     return {key:getattr(result,key) for key in ("text","model_id","confidence","logprobs","usage","metadata")}
+
+def safe_error_detail(detail):
+    safe,invalid=safe_workflow_json(detail)
+    if not invalid:return safe
+    if type(safe) is dict:
+        safe['invalid_json_paths']=invalid
+        return safe
+    return {'reason':safe,'invalid_json_paths':invalid,'retry_allowed':False}

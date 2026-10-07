@@ -2,7 +2,7 @@ from fastapi import APIRouter,Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from .models import RouteRequest
 from .executor import ConfidenceUnavailable
-from .response_json import safe_workflow_json,model_result_fields
+from .response_json import safe_workflow_json,model_result_fields,safe_error_detail
 from .schemas import RunIn,WorkflowIn
 from .workflow import Workflow,WorkflowValidationError,WorkflowNodeFailure
 from app.core.providers import ProviderOutcomeUnknown
@@ -34,8 +34,8 @@ async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=De
         safe,invalid=safe_workflow_json(detail)
         if invalid:safe["invalid_json_paths"]=invalid
         raise HTTPException(422,safe) from error
-    except ProviderOutcomeUnknown as error:raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
-    except RuntimeError as error: raise HTTPException(422,str(error)) from error
+    except ProviderOutcomeUnknown as error:raise HTTPException(409,safe_error_detail({"state":"unknown","reason":str(error),"retry_allowed":False})) from error
+    except RuntimeError as error: raise HTTPException(422,safe_error_detail(str(error))) from error
 @router.post("/workflows/run")
 async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tenant),engine=Depends(get_dag_engine)):
     try:
@@ -59,7 +59,7 @@ async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tena
         safe,invalid=safe_workflow_json(detail)
         if invalid:safe["invalid_json_paths"]=invalid
         raise HTTPException(409 if state=="unknown" else 422,safe) from error
-    except WorkflowValidationError as error: raise HTTPException(422,str(error)) from error
+    except WorkflowValidationError as error: raise HTTPException(422,safe_error_detail(str(error))) from error
 
 from pydantic import BaseModel,Field
 from typing import Any,Literal
