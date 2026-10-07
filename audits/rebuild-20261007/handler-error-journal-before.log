@@ -1,0 +1,31 @@
+........................................................................ [ 54%]
+...........................................................F             [100%]
+=================================== FAILURES ===================================
+___ test_handler_toolerror_is_retained_failed_execution_not_missing_journal ____
+
+    def test_handler_toolerror_is_retained_failed_execution_not_missing_journal():
+        import asyncio
+        from app.modules.m20_general_cognitive_worker.tools import ToolError
+        runtime,repo=make_runtime()
+        calls=[]
+        async def handler(args):calls.append(1);raise ToolError('actual local handler diagnostic')
+        runtime.tools.register(ToolSpec(name='fixture_toolerror',description='fixture',risk=Risk.READ,max_retries=1),handler)
+        task=runtime.submit_goal('fixture diagnostic',run_immediately=False)
+        runtime.prepare_supplied_plan(task.id,steps=[{'title':'diagnostic','tool':'fixture_toolerror','max_attempts':1}])
+        result=runtime.run_task(task.id)
+        assert result.state==TaskState.FAILED
+        actions=repo.list_actions(task_id=task.id)
+>       assert len(actions)==1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/modules/test_m20_runtime_depth.py:1898: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_handler_toolerror_is_retained_failed_execution_not_missing_journal
+1 failed, 131 passed, 1 warning in 7.87s

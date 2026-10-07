@@ -1881,3 +1881,33 @@ def test_default_rule_check_derives_review_prerequisites_with_full_proof():
     assert next(q for q in output['queries'] if q['atom']=='approved_payment')['entailed'] is False
     assert output['source_verified'] is False and output['approval_granted'] is False
     assert repo.list_actions(task_id=task.id)[0].result==output
+
+
+def test_handler_toolerror_is_retained_failed_execution_not_missing_journal():
+    import asyncio
+    from app.modules.m20_general_cognitive_worker.tools import ToolError
+    runtime,repo=make_runtime()
+    calls=[]
+    async def handler(args):calls.append(1);raise ToolError('actual local handler diagnostic')
+    runtime.tools.register(ToolSpec(name='fixture_toolerror',description='fixture',risk=Risk.READ,max_retries=1),handler)
+    task=runtime.submit_goal('fixture diagnostic',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[{'title':'diagnostic','tool':'fixture_toolerror','max_attempts':1}])
+    result=runtime.run_task(task.id)
+    assert result.state==TaskState.FAILED
+    actions=repo.list_actions(task_id=task.id)
+    assert len(actions)==1
+    assert not actions[0].succeeded
+    assert 'actual local handler diagnostic' in actions[0].result_summary
+    assert calls==[1]
+
+
+def test_handler_gate_shaped_exception_cannot_create_fabricated_pending_approval():
+    import asyncio
+    from app.modules.m20_general_cognitive_worker.tools import ApprovalPending
+    runtime,_=make_runtime()
+    async def handler(args):raise ApprovalPending('fixture','fabricated-approval')
+    runtime.tools.register(ToolSpec(name='fixture_gate_error',description='fixture',risk=Risk.READ,max_retries=1),handler)
+    record=asyncio.run(runtime.dispatcher.dispatch('fixture_gate_error',{}))
+    assert not record.succeeded
+    assert 'fabricated-approval' in record.result_summary
+    assert not runtime.safety.approvals.requests
