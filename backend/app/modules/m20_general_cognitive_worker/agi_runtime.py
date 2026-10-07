@@ -91,16 +91,20 @@ class PersistentWorldModel:
                           "FROM world_evidence WHERE tenant=? AND subject=? AND predicate=?",
                           (self.tenant_id, subject, predicate)).fetchall()
         grouped: dict[str, dict[str, Any]] = {}
+        scale = max((weight for _,_,_,weight,_,_ in rows), default=1.0)
         for value_json, source, reliability, weight, at, digest in rows:
             item = grouped.setdefault(value_json, {"value": json.loads(value_json), "support": 0.0,
                                                    "sources": [], "latest_at": at, "evidence_hashes": []})
-            item["support"] += reliability * weight
+            item["support"] += reliability * (weight / scale)
             item["sources"].append(source); item["evidence_hashes"].append(digest)
             item["latest_at"] = max(item["latest_at"], at)
         total = sum(x["support"] for x in grouped.values())
         result = []
         for item in grouped.values():
             item["supplied_support_share"] = round(item["support"] / total, 6) if total else 0.0
+            raw_support = item["support"] * scale
+            item["support"] = raw_support if math.isfinite(raw_support) else None
+            item["support_status"] = "supplied_weight_sum" if item["support"] is not None else "sum_exceeds_float_range"
             item["sources"] = sorted(set(item["sources"]))
             item["status"]="supplied_weight_rollup_only";item["evidence_verified"]=False;item["predictive_confidence_available"]=False
             result.append(item)

@@ -197,3 +197,15 @@ def test_isolated_pure_code_time_limit_and_memory_failure_do_not_pass():
  assert slow['passed'] is False and slow['returncode']!=0
  lab.propose(SynthesizedTool('memory','def run(arguments): return [1]*1000000000','bounded fixture',{},[{'input':{},'expected':1}]))
  assert lab.test('memory')['passed'] is False
+
+
+def test_supplied_weight_shares_stay_finite_when_raw_sum_overflows(tmp_path):
+ import json,math
+ world=PersistentWorldModel(str(tmp_path/'huge.sqlite'),'t')
+ for value in ('a','a','b'):world.observe(subject='x',predicate='p',value=value,source='fixture',weight=1e308)
+ groups=world.hypotheses('x','p')
+ assert [item['supplied_support_share'] for item in groups]==[.666667,.333333]
+ assert groups[0]['support'] is None and groups[0]['support_status']=='sum_exceeds_float_range'
+ assert math.isfinite(groups[1]['support'])
+ json.dumps(groups,allow_nan=False)
+ assert world.verify_chain() and world.snapshot()
