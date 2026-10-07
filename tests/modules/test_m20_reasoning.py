@@ -264,3 +264,9 @@ def test_sensitivity_callback_cannot_change_caller_parameters():
 def test_sensitivity_invalid_evaluator_outputs_reject(output):
     with pytest.raises(ValueError):
         R.sensitivity_analysis(lambda values: output, {'x': 2})
+
+
+@pytest.mark.parametrize('kwargs', [{'throughput': True, 'cycle_time': 1}, {'wip': -1, 'cycle_time': 2}, {'throughput': float('nan'), 'cycle_time': 2}, {'wip': 1, 'throughput': 0}, {'wip': 1, 'cycle_time': 0}, {'throughput': 1e308, 'cycle_time': 2}])
+def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
+    with pytest.raises(ValueError):
+        R.littles_law(**kwargs)
