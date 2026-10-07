@@ -207,6 +207,18 @@ class MemorySocialRepository:
     def get_plan(self, plan_id: str) -> ContentPlan | None: return self.plans.get(plan_id)
     def save_report(self, report: AnalysisReport) -> AnalysisReport: self.reports[report.id]=report; return report
     def get_report(self, report_id: str) -> AnalysisReport | None: return self.reports.get(report_id)
+    def finalize_publish(self, entry, record):
+        with self._schedule_lock:
+            previous = deepcopy(self.schedules.get(entry.id))
+            if previous is None or previous.status != 'publishing':raise ValueError('publish claim no longer active')
+            old_records = deepcopy(self.publish_records)
+            try:
+                self.save_schedule(entry)
+                return self.save_publish_record(record)
+            except BaseException:
+                self.schedules[entry.id] = previous
+                self.publish_records = old_records
+                raise
     def claim_publish(self, entry: ScheduleEntry) -> ScheduleEntry | None:
         with self._schedule_lock:
             current = self.schedules.get(entry.id)

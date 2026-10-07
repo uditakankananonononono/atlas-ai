@@ -106,6 +106,7 @@ class PublishRecord:
 class ScheduleRepository(Protocol):
     """Persistence boundary for schedule entries and publish receipts."""
 
+    def finalize_publish(self, entry: ScheduleEntry, record: PublishRecord) -> PublishRecord: ...
     def claim_publish(self, entry: ScheduleEntry) -> ScheduleEntry | None: ...
     def save_schedule(self, entry: ScheduleEntry) -> ScheduleEntry: ...
     def get_schedule(self, schedule_id: str) -> ScheduleEntry | None: ...
@@ -304,19 +305,9 @@ class Scheduler:
             entry.external_url = result.url
             entry.draft_only = result.draft_only
             entry.failure = None
-            self._repository.save_schedule(entry)
-            records.append(
-                self._repository.save_publish_record(
-                    PublishRecord(
-                        schedule_id=entry.id,
-                        platform=entry.platform.value,
-                        external_id=result.external_id,
-                        external_url=result.url,
-                        draft_only=result.draft_only,
-                        published_at=published_at,
-                    )
-                )
-            )
+            record = PublishRecord(schedule_id=entry.id,platform=entry.platform.value,
+                external_id=result.external_id,external_url=result.url,draft_only=result.draft_only,published_at=published_at)
+            records.append(self._repository.finalize_publish(entry,record))
         return records
 
     # -- human operations ---------------------------------------------------------

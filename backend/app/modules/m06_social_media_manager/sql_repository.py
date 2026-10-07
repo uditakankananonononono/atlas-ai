@@ -171,6 +171,17 @@ class SqlSocialRepository:
     def get_report(self,item_id): return self._get(SocialReportRow,item_id,to_report)
 
     # schedules + publish receipts
+    def finalize_publish(self,x,receipt):
+        data=schedule_data(x)
+        with self.sessions.begin() as db:
+            row=db.scalar(select(SocialScheduleRow).where(SocialScheduleRow.tenant_id==self.tenant_id,SocialScheduleRow.item_id==x.id).with_for_update())
+            if row is None or row.status!='publishing':raise ValueError('publish claim no longer active')
+            ignored={'status','failure','published_at','external_id','external_url','draft_only'}
+            if {k:v for k,v in row.data.items() if k not in ignored}!={k:v for k,v in data.items() if k not in ignored}:raise ValueError('immutable publish payload cannot change')
+            if receipt.schedule_id!=x.id or receipt.external_id!=x.external_id or not receipt.external_id:raise ValueError('receipt does not match claim')
+            row.status=x.status;row.data=data
+            db.add(SocialPublishRow(tenant_id=self.tenant_id,item_id=x.id,data=publish_record_data(receipt)))
+        return receipt
     def claim_publish(self,x):
         expected = schedule_data(x)
         claimed = dict(expected);claimed['status'] = 'publishing'
