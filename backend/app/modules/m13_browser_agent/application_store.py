@@ -10,12 +10,12 @@ from __future__ import annotations
 from copy import deepcopy
 from threading import RLock
 
-from sqlalchemy import JSON, String, UniqueConstraint, select
+from sqlalchemy import JSON, String, UniqueConstraint, select, update, func
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
 from app.core.database import Base, SessionLocal, engine
 
-from .application_flow import ApplicationSession
+from .application_flow import ApplicationSession, SessionRevisionConflict
 
 
 class ApplicationSessionRow(Base):
@@ -53,19 +53,18 @@ class SQLApplicationSessionStore:
             return ApplicationSession.from_dict(row.data) if row else None
 
     def save(self, record: ApplicationSession) -> ApplicationSession:
+        expected = record.revision
+        data = record.to_dict()
+        data["revision"] = expected + 1
         with self.sessions.begin() as db:
-            row = db.scalar(select(ApplicationSessionRow).where(
+            claimed = db.execute(update(ApplicationSessionRow).where(
                 ApplicationSessionRow.tenant_id == record.tenant_id,
                 ApplicationSessionRow.session_id == record.session_id,
-            ))
-            if row is None:
-                db.add(ApplicationSessionRow(
-                    tenant_id=record.tenant_id,
-                    session_id=record.session_id,
-                    data=record.to_dict(),
-                ))
-            else:
-                row.data = record.to_dict()
+                func.coalesce(ApplicationSessionRow.data["revision"].as_integer(), 0) == expected,
+            ).values(data=data))
+            if claimed.rowcount != 1:
+                raise SessionRevisionConflict("application session changed; reload before saving")
+        record.revision = expected + 1
         return record
 
 
@@ -76,6 +75,8 @@ class InMemoryApplicationSessionStore:
 
     def create(self, record: ApplicationSession) -> ApplicationSession:
         with self._lock:
+            if (record.tenant_id, record.session_id) in self._rows:
+                raise SessionRevisionConflict("application session already exists")
             self._rows[(record.tenant_id, record.session_id)] = deepcopy(record)
             return deepcopy(record)
 
@@ -85,4 +86,12 @@ class InMemoryApplicationSessionStore:
             return deepcopy(row) if row else None
 
     def save(self, record: ApplicationSession) -> ApplicationSession:
-        return self.create(record)
+        with self._lock:
+            existing = self._rows.get((record.tenant_id, record.session_id))
+            if existing is None or existing.revision != record.revision:
+                raise SessionRevisionConflict("application session changed; reload before saving")
+            updated = deepcopy(record)
+            updated.revision += 1
+            self._rows[(record.tenant_id, record.session_id)] = updated
+            record.revision = updated.revision
+            return deepcopy(updated)

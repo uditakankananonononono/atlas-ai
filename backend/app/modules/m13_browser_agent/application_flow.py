@@ -64,6 +64,10 @@ class WorkflowStateError(ApplicationFlowError):
     """The requested step does not fit the session's current state."""
 
 
+class SessionRevisionConflict(WorkflowStateError):
+    """A detached session save lost a concurrent persistence race."""
+
+
 class BlockedError(ApplicationFlowError):
     """The site itself blocks honest automation (CAPTCHA, redesign)."""
 
@@ -196,6 +200,7 @@ class ApplicationSession:
     error: str = ""
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
+    revision: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
