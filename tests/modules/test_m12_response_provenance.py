@@ -563,3 +563,14 @@ def test_mounted_whitespace_prompt_rejected_before_actual_executor_provider(prom
  response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':prompt,'task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
  assert response.status_code==422,response.text
  assert response.json()['detail'][0]['loc']==['body','prompt'] and not calls
+
+def test_provider_usage_and_logprob_containers_not_rewriteable_through_retained_refs():
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ usage={'input_tokens':12};logprobs=[0,-.2]
+ class Provider:
+  async def generate(self,**kwargs):return ModelResult('fixture','reported',None,logprobs,usage)
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ original_confidence=result.confidence
+ usage['input_tokens']=999;logprobs[0]=-100
+ assert result.usage=={'input_tokens':12} and result.logprobs==[0,-.2] and result.confidence==original_confidence
