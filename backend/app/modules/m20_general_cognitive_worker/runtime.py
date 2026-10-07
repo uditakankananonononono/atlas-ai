@@ -137,8 +137,6 @@ class GCWRuntime:
             approvals=approval_gate or InMemoryApprovalGate(), sandbox=sandbox_policy,
         )
         self.dispatcher = ToolDispatcher(self.tools, self.safety)
-        if _hydrate:
-            self.dispatcher.records = repo.list_actions()
         self._persisted_actions = len(self.dispatcher.records)
         self.loop = DeliberativeLoop(
             planner=self.planner, dispatcher=self.dispatcher,
@@ -153,6 +151,7 @@ class GCWRuntime:
         self.sandbox = SandboxRunner(policy=sandbox_policy, workspace_root=os.path.join(
             tempfile.gettempdir(), "atlas-gcw-sandbox", owner_volume))
         self.meta = MetaReasoner()
+        self.loop.action_history = lambda task_id: self.repo.list_actions(task_id=task_id)
         self.loop.before_run = self._register_expectations
         self.loop.before_plan = self._retrieve_review_lessons
         self._persisted_traces = 0

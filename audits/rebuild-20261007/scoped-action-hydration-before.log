@@ -1,0 +1,47 @@
+........................................................................ [ 59%]
+................................................F                        [100%]
+=================================== FAILURES ===================================
+_ test_runtime_startup_avoids_all_tenant_action_payloads_but_episode_keeps_history _
+
+    def test_runtime_startup_avoids_all_tenant_action_payloads_but_episode_keeps_history():
+        runtime,repo=make_runtime()
+        task=runtime.submit_goal('fixture pipeline',run_immediately=False)
+        runtime.prepare_supplied_plan(task.id,steps=[
+            {'id':'a','title':'filter','tool':'csv_filter','arguments':{'csv_text':'amount\n42\n'}},
+            {'id':'b','title':'summary','tool':'csv_summary','depends_on':['a'],
+             'arguments':{'csv_text':{'$step':'a','path':['csv_text']},'value_column':'amount'}}])
+        runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+        original=repo.list_actions
+        def scoped_only(*,task_id=None):
+            if task_id is None:raise AssertionError('unbounded startup journal read')
+            return original(task_id=task_id)
+        repo.list_actions=scoped_only
+>       restored=make_runtime(hydrate_repo=repo)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_runtime_depth.py:1718: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m20_runtime_depth.py:63: in make_runtime
+    return GCWRuntime(hydrate_repo, planner_model=model, approval_gate=gate,
+backend/app/modules/m20_general_cognitive_worker/runtime.py:141: in __init__
+    self.dispatcher.records = repo.list_actions()
+                              ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+task_id = None
+
+    def scoped_only(*,task_id=None):
+>       if task_id is None:raise AssertionError('unbounded startup journal read')
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: unbounded startup journal read
+
+tests/modules/test_m20_runtime_depth.py:1715: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_startup_avoids_all_tenant_action_payloads_but_episode_keeps_history
+1 failed, 120 passed, 1 warning in 6.64s
