@@ -711,3 +711,19 @@ def test_trace_flush_retry_does_not_duplicate_already_committed_trace(monkeypatc
  assert len(repo.list_traces(task_id=context.id))==1
  runtime._persist_context(context)
  assert len(repo.list_traces(task_id=context.id))==3
+
+
+def test_retrospective_after_restart_uses_durable_failure_trace_history():
+ runtime,repo=make_runtime()
+ async def fail(arguments):raise RuntimeError('synthetic retained failure evidence')
+ runtime.tools.register(ToolSpec(name='fixture_failure',description='fixture',max_retries=1),fail)
+ runtime.planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture failure',subtasks=[PlanNode(title='fixture failure',tool='fixture_failure',max_attempts=1)]))
+ context=runtime.submit_goal('fixture failure')
+ assert context.state==TaskState.FAILED
+ restarted=make_runtime(hydrate_repo=repo)
+ assert not restarted.loop.traces
+ result=restarted.close(context.id)
+ retro=result['retrospective']
+ assert any('synthetic retained failure evidence' in text for text in retro['went_poorly'])
+ assert any('investigate failing tools' in text for text in retro['lessons'])
+ assert restarted.close(context.id)['idempotent'] is True

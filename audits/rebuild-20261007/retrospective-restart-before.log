@@ -1,0 +1,29 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_retrospective_after_restart_uses_durable_failure_trace_history ______
+
+    def test_retrospective_after_restart_uses_durable_failure_trace_history():
+     runtime,repo=make_runtime()
+     async def fail(arguments):raise RuntimeError('synthetic retained failure evidence')
+     runtime.tools.register(ToolSpec(name='fixture_failure',description='fixture',max_retries=1),fail)
+     runtime.planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture failure',subtasks=[PlanNode(title='fixture failure',tool='fixture_failure',max_attempts=1)]))
+     context=runtime.submit_goal('fixture failure')
+     assert context.state==TaskState.FAILED
+     restarted=make_runtime(hydrate_repo=repo)
+     assert not restarted.loop.traces
+     result=restarted.close(context.id)
+     retro=result['retrospective']
+>    assert any('synthetic retained failure evidence' in text for text in retro['went_poorly'])
+E    assert False
+E     +  where False = any(<generator object test_retrospective_after_restart_uses_durable_failure_trace_history.<locals>.<genexpr> at 0x7fca37feadc0>)
+
+tests/modules/test_m20_runtime_depth.py:727: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_retrospective_after_restart_uses_durable_failure_trace_history
+1 failed, 38 deselected, 1 warning in 1.50s
