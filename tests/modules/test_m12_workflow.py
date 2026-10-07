@@ -248,3 +248,15 @@ async def test_node_input_tenant_mutation_cannot_change_siblings_or_descendants(
  out=await DagEngine(runner).run(wf,inputs)
  assert seen==[('a','original'),('b','original'),('c','original')]
  assert inputs=={'tenant_id':'original','prompt':'fixture'} and len(out)==3
+
+@pytest.mark.asyncio
+async def test_validator_top_level_input_mutation_does_not_rebind_execution():
+ seen=[];validated=[]
+ def validator(node,inputs):
+  validated.append((node.id,inputs['tenant_id']))
+  inputs['tenant_id']='changed-by-validator'
+ async def runner(task,config,context):seen.append(context['workflow_inputs']['tenant_id']);return {}
+ inputs={'tenant_id':'original'}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: a}, {id: b, task: b}]')
+ await DagEngine(runner,validator=validator).run(wf,inputs)
+ assert validated==[('a','original'),('b','original')] and seen==['original','original'] and inputs=={'tenant_id':'original'}

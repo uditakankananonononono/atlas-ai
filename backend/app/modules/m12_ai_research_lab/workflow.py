@@ -77,8 +77,9 @@ class DagEngine:
         if type(max_concurrency) is not int or max_concurrency<=0:raise WorkflowValidationError("workflow concurrency must be positive integer")
         self.runner=runner;self.limit=asyncio.Semaphore(max_concurrency);self.validator=validator
     async def run(self, wf: Workflow, inputs: dict[str,Any]) -> dict[str,dict[str,Any]]:
+        inputs=dict(inputs)
         if self.validator is not None:
-            for node in wf.nodes:self.validator(node,inputs)
+            for node in wf.nodes:self.validator(node,dict(inputs))
         nodes={n.id:n for n in wf.nodes}; results={}; pending=set(nodes)
         async def execute(n: Node):
             context={"workflow_inputs":dict(inputs),"parents":{d:results[d] for d in n.depends_on}}
