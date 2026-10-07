@@ -87,3 +87,25 @@ def test_creativity_mode_params():
     assert mode.model_params()["temperature"] > 1.0
     mode.deactivate()
     assert mode.enabled is False
+
+
+def test_retrospective_failed_embedding_does_not_publish_record():
+    import pytest
+    class Embedder:
+        dimensions = 8
+        fail = False
+        def embed(self, text):
+            if self.fail:
+                raise RuntimeError("embedding unavailable")
+            return [1.0] + [0.0] * 7
+    embedder = Embedder()
+    engine = RetrospectiveEngine(embedder)
+    old = engine.write("t", went_well=["old"], went_poorly=[], lessons=["old"])
+    updated = old.model_copy(deep=True, update={"lessons": ["new"]})
+    embedder.fail = True
+    with pytest.raises(RuntimeError):
+        engine._store_snapshot(updated)
+    assert engine._retros[old.id] == old
+    with pytest.raises(RuntimeError):
+        engine.write("new", went_well=[], went_poorly=[], lessons=["new"])
+    assert len(engine) == 1

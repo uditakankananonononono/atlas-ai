@@ -1,0 +1,29 @@
+......F                                                                  [100%]
+=================================== FAILURES ===================================
+_________ test_retrospective_failed_embedding_does_not_publish_record __________
+
+    def test_retrospective_failed_embedding_does_not_publish_record():
+        import pytest
+        class Embedder:
+            dimensions = 8
+            fail = False
+            def embed(self, text):
+                if self.fail:
+                    raise RuntimeError("embedding unavailable")
+                return [1.0] + [0.0] * 7
+        embedder = Embedder()
+        engine = RetrospectiveEngine(embedder)
+        old = engine.write("t", went_well=["old"], went_poorly=[], lessons=["old"])
+        updated = old.model_copy(deep=True, update={"lessons": ["new"]})
+        embedder.fail = True
+        with pytest.raises(RuntimeError):
+            engine._store_snapshot(updated)
+>       assert engine._retros[old.id] == old
+E       assert Retrospective...timezone.utc)) == Retrospective...timezone.utc))
+E         
+E         Use -v to get more diff
+
+tests/modules/test_m20_reflection.py:108: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reflection.py::test_retrospective_failed_embedding_does_not_publish_record
+1 failed, 6 passed in 1.45s

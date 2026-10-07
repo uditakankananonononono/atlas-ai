@@ -802,3 +802,7 @@ register input/return/get/active exposed internal mutable prompt templates, allo
 ## Semantic/episodic embedding-failure publication correction
 
 Replacement stored new content before injected embedder; exception left old vector/new content or unindexed new item. Two initial failures retained. Compute vector before publishing content/vector.64memory/runtimepass1warning; recorded87adjacent2223pass2warnings40.82s. Fixtures preserve exact old record after replacement failure and absent new record after first-insert failure for both stores. This covers injected embedding exceptions only, not malformed vector validation, concurrent readers/writers, SQL write failure/crash transaction, trained embeddings or semantic relevance. Default hashing retrieval remains heuristic, not model-backed cognition; no production rollout or full original memory capability claim.
+
+## Retrospective embedding-failure publication correction
+
+Same content-before-embed ordering existed in retrospective snapshot loader/write, outside prior semantic/episodic fix. One failing replacement fixture retained. Compute embedding before publishing retrospective/vector.60reflection/runtimepass1warning; recorded87adjacent2224pass2warnings41.52s. Failed replacement preserves original and failed first write creates no extra record. Injected embedding exception consistency only, not malformed-vector checks, concurrent/store transaction, full close atomicity or lesson truth. No learned reflective cognition/production guarantee.
