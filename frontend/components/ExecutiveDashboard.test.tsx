@@ -52,13 +52,13 @@ describe("Scheduled re-runs card",()=>{
     await screen.findByRole("region",{name:"Scheduled re-runs"});
     for(const write of [apiMock.decideApprovalRequest,apiMock.saveView,apiMock.decide,apiMock.bulkDecide,apiMock.execute,apiMock.sweep,apiMock.project])expect(write).not.toHaveBeenCalled();
   });
-  it("an M04 failure leaves the other cards and shows no error banner",async()=>{
+  it("an M04 failure leaves the other cards and shows an optional-card warning",async()=>{
     apiMock.rerunSchedules.mockRejectedValue(new Error("GET /executive-dashboard/rerun-schedules failed: 500"));
     render(<ExecutiveDashboard/>);
     await screen.findByText("Agent 7 stalled");
     await waitFor(()=>expect(apiMock.rerunSchedules).toHaveBeenCalled());
     expect(screen.queryByRole("region",{name:"Scheduled re-runs"})).toBeNull();
-    expect(screen.queryByText(/failed: 500/)).toBeNull();
+    expect(screen.getByText(/unavailable: GET.*failed: 500/)).toBeTruthy();
   });
   it("renders the backend's unavailable reason and the empty state",()=>{
     const {rerender}=render(<RerunScheduleCard card={{...card,available:false,reason:"M04 research scientist module is not installed"}}/>);
@@ -152,13 +152,13 @@ describe("Outreach approval card with contact timeline",()=>{
     await userEvent.click(screen.getByRole("button",{name:"Review"}));
     expect(await screen.findByText("No earlier messages. This would be the first contact.")).toBeTruthy();
   });
-  it("an M00 list failure leaves the M16 queue untouched with no banner",async()=>{
+  it("an M00 list failure leaves the M16 queue untouched with an optional-card warning",async()=>{
     apiMock.rerunSchedules.mockResolvedValue(card);apiMock.approvalRequests.mockRejectedValue(new Error("GET /approval-center/requests failed: 500"));
     render(<ExecutiveDashboard/>);
     await screen.findByText("Approval queue (0)");
     await waitFor(()=>expect(apiMock.approvalRequests).toHaveBeenCalled());
     expect(screen.queryByText(/Outreach sends/)).toBeNull();
-    expect(screen.queryByText(/failed: 500/)).toBeNull();
+    expect(screen.getByText(/unavailable: GET.*failed: 500/)).toBeTruthy();
   });
 });
 
@@ -266,4 +266,52 @@ it("a later hung fetch becomes stale, aborts, and a subsequent poll recovers",as
  expect(screen.getByRole("status").textContent).toContain("Updated");
  await act(async()=>{pending.resolve({data:{}})});await settle();
  expect(screen.getByRole("status").textContent).toContain("Updated");expect(screen.queryByText(/timed out/)).toBeNull();
+});
+
+it("queues action readback immediately after an active refresh failure",async()=>{
+ const tick=pollCapture();apiMock.approvals.mockResolvedValue([{id:"a1",title:"Test approval",risk:"low",summary:"test",module_id:1}]);apiMock.decide.mockResolvedValue({});
+ render(<ExecutiveDashboard/>);await settle();
+ let reject!:(e:Error)=>void;
+ apiMock.snapshot.mockReturnValueOnce(new Promise((_,r)=>{reject=r}));
+ await act(async()=>{void tick()});await userEvent.click(screen.getByRole("button",{name:"Approve"}));
+ expect(apiMock.snapshot).toHaveBeenCalledTimes(2);
+ await act(async()=>{reject(new Error("poll failure"))});await settle();expect(apiMock.snapshot).toHaveBeenCalledTimes(3);expect(screen.getByRole("status").textContent).toContain("Updated");
+});
+it("queues post-action readback after the poll deadline without waiting for another interval",async()=>{
+ vi.useFakeTimers();apiMock.approvals.mockResolvedValue([{id:"a1",title:"Test approval",risk:"low",summary:"test",module_id:1}]);apiMock.decide.mockResolvedValue({});
+ render(<ExecutiveDashboard/>);await settle();apiMock.snapshot.mockReturnValueOnce(new Promise(()=>{}));
+ await act(async()=>{await vi.advanceTimersByTimeAsync(30000)});
+ await act(async()=>{screen.getByRole("button",{name:"Approve"}).click();for(let i=0;i<8;i++)await Promise.resolve()});
+ expect(apiMock.snapshot).toHaveBeenCalledTimes(2);
+ await act(async()=>{await vi.advanceTimersByTimeAsync(10000)});
+ expect(apiMock.snapshot).toHaveBeenCalledTimes(3);expect(screen.getByRole("status").textContent).toContain("Updated");
+});
+it("bounds optional reads independently and rejects late optional results",async()=>{
+ vi.useFakeTimers();const rerun=deferred<any>();const requests=deferred<any>();apiMock.rerunSchedules.mockReturnValueOnce(rerun.promise);apiMock.approvalRequests.mockReturnValueOnce(requests.promise);
+ render(<ExecutiveDashboard/>);await settle();expect(screen.getByRole("status").textContent).toContain("Updated");
+ await act(async()=>{await vi.advanceTimersByTimeAsync(10000)});
+ expect(screen.getByText(/Scheduled re-runs unavailable:.*timed out/)).toBeTruthy();expect(screen.getByText(/Outreach requests unavailable:.*timed out/)).toBeTruthy();
+ expect(apiMock.rerunSchedules.mock.calls[0][0].aborted).toBe(true);expect(apiMock.approvalRequests.mock.calls[0][1].aborted).toBe(true);
+ await act(async()=>{rerun.resolve(card);requests.resolve([outreachReq])});await settle();
+ expect(screen.queryByRole("region",{name:"Scheduled re-runs"})).toBeNull();expect(screen.queryByText("Outreach sends in the approval center (1)")).toBeNull();
+ await act(async()=>{await vi.advanceTimersByTimeAsync(20000)});expect(screen.queryByText(/Scheduled re-runs unavailable/)).toBeNull();expect(screen.queryByText(/Outreach requests unavailable/)).toBeNull();
+});
+
+it("does not publish a command preview from a previous API base",async()=>{
+ const pending=deferred<any>();apiMock.preview.mockReturnValue(pending.promise);const {rerender}=render(<ExecutiveDashboard apiBase="/old"/>);await settle();
+ await userEvent.type(screen.getByRole("textbox"),"Show blockers");await userEvent.click(screen.getByRole("button",{name:"Preview"}));
+ rerender(<ExecutiveDashboard apiBase="/new"/>);await settle();await act(async()=>{pending.resolve({id:"p1",intent:"OLD PREVIEW",confidence:1,read_only:true})});await settle();
+ expect(screen.queryByText(/OLD PREVIEW/)).toBeNull();
+});
+it("does not refresh the new base after an old-base decision completes",async()=>{
+ const pending=deferred<any>();apiMock.decide.mockReturnValue(pending.promise);apiMock.approvals.mockResolvedValue([{id:"a1",title:"Test approval",risk:"low",summary:"test",module_id:1}]);
+ const {rerender}=render(<ExecutiveDashboard apiBase="/old"/>);await settle();await userEvent.click(screen.getByRole("button",{name:"Approve"}));
+ rerender(<ExecutiveDashboard apiBase="/new"/>);await settle();expect(apiMock.snapshot).toHaveBeenCalledTimes(2);
+ await act(async()=>{pending.resolve({})});await settle();expect(apiMock.snapshot).toHaveBeenCalledTimes(2);
+});
+it("does not repopulate a rerun dialog from old-base detail completions",async()=>{
+ const pending=deferred<any>();apiMock.rerunSchedules.mockResolvedValue(card);apiMock.approvalRequest.mockReturnValue(pending.promise);apiMock.approvalAudit.mockResolvedValue([]);
+ const {rerender}=render(<ExecutiveDashboard apiBase="/old"/>);await settle();await userEvent.click(screen.getByRole("button",{name:"Open approval for re-run of orig-7"}));
+ rerender(<ExecutiveDashboard apiBase="/new"/>);await settle();await act(async()=>{pending.resolve({id:"r1",status:"pending",payload:{}})});await settle();
+ expect(screen.queryByRole("dialog",{name:"Re-run approval"})).toBeNull();
 });
