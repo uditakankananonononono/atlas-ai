@@ -1,0 +1,27 @@
+.............FF                                                          [100%]
+=================================== FAILURES ===================================
+__ test_causal_effect_decomposes_signed_parent_channels_under_supplied_model ___
+
+    def test_causal_effect_decomposes_signed_parent_channels_under_supplied_model():
+     equations={'X':{},'M':{'parents':{'X':3}},'N':{'parents':{'X':-2}},'Y':{'parents':{'X':1,'M':4,'N':5}}}
+     r=causal_effect({'equations':equations,'exposure':'X','outcome':'Y','intervention_values':[1,2]})
+     assert r['effect']==3
+>    assert r['unit_sensitivities']=={'X':1.,'M':3.,'N':-2.,'Y':3.}
+            ^^^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'unit_sensitivities'
+
+tests/modules/test_m20_formal_reasoning.py:108: KeyError
+_ test_causal_channel_analysis_respects_intervention_cut_and_same_variable_effect _
+
+    def test_causal_channel_analysis_respects_intervention_cut_and_same_variable_effect():
+     equations={'X':{},'M':{'parents':{'X':3}},'Y':{'parents':{'M':4,'X':7}}}
+     r=causal_effect({'equations':equations,'exposure':'M','outcome':'Y','intervention_values':[1,3]})
+>    assert r['unit_sensitivities']=={'X':0.,'M':1.,'Y':4.}
+            ^^^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'unit_sensitivities'
+
+tests/modules/test_m20_formal_reasoning.py:118: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_formal_reasoning.py::test_causal_effect_decomposes_signed_parent_channels_under_supplied_model
+FAILED tests/modules/test_m20_formal_reasoning.py::test_causal_channel_analysis_respects_intervention_cut_and_same_variable_effect
+2 failed, 13 passed in 1.39s
