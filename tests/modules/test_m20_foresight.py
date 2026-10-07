@@ -581,3 +581,20 @@ def test_planning_public_history_cannot_bypass_ratio_validation():
     assert multiplier == pytest.approx(2) and count == 1
     with pytest.raises(TypeError):
         corrector.history['other'] = [3]
+
+
+def test_reference_forecast_even_large_finite_median_stays_finite():
+    forecaster = ReferenceClassForecaster(min_similar=2)
+    forecaster.add_case('fixture', 1.6e308)
+    forecaster.add_case('fixture', 1.7e308)
+    forecast = forecaster.forecast('fixture')
+    assert forecast.mean == pytest.approx(1.65e308)
+    assert forecast.median == pytest.approx(1.65e308)
+
+
+@pytest.mark.parametrize('outcome', [float('nan'), float('inf'), True, '10'])
+def test_reference_case_invalid_outcomes_do_not_publish(outcome):
+    forecaster = ReferenceClassForecaster()
+    with pytest.raises(ValueError):
+        forecaster.add_case('fixture', outcome)
+    assert forecaster.cases == []

@@ -1,0 +1,74 @@
+........................................................................ [ 84%]
+........FFFFF                                                            [100%]
+=================================== FAILURES ===================================
+________ test_reference_forecast_even_large_finite_median_stays_finite _________
+
+    def test_reference_forecast_even_large_finite_median_stays_finite():
+        forecaster = ReferenceClassForecaster(min_similar=2)
+        forecaster.add_case('fixture', 1.6e308)
+        forecaster.add_case('fixture', 1.7e308)
+        forecast = forecaster.forecast('fixture')
+        assert forecast.mean == pytest.approx(1.65e308)
+>       assert forecast.median == pytest.approx(1.65e308)
+E       assert inf == 1.65e+308 ± 1.7e+302
+E         
+E         comparison failed
+E         Obtained: inf
+E         Expected: 1.65e+308 ± 1.7e+302
+
+tests/modules/test_m20_foresight.py:592: AssertionError
+___________ test_reference_case_invalid_outcomes_do_not_publish[nan] ___________
+
+outcome = nan
+
+    @pytest.mark.parametrize('outcome', [float('nan'), float('inf'), True, '10'])
+    def test_reference_case_invalid_outcomes_do_not_publish(outcome):
+        forecaster = ReferenceClassForecaster()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:598: Failed
+___________ test_reference_case_invalid_outcomes_do_not_publish[inf] ___________
+
+outcome = inf
+
+    @pytest.mark.parametrize('outcome', [float('nan'), float('inf'), True, '10'])
+    def test_reference_case_invalid_outcomes_do_not_publish(outcome):
+        forecaster = ReferenceClassForecaster()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:598: Failed
+__________ test_reference_case_invalid_outcomes_do_not_publish[True] ___________
+
+outcome = True
+
+    @pytest.mark.parametrize('outcome', [float('nan'), float('inf'), True, '10'])
+    def test_reference_case_invalid_outcomes_do_not_publish(outcome):
+        forecaster = ReferenceClassForecaster()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:598: Failed
+___________ test_reference_case_invalid_outcomes_do_not_publish[10] ____________
+
+outcome = '10'
+
+    @pytest.mark.parametrize('outcome', [float('nan'), float('inf'), True, '10'])
+    def test_reference_case_invalid_outcomes_do_not_publish(outcome):
+        forecaster = ReferenceClassForecaster()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:598: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_reference_forecast_even_large_finite_median_stays_finite
+FAILED tests/modules/test_m20_foresight.py::test_reference_case_invalid_outcomes_do_not_publish[nan]
+FAILED tests/modules/test_m20_foresight.py::test_reference_case_invalid_outcomes_do_not_publish[inf]
+FAILED tests/modules/test_m20_foresight.py::test_reference_case_invalid_outcomes_do_not_publish[True]
+FAILED tests/modules/test_m20_foresight.py::test_reference_case_invalid_outcomes_do_not_publish[10]
+5 failed, 80 passed in 1.60s
