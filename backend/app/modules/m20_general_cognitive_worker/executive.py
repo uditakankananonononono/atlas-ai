@@ -172,10 +172,10 @@ class DeliberativeLoop:
 
     def _hold_unknown(self,context:TaskContext)->bool:
         unknown=[node for node in context.plan if node.outcome_unknown]
-        if not unknown:return False
+        if not unknown and not context.model_outcome_unknown:return False
         context.state=TaskState.BLOCKED
         for node in unknown:node.state=TaskState.BLOCKED
-        self._trace("act","unresolved tool effect outcome unknown; execution held",task_id=context.id)
+        self._trace("act","unresolved effect or model outcome unknown; execution held",task_id=context.id)
         return True
 
     def start(self, context: TaskContext) -> TaskContext:
@@ -210,6 +210,7 @@ class DeliberativeLoop:
                 )
                 self._trace("plan", f"plan with {len(context.plan)} steps", task_id=context.id)
             except PlanError as exc:
+                if getattr(exc,"outcome",None)=="unknown":context.model_outcome_unknown=True
                 context.state = TaskState.BLOCKED
                 self._trace("plan", f"planning failed: {exc}", task_id=context.id)
                 return context
@@ -270,6 +271,7 @@ class DeliberativeLoop:
                         response = self.model.complete("reason", {"goal": context.goal,
                             "step": node.title, "arguments": node.arguments, "context": wm_context})
                         if isinstance(response,dict) and response.get("outcome")=="unknown":
+                            context.model_outcome_unknown=True
                             node.state=TaskState.BLOCKED;context.state=TaskState.BLOCKED
                             node.result_summary="reasoning generation outcome unknown; no automatic retry"
                             self._trace("act",node.result_summary,task_id=context.id)

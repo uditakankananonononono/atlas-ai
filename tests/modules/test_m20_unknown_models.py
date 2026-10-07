@@ -36,3 +36,19 @@ def test_reflection_unknown_is_not_recorded_as_model_analysis(monkeypatch):
  svc.loop._reflect_on_failure(ctx,node,'fixture error')
  assert len(calls)==1
  assert svc.loop.traces[-1].detail=='reflection generation outcome unknown; no automatic retry'
+
+@pytest.mark.parametrize('phase',['planning','deferred_planning','reasoning'])
+def test_runtime_api_persists_model_unknown_and_restart_manualrun_holds(tmp_path,monkeypatch,phase):
+ from sqlalchemy import create_engine
+ from app.modules.m20_general_cognitive_worker.sql_repository import GCWRepository
+ from app.modules.m20_general_cognitive_worker.runtime import GCWRuntime
+ calls=bind(monkeypatch);url=f'sqlite:///{tmp_path / "model-unknown.db"}'
+ engine=create_engine(url);repo=GCWRepository(engine);repo.create_schema()
+ runtime=GCWRuntime(repo,planner_model=ma.FreeFirstPlannerModel(),executive_model=ma.FreeFirstExecutiveModel())
+ if phase=='reasoning':
+  ctx=TaskContext(goal='fixture',plan=[PlanNode(title='fixture reason')]);repo.save_task(ctx);ctx=runtime.run_task(ctx.id)
+ else:ctx=runtime.submit_goal('fixture novel goal',run_immediately=phase!='deferred_planning')
+ assert ctx.state==TaskState.BLOCKED and repo.load_task(ctx.id).model_outcome_unknown and len(calls)==1
+ engine.dispose();fresh_engine=create_engine(url);fresh=GCWRuntime(GCWRepository(fresh_engine),planner_model=ma.FreeFirstPlannerModel(),executive_model=ma.FreeFirstExecutiveModel())
+ result=fresh.run_task(ctx.id);assert result.state==TaskState.BLOCKED and result.model_outcome_unknown and len(calls)==1
+ fresh_engine.dispose()

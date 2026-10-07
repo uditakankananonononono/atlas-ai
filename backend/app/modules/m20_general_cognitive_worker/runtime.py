@@ -181,8 +181,9 @@ class GCWRuntime:
             try:
                 context.plan = self.planner.decompose(context.goal)
                 context.state = TaskState.PLANNING
-            except PlanError:
-                context.state = TaskState.PENDING
+            except PlanError as exc:
+                context.model_outcome_unknown=getattr(exc,"outcome",None)=="unknown"
+                context.state = TaskState.BLOCKED if context.model_outcome_unknown else TaskState.PENDING
             self.repo.save_task(context)
         return context
 
