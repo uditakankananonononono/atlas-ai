@@ -153,7 +153,7 @@ class CheckpointWorker:
             lease, q = self._live(db, token)
             ids = [r.key_id for r in receipts]
             trusted = self._trusted_keys(db, receipts)
-            if len(set(ids)) != len(trusted):
+            if len(set(ids)) != len({(r.provider, r.key_id) for r in receipts}):
                 raise LeaseError("key_id is reused across providers")
             try:
                 verdict = verify_asymmetric_resume(AsymmetricResumeVerificationRequest(
