@@ -58,3 +58,28 @@ def test_indexed_closure_matches_independent_ordered_sweep_on_100_random_program
      known.add(rule['then']);trace.append({'rule':rule['id'],'fact':rule['then']});changed=True
   actual,actual_trace=closure(facts,program)
   assert actual==known and actual_trace==trace
+
+
+def test_horn_fact_revision_recomputes_alternative_support_not_blanket_descendant_retraction():
+ result=forward({'facts':['a','b'],'removed_facts':['a'],
+  'rules':[{'id':'via-a','if':['a'],'then':'x'},{'id':'via-b','if':['b'],'then':'x'},{'id':'next','if':['x'],'then':'y'}],
+  'query_atoms':['y']})
+ assert result['facts']==['b','x','y']
+ assert result['before_facts']==['a','b','x','y']
+ assert result['retracted_facts']==['a'] and result['new_facts']==[]
+ assert result['proofs']['x']['rule_id']=='via-b'
+ assert result['queries'][0]['proof_tree']['premise_proofs'][0]['rule_id']=='via-b'
+
+
+def test_horn_revision_retracts_unsupported_cycle_and_adds_new_real_derivation():
+ result=forward({'facts':['a'],'removed_facts':['a'],'added_facts':['b'],
+  'rules':[{'id':'a-to-x','if':['a'],'then':'x'},{'id':'x-to-y','if':['x'],'then':'y'},
+           {'id':'y-to-x','if':['y'],'then':'x'},{'id':'b-to-z','if':['b'],'then':'z'}]})
+ assert result['facts']==['b','z']
+ assert result['retracted_facts']==['a','x','y'] and result['new_facts']==['b','z']
+ assert result['rule_trace']==[{'rule':'b-to-z','fact':'z'}]
+
+
+def test_horn_revision_rejects_missing_removal_and_conflicting_add_remove():
+ for update in [{'removed_facts':['missing']},{'added_facts':['a'],'removed_facts':['a']}]:
+  with pytest.raises(ValueError):forward({'facts':['a'],'rules':[{'if':['a'],'then':'b'}],**update})

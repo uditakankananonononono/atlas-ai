@@ -1,0 +1,44 @@
+.........FFF                                                             [100%]
+=================================== FAILURES ===================================
+_ test_horn_fact_revision_recomputes_alternative_support_not_blanket_descendant_retraction _
+
+    def test_horn_fact_revision_recomputes_alternative_support_not_blanket_descendant_retraction():
+     result=forward({'facts':['a','b'],'removed_facts':['a'],
+      'rules':[{'id':'via-a','if':['a'],'then':'x'},{'id':'via-b','if':['b'],'then':'x'},{'id':'next','if':['x'],'then':'y'}],
+      'query_atoms':['y']})
+>    assert result['facts']==['b','x','y']
+E    AssertionError: assert ['a', 'b', 'x', 'y'] == ['b', 'x', 'y']
+E      
+E      At index 0 diff: 'a' != 'b'
+E      Left contains one more item: 'y'
+E      Use -v to get more diff
+
+tests/modules/test_m20_horn_inference.py:67: AssertionError
+__ test_horn_revision_retracts_unsupported_cycle_and_adds_new_real_derivation __
+
+    def test_horn_revision_retracts_unsupported_cycle_and_adds_new_real_derivation():
+     result=forward({'facts':['a'],'removed_facts':['a'],'added_facts':['b'],
+      'rules':[{'id':'a-to-x','if':['a'],'then':'x'},{'id':'x-to-y','if':['x'],'then':'y'},
+               {'id':'y-to-x','if':['y'],'then':'x'},{'id':'b-to-z','if':['b'],'then':'z'}]})
+>    assert result['facts']==['b','z']
+E    AssertionError: assert ['a', 'x', 'y'] == ['b', 'z']
+E      
+E      At index 0 diff: 'a' != 'b'
+E      Left contains one more item: 'y'
+E      Use -v to get more diff
+
+tests/modules/test_m20_horn_inference.py:78: AssertionError
+____ test_horn_revision_rejects_missing_removal_and_conflicting_add_remove _____
+
+    def test_horn_revision_rejects_missing_removal_and_conflicting_add_remove():
+     for update in [{'removed_facts':['missing']},{'added_facts':['a'],'removed_facts':['a']}]:
+>     with pytest.raises(ValueError):forward({'facts':['a'],'rules':[{'if':['a'],'then':'b'}],**update})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E     Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_horn_inference.py:85: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_horn_inference.py::test_horn_fact_revision_recomputes_alternative_support_not_blanket_descendant_retraction
+FAILED tests/modules/test_m20_horn_inference.py::test_horn_revision_retracts_unsupported_cycle_and_adds_new_real_derivation
+FAILED tests/modules/test_m20_horn_inference.py::test_horn_revision_rejects_missing_removal_and_conflicting_add_remove
+3 failed, 9 passed in 1.37s
