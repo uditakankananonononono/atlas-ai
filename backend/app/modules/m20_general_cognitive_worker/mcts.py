@@ -44,7 +44,7 @@ class MCTSResult:
     best_action_id: str | None
     best_action_title: str | None
     simulations_run: int
-    stopped_by: str  # "simulation_budget" | "time_budget" | "terminal"
+    stopped_by: str  # simulation_budget, time_budget, terminal, no_ready_action
     principal_variation: list[str]
     action_stats: list[ActionStat]
     heuristic_root_value: float
@@ -141,10 +141,13 @@ class BoundedMCTS:
         start = time.monotonic()
         ready = self._ready(plan, frozenset())
         if not ready:
+            included = [node for node in plan if node.state != TaskState.CANCELLED]
+            succeeded = sum(node.state == TaskState.SUCCEEDED for node in included)
+            complete = all(node.state == TaskState.SUCCEEDED for node in included)
             return MCTSResult(
                 best_action_id=None, best_action_title=None, simulations_run=0,
-                stopped_by="terminal", principal_variation=[], action_stats=[],
-                heuristic_root_value=1.0 if not self._pending(plan, frozenset()) else 0.0,
+                stopped_by="terminal" if complete else "no_ready_action", principal_variation=[], action_stats=[],
+                heuristic_root_value=succeeded / len(included) if included else 1.0,
                 heuristic_root_standard_error=0.0,
             )
         root = _TreeNode(completed=frozenset(), untried=[n.id for n in ready])
@@ -204,7 +207,7 @@ class BoundedMCTS:
             best_action_id=best.node_id if best else None,
             best_action_title=best.title if best else None,
             simulations_run=simulations,
-            stopped_by=stopped_by if simulations else "terminal",
+            stopped_by=stopped_by,
             principal_variation=self._principal_variation(root, by_id),
             action_stats=stats,
             heuristic_root_value=round(root.mean_value, 4),

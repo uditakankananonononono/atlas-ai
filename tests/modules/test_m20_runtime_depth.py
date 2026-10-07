@@ -939,3 +939,18 @@ def test_mcts_rollout_failure_is_not_retried_and_sibling_remains_ready():
     search.random = rng
     search._rollout([parent, child, sibling], set(), 0)
     assert rng.choices == ["p", "s"]
+
+
+@pytest.mark.parametrize("state", [TaskState.FAILED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+def test_mcts_no_ready_does_not_label_unsucceeded_plan_complete(state):
+    result = BoundedMCTS().search([PlanNode(title="not completed", state=state)])
+    assert result.best_action_id is None
+    assert result.simulations_run == 0
+    assert result.heuristic_root_value == 0
+    assert result.stopped_by == "no_ready_action"
+
+
+def test_mcts_partial_no_ready_reports_supplied_progress():
+    result = BoundedMCTS().search([PlanNode(title="done", state=TaskState.SUCCEEDED), PlanNode(title="failed", state=TaskState.FAILED)])
+    assert result.heuristic_root_value == 0.5
+    assert result.stopped_by == "no_ready_action"

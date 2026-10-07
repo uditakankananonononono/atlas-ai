@@ -1,0 +1,55 @@
+......................................................FFF                [100%]
+=================================== FAILURES ===================================
+_____ test_mcts_no_ready_does_not_label_unsucceeded_plan_complete[failed] ______
+
+state = <TaskState.FAILED: 'failed'>
+
+    @pytest.mark.parametrize("state", [TaskState.FAILED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_mcts_no_ready_does_not_label_unsucceeded_plan_complete(state):
+        result = BoundedMCTS().search([PlanNode(title="not completed", state=state)])
+        assert result.best_action_id is None
+        assert result.simulations_run == 0
+>       assert result.heuristic_root_value == 0
+E       AssertionError: assert 1.0 == 0
+E        +  where 1.0 = MCTSResult(best_action_id=None, best_action_title=None, simulations_run=0, stopped_by='terminal', principal_variation=[], action_stats=[], heuristic_root_value=1.0, heuristic_root_standard_error=0.0).heuristic_root_value
+
+tests/modules/test_m20_runtime_depth.py:949: AssertionError
+_____ test_mcts_no_ready_does_not_label_unsucceeded_plan_complete[blocked] _____
+
+state = <TaskState.BLOCKED: 'blocked'>
+
+    @pytest.mark.parametrize("state", [TaskState.FAILED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_mcts_no_ready_does_not_label_unsucceeded_plan_complete(state):
+        result = BoundedMCTS().search([PlanNode(title="not completed", state=state)])
+        assert result.best_action_id is None
+        assert result.simulations_run == 0
+>       assert result.heuristic_root_value == 0
+E       AssertionError: assert 1.0 == 0
+E        +  where 1.0 = MCTSResult(best_action_id=None, best_action_title=None, simulations_run=0, stopped_by='terminal', principal_variation=[], action_stats=[], heuristic_root_value=1.0, heuristic_root_standard_error=0.0).heuristic_root_value
+
+tests/modules/test_m20_runtime_depth.py:949: AssertionError
+_ test_mcts_no_ready_does_not_label_unsucceeded_plan_complete[waiting_approval] _
+
+state = <TaskState.WAITING_APPROVAL: 'waiting_approval'>
+
+    @pytest.mark.parametrize("state", [TaskState.FAILED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_mcts_no_ready_does_not_label_unsucceeded_plan_complete(state):
+        result = BoundedMCTS().search([PlanNode(title="not completed", state=state)])
+        assert result.best_action_id is None
+        assert result.simulations_run == 0
+>       assert result.heuristic_root_value == 0
+E       AssertionError: assert 1.0 == 0
+E        +  where 1.0 = MCTSResult(best_action_id=None, best_action_title=None, simulations_run=0, stopped_by='terminal', principal_variation=[], action_stats=[], heuristic_root_value=1.0, heuristic_root_standard_error=0.0).heuristic_root_value
+
+tests/modules/test_m20_runtime_depth.py:949: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_no_ready_does_not_label_unsucceeded_plan_complete[failed]
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_no_ready_does_not_label_unsucceeded_plan_complete[blocked]
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_no_ready_does_not_label_unsucceeded_plan_complete[waiting_approval]
+3 failed, 54 passed, 1 warning in 3.98s
