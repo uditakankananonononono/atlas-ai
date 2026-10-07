@@ -151,8 +151,12 @@ def test_m25_hz10_persist_failure_rolls_back_memory_and_own_files(tmp_path, monk
         return original(rec)
     monkeypatch.setattr(p,'_persist_manifest',flaky)
     with pytest.raises(KnowledgeError,match='rolled back'):ingest(p)
-    assert 's1' not in p.records and not p.chunks and not p.edges
+    # The durable registration is preserved; only the unpersisted version is
+    # rolled back. Memory and manifest agree: record present, zero versions.
+    assert 's1' in p.records and p.records['s1'].versions==[] and not p.chunks and not p.edges
     assert not (tmp_path/'tenant-a'/'s1'/'v1').exists()
+    import json as J
+    assert J.loads((tmp_path/'tenant-a'/'s1'/'manifest.json').read_text())['versions']==[]
 
 def test_m25_hz10_delete_failure_retains_tracking_truthfully(tmp_path, monkeypatch):
     # KILL: a no-op rmtree removed memory tracking while returning
@@ -163,3 +167,23 @@ def test_m25_hz10_delete_failure_retains_tracking_truthfully(tmp_path, monkeypat
     result=p.delete_verified('s1')
     assert result['deleted'] is False and result['tracking_retained'] is True
     assert 's1' in p.records and p.search('Alpha')
+
+
+def test_m25_hz11_register_persist_failure_leaves_no_record(tmp_path, monkeypatch):
+    # KILL: register() persisted after mutating records; a failed first
+    # manifest write left an in-memory record with nothing on disk.
+    p=pipe(tmp_path)
+    monkeypatch.setattr(p,'_persist_manifest',lambda rec:(_ for _ in ()).throw(OSError('disk full')))
+    import pytest as _pt
+    with _pt.raises(OSError):p.register(src())
+    assert 's1' not in p.records
+
+def test_m25_hz11_register_time_failure_leaves_no_files_or_state(tmp_path, monkeypatch):
+    # KILL: register-time manifest failure mid-ingest left version files on
+    # disk plus an in-memory record - untracked residue and a false claim.
+    p=pipe(tmp_path)
+    monkeypatch.setattr(p,'_persist_manifest',lambda rec:(_ for _ in ()).throw(OSError('disk full')))
+    import pytest as _pt
+    with _pt.raises(OSError):ingest(p)
+    assert 's1' not in p.records and not p.chunks
+    assert not (tmp_path/'tenant-a'/'s1').exists()
