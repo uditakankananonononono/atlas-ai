@@ -154,7 +154,7 @@ class GCWRuntime:
                                      TaskState.RUNNING, TaskState.RUMINATING,
                                      TaskState.WAITING_APPROVAL):
                     self.scheduler.add(context)
-            self._persisted_traces = len(repo.list_traces())
+            # Cursor indexes this process's new loop.traces, not SQL history.
 
     # -- lifecycle -----------------------------------------------------------
 
@@ -254,7 +254,7 @@ class GCWRuntime:
         new_traces = self.loop.traces[self._persisted_traces:]
         for trace in new_traces:
             self.repo.save_trace(trace)
-        self._persisted_traces += len(new_traces)
+            self._persisted_traces += 1
 
     def _register_expectations(self, context: TaskContext) -> None:
         """No fitted success predictor; heuristic weights are not probabilities."""
@@ -290,8 +290,6 @@ class GCWRuntime:
                     policy_basis="spec 4.2.4 surprise reflection",
                 )
                 self.loop.traces.append(trace)
-                self.repo.save_trace(trace)
-                self._persisted_traces += 1
         self._persist_context(context)
         return surprises
 
