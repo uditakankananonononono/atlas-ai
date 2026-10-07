@@ -383,3 +383,27 @@ def test_bert_classifier_loads_configured_pipeline_and_preserves_provenance(monk
     out=BertEmailClassifier("verified-local").classify(ClassifierInput("Please sign","x@example.org","sign by Friday"))
     assert out.category.value == "action_required" and out.confidence == .97
     assert out.reasons == ["bert:ACTION_REQUIRED"]
+
+@pytest.mark.xfail(strict=True, reason="M10 provider message ID is not account-scoped; pending schema/service repair")
+def test_same_tenant_accounts_do_not_collide_messages_or_share_thread_context(tmp_path):
+ engine=create_engine(f'sqlite:///{tmp_path}/multi.db');Base.metadata.create_all(engine)
+ repo=SqlEmailRepository('same-tenant',sessionmaker(bind=engine))
+ def save(account,mid,gid,body):
+  repo.save_message(message_id=mid,account_id=account,gmail_id=gid,thread_id='same-thread',history_id=None,subject='subject',sender='sender@example.com',recipients=[],snippet=body,body_text=body,received_at=datetime.now(timezone.utc),labels=[],headers={},category='personal',category_confidence=1,embedding=None,unsubscribe_url=None)
+ save('account-a','message-a','same-provider-id','private-account-a')
+ save('account-b','message-b','same-provider-id','private-account-b')
+ assert len(repo.list_messages())==2
+
+
+
+@pytest.mark.xfail(strict=True, reason="M10 thread context is tenant-only; pending account ownership repair")
+def test_draft_context_must_not_include_other_account_same_thread(tmp_path):
+ service,repo,approvals,client=make_service(tmp_path)
+ repo.save_message(message_id='a',account_id='account-a',gmail_id='gid-a',thread_id='same-thread',history_id=None,subject='Private A',sender='sender@example.com',recipients=[],snippet='private-account-a',body_text='private-account-a',received_at=datetime.now(timezone.utc),labels=[],headers={},category='personal',category_confidence=1,embedding=None,unsubscribe_url=None)
+ raw=raw_message('gid-b','Account B',thread='same-thread')
+ async def draft():
+  await service._draft_reply('message-b',raw,RuleBasedClassifier().classify(ClassifierInput(subject='Account B',sender=raw.sender,snippet='snip')),[])
+ asyncio.run(draft())
+ # No account selection exists in this context method, so this is unsafe.
+ assert 'private-account-a' not in service._context_window(raw)
+ asyncio.run(client.aclose())
