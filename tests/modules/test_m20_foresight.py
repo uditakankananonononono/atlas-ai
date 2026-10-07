@@ -547,3 +547,26 @@ def test_base_rate_finite_denominator_overflow_keeps_sample_share():
     result = BaseRateIntegrator(sample_strength=1e308).integrate(
         base_rate=0.2, case_estimate=0.8, evidence_reliability=1, sample_size=10**308)
     assert result.weight_on_case == pytest.approx(0.5)
+
+
+@pytest.mark.parametrize('shrinkage', [-1, float('nan'), float('inf'), True, '5'])
+def test_planning_shrinkage_validates_finite_nonnegative_numeric(shrinkage):
+    with pytest.raises(ValueError):
+        PlanningFallacyCorrector(shrinkage=shrinkage)
+
+
+@pytest.mark.parametrize('estimated,actual', [(float('nan'), 1), (1, float('inf')), (True, 1), (1e-308, 1e308)])
+def test_planning_invalid_or_overflowed_ratios_do_not_publish(estimated, actual):
+    corrector = PlanningFallacyCorrector()
+    with pytest.raises(ValueError):
+        corrector.record(kind='fixture', estimated=estimated, actual=actual)
+    assert corrector.history == {}
+
+
+def test_planning_shrinkage_arithmetic_does_not_overflow_finite_mean():
+    corrector = PlanningFallacyCorrector(shrinkage=0)
+    for _ in range(3):
+        corrector.record(kind='fixture', estimated=1, actual=1e308)
+    assert corrector.multiplier('fixture')[0] == pytest.approx(1e308)
+    with pytest.raises(ValueError):
+        corrector.correct(kind='fixture', estimate=10)
