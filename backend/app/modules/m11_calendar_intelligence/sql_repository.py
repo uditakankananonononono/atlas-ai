@@ -274,6 +274,38 @@ class SqlCalendarRepository:
             return db.scalar(select(PlanRow).where(
                 PlanRow.tenant_id == self.tenant_id, PlanRow.approval_id == approval_id))
 
+    def apply_reschedule_effect(self, *, task_id: str, title: str, duration_minutes: int,
+                                deadline: datetime, priority: int, location: str | None,
+                                prep_minutes: int, splittable: bool, min_block_minutes: int,
+                                plan_id: str, week_start: str, approval_id: str,
+                                blocks: list[dict[str, Any]], displaced_task_ids: list[str]) -> None:
+        """Persist the whole approved reschedule in one transaction.
+
+        A failure at any insert rolls the task, plan, blocks and displaced
+        statuses back together, so no partial state can strand the
+        consumption marker and the approval stays retryable.
+        """
+        with self.sessions.begin() as db:
+            db.add(SchedulingTaskRow(
+                tenant_id=self.tenant_id, id=task_id, title=title,
+                duration_minutes=duration_minutes, deadline=deadline, priority=priority,
+                location=location, prep_minutes=prep_minutes, splittable=splittable,
+                min_block_minutes=min_block_minutes, status="scheduled", created_at=_utcnow()))
+            self._log(db, "scheduling_task", task_id, "task_created", {"title": title})
+            db.add(PlanRow(tenant_id=self.tenant_id, id=plan_id, week_start=week_start,
+                           status="applied", approval_id=approval_id, created_at=_utcnow()))
+            for block in blocks:
+                db.add(PlannedBlockRow(
+                    tenant_id=self.tenant_id, plan_id=plan_id, task_id=block["task_id"],
+                    kind=block["kind"], start=block["start"], end=block["end"],
+                    location=block.get("location")))
+            for displaced in displaced_task_ids:
+                row = db.scalar(select(SchedulingTaskRow).where(
+                    SchedulingTaskRow.tenant_id == self.tenant_id,
+                    SchedulingTaskRow.id == displaced))
+                if row is not None:
+                    row.status = "deferred"
+
     def set_plan_status(self, plan_id: str, status: str, approval_id: str | None = None) -> None:
         with self.sessions.begin() as db:
             row = db.scalar(select(PlanRow).where(
