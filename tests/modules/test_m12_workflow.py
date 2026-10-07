@@ -217,3 +217,21 @@ def test_workflow_body_extra_options_not_silently_ignored(extra):
  response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: fixture}]',**extra})
  assert response.status_code==422,response.text
  assert response.json()['detail'][0]['type']=='extra_forbidden' and not calls
+
+@pytest.mark.parametrize('raw',[
+ 'budget_cents: 1\nnodes: [{id: a, task: fixture}]',
+ 'inputs: {prompt: ignored}\nnodes: [{id: a, task: fixture}]',
+ 'nodes: [{id: a, task: fixture, model_id: ignored}]',
+ 'nodes: [{id: a, task: fixture, depend_on: [missing]}]',
+])
+def test_unknown_yaml_options_not_silently_ignored(raw):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ calls=[]
+ async def runner(*args):calls.append(args);return {}
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw})
+ assert response.status_code==422,response.text
+ assert 'unsupported workflow' in response.json()['detail'] and not calls
