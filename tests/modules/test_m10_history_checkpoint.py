@@ -84,7 +84,7 @@ def test_work_mutation_and_checkpoint_share_account_lock(repo,monkeypatch):
  from threading import Event
  from concurrent.futures import ThreadPoolExecutor
  from sqlalchemy import select
- acquired=Event();release=Event();original=repo._lock_account
+ acquired=Event();release=Event();checkpoint_started=Event();original=repo._lock_account
  def lock(db,aid):
   result=original(db,aid);acquired.set();assert release.wait(timeout=5);return result
  monkeypatch.setattr(repo,'_lock_account',lock)
@@ -93,7 +93,12 @@ def test_work_mutation_and_checkpoint_share_account_lock(repo,monkeypatch):
  with ThreadPoolExecutor(max_workers=2) as pool:
   work=pool.submit(insert);assert acquired.wait(timeout=5)
   other=SqlEmailRepository('a',repo.sessions)
+  other_lock=other._lock_account
+  def checkpoint_lock(db,aid):
+   checkpoint_started.set();return other_lock(db,aid)
+  monkeypatch.setattr(other,'_lock_account',checkpoint_lock)
   checkpoint=pool.submit(other.checkpoint_history,'account','100','101')
+  assert checkpoint_started.wait(timeout=5)
   # release only after competing transaction started, completion follows commit.
   release.set();assert work.result(timeout=5)
   assert checkpoint.result(timeout=5) is False
