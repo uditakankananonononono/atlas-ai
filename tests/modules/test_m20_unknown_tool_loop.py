@@ -65,3 +65,13 @@ def test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save(t
  assert fresh.resume(ctx.id,pending.plan[0].id,approved=True).state==TaskState.BLOCKED
  assert len(calls)==1
  fresh_engine.dispose()
+
+def test_read_labeled_provider_wrapper_unknown_is_not_retried_or_reflected():
+ from app.core.providers import ProviderOutcomeUnknown
+ calls=[];svc=CognitiveWorkerService()
+ async def provider_wrapper(args):calls.append(args);raise ProviderOutcomeUnknown('fixture dispatched provider')
+ svc.tools.register(ToolSpec(name='fixture_model_wrapper',description='fake model wrapper',risk=Risk.READ,max_retries=3),provider_wrapper)
+ ctx=TaskContext(goal='fixture',plan=[PlanNode(title='fixture',tool='fixture_model_wrapper')]);svc.loop.start(ctx)
+ assert len(calls)==1 and ctx.state==TaskState.BLOCKED and ctx.plan[0].outcome_unknown
+ assert svc.dispatcher.records[-1].outcome_unknown
+ svc.loop.run(ctx);assert len(calls)==1
