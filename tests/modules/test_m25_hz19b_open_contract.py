@@ -52,10 +52,13 @@ def test_hz19b_open_flags_and_postopen_regular_contract(tmp_path, monkeypatch):
     monkeypatch.setattr(os, 'open', spy_open)
     monkeypatch.setattr(os, 'fstat', lambda fd: os.stat_result(
         (stat.S_IFIFO | 0o644, 1, 1, 1, 0, 0, 0, 0, 0, 0)))
+    fds_before = len(os.listdir('/proc/self/fd'))
     with pytest.raises(KnowledgeError, match='not a regular file'):
         ingest_alpha(p)
     assert captured['flags'] & os.O_NONBLOCK
     assert captured['flags'] & os.O_NOFOLLOW
+    # The refused open leaves no descriptor behind.
+    assert len(os.listdir('/proc/self/fd')) == fds_before
 
 
 def test_hz19b_fdopen_failure_maps_and_closes_fd(tmp_path, monkeypatch):
@@ -74,18 +77,26 @@ def test_hz19b_fdopen_failure_maps_and_closes_fd(tmp_path, monkeypatch):
 
 def test_hz19b_read_oserror_maps_to_refusal_contract(tmp_path, monkeypatch):
     # KILL: hz19 let an OSError from the buffered read escape raw; hz19b
-    # maps it to the refusal contract. The fdopen mock returns a stand-in,
-    # so this pin intentionally does not assert descriptor counts.
+    # maps it to the refusal contract. The stand-in takes OWNERSHIP of the
+    # real descriptor and closes it on close(), so the descriptor count
+    # also proves the real read-error path closes the transferred fd
+    # (no mock-fd leak, no nonregular probe).
     p = pipe(tmp_path)
     ingest_alpha(p)
     class FailingRead:
+        def __init__(self, fd): self._fd = fd
         def __enter__(self): return self
-        def __exit__(self, *exc): return False
+        def __exit__(self, *exc): self.close(); return False
         def read(self, n=-1): raise OSError('read boom')
-        def close(self): pass
-    monkeypatch.setattr(os, 'fdopen', lambda fd, *a, **kw: FailingRead())
+        def close(self):
+            if self._fd is not None:
+                os.close(self._fd)
+                self._fd = None
+    monkeypatch.setattr(os, 'fdopen', lambda fd, *a, **kw: FailingRead(fd))
+    fds_before = len(os.listdir('/proc/self/fd'))
     with pytest.raises(KnowledgeError, match='unreadable'):
         ingest_alpha(p)
+    assert len(os.listdir('/proc/self/fd')) == fds_before
 
 
 def test_hz19b_oversize_manifest_write_refused_before_mutation(tmp_path):

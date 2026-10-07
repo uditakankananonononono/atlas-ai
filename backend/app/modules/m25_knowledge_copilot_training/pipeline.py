@@ -314,11 +314,10 @@ class LocalKnowledgePipeline:
     def _read_bounded_file(blob:Path,limit:int,refusal:str,what:str,over:str)->bytes:
         # Bounded, swap-resistant read of a regular file. O_NOFOLLOW refuses
         # a symlink swapped in as the FINAL component between containment and
-        # open; O_NONBLOCK requests a non-blocking open, so a node swapped
-        # to a fifo does not hang the caller before the type check. This is
-        # scoped hardening pinned by mock-driven tests, not a universal
-        # no-block guarantee for every device node. The type contract is
-        # fstat on the OPENED descriptor: the
+        # open, and O_NONBLOCK is requested on the open (scoped hardening
+        # pinned by mock-driven flag capture; no universal device no-block
+        # guarantee is claimed). The type contract is fstat on the OPENED
+        # descriptor: the
         # file actually opened is what gets judged, so a stat-then-open swap
         # cannot launder a non-regular node through a stale stat verdict. At
         # most limit+1 bytes are ever pulled into memory, so growth after
