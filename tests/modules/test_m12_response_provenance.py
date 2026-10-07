@@ -586,3 +586,14 @@ def test_direct_executor_provider_context_uses_request_tenant_not_caller_overrid
  result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'request-tenant'),'fixture',context))
  assert seen[0]['tenant_id']=='request-tenant' and seen[0]['custom']=='retained'
  assert context=={'tenant_id':'spoofed','custom':'retained'} and result.text=='fixture'
+
+@pytest.mark.parametrize('confidence',[.1,.9])
+def test_unencodable_provider_text_is_unknown_before_critique_or_backup(confidence):
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ from app.core.providers import ProviderOutcomeUnknown
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('bad\ud800','first',confidence)
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['first','backup']]
+ with pytest.raises(ProviderOutcomeUnknown,match='UTF-8'):asyncio.run(ResearchExecutor(ModelRouter(cat),Provider(),RetryPolicy(base_delay_seconds=0)).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert len(calls)==1
