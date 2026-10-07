@@ -1,13 +1,11 @@
-"""hz19b pins: opened-descriptor type contract, non-blocking open, error/FD
-lifecycle, and writer-side manifest bound. KILL pins fail on hz19
-(fc6f2749); the stat/open swap pin fails there by BLOCKING inside os.open
-(the alarm converts the hang into the detected failure). Race/TOCTOU
-residuals (parent-component swap, post-open content drift, fsync and
-durability) stay carried, not claimed."""
+"""hz19b pins: opened-descriptor type contract, non-blocking open request,
+error/FD lifecycle, and writer-side manifest bound. KILL pins fail on hz19
+(fc6f2749). Mock-driven only - open flags, fstat verdicts, and error paths
+are simulated deterministically; no fifo/device or other blocking and
+nonregular payload probes. Race/TOCTOU residuals (parent-component swap,
+post-open content drift, fsync and durability) stay carried, not claimed."""
 import os
 import stat
-import signal
-from pathlib import Path
 from datetime import datetime, timezone
 
 import pytest
@@ -36,34 +34,28 @@ def ingest_alpha(p):
     p.ingest(IngestRequest(source=src(), content='Alpha fact.', mime_type='text/plain', actor_id='actor-a'))
 
 
-def test_hz19b_stat_open_swap_to_fifo_cannot_block(tmp_path, monkeypatch):
-    # KILL: hz19 checked blob.stat() BEFORE open; a swap to a fifo between
-    # check and open blocked the open(2) itself (no O_NONBLOCK). hz19b opens
-    # O_NONBLOCK and applies the regular-file contract by fstat on the
-    # OPENED descriptor, refusing without blocking. The stat mock replays
-    # the stale 'regular' verdict; on hz19 the alarm fires inside os.open,
-    # which is the failure this pin detects there.
+def test_hz19b_open_flags_and_postopen_regular_contract(tmp_path, monkeypatch):
+    # KILL (deterministic, mock-driven; no fifo/device probe): captures the
+    # open(2) flags and drives the post-open fstat verdict to fifo. hz19
+    # requested the open WITHOUT O_NONBLOCK and applied the regular-file
+    # check by stat BEFORE the open, so a stale verdict let the read
+    # proceed; hz19b requests O_NONBLOCK|O_NOFOLLOW and applies the
+    # contract by fstat on the OPENED descriptor, refusing. Scoped to this
+    # mocked contract - not a universal device no-block guarantee.
     p = pipe(tmp_path)
     ingest_alpha(p)
-    blob = tmp_path / 'tenant-a' / 's1' / 'v1' / 'source.bin'
-    blob.unlink()
-    os.mkfifo(blob)
-    orig_stat = Path.stat
-    def stale_regular(self, *a, **kw):
-        if self == blob:
-            return os.stat_result((stat.S_IFREG | 0o644, 1, 1, 1, 0, 0, 100, 0, 0, 0))
-        return orig_stat(self, *a, **kw)
-    monkeypatch.setattr(Path, 'stat', stale_regular)
-    class Blocked(Exception): pass
-    def on_alarm(signum, frame): raise Blocked()
-    previous = signal.signal(signal.SIGALRM, on_alarm)
-    signal.alarm(3)
-    try:
-        with pytest.raises(KnowledgeError, match='not a regular file'):
-            ingest_alpha(p)
-    finally:
-        signal.alarm(0)
-        signal.signal(signal.SIGALRM, previous)
+    captured = {}
+    real_open = os.open
+    def spy_open(path, flags, *a, **kw):
+        captured['flags'] = flags
+        return real_open(path, flags, *a, **kw)
+    monkeypatch.setattr(os, 'open', spy_open)
+    monkeypatch.setattr(os, 'fstat', lambda fd: os.stat_result(
+        (stat.S_IFIFO | 0o644, 1, 1, 1, 0, 0, 0, 0, 0, 0)))
+    with pytest.raises(KnowledgeError, match='not a regular file'):
+        ingest_alpha(p)
+    assert captured['flags'] & os.O_NONBLOCK
+    assert captured['flags'] & os.O_NOFOLLOW
 
 
 def test_hz19b_fdopen_failure_maps_and_closes_fd(tmp_path, monkeypatch):
