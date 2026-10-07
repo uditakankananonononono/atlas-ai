@@ -376,7 +376,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located normalized-paper clustering, BYOK hypothesis draft, evidence-gap candidates, manuscript report and approval-gated sandbox code/routes. Their existence does not prove continuous scientific discovery, novelty, experiment validity or personalized recommendation outcomes. Scope: M04 code read, no provider/science execution, not whole-repo. Status stays unverified."
     },
     {
       "row": 34,
@@ -387,7 +387,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located lane_surveillance RSS/Atom parser and SQLite query/result dedupe; mounted surveillance ingest accepts caller-supplied papers and embeds combined title+abstract with configured provider into tenant SQL rows. OpenAI embedder defaults to text-embedding-3-large (configurable), not separately verified title/abstract/body vectors. PaperInput persistence keeps title/abstract/source/url/published_at/keywords, not all source-listed metadata. Automatic source connectors/polling cadence, permissioned full-text download and semantic PDF/HTML chunking not established in scoped M04 routes/service/surveillance/lane read. No ingestion/provider calls run. Status stays unverified."
     },
     {
       "row": 35,
@@ -398,7 +398,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Mounted Service clusters terms by Jaccard connected components; durable SurveillancePipeline uses thresholded cosine union-find. Lane evidence uses term similarity and keyword labels. These are existing algorithms, not scipy hierarchical linkage/silhouette selection, daily six-month batch or TF-IDF+LLM trend summaries. Three-versus-six-month growth comparison and Research Radar visualization not established in scoped M04 read. No cluster behavior or pixels exercised here. Status stays unverified."
     },
     {
       "row": 36,
@@ -409,7 +409,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "SurveillancePipeline.gaps produces candidate transfer questions from intermediate cosine similarity and shared keywords. Lane detect_evidence_gaps produces retrieval-dependent heuristic candidates with supporting paper IDs. Neither read establishes a two-year co-citation graph, Louvain, betweenness/citation-count bridge detection or link-prediction model. Candidates are not verified literature absences or novelty evidence. Scope: M04 service/surveillance/evidence code read, no scientific execution, not whole-repo. Status stays unverified."
     },
     {
       "row": 37,
@@ -420,7 +420,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.generate_hypothesis makes one BYOK prompt from request-supplied abstracts, requesting variables, direction, falsification and a computational experiment, with explicit review caveats. No ReAct tool loop/LTM exhaustive paper retrieval or novelty verification established. HypothesisResponse contains text/evidence IDs, not automatic Knowledge Workspace persistence. Current M09 NodeType enum lacks hypothesis; that is scoped schema divergence, not whole-product absence. No model call or science acceptance. Status stays unverified."
     },
     {
       "row": 38,
@@ -431,7 +431,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located inert analysis proposals plus approved_sandbox executor with Docker/Bubblewrap backends, receipt/hash/artifact logic and pre-run dataset staging; older sandbox helper also constructs Docker commands. Dataset adapters check caller-byte license/provenance/checksum, not automatic Hugging Face/Kaggle discovery. DeepSeek-Coder-V2 generation, user-stack tailoring, LLM output interpretation, wet-lab protocols and lab-supply estimates not established in scoped M04 read. Existing scientific tool adapters are callable code, not accepted installations or isolation. No code/science/backend execution run; Docker unavailable on this host. Status stays unverified."
     },
     {
       "row": 39,
@@ -442,7 +442,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "manuscripts.render_manuscript creates Markdown Methods/Results/gaps/references from supplied Paper and ExperimentResult manifests. It handles no-results honestly and records run IDs. This is not a full IMRaD model draft, method extraction from executable code, official journal-finder/current metrics lookup or journal-styled LaTeX/M15 delivery. These paths not established in scoped manuscript/lane/routes read; no render/artifact inspection or scientific result validation performed. Status stays unverified."
     },
     {
       "row": 40,
@@ -453,7 +453,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M04 SQL surveillance is tenant-scoped and retains paper evidence; sandbox rerun scheduling proposes approvals via beat, not Calendar research-review sessions. Research-interest/finding/collaborator graph personalization, complementary-expertise hypothesis ranking and feedback-trained recommendations not established in scoped M04 read. Existing project tags/rerun proposals are separate behavior. No Claire/Meemee/personality mutation, calendar action or science execution performed. Status stays unverified."
     },
     {
       "row": 41,
