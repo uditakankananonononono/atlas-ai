@@ -669,3 +669,45 @@ def test_method_same_name_replacements_update_one_durable_revision_and_restart()
   restarted.planner.activate_method(current.name,expected_hash=old_hash)
  assert restarted.planner.activate_method(current.name,expected_hash=restarted.planner.method_review_hash(current))
  assert make_runtime(hydrate_repo=repo).planner.method_status(current.name)=='active'
+
+
+def test_runtime_restart_persists_first_new_traces_without_skipping_history_count():
+ runtime,repo=make_runtime()
+ old=runtime.submit_goal('old fixture unavailable')
+ old_ids={t.id for t in repo.list_traces()}
+ assert old_ids
+ restarted=make_runtime(hydrate_repo=repo)
+ new=restarted.submit_goal('new fixture unavailable')
+ new_traces=repo.list_traces(task_id=new.id)
+ assert new_traces and {t.id for t in new_traces}=={t.id for t in restarted.loop.traces}
+ assert old_ids<={t.id for t in repo.list_traces()}
+
+
+def test_surprise_persistence_flushes_pending_trace_before_new_reflection():
+ runtime,repo=make_runtime()
+ context=runtime.submit_goal('surprise fixture',run_immediately=False)
+ claim=runtime.calibration.assess_claim('supplied prediction',.9)
+ context.plan=[PlanNode(title='synthetic failed',state=TaskState.FAILED,arguments={'_expectation_claim_id':claim.id})]
+ runtime.loop._trace('fixture','pending trace before evaluation',task_id=context.id)
+ runtime._evaluate_expectations(context)
+ traces=repo.list_traces(task_id=context.id)
+ assert len(traces)==2 and {t.id for t in traces}=={t.id for t in runtime.loop.traces}
+ runtime._persist_context(context)
+ assert len(repo.list_traces(task_id=context.id))==2
+
+
+def test_trace_flush_retry_does_not_duplicate_already_committed_trace(monkeypatch):
+ runtime,repo=make_runtime()
+ context=runtime.submit_goal('fixture',run_immediately=False)
+ for i in range(3):runtime.loop._trace('fixture',str(i),task_id=context.id)
+ original=repo.save_trace;calls=0
+ def flaky(trace):
+  nonlocal calls
+  calls+=1
+  if calls==2:raise RuntimeError('synthetic write failure before commit')
+  return original(trace)
+ monkeypatch.setattr(repo,'save_trace',flaky)
+ with pytest.raises(RuntimeError,match='synthetic'):runtime._persist_context(context)
+ assert len(repo.list_traces(task_id=context.id))==1
+ runtime._persist_context(context)
+ assert len(repo.list_traces(task_id=context.id))==3

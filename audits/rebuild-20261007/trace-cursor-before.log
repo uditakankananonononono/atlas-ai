@@ -1,0 +1,259 @@
+...................................FF                                    [100%]
+=================================== FAILURES ===================================
+_ test_runtime_restart_persists_first_new_traces_without_skipping_history_count _
+
+    def test_runtime_restart_persists_first_new_traces_without_skipping_history_count():
+     runtime,repo=make_runtime()
+     old=runtime.submit_goal('old fixture unavailable')
+     old_ids={t.id for t in repo.list_traces()}
+     assert old_ids
+     restarted=make_runtime(hydrate_repo=repo)
+     new=restarted.submit_goal('new fixture unavailable')
+     new_traces=repo.list_traces(task_id=new.id)
+>    assert new_traces and {t.id for t in new_traces}=={t.id for t in restarted.loop.traces}
+E    assert ([])
+
+tests/modules/test_m20_runtime_depth.py:682: AssertionError
+____ test_surprise_persistence_flushes_pending_trace_before_new_reflection _____
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f67ac24b7a0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f67ac0876b0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f67ac24aba0>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f67ac249700>
+parameters = [('8756b4ac-0e8b-4894-a6bc-030781408fc0', 'default', '5627ad30-abbb-49fa-acbd-36bf374380cc', 'reflect', "surprise-triggered reflection on 'synthetic failed'; replanning advised", 'spec 4.2.4 surprise reflection', ...)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f67ac0876b0>
+cursor = <sqlite3.Cursor object at 0x7f67ac1b19c0>
+statement = 'INSERT INTO m20_traces (id, tenant_id, task_id, phase, detail, policy_basis, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+parameters = ('8756b4ac-0e8b-4894-a6bc-030781408fc0', 'default', '5627ad30-abbb-49fa-acbd-36bf374380cc', 'reflect', "surprise-triggered reflection on 'synthetic failed'; replanning advised", 'spec 4.2.4 surprise reflection', ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f67ac24aba0>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.IntegrityError: UNIQUE constraint failed: m20_traces.id
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: IntegrityError
+
+The above exception was the direct cause of the following exception:
+
+    def test_surprise_persistence_flushes_pending_trace_before_new_reflection():
+     runtime,repo=make_runtime()
+     context=runtime.submit_goal('surprise fixture',run_immediately=False)
+     claim=runtime.calibration.assess_claim('supplied prediction',.9)
+     context.plan=[PlanNode(title='synthetic failed',state=TaskState.FAILED,arguments={'_expectation_claim_id':claim.id})]
+     runtime.loop._trace('fixture','pending trace before evaluation',task_id=context.id)
+>    runtime._evaluate_expectations(context)
+
+tests/modules/test_m20_runtime_depth.py:692: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/runtime.py:295: in _evaluate_expectations
+    self._persist_context(context)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:256: in _persist_context
+    self.repo.save_trace(trace)
+backend/app/modules/m20_general_cognitive_worker/sql_repository.py:243: in save_trace
+    session.commit()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2095: in commit
+    trans.commit(_to_root=True)
+<sqlalchemy generated _go() wrapper for sqlalchemy.orm.session.SessionTransaction.commit>:2: in commit
+    return target(fn, self, _to_root=_to_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1330: in commit
+    self._prepare_impl()
+<sqlalchemy generated _go() wrapper for sqlalchemy.orm.session.SessionTransaction._prepare_impl>:2: in _prepare_impl
+    return target(fn, self)
+           ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1304: in _prepare_impl
+    self.session.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4536: in flush
+    self._flush(objects)
+<sqlalchemy generated warned() wrapper for sqlalchemy.orm.session.Session._flush>:2: in _flush
+    return target(fn, self, objects=objects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py:281: in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4679: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:166: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4640: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:467: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:643: in execute
+    util.preloaded.orm_persistence._save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:92: in _save_obj
+    _emit_insert_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:1052: in _emit_insert_statements
+    result = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1448: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1668: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1822: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1962: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2332: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f67ac0876b0>
+cursor = <sqlite3.Cursor object at 0x7f67ac1b19c0>
+statement = 'INSERT INTO m20_traces (id, tenant_id, task_id, phase, detail, policy_basis, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+parameters = ('8756b4ac-0e8b-4894-a6bc-030781408fc0', 'default', '5627ad30-abbb-49fa-acbd-36bf374380cc', 'reflect', "surprise-triggered reflection on 'synthetic failed'; replanning advised", 'spec 4.2.4 surprise reflection', ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f67ac24aba0>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: m20_traces.id
+E       [SQL: INSERT INTO m20_traces (id, tenant_id, task_id, phase, detail, policy_basis, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)]
+E       [parameters: ('8756b4ac-0e8b-4894-a6bc-030781408fc0', 'default', '5627ad30-abbb-49fa-acbd-36bf374380cc', 'reflect', "surprise-triggered reflection on 'synthetic failed'; replanning advised", 'spec 4.2.4 surprise reflection', '2026-10-07 01:08:09.191527')]
+E       (Background on this error at: https://sqlalche.me/e/21/gkpj)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: IntegrityError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_restart_persists_first_new_traces_without_skipping_history_count
+FAILED tests/modules/test_m20_runtime_depth.py::test_surprise_persistence_flushes_pending_trace_before_new_reflection
+2 failed, 35 passed, 1 warning in 3.71s
