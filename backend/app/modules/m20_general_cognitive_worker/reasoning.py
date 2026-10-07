@@ -320,12 +320,21 @@ def pareto_frontier(points: list[dict[str, float]], *, maximize: list[str]) -> l
 
 
 def planning_fallacy_correction(estimate_days: float, historical_overruns: list[float]) -> float:
-    """Planning Fallacy Correction: scale the estimate by the observed
-    median overrun ratio (reference class forecasting)."""
-    if estimate_days <= 0:
-        raise ValueError("estimate must be positive")
-    ratios = [max(0.05, o) for o in historical_overruns if o > 0] or [1.0]
-    return estimate_days * median(ratios)
+    """Supplied median-ratio heuristic with0.05floor; empty history uses1.
+
+    Does not verify durations, reference-class relevance or forecast validity.
+    """
+    if type(estimate_days) not in (int, float) or not math.isfinite(estimate_days) or estimate_days <= 0:
+        raise ValueError("estimate must be positive finite numeric, not bool")
+    if not isinstance(historical_overruns, list) or any(type(ratio) not in (int, float) or not math.isfinite(ratio) or ratio <= 0 for ratio in historical_overruns):
+        raise ValueError("historical ratios must be positive finite numeric, not bool")
+    ratios = sorted(max(0.05, ratio) for ratio in historical_overruns) or [1.0]
+    n = len(ratios)
+    factor = ratios[n // 2] if n % 2 else ratios[n // 2 - 1] + (ratios[n // 2] - ratios[n // 2 - 1]) / 2
+    corrected = estimate_days * factor
+    if not math.isfinite(corrected):
+        raise ValueError("corrected estimate exceeds numeric range")
+    return corrected
 
 
 def brier_score(predictions: list[tuple[float, bool]]) -> float:
