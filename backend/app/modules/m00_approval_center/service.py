@@ -18,7 +18,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
-from sqlalchemy import JSON, DateTime, String, select
+from sqlalchemy import JSON, DateTime, String, select, cast, func
 from sqlalchemy.orm import Mapped, Session, mapped_column, sessionmaker
 from uuid import uuid4
 
@@ -234,6 +234,12 @@ class Service:
             statement=select(ApprovalRequestRow).where(ApprovalRequestRow.user_id==user_id,
                 ApprovalRequestRow.module_id==module_id,ApprovalRequestRow.action_type==action_type)
             for key,value in payload.items():
+                if not key.replace('_','').isalnum():raise ValueError('invalid source receipt key')
+                if db.get_bind().dialect.name=='postgresql':
+                    from sqlalchemy.dialects.postgresql import JSONB
+                    statement=statement.where(cast(ApprovalRequestRow.payload,JSONB).has_key(key))
+                else:
+                    statement=statement.where(func.json_type(ApprovalRequestRow.payload,'$.'+key).is_not(None))
                 if value is None:statement=statement.where(ApprovalRequestRow.payload[key].as_string().is_(None))
                 elif isinstance(value,str):statement=statement.where(ApprovalRequestRow.payload[key].as_string()==value)
                 else:raise ValueError('source receipt lookup supports exact string/null fields only')
