@@ -35,12 +35,13 @@ class RetryPolicy:
 class ResearchExecutor:
     def __init__(self, router:ModelRouter, provider:ModelProvider, policy:RetryPolicy=RetryPolicy()): self.router=router; self.provider=provider; self.policy=policy
     async def execute(self, req:RouteRequest, prompt:str, context:dict[str,Any]|None=None)->ModelResult:
+        policy=self.policy
         if type(req.tenant_id) is not str or not req.tenant_id.strip():raise ValueError("research tenant must be nonblank text")
         if type(prompt) is not str or not prompt.strip():raise ValueError("research prompt must be nonblank text")
         try:prompt.encode("utf-8")
         except UnicodeEncodeError as error:raise ValueError("research prompt must encode as UTF-8") from error
         decision=self.router.route(req); diagnostics={"route_scores":{key:value if isfinite(value) else None for key,value in decision.scores.items()},"route_reasons":decision.reasons}; choices=(decision.primary,)+decision.fallbacks; history=[]; context=dict(context or {})
-        for attempt in range(min(self.policy.max_attempts,len(choices))):
+        for attempt in range(min(policy.max_attempts,len(choices))):
             model=choices[attempt]
             result=await self.provider.generate(model_id=model.model_id,prompt=prompt,context={**context,"attempt_history":[dict(item) for item in history]})
             if not isinstance(result,ModelResult) or type(result.metadata) is not dict:
@@ -59,11 +60,11 @@ class ResearchExecutor:
                 result.confidence=confidence
                 result.metadata["confidence_source"]="supplied_logprobs_mean_exp"
             history.append({"model":model.model_id,"confidence":confidence})
-            if confidence >= self.policy.min_confidence:
+            if confidence >= policy.min_confidence:
                 result.metadata.update({"attempts":attempt+1,**diagnostics,"history":history}); return result
-            if self.policy.enable_self_critique:
+            if policy.enable_self_critique:
                 prompt=f"Critique and improve the candidate. Return only the improved answer.\nCandidate:\n{result.text}\nOriginal task:\n{prompt}"
-            if attempt+1 < min(self.policy.max_attempts,len(choices)):
-                await asyncio.sleep(self.policy.base_delay_seconds*(2**attempt))
+            if attempt+1 < min(policy.max_attempts,len(choices)):
+                await asyncio.sleep(policy.base_delay_seconds*(2**attempt))
         result.metadata.update({"review_required":True,"review_reason":"confidence_threshold_not_reached","attempts":len(history),"history":history,**diagnostics})
         raise ConfidenceThresholdNotReached(result)
