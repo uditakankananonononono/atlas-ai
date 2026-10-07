@@ -362,3 +362,8 @@ def task_preflight(task_id: str, request: TaskPreflightRequest,
         return runtime.preflight_task(task_id, context=request.context)
     except KeyError:
         raise HTTPException(404, 'task not found')
+
+
+@router.get('/supervision')
+def runtime_supervision(runtime: GCWRuntime = Depends(get_runtime)):
+    return runtime.supervision()

@@ -205,6 +205,22 @@ class GCWRuntime:
         context = self.scheduler.get(task_id)
         return context or self.repo.load_task(task_id)
 
+    def supervision(self):
+        tasks = self.repo.list_tasks()
+        states = {}; attention = []
+        for task in tasks:
+            states[task.state.value] = states.get(task.state.value, 0) + 1
+            if task.state in (TaskState.FAILED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL, TaskState.WAITING_USER):
+                attention.append({'task_id': task.id, 'goal': task.goal, 'state': task.state.value,
+                    'steps': [{'step_id': node.id, 'title': node.title, 'tool': node.tool,
+                               'state': node.state.value, 'attempts': node.attempts,
+                               'approval_id': node.approval_id, 'result_summary': node.result_summary}
+                              for node in task.plan if node.state != TaskState.SUCCEEDED]})
+        return {'healthy': None, 'task_count': len(tasks), 'tasks_by_state': states,
+                'attention_required': attention, **self.repo.action_summary(),
+                'external_outcomes_verified': False, 'status': 'durable_local_work_state_review',
+                'boundary': 'Persisted local work-state review only; no production health, liveness or externally verified outcome inference.'}
+
     def preflight_task(self, task_id, *, context=None):
         from .tools import ToolError, ToolBlockedError
         task = self.get_task(task_id)
