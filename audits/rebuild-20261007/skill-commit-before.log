@@ -1,0 +1,57 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_skill_replacement_failed_commit_preserves_active_revision_and_reload ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7faeda439490>
+
+    def test_skill_replacement_failed_commit_preserves_active_revision_and_reload(monkeypatch):
+     library=DurableSkillLibrary(fresh_repo());old=library.compile('fixture','fixture',[ActionRecord(tool='read')])
+     original=library.repo._session
+     def session():
+      result=original()
+      def fail():raise RuntimeError('fixture skill commit unavailable')
+      result.commit=fail
+      return result
+     monkeypatch.setattr(library.repo,'_session',session)
+     with pytest.raises(RuntimeError):library.compile('fixture','changed',[ActionRecord(tool='other')])
+>    assert library.find_by_name('fixture').id==old.id
+E    AssertionError: assert '5ad20693-914...-7f3f4b67fcb8' == '2663bb3e-8c5...-0b5c9277ef4c'
+E      
+E      - 2663bb3e-8c56-443b-988d-0b5c9277ef4c
+E      + 5ad20693-914d-4bd8-a76f-7f3f4b67fcb8
+
+tests/modules/test_m20_runtime_depth.py:2229: AssertionError
+_________ test_skill_activation_failed_commit_keeps_proposal_not_live __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7faeda4bd850>
+
+    def test_skill_activation_failed_commit_keeps_proposal_not_live(monkeypatch):
+     from app.modules.m20_general_cognitive_worker.schemas import Episode
+     library=DurableSkillLibrary(fresh_repo())
+     episodes=[Episode(task_id=str(i),goal='fixture',actions=[ActionRecord(tool='a'),ActionRecord(tool='b')]) for i in range(2)]
+     proposed=library.propose_from_episodes(episodes)[0]
+     original=library.repo._session
+     def session():
+      result=original()
+      def fail():raise RuntimeError('fixture skill commit unavailable')
+      result.commit=fail
+      return result
+     monkeypatch.setattr(library.repo,'_session',session)
+     with pytest.raises(RuntimeError):library.activate(proposed.id)
+>    assert library.list()[0].status==SkillStatus.PROPOSED
+E    AssertionError: assert <SkillStatus.ACTIVE: 'active'> == <SkillStatus....D: 'proposed'>
+E      
+E      - proposed
+E      + active
+
+tests/modules/test_m20_runtime_depth.py:2247: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_skill_replacement_failed_commit_preserves_active_revision_and_reload
+FAILED tests/modules/test_m20_runtime_depth.py::test_skill_activation_failed_commit_keeps_proposal_not_live
+2 failed, 156 deselected, 1 warning in 1.81s

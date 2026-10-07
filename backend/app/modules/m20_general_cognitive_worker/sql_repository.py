@@ -251,19 +251,24 @@ class GCWRepository:
     # -- skills ------------------------------------------------------------
 
     def save_skill(self, skill: Skill) -> Skill:
-        with self._session() as session:
-            row = session.get(SkillRow, skill.id)
-            if row is not None and row.tenant_id != self.tenant_id:
-                raise PermissionError("skill belongs to another tenant")
-            if row is None:
-                row = SkillRow(id=skill.id, name=skill.name, tenant_id=self.tenant_id)
-                session.add(row)
-            row.version = skill.version
-            row.status = skill.status.value
-            row.payload_json = skill.model_dump(mode="json")
-            row.created_at = _aware(skill.created_at)
-            session.commit()
+        self.save_skills([skill])
         return skill
+
+    def save_skills(self, skills: list[Skill]) -> None:
+        """Commit related skill revisions together within this tenant."""
+        with self._session() as session:
+            for skill in skills:
+                row = session.get(SkillRow, skill.id)
+                if row is not None and row.tenant_id != self.tenant_id:
+                    raise PermissionError("skill belongs to another tenant")
+                if row is None:
+                    row = SkillRow(id=skill.id, name=skill.name, tenant_id=self.tenant_id)
+                    session.add(row)
+                row.version = skill.version
+                row.status = skill.status.value
+                row.payload_json = skill.model_dump(mode="json")
+                row.created_at = _aware(skill.created_at)
+            session.commit()
 
     def list_skills(self, *, status: str | None = None) -> list[Skill]:
         with self._session() as session:

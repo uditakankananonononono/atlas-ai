@@ -140,30 +140,28 @@ class DurableSkillLibrary(SkillLibrary):
         super().__init__()
         self.repo = repo
 
-    def register(self, skill: Skill) -> Skill:
-        result = super().register(skill)
-        for existing in self._skills.values():
-            self.repo.save_skill(existing)
+    def _change(self, operation, *args, **kwargs):
+        staged = SkillLibrary()
+        staged._skills = {ident:skill.model_copy(deep=True) for ident,skill in self._skills.items()}
+        result = getattr(staged, operation)(*args, **kwargs)
+        changed = [skill for ident,skill in staged._skills.items()
+                   if ident not in self._skills or skill != self._skills[ident]]
+        if changed:
+            self.repo.save_skills(changed)
+        self._skills = staged._skills
         return result
 
+    def register(self, skill: Skill) -> Skill:
+        return self._change('register', skill)
+
     def activate(self, skill_id: str) -> Skill:
-        skill = super().activate(skill_id)
-        for entry in self._skills.values():
-            self.repo.save_skill(entry)
-        return skill
+        return self._change('activate', skill_id)
 
     def retire(self, name: str) -> bool:
-        retired = super().retire(name)
-        if retired:
-            for skill in self._skills.values():
-                self.repo.save_skill(skill)
-        return retired
+        return self._change('retire', name)
 
     def propose_from_episodes(self, episodes, *, min_occurrences: int = 2) -> list[Skill]:
-        proposals = super().propose_from_episodes(episodes, min_occurrences=min_occurrences)
-        for skill in proposals:
-            self.repo.save_skill(skill)
-        return proposals
+        return self._change('propose_from_episodes', episodes, min_occurrences=min_occurrences)
 
     @classmethod
     def load(cls, repo: GCWRepository) -> "DurableSkillLibrary":
