@@ -286,10 +286,16 @@ class BayesianUpdater:
 
     @staticmethod
     def update_beta(alpha: float, beta: float, *, successes: int, failures: int) -> dict[str, float]:
-        if alpha <= 0 or beta <= 0 or successes < 0 or failures < 0:
-            raise ValueError("invalid beta parameters or counts")
+        if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in (alpha, beta)):
+            raise ValueError("finite positive numeric beta shapes required")
+        if any(type(v) is not int or not 0 <= v <= 10**15 for v in (successes, failures)):
+            raise ValueError("integer counts in0..10**15 required, not bool")
         a, b = alpha + successes, beta + failures
-        return {"alpha": a, "beta": b, "mean": a / (a + b)}
+        if not math.isfinite(a) or not math.isfinite(b):
+            raise ValueError("posterior beta shapes exceed numeric range")
+        scale = max(a, b)
+        mean_value = (a / scale) / (a / scale + b / scale)
+        return {"alpha": a, "beta": b, "mean": mean_value}
 
     @staticmethod
     def sequence(prior: float, likelihood_ratios: list[float]) -> list[float]:
