@@ -862,3 +862,16 @@ def test_legacy_closed_active_row_excluded_from_scheduler_and_approval_resume():
  assert restarted.step().state=='idle'
  assert restarted.resume(context.id,context.plan[0].id,approved=True).state==TaskState.WAITING_APPROVAL
  assert not restarted.dispatcher.records
+
+
+def test_retrospective_restart_preserves_identity_time_and_detached_views():
+ runtime,repo=make_runtime()
+ retro=runtime.retrospectives.write('fixture',went_well=['fixture'],went_poorly=[],lessons=['fixture lesson'])
+ original=repo.list_retrospectives()[0]
+ retro.lessons.append('caller mutation')
+ hit=runtime.retrospectives.lessons_for('fixture')[0][0]
+ assert hit.lessons==['fixture lesson']
+ hit.lessons.append('read mutation')
+ assert runtime.retrospectives.lessons_for('fixture')[0][0].lessons==['fixture lesson']
+ restored=make_runtime(hydrate_repo=repo).retrospectives.lessons_for('fixture')[0][0]
+ assert restored.id==original.id and restored.created_at==original.created_at and restored.lessons==original.lessons

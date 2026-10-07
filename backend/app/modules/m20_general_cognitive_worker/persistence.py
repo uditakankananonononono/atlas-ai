@@ -164,10 +164,7 @@ class DurableRetrospectiveEngine(RetrospectiveEngine):
     def load(cls, repo: GCWRepository, embedder: EmbeddingProvider | None = None) -> "DurableRetrospectiveEngine":
         engine = cls(repo, embedder=embedder)
         for retro in repo.list_retrospectives():
-            RetrospectiveEngine.write(
-                engine, retro.task_id, went_well=retro.went_well,
-                went_poorly=retro.went_poorly, lessons=retro.lessons,
-            )
+            engine._store_snapshot(retro)
         return engine
 
 

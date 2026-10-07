@@ -141,15 +141,19 @@ class RetrospectiveEngine:
             task_id=task_id, went_well=went_well,
             went_poorly=went_poorly, lessons=lessons,
         )
+        return self._store_snapshot(retro)
+
+    def _store_snapshot(self, retro: Retrospective) -> Retrospective:
+        retro = retro.model_copy(deep=True)
         self._retros[retro.id] = retro
-        text = " ".join(went_well + went_poorly + lessons)
+        text = " ".join(retro.went_well + retro.went_poorly + retro.lessons)
         self._vectors[retro.id] = self.embedder.embed(text)
-        return retro
+        return retro.model_copy(deep=True)
 
     def lessons_for(self, situation: str, *, limit: int = 3) -> list[tuple[Retrospective, float]]:
         vector = self.embedder.embed(situation)
         scored = [
-            (self._retros[rid], cosine_similarity(vector, vec))
+            (self._retros[rid].model_copy(deep=True), cosine_similarity(vector, vec))
             for rid, vec in self._vectors.items()
         ]
         scored.sort(key=lambda pair: pair[1], reverse=True)

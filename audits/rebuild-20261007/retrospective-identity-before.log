@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_retrospective_restart_preserves_identity_time_and_detached_views _____
+
+    def test_retrospective_restart_preserves_identity_time_and_detached_views():
+     runtime,repo=make_runtime()
+     retro=runtime.retrospectives.write('fixture',went_well=['fixture'],went_poorly=[],lessons=['fixture lesson'])
+     original=repo.list_retrospectives()[0]
+     retro.lessons.append('caller mutation')
+     hit=runtime.retrospectives.lessons_for('fixture')[0][0]
+>    assert hit.lessons==['fixture lesson']
+E    AssertionError: assert ['fixture les...ler mutation'] == ['fixture lesson']
+E      
+E      Left contains one more item: 'caller mutation'
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:873: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_retrospective_restart_preserves_identity_time_and_detached_views
+1 failed, 48 deselected, 1 warning in 1.39s
