@@ -938,3 +938,7 @@ One actual failure retained: publichistorylist permitsNaN/ratioedit bypassing va
 ## Supplied reference-case outcome arithmetic
 
 Five actual failures retained: invalidnumericoutcomespublish; evenfinite median overflows1.6e308/1.7e308. Finite numeric/notbool case outcomes; dividedoperandsforevenmedian.118foresightHTTPpass1warning; recorded87adjacent2349pass2warnings39.22s. Syntheticmean/median1.65e308 nowfinite. Lexicalcase matching/fallbackheuristic only, not verified relevance/predictive validity. Publiccases/configvalidation/transportcoercion remain separate. Latestfull9869passsource724c275 predatesthirteenlaterfixes.
+
+## Reference selection snapshots and midpoint correction
+
+Eight actual failures retained: invalid selectionconfig accepted, publiccase mutation bypasses guards, prior dividedoperandmedianfix loses equal smallestsubnormal. Positiveinteger minsimilar; finite0..1notbool overlap; privatecases/deepdetachedviews; signaware midpoint preserves equalminimumsubnormal and largefinitepair.126foresightHTTPpass1warning; recorded87adjacent2357pass2warnings39.40s. Corrects incompleteness of previousmedianfix. Lexicalreference selection only, not evidence relevance/forecast validity. Latestfull9869passsource724c275 predatesfourteenlaterfixes.

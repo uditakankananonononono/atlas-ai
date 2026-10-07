@@ -598,3 +598,28 @@ def test_reference_case_invalid_outcomes_do_not_publish(outcome):
     with pytest.raises(ValueError):
         forecaster.add_case('fixture', outcome)
     assert forecaster.cases == []
+
+
+@pytest.mark.parametrize('kwargs', [{'min_similar': 0}, {'min_similar': True}, {'min_similar': 1.5},
+                                   {'min_overlap': float('nan')}, {'min_overlap': True}, {'min_overlap': 1.1}])
+def test_reference_class_selection_config_validates(kwargs):
+    with pytest.raises(ValueError):
+        ReferenceClassForecaster(**kwargs)
+
+
+def test_reference_even_median_preserves_smallest_positive_value():
+    tiny = float.fromhex('0x0.0000000000001p-1022')
+    forecaster = ReferenceClassForecaster(min_similar=2)
+    forecaster.add_case('fixture', tiny)
+    forecaster.add_case('fixture', tiny)
+    assert forecaster.forecast('fixture').median == tiny
+
+
+def test_reference_case_views_cannot_rewrite_outcomes_or_tokens():
+    forecaster = ReferenceClassForecaster(min_similar=1)
+    forecaster.add_case('fixture', 10)
+    forecaster.cases[0]['outcome'] = float('nan')
+    forecaster.cases[0]['tokens'].clear()
+    forecaster.cases.append({'outcome': 99})
+    forecast = forecaster.forecast('fixture')
+    assert forecast.n_cases == 1 and forecast.mean == 10
