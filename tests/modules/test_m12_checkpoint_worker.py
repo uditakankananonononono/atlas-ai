@@ -101,3 +101,39 @@ def test_routes(env):
         assert c.post(f"{base}/heartbeat", json={"lease_token": tok}, headers=H).status_code == 409
     finally:
         app.dependency_overrides.clear()
+
+
+def _resigned(priv, base, node_id):
+    r = SignedProviderReceipt(**{**base.model_dump(mode="json", exclude={"signature_base64"}), "node_id": node_id,
+                                 "signature_base64": "x"})
+    canonical = json.dumps(r.model_dump(mode="json", exclude={"signature_base64"}), sort_keys=True, separators=(",", ":")).encode()
+    return SignedProviderReceipt(**{**r.model_dump(mode="json", exclude={"signature_base64"}),
+                                    "signature_base64": base64.b64encode(priv.sign(canonical)).decode()})
+
+
+def test_complete_rejects_key_id_reused_across_providers(env):
+    # Structural guard: one key_id naming two different providers in a single
+    # completion must be rejected as reuse, not surface as a later signature
+    # failure after its trusted-key entry was silently overwritten. Order of
+    # the receipts must not matter.
+    w, now, priv, reg, _ = env
+    other = Ed25519PrivateKey.generate()
+    reg.register(RegisterProviderKey(provider="openai", key_id="k1", public_key_base64=base64.b64encode(
+        other.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)).decode()))
+    hf_n1 = receipt(priv, provider="hf", key_id="k1")
+    openai_n2 = _resigned(other, receipt(other, provider="openai", key_id="k1"), "n2")
+    a = w.claim("w1", 60)
+    with pytest.raises(LeaseError, match="reused across providers"):
+        w.complete(a["lease_token"], [hf_n1, openai_n2], "n1")
+    b = w.claim("w1", 60)
+    with pytest.raises(LeaseError, match="reused across providers"):
+        w.complete(b["lease_token"], [openai_n2, hf_n1], "n2")
+
+
+def test_complete_allows_one_provider_key_across_many_nodes(env):
+    # Regression pin: the normal case is one provider key signing receipts for
+    # several nodes; the reuse guard must not reject same-provider key reuse.
+    w, now, priv, reg, _ = env
+    a = w.claim("w1", 60)
+    out = w.complete(a["lease_token"], [receipt(priv), _resigned(priv, receipt(priv), "n2")], "n1")
+    assert out["state"] == "completed" and out["receipts_verified"] == 2
