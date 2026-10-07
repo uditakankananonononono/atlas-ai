@@ -261,3 +261,20 @@ def test_effective_logprob_confidence_retained_with_derivation_marker(logprobs,r
  assert result.metadata['confidence_source']=='supplied_logprobs_mean_exp'
  assert result.metadata['history'][0]['confidence']==result.confidence and result.logprobs==logprobs
  assert len(calls)==1
+
+@pytest.mark.parametrize('confidence',[None,.9])
+def test_requested_route_identity_separate_from_reported_response_model(confidence):
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):
+   calls.append(kwargs['model_id']);return ModelResult('fixture','reported-model-alias',confidence,metadata={'requested_model_id':'untrusted-stale-field'})
+ cat=[ModelCapability('ollama:requested-model',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ executor=ResearchExecutor(ModelRouter(cat),Provider())
+ if confidence is None:
+  with pytest.raises(ConfidenceUnavailable) as error:asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+  result=error.value.result
+ else:result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert calls==['ollama:requested-model']
+ assert result.model_id=='reported-model-alias'
+ assert result.metadata['requested_model_id']=='ollama:requested-model'
