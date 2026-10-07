@@ -110,3 +110,71 @@ def test_atomic_review_stale_snapshot_rollback_and_duplicate_proposal(tmp_path,k
  assert first['id']==second['id'] and len(m00.list(user_id='a'))==1
  with sessions() as db:assert db.scalar(select(func.count()).select_from(ApprovalEventRow))==1
  engine.dispose()
+
+
+@pytest.mark.parametrize('kind',['sqlite','postgres'])
+def test_simultaneous_same_snapshot_review_proposals_create_one_card(tmp_path,kind,monkeypatch):
+ from concurrent.futures import ThreadPoolExecutor
+ from threading import Barrier
+ from sqlalchemy import select,func
+ from app.modules.m00_approval_center.service import ApprovalRequestRow,ApprovalEventRow
+ if kind=='postgres':
+  pgserver=pytest.importorskip('pgserver');server=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop')
+  url=server.get_uri().replace('postgresql://','postgresql+psycopg://')
+ else:url=f'sqlite:///{tmp_path}/simultaneous.db'
+ engine=create_engine(url);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False)
+ repo=SqlSocialRepository('a',sessions)
+ repo.save_schedule(ScheduleEntry(id='s',plan_id='p',platform=Platform.TWITTER,format='thread',text='fixture',publish_at=datetime.now(timezone.utc),approval_id='old'))
+ barrier=Barrier(2)
+ class Factory:
+  def account_id(self,p):return 'fixture-account'
+ def propose(_):
+  worker=Scheduler(repository=SqlSocialRepository('a',sessions),decisions=None,adapter_factory=Factory())
+  original=worker.final_review_payload
+  def snapshot(*args,**kwargs):
+   value=original(*args,**kwargs);barrier.wait(timeout=5);return value
+  worker.final_review_payload=snapshot
+  return worker.request_final_review('s','a',ApprovalService(session_factory=sessions))['id']
+ with ThreadPoolExecutor(max_workers=2) as pool:ids=list(pool.map(propose,[1,2]))
+ assert ids[0]==ids[1]==repo.get_schedule('s').approval_id
+ with sessions() as db:
+  assert db.scalar(select(func.count()).select_from(ApprovalRequestRow))==1
+  assert db.scalar(select(func.count()).select_from(ApprovalEventRow))==1
+ engine.dispose()
+
+
+@pytest.mark.parametrize('kind',['sqlite','postgres'])
+def test_expired_or_decided_review_is_not_reused_and_decision_race_has_no_deadlock(tmp_path,kind):
+ from datetime import timedelta
+ from concurrent.futures import ThreadPoolExecutor
+ from threading import Barrier
+ from app.core.models import ApprovalStatus
+ if kind=='postgres':
+  pgserver=pytest.importorskip('pgserver');server=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop')
+  url=server.get_uri().replace('postgresql://','postgresql+psycopg://')
+ else:url=f'sqlite:///{tmp_path}/decision.db'
+ engine=create_engine(url);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False)
+ now=[datetime.now(timezone.utc)];repo=SqlSocialRepository('a',sessions);m00=ApprovalService(session_factory=sessions,clock=lambda:now[0])
+ class Factory:
+  def account_id(self,p):return 'fixture-account'
+ scheduler=Scheduler(repository=repo,decisions=None,adapter_factory=Factory())
+ repo.save_schedule(ScheduleEntry(id='s',plan_id='p',platform=Platform.TWITTER,format='thread',text='fixture',publish_at=now[0],approval_id='old'))
+ first=scheduler.request_final_review('s','a',m00,ttl_seconds=10)
+ now[0]+=timedelta(seconds=20)
+ fresh=scheduler.request_final_review('s','a',m00)
+ assert fresh['id']!=first['id']
+ barrier=Barrier(2)
+ def proposal():
+  barrier.wait(timeout=5);return scheduler.request_final_review('s','a',m00)
+ def decision():
+  barrier.wait(timeout=5);return m00.decide(fresh['id'],ApprovalStatus.APPROVED,'fixture-owner')
+ with ThreadPoolExecutor(max_workers=2) as pool:
+  a=pool.submit(proposal);b=pool.submit(decision)
+  card=a.result(timeout=10);decided=b.result(timeout=10)
+ assert decided['status']=='approved'
+ assert card['id'] in [fresh['id'],repo.get_schedule('s').approval_id]
+ assert len(m00.list(user_id='a')) in [2,3]
+ # Either valid serialization may reuse-before-decision or create-afterdecision.
+ after=scheduler.request_final_review('s','a',m00)
+ assert after['id']!=fresh['id'] and after['status']=='pending'
+ engine.dispose()
