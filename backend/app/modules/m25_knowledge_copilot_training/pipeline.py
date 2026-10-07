@@ -49,12 +49,18 @@ class LocalKnowledgePipeline:
         if self.root not in self.workspace.parents: raise KnowledgeError('workspace escapes mounted boundary')
         self.workspace.mkdir(parents=True,exist_ok=True)
     def _contained(self,*parts:str)->Path:
-        # Containment is resolved-path based and checked BEFORE any write or
-        # state mutation; '..' and '.' segments cannot escape the tenant
-        # workspace. Residual, code-grounded: a pre-existing symlink inside
-        # the workspace is followed by resolve() - symlink swap attacks are
-        # not closed by this check.
+        # Containment is checked BEFORE any write or state mutation; '..' and
+        # '.' segments cannot escape the tenant workspace.
         if any(part in ('.','..') for part in parts): raise KnowledgeError('dot-segment source ids are not valid paths')
+        # Reject symlinked components inside the workspace before resolving:
+        # a pre-existing symlink (dangling, or pointing at a sibling record)
+        # must never redirect a write or delete into another directory.
+        # Residual, code-grounded: a component swapped to a symlink AFTER
+        # this check but before the write (TOCTOU) is not closed here.
+        cursor=self.workspace
+        for part in parts:
+            cursor=cursor/part
+            if cursor.is_symlink(): raise KnowledgeError('symlinked path component inside workspace; refusing')
         p=self.workspace.joinpath(*parts).resolve()
         # Strict child: the workspace root itself is never a valid write or
         # delete target, however a part resolves.
@@ -145,7 +151,18 @@ class LocalKnowledgePipeline:
         digest=hashlib.sha256(raw).hexdigest()
         prior=self.records.get(request.source.source_id)
         if prior and prior.tenant_id!=self.tenant_id: raise KnowledgeError('cross-tenant source access denied')
-        if prior and prior.versions and prior.versions[-1].content_hash==digest:return prior.versions[-1]
+        if prior and prior.versions and prior.versions[-1].content_hash==digest:
+            # Dedup serves the recorded version only while the on-disk source
+            # bytes still hash to it. Establishes last-version source-bytes
+            # equivalence at serve time; older versions and segments.json are
+            # not re-validated here - whole-store byte integrity stays carried.
+            last=prior.versions[-1]
+            blob=self._contained(request.source.source_id,f'v{last.number}')/'source.bin'
+            try: on_disk=blob.read_bytes()
+            except OSError as exc: raise KnowledgeError('dedup validation failed: on-disk source bytes unreadable; refusing to serve unverified content') from exc
+            if hashlib.sha256(on_disk).hexdigest()!=last.content_hash:
+                raise KnowledgeError('dedup validation failed: on-disk source bytes diverge from the recorded hash; refusing to serve unverified content')
+            return last
         # All validation and extraction happen BEFORE any state mutation or
         # write, so a failed ingest leaves no registered record behind.
         segments=self._extract(raw,request.mime_type,request.source.kind)

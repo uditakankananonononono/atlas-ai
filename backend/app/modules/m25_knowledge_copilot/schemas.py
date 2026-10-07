@@ -11,9 +11,11 @@ class Redaction(BaseModel):
  pattern:str=Field(min_length=1,max_length=200); replacement:str='[REDACTED]'
  @model_validator(mode='after')
  def pattern_compiles(self):
-  import re
-  try: re.compile(self.pattern)
-  except re.error as exc: raise ValueError(f'invalid redaction pattern: {exc}') from exc
+  # Validated against the same engine that executes it (`regex`), so an
+  # accepted pattern cannot fail differently at ingest time.
+  import regex
+  try: regex.compile(self.pattern)
+  except regex.error as exc: raise ValueError(f'invalid redaction pattern: {exc}') from exc
   return self
 class CaptureStart(BaseModel):
  device_id:str=Field(min_length=1,max_length=128); selected_screen_ids:list[str]=Field(min_length=1,max_length=8); redactions:list[Redaction]=Field(default_factory=list,max_length=50)

@@ -1,6 +1,6 @@
 """Persistent student-owned story projects and evolving BrandID."""
 from datetime import datetime,timezone
-from sqlalchemy import JSON,DateTime,Integer,String,Text,UniqueConstraint,select
+from sqlalchemy import JSON,DateTime,Integer,String,Text,UniqueConstraint,func,select
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 class StoryProjectRow(Base):
@@ -16,10 +16,22 @@ class StoryRepository:
   with self.sessions.begin() as db:r=StoryProjectRow(tenant_id=self.tenant_id,title=title,track=track,opportunity=opportunity);db.add(r);db.flush();return r.id
  def add_student_version(self,project_id,text,feedback):
   if not text.strip():raise ValueError('student-authored text is required')
-  with self.sessions.begin() as db:
-   p=db.get(StoryProjectRow,project_id)
-   if not p or p.tenant_id!=self.tenant_id:raise LookupError(project_id)
-   versions=list(db.scalars(select(StoryVersionRow).where(StoryVersionRow.project_id==project_id)));v=len(versions)+1;db.add(StoryVersionRow(project_id=project_id,version=v,student_text=text,coach_feedback=feedback));return v
+  # Allocation contract: the next version is max(version)+1 computed inside
+  # the transaction. A unique-(project_id,version) collision - two
+  # concurrent allocations observing the same maximum - retries with a
+  # recomputed number in a fresh transaction, bounded to three attempts,
+  # then fails with a domain error. A raw IntegrityError never escapes.
+  # Deterministic handler-path contract only; no real-race closure claimed.
+  from sqlalchemy.exc import IntegrityError as _IE
+  last=None
+  for _ in range(3):
+   try:
+    with self.sessions.begin() as db:
+     p=db.get(StoryProjectRow,project_id)
+     if not p or p.tenant_id!=self.tenant_id:raise LookupError(project_id)
+     current=db.scalar(select(func.max(StoryVersionRow.version)).where(StoryVersionRow.project_id==project_id));v=(current or 0)+1;db.add(StoryVersionRow(project_id=project_id,version=v,student_text=text,coach_feedback=feedback));return v
+   except _IE as exc:last=exc
+  raise ValueError('story version allocation collided repeatedly; resubmit the student text') from last
  def evolve_brand(self,values,patterns,strengths,evidence,_db=None):
   if not evidence:raise ValueError('BrandID requires student-supplied evidence')
   now=datetime.now(timezone.utc)
