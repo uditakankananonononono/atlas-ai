@@ -196,11 +196,22 @@ def littles_law(*, wip: float | None = None, throughput: float | None = None,
     provided = [x is not None for x in (wip, throughput, cycle_time)]
     if sum(provided) != 2:
         raise ValueError("provide exactly two of wip, throughput, cycle_time")
+    for value in (wip, throughput, cycle_time):
+        if value is not None and (type(value) not in (int, float) or not math.isfinite(value) or value < 0):
+            raise ValueError("finite nonnegative numeric queue values required, not bool")
     if wip is None:
-        return throughput * cycle_time  # type: ignore[operator]
-    if throughput is None:
-        return wip / cycle_time  # type: ignore[operator]
-    return wip / throughput  # type: ignore[return-value]
+        result = throughput * cycle_time
+    elif throughput is None:
+        if cycle_time == 0:
+            raise ValueError("zero cycle time cannot determine throughput")
+        result = wip / cycle_time
+    else:
+        if throughput == 0:
+            raise ValueError("zero throughput cannot determine cycle time")
+        result = wip / throughput
+    if not math.isfinite(result):
+        raise ValueError("Little's-law result exceeds numeric range")
+    return result
 
 
 def critical_path(tasks: list[dict[str, Any]]) -> dict[str, Any]:

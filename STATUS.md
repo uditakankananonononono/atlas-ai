@@ -990,3 +990,7 @@ Five reproduced failures retained: malformed/nonfinite/boolinputs and overflowin
 ## Supplied sensitivity callback validation
 
 Eight actual failures retained: invalidswing evaluatescallbackbeforevalidation, callbackrewritescallerparams, malformedoutputsaccepted. Finite numeric/notbool nonnegativeswing/params/perturbations validatedbeforeevaluation; detachedcallbackdicts andfiniteoutput/impactguards.166reasoningforesightpass; recorded87adjacent2416pass2warnings45.03s. One-at-a-time supplied-evaluator sensitivity only, not global sensitivity/causalproof. Arbitrarycallbackexternal effects cannotrollback. Latestfull9944passsourcec5b11ab predateselevenlaterfixes.
+
+## Supplied Little law finite algebra
+
+Six actual failures retained: bool/negative/nonfiniteinput/undefinedzerodenominator/overflowresult. Exactlytwosuppliedfinite nonnegative numeric/notboolvalues, positive divisiondenominator, finiteresult.172reasoningforesightpass; recorded87adjacent2422pass2warnings43.83s. Steady-statealgebra only, not verifiedqueue stability/validthroughputmeasurement/production performance. Latestfull9944passsourcec5b11ab predatestwelvelaterfixes.

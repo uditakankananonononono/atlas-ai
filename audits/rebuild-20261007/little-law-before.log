@@ -1,0 +1,111 @@
+.....................................................FFFFFF              [100%]
+=================================== FAILURES ===================================
+_________ test_littles_law_invalid_or_undefined_inputs_reject[kwargs0] _________
+
+kwargs = {'throughput': True, 'cycle_time': 1}
+
+    @pytest.mark.parametrize('kwargs', [{'throughput': True, 'cycle_time': 1}, {'wip': -1, 'cycle_time': 2}, {'throughput': float('nan'), 'cycle_time': 2}, {'wip': 1, 'throughput': 0}, {'wip': 1, 'cycle_time': 0}, {'throughput': 1e308, 'cycle_time': 2}])
+    def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:271: Failed
+_________ test_littles_law_invalid_or_undefined_inputs_reject[kwargs1] _________
+
+kwargs = {'wip': -1, 'cycle_time': 2}
+
+    @pytest.mark.parametrize('kwargs', [{'throughput': True, 'cycle_time': 1}, {'wip': -1, 'cycle_time': 2}, {'throughput': float('nan'), 'cycle_time': 2}, {'wip': 1, 'throughput': 0}, {'wip': 1, 'cycle_time': 0}, {'throughput': 1e308, 'cycle_time': 2}])
+    def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:271: Failed
+_________ test_littles_law_invalid_or_undefined_inputs_reject[kwargs2] _________
+
+kwargs = {'throughput': nan, 'cycle_time': 2}
+
+    @pytest.mark.parametrize('kwargs', [{'throughput': True, 'cycle_time': 1}, {'wip': -1, 'cycle_time': 2}, {'throughput': float('nan'), 'cycle_time': 2}, {'wip': 1, 'throughput': 0}, {'wip': 1, 'cycle_time': 0}, {'throughput': 1e308, 'cycle_time': 2}])
+    def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:271: Failed
+_________ test_littles_law_invalid_or_undefined_inputs_reject[kwargs3] _________
+
+kwargs = {'wip': 1, 'throughput': 0}
+
+    @pytest.mark.parametrize('kwargs', [{'throughput': True, 'cycle_time': 1}, {'wip': -1, 'cycle_time': 2}, {'throughput': float('nan'), 'cycle_time': 2}, {'wip': 1, 'throughput': 0}, {'wip': 1, 'cycle_time': 0}, {'throughput': 1e308, 'cycle_time': 2}])
+    def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
+        with pytest.raises(ValueError):
+>           R.littles_law(**kwargs)
+
+tests/modules/test_m20_reasoning.py:272: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+wip = 1, throughput = 0, cycle_time = None
+
+    def littles_law(*, wip: float | None = None, throughput: float | None = None,
+                    cycle_time: float | None = None) -> float:
+        """Little's Law Application: L = lambda * W; provide any two."""
+        provided = [x is not None for x in (wip, throughput, cycle_time)]
+        if sum(provided) != 2:
+            raise ValueError("provide exactly two of wip, throughput, cycle_time")
+        if wip is None:
+            return throughput * cycle_time  # type: ignore[operator]
+        if throughput is None:
+            return wip / cycle_time  # type: ignore[operator]
+>       return wip / throughput  # type: ignore[return-value]
+               ^^^^^^^^^^^^^^^^
+E       ZeroDivisionError: division by zero
+
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:203: ZeroDivisionError
+_________ test_littles_law_invalid_or_undefined_inputs_reject[kwargs4] _________
+
+kwargs = {'wip': 1, 'cycle_time': 0}
+
+    @pytest.mark.parametrize('kwargs', [{'throughput': True, 'cycle_time': 1}, {'wip': -1, 'cycle_time': 2}, {'throughput': float('nan'), 'cycle_time': 2}, {'wip': 1, 'throughput': 0}, {'wip': 1, 'cycle_time': 0}, {'throughput': 1e308, 'cycle_time': 2}])
+    def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
+        with pytest.raises(ValueError):
+>           R.littles_law(**kwargs)
+
+tests/modules/test_m20_reasoning.py:272: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+wip = 1, throughput = None, cycle_time = 0
+
+    def littles_law(*, wip: float | None = None, throughput: float | None = None,
+                    cycle_time: float | None = None) -> float:
+        """Little's Law Application: L = lambda * W; provide any two."""
+        provided = [x is not None for x in (wip, throughput, cycle_time)]
+        if sum(provided) != 2:
+            raise ValueError("provide exactly two of wip, throughput, cycle_time")
+        if wip is None:
+            return throughput * cycle_time  # type: ignore[operator]
+        if throughput is None:
+>           return wip / cycle_time  # type: ignore[operator]
+                   ^^^^^^^^^^^^^^^^
+E           ZeroDivisionError: division by zero
+
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:202: ZeroDivisionError
+_________ test_littles_law_invalid_or_undefined_inputs_reject[kwargs5] _________
+
+kwargs = {'throughput': 1e+308, 'cycle_time': 2}
+
+    @pytest.mark.parametrize('kwargs', [{'throughput': True, 'cycle_time': 1}, {'wip': -1, 'cycle_time': 2}, {'throughput': float('nan'), 'cycle_time': 2}, {'wip': 1, 'throughput': 0}, {'wip': 1, 'cycle_time': 0}, {'throughput': 1e308, 'cycle_time': 2}])
+    def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:271: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reasoning.py::test_littles_law_invalid_or_undefined_inputs_reject[kwargs0]
+FAILED tests/modules/test_m20_reasoning.py::test_littles_law_invalid_or_undefined_inputs_reject[kwargs1]
+FAILED tests/modules/test_m20_reasoning.py::test_littles_law_invalid_or_undefined_inputs_reject[kwargs2]
+FAILED tests/modules/test_m20_reasoning.py::test_littles_law_invalid_or_undefined_inputs_reject[kwargs3]
+FAILED tests/modules/test_m20_reasoning.py::test_littles_law_invalid_or_undefined_inputs_reject[kwargs4]
+FAILED tests/modules/test_m20_reasoning.py::test_littles_law_invalid_or_undefined_inputs_reject[kwargs5]
+6 failed, 53 passed in 1.37s
