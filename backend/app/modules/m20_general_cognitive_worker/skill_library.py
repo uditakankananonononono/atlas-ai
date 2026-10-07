@@ -22,10 +22,12 @@ class SkillLibrary:
 
     def register(self, skill: Skill) -> Skill:
         skill = skill.model_copy(deep=True)
-        existing = self.find_by_name(skill.name)
-        if existing is not None:
-            skill.version = existing.version + 1
-            self._skills[existing.id].status = SkillStatus.RETIRED
+        previous = [entry for entry in self._skills.values() if entry.name == skill.name]
+        if previous:
+            skill.version = max(entry.version for entry in previous) + 1
+            for entry in previous:
+                if entry.status == SkillStatus.ACTIVE:
+                    entry.status = SkillStatus.RETIRED
         skill.status = SkillStatus.ACTIVE
         self._skills[skill.id] = skill
         return skill.model_copy(deep=True)
@@ -128,6 +130,9 @@ class SkillLibrary:
 
     def activate(self, skill_id: str) -> Skill:
         skill = self._skills[skill_id]
+        for entry in self._skills.values():
+            if entry.id != skill_id and entry.name == skill.name and entry.status == SkillStatus.ACTIVE:
+                entry.status = SkillStatus.RETIRED
         skill.status = SkillStatus.ACTIVE
         return skill.model_copy(deep=True)
 

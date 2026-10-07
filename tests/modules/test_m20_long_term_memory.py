@@ -202,3 +202,20 @@ def test_cosine_scaled_independent_numpy_direction():
     expected = np.dot(aa, bb) / np.linalg.norm(aa) / np.linalg.norm(bb)
     assert cosine_similarity(a, b) == pytest.approx(expected)
     assert cosine_similarity([1e308, 0], [-1e-300, 0]) == pytest.approx(-1)
+
+
+def test_skill_versions_do_not_reset_after_retirement():
+    library = SkillLibrary()
+    first = library.compile("fixture", "fixture", actions("a", "b"))
+    library.retire("fixture")
+    second = library.compile("fixture", "fixture", actions("a", "b"))
+    assert second.version == first.version + 1
+
+
+def test_skill_activation_has_one_active_same_name_revision():
+    library = SkillLibrary()
+    first = library.compile("fixture", "fixture", actions("a", "b"))
+    second = library.compile("fixture", "fixture", actions("a", "b"))
+    library.activate(first.id)
+    active = library.list(status=SkillStatus.ACTIVE)
+    assert [s.id for s in active] == [first.id]
