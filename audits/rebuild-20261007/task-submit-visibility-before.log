@@ -1,0 +1,28 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_failed_initial_task_write_never_publishes_runnable_goal _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f7fcf16c0b0>
+
+    def test_failed_initial_task_write_never_publishes_runnable_goal(monkeypatch):
+     runtime,repo=make_runtime()
+     def fail(context):raise RuntimeError('fixture task creation unavailable')
+     monkeypatch.setattr(repo,'save_task',fail)
+     with pytest.raises(RuntimeError):runtime.submit_goal('uncommitted runnable goal',run_immediately=False)
+     assert repo.list_tasks()==[]
+>    assert runtime.scheduler.active()==[]
+E    AssertionError: assert [TaskContext(...id='default')] == []
+E      
+E      Left contains one more item: TaskContext(id='349cfb1d-2f01-43b9-b761-3f4fb7153e3b', goal='uncommitted runnable goal', state=<TaskState.PENDING: 'pe...tition='349cfb1d-2f01-43b9-b761-3f4fb7153e3b', standup_notes=[], last_run_at=None, ticks_served=0, tenant_id='default')
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2453: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_initial_task_write_never_publishes_runnable_goal
+1 failed, 178 deselected, 1 warning in 2.04s

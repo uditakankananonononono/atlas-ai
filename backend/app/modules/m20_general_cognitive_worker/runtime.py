@@ -182,8 +182,8 @@ class GCWRuntime:
             tenant_id=self.tenant_id,
         )
         context.wm_partition = context.id
-        self.scheduler.add(context)
         self.repo.save_task(context)
+        self.scheduler.add(context)
         if run_immediately:
             self._run_and_persist(context)
         else:
