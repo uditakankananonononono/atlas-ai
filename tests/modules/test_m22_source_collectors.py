@@ -365,3 +365,32 @@ def test_http_get_refuses_out_of_contract_url_before_network():
     from app.modules.m22_tools_hub.sources import SourceError, http_get
     with _pt.raises(SourceError):
         http_get("https://")
+
+
+def test_feed_url_validation_rejects_encoded_delims_del_backslash_dot():
+    from app.modules.m22_tools_hub.sources import _is_public_feed_url
+    for bad in ("https://host%20name/feed", "https://%2fevil/feed", "https://%40/feed",
+                "https://ho\x7fst/feed", "https://host\\path/feed",
+                "https://./feed", "https://../feed"):
+        assert not _is_public_feed_url(bad), bad
+
+def test_feed_url_validation_accepts_case_and_trailing_dot_characterization():
+    # Characterization per review: mixed-case scheme/host and a trailing dot
+    # are accepted - observed behavior, not a defect or new normalization.
+    from app.modules.m22_tools_hub.sources import _is_public_feed_url
+    assert _is_public_feed_url("HTTPS://Host.EXAMPLE./feed")
+
+def test_feed_collector_revalidates_at_use_point():
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import FeedCollector, SourceError
+    collector = FeedCollector("https://host.example/feed")
+    collector.feed_url = "http://evil.example/x"  # mutable attribute
+    with _pt.raises(SourceError):
+        collector._stream()
+
+def test_redirect_encoded_host_rejected():
+    from urllib.request import Request
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect, SourceError
+    with _pt.raises(SourceError):
+        _HttpsOnlyRedirect().redirect_request(Request("https://a.example/"), None, 302, "", {}, "https://host%20name/x")

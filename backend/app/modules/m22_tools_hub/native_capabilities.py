@@ -97,9 +97,10 @@ class CodeWorkspace:
         # Enforced by backend.run: namespaces/no-network/clearenv/ro-system,
         # rlimits AS/CPU/FSIZE/CORE, wall timeout (float; the pre-ht subsecond
         # contract is preserved), log truncation. NOT enforced by backend.run:
-        # pids and output quotas - output files are enforced below by this
-        # wrapper; the pids limit cannot be set at this layer and is not
-        # claimed. CPU rlimit granularity floors at 1s (rlimit is in seconds).
+        # pids and output quotas: output files are counted and discarded
+        # post-run by this wrapper (never returned to the caller); that is
+        # not a quota. The pids limit cannot be set at this layer and is
+        # not claimed. CPU rlimit granularity floors at 1s (rlimit is in seconds).
         limits=SmokeLimits(timeout_seconds=timeout_seconds,memory_mb=256,cpus=1.0,
                            max_file_mb=8,max_log_bytes=262144)
         with tempfile.TemporaryDirectory(prefix='atlas-workspace-') as root:
@@ -114,8 +115,12 @@ class CodeWorkspace:
             for harness_name in HARNESS_NAMES['python']:
                 (input_dir/harness_name).write_text(harness_src)
             run=runner.run(language='python',input_dir=input_dir,output_dir=output_dir,limits=limits)
-            # Output quota enforced here: workspace output is never returned,
-            # only counted; files are discarded with the tempdir either way.
+            # No output quota is enforced here or by the backend: sandbox
+            # output is only counted, never returned to the caller, and
+            # discarded with the tempdir. During-run disk growth is bounded
+            # only by the backend's FSIZE rlimit and tmpfs. pids is
+            # unbounded - SmokeLimits.pids exists but backend.run does not
+            # enforce it.
             out_files=[f for f in output_dir.rglob('*') if f.is_file()]
             out_bytes=sum(f.stat().st_size for f in out_files)
         stdout=run.stdout.decode('utf-8',errors='replace') if isinstance(run.stdout,bytes) else str(run.stdout or '')
