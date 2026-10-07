@@ -84,7 +84,7 @@ class DagEngine:
         async def execute(n: Node):
             context={"workflow_inputs":dict(inputs),"parents":{d:dict(results[d]) if type(results[d]) is dict else results[d] for d in n.depends_on}}
             async with self.limit:
-                value=await self.runner(n.task,n.config,context)
+                value=await self.runner(n.task,dict(n.config),context)
                 return dict(value) if type(value) is dict else value
         while pending:
             ready=[nodes[i] for i in sorted(pending) if set(nodes[i].depends_on)<=results.keys()]

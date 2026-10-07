@@ -311,3 +311,12 @@ async def test_runner_return_snapshot_precedes_waiting_for_other_wave_sibling():
  await sibling_entered.wait();parent['text']='changed-before-wave-collected';release.set()
  result=await running
  assert result['a']=={'text':'original'} and result['b']=={'text':'sibling'}
+
+@pytest.mark.asyncio
+async def test_custom_runner_top_level_config_mutation_does_not_edit_workflow():
+ calls=[]
+ async def runner(task,config,context):calls.append(dict(config));config['prompt']='changed';return {}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: fixture, config: {prompt: original}}]')
+ engine=DagEngine(runner)
+ await engine.run(wf,{});await engine.run(wf,{})
+ assert calls==[{'prompt':'original'},{'prompt':'original'}] and wf.nodes[0].config=={'prompt':'original'}
