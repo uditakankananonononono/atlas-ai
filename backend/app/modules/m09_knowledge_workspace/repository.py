@@ -2,9 +2,14 @@
 from __future__ import annotations
 from datetime import datetime
 from sqlalchemy import JSON,DateTime,Float,Integer,String,Text,UniqueConstraint,or_,select,update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 from .schemas import Edge,LinkSuggestion,Node,NodeType,Relationship,SuggestionStatus
+class DuplicateEdgeError(ValueError):
+    pass
+
+
 class NodeRow(Base):
     __tablename__="m09_nodes";__table_args__=(UniqueConstraint("tenant_id","source_module","external_id",name="uq_m09_external"),)
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36),index=True)
@@ -44,7 +49,16 @@ class SqlGraphRepository:
     def list_nodes(self,limit=500):
         with self.sessions() as db:return [_node(r) for r in db.scalars(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id).limit(limit))]
     def save_edge(self,e:Edge):
-        with self.sessions.begin() as db:db.add(EdgeRow(tenant_id=self.tenant_id,id=e.id,source_id=e.source_id,target_id=e.target_id,relationship=e.relationship.value,rationale=e.rationale,evidence=e.evidence,confidence=e.confidence,created_at=e.created_at));db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action="edge.created",entity_id=e.id,detail={"relationship":e.relationship.value},created_at=e.created_at))
+        try:
+            with self.sessions.begin() as db:db.add(EdgeRow(tenant_id=self.tenant_id,id=e.id,source_id=e.source_id,target_id=e.target_id,relationship=e.relationship.value,rationale=e.rationale,evidence=e.evidence,confidence=e.confidence,created_at=e.created_at));db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action="edge.created",entity_id=e.id,detail={"relationship":e.relationship.value},created_at=e.created_at))
+        except IntegrityError as exc:
+            # Classify by state, not by catching every integrity failure: only a
+            # persisted matching edge means this was a duplicate. An unrelated
+            # failure (e.g. the audit INSERT) leaves no such row and re-raises.
+            with self.sessions() as db:
+                duplicate=db.scalar(select(EdgeRow).where(EdgeRow.tenant_id==self.tenant_id,EdgeRow.source_id==e.source_id,EdgeRow.target_id==e.target_id,EdgeRow.relationship==e.relationship.value))
+            if duplicate is None:raise
+            raise DuplicateEdgeError("edge already exists") from exc
         return e
     def edges_for(self,node_ids:set[str],limit=1000):
         with self.sessions() as db:return [_edge(r) for r in db.scalars(select(EdgeRow).where(EdgeRow.tenant_id==self.tenant_id,or_(EdgeRow.source_id.in_(node_ids),EdgeRow.target_id.in_(node_ids))).limit(limit))]
