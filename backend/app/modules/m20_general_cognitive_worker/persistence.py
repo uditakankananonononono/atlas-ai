@@ -9,6 +9,9 @@ invalidates stored rows. All rows are tenant-scoped by the repository.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+
 from .embeddings import EmbeddingProvider
 from .episodic_memory import EpisodicMemory
 from .htn_planner import HTNPlanner, PlannerModel
@@ -197,9 +200,18 @@ class DurableHTNPlanner(HTNPlanner):
             return None
         return match
 
-    def activate_method(self, name: str) -> bool:
+    @staticmethod
+    def method_review_hash(method):
+        payload=method.model_dump(mode="json")
+        payload.pop("times_used", None)
+        payload.pop("success_rate", None)
+        return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
+
+    def activate_method(self, name: str, *, expected_hash: str) -> bool:
         if name not in self.methods:
             return False
+        if expected_hash != self.method_review_hash(self.methods[name]):
+            raise PermissionError("method revision differs from reviewed hash")
         self._review_status[name] = "active"
         self.repo.set_method_status(self.methods[name].id, "active")
         return True

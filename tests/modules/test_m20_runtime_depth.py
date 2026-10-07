@@ -188,7 +188,7 @@ def test_m20_10_11_learned_methods_require_review_before_reuse():
     assert planner.method_status(learned[0].name) == "proposed"
     planner.decompose("draft a launch announcement")
     assert model.calls == 2  # proposed method cannot match yet
-    planner.activate_method(learned[0].name)
+    planner.activate_method(learned[0].name,expected_hash=planner.method_review_hash(planner.methods[learned[0].name]))
     planner.decompose("draft a launch announcement")
     assert model.calls == 2  # reviewed method now matches
     restored = GCWRuntime(repo, planner_model=model, require_method_review=True)
@@ -626,3 +626,14 @@ def test_replanning_same_generated_cache_key_never_self_activates_review_require
  assert len(methods)==1
  assert runtime.planner.method_status(methods[0].name)=='proposed'
  assert all(status=='proposed' for method,status in repo.list_methods() if method.name.startswith('learned:'))
+
+
+def test_method_activation_requires_exact_reviewed_revision_hash():
+ model=StubPlannerModel([{'title':'old fixture'}]);runtime,repo=make_runtime(model=model)
+ runtime.planner.decompose('fixture exact',context='same')
+ method=next(iter(runtime.planner.methods.values()));reviewed=runtime.planner.method_review_hash(method)
+ model.steps=[{'title':'replacement fixture'}];runtime.planner.decompose('fixture exact',context='same')
+ with pytest.raises(PermissionError,match='revision'):runtime.planner.activate_method(method.name,expected_hash=reviewed)
+ assert runtime.planner.method_status(method.name)=='proposed'
+ current=runtime.planner.methods[method.name]
+ assert runtime.planner.activate_method(method.name,expected_hash=runtime.planner.method_review_hash(current))
