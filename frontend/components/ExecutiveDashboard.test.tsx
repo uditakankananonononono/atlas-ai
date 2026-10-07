@@ -29,9 +29,9 @@ beforeEach(()=>{
   apiMock.getView.mockResolvedValue(view);apiMock.kpis.mockResolvedValue([]);apiMock.modules.mockResolvedValue([]);
   apiMock.blockers.mockResolvedValue([blocker]);apiMock.approvals.mockResolvedValue([]);apiMock.digest.mockResolvedValue(null);
   apiMock.snapshot.mockResolvedValue({version:1,last_sequence:0,generated_at:"2026-10-05T09:00:00Z",data:{}});
-  apiMock.approvalRequests.mockResolvedValue([]);
+  apiMock.approvalRequests.mockResolvedValue([]);apiMock.rerunSchedules.mockResolvedValue(null);
 });
-afterEach(cleanup);
+afterEach(()=>{cleanup();vi.useRealTimers();vi.restoreAllMocks()});
 
 describe("Scheduled re-runs card",()=>{
   it("shows due, awaiting, overdue counts and verdicts next to the existing cards",async()=>{
@@ -113,7 +113,7 @@ describe("Outreach approval card with contact timeline",()=>{
     apiMock.messageCadence.mockResolvedValue({allowed:false,reasons:[{code:"too_soon",detail:"last message 2 days ago"}],next_allowed_at:"2026-10-10T08:00:00Z",policy_version:2});
     render(<ExecutiveDashboard/>);
     await screen.findByText("Outreach sends in the approval center (1)");
-    expect(apiMock.approvalRequests).toHaveBeenCalledWith({status:"pending",module_id:5});
+    expect(apiMock.approvalRequests).toHaveBeenCalledWith({status:"pending",module_id:5},expect.any(AbortSignal));
     await userEvent.click(screen.getByRole("button",{name:"Review"}));
     const dialog=await screen.findByRole("dialog",{name:"Outreach approval"});
     const history=await screen.findByRole("region",{name:"Contact timeline"});
@@ -182,11 +182,88 @@ it("keeps last successful data visibly stale after a refresh failure and recover
  apiMock.snapshot.mockRejectedValue(new Error("refresh unavailable"));
  await act(async()=>{await poll()});
  expect(screen.getByRole("status").textContent).toContain("Stale data");
- expect(screen.getByRole("status").textContent).toContain("Last updated");
+ expect(screen.getByRole("status").textContent).toContain("Fetched");
  expect(screen.getByText("Agent 7 stalled")).toBeTruthy();
  apiMock.snapshot.mockResolvedValue({version:2,last_sequence:1,generated_at:new Date().toISOString(),data:{}});
  await act(async()=>{await poll()});
  expect(screen.getByRole("status").textContent).toContain("Updated");
  expect(screen.queryByText("refresh unavailable")).toBeNull();
  timer.mockRestore();
+});
+
+function deferred<T>(){let resolve!:(value:T)=>void;const promise=new Promise<T>(r=>{resolve=r});return {promise,resolve};}
+function pollCapture(){let poll:()=>Promise<void>=async()=>{};vi.spyOn(window,"setInterval").mockImplementation((callback,delay)=>{if(delay===30000)poll=callback as ()=>Promise<void>;return 123 as unknown as ReturnType<typeof window.setInterval>});return ()=>poll();}
+async function settle(){await act(async()=>{for(let i=0;i<12;i++)await Promise.resolve()})}
+it("does not start overlapping poll requests while a deferred refresh is pending",async()=>{
+ const tick=pollCapture();const pending=deferred<any>();apiMock.snapshot.mockReturnValue(pending.promise);
+ render(<ExecutiveDashboard/>);await settle();
+ await act(async()=>{await tick();await tick()});
+ expect(apiMock.snapshot).toHaveBeenCalledTimes(1);
+ expect(screen.getByRole("status").textContent).toBe("Loading");
+ await act(async()=>{pending.resolve({data:{}})});await settle();
+ expect(screen.getByRole("status").textContent).toContain("Updated");
+ await act(async()=>{await tick()});expect(apiMock.snapshot).toHaveBeenCalledTimes(2);
+});
+it("queues one immediate post-action readback behind an active poll",async()=>{
+ const tick=pollCapture();apiMock.approvals.mockResolvedValue([{id:"a1",title:"Test approval",risk:"low",summary:"test",module_id:1}]);apiMock.decide.mockResolvedValue({});
+ render(<ExecutiveDashboard/>);await settle();
+ const pending=deferred<any>();apiMock.snapshot.mockReturnValueOnce(pending.promise);
+ await act(async()=>{void tick()});
+ await userEvent.click(screen.getByRole("button",{name:"Approve"}));
+ expect(apiMock.snapshot).toHaveBeenCalledTimes(2);
+ await act(async()=>{pending.resolve({data:{}})});await settle();
+ expect(apiMock.snapshot).toHaveBeenCalledTimes(3);
+});
+it("times out a hung initial read and ignores its late result",async()=>{
+ vi.useFakeTimers();const pending=deferred<any>();apiMock.snapshot.mockReturnValueOnce(pending.promise);
+ render(<ExecutiveDashboard/>);await settle();
+ await act(async()=>{await vi.advanceTimersByTimeAsync(10000)});
+ expect(screen.getByRole("status").textContent).toContain("Unavailable");
+ expect(screen.getByText(/timed out after 10 seconds/)).toBeTruthy();
+ expect(apiMock.snapshot.mock.calls[0][0].aborted).toBe(true);
+ await act(async()=>{pending.resolve({data:{}})});await settle();
+ expect(screen.getByRole("status").textContent).toContain("Unavailable");
+});
+it("bounds Updated by client age, even when no poll completes",async()=>{
+ vi.useFakeTimers();const interval=window.setInterval.bind(window);vi.spyOn(window,"setInterval").mockImplementation((cb,delay)=>interval(delay===30000?()=>{}:cb,delay) as unknown as ReturnType<typeof window.setInterval>);render(<ExecutiveDashboard/>);await settle();
+ expect(screen.getByRole("status").textContent).toContain("Updated");
+ const timer=vi.spyOn(window,"clearInterval");
+ // Suppress polling to isolate the age guard from failure/timeout behavior.
+ const entries=vi.getTimerCount();expect(entries).toBeGreaterThan(0);
+ apiMock.snapshot.mockImplementation(()=>new Promise(()=>{}));
+ await act(async()=>{await vi.advanceTimersByTimeAsync(60000)});
+ expect(screen.getByRole("status").textContent).toContain("Stale data");
+ expect(screen.getByText("Agent 7 stalled")).toBeTruthy();timer.mockRestore();
+});
+it("invalidates old API-generation and optional-card completions",async()=>{
+ const old=deferred<any>();const optional=deferred<any>();apiMock.blockers.mockReturnValueOnce(old.promise);apiMock.rerunSchedules.mockReturnValueOnce(optional.promise);
+ const {rerender}=render(<ExecutiveDashboard apiBase="/old"/>);await settle();
+ const signal=apiMock.snapshot.mock.calls[0][0];
+ rerender(<ExecutiveDashboard apiBase="/new"/>);await settle();
+ expect(signal.aborted).toBe(true);expect(apiMock.snapshot).toHaveBeenCalledTimes(2);
+ await act(async()=>{old.resolve([{...blocker,summary:"OLD DATA"}])});await settle();
+ expect(screen.queryByText("OLD DATA")).toBeNull();
+ // The only rerun call is from the new successful generation, invalidate it too.
+ rerender(<ExecutiveDashboard apiBase="/third"/>);await settle();
+ await act(async()=>{optional.resolve(card)});await settle();
+ expect(screen.queryByRole("region",{name:"Scheduled re-runs"})).toBeNull();
+});
+it("aborts unmounted reads and does not start follow-on optional reads",async()=>{
+ const pending=deferred<any>();apiMock.snapshot.mockReturnValue(pending.promise);
+ const {unmount}=render(<ExecutiveDashboard/>);await settle();const signal=apiMock.snapshot.mock.calls[0][0];unmount();
+ expect(signal.aborted).toBe(true);await act(async()=>{pending.resolve({data:{}})});await settle();
+ expect(apiMock.rerunSchedules).not.toHaveBeenCalled();expect(apiMock.approvalRequests).not.toHaveBeenCalled();
+});
+
+it("a later hung fetch becomes stale, aborts, and a subsequent poll recovers",async()=>{
+ vi.useFakeTimers();render(<ExecutiveDashboard/>);await settle();
+ const pending=deferred<any>();apiMock.snapshot.mockReturnValueOnce(pending.promise);
+ await act(async()=>{await vi.advanceTimersByTimeAsync(30000)});
+ expect(screen.getByRole("status").textContent).toContain("Updated");
+ await act(async()=>{await vi.advanceTimersByTimeAsync(10000)});
+ expect(screen.getByRole("status").textContent).toContain("Stale data");expect(apiMock.snapshot.mock.calls[1][0].aborted).toBe(true);
+ await act(async()=>{await vi.advanceTimersByTimeAsync(20000)});
+ expect(screen.getByRole("status").textContent).toContain("Updated");
+ await act(async()=>{pending.resolve({data:{}})});await settle();
+ expect(screen.getByRole("status").textContent).toContain("Updated");expect(screen.queryByText(/timed out/)).toBeNull();
 });
