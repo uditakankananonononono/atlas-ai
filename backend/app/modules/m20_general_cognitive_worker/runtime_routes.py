@@ -349,3 +349,16 @@ def prepare_supplied_task_plan(task_id: str, request: SuppliedTaskPlanRequest,
         raise HTTPException(422, str(exc))
     except ValueError as exc:
         raise HTTPException(409 if str(exc).startswith('plan conflict') else 422, str(exc))
+
+
+class TaskPreflightRequest(BaseModel):
+    context: dict[str, Any] = Field(default_factory=dict)
+
+
+@router.post('/tasks/{task_id}/preflight')
+def task_preflight(task_id: str, request: TaskPreflightRequest,
+                   runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        return runtime.preflight_task(task_id, context=request.context)
+    except KeyError:
+        raise HTTPException(404, 'task not found')

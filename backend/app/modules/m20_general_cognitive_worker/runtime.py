@@ -37,7 +37,7 @@ from .sandbox import SandboxRunner
 from .scheduler import FairContextScheduler
 from .schemas import (
     Budget,
-    ChunkType, EpisodeOutcome, MemoryChunk, PlanNode, TaskContext, TaskState, TraceEntry,
+    ChunkType, EpisodeOutcome, MemoryChunk, PlanNode, Risk, TaskContext, TaskState, TraceEntry,
 )
 from .risk_register import DurableRiskRegister
 from .sql_repository import GCWRepository
@@ -202,6 +202,48 @@ class GCWRuntime:
     def get_task(self, task_id: str) -> TaskContext | None:
         context = self.scheduler.get(task_id)
         return context or self.repo.load_task(task_id)
+
+    def preflight_task(self, task_id, *, context=None):
+        from .tools import ToolError, ToolBlockedError
+        task = self.get_task(task_id)
+        if task is None: raise KeyError(task_id)
+        context = context or {}
+        rows = []
+        def bindings(value):
+            if isinstance(value, dict):
+                return '$step' in value or any(bindings(item) for item in value.values())
+            return isinstance(value, list) and any(bindings(item) for item in value)
+        for node in task.plan:
+            row = {'step_id': node.id, 'tool': node.tool, 'issues': [], 'missing_preconditions': [],
+                   'argument_check': 'not_applicable', 'effective_risk': node.risk.value}
+            if node.tool is None:
+                if self.loop.model is None: row['issues'].append('reasoning_model_unavailable')
+            else:
+                try: tool = self.tools.get(node.tool)
+                except ToolError:
+                    row['issues'].append('unknown_tool'); rows.append(row); continue
+                tiers = [Risk.READ, Risk.REVERSIBLE, Risk.EXTERNAL, Risk.IRREVERSIBLE]
+                row['effective_risk'] = tiers[max(tiers.index(tool.spec.risk), tiers.index(node.risk))].value
+                row['missing_preconditions'] = tool.check_preconditions(context)
+                if row['missing_preconditions']: row['issues'].append('missing_preconditions')
+                if bindings(node.arguments):
+                    row['argument_check'] = 'deferred_until_dependency_output'
+                    row['issues'].append('argument_binding_unresolved')
+                else:
+                    try:
+                        tool.validate_arguments(node.arguments)
+                        row['argument_check'] = 'static_schema_valid'
+                    except ToolBlockedError:
+                        row['argument_check'] = 'static_schema_invalid'
+                        row['issues'].append('arguments_schema')
+            rows.append(row)
+        return {'task_id': task_id, 'steps': rows,
+                'ready_for_dispatch': False,
+                'static_checks_passed': bool(rows) and not any(row['issues'] for row in rows),
+                'status': 'registered_capability_and_static_input_diagnostics_only',
+                'approval_granted': False, 'external_actions_executed': False,
+                'context_is_supplied_not_verified': True,
+                'dispatch_rechecks_required': True}
 
     def prepare_supplied_plan(self, task_id, *, steps):
         from .htn_planner import HTNPlanner
