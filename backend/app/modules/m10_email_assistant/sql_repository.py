@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import JSON, DateTime, Float, Integer, String, Text, UniqueConstraint, select
+from sqlalchemy import JSON, DateTime, Float, Integer, String, Text, UniqueConstraint, select, update, cast
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
 from app.core.database import Base, SessionLocal, engine
@@ -56,6 +56,16 @@ class EmailMessageRow(Base):
     embedding: Mapped[list | None] = mapped_column(JSON, nullable=True)
     unsubscribe_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class DraftWorkRow(Base):
+    """Durable post-ingest pipeline. In-flight phases never auto-retry."""
+    __tablename__='m10_draft_work'
+    tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True)
+    message_id:Mapped[str]=mapped_column(String(36),primary_key=True)
+    account_id:Mapped[str]=mapped_column(String(36),index=True)
+    phase:Mapped[str]=mapped_column(String(40),index=True)
+    data:Mapped[dict]=mapped_column(JSON)
 
 
 class ActionItemRow(Base):
@@ -183,7 +193,7 @@ class SqlEmailRepository:
                      sender: str, recipients: list[str], snippet: str, body_text: str,
                      received_at: datetime | None, labels: list[str], headers: dict,
                      category: str | None, category_confidence: float,
-                     embedding: list[float] | None, unsubscribe_url: str | None) -> bool:
+                     embedding: list[float] | None, unsubscribe_url: str | None, draft_work: dict | None = None) -> bool:
         with self.sessions.begin() as db:
             values=dict(
                 tenant_id=self.tenant_id, id=message_id, account_id=account_id,
@@ -202,9 +212,47 @@ class SqlEmailRepository:
             claimed=db.execute(insert(EmailMessageRow).values(**values).on_conflict_do_nothing(index_elements=["tenant_id","account_id","gmail_id"]).returning(EmailMessageRow.pk))
             if claimed.scalar_one_or_none() is None:
                 return False
+            if draft_work is not None:
+                db.add(DraftWorkRow(tenant_id=self.tenant_id,message_id=message_id,account_id=account_id,phase='ready',data=draft_work))
+                from uuid import uuid4
+                for action in draft_work.get('actions',[]):
+                    deadline=datetime.fromisoformat(action['deadline'].replace('Z','+00:00')) if action.get('deadline') else None
+                    db.add(ActionItemRow(tenant_id=self.tenant_id,id=str(uuid4()),message_id=message_id,action=action['action'],deadline=deadline,related_entity=action.get('related_entity'),confidence=category_confidence,status='open',created_at=_utcnow()))
             self._log(db, "email_message", message_id, "ingested",
                       {"gmail_id": gmail_id, "category": category})
         return True
+
+    def draft_work(self,message_id:str,account_id:str):
+        with self.sessions() as db:
+            row=db.scalar(select(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.message_id==message_id,DraftWorkRow.account_id==account_id))
+            return {'phase':row.phase,'data':dict(row.data)} if row else None
+
+    def transition_draft_work(self,message_id:str,account_id:str,expected:str,target:str,data:dict)->bool:
+        allowed={'ready':'model_inflight','model_inflight':'model_done','model_done':'approval_inflight','approval_inflight':'approval_done'}
+        if allowed.get(expected)!=target:raise ValueError('illegal draft ownership phase transition')
+        with self.sessions.begin() as db:
+            won=db.execute(update(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.message_id==message_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase==expected).values(phase=target,data=data).returning(DraftWorkRow.message_id)).first()
+            if won:self._log(db,'draft_work',message_id,target,{})
+            return won is not None
+
+    def recoverable_draft_work(self,account_id:str):
+        with self.sessions() as db:
+            rows=db.scalars(select(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase.in_(['ready','model_done','approval_done'])))
+            return [r.message_id for r in rows]
+
+    def unresolved_draft_work(self,account_id:str):
+        with self.sessions() as db:
+            return [{'message_id':r.message_id,'phase':r.phase} for r in db.scalars(select(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase.in_(['model_inflight','approval_inflight'])))]
+
+    def finalize_draft_work(self,message_id:str,account_id:str,data:dict)->bool:
+        with self.sessions.begin() as db:
+            from sqlalchemy.dialects.postgresql import JSONB
+            matches=cast(DraftWorkRow.data,JSONB)==data if db.get_bind().dialect.name=='postgresql' else DraftWorkRow.data==data
+            claimed=db.execute(update(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.message_id==message_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase=='approval_done',matches).values(phase='complete').returning(DraftWorkRow.message_id)).first()
+            if not claimed:return False
+            db.add(EmailDraftRow(tenant_id=self.tenant_id,id=data['draft_id'],message_id=message_id,approval_id=data['approval_id'],to=data['to'],subject=data['subject'],body=data['body'],model=data['model'],status='pending_approval',created_at=_utcnow()))
+            self._log(db,'email_draft',data['draft_id'],'draft_proposed',{'message_id':message_id,'approval_id':data['approval_id']})
+            return True
 
     def list_messages(self, category: str | None = None, limit: int = 100) -> list[EmailMessageRow]:
         with self.sessions() as db:
