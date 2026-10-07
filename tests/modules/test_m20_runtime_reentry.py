@@ -35,3 +35,15 @@ def test_mounted_busy_is_conflict_not_server_error():
  app=FastAPI();app.include_router(router);app.dependency_overrides[get_runtime]=lambda:Busy()
  response=TestClient(app).post('/api/modules/20/runtime/tasks/fixture/step',json={})
  assert response.status_code==409 and response.json()['detail']=='runtime execution already active'
+
+def test_held_execution_lock_rejects_before_any_model_or_task_write(tmp_path):
+ calls=[]
+ class Model:
+  def complete(self,*args):calls.append(args);return {'result':'fixture'}
+ engine=create_engine(f'sqlite:///{tmp_path / "held-lock.db"}');repo=GCWRepository(engine);repo.create_schema();runtime=GCWRuntime(repo,executive_model=Model())
+ ctx=TaskContext(goal='fixture',plan=[PlanNode(title='reason')]);repo.save_task(ctx)
+ runtime._execution_lock.acquire()
+ try:
+  with pytest.raises(RuntimeError,match='runtime execution already active'):runtime.run_task(ctx.id)
+  assert calls==[] and repo.load_task(ctx.id).state==TaskState.PENDING
+ finally:runtime._execution_lock.release();engine.dispose()
