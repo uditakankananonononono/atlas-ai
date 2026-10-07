@@ -177,3 +177,28 @@ def test_memory_embedding_failure_does_not_publish_content(kind):
     with pytest.raises(RuntimeError):
         publish(fresh)
     assert memory.get(fresh.id) is None
+
+
+def test_cosine_large_finite_vectors_keep_exact_direction():
+    from app.modules.m20_general_cognitive_worker.embeddings import cosine_similarity
+    assert cosine_similarity([1e308, 1e308], [1e308, 1e308]) == pytest.approx(1)
+    assert cosine_similarity([1e-300, 0], [1e-300, 0]) == pytest.approx(1)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), True])
+def test_cosine_invalid_components_rejected(value):
+    from app.modules.m20_general_cognitive_worker.embeddings import cosine_similarity
+    with pytest.raises(ValueError):
+        cosine_similarity([value, 1], [1, 0])
+
+
+def test_cosine_scaled_independent_numpy_direction():
+    import numpy as np
+    from app.modules.m20_general_cognitive_worker.embeddings import cosine_similarity
+    a = [3e200, -4e200, 2e200]
+    b = [-2e-200, 5e-200, 1e-200]
+    aa = np.array([3, -4, 2], dtype=float)
+    bb = np.array([-2, 5, 1], dtype=float)
+    expected = np.dot(aa, bb) / np.linalg.norm(aa) / np.linalg.norm(bb)
+    assert cosine_similarity(a, b) == pytest.approx(expected)
+    assert cosine_similarity([1e308, 0], [-1e-300, 0]) == pytest.approx(-1)
