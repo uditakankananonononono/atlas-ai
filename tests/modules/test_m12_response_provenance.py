@@ -418,3 +418,43 @@ def test_single_run_unsupported_options_rejected_before_execution(extra):
  response=TestClient(app).post('/ai-research-lab/run',json=body)
  assert response.status_code==422,response.text
  assert response.json()['detail'][0]['type']=='extra_forbidden' and not calls
+
+@pytest.mark.parametrize('workflow',[True,False])
+def test_model_execution_auth_headers_do_not_bypass_default_bearer_requirement(monkeypatch,workflow):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.modules.m12_ai_research_lab.routes import router,get_service,get_dag_engine
+ calls=[]
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+ class Service:
+  async def execute(self,*args):calls.append(args)
+ class Engine:
+  async def run(self,*args):calls.append(args)
+ app=FastAPI();app.include_router(router,prefix='/api/v1');app.dependency_overrides[get_service]=lambda:Service();app.dependency_overrides[get_dag_engine]=lambda:Engine()
+ body={'yaml':'nodes: [{id: a, task: research}]'} if workflow else {'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100}
+ path='/api/v1/ai-research-lab/'+('workflows/run' if workflow else 'run')
+ response=TestClient(app).post(path,json=body,headers={'x-atlas-tenant':'spoofed','x-atlas-actor':'spoofed'})
+ assert response.status_code==401 and response.json()=={'detail':'OIDC bearer token required'} and not calls
+
+@pytest.mark.parametrize('workflow',[True,False])
+def test_model_execution_verified_principal_overrides_claimed_input_tenant(monkeypatch,workflow):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ import app.auth.context as auth
+ from app.modules.m12_ai_research_lab.routes import router,get_service,get_dag_engine
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ from app.modules.m12_ai_research_lab.workflow import DagEngine
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+ tokens=[];calls=[]
+ class Verifier:
+  tenant_claim='atlas_tenant'
+  async def verify(self,token):tokens.append(token);return {'atlas_tenant':'verified-tenant','sub':'verified-actor'}
+ monkeypatch.setattr(auth,'_production_verifier',lambda:Verifier())
+ class Service:
+  async def execute(self,req,*args):calls.append(req.tenant_id);return ModelResult('fixture','fixture',.9)
+ async def runner(task,config,context):calls.append(context['workflow_inputs']['tenant_id']);return {'text':'fixture'}
+ app=FastAPI();app.include_router(router,prefix='/api/v1');app.dependency_overrides[get_service]=lambda:Service();app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ body={'yaml':'nodes: [{id: a, task: research}]','inputs':{'tenant_id':'spoofed'}} if workflow else {'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100}
+ response=TestClient(app).post('/api/v1/ai-research-lab/'+('workflows/run' if workflow else 'run'),json=body,headers={'authorization':'Bearer fixture-token','x-atlas-tenant':'spoofed','x-atlas-actor':'spoofed'})
+ assert response.status_code==200,response.text
+ assert tokens==['fixture-token'] and calls==['verified-tenant']
