@@ -171,6 +171,30 @@ class SqlSocialRepository:
     def get_report(self,item_id): return self._get(SocialReportRow,item_id,to_report)
 
     # schedules + publish receipts
+    def propose_final_review(self,expected,payload,tenant_id,m00,ttl_seconds):
+        if tenant_id!=self.tenant_id:raise ValueError('tenant mismatch')
+        if self.sessions.kw.get('bind') is not m00._sessions.kw.get('bind'):raise ValueError('proposal requires same owning SQL database')
+        old=schedule_data(expected)
+        def bind(db,approval_id):
+            from app.modules.m00_approval_center.service import ApprovalRequestRow
+            db.execute(update(SocialScheduleRow).where(SocialScheduleRow.tenant_id==self.tenant_id,SocialScheduleRow.item_id==expected.id).values(status=SocialScheduleRow.status))
+            current=db.scalar(select(SocialScheduleRow).where(SocialScheduleRow.tenant_id==self.tenant_id,SocialScheduleRow.item_id==expected.id))
+            if current is None:return False
+            ignored={'approval_id','status','decided_at','failure'}
+            if {k:v for k,v in current.data.items() if k not in ignored}!={k:v for k,v in old.items() if k not in ignored}:return False
+            if current.status in {'publishing','outcome_unknown','published','cancelled','failed'}:return False
+            source=db.get(ApprovalRequestRow,current.data.get('approval_id'))
+            if source is not None and source.user_id==tenant_id and source.module_id==6 and source.action_type=='schedule_post' and source.status=='pending' and source.payload==payload and source.expires_at is not None:
+                from datetime import timezone
+                expiry=source.expires_at.replace(tzinfo=timezone.utc) if source.expires_at.tzinfo is None else source.expires_at
+                if expiry>m00._clock():return source.id
+            from sqlalchemy.dialects.postgresql import JSONB
+            matches=cast(SocialScheduleRow.data,JSONB)==old if db.get_bind().dialect.name=='postgresql' else SocialScheduleRow.data==old
+            if expected.status in {'publishing','outcome_unknown','published','cancelled','failed'}:return False
+            new={**old,'approval_id':approval_id,'status':'awaiting_approval','decided_at':None,'failure':None}
+            return db.execute(update(SocialScheduleRow).where(SocialScheduleRow.tenant_id==self.tenant_id,SocialScheduleRow.item_id==expected.id,SocialScheduleRow.status==expected.status,matches).values(data=new,status='awaiting_approval').returning(SocialScheduleRow.item_id)).first() is not None
+        return m00.submit_bound(module_id=6,action_type='schedule_post',payload=payload,user_id=tenant_id,ttl_seconds=ttl_seconds,binder=bind)
+
     def bind_final_review(self,expected,approval_id):
         if expected.status in {'publishing','outcome_unknown','published','cancelled','failed'}:return False
         old=schedule_data(expected);new={**old,'approval_id':approval_id,'status':'awaiting_approval','decided_at':None,'failure':None}

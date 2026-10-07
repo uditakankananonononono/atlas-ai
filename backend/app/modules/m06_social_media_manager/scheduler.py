@@ -223,13 +223,13 @@ class Scheduler:
         entry.alt_texts = list(alt_texts or [])
         return self._repository.save_schedule(entry)
 
-    def final_review_payload(self,schedule_id:str,tenant_id:str)->dict[str,Any]:
+    def final_review_payload(self,schedule_id:str,tenant_id:str,*,snapshot=None)->dict[str,Any]:
         """Snapshot for a new owner review after rendering. Does not approve/publish.
 
         Account identity comes only from a trusted connected-account resolver;
         environment credentials alone cannot supply it.
         """
-        entry=self._entry(schedule_id)
+        entry=snapshot if snapshot is not None else self._entry(schedule_id)
         if entry.status in TERMINAL_STATUSES:
             raise ScheduleStateError('cannot prepare final review for terminal/claimed schedule')
         resolve=getattr(self._adapters,'account_id',None)
@@ -251,11 +251,12 @@ class Scheduler:
         unmatched pending card, never a publish grant for the changed payload.
         """
         entry=self._entry(schedule_id)
-        payload=self.final_review_payload(schedule_id,tenant_id)
-        view=approval_service.submit(module_id=6,action_type='schedule_post',payload=payload,user_id=tenant_id,ttl_seconds=ttl_seconds)
-        if not self._repository.bind_final_review(entry,view['id']):
-            raise ScheduleStateError('schedule changed during final review proposal; new review required')
-        return view
+        payload=self.final_review_payload(schedule_id,tenant_id,snapshot=entry)
+        atomic=getattr(self._repository,'propose_final_review',None)
+        if atomic is None:raise ScheduleStateError('atomic durable final-review proposal unavailable')
+        try:return atomic(entry,payload,tenant_id,approval_service,ttl_seconds)
+        except Exception as error:
+            raise ScheduleStateError(f'final review not bound: {error}') from error
 
     # -- decision sync ---------------------------------------------------------
 

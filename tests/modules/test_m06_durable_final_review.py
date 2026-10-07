@@ -76,3 +76,37 @@ def test_runtime_final_review_refuses_unverified_environment_account_before_m00(
   def submit(self,**kwargs):raise AssertionError('unverified account must not create review')
  scheduler=Scheduler(repository=repo,decisions=None,adapter_factory=_EnvAdapterFactory())
  with pytest.raises(ScheduleStateError,match='identity unavailable'):scheduler.request_final_review('s','a',NoSubmit())
+
+
+@pytest.mark.parametrize('kind',['sqlite','postgres'])
+def test_atomic_review_stale_snapshot_rollback_and_duplicate_proposal(tmp_path,kind,monkeypatch):
+ from sqlalchemy import event,select,func
+ from app.modules.m00_approval_center.service import ApprovalRequestRow,ApprovalEventRow
+ if kind=='postgres':
+  pgserver=pytest.importorskip('pgserver');server=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop')
+  url=server.get_uri().replace('postgresql://','postgresql+psycopg://')
+ else:url=f'sqlite:///{tmp_path}/atomic.db'
+ engine=create_engine(url);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False)
+ repo=SqlSocialRepository('a',sessions);m00=ApprovalService(session_factory=sessions)
+ class Factory:
+  def account_id(self,p):return 'fixture-account'
+ scheduler=Scheduler(repository=repo,decisions=None,adapter_factory=Factory())
+ entry=ScheduleEntry(id='s',plan_id='p',platform=Platform.TWITTER,format='thread',text='fixture',publish_at=datetime.now(timezone.utc),approval_id='old');repo.save_schedule(entry)
+ original=scheduler.final_review_payload
+ def interleave(sid,tenant,**kwargs):
+  changed=repo.get_schedule(sid);changed.text='changed';repo.save_schedule(changed)
+  return original(sid,tenant,**kwargs)
+ monkeypatch.setattr(scheduler,'final_review_payload',interleave)
+ with pytest.raises(ScheduleStateError):scheduler.request_final_review('s','a',m00)
+ assert m00.list(user_id='a')==[] and repo.get_schedule('s').approval_id=='old'
+ monkeypatch.setattr(scheduler,'final_review_payload',original)
+ def fail(mapper,conn,target):raise RuntimeError('fixture approval insert fail')
+ event.listen(ApprovalRequestRow,'before_insert',fail)
+ try:
+  with pytest.raises(ScheduleStateError):scheduler.request_final_review('s','a',m00)
+ finally:event.remove(ApprovalRequestRow,'before_insert',fail)
+ assert repo.get_schedule('s').approval_id=='old' and m00.list(user_id='a')==[]
+ first=scheduler.request_final_review('s','a',m00);second=scheduler.request_final_review('s','a',m00)
+ assert first['id']==second['id'] and len(m00.list(user_id='a'))==1
+ with sessions() as db:assert db.scalar(select(func.count()).select_from(ApprovalEventRow))==1
+ engine.dispose()

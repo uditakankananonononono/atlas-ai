@@ -195,6 +195,27 @@ class Service:
         self._broadcaster.publish({"type": "approval_request", "approval": _jsonable(view)})
         return view
 
+    def submit_bound(self,*,module_id:int,action_type:str,payload:dict,user_id:str,ttl_seconds:int,binder)->dict:
+        """Internal atomic proposal plus owning-resource CAS on this database.
+
+        binder receives the active transaction and must fail closed. No effects.
+        """
+        if module_id not in BY_ID:raise ValueError('unknown module')
+        now=self._clock()
+        row=ApprovalRequestRow(id=str(uuid4()),user_id=user_id,module_id=module_id,action_type=action_type,payload=payload,
+            status=ApprovalStatus.PENDING.value,created_at=now,expires_at=now+timedelta(seconds=ttl_seconds))
+        with self._sessions.begin() as db:
+            binding=binder(db,row.id)
+            if not binding:raise ApprovalConflictError('owning resource changed; proposal not created')
+            if isinstance(binding,str):
+                existing=db.get(ApprovalRequestRow,binding)
+                if existing is None:raise ApprovalConflictError('bound approval disappeared')
+                return _view(existing)
+            db.add(row);db.add(ApprovalEventRow(approval_id=row.id,event='created',at=now))
+        view=_view(row)
+        self._broadcaster.publish({'type':'approval_request','approval':_jsonable(view)})
+        return view
+
     def get(self, approval_id: str) -> dict[str, Any]:
         """Return one request, applying expiry lazily. Raises ApprovalNotFoundError."""
         with self._sessions.begin() as db:
