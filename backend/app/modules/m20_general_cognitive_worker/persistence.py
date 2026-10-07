@@ -214,8 +214,8 @@ class DurableHTNPlanner(HTNPlanner):
             method = method.model_copy(deep=True, update={"id": existing.id})
         if self.require_review and method.source == MethodSource.LEARNED:
             status = "proposed"
-        self._review_status[method.name] = status
         self.repo.save_method(method, status=status)
+        self._review_status[method.name] = status
         return super().register_method(method)
 
     def _match_method(self, goal: str, *, context: str = "") -> HTNMethod | None:
@@ -225,19 +225,26 @@ class DurableHTNPlanner(HTNPlanner):
         return match
 
     def decompose(self, goal: str, *, context: str = ""):
-        # Persist usage only for a matched method. A newly proposed method is
-        # already saved by register_method and is not activated by this path.
         matched = self._match_method(goal, context=context)
-        nodes = super().decompose(goal, context=context)
-        if matched is not None:
-            self.repo.save_method(matched, status=self.method_status(matched.name))
+        if matched is None:
+            return super().decompose(goal, context=context)
+        staged = matched.model_copy(deep=True)
+        nodes = self._instantiate(staged)
+        staged.times_used += 1
+        self.repo.save_method(staged, status=self.method_status(staged.name))
+        self._methods[staged.name] = staged
         return nodes
 
     def record_outcome(self, method_name: str, succeeded: bool) -> None:
-        super().record_outcome(method_name, succeeded)
         method = self._methods.get(method_name)
-        if method is not None:
-            self.repo.save_method(method, status=self.method_status(method_name))
+        if method is None:
+            return
+        staged = HTNPlanner()
+        staged._methods[method_name] = method.model_copy(deep=True)
+        staged.record_outcome(method_name, succeeded)
+        updated = staged._methods[method_name]
+        self.repo.save_method(updated, status=self.method_status(method_name))
+        self._methods[method_name] = updated
 
     @staticmethod
     def method_review_hash(method):
@@ -253,8 +260,9 @@ class DurableHTNPlanner(HTNPlanner):
             return False
         if expected_hash != self.method_review_hash(self.methods[name]):
             raise PermissionError("method revision differs from reviewed hash")
+        if not self.repo.set_method_status(self.methods[name].id, "active"):
+            return False
         self._review_status[name] = "active"
-        self.repo.set_method_status(self.methods[name].id, "active")
         return True
 
     @classmethod
