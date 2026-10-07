@@ -137,3 +137,17 @@ def test_mounted_single_run_provider_unknown_is_hold_without_backup():
  assert response.status_code==409,response.text
  detail=response.json()['detail'];assert detail['state']=='unknown' and detail['retry_allowed'] is False
  assert detail['reason']=='fixture dispatch unknown' and calls==['first']
+
+@pytest.mark.parametrize('budget',['NaN','Infinity','-Infinity'])
+def test_single_run_nonfinite_budget_rejected_before_service(budget):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ calls=[]
+ class Service:
+  async def execute(self,*args):calls.append(args);raise AssertionError('must not execute')
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service()
+ response=TestClient(app).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':budget,'latency_tolerance_ms':100})
+ assert response.status_code==422,response.text
+ assert not calls

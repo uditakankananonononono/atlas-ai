@@ -74,3 +74,21 @@ def test_invalid_catalog_estimate_does_not_poison_valid_choice():
  invalid=ModelCapability('nan',frozenset({TaskType.RESEARCH}),1000,0,float('nan'),1)
  decision=ModelRouter([invalid,*models()]).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'))
  assert decision.primary.model_id=='first' and [m.model_id for m in decision.fallbacks]==['backup']
+
+@pytest.mark.parametrize('invalid',[float('nan'),float('inf'),float('-inf'),-.1,True,False,'1',None,10**1000])
+@pytest.mark.parametrize('field',['budget','price'])
+def test_invalid_budget_price_never_invokes_provider(invalid,field):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ model=ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,invalid if field=='price' else 0,100,.8)
+ req=RouteRequest(TaskType.RESEARCH,100,invalid if field=='budget' else 1,100,'fixture')
+ router=ModelRouter([model])
+ assert router.score(model,req)==(float('-inf'),['invalid budget or unit price'])
+ with pytest.raises(NoEligibleModel):asyncio.run(ResearchExecutor(router,Provider()).execute(req,'fixture'))
+ assert not calls
+
+def test_invalid_price_excluded_without_poisoning_valid_free_catalog():
+ invalid=ModelCapability('nan-price',frozenset({TaskType.RESEARCH}),1000,float('nan'),100,1)
+ decision=ModelRouter([invalid,*models()]).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'))
+ assert decision.primary.model_id=='first' and [m.model_id for m in decision.fallbacks]==['backup']
