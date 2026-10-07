@@ -277,3 +277,22 @@ def test_rumination_exception_restores_context_state():
     with pytest.raises(RuntimeError):
         loop.ruminate(context)
     assert context.state == TaskState.RUNNING
+
+
+def test_approval_resume_cannot_reset_completed_read_node():
+    loop, _, calls = build_loop()
+    context = loop.start(TaskContext(goal="research competitors and email the findings"))
+    done = next(n for n in context.plan if n.state == TaskState.SUCCEEDED)
+    with pytest.raises(ValueError):
+        loop.resume_after_approval(context, done.id, True)
+    assert calls["research"] == 1
+    assert done.state == TaskState.SUCCEEDED
+    assert context.state == TaskState.WAITING_APPROVAL
+
+
+def test_unknown_approval_resume_does_not_block_whole_task():
+    loop, _, _ = build_loop()
+    context = loop.start(TaskContext(goal="research competitors and email the findings"))
+    with pytest.raises(KeyError):
+        loop.resume_after_approval(context, "missing", False)
+    assert context.state == TaskState.WAITING_APPROVAL

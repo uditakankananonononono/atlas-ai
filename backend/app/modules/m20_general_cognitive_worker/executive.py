@@ -333,13 +333,18 @@ class DeliberativeLoop:
         return context
 
     def resume_after_approval(self, context: TaskContext, node_id: str, approved: bool) -> TaskContext:
-        for node in context.plan:
-            if node.id == node_id:
-                if approved:
-                    node.state = TaskState.PENDING  # approval_id kept: consumed at dispatch
-                else:
-                    node.state = TaskState.BLOCKED
-                    node.approval_id = None
+        if type(approved) is not bool:
+            raise ValueError("approved must be exact bool")
+        node = next((node for node in context.plan if node.id == node_id), None)
+        if node is None:
+            raise KeyError(node_id)
+        if node.state != TaskState.WAITING_APPROVAL or not node.approval_id:
+            raise ValueError("node is not waiting on an approval")
+        if approved:
+            node.state = TaskState.PENDING  # bound approval consumed at dispatch
+        else:
+            node.state = TaskState.BLOCKED
+            node.approval_id = None
         if approved:
             return self.run(context)
         context.state = TaskState.BLOCKED
