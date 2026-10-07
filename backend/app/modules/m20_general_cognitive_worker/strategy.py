@@ -866,25 +866,28 @@ class GameAnalyzer:
 class NashFinder:
     def find(self, *, row_payoffs: list[list[float]],
              col_payoffs: list[list[float]]) -> dict[str, Any]:
-        if len(row_payoffs) != 2 or any(len(r) != 2 for r in row_payoffs):
-            raise ValueError("2x2 games only")
         pure = nash_equilibria_2x2(row_payoffs, col_payoffs)
-        # Mixed equilibrium for 2x2, interior solutions only:
-        # row player mixes to make col indifferent, and vice versa.
+        # Normalize each player's payoffs before differences to avoid
+        # overflow. Only a nondegenerate interior candidate is returned.
+        def scaled(matrix):
+            scale = max(abs(v) for row in matrix for v in row) or 1.0
+            return [[v / scale for v in row] for row in matrix]
+        row = scaled(row_payoffs); col = scaled(col_payoffs)
         mixed = None
-        dc = col_payoffs[0][0] - col_payoffs[0][1] - col_payoffs[1][0] + col_payoffs[1][1]
-        dr = row_payoffs[0][0] - row_payoffs[1][0] - row_payoffs[0][1] + row_payoffs[1][1]
+        dc = math.fsum([col[0][0], -col[0][1], -col[1][0], col[1][1]])
+        dr = math.fsum([row[0][0], -row[1][0], -row[0][1], row[1][1]])
         if dc != 0 and dr != 0:
-            p = (col_payoffs[1][1] - col_payoffs[1][0]) / dc  # prob row plays row 0
-            q = (row_payoffs[1][1] - row_payoffs[0][1]) / dr  # prob col plays col 0
+            p = (col[1][1] - col[1][0]) / dc
+            q = (row[1][1] - row[0][1]) / dr
             if 0.0 < p < 1.0 and 0.0 < q < 1.0:
                 mixed = {"row_plays_first_with": p, "col_plays_first_with": q}
         return {"pure_equilibria": [{"row": r, "col": c} for r, c in pure],
                 "mixed_equilibrium": mixed,
+                "scope": "supplied 2x2 pure enumeration plus nondegenerate interior candidate; degenerate mixed families not enumerated; float rounding may omit ill-conditioned candidates",
                 "reading": ("multiple equilibria - coordination or focal points decide"
                             if len(pure) > 1 else
-                            "unique stable outcome" if len(pure) == 1 else
-                            "no pure equilibrium; play the mixed strategy" if mixed else
+                            "one pure equilibrium found" if len(pure) == 1 else
+                            "no pure equilibrium; interior mixed candidate found" if mixed else
                             "no equilibrium found"),
                 "assumptions": ["2x2 normal form, expected-payoff maximizing players",
                                  DECISION_SUPPORT_CAVEAT]}

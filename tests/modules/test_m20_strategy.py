@@ -583,3 +583,32 @@ def test_erlang_c_large_server_count_is_finite_and_matches_mm1_at_one_server():
 ])
 def test_queueing_invalid_rate_or_count_rejects(kwargs):
  with pytest.raises(ValueError):QueueAnalyzer.mmc(**kwargs)
+
+
+@pytest.mark.parametrize("col", [[[1]], [[float("nan"), 0], [0, 1]], [[True, 0], [0, 1]]])
+def test_nash_rejects_invalid_column_matrix(col):
+    with pytest.raises(ValueError):
+        NashFinder().find(row_payoffs=[[1, 0], [0, 1]], col_payoffs=col)
+
+
+def test_nash_large_finite_matching_pennies_keeps_mixed():
+    out = NashFinder().find(row_payoffs=[[1e308, -1e308], [-1e308, 1e308]], col_payoffs=[[-1e308, 1e308], [1e308, -1e308]])
+    assert out["mixed_equilibrium"] == {"row_plays_first_with": 0.5, "col_plays_first_with": 0.5}
+
+
+def test_nash_one_pure_does_not_claim_stability_or_full_uniqueness():
+    out = NashFinder().find(row_payoffs=[[3, 0], [5, 1]], col_payoffs=[[3, 5], [0, 1]])
+    assert "stable" not in out["reading"]
+    assert "degenerate" in out["scope"]
+
+
+def test_nash_asymmetric_mixed_independent_indifference_check():
+    row = [[4, 0], [1, 2]]
+    col = [[0, 3], [2, 1]]
+    out = NashFinder().find(row_payoffs=row, col_payoffs=col)
+    p = out["mixed_equilibrium"]["row_plays_first_with"]
+    q = out["mixed_equilibrium"]["col_plays_first_with"]
+    assert p == pytest.approx(0.25)
+    assert q == pytest.approx(0.4)
+    assert q * row[0][0] + (1-q) * row[0][1] == pytest.approx(q * row[1][0] + (1-q) * row[1][1])
+    assert p * col[0][0] + (1-p) * col[1][0] == pytest.approx(p * col[0][1] + (1-p) * col[1][1])

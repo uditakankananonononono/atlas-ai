@@ -1,0 +1,83 @@
+........................................................................ [ 92%]
+.FFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+________________ test_nash_rejects_invalid_column_matrix[col0] _________________
+
+col = [[1]]
+
+    @pytest.mark.parametrize("col", [[[1]], [[float("nan"), 0], [0, 1]], [[True, 0], [0, 1]]])
+    def test_nash_rejects_invalid_column_matrix(col):
+        with pytest.raises(ValueError):
+>           NashFinder().find(row_payoffs=[[1, 0], [0, 1]], col_payoffs=col)
+
+tests/modules/test_m20_strategy.py:591: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:871: in find
+    pure = nash_equilibria_2x2(row_payoffs, col_payoffs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row_payoffs = [[1, 0], [0, 1]], col_payoffs = [[1]]
+
+    def nash_equilibria_2x2(
+        row_payoffs: list[list[float]], col_payoffs: list[list[float]],
+    ) -> list[tuple[int, int]]:
+        """Nash Equilibrium Identification for 2x2 games (pure strategies)."""
+        equilibria = []
+        for r in range(2):
+            for c in range(2):
+                row_best = row_payoffs[r][c] >= row_payoffs[1 - r][c]
+>               col_best = col_payoffs[r][c] >= col_payoffs[r][1 - c]
+                                                ^^^^^^^^^^^^^^^^^^^^^
+E               IndexError: list index out of range
+
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:232: IndexError
+________________ test_nash_rejects_invalid_column_matrix[col1] _________________
+
+col = [[nan, 0], [0, 1]]
+
+    @pytest.mark.parametrize("col", [[[1]], [[float("nan"), 0], [0, 1]], [[True, 0], [0, 1]]])
+    def test_nash_rejects_invalid_column_matrix(col):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:590: Failed
+________________ test_nash_rejects_invalid_column_matrix[col2] _________________
+
+col = [[True, 0], [0, 1]]
+
+    @pytest.mark.parametrize("col", [[[1]], [[float("nan"), 0], [0, 1]], [[True, 0], [0, 1]]])
+    def test_nash_rejects_invalid_column_matrix(col):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:590: Failed
+_____________ test_nash_large_finite_matching_pennies_keeps_mixed ______________
+
+    def test_nash_large_finite_matching_pennies_keeps_mixed():
+        out = NashFinder().find(row_payoffs=[[1e308, -1e308], [-1e308, 1e308]], col_payoffs=[[-1e308, 1e308], [1e308, -1e308]])
+>       assert out["mixed_equilibrium"] == {"row_plays_first_with": 0.5, "col_plays_first_with": 0.5}
+E       AssertionError: assert None == {'row_plays_first_with': 0.5, 'col_plays_first_with': 0.5}
+
+tests/modules/test_m20_strategy.py:596: AssertionError
+________ test_nash_one_pure_does_not_claim_stability_or_full_uniqueness ________
+
+    def test_nash_one_pure_does_not_claim_stability_or_full_uniqueness():
+        out = NashFinder().find(row_payoffs=[[3, 0], [5, 1]], col_payoffs=[[3, 5], [0, 1]])
+>       assert "stable" not in out["reading"]
+E       AssertionError: assert 'stable' not in 'unique stable outcome'
+E         
+E         'stable' is contained here:
+E           unique stable outcome
+E         ?        ++++++
+
+tests/modules/test_m20_strategy.py:601: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy.py::test_nash_rejects_invalid_column_matrix[col0]
+FAILED tests/modules/test_m20_strategy.py::test_nash_rejects_invalid_column_matrix[col1]
+FAILED tests/modules/test_m20_strategy.py::test_nash_rejects_invalid_column_matrix[col2]
+FAILED tests/modules/test_m20_strategy.py::test_nash_large_finite_matching_pennies_keeps_mixed
+FAILED tests/modules/test_m20_strategy.py::test_nash_one_pure_does_not_claim_stability_or_full_uniqueness
+5 failed, 73 passed in 1.48s

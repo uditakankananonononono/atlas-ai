@@ -221,10 +221,19 @@ def critical_path(tasks: list[dict[str, Any]]) -> dict[str, Any]:
             "status": "supplied_dag_point_duration_cpm_only"}
 
 
+def validate_game_2x2(row_payoffs, col_payoffs) -> None:
+    for matrix in (row_payoffs, col_payoffs):
+        if not isinstance(matrix, list) or len(matrix) != 2 or any(not isinstance(row, list) or len(row) != 2 for row in matrix):
+            raise ValueError("two 2x2 payoff matrices required")
+        if any(type(value) not in (int, float) or not math.isfinite(value) for row in matrix for value in row):
+            raise ValueError("finite numeric payoffs required, not bool")
+
+
 def nash_equilibria_2x2(
     row_payoffs: list[list[float]], col_payoffs: list[list[float]],
 ) -> list[tuple[int, int]]:
     """Nash Equilibrium Identification for 2x2 games (pure strategies)."""
+    validate_game_2x2(row_payoffs, col_payoffs)
     equilibria = []
     for r in range(2):
         for c in range(2):
