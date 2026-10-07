@@ -63,3 +63,18 @@ def test_hash_chain_api_does_not_claim_evidence_truth_or_independent_anchor(tmp_
   assert data['status']=='stored_snapshot_hash_chain_consistency_only'
   assert data['independent_anchor_verified'] is data['evidence_truth_verified'] is data['completeness_verified'] is False
  finally:app.dependency_overrides.clear()
+
+
+def test_invalid_observations_and_duplicate_review_are_controlled_errors(tmp_path):
+ service=AGIRuntimeService('t',data_dir=str(tmp_path),approval_gate=InMemoryApprovalGate())
+ app.dependency_overrides[get_agi_service]=lambda:service
+ try:
+  client=TestClient(app)
+  assert client.post('/api/v1/agi-runtime/world/evidence',json={'subject':' ','predicate':'p','value':1,'source':'s'}).status_code==422
+  assert service.world.state()=={}
+  for value in (1,2):client.post('/api/v1/agi-runtime/world/evidence',json={'subject':'x','predicate':'p','value':value,'source':'s'})
+  proposal=client.post('/api/v1/agi-runtime/goals/proposals',json={'mission':'fixture'}).json()[0]
+  path=f"/api/v1/agi-runtime/goals/{proposal['id']}/request-activation"
+  assert client.post(path).status_code==200
+  assert client.post(path).status_code==403
+ finally:app.dependency_overrides.clear()

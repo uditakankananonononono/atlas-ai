@@ -43,8 +43,11 @@ class TransferEvaluationIn(BaseModel):
 
 @router.post("/world/evidence", status_code=201)
 def observe(body: ObservationIn, service: AGIRuntimeService = Depends(get_agi_service)):
-    evidence_id = service.world.observe(**body.model_dump())
-    return {"evidence_id": evidence_id}
+    try:
+        evidence_id = service.world.observe(**body.model_dump())
+        return {"evidence_id": evidence_id}
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 @router.get("/world/hypotheses")
@@ -79,6 +82,8 @@ def request_goal_activation(proposal_id: str,
         return {"approval_id": service.goals.request_activation(proposal_id)}
     except KeyError as exc:
         raise HTTPException(404, "goal proposal not found") from exc
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
 
 
 @router.post("/goals/{proposal_id}/activate")
