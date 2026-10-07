@@ -1,0 +1,117 @@
+.FFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+______ test_vcg_later_high_value_agent_is_not_excluded_when_items_scarce _______
+
+    def test_vcg_later_high_value_agent_is_not_excluded_when_items_scarce():
+     out=MechanismDesigner().vcg(agents={'a':{'x':1},'b':{'x':10},'c':{'x':8}})
+>    assert out['allocation']=={'b':'x'} and out['payments']=={'a':0.0,'b':8.0,'c':0.0}
+E    AssertionError: assert ({'a': 'x'} == {'b': 'x'}
+E      
+E      Left contains 1 more item:
+E      {'a': 'x'}
+E      Right contains 1 more item:
+E      {'b': 'x'}
+E      Use -v to get more diff)
+
+tests/modules/test_m20_strategy.py:426: AssertionError
+__________ test_vcg_assignment_is_global_not_greedy_above_eight_items __________
+
+    def test_vcg_assignment_is_global_not_greedy_above_eight_items():
+     agents={'a':{'x':9,'y':8},'b':{'x':10}}
+     agents['a'].update({f'z{i}':0 for i in range(7)})
+     out=MechanismDesigner().vcg(agents=agents)
+>    assert out['allocation']=={'a':'y','b':'x'} and out['total_welfare']==18
+E    AssertionError: assert ({'a': 'x', 'b': 'z0'} == {'a': 'y', 'b': 'x'}
+E      
+E      Differing items:
+E      {'b': 'z0'} != {'b': 'x'}
+E      {'a': 'x'} != {'a': 'y'}
+E      Use -v to get more diff)
+
+tests/modules/test_m20_strategy.py:434: AssertionError
+______________ test_vcg_rejects_invalid_reported_valuations[nan] _______________
+
+value = nan
+
+    @pytest.mark.parametrize('value',[float('nan'),float('inf'),-1,True,'2'])
+    def test_vcg_rejects_invalid_reported_valuations(value):
+>    with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{'x':value}})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:440: Failed
+______________ test_vcg_rejects_invalid_reported_valuations[inf] _______________
+
+value = inf
+
+    @pytest.mark.parametrize('value',[float('nan'),float('inf'),-1,True,'2'])
+    def test_vcg_rejects_invalid_reported_valuations(value):
+>    with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{'x':value}})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:440: Failed
+_______________ test_vcg_rejects_invalid_reported_valuations[-1] _______________
+
+value = -1
+
+    @pytest.mark.parametrize('value',[float('nan'),float('inf'),-1,True,'2'])
+    def test_vcg_rejects_invalid_reported_valuations(value):
+>    with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{'x':value}})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:440: Failed
+______________ test_vcg_rejects_invalid_reported_valuations[True] ______________
+
+value = True
+
+    @pytest.mark.parametrize('value',[float('nan'),float('inf'),-1,True,'2'])
+    def test_vcg_rejects_invalid_reported_valuations(value):
+>    with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{'x':value}})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:440: Failed
+_______________ test_vcg_rejects_invalid_reported_valuations[2] ________________
+
+value = '2'
+
+    @pytest.mark.parametrize('value',[float('nan'),float('inf'),-1,True,'2'])
+    def test_vcg_rejects_invalid_reported_valuations(value):
+>    with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{'x':value}})
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:440: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.strategy.MechanismDesigner object at 0x7fbf54c01160>
+agents = {'a': {'x': '2'}}
+
+    def vcg(self, *, agents: dict[str, dict[str, float]]) -> dict[str, Any]:
+        """agents: {agent: {item: value}}; one unit of each item, each agent
+        gets at most one item (greedy matching by value)."""
+        if not agents:
+            raise ValueError("agents required")
+        items = sorted({item for v in agents.values() for item in v})
+        # exact optimal matching by exhaustive search when small
+        from itertools import permutations
+        names = sorted(agents)
+        best_welfare, best_alloc = -math.inf, {}
+        if len(items) <= 8:
+            for perm in permutations(items, min(len(names), len(items))):
+                alloc = dict(zip(names, perm))
+>               welfare = sum(agents[a].get(i, 0.0) for a, i in alloc.items())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
+backend/app/modules/m20_general_cognitive_worker/strategy.py:853: TypeError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy.py::test_vcg_later_high_value_agent_is_not_excluded_when_items_scarce
+FAILED tests/modules/test_m20_strategy.py::test_vcg_assignment_is_global_not_greedy_above_eight_items
+FAILED tests/modules/test_m20_strategy.py::test_vcg_rejects_invalid_reported_valuations[nan]
+FAILED tests/modules/test_m20_strategy.py::test_vcg_rejects_invalid_reported_valuations[inf]
+FAILED tests/modules/test_m20_strategy.py::test_vcg_rejects_invalid_reported_valuations[-1]
+FAILED tests/modules/test_m20_strategy.py::test_vcg_rejects_invalid_reported_valuations[True]
+FAILED tests/modules/test_m20_strategy.py::test_vcg_rejects_invalid_reported_valuations[2]
+7 failed, 1 passed, 24 deselected in 1.29s

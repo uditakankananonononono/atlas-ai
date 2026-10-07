@@ -419,3 +419,52 @@ def test_row84_principal_agent_contract():
         PrincipalAgentDesigner().design(
             efforts=[{"level": "low", "cost": 0.0, "expected_output": 100.0}],
             target_effort="low", shares=[1.5])
+
+
+def test_vcg_later_high_value_agent_is_not_excluded_when_items_scarce():
+ out=MechanismDesigner().vcg(agents={'a':{'x':1},'b':{'x':10},'c':{'x':8}})
+ assert out['allocation']=={'b':'x'} and out['payments']=={'a':0.0,'b':8.0,'c':0.0}
+ assert out['total_welfare']==10
+
+
+def test_vcg_assignment_is_global_not_greedy_above_eight_items():
+ agents={'a':{'x':9,'y':8},'b':{'x':10}}
+ agents['a'].update({f'z{i}':0 for i in range(7)})
+ out=MechanismDesigner().vcg(agents=agents)
+ assert out['allocation']=={'a':'y','b':'x'} and out['total_welfare']==18
+ assert out['payments']=={'a':0,'b':1}
+
+
+@pytest.mark.parametrize('value',[float('nan'),float('inf'),-1,True,'2'])
+def test_vcg_rejects_invalid_reported_valuations(value):
+ with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{'x':value}})
+
+
+def test_vcg_matches_independent_small_exhaustive_assignment_and_externalities():
+ import itertools,random
+ rng=random.Random(741)
+ def optimum(agents,items):
+  best=0
+  for choices in itertools.product([None]+items,repeat=len(agents)):
+   used=[item for item in choices if item is not None]
+   if len(used)!=len(set(used)):continue
+   best=max(best,sum(values.get(item,0) for values,item in zip(agents.values(),choices)))
+  return best
+ for agent_count in range(1,5):
+  for item_count in range(1,4):
+   items=[f'i{x}' for x in range(item_count)]
+   for _ in range(8):
+    agents={f'a{x}':{item:rng.randrange(12) for item in items} for x in range(agent_count)}
+    out=MechanismDesigner().vcg(agents=agents)
+    assert out['total_welfare']==optimum(agents,items)
+    for agent,payment in out['payments'].items():
+     expected=0 if agent not in out['allocation'] else optimum({k:v for k,v in agents.items() if k!=agent},items)-sum(agents[k][item] for k,item in out['allocation'].items() if k!=agent)
+     assert payment==expected
+
+
+def test_vcg_declared_bounds_and_empty_item_reports():
+ with pytest.raises(ValueError):MechanismDesigner().vcg(agents={f'a{x}':{'x':1} for x in range(65)})
+ with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{f'x{n}':1 for n in range(65)}})
+ with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{1:2,'x':3}})
+ out=MechanismDesigner().vcg(agents={'a':{},'b':{}})
+ assert out['allocation']=={} and out['total_welfare']==0 and out['payments']=={'a':0,'b':0}

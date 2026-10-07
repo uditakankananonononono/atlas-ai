@@ -1,7 +1,7 @@
 """Strategic and quantitative decision aids (features-doc rows 60-84).
 
-Each row is an exact, typed capability: deterministic, offline, and
-assumption-visible - every result carries the assumptions behind it.
+Typed operators mix bounded supplied-input computations, heuristics and
+templates. Their row names do not certify original spec strength.
 Nothing here claims business certainty, and valuation-shaped rows return
 an explicit decision-support caveat rather than advice.
 """
@@ -838,53 +838,55 @@ class MechanismDesigner:
     caller-supplied misreports: truth-telling must beat every deviation."""
 
     def vcg(self, *, agents: dict[str, dict[str, float]]) -> dict[str, Any]:
-        """agents: {agent: {item: value}}; one unit of each item, each agent
-        gets at most one item (greedy matching by value)."""
-        if not agents:
-            raise ValueError("agents required")
-        items = sorted({item for v in agents.values() for item in v})
-        # exact optimal matching by exhaustive search when small
-        from itertools import permutations
+        """Unit-demand reported valuations; optional unallocated agent/item.
+
+        Exact combinatorial assignment algorithm with float arithmetic,
+        bounded to 64 agents/items. No greedy or first-agent truncation.
+        """
+        from scipy.optimize import linear_sum_assignment
+        import numpy as np
+        if not agents or len(agents) > 64:
+            raise ValueError("need 1..64 agents")
+        if any(not isinstance(name, str) or not name or not isinstance(values, dict) for name, values in agents.items()):
+            raise ValueError("agent names and valuation objects required")
+        item_keys = {item for values in agents.values() for item in values}
+        if len(item_keys) > 64 or any(not isinstance(item, str) or not item for item in item_keys):
+            raise ValueError("need at most 64 nonempty item names")
+        items = sorted(item_keys)
+        if any(type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1e100
+               for values in agents.values() for value in values.values()):
+            raise ValueError("valuations must be finite nonnegative numbers <=1e100")
         names = sorted(agents)
-        best_welfare, best_alloc = -math.inf, {}
-        if len(items) <= 8:
-            for perm in permutations(items, min(len(names), len(items))):
-                alloc = dict(zip(names, perm))
-                welfare = sum(agents[a].get(i, 0.0) for a, i in alloc.items())
-                if welfare > best_welfare:
-                    best_welfare, best_alloc = welfare, alloc
-        else:
-            remaining = set(items)
-            best_alloc, best_welfare = {}, 0.0
-            for a in names:
-                pick = max(remaining, key=lambda i: agents[a].get(i, 0.0), default=None)
-                if pick is not None:
-                    best_alloc[a] = pick
-                    best_welfare += agents[a].get(pick, 0.0)
-                    remaining.discard(pick)
 
-        def welfare_without(excluded: str) -> float:
-            others = [a for a in names if a != excluded]
-            if not others:
-                return 0.0
-            best = 0.0
-            for perm in permutations(items, min(len(others), len(items))):
-                w = sum(agents[a].get(i, 0.0) for a, i in zip(others, perm))
-                best = max(best, w)
-            return best
+        def optimum(selected):
+            if not selected or not items:
+                return {}, 0.0
+            # Zero-valued dummy columns permit any agent to remain unallocated.
+            weights = np.zeros((len(selected), len(items) + len(selected)))
+            for row, name in enumerate(selected):
+                for col, item in enumerate(items):
+                    weights[row, col] = agents[name].get(item, 0.0)
+            rows, cols = linear_sum_assignment(weights, maximize=True)
+            allocation = {selected[row]: items[col] for row, col in zip(rows, cols)
+                          if col < len(items) and weights[row, col] > 0}
+            welfare = math.fsum(agents[name][item] for name, item in allocation.items())
+            return allocation, welfare
 
+        allocation, welfare = optimum(names)
         payments = {}
-        for a in names:
-            if a not in best_alloc:
-                payments[a] = 0.0
+        for name in names:
+            if name not in allocation:
+                payments[name] = 0.0
                 continue
-            others_welfare_with = sum(agents[o].get(i, 0.0)
-                                      for o, i in best_alloc.items() if o != a)
-            payments[a] = welfare_without(a) - others_welfare_with
-        return {"allocation": best_alloc, "payments": payments,
-                "total_welfare": best_welfare,
-                "assumptions": ["Quasi-linear utility; payment = externality imposed on others",
-                                 "Truthful reporting is dominant under VCG"]}
+            _, without = optimum([other for other in names if other != name])
+            others_with = math.fsum(agents[other][item] for other, item in allocation.items() if other != name)
+            payments[name] = max(0.0, without - others_with)
+        return {"allocation": allocation, "payments": payments, "total_welfare": welfare,
+                "method": "unit_demand_optimal_assignment_float_arithmetic",
+                "assumptions": ["Reported nonnegative unit-demand valuations; at most one item per agent",
+                                "64 agent/item bound; zero-value assignments omitted; floating-point ties may vary",
+                                "Quasi-linear utility; payment is externality on other reported valuations",
+                                "VCG incentive theorem assumes exact arithmetic and this unit-demand model; not empirical truthfulness proof"]}
 
     def check_incentives(self, *, agent: str, true_values: dict[str, float],
                          others: dict[str, dict[str, float]],
