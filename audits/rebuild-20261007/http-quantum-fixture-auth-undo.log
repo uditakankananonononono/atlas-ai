@@ -1,0 +1,36 @@
+............................................F..........................  [100%]
+=================================== FAILURES ===================================
+_____ test_http_task_step_honors_cooperative_quantum_and_keeps_work_active _____
+
+mounted = (<starlette.testclient.TestClient object at 0x7f219e88c8f0>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7f219ea0e2d0>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7f219ea0e150>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f219ea0c4d0>
+
+    def test_http_task_step_honors_cooperative_quantum_and_keeps_work_active(mounted,monkeypatch):
+     from app.modules.m20_general_cognitive_worker import executive
+     client,runtime,repo,_=mounted;calls=[]
+     async def square(arguments):calls.append(arguments['n']**2);return {'square':calls[-1]}
+     runtime.tools.register(ToolSpec(name='fixture_square_http',description='fixture'),square)
+     context=runtime.submit_goal('fixture',run_immediately=False)
+     context.plan=[PlanNode(title='first',tool='fixture_square_http',arguments={'n':2}),PlanNode(title='second',tool='fixture_square_http',arguments={'n':3})]
+     runtime.repo.save_task(context)
+     clock=iter([0,0,.2]);monkeypatch.setattr(executive,'monotonic',lambda:next(clock))
+     first=client.post(f'/api/modules/20/runtime/tasks/{context.id}/step',json={'quantum_seconds':.1,'max_ticks':10})
+     assert first.status_code==200 and first.json()['state']=='running' and calls==[4]
+     monkeypatch.undo()
+     final=client.post(f'/api/modules/20/runtime/tasks/{context.id}/step',json={'quantum_seconds':1,'max_ticks':1})
+>    assert final.status_code==200 and final.json()['state']=='succeeded' and calls==[4,9]
+E    assert (401 == 200)
+E     +  where 401 = <Response [401 Unauthorized]>.status_code
+
+tests/modules/test_m20_runtime_depth.py:823: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_http_task_step_honors_cooperative_quantum_and_keeps_work_active
+1 failed, 70 passed, 1 warning in 3.90s

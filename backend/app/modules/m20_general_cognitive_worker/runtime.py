@@ -221,12 +221,12 @@ class GCWRuntime:
             elapsed_seconds=round(elapsed, 4), surprises=surprises,
         )
 
-    def run_task(self, task_id: str, *, max_ticks: int = 25) -> TaskContext | None:
+    def run_task(self, task_id: str, *, max_ticks: int = 25, budget: Budget | None = None, yield_on_boundary: bool = False) -> TaskContext | None:
         context = self.get_task(task_id)
         if context is None:
             return None
         self.loop.max_ticks = max_ticks
-        self._run_and_persist(context)
+        self._run_and_persist(context, budget=budget, yield_on_boundary=yield_on_boundary)
         self._evaluate_expectations(context)
         return context
 
