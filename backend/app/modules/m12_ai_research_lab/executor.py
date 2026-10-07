@@ -43,6 +43,7 @@ class ResearchExecutor:
                 raise ProviderOutcomeUnknown("Returned model result envelope or metadata is unusable; no automatic retry")
             if type(result.text) is not str or type(result.model_id) is not str or not result.model_id.strip():
                 raise ProviderOutcomeUnknown("Returned model text or reported model identity is unusable; no automatic retry")
+            result.metadata=dict(result.metadata)
             result.metadata["requested_model_id"]=model.model_id
             confidence=(result.confidence if valid_confidence(result.confidence) else None) if result.confidence is not None else confidence_from_logprobs(result.logprobs)
             if confidence is None:
