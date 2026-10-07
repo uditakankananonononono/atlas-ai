@@ -211,12 +211,10 @@ class GCWRuntime:
         self.loop.max_ticks = max_ticks
         self.loop.last_ticks_run = 0
         budget = Budget(seconds=quantum_seconds)
-        if context.state in (TaskState.PENDING, TaskState.PLANNING):
-            self._run_and_persist(context, budget=budget, yield_on_boundary=True)
-        elif context.state in (TaskState.RUNNING, TaskState.RUMINATING):
-            self._run_and_persist(context, budget=budget, yield_on_boundary=True)
+        surprises = []
+        if context.state in (TaskState.PENDING, TaskState.PLANNING, TaskState.RUNNING, TaskState.RUMINATING):
+            surprises = self._run_and_persist(context, budget=budget, yield_on_boundary=True)
         elapsed = time.monotonic() - started
-        surprises = self._evaluate_expectations(context)
         return StepReport(
             task_id=context.id, state=context.state.value,
             ticks_run=self.loop.last_ticks_run,
@@ -231,7 +229,6 @@ class GCWRuntime:
             return context
         self.loop.max_ticks = max_ticks
         self._run_and_persist(context, budget=budget, yield_on_boundary=yield_on_boundary)
-        self._evaluate_expectations(context)
         return context
 
     def resume(self, task_id: str, node_id: str, *, approved: bool) -> TaskContext | None:
@@ -247,7 +244,7 @@ class GCWRuntime:
 
     # -- evaluation depth ------------------------------------------------------
 
-    def _run_and_persist(self, context: TaskContext, *, budget: Budget | None = None, yield_on_boundary: bool = False) -> None:
+    def _run_and_persist(self, context: TaskContext, *, budget: Budget | None = None, yield_on_boundary: bool = False) -> list[str]:
         if context.state in (TaskState.PENDING, TaskState.PLANNING) and not context.plan:
             self.loop.start(context, budget=budget, yield_on_boundary=yield_on_boundary)
         else:
@@ -255,7 +252,7 @@ class GCWRuntime:
                 context.state = TaskState.RUNNING
             self.loop.run(context, budget=budget, yield_on_boundary=yield_on_boundary)
         self._persist_context(context)
-        self._evaluate_expectations(context)
+        return self._evaluate_expectations(context)
 
     def _persist_context(self, context: TaskContext) -> None:
         context.updated_at = datetime.now(timezone.utc)

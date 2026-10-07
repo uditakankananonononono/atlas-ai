@@ -870,3 +870,7 @@ assess/resolve returnedinternalclaim and publicmapping exposed it, permitting un
 ## Calibration HTTP strict-input boundary
 
 Priorrawguards were bypassed by requestcoercion: bool/stringconfidence,stringcount/stringoutcomeaccepted; countabove10**15raisedunhandledValueError. Five initialfailuresretained. Claimrequest strictfiniteboundednumber/count and StrictBooloutcome return422beforeengine.125metacognition/HTTP/runtimepass1warning; recorded87adjacent2276pass2warnings41.47s. This binds transport to rawtypedmetrics, not labeltruth/authenticatedobservation/predictivecalibration. Full9813pass predatesthirteenlaterfixes; no productionclaim.
+
+## Scheduler surprise report propagation
+
+_run_and_persistresolved/consumedcallerexpectationsthenstepre-evaluated, reportedsurprisesemptydespitepersistedreflection. Oneactualfailedreport retained; initialmissingToolSpecdescriptionfixtureandbroadfailurealsoretained. Runhelper nowreturnsfirstsurprises; stepreportsitandrun_taskdoesn'tdoubleevaluate.65runtimepass1warning; recorded87adjacent2277pass2warnings39.05s. Syntheticreadsuccessvs0.1suppliedpredictionreportsfixturestepandresolvesclaim. Suppliedprediction/outcomelabelconsistencyonly, not calibrated surprise/cause/replanning or provenance; full9813pass predatesfourteenlaterfixes.

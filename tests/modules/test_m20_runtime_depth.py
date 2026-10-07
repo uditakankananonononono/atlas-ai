@@ -960,3 +960,17 @@ def test_mcts_partial_no_ready_reports_supplied_progress():
 def test_mcts_budget_configuration_requires_finite_bounded_values(kwargs):
     with pytest.raises(ValueError):
         BoundedMCTS(**kwargs)
+
+
+def test_scheduler_step_reports_surprise_consumed_during_run():
+    runtime, _ = make_runtime()
+    async def work(args):
+        return {"value": 1}
+    runtime.tools.register(ToolSpec(name="fixture", description="synthetic fixture", risk=Risk.READ), work)
+    claim = runtime.calibration.assess_claim("unlikely success", 0.1)
+    context = TaskContext(goal="surprise", state=TaskState.RUNNING,
+        plan=[PlanNode(title="fixture step", tool="fixture", arguments={"_expectation_claim_id":claim.id})])
+    runtime.scheduler.add(context)
+    report = runtime.step(max_ticks=2)
+    assert report.surprises == ["fixture step"]
+    assert runtime.calibration.claims[claim.id].resolved is True
