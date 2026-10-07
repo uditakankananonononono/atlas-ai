@@ -296,11 +296,16 @@ class TestRoutes:
         assert any(p["id"] == pid for p in client.get("/project-builder/projects").json())
         assert client.get("/project-builder/projects/nope").status_code == 404
 
-    def test_plan_route_422_on_stub_llm(self, client):
-        pid = client.post("/project-builder/projects",
-                          json={"goal": "Build an ISEF project"}).json()["id"]
-        response = client.post(f"/project-builder/projects/{pid}/plan")
-        assert response.status_code == 422
+    def test_plan_route_500_on_unavailable_llm(self, client):
+        # No shared-model route answers in the test env; provider failure is
+        # infrastructure, not a client error, so it must not be masked as 422.
+        app = FastAPI()
+        app.include_router(router)
+        with TestClient(app, raise_server_exceptions=False) as tolerant:
+            pid = tolerant.post("/project-builder/projects",
+                                json={"goal": "Build an ISEF project"}).json()["id"]
+            response = tolerant.post(f"/project-builder/projects/{pid}/plan")
+        assert response.status_code == 500
 
     def test_scope_and_milestones_routes(self, client):
         pid = client.post("/project-builder/projects",
@@ -482,3 +487,68 @@ class TestExportWarnings:
         view = service.export_project(project, base_dir=tmp_path)
         assert any(manifest.id in w for w in view.warnings)
         assert view.verification["passed"]  # export is consistent, artifact excluded
+
+
+# -- route error classification ---------------------------------------------
+
+def _http_app(service):
+    from app.modules.m14_project_builder.routes import get_service
+    app = FastAPI()
+    app.include_router(router)
+    # Isolated HTTP fixture, not production tenant/auth acceptance.
+    app.dependency_overrides[get_service] = lambda: service
+    return app
+
+
+def test_plan_route_provider_failure_is_not_masked_as_422():
+    from app.core.providers import ProviderError
+
+    async def failing_generate(prompt, provider, model):
+        raise ProviderError("shared model layer unavailable")
+
+    service = Service(FakeSink(), generate_fn=failing_generate)
+    project = service.create("local", CreateProjectRequest(goal="build a thing"))
+    with TestClient(_http_app(service), raise_server_exceptions=False) as client:
+        response = client.post(f"/project-builder/projects/{project.id}/plan")
+    assert response.status_code == 500, response.text
+
+
+def test_plan_route_invalid_planner_json_remains_422():
+    service = Service(FakeSink(), generate_fn=bad_generate)
+    project = service.create("local", CreateProjectRequest(goal="build a thing"))
+    with TestClient(_http_app(service), raise_server_exceptions=False) as client:
+        response = client.post(f"/project-builder/projects/{project.id}/plan")
+    assert response.status_code == 422, response.text
+
+
+class _FailingArtifactRepo:
+    def __init__(self):
+        self._projects = {}
+
+    def save(self, project, expected_revision=None):
+        self._projects[project.id] = project
+        return project
+
+    def get(self, project_id):
+        return self._projects.get(project_id)
+
+    def save_artifact(self, project_id, manifest, payload):
+        raise RuntimeError("artifact store unavailable")
+
+
+def test_designs_route_artifact_store_failure_is_not_masked_as_422():
+    service = Service(FakeSink(), repository=_FailingArtifactRepo())
+    project = service.create("local", CreateProjectRequest(goal="build a thing"))
+    with TestClient(_http_app(service), raise_server_exceptions=False) as client:
+        response = client.post(f"/project-builder/projects/{project.id}/designs",
+                               json={"kind": "requirements"})
+    assert response.status_code == 500, response.text
+
+
+def test_designs_route_unknown_kind_remains_422():
+    service = Service(FakeSink())
+    project = service.create("local", CreateProjectRequest(goal="build a thing"))
+    with TestClient(_http_app(service), raise_server_exceptions=False) as client:
+        response = client.post(f"/project-builder/projects/{project.id}/designs",
+                               json={"kind": "no-such-kind"})
+    assert response.status_code == 422, response.text

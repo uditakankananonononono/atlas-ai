@@ -22,7 +22,7 @@ def get_project(project_id:str,tenant_id:str=Depends(tenant),service:Service=Dep
 async def plan(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return await service.plan(service.get(tenant_id,project_id))
     except KeyError as exc:raise HTTPException(404,str(exc)) from exc
-    except Exception as exc:raise HTTPException(422,str(exc)) from exc
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.post("/projects/{project_id}/execution-proposals",response_model=ExecutionProposal,status_code=202)
 def propose(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.propose_execution(service.get(tenant_id,project_id))
@@ -76,7 +76,7 @@ def validate_artifacts(project_id:str,tenant_id:str=Depends(tenant),service:Serv
 def generate_design(project_id:str,request:DesignRequest,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     project=_get_or_404(service,tenant_id,project_id)
     try:return service.generate_design(project,request)
-    except Exception as exc:raise HTTPException(422,str(exc)) from exc
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.get("/projects/{project_id}/designs",response_model=list[DesignListItem])
 def list_designs(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.list_designs(_get_or_404(service,tenant_id,project_id))
