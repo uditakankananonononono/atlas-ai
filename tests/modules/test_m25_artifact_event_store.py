@@ -29,3 +29,28 @@ def test_m25_hz8_conflicting_duplicate_is_valueerror_not_integrityerror(tmp_path
     import pytest
     with pytest.raises(ValueError): st.put({**ev,'artifact_kind':'other'})
     assert st.put(ev)['created'] is False
+
+
+def test_m25_hz10_integrity_error_handler_exercised(tmp_path, monkeypatch):
+    # Discriminating handler evidence (policy unchanged): force the INSERT to
+    # lose the race against an already-committed row; the handler must re-read
+    # and apply the same idempotency policy instead of leaking IntegrityError.
+    import sqlite3
+    from app.modules.m25_knowledge_copilot.artifact_events import ArtifactEventStore
+    st=ArtifactEventStore(str(tmp_path/'e.db'))
+    ev={'event_id':'e1','tenant_id':'t1','module_id':25,'artifact_id':'a','artifact_kind':'k','content_sha256':'a'*64,'observed_at':'t','producer_version':'1'}
+    st.put(ev)
+    class FlakyDB:
+        def __init__(self,real): self._real=real
+        def execute(self,sql,*a,**k):
+            if str(sql).lstrip().upper().startswith('INSERT'):
+                raise sqlite3.IntegrityError('UNIQUE constraint failed')
+            return self._real.execute(sql,*a,**k)
+        def __enter__(self): self._real.__enter__(); return self
+        def __exit__(self,*a): return self._real.__exit__(*a)
+    real_db=st._db
+    monkeypatch.setattr(st,'_db',lambda:FlakyDB(real_db()))
+    same=st.put(ev)
+    assert same['created'] is False and same['event']['event_id']=='e1'
+    import pytest
+    with pytest.raises(ValueError): st.put({**ev,'artifact_kind':'other'})

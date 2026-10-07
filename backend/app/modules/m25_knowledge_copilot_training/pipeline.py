@@ -56,7 +56,9 @@ class LocalKnowledgePipeline:
         # not closed by this check.
         if any(part in ('.','..') for part in parts): raise KnowledgeError('dot-segment source ids are not valid paths')
         p=self.workspace.joinpath(*parts).resolve()
-        if p!=self.workspace and self.workspace not in p.parents: raise KnowledgeError('path escapes tenant workspace')
+        # Strict child: the workspace root itself is never a valid write or
+        # delete target, however a part resolves.
+        if p==self.workspace or self.workspace not in p.parents: raise KnowledgeError('path escapes tenant workspace')
         return p
     def _check_consent(self,source:SourceRegistration)->None:
         # Caller-supplied consent metadata is a claimed record, not
@@ -68,6 +70,7 @@ class LocalKnowledgePipeline:
             if exp<=self.clock(): raise ConsentError('consent is expired')
         if 'knowledge_ingestion' not in source.consent.purposes: raise ConsentError('missing knowledge_ingestion consent')
     def register(self,source:SourceRegistration)->Record:
+        self._contained(source.source_id)
         self._check_consent(source)
         old=self.records.get(source.source_id)
         if old and old.tenant_id!=self.tenant_id: raise KnowledgeError('cross-tenant source access denied')
@@ -95,14 +98,34 @@ class LocalKnowledgePipeline:
             # already holds prior data. Refuse rather than overwrite, and never
             # let failure cleanup remove data this attempt did not create.
             raise KnowledgeError('version target already exists on disk; refusing to overwrite')
+        import uuid as _uuid
+        tmp=target.with_name(target.name+f'.tmp-{_uuid.uuid4().hex}')
         try:
-            target.mkdir(parents=True); (target/'source.bin').write_bytes(raw)
-            (target/'segments.json').write_text(json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True),encoding='utf-8')
+            # Build the version in a private temp dir, then rename it into
+            # place. Cleanup only ever removes the temp dir this attempt
+            # created; preexisting version contents are never touched.
+            tmp.mkdir(parents=True); (tmp/'source.bin').write_bytes(raw)
+            (tmp/'segments.json').write_text(json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True),encoding='utf-8')
+            import os as _os; _os.rename(tmp,target)
         except OSError:
-            shutil.rmtree(target,ignore_errors=True); raise
+            shutil.rmtree(tmp,ignore_errors=True); raise
+        created_record=request.source.source_id not in self.records
         rec=self.register(request.source)
         rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
-        self._persist_manifest(rec); return version
+        try:
+            self._persist_manifest(rec)
+        except OSError:
+            # Persist failed AFTER memory mutation: roll everything back so
+            # memory never claims a version the manifest does not record.
+            # The version dir was created by this attempt (rename from tmp),
+            # so removing it cannot touch preexisting data.
+            rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
+            if created_record: self.records.pop(request.source.source_id,None)
+            shutil.rmtree(target,ignore_errors=True)
+            try: self._persist_manifest(rec)
+            except OSError: pass
+            raise KnowledgeError('manifest persistence failed; ingest rolled back')
+        return version
     def _extract(self,raw:bytes,mime:str,kind:str)->list[Segment]:
         if mime=='audio/wav':
             segments=self.transcriber.transcribe(raw)
@@ -165,12 +188,16 @@ class LocalKnowledgePipeline:
     def export(self)->dict:
         return {'tenant_id':self.tenant_id,'sources':[{**r.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash,'segments':[s.model_dump(mode='json') for s in v.segments]} for v in r.versions]} for r in self.records.values()],'provenance_edges':self.edges}
     def delete_verified(self,source_id:str)->dict:
-        if source_id not in self.records:raise KeyError(source_id)
         path=self._contained(source_id)
+        if source_id not in self.records:raise KeyError(source_id)
         shutil.rmtree(path,ignore_errors=True)
-        self.records.pop(source_id); self.chunks=[c for c in self.chunks if c.source_id!=source_id]; self.edges=[e for e in self.edges if e['from']!=source_id]
-        verified=not path.exists() and not any(c.source_id==source_id for c in self.chunks)
-        return {'source_id':source_id,'deleted':verified,'verified_at':self.clock().isoformat()}
+        verified=not path.exists()
+        if verified:
+            self.records.pop(source_id); self.chunks=[c for c in self.chunks if c.source_id!=source_id]; self.edges=[e for e in self.edges if e['from']!=source_id]
+        # Truthful tracking: when the disk removal did not happen, memory
+        # keeps the record and the result says so - never deleted=False with
+        # the tracking silently gone.
+        return {'source_id':source_id,'deleted':verified,'tracking_retained':not verified,'verified_at':self.clock().isoformat()}
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
         (p/'manifest.json').write_text(json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True),encoding='utf-8')
