@@ -362,3 +362,25 @@ def test_row34_curiosity_gaps_and_allocation():
     assert sum(i.allocated_budget for i in items) <= 10.0 + 1e-6
     pulls = engine.serendipity_pull(memory, count=1)
     assert pulls == ["python is a programming language"]
+
+
+def test_prompt_registry_public_snapshots_do_not_rewrite_active_template():
+    registry = PromptRegistry()
+    supplied = PromptTemplate(name="p", content="original")
+    registered = registry.register(supplied)
+    supplied.content = "changed input"
+    registered.content = "changed return"
+    registry.get("p").content = "changed get"
+    registry.active()[0].content = "changed active"
+    assert registry.get("p").content == "original"
+    assert registry.get("p").version == 1
+    assert len(registry.audit) == 1
+
+
+def test_prompt_registry_same_input_replacement_does_not_mutate_caller():
+    registry = PromptRegistry()
+    supplied = PromptTemplate(name="p", content="x")
+    registry.register(supplied)
+    row = registry.register(supplied)
+    assert row.version == 2 and row.active is True
+    assert supplied.version == 1 and supplied.active is True

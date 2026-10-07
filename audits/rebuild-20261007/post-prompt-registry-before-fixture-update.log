@@ -1,0 +1,95 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+....F................................................................... [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+.............................FF......................................... [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+.............................................................            [100%]
+=================================== FAILURES ===================================
+________________ test_target_kind_changed_after_review_is_stale ________________
+
+    def test_target_kind_changed_after_review_is_stale():
+     r,g,loop=setup();a=propose(loop);g.decide(a.approval_id,ApprovalGateDecision.APPROVED)
+     r.get('orient').kind='algorithm_parameter'
+>    with pytest.raises(PermissionError):loop.apply(a.id,approved=True,approval_id=a.approval_id)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE PermissionError
+
+tests/modules/test_m20_exact_improvement_gate.py:67: Failed
+_____ test_mounted_route_snapshot_and_stale_target_checks[target_content] ______
+
+bound = (<starlette.testclient.TestClient object at 0x7fa56f93c080>, {'a': <app.modules.m20_general_cognitive_worker.service.C...QWAVfFcKoSa_bjY8LOpZ8GD_Md9lNbMGhXsOIXRXkXHdoWRzkPMGTHkLfCB7IJVgK5CJ1cWJCp6ozLBwPupTku70jQnOdhP4COyxPCfvfstbBW0W7HDg'})
+attack = 'target_content'
+
+    @pytest.mark.parametrize('attack',['proposal_content','proposal_token','target_content','target_kind'])
+    def test_mounted_route_snapshot_and_stale_target_checks(bound,attack):
+     c,ss,a,b=bound;p=propose(c,a);s=ss['a']
+     s.safety.approvals.decide(p['approval_id'],ApprovalGateDecision.APPROVED)
+     if attack=='proposal_content':s.improvement.proposals[p['proposal_id']].proposed_content='unreviewed'
+     if attack=='proposal_token':s.improvement.proposals[p['proposal_id']].approval_id='forged'
+     if attack=='target_content':s.prompt_registry.get('orient').content='newer-current'
+     if attack=='target_kind':s.prompt_registry.get('orient').kind='algorithm_parameter'
+>    assert apply(c,a,p).status_code==403
+E    AssertionError: assert 200 == 403
+E     +  where 200 = <Response [200 OK]>.status_code
+E     +    where <Response [200 OK]> = apply(<starlette.testclient.TestClient object at 0x7fa56f93c080>, {'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...PWnnrLCOEHfSYvTFo-3WClMMsR6iwvXzo4Tk8UYKeYJxc3P3htBDoQwLqTJtex5hwYmOa3QR5tKsqOShQXKeU-D_8yKEZ5P2mLrwBwoaVi_bm_Hn0RF7Q'}, {'proposal_id': 'd708dac7-e453-4f8b-a50c-a02c7dec4e93', 'status': 'proposed', 'evidence': {'tool_calls': 0, 'tool_fail...': 0.0, 'episode_success_rate': 0.0, 'calibration_error': None}, 'approval_id': '9e9d559f-7538-40f3-b197-98a6df23e659'})
+
+tests/modules/test_m20_improvement_http_binding.py:55: AssertionError
+_______ test_mounted_route_snapshot_and_stale_target_checks[target_kind] _______
+
+bound = (<starlette.testclient.TestClient object at 0x7fa549693770>, {'a': <app.modules.m20_general_cognitive_worker.service.C...4vfdm1P2faAovtIVGrJYROwtb7BMGfQk3i0AYhsf81-oIvsuGyOCjMROhvVsgI7-tcdiqiJCu0Xxv-4eGsc5ILbIjSQrPxEB-ik1USHrOp4mdTdDrCyA'})
+attack = 'target_kind'
+
+    @pytest.mark.parametrize('attack',['proposal_content','proposal_token','target_content','target_kind'])
+    def test_mounted_route_snapshot_and_stale_target_checks(bound,attack):
+     c,ss,a,b=bound;p=propose(c,a);s=ss['a']
+     s.safety.approvals.decide(p['approval_id'],ApprovalGateDecision.APPROVED)
+     if attack=='proposal_content':s.improvement.proposals[p['proposal_id']].proposed_content='unreviewed'
+     if attack=='proposal_token':s.improvement.proposals[p['proposal_id']].approval_id='forged'
+     if attack=='target_content':s.prompt_registry.get('orient').content='newer-current'
+     if attack=='target_kind':s.prompt_registry.get('orient').kind='algorithm_parameter'
+>    assert apply(c,a,p).status_code==403
+E    AssertionError: assert 200 == 403
+E     +  where 200 = <Response [200 OK]>.status_code
+E     +    where <Response [200 OK]> = apply(<starlette.testclient.TestClient object at 0x7fa549693770>, {'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...Q5O20irGz1i-ULZTlx2qEL8bNLKCYNN4S92NdPuTYidu65Owwvo_pjmPB6wkdOQwmIvqXI0GtEb976dU7CTDsRvDwDTJ2Ni8dL0C67T6L2x3Z2-QmCVOw'}, {'proposal_id': '24144c03-7f27-485f-a4e0-9bc50131c63c', 'status': 'proposed', 'evidence': {'tool_calls': 0, 'tool_fail...': 0.0, 'episode_success_rate': 0.0, 'calibration_error': None}, 'approval_id': 'd1c4dc61-b3b5-481f-9d6b-b13414ae64a5'})
+
+tests/modules/test_m20_improvement_http_binding.py:55: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/modules/test_m20_conic_solvers.py::test_conic_iteration_limit_does_not_promote_inaccurate_result
+  /home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/conic_solvers.py:40: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+    try:problem.solve(solver='SCS',eps=tol,max_iters=limit,verbose=False)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_exact_improvement_gate.py::test_target_kind_changed_after_review_is_stale
+FAILED tests/modules/test_m20_improvement_http_binding.py::test_mounted_route_snapshot_and_stale_target_checks[target_content]
+FAILED tests/modules/test_m20_improvement_http_binding.py::test_mounted_route_snapshot_and_stale_target_checks[target_kind]
+3 failed, 2218 passed, 2 warnings in 40.15s
