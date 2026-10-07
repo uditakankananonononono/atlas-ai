@@ -1812,3 +1812,21 @@ def test_require_value_exact_json_is_not_truthiness_or_approval():
     for actual,expected in [(True,1),(None,False),('Open','open'),(1,1.0)]:
         with pytest.raises(ValueError):require_value({'actual':actual,'expected':expected})
     with pytest.raises(ValueError):require_value({'actual':float('nan'),'expected':float('nan')})
+
+
+def test_supplied_plan_validates_and_resolves_output_reference_titles_before_execution():
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('fixture binding review',run_immediately=False)
+    prepared=runtime.prepare_supplied_plan(task.id,steps=[
+        {'id':'a','title':'select records','tool':'csv_filter','arguments':{'csv_text':'amount\n42\n'}},
+        {'title':'sum','tool':'csv_summary','depends_on':['select records'],
+         'arguments':{'csv_text':{'$step':'select records','path':['csv_text']},'value_column':'amount'}}])
+    assert prepared.plan[1].arguments['csv_text']['$step']=='a'
+    assert runtime.run_task(task.id).state==TaskState.SUCCEEDED
+    from app.modules.m20_general_cognitive_worker.htn_planner import PlanError
+    for reference in [{'\u0024step':'unknown','path':[]},{'\u0024step':'a','path':[-1]}, {'\u0024step':'a','path':[],'extra':True}]:
+        bad=runtime.submit_goal('invalid binding',run_immediately=False)
+        with pytest.raises(PlanError):runtime.prepare_supplied_plan(bad.id,steps=[
+            {'id':'a','title':'source','tool':'csv_filter','arguments':{'csv_text':'amount\n42\n'}},
+            {'title':'target','tool':'csv_summary','depends_on':['a'],'arguments':{'csv_text':reference,'value_column':'amount'}}])
+        assert repo.load_task(bad.id).plan==[]
