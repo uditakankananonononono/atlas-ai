@@ -282,13 +282,19 @@ class DurableCalibrationEngine(CalibrationEngine):
         self.repo = repo
 
     def assess_claim(self, text, confidence, *, evidence_count: int = 0):
-        claim = super().assess_claim(text, confidence, evidence_count=evidence_count)
+        staged = CalibrationEngine()
+        claim = staged.assess_claim(text, confidence, evidence_count=evidence_count)
         self.repo.save_claim(claim)
+        self._claims[claim.id] = staged._claims[claim.id]
         return claim
 
     def resolve(self, claim_id: str, correct: bool):
-        claim = super().resolve(claim_id, correct)
+        from copy import deepcopy
+        staged = CalibrationEngine()
+        staged._claims[claim_id] = deepcopy(self._claims[claim_id])
+        claim = staged.resolve(claim_id, correct)
         self.repo.save_claim(claim)
+        self._claims[claim_id] = staged._claims[claim_id]
         return claim
 
     @classmethod

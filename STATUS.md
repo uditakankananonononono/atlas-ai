@@ -1384,3 +1384,9 @@ Evidence: 160 runtime tests passed with one warning, including batch owner-confl
 Two failing canaries showed failed method activation made a proposal matchable, and failed usage/outcome writes still changed live statistics. Method registration/review status, matched decomposition usage and explicit outcome updates now publish only after the corresponding durable write succeeds. Missing activation rows return false without live activation. Failed same-name replacement preserves the old active content and review state.
 
 Evidence: 163 runtime tests passed with one warning; 2,503 M20 adjacent tests passed with two warnings in 50.66 seconds before the supplemental replacement failure test. Failures preserve proposed matching restrictions and old usage/outcome counts in live and SQL snapshots. This is sequential method-store visibility, not authenticated review, concurrent revision CAS, automatic task-to-method outcome attribution or ambiguous commit reconciliation. Full 10,164 code a55a725 predates this and related skill-transaction changes.
+
+## Calibration metrics publish only committed claim outcomes
+
+Two failing canaries showed failed claim writes entered live calibration and failed resolution changed the reported observed error despite unchanged SQL. Claim creation and resolution now stage their records, write durably, then publish to live metrics. Failed resolution leaves the prediction unresolved and calibration error null when no committed outcomes exist.
+
+Evidence: 165 runtime tests passed with one warning; 2,506 M20 adjacent tests passed with two warnings in 48.30 seconds. Claim and resolution write failures preserve live/SQL absence or unresolved state. This is sequential claim-store visibility, not independently verified outcome labels, predictive calibration, concurrent revision CAS or cross-store transactionality. Full 10,164 code a55a725 predates three changes including this one.

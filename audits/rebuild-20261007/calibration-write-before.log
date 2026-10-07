@@ -1,0 +1,48 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_________ test_failed_calibration_claim_write_never_enters_live_claims _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f37c52a92b0>
+
+    def test_failed_calibration_claim_write_never_enters_live_claims(monkeypatch):
+     runtime,repo=make_runtime()
+     def fail(claim):raise RuntimeError('fixture claim write unavailable')
+     monkeypatch.setattr(repo,'save_claim',fail)
+     with pytest.raises(RuntimeError):runtime.calibration.assess_claim('uncommitted prediction',.9)
+>    assert runtime.calibration.claims=={} and repo.list_claims()==[]
+E    AssertionError: assert (mappingproxy(...cuted=False)}) == {}
+E      
+E      Left contains 1 more item:
+E      {'d85a6cc0-0379-40e0-93e6-a0e6b97944fe': Claim(id='d85a6cc0-0379-40e0-93e6-a0e6b97944fe',
+E                                                     text='uncommitted prediction',
+E                                                     confidence=0.9,
+E                                                     evidence_count=0,
+E                                                     flagged=None,...
+E      
+E      ...Full output truncated (12 lines hidden), use '-vv' to show)
+
+tests/modules/test_m20_runtime_depth.py:2312: AssertionError
+________ test_failed_calibration_resolution_keeps_prediction_unresolved ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f37c519fec0>
+
+    def test_failed_calibration_resolution_keeps_prediction_unresolved(monkeypatch):
+     runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('prediction',.9)
+     def fail(claim):raise RuntimeError('fixture claim write unavailable')
+     monkeypatch.setattr(repo,'save_claim',fail)
+     with pytest.raises(RuntimeError):runtime.calibration.resolve(claim.id,False)
+>    assert runtime.calibration.claims[claim.id].resolved is False
+E    AssertionError: assert True is False
+E     +  where True = Claim(id='62c3faad-52aa-484d-8d37-3c423ca88662', text='prediction', confidence=0.9, evidence_count=0, flagged=None, fl...0, 7, 13, 10, 27, 627246, tzinfo=datetime.timezone.utc), status='observed_calibration_only', capability_executed=False).resolved
+
+tests/modules/test_m20_runtime_depth.py:2320: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_calibration_claim_write_never_enters_live_claims
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_calibration_resolution_keeps_prediction_unresolved
+2 failed, 163 deselected, 1 warning in 1.76s
