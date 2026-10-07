@@ -35,8 +35,7 @@ execution rejection, exception release, and real risk-register write isolation.
 The affected runtime suite reports 216 passed and 0 failed.
 
 This closes only the identified four-route instance-lock bypass. Direct callers
-of nested planner/risk-register objects still bypass the runtime lock. Broader
-`htn_planner` and `risk_register` semantic comparison remains open. Separate
+of nested planner/risk-register objects still bypass the runtime lock. Their scoped source assessments are recorded below; production and direct-call boundaries remain open. Separate
 runtime instances and workers are not serialized by this lock. The HTTP 409
 mapping alone does not acquire a lock; each mutation wrapper does.
 
@@ -54,12 +53,12 @@ These bounded comparisons are assessed as stated. They do not close broader prod
 
 - `premortem`: scoped assessed-compatible for AST-identical analyze; additive assess_register preserved with supplied ordinal/control-completeness labels, no verified evidence/probability/approval claim; focused suite 7 passed.
 
-## Open comparison surfaces
+## Scoped comparisons with open integration boundaries
 
-The following surfaces remain unassessed for combined semantic clearance, even where existing local tests pass:
+The following assessments retain named boundaries; none grants combined production clearance:
 
-- `risk_register`
-- `htn_planner`: reviewed-payload TOCTOU found and locally fixed with durable hash checking plus exact JSON-snapshot compare-and-set in the activation UPDATE. Two SQLite cross-instance/check-to-write race canaries pass; PostgreSQL multi-writer CAS behavior remains untested. Broader planner comparison remains open.
+- `risk_register`: additive local surface, absent from actual peer b944215; retain tenant-scoped transactional revisions/CAS and detached snapshots. Selected SQLite/runtime/HTTP 31 passed plus one new snapshot/non-authority canary. PostgreSQL multi-writer behavior and independent evidence/authority remain unverified.
+- `htn_planner`: reviewed-payload TOCTOU found and locally fixed with durable hash checking plus exact JSON-snapshot compare-and-set in the activation UPDATE. Two SQLite cross-instance/check-to-write race canaries pass; PostgreSQL multi-writer CAS behavior remains untested. Scoped planner source comparison assessed by preserving stronger local validation/snapshots/bindings and fresh state. Selected suite 54 passed. Semantic applicability, reviewer identity and concurrent durable usage-counter updates remain unverified.
 - `model_ideation`: additive response path assessed; typed unknown flattening to unavailable/503 corrected to ProviderOutcomeUnknown and 409 with retry_allowed=false. No durable cross-request hold/reconciliation is provided by this service API; that broader boundary remains open. Proposed ideas remain unverified.
 - `ActionRow` migration: scoped SQLite additive schema/journal roundtrip assessed (10 selected tests plus 1 migration-only unknown-payload canary). PostgreSQL deployment remains untested. Downgrade drops the journal and is data-destructive, not an automatic uncertainty-preserving recovery path.
 - `safety.py`: scoped source/effect-binding assessment compatible; peer differs only by lacking our two deep-copy protections. Preserve ours. Approval provenance, durable cross-worker token state and complete semantic effect classification remain unverified boundaries.

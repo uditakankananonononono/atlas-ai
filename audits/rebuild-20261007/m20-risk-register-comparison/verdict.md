@@ -1,0 +1,5 @@
+# Risk register scoped additive assessment
+
+Actual peer b944215 has no risk_register.py at the module path (verified object tree), so this is local additive preservation, not parity. Tenant-qualified rows, transactional revision/history writes and expected-revision UPDATE compare-and-set retained. Patch reuses that CAS after detached read. Existing selected SQLite/runtime/HTTP tests: 31 passed, 227 deselected. New snapshot/non-authority canary: 1 passed. Existing coverage includes file restart, rollback on history insert failure, simultaneous SQLite writers, tenant separation and stale revision conflict.
+
+Preserve supplied-control completeness and ordinal priority labels. Neither supplied evidence nor owner-review readiness authenticates truth or grants approval. Snapshot canary covers nested evidence isolation across create/get/history and detached comparison result. PostgreSQL multi-writer behavior, independent evidence verification, authorization/authentication above these tenant-scoped repository methods and multi-process runtime serialization remain unverified. Database state corrupted outside this API is not covered.
