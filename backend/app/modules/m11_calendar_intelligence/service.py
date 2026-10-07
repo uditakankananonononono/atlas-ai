@@ -19,6 +19,7 @@ from dataclasses import replace
 from datetime import date, datetime, time, timedelta, timezone
 from typing import Any, Protocol
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
 from app.core.models import ApprovalRequest
 from app.core.token_crypto import TokenCipher
@@ -609,15 +610,16 @@ class Service:
         return view.model_copy(update={"status": "scheduled"})
 
     # -- analytics (advancement pass) -------------------------------------------------------
-    def meeting_load(self, week_start: date) -> MeetingLoadReport:
-        horizon_start = datetime.combine(week_start, time(0, 0), tzinfo=timezone.utc)
+    def meeting_load(self, week_start: date, *, timezone_name: str = "UTC") -> MeetingLoadReport:
+        zone = ZoneInfo(timezone_name)
+        horizon_start = datetime.combine(week_start, time(0, 0), tzinfo=zone)
         horizon_end = horizon_start + timedelta(days=7)
         events = self.repository.list_events(start=horizon_start, end=horizon_end)
         days: list[DayLoad] = []
         total = 0
         for offset in range(7):
             day = week_start + timedelta(days=offset)
-            day_start = datetime.combine(day, time(0, 0), tzinfo=timezone.utc)
+            day_start = datetime.combine(day, time(0, 0), tzinfo=zone)
             day_end = day_start + timedelta(days=1)
             todays = [
                 e for e in events
@@ -625,7 +627,7 @@ class Service:
                 and _aware(e.start) < day_end and _aware(e.end) > day_start
             ]
             todays.sort(key=lambda e: _aware(e.start))
-            durations = [int((min(_aware(e.end), day_end) - max(_aware(e.start), day_start)).total_seconds() // 60) for e in todays]
+            durations = [int((min(_aware(e.end), day_end).astimezone(timezone.utc) - max(_aware(e.start), day_start).astimezone(timezone.utc)).total_seconds() // 60) for e in todays]
             minutes = sum(durations)
             longest = max(durations, default=0)
             short_gaps = 0
@@ -639,7 +641,7 @@ class Service:
                 longest_meeting_minutes=longest, short_gaps=short_gaps,
             ))
         return MeetingLoadReport(week_start=week_start.isoformat(), days=days,
-                                 total_meeting_minutes=total)
+                                 total_meeting_minutes=total, timezone_name=timezone_name)
 
     # -- helpers --------------------------------------------------------------------------
     def _require_approved(self, approval_id: str) -> None:

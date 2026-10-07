@@ -485,7 +485,6 @@ def test_google_watch_and_sync_must_exchange_refresh_token_before_bearer_use(tmp
  assert calls==['persistent-refresh','persistent-refresh']
 
 
-@pytest.mark.xfail(strict=True, reason="M11 meeting load uses UTC buckets; pending local-timezone contract")
 def test_meeting_load_buckets_follow_user_timezone():
  from types import SimpleNamespace
  from zoneinfo import ZoneInfo
@@ -497,3 +496,28 @@ def test_meeting_load_buckets_follow_user_timezone():
  report=service.meeting_load(date(2026,10,5),timezone_name='Asia/Calcutta')
  assert report.days[0].meeting_minutes==60
  assert report.total_meeting_minutes==60
+ assert report.timezone_name=='Asia/Calcutta'
+
+
+def test_meeting_load_dst_elapsed_minutes_and_http_timezone_contract():
+ from types import SimpleNamespace
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.modules.m11_calendar_intelligence.routes import router,get_service
+ class Repo:
+  def list_events(self,**kwargs):
+   return [SimpleNamespace(start=datetime(2026,11,1,4,0,tzinfo=UTC),end=datetime(2026,11,2,5,0,tzinfo=UTC))]
+ service=Service(Repo(),FakeApprovalGate(),cipher=None)
+ result=service.meeting_load(date(2026,10,26),timezone_name='America/New_York')
+ assert result.days[-1].meeting_minutes==1500
+ app=FastAPI();app.include_router(router)
+ # Isolated HTTP fixture, not production tenant/auth acceptance.
+ app.dependency_overrides[get_service]=lambda:service
+ with TestClient(app) as client:
+  url='/calendar-intelligence/analytics/meeting-load'
+  assert client.get(url,params={'week_start':'2026-10-26'}).status_code==422
+  assert client.get(url,params={'week_start':'2026-10-26','timezone_name':'invalid/zone'}).status_code==422
+  response=client.get(url,params={'week_start':'2026-10-26','timezone_name':'America/New_York'})
+  assert response.status_code==200
+  assert response.json()['total_meeting_minutes']==1500
+  assert response.json()['timezone_name']=='America/New_York'

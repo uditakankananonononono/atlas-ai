@@ -121,6 +121,7 @@ class DayLoad(BaseModel):
 
 
 class MeetingLoadReport(BaseModel):
+    timezone_name: str = "UTC"
     week_start: str
     days: list[DayLoad]
     total_meeting_minutes: int
