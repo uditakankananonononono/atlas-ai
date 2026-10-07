@@ -383,7 +383,9 @@ def test_feed_url_validation_accepts_case_and_trailing_dot_characterization():
 def test_feed_collector_revalidates_at_use_point():
     import pytest as _pt
     from app.modules.m22_tools_hub.sources import FeedCollector, SourceError
-    collector = FeedCollector("https://host.example/feed")
+    def _sentinel(url):  # fail-closed: any opener call fails the test, no network
+        raise AssertionError(f"opener reached with {url!r}")
+    collector = FeedCollector("https://host.example/feed", opener=_sentinel)
     collector.feed_url = "http://evil.example/x"  # mutable attribute
     with _pt.raises(SourceError):
         collector._stream()
@@ -394,3 +396,22 @@ def test_redirect_encoded_host_rejected():
     from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect, SourceError
     with _pt.raises(SourceError):
         _HttpsOnlyRedirect().redirect_request(Request("https://a.example/"), None, 302, "", {}, "https://host%20name/x")
+
+
+def test_redirect_raw_location_with_whitespace_host_rejected():
+    # urllib strips newlines before redirect_request; the raw Location must
+    # be validated first. fp/parent are never reached on rejection - local only.
+    from urllib.request import Request
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect, SourceError
+    with _pt.raises(SourceError):
+        _HttpsOnlyRedirect().http_error_302(Request("https://a.example/"), None, 302, "",
+                                            {"location": "https://ho\nst.example/x"})
+
+def test_redirect_raw_location_with_literal_space_rejected():
+    from urllib.request import Request
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect, SourceError
+    with _pt.raises(SourceError):
+        _HttpsOnlyRedirect().http_error_302(Request("https://a.example/"), None, 302, "",
+                                            {"location": "https://h.example/some path"})

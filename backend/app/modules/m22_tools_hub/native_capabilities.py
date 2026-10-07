@@ -117,10 +117,11 @@ class CodeWorkspace:
             run=runner.run(language='python',input_dir=input_dir,output_dir=output_dir,limits=limits)
             # No output quota is enforced here or by the backend: sandbox
             # output is only counted, never returned to the caller, and
-            # discarded with the tempdir. During-run disk growth is bounded
-            # only by the backend's FSIZE rlimit and tmpfs. pids is
-            # unbounded - SmokeLimits.pids exists but backend.run does not
-            # enforce it.
+            # discarded with the tempdir. During-run disk growth is NOT
+            # bounded by this wrapper: /output is a host-directory bind (not
+            # tmpfs), and the backend's FSIZE rlimit is per-file, not
+            # aggregate. pids is unbounded - SmokeLimits.pids exists but
+            # backend.run does not enforce it.
             out_files=[f for f in output_dir.rglob('*') if f.is_file()]
             out_bytes=sum(f.stat().st_size for f in out_files)
         stdout=run.stdout.decode('utf-8',errors='replace') if isinstance(run.stdout,bytes) else str(run.stdout or '')
