@@ -750,7 +750,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Tenant SQL node/edge/suggestion/audit persistence and graph routes exist; earlier M09 real-PG and signed local fixture HTTP/UI bridge evidence covers a subset, not whole ecosystem identity/integration. Repository embeds JSON lists; INTEGRATION.md explicitly calls pgvector future and injection of embedding/NER services a production step. Neo4j hybrid production path not established by scoped M09 read. All-module source-of-truth/cognitive acceptance remains open. Status unverified."
     },
     {
       "row": 68,
@@ -761,7 +761,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Repository uses tenant-scoped m09_nodes/m09_edges/suggestions/audit with title/body/source/version, JSON metadata+embedding and relationship/confidence. It is SQL adjacency-style endpoint querying, not proof of trigger-maintained bidirectional graph indexes. Tags array, JSONB-specific metadata, weight field and created_by differ from this model; indexed endpoints exist. Prior PG tests cover scoped tenant access/CAS, not full source schema claim. Status unverified."
     },
     {
       "row": 69,
@@ -772,7 +772,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service compares supplied embeddings in Python at fixed .78 threshold and proposes links; injectable entity extractor matches title and creates MENTIONS suggestions, not automatic edges. Runtime get_service uses default no embedding/no extracted entities; production injection is documented as future. No pgvector or spaCy live create hook established. Accept/reject service exists but concurrent review semantics remain unaccepted. Technical 98/99 are supplied-vector/mentions wrappers, not runtime NER. Status unverified."
     },
     {
       "row": 70,
@@ -783,7 +783,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "React Flow canvas has responsive grid placement, dragging, type filters, minimap/zoom and double-click title/body version-CAS editor with safe source links. Earlier desktop/mobile pixels and actual local PG HTTP bridge cover this subset. Force-directed/hierarchical/circular selection, single-click adjacent properties and JSON export not established here. Planner-context returns selected IDs plus adjacent edges, not demonstrated prerequisite traversal or Scientist paper integration. Status unverified."
     },
     {
       "row": 71,
@@ -794,7 +794,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Lane service retrieve performs token/term document scoring with metadata_filter; graph routes expose neighborhoods/context. Runtime natural-language date parsing, embedding hybrid query and Elasticsearch CDC synchronization not established by scoped M09 read. No live search/index/CDC acceptance. Status unverified."
     },
     {
       "row": 72,
@@ -805,7 +805,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Graph neighborhood and cycle reachability plus lane provenance traversals exist. A deadline postponement/removal simulation with downstream impact estimates is not established in scoped M09 service/routes read. Mere traversal does not establish impact calculation or prioritization acceptance. Status unverified."
     },
     {
       "row": 73,
@@ -816,7 +816,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "source_module/external_id/source_uri fields and planner-context route provide integration surfaces. Immediate Competition application/Grant proposal creation hooks to graph and all-module source-of-truth synchronization are not established by scoped M09 and selected cross-module grep. Existing local HTTP bridge is M09-only with fixture identity. No whole-app integration acceptance. Status unverified."
     },
     {
       "row": 74,
