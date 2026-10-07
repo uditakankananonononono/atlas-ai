@@ -85,6 +85,17 @@ class _HttpsOnlyRedirect(HTTPRedirectHandler):
     """Refuse redirects that leave the public https contract (downgrade or
     userinfo-bearing targets)."""
 
+    def http_error_302(self, req, fp, code, msg, headers):
+        # Validate the RAW Location header before urllib normalizes it:
+        # urllib strips newlines and percent-encodes spaces, so validating
+        # only the processed form (redirect_request) would accept hosts a
+        # direct entry rejects. Relative Locations defer to redirect_request,
+        # which validates the resolved absolute form.
+        raw = headers.get("location") or headers.get("uri") or ""
+        if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*://", raw) and not _is_public_feed_url(raw):
+            raise SourceError(f"redirect Location outside the https public-web contract: {raw!r}")
+        return super().http_error_302(req, fp, code, msg, headers)
+
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         if not _is_public_feed_url(newurl):
             raise SourceError(f"redirect outside the https public-web contract refused: {newurl!r}")
