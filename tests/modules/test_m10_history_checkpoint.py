@@ -213,3 +213,45 @@ def test_preinsert_completion_rolls_back_if_message_insert_fails(repo):
  finally:
   event.remove(engine,'before_cursor_execute',fail_sql);event.remove(EmailMessageRow,'before_insert',fail)
  assert repo.ingest_work('account','g')['phase']=='effects_done' and repo.list_messages()==[]
+
+
+def test_preexisting_message_conflict_keeps_effects_done_and_blocks_checkpoint(repo):
+ params=dict(message_id='existing',account_id='account',gmail_id='g',thread_id=None,history_id=None,subject='old source',sender='s',recipients=[],snippet='',body_text='old body',received_at=None,labels=[],headers={},category='personal',category_confidence=1,embedding=None,unsubscribe_url=None)
+ assert repo.save_message(**params)
+ data={'actions':[],'embedding':[]}
+ assert repo.claim_ingest_work('account','g',data)
+ for expected,target in [('extraction_inflight','extraction_done'),('extraction_done','embedding_inflight'),('embedding_inflight','effects_done')]:assert repo.transition_ingest_work('account','g',expected,target,data)
+ assert not repo.save_message(**{**params,'message_id':'new','subject':'new source'},ingest_work_data=data)
+ assert repo.ingest_work('account','g')['phase']=='effects_done'
+ assert len(repo.list_messages())==1 and repo.list_messages()[0].subject=='old source'
+ assert not repo.checkpoint_history('account','100','101')
+
+
+def test_nonactionable_actions_roll_back_with_message_and_ingest_completion(repo):
+ data={'actions':[{'action':'fixture action','deadline':None,'related_entity':None}],'embedding':[]}
+ assert repo.claim_ingest_work('account','g',data)
+ for expected,target in [('extraction_inflight','extraction_done'),('extraction_done','embedding_inflight'),('embedding_inflight','effects_done')]:assert repo.transition_ingest_work('account','g',expected,target,data)
+ params=dict(message_id='m',account_id='account',gmail_id='g',thread_id=None,history_id=None,subject='fixture',sender='s',recipients=[],snippet='',body_text='',received_at=None,labels=[],headers={},category='personal',category_confidence=1,embedding=None,unsubscribe_url=None,ingest_work_data=data)
+ def fail(mapper,conn,target):raise RuntimeError('fixture action insert failed')
+ event.listen(ActionItemRow,'before_insert',fail)
+ try:
+  with pytest.raises(RuntimeError,match='action insert failed'):repo.save_message(**params)
+ finally:event.remove(ActionItemRow,'before_insert',fail)
+ assert repo.ingest_work('account','g')['phase']=='effects_done' and repo.list_messages()==[] and repo.list_action_items()==[]
+ assert repo.save_message(**params)
+ assert repo.ingest_work('account','g')['phase']=='complete' and len(repo.list_messages())==1 and len(repo.list_action_items())==1
+
+
+def test_ingest_phase_cas_rejects_stale_and_illegal_transitions(repo):
+ data={'actions':[],'embedding':[]}
+ assert repo.claim_ingest_work('account','g',data)
+ assert not repo.transition_ingest_work('account','g','extraction_done','embedding_inflight',data)
+ assert repo.ingest_work('account','g')['phase']=='extraction_inflight'
+ assert repo.transition_ingest_work('account','g','extraction_inflight','extraction_done',data)
+ barrier=Barrier(2)
+ def claim(_):
+  barrier.wait(timeout=5)
+  return SqlEmailRepository('a',repo.sessions).transition_ingest_work('account','g','extraction_done','embedding_inflight',data)
+ with ThreadPoolExecutor(max_workers=2) as pool:assert sorted(pool.map(claim,[1,2]))==[False,True]
+ assert not repo.transition_ingest_work('account','g','extraction_done','embedding_inflight',data)
+ with pytest.raises(ValueError):repo.transition_ingest_work('account','g','embedding_inflight','extraction_done',data)

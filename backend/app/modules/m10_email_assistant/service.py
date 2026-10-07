@@ -290,16 +290,6 @@ class Service:
         )
         if not inserted:
             return None
-        if classification.category not in ACTIONABLE_CATEGORIES or 'SENT' in raw.labels:
-            self.repository.save_action_items(
-                message_id,
-                [
-                    {"id": str(uuid4()), "action": item.action,
-                     "deadline": item.deadline, "related_entity": item.related_entity,
-                     "confidence": classification.confidence}
-                    for item in actions
-                ],
-            )
         if classification.category in ACTIONABLE_CATEGORIES and "SENT" not in raw.labels:
             return await self._draft_reply(message_id, raw, classification, actions, account_id=account_id) is not None
         return False
