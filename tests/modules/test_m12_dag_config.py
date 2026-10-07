@@ -156,7 +156,7 @@ def test_mounted_shipped_invalid_parent_never_reaches_descendant_model(kind):
  retained=detail['completed']['a'];assert retained['text']=='retained parent' and retained['usage']=={'input_tokens':12}
  assert retained['metadata']=={'unsafe':None} and detail['invalid_json_paths'] and calls==['upstream']
 
-@pytest.mark.parametrize('metadata',[{1:'numeric','1':'text'},{'bad':'\ud800'}])
+@pytest.mark.parametrize('metadata',[{1:'numeric','1':'text'},{1:'numeric'},{'bad':'\ud800'}])
 def test_parent_source_requires_lossless_json_text_keys_and_utf8(metadata):
  calls=[]
  class Service:
