@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum
 from typing import Any
-from pydantic import BaseModel,Field
+from pydantic import BaseModel,Field,model_validator
 class ApprovalState(str,Enum):PENDING="pending";APPROVED="approved";REJECTED="rejected";EXPIRED="expired"
 class Event(BaseModel):id:str;sequence:int;topic:str;aggregate_type:str;aggregate_id:str;payload:dict[str,Any];occurred_at:datetime
 class Snapshot(BaseModel):version:int;last_sequence:int;generated_at:datetime;data:dict[str,Any]
@@ -22,7 +22,12 @@ class BlockerSeverity(str,Enum):CRITICAL="critical";WARNING="warning";INFO="info
 class Blocker(BaseModel):id:str;kind:str;severity:BlockerSeverity;summary:str;module_id:int|None=None;evidence:list[EvidenceRef]=Field(default_factory=list);recommended_action:str="";detected_at:datetime
 class DashboardOverview(BaseModel):generated_at:datetime;modules:list[ModuleStatus];kpis:list[KPI];blockers:list[Blocker];pending_approvals:int;critical_path:list[str]
 class DrilldownResult(BaseModel):subject:EvidenceRef;detail:dict[str,Any]=Field(default_factory=dict);events:list[Event]=Field(default_factory=list);approvals:list[Approval]=Field(default_factory=list)
-class EventIn(BaseModel):id:str|None=None;topic:str=Field(min_length=1,max_length=120);aggregate_type:str=Field(min_length=1,max_length=80);aggregate_id:str=Field(min_length=1,max_length=200);payload:dict[str,Any]=Field(default_factory=dict);occurred_at:datetime|None=None
+class EventIn(BaseModel):
+    id:str|None=None;topic:str=Field(min_length=1,max_length=120);aggregate_type:str=Field(min_length=1,max_length=80);aggregate_id:str=Field(min_length=1,max_length=200);payload:dict[str,Any]=Field(default_factory=dict);occurred_at:datetime|None=None
+    @model_validator(mode="after")
+    def _aware_occurred_at(self):
+        if self.occurred_at is not None and self.occurred_at.tzinfo is None:raise ValueError("occurred_at must be timezone-aware")
+        return self
 class KpiDefinitionIn(BaseModel):id:str=Field(min_length=2,max_length=80,pattern=r"^[a-z][a-z0-9_]*$");label:str=Field(min_length=2,max_length=120);unit:str="count";topics:list[str]=Field(min_length=1);window_hours:int|None=Field(None,ge=1,le=24*30)
 class KpiDefinitionOut(KpiDefinitionIn):created_at:datetime
 class DigestSection(BaseModel):title:str;lines:list[str]
