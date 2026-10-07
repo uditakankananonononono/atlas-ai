@@ -160,3 +160,21 @@ def test_mounted_cyclic_review_candidate_survives_conversion_boundary():
  detail=response.json()['detail'];assert detail['state']=='review_required'
  assert detail['result']['text']=='retained' and detail['result']['usage']=={'input_tokens':12}
  assert detail['result']['metadata']=={'self':None} and detail['invalid_json_paths']
+
+@pytest.mark.parametrize('limit',[0,-1,True,False,1.5,'8',None,float('nan'),float('inf')])
+def test_invalid_dag_concurrency_rejected_before_node_dispatch(limit):
+ calls=[]
+ async def runner(*args):calls.append(args);return {}
+ with pytest.raises(WorkflowValidationError,match='positive integer'):DagEngine(runner,max_concurrency=limit)
+ assert not calls
+
+@pytest.mark.asyncio
+async def test_valid_dag_concurrency_serializes_independent_nodes():
+ active=0;peak=0;calls=[]
+ async def runner(task,*args):
+  nonlocal active,peak
+  active+=1;peak=max(peak,active);calls.append(task)
+  await asyncio.sleep(0)
+  active-=1;return {'text':task}
+ out=await DagEngine(runner,max_concurrency=1).run(Workflow.from_yaml('nodes: [{id: a, task: a}, {id: b, task: b}]'),{})
+ assert peak==1 and calls==['a','b'] and out=={'a':{'text':'a'},'b':{'text':'b'}}
