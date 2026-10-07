@@ -12,7 +12,7 @@ from dataclasses import asdict
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, String, UniqueConstraint, select
+from sqlalchemy import JSON, String, UniqueConstraint, select, update, cast
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
 from app.core.database import Base, SessionLocal, engine
@@ -171,7 +171,27 @@ class SqlSocialRepository:
     def get_report(self,item_id): return self._get(SocialReportRow,item_id,to_report)
 
     # schedules + publish receipts
-    def save_schedule(self,x): self._save(SocialScheduleRow,x.id,schedule_data(x),{"status":x.status}); return x
+    def claim_publish(self,x):
+        expected = schedule_data(x)
+        claimed = dict(expected);claimed['status'] = 'publishing'
+        with self.sessions.begin() as db:
+            from sqlalchemy.dialects.postgresql import JSONB
+            payload_matches = cast(SocialScheduleRow.data,JSONB)==expected if db.get_bind().dialect.name=='postgresql' else SocialScheduleRow.data==expected
+            winner=db.execute(update(SocialScheduleRow).where(SocialScheduleRow.tenant_id==self.tenant_id,SocialScheduleRow.item_id==x.id,SocialScheduleRow.status=='approved',payload_matches).values(status='publishing',data=claimed).returning(SocialScheduleRow.item_id)).first()
+        return to_schedule(claimed) if winner is not None else None
+    def save_schedule(self,x):
+        data=schedule_data(x)
+        with self.sessions.begin() as db:
+            row=db.scalar(select(SocialScheduleRow).where(SocialScheduleRow.tenant_id==self.tenant_id,SocialScheduleRow.item_id==x.id).with_for_update())
+            if row is None:db.add(SocialScheduleRow(tenant_id=self.tenant_id,item_id=x.id,data=data,status=x.status))
+            else:
+                if row.status in {'publishing','outcome_unknown','published'}:
+                    if row.status != 'publishing' and row.data != data:raise ValueError('final publish outcome cannot change without reconciliation')
+                    if x.status not in {'published','outcome_unknown'}:raise ValueError('immutable publish claim cannot be reset')
+                    ignored={'status','failure','published_at','external_id','external_url','draft_only'}
+                    if {k:v for k,v in row.data.items() if k not in ignored}!={k:v for k,v in data.items() if k not in ignored}:raise ValueError('immutable publish payload cannot change')
+                row.data=data;row.status=x.status
+        return x
     def get_schedule(self,item_id): return self._get(SocialScheduleRow,item_id,to_schedule)
     def list_schedules(self,plan_id:str|None=None):
         entries=self._list(SocialScheduleRow,to_schedule)

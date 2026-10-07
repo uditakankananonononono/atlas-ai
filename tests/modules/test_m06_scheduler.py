@@ -168,7 +168,7 @@ def test_adapter_failure_marks_entry_failed_without_raising():
     records = scheduler.execute_due(NOW)
     assert records == []
     final = repository.get_schedule(entry.id)
-    assert final.status == STATUS_FAILED
+    assert final.status == 'outcome_unknown'
     assert "token expired" in final.failure
 
 
@@ -228,3 +228,38 @@ def test_sync_is_idempotent():
     decisions.statuses["approval-1"] = "approved"
     assert len(scheduler.sync_decisions()) == 1
     assert scheduler.sync_decisions() == []
+
+
+def test_concurrent_due_scans_publish_only_one_claim(monkeypatch):
+ from concurrent.futures import ThreadPoolExecutor
+ from threading import Barrier
+ adapter=FakeAdapter();scheduler,repository,decisions=make_scheduler(adapter)
+ entry=create_entry(scheduler,make_plan());decisions.statuses['approval-1']='approved';scheduler.sync_decisions()
+ original=scheduler.due_entries;barrier=Barrier(2)
+ def due(now=None):
+  rows=original(now);barrier.wait(timeout=5);return rows
+ monkeypatch.setattr(scheduler,'due_entries',due)
+ with ThreadPoolExecutor(max_workers=2) as pool:list(pool.map(lambda _:scheduler.execute_due(NOW),[1,2]))
+ assert len(adapter.published)==1
+ assert len(repository.list_publish_records(entry.id))==1
+
+
+def test_timeout_after_write_is_unknown_and_not_due_again():
+ class Adapter(FakeAdapter):
+  async def publish(self,request):
+   self.published.append(request);raise TimeoutError('fixture ambiguous timeout after write')
+ adapter=Adapter();scheduler,repository,decisions=make_scheduler(adapter)
+ entry=create_entry(scheduler,make_plan());decisions.statuses['approval-1']='approved';scheduler.sync_decisions()
+ assert scheduler.execute_due(NOW)==[]
+ assert repository.get_schedule(entry.id).status=='outcome_unknown'
+ assert scheduler.execute_due(NOW)==[] and len(adapter.published)==1
+ with pytest.raises(ScheduleStateError):scheduler.reschedule(entry.id,FUTURE)
+
+
+def test_receipt_persistence_failure_leaves_claim_without_replay(monkeypatch):
+ adapter=FakeAdapter();scheduler,repository,decisions=make_scheduler(adapter)
+ entry=create_entry(scheduler,make_plan());decisions.statuses['approval-1']='approved';scheduler.sync_decisions()
+ def fail(*args,**kwargs):raise RuntimeError('fixture receipt save failed')
+ monkeypatch.setattr(repository,'save_publish_record',fail)
+ with pytest.raises(RuntimeError,match='receipt save failed'):scheduler.execute_due(NOW)
+ assert scheduler.execute_due(NOW)==[] and len(adapter.published)==1
