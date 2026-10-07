@@ -1331,3 +1331,39 @@ def test_task_context_reference_replay_after_runtime_restart_and_tenant_isolatio
     assert restarted.working_memory.get(first['chunk_id']).confidence == 0
     with pytest.raises(KeyError): GCWRuntime(b).add_task_context(task.id, **payload)
     with pytest.raises(ValueError): restarted.add_task_context(task.id, text=' ', source='caller', reference='r2')
+
+
+def test_runtime_task_schedule_update_changes_service_order_and_survives_restart(mounted):
+    from datetime import datetime, timezone
+    client, runtime, repo, _ = mounted
+    first = runtime.submit_goal('first fixture', importance=4, run_immediately=False)
+    second = runtime.submit_goal('second fixture', importance=1, run_immediately=False)
+    path = f'/api/modules/20/runtime/tasks/{second.id}/schedule'
+    response = client.patch(path, json={'importance': 5, 'deadline': '2026-10-08T10:00:00+05:30'})
+    assert response.status_code == 200
+    assert response.json()['importance'] == 5
+    assert runtime.scheduler.order()[0].id == second.id
+    reopened = make_runtime(hydrate_repo=repo)
+    assert reopened.get_task(second.id).importance == 5
+    assert reopened.get_task(second.id).deadline == datetime(2026, 10, 8, 4, 30, tzinfo=timezone.utc)
+    assert reopened.scheduler.order()[0].id == second.id
+    assert client.patch(path, json={'deadline': None}).json()['deadline'] is None
+    assert client.patch(path, json={'importance': True}).status_code == 422
+    assert client.patch(path, json={'deadline': '2026-10-08T10:00:00'}).status_code == 422
+    assert client.patch(path, json={}).status_code == 422
+    runtime.close(second.id)
+    assert client.patch(path, json={'importance': 3}).status_code == 409
+    assert client.patch('/api/modules/20/runtime/tasks/missing/schedule', json={'importance': 3}).status_code == 404
+    assert runtime.get_task(first.id).importance == 4
+
+
+def test_task_schedule_failed_save_does_not_change_active_scheduler():
+    runtime, repo = make_runtime()
+    task = runtime.submit_goal('fixture', importance=2, run_immediately=False)
+    original = repo.save_task
+    def fail(context): raise RuntimeError('fixture persistence unavailable')
+    repo.save_task = fail
+    with pytest.raises(RuntimeError): runtime.update_task_schedule(task.id, changes={'importance': 5})
+    assert runtime.get_task(task.id).importance == 2
+    repo.save_task = original
+    assert repo.load_task(task.id).importance == 2
