@@ -27,15 +27,20 @@ mapping alone does not acquire a lock; each mutation wrapper does.
 
 The original peer M13 combined-run failure remains unexplained. The peer reported 159 passed and 1 failed; the independent reproduction reported 159 passed, 1 skipped and 0 failed. Collection parity remains unresolved: the peer reported 160 tests, while independent collection found 161. Do not treat the absence of a reproduced failure as clearance.
 
+## Scoped assessed surfaces
+
+These bounded comparisons are assessed as stated. They do not close broader production gates or imply peer source is an ancestor of our main.
+
+- `local_tools`: assessed as our additive bounded offline surface; absent from peer bundle tip b944215. Preserve ours, not a peer-parity claim. Selected runtime tests 27 passed; solver tests 22 passed with overlap; catalog canary 1 passed.
+- `function_schemas`: assessed-compatible for the two export methods against peer b944215; six new canaries pass. Preserve our stronger surrounding spec isolation/schema validation. Live provider compatibility is not established.
+- `retrospectives`: assessed-compatible by retaining our detached snapshots, stage/save/publish ordering, stable restart identity and local execution reports rather than the older peer implementation; focused comparison suite 16 passed. Lesson truth is not independently verified.
+
 ## Open comparison surfaces
 
 The following surfaces remain unassessed for combined semantic clearance, even where existing local tests pass:
 
 - `risk_register`
-- `local_tools`: assessed as our additive bounded offline surface; absent from peer bundle tip b944215. Preserve ours, not a peer-parity claim. Selected runtime tests 27 passed; solver tests 22 passed with overlap; catalog canary 1 passed.
 - `htn_planner`, including method review hash binding
-- `function_schemas`: assessed-compatible for the two export methods against peer b944215; six new canaries pass. Preserve our stronger surrounding spec isolation/schema validation. Live provider compatibility is not established.
-- `retrospectives`: assessed-compatible by retaining our detached snapshots, stage/save/publish ordering, stable restart identity and local execution reports rather than the older peer implementation; focused comparison suite 16 passed. Lesson truth is not independently verified.
 - `model_ideation`
 - `premortem`
 - `ActionRow` migration
@@ -57,4 +62,4 @@ Reconciliation does not dispatch, renew approval, supply successful structured o
 
 ## Scope and publication
 
-The prototype does not include the non-M20 divergent peer commit range. Main merge requires the integration owner's explicit go after review. Publication is separate from local merge approval. No push is authorized by this file; the current GitHub incident remains a publication blocker.
+The prototype does not include the non-M20 divergent peer commit range. Main merge requires the integration owner's explicit go after review. Publication is separate from local merge approval. No push is authorized by this file. The earlier GitHub incident restriction was lifted by the integration owner's retry-wave signal, and the reviewed commits were published with remote readback. Future incidents require a fresh publication-state check, not reuse of that recovery signal.
