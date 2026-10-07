@@ -225,6 +225,20 @@ class Service:
                 self._expire_if_overdue(db, row, now)
             return [_view(row) for row in rows]
 
+    def matching_source_approvals(self,*,user_id:str,module_id:int,action_type:str,payload:dict)->list[dict[str,Any]]:
+        """Exact internal source receipt query, independent of dashboard queue limit.
+
+        Two matches suffice to prove ambiguity. Never changes approval status.
+        """
+        with self._sessions() as db:
+            statement=select(ApprovalRequestRow).where(ApprovalRequestRow.user_id==user_id,
+                ApprovalRequestRow.module_id==module_id,ApprovalRequestRow.action_type==action_type)
+            for key,value in payload.items():
+                if value is None:statement=statement.where(ApprovalRequestRow.payload[key].as_string().is_(None))
+                elif isinstance(value,str):statement=statement.where(ApprovalRequestRow.payload[key].as_string()==value)
+                else:raise ValueError('source receipt lookup supports exact string/null fields only')
+            return [_view(row) for row in db.scalars(statement.limit(2))]
+
     def decide(self, approval_id: str, decision: ApprovalStatus, decided_by: str) -> dict[str, Any]:
         """Record a human decision. Decisions are final; expiry wins races.
 

@@ -689,15 +689,15 @@ def test_approval_inflight_reconcile_requires_unique_exact_source_and_never_refi
  with pytest.raises(RuntimeError):asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply')))
  row=repo.list_messages()[0];item=approvals.items[0][0]
  assert repo.draft_work(row.id,'a')['phase']=='approval_inflight'
- monkeypatch.setattr(approvals,'list',lambda **kwargs:[],raising=False)
+ monkeypatch.setattr(approvals,'matching_source_approvals',lambda **kwargs:[],raising=False)
  assert not svc.reconcile_approval_claim(row.id,'a')
  wrong=item.model_copy(update={'payload':{**item.payload,'body':'wrong'}})
- monkeypatch.setattr(approvals,'list',lambda **kwargs:[wrong],raising=False)
+ monkeypatch.setattr(approvals,'matching_source_approvals',lambda **kwargs:[wrong],raising=False)
  assert not svc.reconcile_approval_claim(row.id,'a')
- monkeypatch.setattr(approvals,'list',lambda **kwargs:[item,item.model_copy(update={'id':'duplicate'})],raising=False)
+ monkeypatch.setattr(approvals,'matching_source_approvals',lambda **kwargs:[item,item.model_copy(update={'id':'duplicate'})],raising=False)
  assert not svc.reconcile_approval_claim(row.id,'a')
  assert repo.draft_work(row.id,'a')['phase']=='approval_inflight' and len(approvals.items)==1
- monkeypatch.setattr(approvals,'list',lambda **kwargs:[item],raising=False)
+ monkeypatch.setattr(approvals,'matching_source_approvals',lambda **kwargs:[item],raising=False)
  assert svc.reconcile_approval_claim(row.id,'a')
  assert not svc.reconcile_approval_claim(row.id,'a')
  assert asyncio.run(svc.recover_draft_pipeline('a'))==1
