@@ -636,3 +636,7 @@ Post-sensory/cooperative-budget adjacent regression after11c3192:90 M20/atomic/l
 ## Episode store detached snapshots
 
 record/get/for_task/recall/successful_patterns previously exposed same mutable history objects, allowing callers to rewrite outcomes/actions without updating vector/SQL. Store and reads now detach deeply; successful patterns reject episodes containing failed actions.57 executive/memory/runtime tests pass1warning incl mutations of input/record-return/all read paths. This is stored snapshot consistency, not independently verified execution truth. Explicit record of same ID remains caller-controlled update, no immutable authenticated receipt guarantee.
+
+## Semantic memory detached snapshots
+
+Caller/readback fact or graph metadata mutation previously rewrote in-process records without updating embeddings/SQL. Store/get/query/confirm/link/neighbors now detach deeply. Explicit store and confirm remain mutation paths; supplied provenance/confidence are not verified truth.58 memory/runtime/executive tests pass1warning incl fact/source and metadata mutation. No durable immutable receipt or causal fact verification claimed.

@@ -57,6 +57,7 @@ def test_no_unfitted_knowledge_freshness_or_refresh_prediction():
     fact = mem.remember(" competitor pricing is $10/mo", decay_rate=2.0, confidence=1.0)
     past = datetime.now(timezone.utc) - timedelta(days=60)
     fact.last_confirmed_at = past
+    mem.store(fact)
     fresh = mem.freshness(fact.id)
     assert fresh is None
     due = mem.due_for_refresh(threshold=0.5)
@@ -130,3 +131,15 @@ def test_episode_snapshots_detached_from_input_and_all_readbacks():
  assert original.actions[0].arguments=={}
  bad=original.model_copy(deep=True,update={'id':'bad'});bad.actions[0].succeeded=False;mem.record(bad)
  assert [e.id for e in mem.successful_patterns()]==[stored.id]
+
+
+def test_semantic_fact_and_graph_views_are_detached():
+ mem=SemanticMemory();a=mem.remember('fixture a',provenance={'source':'supplied'});b=mem.remember('fixture b')
+ a.content='caller';a.provenance['source']='changed'
+ for view in (mem.get(a.id),mem.query('fixture a')[0][0]):
+  view.content='readback';view.provenance['source']='changed'
+ assert mem.get(a.id).content=='fixture a'
+ assert mem.get(a.id).provenance=={'source':'supplied'}
+ metadata={'label':'supplied'};edge=mem.link(a.id,'related',b.id,metadata=metadata)
+ metadata['label']='caller';edge.metadata['label']='returned';mem.neighbors(a.id)[0].metadata['label']='view'
+ assert mem.neighbors(a.id)[0].metadata=={'label':'supplied'}
