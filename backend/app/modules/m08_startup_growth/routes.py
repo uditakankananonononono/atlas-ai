@@ -12,7 +12,9 @@ def landing(data:LandingPageIn,service:Service=Depends(get_service)):return serv
 @router.post("/pitch-decks",response_model=BuildOut,status_code=201)
 def deck(data:PitchDeckIn,service:Service=Depends(get_service)):return service.pitch_deck(data)
 @router.post("/documentation",response_model=BuildOut,status_code=201)
-def docs(data:DocumentationIn,service:Service=Depends(get_service)):return service.documentation(data)
+def docs(data:DocumentationIn,service:Service=Depends(get_service)):
+    try:return service.documentation(data)
+    except ValueError as e:raise HTTPException(422,str(e)) from e
 @router.post("/builds/{build_id}/propose/{action}",response_model=PublishProposal,status_code=201)
 def propose(build_id:str,action:Literal["push_startup_site","deploy_startup_site","share_pitch_deck","publish_documentation"],service:Service=Depends(get_service)):
     try:return service.propose(build_id,action)
