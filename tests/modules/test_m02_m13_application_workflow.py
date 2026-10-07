@@ -585,3 +585,65 @@ def test_post_click_save_conflict_retains_durable_claim_and_blocks_replay(rig,mo
  assert rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']}).status_code==409
  assert rig.page.clicked==['#submit-btn']
  assert rig.client.post(f'{base}/stage',json={'fields':{'full name':'Ada'},'submit_selector':'#submit-btn'}).status_code==409
+
+
+def test_consume_crash_after_claim_cannot_replay_even_unconsumed(rig,monkeypatch):
+ import asyncio
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ async def crash(*args):raise RuntimeError('fixture consume unavailable')
+ original=rig.audit.consume;monkeypatch.setattr(rig.audit,'consume',crash)
+ record=next(v for (tenant,session),v in rig.flow.store._rows.items() if session==sid)
+ with pytest.raises(RuntimeError,match='consume unavailable'):
+  asyncio.run(rig.flow.execute_submit(record.tenant_id,record.actor_id,sid,approval['approval_id']))
+ assert rig.client.get(base).json()['status']=='submitting'
+ assert approval['approval_id'] not in rig.audit.consumed and rig.page.clicked==[]
+ monkeypatch.setattr(rig.audit,'consume',original)
+ replay=rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ assert replay.status_code==409 and rig.page.clicked==[]
+
+
+@pytest.mark.parametrize('case',['readback_failure','captcha'])
+def test_postclick_unverifiable_readback_stays_unknown(rig,monkeypatch,case):
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ if case=='captcha':rig.page.after_submit_html=CAPTCHA_HTML
+ else:
+  async def fail(*args):raise RuntimeError('fixture readback unavailable')
+  monkeypatch.setattr(rig.flow.browser,'extract',fail)
+ response=rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ assert response.status_code==502
+ assert rig.client.get(base).json()['status']=='outcome_unknown'
+ assert rig.page.clicked==['#submit-btn'] and approval['approval_id'] in rig.audit.consumed
+ assert rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
+ assert rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']}).status_code==409
+
+
+@pytest.mark.parametrize('kind',['memory','sqlite','postgres'])
+def test_simultaneous_real_store_submit_claim_has_one_effect(rig,monkeypatch,tmp_path,kind):
+ import asyncio
+ from concurrent.futures import ThreadPoolExecutor
+ from threading import Barrier
+ from app.modules.m13_browser_agent.application_flow import SessionRevisionConflict
+ if kind!='memory':
+  from app.modules.m13_browser_agent.application_store import SQLApplicationSessionStore,ApplicationSessionRow
+  if kind=='postgres':
+   pgserver=pytest.importorskip('pgserver');server=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop')
+   url=server.get_uri().replace('postgresql://','postgresql+psycopg://')
+  else:url=f'sqlite:///{tmp_path}/submit-race.db'
+  engine=create_engine(url);ApplicationSessionRow.__table__.create(engine)
+  rig.flow.store=SQLApplicationSessionStore(sessionmaker(bind=engine))
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ original=rig.flow._save;barrier=Barrier(2)
+ def save(record):
+  if record.status=='submitting':barrier.wait(timeout=5)
+  return original(record)
+ owner=rig.flow.store.get('local',sid)
+ monkeypatch.setattr(rig.flow,'_save',save)
+ def execute(_):
+  try:return asyncio.run(rig.flow.execute_submit(owner.tenant_id,owner.actor_id,sid,approval['approval_id']))['submitted']
+  except SessionRevisionConflict:return False
+ with ThreadPoolExecutor(max_workers=2) as pool:assert sorted(pool.map(execute,[1,2]))==[False,True]
+ assert rig.page.clicked==['#submit-btn']
+ assert len(rig.audit.consumed)==1
