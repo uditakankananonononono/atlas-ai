@@ -495,3 +495,17 @@ def test_simulation_fidelity_returned_record_cannot_rewrite_metric():
     resolved.fidelity = 1
     tracker.records[record.record_id].fidelity = 1
     assert tracker.fidelity() == pytest.approx(0.5)
+
+
+def test_hypothesis_returned_and_public_views_cannot_rewrite_ranking():
+    tracker = HypothesisTracker()
+    a = tracker.add('a', prior=0.6)
+    b = tracker.add('b', prior=0.4)
+    a.probability = 0.01
+    tracker.hypotheses[b.hypothesis_id].probability = 0.99
+    tracker.ranking()[0].status = 'retired'
+    result = tracker.update({a.hypothesis_id: 2})
+    assert result[0].hypothesis_id == a.hypothesis_id
+    assert result[0].probability == pytest.approx(0.75 / 1.15)
+    result[0].probability = 0
+    assert tracker.ranking()[0].probability == pytest.approx(0.75 / 1.15)

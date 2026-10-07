@@ -914,3 +914,7 @@ Two reproduced failures retained: malformed/nonfinite/bool numeric predictions p
 ## Simulation HTTP numeric boundary
 
 Six reproduced failures retained: bool/string prediction/confidence/actual coerce into accepted raw numbers. Strictfinite numeric fields now422beforetracker mutation; integer JSON numbers remain accepted.87foresight/HTTPpass1warning; recorded87adjacent2318pass2warnings40.95s. Transport input consistency only, not supplied outcome truth/independent verification/fitted calibration. Latestfull9869passsource724c275 predatessevenlaterfixes.
+
+## Hypothesis public snapshots
+
+One actual failure retained: returned/public/ranking views rewrite internal probability/status despite update validation. Privatehypothesisstore with detachedread-onlypublicmapping/deepreturns/rankingviews.88foresight/HTTPpass1warning; recorded87adjacent2319pass2warnings39.82s. Synthetic0.6prior/LR2vs0.4 yieldsnormalized0.75/1.15 despite external view mutations. Heuristic independent binary odds plus survivor renormalization, not categorical Bayesian inference/evidence truth or cognition. Latestfull9869passsource724c275 predateseightlaterfixes.

@@ -233,14 +233,18 @@ class HypothesisTracker:
     RETIRE_BELOW = 0.01
 
     def __init__(self) -> None:
-        self.hypotheses: dict[str, Hypothesis] = {}
+        self._hypotheses: dict[str, Hypothesis] = {}
+
+    @property
+    def hypotheses(self):
+        return MappingProxyType(copy.deepcopy(self._hypotheses))
 
     def add(self, statement: str, *, prior: float) -> Hypothesis:
         if isinstance(prior, bool) or not isinstance(prior, (int, float)) or not math.isfinite(prior) or not 0.0 < prior < 1.0:
             raise ValueError("prior must be finite numeric in (0, 1)")
         h = Hypothesis(hypothesis_id=_uid(), statement=statement, probability=prior)
-        self.hypotheses[h.hypothesis_id] = h
-        return h
+        self._hypotheses[h.hypothesis_id] = h
+        return copy.deepcopy(h)
 
     def update(self, likelihood_ratios: dict[str, float]) -> list[Hypothesis]:
         """Apply one evidence item: per-hypothesis likelihood ratio
@@ -249,15 +253,15 @@ class HypothesisTracker:
         # Compute the complete validated batch before changing any record.
         updates = {}
         for hid, lr in likelihood_ratios.items():
-            h = self.hypotheses[hid]
+            h = self._hypotheses[hid]
             if h.status != "active":
                 raise ValueError("cannot update retired hypothesis")
             updates[hid] = BayesianUpdater.update(h.probability, lr)
         for hid, posterior in updates.items():
-            h = self.hypotheses[hid]
+            h = self._hypotheses[hid]
             h.probability = posterior
             h.evidence_count += 1
-        active = [h for h in self.hypotheses.values() if h.status == "active"]
+        active = [h for h in self._hypotheses.values() if h.status == "active"]
         for h in active:
             if h.probability < self.RETIRE_BELOW:
                 h.status = "retired"
@@ -269,7 +273,7 @@ class HypothesisTracker:
         return self.ranking()
 
     def ranking(self) -> list[Hypothesis]:
-        return sorted((h for h in self.hypotheses.values() if h.status == "active"),
+        return sorted((copy.deepcopy(h) for h in self._hypotheses.values() if h.status == "active"),
                       key=lambda h: h.probability, reverse=True)
 
 
