@@ -918,3 +918,7 @@ Six reproduced failures retained: bool/string prediction/confidence/actual coerc
 ## Hypothesis public snapshots
 
 One actual failure retained: returned/public/ranking views rewrite internal probability/status despite update validation. Privatehypothesisstore with detachedread-onlypublicmapping/deepreturns/rankingviews.88foresight/HTTPpass1warning; recorded87adjacent2319pass2warnings39.82s. Synthetic0.6prior/LR2vs0.4 yieldsnormalized0.75/1.15 despite external view mutations. Heuristic independent binary odds plus survivor renormalization, not categorical Bayesian inference/evidence truth or cognition. Latestfull9869passsource724c275 predateseightlaterfixes.
+
+## Binary Bayesian sequence odds preservation
+
+Two reproduced failures retained: displayedposterior rounds1afterLR1e300 then LR1e-300 cannotrecover0.5; invalidprior skippedonemptysequence. Accumulate supplied loglikelihood ratios independently of displayed posterior, fsum prefix terms; validateinitialprior evenemptysequence.90foresightHTTPpass1warning; recorded87adjacent2321pass2warnings38.27s. Synthetic reciprocalLRsequence now0.5final. Finiteprecision binary suppliedlikelihood arithmetic, not independent likelihood verification/categoricalinference or cognition. Latestfull9869passsource724c275 predatesninelaterfixes.

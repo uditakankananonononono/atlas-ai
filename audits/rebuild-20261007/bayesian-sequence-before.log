@@ -1,0 +1,27 @@
+.......................................................FF                [100%]
+=================================== FAILURES ===================================
+_ test_bayesian_sequence_retains_evidence_after_display_probability_rounds_to_one _
+
+    def test_bayesian_sequence_retains_evidence_after_display_probability_rounds_to_one():
+        result = BayesianUpdater.sequence(0.5, [1e300, 1e-300])
+        assert result[0] == 1
+>       assert result[1] == pytest.approx(0.5)
+E       assert 1.0 == 0.5 ± 5.0e-07
+E         
+E         comparison failed
+E         Obtained: 1.0
+E         Expected: 0.5 ± 5.0e-07
+
+tests/modules/test_m20_foresight.py:517: AssertionError
+__________ test_bayesian_empty_sequence_still_validates_initial_prior __________
+
+    def test_bayesian_empty_sequence_still_validates_initial_prior():
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:521: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_bayesian_sequence_retains_evidence_after_display_probability_rounds_to_one
+FAILED tests/modules/test_m20_foresight.py::test_bayesian_empty_sequence_still_validates_initial_prior
+2 failed, 55 passed in 1.47s

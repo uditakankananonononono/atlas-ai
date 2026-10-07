@@ -509,3 +509,14 @@ def test_hypothesis_returned_and_public_views_cannot_rewrite_ranking():
     assert result[0].probability == pytest.approx(0.75 / 1.15)
     result[0].probability = 0
     assert tracker.ranking()[0].probability == pytest.approx(0.75 / 1.15)
+
+
+def test_bayesian_sequence_retains_evidence_after_display_probability_rounds_to_one():
+    result = BayesianUpdater.sequence(0.5, [1e300, 1e-300])
+    assert result[0] == 1
+    assert result[1] == pytest.approx(0.5)
+
+
+def test_bayesian_empty_sequence_still_validates_initial_prior():
+    with pytest.raises(ValueError):
+        BayesianUpdater.sequence(float('nan'), [])

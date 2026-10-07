@@ -318,10 +318,22 @@ class BayesianUpdater:
 
     @staticmethod
     def sequence(prior: float, likelihood_ratios: list[float]) -> list[float]:
-        out, p = [], prior
+        BayesianUpdater.update(prior, 1.0)  # Also validate an empty sequence.
+        out = []
+        terms = [] if prior in (0, 1) else [math.log(prior), -math.log1p(-prior)]
         for lr in likelihood_ratios:
-            p = BayesianUpdater.update(p, lr)
-            out.append(p)
+            BayesianUpdater.update(prior, lr)  # Validate each supplied ratio.
+            if prior in (0, 1):
+                out.append(float(prior))
+                continue
+            terms.append(math.log(lr))
+            log_odds = math.fsum(terms)
+            if log_odds >= 0:
+                posterior = 1.0 / (1.0 + math.exp(-log_odds))
+            else:
+                odds = math.exp(log_odds)
+                posterior = odds / (1.0 + odds)
+            out.append(posterior)
         return out
 
 
