@@ -279,7 +279,7 @@ class ApplicationFlow:
         )
 
     async def _page(self, record: ApplicationSession):
-        return await self.browser.sessions.page(record.tenant_id, record.session_id, True)
+        return await self.browser.sessions.page(record.tenant_id, record.session_id, False)
 
     async def _probe_page(self, record: ApplicationSession) -> tuple[Any, str, AuthProbe, list[str]]:
         page = await self._page(record)
@@ -315,7 +315,7 @@ class ApplicationFlow:
             label=label,
         )
         self.store.create(record)
-        await self.browser.navigate(tenant_id, record.session_id, safe_url, persistent=True)
+        await self.browser.navigate(tenant_id, record.session_id, safe_url, persistent=False)
         _, final_url, auth, captcha = await self._probe_page(record)
         record.url = final_url
         if captcha:
@@ -640,6 +640,44 @@ class ApplicationFlow:
             "final_url": final_url,
         })
         return {"session_id": session_id, "status": record.status, "submitted": positive, "confirmation": dict(record.confirmation)}
+
+    async def reconcile_submit(self,tenant_id:str,actor_id:str,session_id:str)->dict[str,Any]:
+        """Read the same owning browser source, never click/refill/navigate/retry.
+
+        Only the original consumed exact approval and conservative application
+        receipt contract can settle an unknown. Unsupported source stays held.
+        """
+        record=self._record(tenant_id,session_id);self._require_actor(record,actor_id)
+        if record.status not in {WorkflowStatus.SUBMITTING.value,WorkflowStatus.OUTCOME_UNKNOWN.value}:
+            raise WorkflowStateError('only unresolved submissions may be reconciled')
+        if not record.approval_id or not await self.browser.store.was_consumed(record.approval_id):
+            raise PermissionError('submission claim lacks consumed approval; no automatic outcome or retry')
+        source=self.approvals.get(record.approval_id);payload=source.get('payload',{})
+        expected={'tenant_id':tenant_id,'actor_id':actor_id,'session_id':session_id,'selector':record.submit_selector}
+        if source.get('id')!=record.approval_id or any(payload.get(k)!=v for k,v in expected.items()):
+            raise PermissionError('original approval identity no longer matches')
+        page=await self._page(record)
+        try:
+            final_url=validate_public_url(page.url,self.browser.allowed_hosts)
+            html=await self.browser.extract(tenant_id,session_id)
+        except Exception as error:
+            return {'session_id':session_id,'status':record.status,'submitted':False,'reconciled':False,'boundary':'source readback unavailable; outcome held, never retry'}
+        from urllib.parse import urlsplit
+        text=BeautifulSoup(html,'html.parser').get_text(' ',strip=True).lower()
+        receipt=bool(re.search(r'\b(?:your )?application (?:was|has been) (?:received|submitted|accepted)\b',text))
+        negative=bool(re.search(r'\b(?:error|failed|not received|not submitted|could not|unable to)\b',text))
+        positive=(receipt and not negative and not BeautifulSoup(html,'html.parser').find('form')
+            and not probe_captcha(html) and final_url!=payload.get('page_url')
+            and urlsplit(final_url).netloc==urlsplit(payload.get('page_url','')).netloc)
+        if not positive:
+            return {'session_id':session_id,'status':record.status,'submitted':False,'reconciled':False,'boundary':'no original-site positive receipt; outcome held, never retry'}
+        record.confirmation={'final_url':final_url,'page_excerpt':re.sub(r'\s+',' ',html)[:500],
+            'observed_at':time.time(),'approval_id':record.approval_id,'positive_receipt':True,
+            'receipt_contract':'same original host, changedURL, application receipt text, no form/error/CAPTCHA'}
+        record.status=WorkflowStatus.SUBMITTED.value;record.error=''
+        self._save(record)
+        await self._audit(record,ActionType.SUBMIT,{'phase':'source_reconciled','approval_id':record.approval_id,'final_url':final_url})
+        return {'session_id':session_id,'status':record.status,'submitted':True,'reconciled':True,'confirmation':dict(record.confirmation)}
 
     def status(self, tenant_id: str, actor_id: str, session_id: str) -> dict[str, Any]:
         record = self._record(tenant_id, session_id)

@@ -647,3 +647,36 @@ def test_simultaneous_real_store_submit_claim_has_one_effect(rig,monkeypatch,tmp
  with ThreadPoolExecutor(max_workers=2) as pool:assert sorted(pool.map(execute,[1,2]))==[False,True]
  assert rig.page.clicked==['#submit-btn']
  assert len(rig.audit.consumed)==1
+
+
+def test_unknown_submit_reconciliation_reads_original_source_without_second_click(rig):
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ rig.page.after_submit_url=FORM_URL;rig.page.after_submit_html=FORM_HTML
+ assert rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']}).json()['status']=='outcome_unknown'
+ assert not rig.client.post(f'{base}/reconcile-submit').json()['reconciled']
+ rig.page.url=DONE_URL;rig.page.html=THANKS_HTML
+ result=rig.client.post(f'{base}/reconcile-submit')
+ assert result.status_code==200,result.text
+ assert result.json()['reconciled'] and result.json()['submitted']
+ assert rig.page.clicked==['#submit-btn'] and rig.competitions.get_competition('comp-1').status==SubmissionStatus.SUBMITTED
+ assert rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']}).status_code==409
+
+
+@pytest.mark.parametrize('case',['unconsumed','other_host','captcha','error','wrong_approval'])
+def test_unknown_reconciliation_refuses_unbound_or_negative_source(rig,case):
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ rig.page.after_submit_url=FORM_URL;rig.page.after_submit_html=FORM_HTML
+ rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ rig.page.url=DONE_URL;rig.page.html=THANKS_HTML
+ if case=='unconsumed':rig.audit.consumed.clear()
+ elif case=='other_host':rig.page.url='https://other.example/thanks'
+ elif case=='captcha':rig.page.html=CAPTCHA_HTML
+ elif case=='error':rig.page.html='<html>Application was received. Error.</html>'
+ else:
+  rig.approvals.get=lambda aid:{'id':'wrong','payload':{}}
+ response=rig.client.post(f'{base}/reconcile-submit',json={'receipt':'approved','retry':True})
+ assert response.status_code in [200,403]
+ if response.status_code==200:assert not response.json()['reconciled']
+ assert rig.page.clicked==['#submit-btn'] and rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
