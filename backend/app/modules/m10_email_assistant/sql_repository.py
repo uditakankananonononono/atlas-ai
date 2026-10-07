@@ -144,7 +144,7 @@ class SqlEmailRepository:
                 row.encrypted_refresh_token = encrypted_refresh_token
                 # Reconnecting credentials is not evidence history was processed.
                 row.updated_at = now
-            self._log(db, "gmail_account", account_id, "account_saved", {"email_address": email_address})
+            self._log(db, "gmail_account", row.id if row is not None else account_id, "account_saved", {"email_address": email_address})
 
     def get_account_by_email(self, email_address: str) -> GmailAccountRow | None:
         with self.sessions() as db:
@@ -193,7 +193,9 @@ class SqlEmailRepository:
             if row is not None:
                 row.watch_expiration = expires_at
                 # Watch response is subscription state, not processed history.
-                if row.history_id is None:row.history_id = history_id
+                if row.history_id is None:
+                    pending=db.scalar(select(DraftWorkRow.message_id).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase!='complete').limit(1))
+                    if pending is None and history_id.isdecimal():row.history_id = history_id
                 row.updated_at = _utcnow()
                 self._log(db, "gmail_account", account_id, "watch_renewed",
                           {"watch_expiration": expires_at.isoformat()})

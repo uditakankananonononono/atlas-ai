@@ -133,3 +133,21 @@ def test_watch_and_reconnect_do_not_skip_or_rewind_ingestion_checkpoint(repo):
  assert repo.get_account('new-provisional') is None
  repo.update_history_id('account','99')
  assert repo.get_account('account').history_id=='100'
+
+
+def test_null_watch_baseline_requires_decimal_and_no_unfinished_work_and_correct_audit_id(repo):
+ from datetime import datetime,timezone
+ from sqlalchemy import select
+ with repo.sessions.begin() as db:db.get(GmailAccountRow,repo.get_account('account').pk).history_id=None
+ repo.update_watch_expiration('account',datetime.now(timezone.utc),'invalid')
+ assert repo.get_account('account').history_id is None
+ with repo.sessions.begin() as db:db.add(DraftWorkRow(tenant_id='a',message_id='m',account_id='account',phase='approval_done',data={}))
+ repo.update_watch_expiration('account',datetime.now(timezone.utc),'200')
+ assert repo.get_account('account').history_id is None
+ with repo.sessions.begin() as db:db.get(DraftWorkRow,('a','m')).phase='complete'
+ repo.update_watch_expiration('account',datetime.now(timezone.utc),'200')
+ assert repo.get_account('account').history_id=='200'
+ repo.save_account(account_id='provisional',email_address='fixture@example.invalid',encrypted_refresh_token='new',history_id='300',watch_expiration=None)
+ with repo.sessions() as db:
+  rows=list(db.scalars(select(EmailEventRow).where(EmailEventRow.event=='account_saved').order_by(EmailEventRow.pk)))
+  assert rows[-1].entity_id=='account' and all(r.entity_id!='provisional' for r in rows)
