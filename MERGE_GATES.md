@@ -34,7 +34,7 @@ The following surfaces remain unassessed for combined semantic clearance, even w
 - `risk_register`
 - `local_tools`
 - `htn_planner`, including method review hash binding
-- `function_schemas`
+- `function_schemas`: assessed-compatible for the two export methods against peer b944215; six new canaries pass. Preserve our stronger surrounding spec isolation/schema validation. Live provider compatibility is not established.
 - `retrospectives`
 - `model_ideation`
 - `premortem`
