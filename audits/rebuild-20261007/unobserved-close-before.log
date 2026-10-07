@@ -1,0 +1,58 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_____ test_close_unobserved_step_never_labels_prediction_as_false[pending] _____
+
+state = <TaskState.PENDING: 'pending'>
+
+    @pytest.mark.parametrize('state',[TaskState.PENDING,TaskState.WAITING_APPROVAL,TaskState.CANCELLED])
+    def test_close_unobserved_step_never_labels_prediction_as_false(state):
+     runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('fixture future step succeeds',.9)
+     context=TaskContext(goal='fixture unobserved',state=state,plan=[PlanNode(title='not executed',state=state,arguments={'_expectation_claim_id':claim.id})])
+     repo.save_task(context);runtime.scheduler.add(context)
+     runtime.close(context.id)
+>    assert runtime.calibration.claims[claim.id].resolved is False
+E    AssertionError: assert True is False
+E     +  where True = Claim(id='7030156e-ae17-49f3-bd42-f429527028f6', text='fixture future step succeeds', confidence=0.9, evidence_count=0...10, 7, 15, 8, 42, 951002, tzinfo=datetime.timezone.utc), status='observed_calibration_only', capability_executed=False).resolved
+
+tests/modules/test_m20_runtime_depth.py:2508: AssertionError
+_ test_close_unobserved_step_never_labels_prediction_as_false[waiting_approval] _
+
+state = <TaskState.WAITING_APPROVAL: 'waiting_approval'>
+
+    @pytest.mark.parametrize('state',[TaskState.PENDING,TaskState.WAITING_APPROVAL,TaskState.CANCELLED])
+    def test_close_unobserved_step_never_labels_prediction_as_false(state):
+     runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('fixture future step succeeds',.9)
+     context=TaskContext(goal='fixture unobserved',state=state,plan=[PlanNode(title='not executed',state=state,arguments={'_expectation_claim_id':claim.id})])
+     repo.save_task(context);runtime.scheduler.add(context)
+     runtime.close(context.id)
+>    assert runtime.calibration.claims[claim.id].resolved is False
+E    AssertionError: assert True is False
+E     +  where True = Claim(id='fcfcc0d2-9794-4912-b105-cc57bcdfdc03', text='fixture future step succeeds', confidence=0.9, evidence_count=0...10, 7, 15, 8, 43, 109651, tzinfo=datetime.timezone.utc), status='observed_calibration_only', capability_executed=False).resolved
+
+tests/modules/test_m20_runtime_depth.py:2508: AssertionError
+____ test_close_unobserved_step_never_labels_prediction_as_false[cancelled] ____
+
+state = <TaskState.CANCELLED: 'cancelled'>
+
+    @pytest.mark.parametrize('state',[TaskState.PENDING,TaskState.WAITING_APPROVAL,TaskState.CANCELLED])
+    def test_close_unobserved_step_never_labels_prediction_as_false(state):
+     runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('fixture future step succeeds',.9)
+     context=TaskContext(goal='fixture unobserved',state=state,plan=[PlanNode(title='not executed',state=state,arguments={'_expectation_claim_id':claim.id})])
+     repo.save_task(context);runtime.scheduler.add(context)
+     runtime.close(context.id)
+>    assert runtime.calibration.claims[claim.id].resolved is False
+E    AssertionError: assert True is False
+E     +  where True = Claim(id='3b01275e-8ec7-44c7-8b84-c80ac772acc1', text='fixture future step succeeds', confidence=0.9, evidence_count=0...10, 7, 15, 8, 43, 224512, tzinfo=datetime.timezone.utc), status='observed_calibration_only', capability_executed=False).resolved
+
+tests/modules/test_m20_runtime_depth.py:2508: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_close_unobserved_step_never_labels_prediction_as_false[pending]
+FAILED tests/modules/test_m20_runtime_depth.py::test_close_unobserved_step_never_labels_prediction_as_false[waiting_approval]
+FAILED tests/modules/test_m20_runtime_depth.py::test_close_unobserved_step_never_labels_prediction_as_false[cancelled]
+3 failed, 182 deselected, 1 warning in 2.29s

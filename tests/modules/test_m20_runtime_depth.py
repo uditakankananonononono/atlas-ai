@@ -2497,3 +2497,14 @@ def test_close_retry_after_restart_cleans_residue_without_second_report(monkeypa
  assert len(repo.list_retrospectives(task_id=context.id))==1
  assert restarted.working_memory.focused(partition=context.id)==[]
  assert repo.list_chunks(partition=context.id)==[]
+
+
+@pytest.mark.parametrize('state',[TaskState.PENDING,TaskState.WAITING_APPROVAL,TaskState.CANCELLED])
+def test_close_unobserved_step_never_labels_prediction_as_false(state):
+ runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('fixture future step succeeds',.9)
+ context=TaskContext(goal='fixture unobserved',state=state,plan=[PlanNode(title='not executed',state=state,arguments={'_expectation_claim_id':claim.id})])
+ repo.save_task(context);runtime.scheduler.add(context)
+ runtime.close(context.id)
+ assert runtime.calibration.claims[claim.id].resolved is False
+ assert repo.list_claims()[0].correct is None
+ assert runtime.calibration.calibration_error() is None
