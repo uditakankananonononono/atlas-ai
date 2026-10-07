@@ -239,7 +239,7 @@ def test_m25_hz14_same_count_diverged_hash_refused(tmp_path):
     import json as J
     p=pipe(tmp_path);ingest(p)
     mpath=tmp_path/'tenant-a'/'s1'/'manifest.json'
-    disk=J.loads(mpath.read_text()); disk['versions'][0]['hash']='tampered'
+    disk=J.loads(mpath.read_text()); disk['versions'][0]['hash']='b'*64  # valid shape, wrong digest: must reach equivalence, not schema
     mpath.write_text(J.dumps(disk))
     # same pipeline: memory holds v1 so the count check passes and the
     # equivalence comparison is what must fire
@@ -283,3 +283,63 @@ def test_m25_hz14_tmp_write_exclusive_nofollow(tmp_path, monkeypatch):
     (target/'manifest.json.tmp-fixed').symlink_to(outside)
     with pytest.raises(OSError):ingest(p)
     assert outside.read_text()=='untouched'
+
+
+def test_m25_hz15_disk_empty_versions_with_loaded_v1_refused(tmp_path):
+    # KILL: disk versions=[] against a loaded v1 was silently replaced -
+    # the count check only looked one way.
+    import json as J
+    p=pipe(tmp_path);ingest(p)
+    mpath=tmp_path/'tenant-a'/'s1'/'manifest.json'
+    disk=J.loads(mpath.read_text()); disk['versions']=[]
+    mpath.write_text(J.dumps(disk))
+    with pytest.raises(KnowledgeError,match='count diverges'):ingest(p,text='changed')
+
+def test_m25_hz15_missing_source_id_and_consent_change_refused(tmp_path):
+    # KILL: manifests without source_id were accepted, and changed consent
+    # evidence was silently overwritten (equivalence guards overwrite only,
+    # not consent authority).
+    import json as J
+    p=pipe(tmp_path);ingest(p)
+    mpath=tmp_path/'tenant-a'/'s1'/'manifest.json'
+    original=mpath.read_text()
+    disk=J.loads(original); del disk['source']['source_id']
+    mpath.write_text(J.dumps(disk))
+    with pytest.raises(KnowledgeError,match='invalid on-disk manifest schema'):ingest(p,text='changed')
+    mpath.write_text(original)
+    changed=src(); changed.consent.evidence='different-evidence'
+    with pytest.raises(KnowledgeError,match='consent record differs'):p.register(changed)
+
+def test_m25_hz15_schema_number_digest_sequence(tmp_path):
+    # KILL: number=True passed isinstance(int); non-hex and duplicate/gap
+    # numbering were never validated.
+    import json as J
+    p=pipe(tmp_path);ingest(p)
+    mpath=tmp_path/'tenant-a'/'s1'/'manifest.json'
+    original=J.loads(mpath.read_text())
+    v=original['versions'][0]
+    for bad_entry in ({'number':True,'hash':v['hash']},
+                      {'number':1,'hash':'z'*64},
+                      {'number':2,'hash':v['hash']},
+                      {'number':0,'hash':v['hash']}):
+        disk=dict(original); disk['versions']=[bad_entry]
+        mpath.write_text(J.dumps(disk))
+        with pytest.raises(KnowledgeError,match='invalid on-disk manifest schema|count diverges|diverges'):
+            ingest(p,text='changed')
+    mpath.write_text(J.dumps(original))
+
+def test_m25_hz15_invalid_utf8_manifest_fails_closed(tmp_path):
+    # KILL: invalid UTF-8 raised a raw UnicodeDecodeError.
+    p=pipe(tmp_path);ingest(p)
+    (tmp_path/'tenant-a'/'s1'/'manifest.json').write_bytes(b'\xff\xfe bad')
+    with pytest.raises(KnowledgeError,match='unreadable'):ingest(p,text='changed')
+
+def test_m25_hz15_short_write_still_persists_full_manifest(tmp_path, monkeypatch):
+    # KILL: a single os.write return value was ignored - a short write left
+    # truncated JSON in the manifest after replace.
+    import os
+    real_write=os.write
+    monkeypatch.setattr(os,'write',lambda fd,data: real_write(fd,data[:10]))
+    p=pipe(tmp_path);ingest(p)
+    import json as J
+    assert len(J.loads((tmp_path/'tenant-a'/'s1'/'manifest.json').read_text())['versions'])==1
