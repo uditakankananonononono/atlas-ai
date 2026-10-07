@@ -11,6 +11,11 @@ from __future__ import annotations
 
 import asyncio
 import copy
+
+from jsonschema import Draft202012Validator, SchemaError, ValidationError
+from jsonschema.validators import validator_for
+from referencing import Registry
+from referencing.exceptions import Unresolvable
 from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable
 
@@ -44,11 +49,39 @@ class ApprovalPending(ToolError):
 
 
 class RegisteredTool:
-    __slots__ = ("_spec", "_handler")
+    __slots__ = ("_spec", "_handler", "_validator")
 
     def __init__(self, spec: ToolSpec, handler: ToolHandler) -> None:
         self._spec = spec.model_copy(deep=True)
         self._handler = handler
+        schema = self._spec.parameters
+        def check_refs(value):
+            if isinstance(value, dict):
+                for key, item in value.items():
+                    if key in {"$ref", "$dynamicRef", "$recursiveRef"} and (not isinstance(item, str) or not item.startswith("#")):
+                        raise ToolError("tool schema permits only document-local references")
+                    check_refs(item)
+            elif isinstance(value, list):
+                for item in value:
+                    check_refs(item)
+        check_refs(schema)
+        validator_class = validator_for(schema, default=Draft202012Validator)
+        if "$schema" in schema and validator_for(schema, default=None) is None:
+            raise ToolError("unknown tool schema dialect")
+        try:
+            validator_class.check_schema(schema)
+        except SchemaError as exc:
+            raise ToolError("invalid tool schema: " + exc.message) from exc
+        # Explicit empty registry has no remote retrieval fallback.
+        self._validator = validator_class(schema, registry=Registry())
+
+    def validate_arguments(self, arguments):
+        if not isinstance(arguments, dict):
+            raise ToolBlockedError(self._spec.name, ["arguments schema requires an object"])
+        try:
+            self._validator.validate(arguments)
+        except (ValidationError, Unresolvable) as exc:
+            raise ToolBlockedError(self._spec.name, ["arguments schema validation failed"]) from exc
 
     @property
     def spec(self):
@@ -137,6 +170,7 @@ class ToolDispatcher:
         tool = self.registry.get(name)
         # Detach nested caller data before review and execution can yield.
         arguments = copy.deepcopy(arguments)
+        tool.validate_arguments(arguments)
         context = context or {}
         missing = tool.check_preconditions(context)
         if missing:

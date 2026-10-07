@@ -1,0 +1,268 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+__ test_invalid_schema_arguments_never_reach_handler_or_approval[arguments0] ___
+
+arguments = {}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('arguments',[{}, {'n':'2'}, {'n':True}, {'n':2,'extra':1}])
+    async def test_invalid_schema_arguments_never_reach_handler_or_approval(arguments):
+     calls=[]
+     async def handler(args):calls.append(args);return {'sum':args['n']+1}
+     r=ToolRegistry();r.register(ToolSpec(name='fixture',description='fixture',risk=Risk.EXTERNAL,parameters={'type':'object','properties':{'n':{'type':'integer'}},'required':['n'],'additionalProperties':False}),handler)
+     gate=InMemoryApprovalGate()
+>    with pytest.raises(ToolBlockedError,match='schema'):await ToolDispatcher(r,SafetyGate(approvals=gate)).dispatch('fixture',arguments)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_tool_schema_boundary.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.tools.ToolDispatcher object at 0x7fd53ab0bf20>
+name = 'fixture', arguments = {}, context = {}, task_id = None
+granted_approval_id = None
+
+    async def dispatch(
+        self,
+        name: str,
+        arguments: dict[str, Any],
+        *,
+        context: dict[str, Any] | None = None,
+        task_id: str | None = None,
+        granted_approval_id: str | None = None,
+    ) -> ActionRecord:
+        tool = self.registry.get(name)
+        # Detach nested caller data before review and execution can yield.
+        arguments = copy.deepcopy(arguments)
+        context = context or {}
+        missing = tool.check_preconditions(context)
+        if missing:
+            raise ToolBlockedError(name, [f"missing precondition: {m}" for m in missing])
+        may_proceed, approval_id, violations = self.safety.preflight(
+            name, tool.spec.risk, arguments, task_id=task_id,
+            summary=tool.spec.description,
+            granted_approval_id=granted_approval_id,
+        )
+        if any(v.rule_id == "approval_consumed" for v in violations):
+            raise ApprovalConsumed(name, approval_id)
+        if violations:
+            raise ToolBlockedError(name, [f"{v.rule_id}: {v.reason}" for v in violations])
+        if not may_proceed:
+            if approval_id is not None:
+>               raise ApprovalPending(name, approval_id)
+E               app.modules.m20_general_cognitive_worker.tools.ApprovalPending: tool 'fixture' waiting on approval fc3ce2da-58ef-4945-a03b-832b12332e4d
+
+backend/app/modules/m20_general_cognitive_worker/tools.py:155: ApprovalPending
+__ test_invalid_schema_arguments_never_reach_handler_or_approval[arguments1] ___
+
+arguments = {'n': '2'}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('arguments',[{}, {'n':'2'}, {'n':True}, {'n':2,'extra':1}])
+    async def test_invalid_schema_arguments_never_reach_handler_or_approval(arguments):
+     calls=[]
+     async def handler(args):calls.append(args);return {'sum':args['n']+1}
+     r=ToolRegistry();r.register(ToolSpec(name='fixture',description='fixture',risk=Risk.EXTERNAL,parameters={'type':'object','properties':{'n':{'type':'integer'}},'required':['n'],'additionalProperties':False}),handler)
+     gate=InMemoryApprovalGate()
+>    with pytest.raises(ToolBlockedError,match='schema'):await ToolDispatcher(r,SafetyGate(approvals=gate)).dispatch('fixture',arguments)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_tool_schema_boundary.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.tools.ToolDispatcher object at 0x7fd53ab41160>
+name = 'fixture', arguments = {'n': '2'}, context = {}, task_id = None
+granted_approval_id = None
+
+    async def dispatch(
+        self,
+        name: str,
+        arguments: dict[str, Any],
+        *,
+        context: dict[str, Any] | None = None,
+        task_id: str | None = None,
+        granted_approval_id: str | None = None,
+    ) -> ActionRecord:
+        tool = self.registry.get(name)
+        # Detach nested caller data before review and execution can yield.
+        arguments = copy.deepcopy(arguments)
+        context = context or {}
+        missing = tool.check_preconditions(context)
+        if missing:
+            raise ToolBlockedError(name, [f"missing precondition: {m}" for m in missing])
+        may_proceed, approval_id, violations = self.safety.preflight(
+            name, tool.spec.risk, arguments, task_id=task_id,
+            summary=tool.spec.description,
+            granted_approval_id=granted_approval_id,
+        )
+        if any(v.rule_id == "approval_consumed" for v in violations):
+            raise ApprovalConsumed(name, approval_id)
+        if violations:
+            raise ToolBlockedError(name, [f"{v.rule_id}: {v.reason}" for v in violations])
+        if not may_proceed:
+            if approval_id is not None:
+>               raise ApprovalPending(name, approval_id)
+E               app.modules.m20_general_cognitive_worker.tools.ApprovalPending: tool 'fixture' waiting on approval 43e49b0d-0041-49b7-b4d5-ea6fa86c01eb
+
+backend/app/modules/m20_general_cognitive_worker/tools.py:155: ApprovalPending
+__ test_invalid_schema_arguments_never_reach_handler_or_approval[arguments2] ___
+
+arguments = {'n': True}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('arguments',[{}, {'n':'2'}, {'n':True}, {'n':2,'extra':1}])
+    async def test_invalid_schema_arguments_never_reach_handler_or_approval(arguments):
+     calls=[]
+     async def handler(args):calls.append(args);return {'sum':args['n']+1}
+     r=ToolRegistry();r.register(ToolSpec(name='fixture',description='fixture',risk=Risk.EXTERNAL,parameters={'type':'object','properties':{'n':{'type':'integer'}},'required':['n'],'additionalProperties':False}),handler)
+     gate=InMemoryApprovalGate()
+>    with pytest.raises(ToolBlockedError,match='schema'):await ToolDispatcher(r,SafetyGate(approvals=gate)).dispatch('fixture',arguments)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_tool_schema_boundary.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.tools.ToolDispatcher object at 0x7fd53ab41400>
+name = 'fixture', arguments = {'n': True}, context = {}, task_id = None
+granted_approval_id = None
+
+    async def dispatch(
+        self,
+        name: str,
+        arguments: dict[str, Any],
+        *,
+        context: dict[str, Any] | None = None,
+        task_id: str | None = None,
+        granted_approval_id: str | None = None,
+    ) -> ActionRecord:
+        tool = self.registry.get(name)
+        # Detach nested caller data before review and execution can yield.
+        arguments = copy.deepcopy(arguments)
+        context = context or {}
+        missing = tool.check_preconditions(context)
+        if missing:
+            raise ToolBlockedError(name, [f"missing precondition: {m}" for m in missing])
+        may_proceed, approval_id, violations = self.safety.preflight(
+            name, tool.spec.risk, arguments, task_id=task_id,
+            summary=tool.spec.description,
+            granted_approval_id=granted_approval_id,
+        )
+        if any(v.rule_id == "approval_consumed" for v in violations):
+            raise ApprovalConsumed(name, approval_id)
+        if violations:
+            raise ToolBlockedError(name, [f"{v.rule_id}: {v.reason}" for v in violations])
+        if not may_proceed:
+            if approval_id is not None:
+>               raise ApprovalPending(name, approval_id)
+E               app.modules.m20_general_cognitive_worker.tools.ApprovalPending: tool 'fixture' waiting on approval a27754fc-e0d4-496a-892f-50b2ab23712d
+
+backend/app/modules/m20_general_cognitive_worker/tools.py:155: ApprovalPending
+__ test_invalid_schema_arguments_never_reach_handler_or_approval[arguments3] ___
+
+arguments = {'n': 2, 'extra': 1}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('arguments',[{}, {'n':'2'}, {'n':True}, {'n':2,'extra':1}])
+    async def test_invalid_schema_arguments_never_reach_handler_or_approval(arguments):
+     calls=[]
+     async def handler(args):calls.append(args);return {'sum':args['n']+1}
+     r=ToolRegistry();r.register(ToolSpec(name='fixture',description='fixture',risk=Risk.EXTERNAL,parameters={'type':'object','properties':{'n':{'type':'integer'}},'required':['n'],'additionalProperties':False}),handler)
+     gate=InMemoryApprovalGate()
+>    with pytest.raises(ToolBlockedError,match='schema'):await ToolDispatcher(r,SafetyGate(approvals=gate)).dispatch('fixture',arguments)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_tool_schema_boundary.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.tools.ToolDispatcher object at 0x7fd53ab433e0>
+name = 'fixture', arguments = {'n': 2, 'extra': 1}, context = {}, task_id = None
+granted_approval_id = None
+
+    async def dispatch(
+        self,
+        name: str,
+        arguments: dict[str, Any],
+        *,
+        context: dict[str, Any] | None = None,
+        task_id: str | None = None,
+        granted_approval_id: str | None = None,
+    ) -> ActionRecord:
+        tool = self.registry.get(name)
+        # Detach nested caller data before review and execution can yield.
+        arguments = copy.deepcopy(arguments)
+        context = context or {}
+        missing = tool.check_preconditions(context)
+        if missing:
+            raise ToolBlockedError(name, [f"missing precondition: {m}" for m in missing])
+        may_proceed, approval_id, violations = self.safety.preflight(
+            name, tool.spec.risk, arguments, task_id=task_id,
+            summary=tool.spec.description,
+            granted_approval_id=granted_approval_id,
+        )
+        if any(v.rule_id == "approval_consumed" for v in violations):
+            raise ApprovalConsumed(name, approval_id)
+        if violations:
+            raise ToolBlockedError(name, [f"{v.rule_id}: {v.reason}" for v in violations])
+        if not may_proceed:
+            if approval_id is not None:
+>               raise ApprovalPending(name, approval_id)
+E               app.modules.m20_general_cognitive_worker.tools.ApprovalPending: tool 'fixture' waiting on approval fbf7b1bb-2b5f-496d-aa18-0a52eafdc8d7
+
+backend/app/modules/m20_general_cognitive_worker/tools.py:155: ApprovalPending
+_____________ test_valid_local_ref_arguments_execute_real_fixture ______________
+
+    @pytest.mark.asyncio
+    async def test_valid_local_ref_arguments_execute_real_fixture():
+     async def handler(args):return {'sum':args['n']+1}
+     r=ToolRegistry();r.register(ToolSpec(name='fixture',description='fixture',parameters={'type':'object','$defs':{'number':{'type':'integer','minimum':1}},'properties':{'n':{'$ref':'#/$defs/number'}},'required':['n']}),handler)
+     dispatcher=ToolDispatcher(r,SafetyGate())
+>    with pytest.raises(ToolBlockedError,match='schema'):await dispatcher.dispatch('fixture',{'n':0})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ToolBlockedError
+
+tests/modules/test_m20_tool_schema_boundary.py:21: Failed
+_________ test_bad_or_remote_schema_rejected_at_registration[schema0] __________
+
+schema = {'type': 'made_up'}
+
+    @pytest.mark.parametrize('schema',[{'type':'made_up'}, {'$ref':'https://untrusted.invalid/schema'}, {'$defs':{'x':{'$ref':'file:///etc/passwd'}}}])
+    def test_bad_or_remote_schema_rejected_at_registration(schema):
+     async def handler(args):return {}
+>    with pytest.raises(ToolError,match='schema'):ToolRegistry().register(ToolSpec(name='fixture',description='fixture',parameters=schema),handler)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ToolError
+
+tests/modules/test_m20_tool_schema_boundary.py:28: Failed
+_________ test_bad_or_remote_schema_rejected_at_registration[schema1] __________
+
+schema = {'$ref': 'https://untrusted.invalid/schema'}
+
+    @pytest.mark.parametrize('schema',[{'type':'made_up'}, {'$ref':'https://untrusted.invalid/schema'}, {'$defs':{'x':{'$ref':'file:///etc/passwd'}}}])
+    def test_bad_or_remote_schema_rejected_at_registration(schema):
+     async def handler(args):return {}
+>    with pytest.raises(ToolError,match='schema'):ToolRegistry().register(ToolSpec(name='fixture',description='fixture',parameters=schema),handler)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ToolError
+
+tests/modules/test_m20_tool_schema_boundary.py:28: Failed
+_________ test_bad_or_remote_schema_rejected_at_registration[schema2] __________
+
+schema = {'$defs': {'x': {'$ref': 'file:///etc/passwd'}}}
+
+    @pytest.mark.parametrize('schema',[{'type':'made_up'}, {'$ref':'https://untrusted.invalid/schema'}, {'$defs':{'x':{'$ref':'file:///etc/passwd'}}}])
+    def test_bad_or_remote_schema_rejected_at_registration(schema):
+     async def handler(args):return {}
+>    with pytest.raises(ToolError,match='schema'):ToolRegistry().register(ToolSpec(name='fixture',description='fixture',parameters=schema),handler)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ToolError
+
+tests/modules/test_m20_tool_schema_boundary.py:28: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_tool_schema_boundary.py::test_invalid_schema_arguments_never_reach_handler_or_approval[arguments0]
+FAILED tests/modules/test_m20_tool_schema_boundary.py::test_invalid_schema_arguments_never_reach_handler_or_approval[arguments1]
+FAILED tests/modules/test_m20_tool_schema_boundary.py::test_invalid_schema_arguments_never_reach_handler_or_approval[arguments2]
+FAILED tests/modules/test_m20_tool_schema_boundary.py::test_invalid_schema_arguments_never_reach_handler_or_approval[arguments3]
+FAILED tests/modules/test_m20_tool_schema_boundary.py::test_valid_local_ref_arguments_execute_real_fixture
+FAILED tests/modules/test_m20_tool_schema_boundary.py::test_bad_or_remote_schema_rejected_at_registration[schema0]
+FAILED tests/modules/test_m20_tool_schema_boundary.py::test_bad_or_remote_schema_rejected_at_registration[schema1]
+FAILED tests/modules/test_m20_tool_schema_boundary.py::test_bad_or_remote_schema_rejected_at_registration[schema2]
+8 failed in 1.28s
