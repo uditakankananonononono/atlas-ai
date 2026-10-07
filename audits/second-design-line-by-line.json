@@ -981,7 +981,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Runtime ModelRouter is deterministic weighted quality/cost/latency-fit scoring, not trained decision-tree or weekly RL. Capability/output/budget filters exist; latency tolerance is soft rather than exclusion. ResearchExecutor retries alternate choices on low confidence, not caught timeout/rate-limit exceptions in this method. Runtime AtlasProvider fixed .75 confidence is not measured quality. Lane router also exists, distinct from shipped wiring. No model-quality/load/feedback acceptance. Status unverified."
+      "notes": "Runtime ModelRouter is deterministic weighted quality/cost/latency-fit scoring, not trained decision-tree or weekly RL. Capability/output/budget filters exist; latency tolerance is soft rather than exclusion. ResearchExecutor retries alternate choices on low confidence, not caught timeout/rate-limit exceptions in this method. Runtime AtlasProvider fixed .75 confidence is not measured quality. Lane router also exists, distinct from shipped wiring. No model-quality/load/feedback acceptance. Status unverified. Local runtime router repair enforces positive catalogp95<=requestedmaximum eligibility forprimary+fallbacks; equalityallowed, ineligiblecatalog makeszero fakeprovidercalls, lowconfidence fallbackneverchooses overboundmodel. Original strictxfailnowordinarypass.880 M12 tests pass; overboundfilterremoval and >=boundary mutants killed. Suppliedp95 estimate eligibility only, not measuredlatency/wallclockdeadline/SLA; no realmodelcalls or timeoutretry change."
     },
     {
       "row": 89,
