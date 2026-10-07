@@ -170,8 +170,17 @@ class DeliberativeLoop:
     def _trace(self, phase: str, detail: str, *, task_id: str | None = None, policy_basis: str = "") -> None:
         self.traces.append(TraceEntry(task_id=task_id, phase=phase, detail=detail, policy_basis=policy_basis))
 
+    def _hold_unknown(self,context:TaskContext)->bool:
+        unknown=[node for node in context.plan if node.outcome_unknown]
+        if not unknown:return False
+        context.state=TaskState.BLOCKED
+        for node in unknown:node.state=TaskState.BLOCKED
+        self._trace("act","unresolved tool effect outcome unknown; execution held",task_id=context.id)
+        return True
+
     def start(self, context: TaskContext) -> TaskContext:
         """Plan the goal, seed working memory, and run the loop."""
+        if self._hold_unknown(context):return context
         # start is a fresh execution, not a resume. Incoming states are not
         # execution evidence. Continuations must use run/resume.
         for node in context.plan:
@@ -212,6 +221,7 @@ class DeliberativeLoop:
         return self.run(context)
 
     def run(self, context: TaskContext, *, budget: Budget | None = None) -> TaskContext:
+        if self._hold_unknown(context):return context
         budget = budget or Budget()
         if self.before_run is not None:
             self.before_run(context)
@@ -286,6 +296,11 @@ class DeliberativeLoop:
                     node.tool, node.arguments, task_id=context.id,
                     granted_approval_id=node.approval_id,
                 ))
+                if record.outcome_unknown:
+                    node.outcome_unknown=True;node.state=TaskState.BLOCKED;context.state=TaskState.BLOCKED
+                    node.result_summary=record.result_summary
+                    self._trace("act","tool effect outcome unknown; reconcile before retry or new approval",task_id=context.id)
+                    return context
                 if record.succeeded:
                     node.state = TaskState.SUCCEEDED
                     node.approval_id = None
@@ -321,6 +336,7 @@ class DeliberativeLoop:
         return context
 
     def resume_after_approval(self, context: TaskContext, node_id: str, approved: bool) -> TaskContext:
+        if self._hold_unknown(context):return context
         for node in context.plan:
             if node.id == node_id:
                 if approved:

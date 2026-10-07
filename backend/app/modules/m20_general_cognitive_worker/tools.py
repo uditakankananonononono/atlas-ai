@@ -165,6 +165,7 @@ class ToolDispatcher:
             except Exception as exc:  # handler failure: retry within bound
                 last_error = exc
         record.succeeded = False
+        record.outcome_unknown = effectful
         record.result_summary = (f"effect outcome unknown; not retried: {last_error}" if effectful else
                                  f"failed after {attempts} attempt(s): {last_error}")
         record.finished_at = datetime.now(timezone.utc)
