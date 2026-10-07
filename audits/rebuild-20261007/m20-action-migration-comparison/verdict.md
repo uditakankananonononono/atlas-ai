@@ -1,0 +1,5 @@
+# ActionRow migration comparison
+
+ActionRow and 20261007_m20_action_records are additive local surfaces absent from peer b944215. Migration columns/indexes match our ActionRow mapping. Local clean-head/historical-upgrade and selected runtime journal tests: 10 passed; new migration-only unknown-payload roundtrip/idempotence/tenant-isolation canary: 1 passed. Unknown state lives in payload_json, requiring no separate action-table column. Atomic execution writes were verified separately in the combined lifecycle canaries.
+
+Scoped result: local SQLite additive migration and journal roundtrip assessed, not PostgreSQL deployment clearance. The downgrade drops the journal table including any records; it does not preserve uncertainty evidence or provide a lossless rollback. Treat downgrade as data-destructive, never an automatic recovery path. PostgreSQL upgrade/rollback behavior and the separate same-id model-unknown Alembic collision remain open. No migration revision renamed or body changed in this review.
