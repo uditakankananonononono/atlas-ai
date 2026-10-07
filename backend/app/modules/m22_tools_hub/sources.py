@@ -29,7 +29,7 @@ import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Any, AsyncIterator, Callable, Iterator
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 USER_AGENT = "AtlasAI-ToolsHub/1.0 (+https://github.com/uditakankananonononono/atlas-ai)"
@@ -50,12 +50,27 @@ Fetch = Callable[[str], bytes]
 # m18). Discovered feed URLs and redirect targets must stay https and carry
 # no userinfo. Explicitly NOT established here (no repo policy): private-range
 # IP blocking and DNS-rebinding protection - those remain open limits.
-_FEED_URL_RE = re.compile(r"https://[^/@]+(/.*)?")
-
-
 def _is_public_feed_url(url: str) -> bool:
-    """https URL with a host and no userinfo (the m22 feed fetch contract)."""
-    return bool(_FEED_URL_RE.fullmatch(url or ""))
+    """Syntactic public-web contract for URLs m22 will fetch: https scheme,
+    a real host, no userinfo, valid port, no whitespace/control characters.
+    Parsed (urlsplit), not regex-matched. This is a SYNTAX/contract check
+    only - it does not establish the target is public: private-range IPs,
+    internal hostnames and DNS-rebinding remain OPEN gaps (no repo policy),
+    and injectable openers/fetch callables bypass it by design (test seam)."""
+    if not url or any(ch.isspace() or ord(ch) < 0x21 for ch in url):
+        return False
+    try:
+        parts = urlsplit(url)
+        if parts.scheme != "https":
+            return False
+        if not parts.hostname:
+            return False
+        if parts.username is not None or parts.password is not None:
+            return False
+        _ = parts.port  # raises ValueError for invalid/out-of-range ports
+    except ValueError:
+        return False
+    return True
 
 
 class _HttpsOnlyRedirect(HTTPRedirectHandler):
@@ -76,6 +91,8 @@ def http_get(url: str, *, accept: str = "application/json, */*", limit: int = MA
              headers: dict[str, str] | None = None, truncate_ok: bool = False) -> bytes:
     """HTTPS GET with Atlas UA and a byte cap. ``truncate_ok`` keeps the first
     ``limit`` bytes instead of failing (for HTML pages and feed probes)."""
+    if not _is_public_feed_url(url):
+        raise SourceError(f"URL outside the https public-web contract: {url!r}")
     request = Request(url, headers={"User-Agent": USER_AGENT, "Accept": accept, **(headers or {})})
     with _SAFE_OPENER.open(request, timeout=TIMEOUT_SECONDS) as response:
         data = response.read(limit + 1)
@@ -235,8 +252,8 @@ class FeedCollector:
 
     def __init__(self, feed_url: str, *, name: str | None = None, max_items: int = MAX_FEED_ITEMS,
                  opener: Callable[[str], Any] | None = None) -> None:
-        if not re.fullmatch(r"https://[^/]+/.*", feed_url or ""):
-            raise SourceError(f"feed URL must be https with a path: {feed_url!r}")
+        if not (_is_public_feed_url(feed_url) and urlsplit(feed_url).path):
+            raise SourceError(f"feed URL must be https with a path and no userinfo: {feed_url!r}")
         self.feed_url = feed_url
         self.name = name or f"feed:{feed_url.split('/')[2]}"
         self.kind = "feed"

@@ -342,3 +342,26 @@ def test_https_redirect_within_contract_allowed():
     from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect
     req = _HttpsOnlyRedirect().redirect_request(Request("https://a.example/"), None, 302, "", {"x": "y"}, "https://b.example/feed")
     assert req.full_url == "https://b.example/feed"
+
+
+def test_feed_url_validation_rejects_hostless_userinfo_badport_whitespace():
+    from app.modules.m22_tools_hub.sources import _is_public_feed_url
+    for bad in ("https://", "https://?q=1", "https://#f", "https://host:badport/feed",
+                "https://host:99999/feed", " https://h/f", "https://ho st/f",
+                "https://u:p@h/f", "http://h/f", "https:///feed"):
+        assert not _is_public_feed_url(bad), bad
+    assert _is_public_feed_url("https://feeds.example.com/rss.xml?x=1#f")
+
+def test_feed_collector_rejects_userinfo_at_construction():
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import FeedCollector, SourceError
+    with _pt.raises(SourceError):
+        FeedCollector("https://u:p@host.example/feed")
+
+def test_http_get_refuses_out_of_contract_url_before_network():
+    # No network happens: the guard runs before any opener call. On old code
+    # this URL raises URLError from urlopen instead - distinct failure type.
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import SourceError, http_get
+    with _pt.raises(SourceError):
+        http_get("https://")
