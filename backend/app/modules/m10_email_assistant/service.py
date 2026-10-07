@@ -62,6 +62,10 @@ class AccountNotFoundError(LookupError):
     pass
 
 
+class DraftPipelineUnresolvedError(RuntimeError):
+    """Unknown model/approval effects block checkpoint until source reconciliation."""
+
+
 class Embedder(Protocol):
     async def embed(self, texts: list[str]) -> list[list[float]]: ...
 
@@ -199,10 +203,14 @@ class Service:
             raise AccountNotFoundError(email_address)
         access_token = await self._access_token(account)
         start = account.history_id or history_id
+        recovered = await self.recover_draft_pipeline(account.id)
+        unresolved=self.repository.unresolved_draft_work(account.id)
+        if unresolved:
+            raise DraftPipelineUnresolvedError(f'{len(unresolved)} unresolved draft pipeline claims; source reconciliation required, no blind retry or checkpoint advance')
         message_ids = await self.gmail.list_history(access_token, start)
         fetched = len(message_ids)
         new_messages = 0
-        drafts = 0
+        drafts = recovered
         for message_id in message_ids:
             if self.repository.has_message(message_id, account_id=account.id):
                 continue
@@ -249,22 +257,44 @@ class Service:
             headers=raw.headers, category=classification.category.value,
             category_confidence=classification.confidence,
             embedding=embedding or None, unsubscribe_url=unsubscribe_url,
+            draft_work={'actions':[a.model_dump(mode='json') for a in actions]}
+                if classification.category in ACTIONABLE_CATEGORIES and 'SENT' not in raw.labels else None,
         )
         if not inserted:
             return None
-        self.repository.save_action_items(
-            message_id,
-            [
-                {"id": str(uuid4()), "action": item.action,
-                 "deadline": item.deadline, "related_entity": item.related_entity,
-                 "confidence": classification.confidence}
-                for item in actions
-            ],
-        )
+        if classification.category not in ACTIONABLE_CATEGORIES or 'SENT' in raw.labels:
+            self.repository.save_action_items(
+                message_id,
+                [
+                    {"id": str(uuid4()), "action": item.action,
+                     "deadline": item.deadline, "related_entity": item.related_entity,
+                     "confidence": classification.confidence}
+                    for item in actions
+                ],
+            )
         if classification.category in ACTIONABLE_CATEGORIES and "SENT" not in raw.labels:
-            await self._draft_reply(message_id, raw, classification, actions, account_id=account_id)
-            return True
+            return await self._draft_reply(message_id, raw, classification, actions, account_id=account_id) is not None
         return False
+
+    async def recover_draft_pipeline(self,account_id:str)->int:
+        """Resume durable safe phases only. In-flight model/approval stays held.
+
+        Historical messages without work rows cannot be assigned guessed phases.
+        Model extraction/embedding before insertion are outside this recovery.
+        """
+        recovered=0
+        for message_id in self.repository.recoverable_draft_work(account_id):
+            row=self.repository.get_message(message_id)
+            if row is None or row.account_id!=account_id:continue
+            work=self.repository.draft_work(message_id,account_id)
+            raw=GmailRawMessage(gmail_id=row.gmail_id,thread_id=row.thread_id,history_id=row.history_id,
+                subject=row.subject,sender=row.sender,recipients=row.recipients,snippet=row.snippet,
+                body_text=row.body_text,labels=row.labels,headers=row.headers,received_at=None)
+            classification=Classification(EmailCategory(row.category),row.category_confidence)
+            actions=[ActionItem(**a) for a in work['data'].get('actions',[])]
+            result=await self._draft_reply(message_id,raw,classification,actions,account_id=account_id)
+            if result is not None:recovered+=1
+        return recovered
 
     @staticmethod
     def _unsubscribe_url(headers: dict[str, str]) -> str | None:
@@ -298,6 +328,10 @@ class Service:
             f"Recent related emails (context window):\n{context}\n"
             f"Email body:\n{raw.body_text[:4000]}"
         )
+        work=self.repository.draft_work(message_id,account_id)
+        if work is not None:
+            return await self._resume_owned_draft(message_id,account_id,raw,prompt,work)
+        # Legacy/direct drafting lacks durable ownership; not a recovery path.
         model, text = await self.llm_generate(prompt, self.llm_provider, self.llm_model)
         subject, body = self._parse_draft(text, raw.subject)
         draft_id = str(uuid4())
@@ -336,6 +370,36 @@ class Service:
             id=draft_id, message_id=message_id, approval_id=approval.id, to=raw.sender,
             subject=subject, body=body, model=model, created_at=datetime.now(timezone.utc),
         )
+
+    async def _resume_owned_draft(self,message_id,account_id,raw,prompt,work):
+        phase=work['phase'];data=work['data']
+        if phase=='ready':
+            if not self.repository.transition_draft_work(message_id,account_id,'ready','model_inflight',data):return None
+            # Once claimed, any crash/timeout is ambiguous. Do not rerun a model.
+            model,text=await self.llm_generate(prompt,self.llm_provider,self.llm_model)
+            subject,body=self._parse_draft(text,raw.subject)
+            data={**data,'draft_id':str(uuid4()),'approval_id':str(uuid4()),'model':model,'subject':subject,'body':body,'to':raw.sender}
+            if not self.repository.transition_draft_work(message_id,account_id,'model_inflight','model_done',data):return None
+            phase='model_done'
+        if phase=='model_done':
+            if not self.repository.transition_draft_work(message_id,account_id,'model_done','approval_inflight',data):return None
+            approval=ApprovalRequest(id=data['approval_id'],module_id=10,action_type='send_email_reply',payload={
+                'tenant_id':self.tenant_id,'account_id':account_id,'draft_id':data['draft_id'],
+                'message_id':message_id,'gmail_id':raw.gmail_id,'thread_id':raw.thread_id,
+                'to':data['to'],'subject':data['subject'],'body':data['body']})
+            approval=self.approval_sink.put(approval,user_id=self.tenant_id) or approval
+            data={**data,'approval_id':approval.id}
+            if not self.repository.transition_draft_work(message_id,account_id,'approval_inflight','approval_done',data):return None
+            phase='approval_done'
+        if phase=='approval_done':
+            if not self.repository.finalize_draft_work(message_id,account_id,data):return None
+            if self.review_state_capturer is not None:
+                try:await asyncio.to_thread(self.review_state_capturer,data['approval_id'])
+                except Exception as exc:
+                    self.repository.log_event('email_draft',data['draft_id'],'review_state_capture_failed',{'approval_id':data['approval_id'],'error':str(exc)[:200]})
+            return EmailDraftView(id=data['draft_id'],message_id=message_id,approval_id=data['approval_id'],
+                to=data['to'],subject=data['subject'],body=data['body'],model=data['model'],created_at=datetime.now(timezone.utc))
+        return None
 
     def _context_window(self, raw: GmailRawMessage, max_chars: int = 6000, *, account_id: str) -> str:
         """Recent related emails: same thread first, then same sender."""

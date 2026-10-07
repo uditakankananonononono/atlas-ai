@@ -494,14 +494,102 @@ def _retry_after_insert_before_draft_failure(tmp_path):
  return asyncio.run(run())
 
 
-def test_insert_before_draft_failure_currently_strands_retry(tmp_path):
+def test_insert_before_draft_failure_recovers_safe_ready_work(tmp_path):
  result,repo,approvals=_retry_after_insert_before_draft_failure(tmp_path)
- assert result.new_messages==0 and result.drafts_proposed==0
+ assert result.new_messages==0 and result.drafts_proposed==1
  assert repo.get_account_by_email('a@example.com').history_id=='101'
- assert len(repo.list_messages())==1 and repo.list_drafts()==[] and approvals.items==[]
+ assert len(repo.list_messages())==1 and len(repo.list_drafts())==1 and len(approvals.items)==1
 
 
-@pytest.mark.xfail(strict=True,reason='committed message dedupe skips unfinished draft pipeline; no reconciliation yet')
 def test_retry_recovers_inserted_message_missing_draft(tmp_path):
  result,repo,approvals=_retry_after_insert_before_draft_failure(tmp_path)
  assert len(repo.list_drafts())==1 and len(approvals.items)==1
+
+
+@pytest.mark.parametrize('failure_phase',['model','approval','model_result_save','approval_result_save'])
+def test_draft_pipeline_ambiguous_phases_never_repeat_effect(tmp_path,monkeypatch,failure_phase):
+ svc,repo,approvals,client=make_service(tmp_path)
+ calls=[];original=fake_generate;original_put=approvals.put;original_transition=repo.transition_draft_work
+ async def generate(prompt,provider,model):
+  if prompt.startswith('Extract action items'):return await original(prompt,provider,model)
+  calls.append('model')
+  if failure_phase=='model':raise TimeoutError('fixture model outcome unknown')
+  return 'fixture','Subject: Re: hello\nFixture draft'
+ def put(*args,**kwargs):
+  calls.append('approval');result=original_put(*args,**kwargs)
+  if failure_phase=='approval':raise RuntimeError('fixture approval outcome unknown')
+  return result
+ def transition(mid,aid,expected,target,data):
+  if (failure_phase=='model_result_save' and target=='model_done') or (failure_phase=='approval_result_save' and target=='approval_done'):
+   raise RuntimeError('fixture result persistence failed')
+  return original_transition(mid,aid,expected,target,data)
+ svc.llm_generate=generate;monkeypatch.setattr(approvals,'put',put);monkeypatch.setattr(repo,'transition_draft_work',transition)
+ with pytest.raises((TimeoutError,RuntimeError)):
+  asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply')))
+ message=repo.list_messages()[0]
+ expected='model_inflight' if failure_phase in {'model','model_result_save'} else 'approval_inflight'
+ assert repo.draft_work(message.id,'a')['phase']==expected
+ before=list(calls);monkeypatch.setattr(repo,'transition_draft_work',original_transition)
+ assert asyncio.run(svc.recover_draft_pipeline('a'))==0
+ assert calls==before and repo.list_drafts()==[]
+ assert repo.draft_work(message.id,'other') is None
+ assert SqlEmailRepository('other',repo.sessions).draft_work(message.id,'a') is None
+ asyncio.run(client.aclose())
+
+
+def test_draft_finalization_crash_recovers_saved_approval_without_model_or_refile(tmp_path,monkeypatch):
+ svc,repo,approvals,client=make_service(tmp_path);calls=[]
+ async def generate(prompt,provider,model):
+  calls.append('extract' if prompt.startswith('Extract action items') else 'draft')
+  return await fake_generate(prompt,provider,model)
+ svc.llm_generate=generate;original=repo.finalize_draft_work
+ def fail(*args):raise RuntimeError('fixture before local finalize')
+ monkeypatch.setattr(repo,'finalize_draft_work',fail)
+ with pytest.raises(RuntimeError,match='before local finalize'):
+  asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply')))
+ message=repo.list_messages()[0];assert repo.draft_work(message.id,'a')['phase']=='approval_done'
+ assert calls==['extract','draft'] and len(approvals.items)==1
+ monkeypatch.setattr(repo,'finalize_draft_work',original)
+ assert asyncio.run(svc.recover_draft_pipeline('a'))==1
+ assert calls==['extract','draft'] and len(approvals.items)==1 and len(repo.list_drafts())==1
+ assert repo.draft_work(message.id,'a')['phase']=='complete'
+ assert asyncio.run(svc.recover_draft_pipeline('a'))==0
+ asyncio.run(client.aclose())
+
+
+def test_unknown_draft_effect_keeps_history_checkpoint_and_blocks_blind_push_retry(tmp_path):
+ from app.modules.m10_email_assistant.service import DraftPipelineUnresolvedError
+ svc,repo,approvals,client=make_service(tmp_path,gmail=FakeGmailClient(history={'100':['g']},messages={'g':raw_message('g','Please reply',snippet='please reply')}))
+ repo.save_account(account_id='a',email_address='a@example.com',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ calls=[]
+ async def generate(prompt,provider,model):
+  if prompt.startswith('Extract action items'):return 'fixture','[]'
+  calls.append('model');raise TimeoutError('fixture unknown model')
+ svc.llm_generate=generate
+ with pytest.raises(TimeoutError):asyncio.run(svc.ingest_from_history('a@example.com','101'))
+ with pytest.raises(DraftPipelineUnresolvedError,match='no blind retry'):asyncio.run(svc.ingest_from_history('a@example.com','101'))
+ assert calls==['model'] and repo.get_account_by_email('a@example.com').history_id=='100'
+ assert len(repo.unresolved_draft_work('a'))==1
+ assert len(repo.list_messages())==1 and repo.list_drafts()==[] and approvals.items==[]
+ asyncio.run(client.aclose())
+
+
+def test_concurrent_recovery_claim_has_one_model_approval_and_draft(tmp_path,monkeypatch):
+ from concurrent.futures import ThreadPoolExecutor
+ from threading import Barrier
+ svc,repo,approvals,client=make_service(tmp_path)
+ original=svc._draft_reply
+ async def stop(*args,**kwargs):raise RuntimeError('fixture ready stop')
+ svc._draft_reply=stop
+ with pytest.raises(RuntimeError):asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply')))
+ svc._draft_reply=original;barrier=Barrier(2);scan=repo.recoverable_draft_work;calls=[]
+ def scan_same(aid):
+  result=scan(aid);barrier.wait(timeout=5);return result
+ monkeypatch.setattr(repo,'recoverable_draft_work',scan_same)
+ async def generate(prompt,provider,model):
+  calls.append('draft');return 'fixture','Subject: Re: fixture\nFixture draft'
+ svc.llm_generate=generate
+ with ThreadPoolExecutor(max_workers=2) as pool:
+  assert sum(pool.map(lambda _:asyncio.run(svc.recover_draft_pipeline('a')),[1,2]))==1
+ assert calls==['draft'] and len(approvals.items)==1 and len(repo.list_drafts())==1
+ asyncio.run(client.aclose())
