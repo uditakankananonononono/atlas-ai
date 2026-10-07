@@ -81,16 +81,19 @@ def test_row39_bayesian_updates():
 def test_row40_causal_vs_correlational():
     assessor = CausalAssessor()
     weak = assessor.assess(cause="ice cream sales", effect="drownings")
-    assert weak.verdict == "correlational_only"
+    assert weak.verdict == "unverified"
+    assert weak.checklist_status == "no_checks_declared"
     assert any("confounder" in a for a in weak.alternative_explanations)
     strong = assessor.assess(cause="vaccine", effect="immunity",
                              evidence={"randomized": True, "temporal_order": True,
                                        "mechanism": True, "dose_response": True,
                                        "controlled": True})
-    assert strong.verdict == "causal_supported"
+    assert strong.verdict == "unverified"
+    assert strong.checklist_status == "declared_checks_complete"
     partial = assessor.assess(cause="coffee", effect="productivity",
                               evidence={"temporal_order": True})
-    assert partial.verdict == "plausible_unproven"
+    assert partial.verdict == "unverified"
+    assert partial.checklist_status == "declared_checks_partial"
 
 
 def test_row41_base_rate_shrinks_weak_evidence():
@@ -399,3 +402,19 @@ def test_hypothesis_invalid_ratio_batch_is_atomic():
         tracker.update({a.hypothesis_id: 2.0, b.hypothesis_id: float("nan")})
     assert tracker.hypotheses[a.hypothesis_id].probability == 0.4
     assert tracker.hypotheses[a.hypothesis_id].evidence_count == 0
+
+
+def test_causal_caller_flags_never_certify_causality():
+    from itertools import product
+    assessor = CausalAssessor()
+    for flags in product([False, True], repeat=5):
+        report = assessor.assess(cause="invented cause", effect="invented effect", evidence=dict(zip(assessor.EVIDENCE_KEYS, flags)))
+        assert report.verdict == "unverified"
+        assert report.causality_verified is False
+        assert "checklist" in report.scope
+
+
+@pytest.mark.parametrize("flag", ["false", 1, None])
+def test_causal_raw_flags_require_actual_bool(flag):
+    with pytest.raises(ValueError):
+        CausalAssessor().assess(cause="a", effect="b", evidence={"randomized": flag})
