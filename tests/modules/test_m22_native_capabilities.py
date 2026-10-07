@@ -104,3 +104,22 @@ def test_workspace_run_preserves_exit_code_and_stderr():
     out2 = ws2.run('t.py')
     assert out2['exit_code'] == 1
     assert 'ZeroDivisionError' in out2['stderr']
+
+
+def test_workspace_run_passes_float_timeout_through_unceiled(monkeypatch):
+    # Regression: the pre-hv ceil() rounded 0.05s up to 1s. The float wall
+    # timeout must reach the backend unchanged (CPU rlimit flooring at 1s is
+    # a separate, documented rlimit-granularity limit).
+    import app.modules.m22_tools_hub.native_capabilities as nc
+    from app.modules.m22_tools_hub.smoke import SmokeRun
+    seen = {}
+    class _FakeRunner:
+        def run(self, *, language, input_dir, output_dir, limits):
+            seen['timeout'] = limits.timeout_seconds
+            return SmokeRun(backend='fake', isolation={}, exit_code=0, timed_out=False,
+                            stdout=b'ok\n', stderr=b'')
+    monkeypatch.setattr(nc, 'select_smoke_backend', lambda language: _FakeRunner())
+    ws = CodeWorkspace(); ws.write('main.py', "print('ok')\n")
+    out = ws.run('main.py', 0.05)
+    assert seen['timeout'] == 0.05
+    assert out['exit_code'] == 0 and out['stdout'] == 'ok\n' and out['sandbox'] == 'fake'
