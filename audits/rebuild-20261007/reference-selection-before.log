@@ -1,0 +1,125 @@
+........................................................................ [ 77%]
+.............FFFFFFFF                                                    [100%]
+=================================== FAILURES ===================================
+___________ test_reference_class_selection_config_validates[kwargs0] ___________
+
+kwargs = {'min_similar': 0}
+
+    @pytest.mark.parametrize('kwargs', [{'min_similar': 0}, {'min_similar': True}, {'min_similar': 1.5},
+                                       {'min_overlap': float('nan')}, {'min_overlap': True}, {'min_overlap': 1.1}])
+    def test_reference_class_selection_config_validates(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:606: Failed
+___________ test_reference_class_selection_config_validates[kwargs1] ___________
+
+kwargs = {'min_similar': True}
+
+    @pytest.mark.parametrize('kwargs', [{'min_similar': 0}, {'min_similar': True}, {'min_similar': 1.5},
+                                       {'min_overlap': float('nan')}, {'min_overlap': True}, {'min_overlap': 1.1}])
+    def test_reference_class_selection_config_validates(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:606: Failed
+___________ test_reference_class_selection_config_validates[kwargs2] ___________
+
+kwargs = {'min_similar': 1.5}
+
+    @pytest.mark.parametrize('kwargs', [{'min_similar': 0}, {'min_similar': True}, {'min_similar': 1.5},
+                                       {'min_overlap': float('nan')}, {'min_overlap': True}, {'min_overlap': 1.1}])
+    def test_reference_class_selection_config_validates(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:606: Failed
+___________ test_reference_class_selection_config_validates[kwargs3] ___________
+
+kwargs = {'min_overlap': nan}
+
+    @pytest.mark.parametrize('kwargs', [{'min_similar': 0}, {'min_similar': True}, {'min_similar': 1.5},
+                                       {'min_overlap': float('nan')}, {'min_overlap': True}, {'min_overlap': 1.1}])
+    def test_reference_class_selection_config_validates(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:606: Failed
+___________ test_reference_class_selection_config_validates[kwargs4] ___________
+
+kwargs = {'min_overlap': True}
+
+    @pytest.mark.parametrize('kwargs', [{'min_similar': 0}, {'min_similar': True}, {'min_similar': 1.5},
+                                       {'min_overlap': float('nan')}, {'min_overlap': True}, {'min_overlap': 1.1}])
+    def test_reference_class_selection_config_validates(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:606: Failed
+___________ test_reference_class_selection_config_validates[kwargs5] ___________
+
+kwargs = {'min_overlap': 1.1}
+
+    @pytest.mark.parametrize('kwargs', [{'min_similar': 0}, {'min_similar': True}, {'min_similar': 1.5},
+                                       {'min_overlap': float('nan')}, {'min_overlap': True}, {'min_overlap': 1.1}])
+    def test_reference_class_selection_config_validates(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:606: Failed
+_________ test_reference_even_median_preserves_smallest_positive_value _________
+
+    def test_reference_even_median_preserves_smallest_positive_value():
+        tiny = float.fromhex('0x0.0000000000001p-1022')
+        forecaster = ReferenceClassForecaster(min_similar=2)
+        forecaster.add_case('fixture', tiny)
+        forecaster.add_case('fixture', tiny)
+>       assert forecaster.forecast('fixture').median == tiny
+E       AssertionError: assert 0.0 == 5e-324
+E        +  where 0.0 = ReferenceClassForecast(n_cases=2, mean=5e-324, median=0.0, p25=5e-324, p75=5e-324, matched_cases=['fixture', 'fixture'...tions=['Outcomes are only as relevant as the reference class is similar', 'Similarity threshold 0.15; 2 case(s) used']).median
+E        +    where ReferenceClassForecast(n_cases=2, mean=5e-324, median=0.0, p25=5e-324, p75=5e-324, matched_cases=['fixture', 'fixture'...tions=['Outcomes are only as relevant as the reference class is similar', 'Similarity threshold 0.15; 2 case(s) used']) = forecast('fixture')
+E        +      where forecast = <app.modules.m20_general_cognitive_worker.foresight.ReferenceClassForecaster object at 0x7fb1d883b020>.forecast
+
+tests/modules/test_m20_foresight.py:615: AssertionError
+_________ test_reference_case_views_cannot_rewrite_outcomes_or_tokens __________
+
+    def test_reference_case_views_cannot_rewrite_outcomes_or_tokens():
+        forecaster = ReferenceClassForecaster(min_similar=1)
+        forecaster.add_case('fixture', 10)
+        forecaster.cases[0]['outcome'] = float('nan')
+        forecaster.cases[0]['tokens'].clear()
+        forecaster.cases.append({'outcome': 99})
+>       forecast = forecaster.forecast('fixture')
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_foresight.py:624: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/foresight.py:482: in forecast
+    scored = sorted(self.cases, key=sim, reverse=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+c = {'outcome': 99}
+
+    def sim(c: dict[str, Any]) -> float:
+>       union = q | c["tokens"]
+                    ^^^^^^^^^^^
+E       KeyError: 'tokens'
+
+backend/app/modules/m20_general_cognitive_worker/foresight.py:480: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_reference_class_selection_config_validates[kwargs0]
+FAILED tests/modules/test_m20_foresight.py::test_reference_class_selection_config_validates[kwargs1]
+FAILED tests/modules/test_m20_foresight.py::test_reference_class_selection_config_validates[kwargs2]
+FAILED tests/modules/test_m20_foresight.py::test_reference_class_selection_config_validates[kwargs3]
+FAILED tests/modules/test_m20_foresight.py::test_reference_class_selection_config_validates[kwargs4]
+FAILED tests/modules/test_m20_foresight.py::test_reference_class_selection_config_validates[kwargs5]
+FAILED tests/modules/test_m20_foresight.py::test_reference_even_median_preserves_smallest_positive_value
+FAILED tests/modules/test_m20_foresight.py::test_reference_case_views_cannot_rewrite_outcomes_or_tokens
+8 failed, 85 passed in 1.54s

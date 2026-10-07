@@ -463,23 +463,35 @@ class ReferenceClassForecaster:
     feature text. Falls back to all cases when the class is small."""
 
     def __init__(self, *, min_similar: int = 3, min_overlap: float = 0.15) -> None:
+        if type(min_similar) is not int or min_similar < 1:
+            raise ValueError("min_similar must be a positive integer")
+        if type(min_overlap) not in (int, float) or not math.isfinite(min_overlap) or not 0 <= min_overlap <= 1:
+            raise ValueError("min_overlap must be finite numeric in [0,1], not bool")
         self.min_similar = min_similar
         self.min_overlap = min_overlap
-        self.cases: list[dict[str, Any]] = []
+        self._cases: list[dict[str, Any]] = []
+
+    @property
+    def cases(self):
+        return copy.deepcopy(self._cases)
+
+    @staticmethod
+    def _midpoint(a: float, b: float) -> float:
+        return a + (b - a) / 2 if (a >= 0) == (b >= 0) else (a + b) / 2
 
     def add_case(self, features: str, outcome: float, *, label: str | None = None) -> None:
         SimulationFidelityTracker._finite(outcome)
-        self.cases.append({"features": features, "tokens": set(tokenize(features)),
+        self._cases.append({"features": features, "tokens": set(tokenize(features)),
                            "outcome": outcome, "label": label or features})
 
     def forecast(self, features: str) -> ReferenceClassForecast | None:
-        if not self.cases:
+        if not self._cases:
             return None
         q = set(tokenize(features))
         def sim(c: dict[str, Any]) -> float:
             union = q | c["tokens"]
             return len(q & c["tokens"]) / len(union) if union else 0.0
-        scored = sorted(self.cases, key=sim, reverse=True)
+        scored = sorted(self._cases, key=sim, reverse=True)
         matched = [c for c in scored if sim(c) >= self.min_overlap]
         if len(matched) < self.min_similar:
             matched = scored[: max(self.min_similar, len(matched))]
@@ -488,7 +500,7 @@ class ReferenceClassForecaster:
         return ReferenceClassForecast(
             n_cases=n, mean=mean(outcomes),
             median=(outcomes[n // 2] if n % 2 else
-                    (outcomes[n // 2 - 1] / 2 + outcomes[n // 2] / 2)),
+                    self._midpoint(outcomes[n // 2 - 1], outcomes[n // 2])),
             p25=outcomes[int(0.25 * (n - 1))], p75=outcomes[int(0.75 * (n - 1))],
             matched_cases=[c["label"] for c in matched],
             assumptions=["Outcomes are only as relevant as the reference class is similar",
