@@ -179,3 +179,9 @@ def test_raw_decision_tree_rejects_invalid_probabilities_unknown_kind_and_cycles
   with pytest.raises(ValueError):R.evaluate_decision_tree(node)
  cycle=R.DecisionNode('decision',children=[]);cycle.children.append((1,cycle))
  with pytest.raises(ValueError,match='cyclic'):R.evaluate_decision_tree(cycle)
+
+
+@pytest.mark.parametrize("matrix", [[[1]], [[1, 2], [3, float("inf")]], [[1, 2], [3, True]]])
+def test_raw_nash_validates_both_matrices(matrix):
+    with pytest.raises(ValueError):
+        R.nash_equilibria_2x2([[1, 0], [0, 1]], matrix)

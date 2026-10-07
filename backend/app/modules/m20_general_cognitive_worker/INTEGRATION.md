@@ -154,3 +154,11 @@ likelihood ratios are not discovered or independently verified. The API now
 states this scope. Validation of a complete update batch precedes local
 mutation, and row39's binary update uses finite log odds with absorbing0/1
 boundaries. This repairs arithmetic/validation only, not full row38 cognition.
+
+###2x2 Nash scope correction
+
+Row80 enumerates pure equilibria and computes a nondegenerate interior
+candidate from supplied2x2 matrices. It does not enumerate degenerate mixed
+families or establish stability, general-game equilibria or actual opponent
+behavior. Both matrices now require finite numeric payoffs; player scaling
+avoids direct overflow, but rounding may still omit ill-conditioned candidates.
