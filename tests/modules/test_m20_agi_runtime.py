@@ -40,10 +40,12 @@ def test_autonomous_goal_is_proposed_but_cannot_self_authorize(tmp_path):
 async def test_tool_synthesis_requires_safe_ast_passing_tests_and_admission():
     registry=ToolRegistry(); gate=InMemoryApprovalGate(); lab=ToolSynthesisLab(registry,gate)
     with pytest.raises(ValueError,match='forbidden syntax'):
-        lab.propose(SynthesizedTool('bad','import os\ndef run(arguments): return {}','bad',{},[]))
+        lab.propose(SynthesizedTool('bad','import os\ndef run(arguments): return {}','bad',{},[{'input':{},'expected':{}}]))
     tool=lab.propose(SynthesizedTool('total','def run(arguments):\n return {"total": sum(arguments["values"])}',
         'Sum numeric values',{'type':'object'},[{'input':{'values':[2,3]},'expected':{'total':5}}]))
-    with pytest.raises(PermissionError,match='OS-isolated'):lab.test('total')
+    report=lab.test('total')
+    assert report['passed'] and report['outputs']==[{'total':5}]
+    assert report['tool_admission_available'] is report['model_generation_verified'] is False
     with pytest.raises(PermissionError,match='unavailable'):lab.request_admission('total')
     tool.status='tested';tool.source='def run(arguments): return {"unreviewed":True}'
     with pytest.raises(PermissionError,match='unavailable'):lab.admit('total',approval_id='invented')
@@ -160,3 +162,38 @@ def test_world_chain_malformed_stored_snapshot_returns_false(tmp_path):
  path=str(tmp_path/'malformed.sqlite');world=PersistentWorldModel(path,'t');snapshot=world.snapshot()
  with sqlite3.connect(path) as db:db.execute("UPDATE world_snapshots SET state_json='not json' WHERE id=?",(snapshot['id'],))
  assert world.verify_chain() is False
+
+
+def test_isolated_pure_code_rejects_mutated_source_and_reports_failed_cases():
+ lab=ToolSynthesisLab(ToolRegistry(),InMemoryApprovalGate())
+ lab.propose(SynthesizedTool('wrong','def run(arguments): return 2','fixture',{},[{'input':{},'expected':3}]))
+ assert lab.test('wrong')['passed'] is False
+ lab.proposals['wrong'].source='import os\ndef run(arguments): return {}'
+ with pytest.raises(PermissionError,match='changed'):lab.test('wrong')
+
+
+def test_isolated_pure_code_backend_unavailable_never_falls_back(monkeypatch):
+ from app.modules.m20_general_cognitive_worker.sandbox import SandboxViolation
+ from app.modules.m04_research_scientist import approved_sandbox
+ def missing():raise approved_sandbox.BackendUnavailableError('fixture missing backend')
+ monkeypatch.setattr(approved_sandbox,'select_backend',missing)
+ lab=ToolSynthesisLab(ToolRegistry(),InMemoryApprovalGate())
+ lab.propose(SynthesizedTool('x','def run(arguments): return 1','fixture',{},[{'input':{},'expected':1}]))
+ with pytest.raises(SandboxViolation,match='execution refused'):lab.test('x')
+
+
+def test_isolated_candidate_input_and_source_snapshot_detach():
+ lab=ToolSynthesisLab(ToolRegistry(),InMemoryApprovalGate());candidate=SynthesizedTool('x','def run(arguments): return arguments["x"]','fixture',{},[{'input':{'x':1},'expected':1}])
+ returned=lab.propose(candidate);candidate.source='bad';returned.cases[0]['expected']=9
+ assert lab.test('x')['passed'] is True
+ with pytest.raises(ValueError,match='cases'):lab.propose(SynthesizedTool('bad','def run(arguments): return 1','fixture',{},[{'input':[]}]))
+
+
+def test_isolated_pure_code_time_limit_and_memory_failure_do_not_pass():
+ lab=ToolSynthesisLab(ToolRegistry(),InMemoryApprovalGate())
+ loop='def run(arguments):\n for a in arguments["items"]:\n  for b in arguments["items"]:\n   for c in arguments["items"]:\n    for d in arguments["items"]:\n     x=1\n return 1'
+ lab.propose(SynthesizedTool('slow',loop,'bounded fixture',{},[{'input':{'items':list(range(200))},'expected':1}]))
+ slow=lab.test('slow')
+ assert slow['passed'] is False and slow['returncode']!=0
+ lab.propose(SynthesizedTool('memory','def run(arguments): return [1]*1000000000','bounded fixture',{},[{'input':{},'expected':1}]))
+ assert lab.test('memory')['passed'] is False

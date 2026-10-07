@@ -2,12 +2,14 @@
 
 This module does not label the system AGI. It implements properties that can
 be tested: a persistent evidence-backed world model, self-directed *proposal*
-of goals (activation remains authority-gated), static synthesis candidate inspection (execution/admission unavailable), and caller-evaluator-bound improvement with
+of goals (activation remains authority-gated), isolated supplied pure-code tests (generation/admission unavailable), and caller-evaluator-bound improvement with
 immutable baselines and rollback.
 """
 from __future__ import annotations
 
 import ast
+import copy
+import tempfile
 import hashlib
 import json
 import math
@@ -234,17 +236,29 @@ class SynthesizedTool:
 
 
 class ToolSynthesisLab:
-    """Static candidate inspection only. Generated execution/admission unavailable."""
+    """Isolated supplied pure-code tests only. Generation/admission unavailable."""
 
     def __init__(self, registry: ToolRegistry, approval_gate: ApprovalGate) -> None:
         self.registry, self.approvals, self.proposals = registry, approval_gate, {}
         self.admission_approvals: dict[str, str] = {}
+        self._frozen_candidates = {}
 
     def propose(self, tool: SynthesizedTool) -> SynthesizedTool:
+        if len(tool.source) > 16000 or not 1 <= len(tool.cases) <= 20:
+            raise ValueError("source/case bound exceeded or no cases")
+        frozen = json.dumps(asdict(tool), sort_keys=True, allow_nan=False)
+        if len(frozen.encode()) > 64000:
+            raise ValueError("candidate JSON exceeds 64KB")
+        if any(not isinstance(case,dict) or set(case) != {"input","expected"} or not isinstance(case["input"],dict) for case in tool.cases):
+            raise ValueError("cases must have object input and expected JSON value")
+        tool = copy.deepcopy(tool)
         tree = ast.parse(tool.source)
         functions = [n for n in tree.body if isinstance(n, ast.FunctionDef)]
         if len(functions) != 1 or functions[0].name != "run":
             raise ValueError("tool source must define exactly one run(arguments) function")
+        args = functions[0].args
+        if len(args.args) != 1 or args.args[0].arg != "arguments" or args.posonlyargs or args.kwonlyargs or args.vararg or args.kwarg or args.defaults:
+            raise ValueError("run must take exactly one arguments parameter")
         for node in ast.walk(tree):
             if type(node) not in _ALLOWED_NODES:
                 raise ValueError(f"forbidden syntax: {type(node).__name__}")
@@ -254,13 +268,39 @@ class ToolSynthesisLab:
                 raise ValueError("dunder access is forbidden")
         tool.source_hash = hashlib.sha256(tool.source.encode()).hexdigest()
         self.proposals[tool.name] = tool
-        return tool
+        self._frozen_candidates[tool.name] = json.dumps(asdict(tool), sort_keys=True, allow_nan=False)
+        return copy.deepcopy(tool)
 
     def test(self, name: str) -> dict[str, Any]:
-        # AST allowlists do not isolate CPU/memory or prevent mutated source.
-        # Do not execute untrusted generated code inside the service process.
-        self.proposals[name]
-        raise PermissionError('synthesized code execution unavailable: OS-isolated bounded worker required')
+        from .sandbox import SandboxRunner
+        frozen = self._frozen_candidates[name]
+        if json.dumps(asdict(self.proposals[name]), sort_keys=True, allow_nan=False) != frozen:
+            raise PermissionError("candidate changed after static inspection")
+        candidate = json.loads(frozen)
+        # This wrapper executes only INSIDE the OS-isolated process. The
+        # service never compiles or executes supplied generated source.
+        wrapper = "import json\n" + candidate["source"] + "\n"
+        wrapper += "cases=json.loads(" + repr(json.dumps(candidate["cases"], allow_nan=False)) + ")\n"
+        wrapper += "outputs=[run(case['input']) for case in cases]\n"
+        wrapper += "print(json.dumps(outputs, allow_nan=False))\n"
+        with tempfile.TemporaryDirectory(prefix="atlas-pure-code-") as root:
+            result = SandboxRunner(workspace_root=root, max_output_bytes=64000).run_python(
+                "test", wrapper, timeout_seconds=2)
+        report = {"status": "isolated_supplied_pure_code_test_only", "passed": False,
+                  "source_hash": candidate["source_hash"], "candidate_hash": hashlib.sha256(frozen.encode()).hexdigest(),
+                  "case_count": len(candidate["cases"]), "timeout_seconds": 2, "memory_mb": 512,
+                  "tool_admission_available": False, "model_generation_verified": False,
+                  "returncode": result.returncode, "timed_out": result.timed_out,
+                  "duration_seconds": result.duration_seconds}
+        if result.returncode == 0 and not result.timed_out:
+            try:
+                outputs = json.loads(result.stdout)
+                expected = [case["expected"] for case in candidate["cases"]]
+                report["outputs"] = outputs
+                report["passed"] = json.dumps(outputs, sort_keys=True, allow_nan=False) == json.dumps(expected, sort_keys=True, allow_nan=False)
+            except (ValueError, KeyError, TypeError):
+                report["error"] = "invalid output JSON or test cases"
+        return report
 
     def request_admission(self, name: str) -> str:
         self.proposals[name]
