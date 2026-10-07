@@ -92,3 +92,30 @@ def test_mounted_http_mixed_catalog_diagnostics_are_strict_json_and_retain_resul
  assert result['metadata']['route_scores']['excluded'] is None
  assert result['metadata']['route_reasons']['excluded']==['latency estimate exceeds tolerance']
  json.dumps(body,allow_nan=False)
+
+@pytest.mark.parametrize('review',[True,False])
+@pytest.mark.parametrize('kind',['cycle','nan','object'])
+def test_mounted_single_run_unsafe_candidate_retains_evidence_without_repeat(review,kind):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ import json
+ metadata={}
+ metadata['unsafe']=metadata if kind=='cycle' else float('nan') if kind=='nan' else object()
+ calls=[]
+ class Service:
+  async def execute(self,*args):
+   calls.append(args)
+   result=ModelResult('retained','fixture',None if review else .9,usage={'input_tokens':12},metadata=metadata)
+   if review:raise ConfidenceUnavailable(result)
+   return result
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service()
+ response=TestClient(app).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==422,response.text
+ detail=response.json()['detail'];assert detail['state']==('review_required' if review else 'invalid_output') and detail['retry_allowed'] is False
+ assert detail['result']['text']=='retained' and detail['result']['usage']=={'input_tokens':12}
+ assert detail['result']['metadata']=={'unsafe':None} and detail['invalid_json_paths']
+ assert len(calls)==1
+ json.dumps(detail,allow_nan=False)
