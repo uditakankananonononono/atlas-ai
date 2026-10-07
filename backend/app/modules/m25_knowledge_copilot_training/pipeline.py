@@ -201,50 +201,72 @@ class LocalKnowledgePipeline:
         tmp=target.with_name(target.name+f'.tmp-{_uuid.uuid4().hex}')
         import os as _os
         dfd=None
+        # ONE unconditional finally owns the held descriptor's lifecycle:
+        # whatever fails between acquisition and outcome - OSError or any
+        # unexpected exception - cannot leak it. The handlers keep the error
+        # state truthful: memory never claims a version the manifest does
+        # not record, and every cleanup attempt is ownership-checked and
+        # best-effort, never a completed rollback of on-disk state. Close
+        # errors remain ambiguous (carried).
         try:
-            # Build the version in a private temp dir, then rename it into
-            # place. After open, the attempt HOLDS that dir: the descriptor
-            # pins its inode (a deleted-then-recreated replacement cannot
-            # reuse it) and anchors both the exclusive writes and the
-            # ownership check every destructive cleanup must pass - the
-            # pathname must still denote the SAME (dev,ino), a real
-            # directory, not a link; anything else is LEFT in place rather
-            # than deleted by mistake. The mkdir-to-open acquisition gap
-            # remains: a different real directory swapped in BEFORE open
-            # can be adopted. After-open replacement checks narrow the
-            # race, but do not atomically close check-to-rmtree (carried).
-            tmp.mkdir(parents=True)
-            dfd=_os.open(tmp,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
-            segments_blob=json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True).encode('utf-8')
-            self._write_version_files(dfd,raw,segments_blob)
-            _os.rename(tmp,target)
-        except OSError:
-            self._rmtree_if_owned(tmp,dfd)
-            if dfd is not None:
-                try: _os.close(dfd)
-                except OSError: pass
-            raise
-        rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
-        try:
-            self._persist_manifest(rec)
-        except (OSError, ManifestOversizeError) as persist_exc:
-            # Persist failed AFTER memory mutation: roll the version state
-            # back so memory never claims a version the manifest does not
-            # record. The durable registration (its own manifest was written
-            # before any version file) is PRESERVED. The version dir is
-            # removed only while the pathname still denotes the object this
-            # attempt created (ownership check; the replace race is
-            # narrowed, not atomically closed); a replaced object or a
-            # failed removal leaves unresolved on-disk state with no new
-            # memory version claim. An oversize refusal
-            # happens before any manifest mutation, so the recorded
-            # manifest bytes survive.
-            rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
-            self._rmtree_if_owned(target,dfd)
-            try: self._persist_manifest(rec)
-            except (OSError, ManifestOversizeError): pass
-            if isinstance(persist_exc, ManifestOversizeError): raise persist_exc
-            raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
+            try:
+                # Build the version in a private temp dir, then rename it into
+                # place. After open, the attempt HOLDS that dir: the descriptor
+                # pins its inode (a deleted-then-recreated replacement cannot
+                # reuse it) and anchors both the exclusive writes and the
+                # ownership check every destructive cleanup must pass - the
+                # pathname must still denote the SAME (dev,ino), a real
+                # directory, not a link; anything else is LEFT in place rather
+                # than deleted by mistake. The mkdir-to-open acquisition gap
+                # remains: a different real directory swapped in BEFORE open
+                # can be adopted. After-open replacement checks narrow the
+                # race, but do not atomically close check-to-rmtree (carried).
+                tmp.mkdir(parents=True)
+                dfd=_os.open(tmp,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
+                segments_blob=json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True).encode('utf-8')
+                self._write_version_files(dfd,raw,segments_blob)
+                _os.rename(tmp,target)
+            except OSError:
+                self._rmtree_if_owned(tmp,dfd)
+                raise
+            except BaseException:
+                # Unexpected failure while the attempt holds its tmp dir and
+                # BEFORE any memory version claim exists: attempt the same
+                # ownership-checked cleanup (a replaced object is preserved,
+                # never deleted) and propagate. Best-effort, not a completed
+                # rollback.
+                self._rmtree_if_owned(tmp,dfd)
+                raise
+            rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
+            try:
+                self._persist_manifest(rec)
+            except (OSError, ManifestOversizeError) as persist_exc:
+                # Persist failed AFTER memory mutation: roll the version state
+                # back so memory never claims a version the manifest does not
+                # record. The durable registration (its own manifest was written
+                # before any version file) is PRESERVED. The version dir is
+                # removed only while the pathname still denotes the object this
+                # attempt created (ownership check; the replace race is
+                # narrowed, not atomically closed); a replaced object or a
+                # failed removal leaves unresolved on-disk state with no new
+                # memory version claim. An oversize refusal
+                # happens before any manifest mutation, so the recorded
+                # manifest bytes survive.
+                rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
+                self._rmtree_if_owned(target,dfd)
+                try: self._persist_manifest(rec)
+                except (OSError, ManifestOversizeError): pass
+                if isinstance(persist_exc, ManifestOversizeError): raise persist_exc
+                raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
+            except BaseException:
+                # Unexpected failure AFTER the memory version claim: roll the
+                # claim back so memory stays truthful (no version the manifest
+                # does not record), attempt the ownership-checked removal of
+                # the renamed dir (a replaced object is preserved), and
+                # propagate. Best-effort, not a completed rollback.
+                rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
+                self._rmtree_if_owned(target,dfd)
+                raise
         finally:
             if dfd is not None:
                 try: _os.close(dfd)
