@@ -1654,3 +1654,25 @@ def test_csv_filter_exact_predicates_quoted_fields_and_empty_matches():
     assert result['csv_text']=='id,status\n' and result['matched_rows']==0
     with pytest.raises(ValueError):filter_csv({'csv_text':'id\nA\n','where':{'missing':'x'}})
     with pytest.raises(ValueError):filter_csv({'csv_text':'id\nA\n','columns':['id','id']})
+
+
+def test_runtime_supervision_reports_actual_durable_blockers_after_restart(mounted):
+    client,runtime,repo,_=mounted
+    a=runtime.submit_goal('fixture invoice review',run_immediately=False)
+    runtime.prepare_supplied_plan(a.id,steps=[{'title':'missing handler','tool':'missing_fixture'}])
+    runtime.run_task(a.id,max_ticks=1)
+    b=runtime.submit_goal('fixture queued',run_immediately=False)
+    response=client.get('/api/modules/20/runtime/supervision')
+    assert response.status_code==200
+    report=response.json()
+    assert report['healthy'] is None
+    assert report['tasks_by_state']['failed']==1
+    assert report['tasks_by_state']['pending']==1
+    assert report['local_action_count']==0
+    assert report['task_count']==2
+    blocked={r['task_id']:r for r in report['attention_required']}
+    assert a.id in blocked
+    assert blocked[a.id]['steps'][0]['tool']=='missing_fixture'
+    restored=make_runtime(hydrate_repo=repo)
+    assert restored.supervision()['tasks_by_state']==report['tasks_by_state']
+    assert 'production' in report['boundary']

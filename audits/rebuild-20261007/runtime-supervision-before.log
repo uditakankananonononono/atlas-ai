@@ -1,0 +1,28 @@
+........................................................................ [ 61%]
+.............................................F                           [100%]
+=================================== FAILURES ===================================
+____ test_runtime_supervision_reports_actual_durable_blockers_after_restart ____
+
+mounted = (<starlette.testclient.TestClient object at 0x7f55f9719400>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7f55f96ec110>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7f55f96ef290>)
+
+    def test_runtime_supervision_reports_actual_durable_blockers_after_restart(mounted):
+        client,runtime,repo,_=mounted
+        a=runtime.submit_goal('fixture invoice review',run_immediately=False)
+        runtime.prepare_supplied_plan(a.id,steps=[{'title':'missing handler','tool':'missing_fixture'}])
+        runtime.run_task(a.id,max_ticks=1)
+        b=runtime.submit_goal('fixture queued',run_immediately=False)
+        response=client.get('/api/modules/20/runtime/supervision')
+>       assert response.status_code==200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_m20_runtime_depth.py:1666: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_supervision_reports_actual_durable_blockers_after_restart
+1 failed, 117 passed, 1 warning in 6.50s

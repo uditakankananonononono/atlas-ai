@@ -285,6 +285,13 @@ class GCWRepository:
             session.commit()
         return trace
 
+    def action_summary(self):
+        with self._session() as session:
+            rows = session.query(ActionRow).filter(ActionRow.tenant_id == self.tenant_id)
+            count = rows.count()
+            failures = sum(not row.payload_json.get('succeeded', True) for row in rows.all())
+            return {'local_action_count': count, 'local_failure_count': failures}
+
     def task_evidence(self, task_id: str, *, limit: int = 50) -> dict:
         if type(limit) is not int or not 1 <= limit <= 100:
             raise ValueError('limit must be exact integer1..100')
