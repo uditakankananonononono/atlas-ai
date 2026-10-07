@@ -314,6 +314,7 @@ class DeliberativeLoop:
                     self._trace("evaluate", f"{node.tool} failed: {record.result_summary}",
                                 task_id=context.id)
                     self._reflect_on_failure(context, node, record.result_summary)
+                    if self._hold_unknown(context):return context
             except ApprovalPending as pending:
                 node.state = TaskState.WAITING_APPROVAL
                 node.approval_id = pending.approval_id
@@ -332,6 +333,7 @@ class DeliberativeLoop:
                 node.state = TaskState.FAILED if node.attempts >= node.max_attempts else TaskState.PENDING
                 self._trace("evaluate", f"{node.tool} error: {exc}", task_id=context.id)
                 self._reflect_on_failure(context, node, str(exc))
+                if self._hold_unknown(context):return context
         context.state = TaskState.FAILED
         self._trace("evaluate", "budget exhausted", task_id=context.id)
         self._close_episode(context, EpisodeOutcome.FAILED)
@@ -385,6 +387,7 @@ class DeliberativeLoop:
                 "goal": context.goal, "failed_step": node.title, "error": error,
             })
             if isinstance(analysis,dict) and analysis.get("outcome")=="unknown":
+                context.model_outcome_unknown=True;context.state=TaskState.BLOCKED
                 self._trace("reflect","reflection generation outcome unknown; no automatic retry",task_id=context.id)
                 return
             self._trace("reflect", f"model reflection: {str(analysis)[:200]}", task_id=context.id)
