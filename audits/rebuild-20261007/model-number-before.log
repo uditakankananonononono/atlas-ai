@@ -1,0 +1,28 @@
+...................FF                                                    [100%]
+=================================== FAILURES ===================================
+________ test_model_json_numeric_overflow_is_rejected[{"value":1e999}] _________
+
+body = '{"value":1e999}'
+
+    @pytest.mark.parametrize("body", ['{"value":1e999}', '[{"arguments":{"value":-1e999}}]'])
+    def test_model_json_numeric_overflow_is_rejected(body):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strict_model_output.py:49: Failed
+_ test_model_json_numeric_overflow_is_rejected[[{"arguments":{"value":-1e999}}]] _
+
+body = '[{"arguments":{"value":-1e999}}]'
+
+    @pytest.mark.parametrize("body", ['{"value":1e999}', '[{"arguments":{"value":-1e999}}]'])
+    def test_model_json_numeric_overflow_is_rejected(body):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strict_model_output.py:49: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strict_model_output.py::test_model_json_numeric_overflow_is_rejected[{"value":1e999}]
+FAILED tests/modules/test_m20_strict_model_output.py::test_model_json_numeric_overflow_is_rejected[[{"arguments":{"value":-1e999}}]]
+2 failed, 19 passed in 1.25s

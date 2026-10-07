@@ -42,3 +42,9 @@ def test_executive_accepts_exact_purpose_schema(monkeypatch,purpose,body):
  reply(monkeypatch,body)
  out=ma.FreeFirstExecutiveModel().complete(purpose,{})
  assert out.get('available') is not False and out['route']=='local/fixture'
+
+
+@pytest.mark.parametrize("body", ['{"value":1e999}', '[{"arguments":{"value":-1e999}}]'])
+def test_model_json_numeric_overflow_is_rejected(body):
+    with pytest.raises(ValueError):
+        ma.extract_json(body)

@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import concurrent.futures
 import json
+import math
 import os
 import re
 from typing import Any
@@ -46,7 +47,12 @@ def extract_json(text: str) -> Any:
             result[key]=value
         return result
     def invalid(value):raise ValueError("nonfinite JSON constant: "+value)
-    return json.loads(body,object_pairs_hook=unique,parse_constant=invalid)
+    def finite_number(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("JSON numeric exponent exceeds finite range")
+        return number
+    return json.loads(body,object_pairs_hook=unique,parse_constant=invalid,parse_float=finite_number)
 
 
 def _model_name() -> str | None:
