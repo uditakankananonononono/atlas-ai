@@ -1091,7 +1091,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M14 service has tenant project plans/status/revision, scope/milestones/quality/artifacts/reports and injected executor runner. SQL repository exists. End-to-end all-module complete-project execution not established by scoped read; generated artifacts and state flags do not establish final acceptance. No model/science/device/provider effects. Status unverified."
     },
     {
       "row": 99,
@@ -1102,7 +1102,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.plan asks injected generator for JSON dependency tasks/assumptions/risks/quality gates and marks roots ready. It directly generates rather than calls Planner decomposition here; M09 WBS tree node/child_of persistence and user visual scope review not established in this path. No live LLM/knowledge integration acceptance. Status unverified."
     },
     {
       "row": 100,
@@ -1113,7 +1113,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "TaskRunner synchronously calls injected executor over ready dependency tasks, records cost/runtime afterward, and returns human-review statuses with bounded failure iterations. Actual specialist registrations, Docker execution, async worker binding and Dashboard SSE not established; INTEGRATION.md calls registrations/Celery dispatch integration work. No provider/sandbox effects or completed-project acceptance. Status unverified."
     },
     {
       "row": 101,
@@ -1124,7 +1124,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.apply_feedback asks generator to revise plan, validates JSON and updates revision/status; milestone/quality/report APIs exist. Natural-language revision seam is not demonstrated intermediate chart presentation, feedback dashboard or validated milestone-specific adjustment. No external generation/report pixels. Status unverified."
     },
     {
       "row": 102,
@@ -1135,7 +1135,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.commit uses GitPython with explicit relative paths/caller message and workspace-escape guard. Every-file automatic commits, LLM-generated commit messages and approval-gated remote push not established by this method. Local reconstruction commits are unrelated acceptance. No remote push/collaborator share. Status unverified."
     },
     {
       "row": 103,
@@ -1146,7 +1146,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Report/export modules assemble manifest/status artifacts and bundles. Multi-format polished paper/business deck with all figures/tables/citations and Document Generator integration require artifact fidelity/visual inspection, not ZIP existence. No generated report pixels or stakeholder sharing. Status unverified."
     },
     {
       "row": 104,
@@ -1157,7 +1157,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Injectable specialists/dependency/budget/state persistence support bounded project workflow mechanisms; arbitrary multi-month scale, worker scaling and all-module complete deliverables are not established by scoped M14 read. No whole-product readiness or external work. Status unverified."
     },
     {
       "row": 105,

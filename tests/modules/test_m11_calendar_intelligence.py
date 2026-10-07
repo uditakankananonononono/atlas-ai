@@ -570,7 +570,7 @@ def test_service_rejects_invalid_exchanged_token_before_provider(tmp_path,value)
  with pytest.raises(ValueError,match='invalid access token'):asyncio.run(svc.sync_source(source.id))
  assert google.sync_tokens_seen==[]
 
-@pytest.mark.parametrize('status,body',[(200,{'access_token':'persistent-refresh'}),(200,{'access_token':''}),(200,{'access_token':' '}),(200,{'access_token':123}),(200,{}),(400,{'error':'invalid_grant'}),(503,{})])
+@pytest.mark.parametrize('status,body',[(200,{'access_token':'persistent-refresh'}),(200,{'access_token':''}),(200,{'access_token':' '}),(200,{'access_token':123}),(200,{}),(400,{'error':'invalid_grant'}),(503,{}),(400,{'access_token':'valid-looking-token'}),(503,{'access_token':'valid-looking-token'})])
 def test_http_exchange_rejects_bad_response(status,body):
  from app.modules.m11_calendar_intelligence.google_calendar import exchange_refresh_token,UpstreamServiceError
  async def run():

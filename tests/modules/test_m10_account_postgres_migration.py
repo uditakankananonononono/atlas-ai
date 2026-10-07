@@ -36,3 +36,10 @@ assert not SqlEmailRepository('tenant-b').has_message('same-provider-id',account
     assert run.returncode==0,run.stderr[-1800:]
     with psycopg.connect(uri) as conn:
         assert conn.execute('SELECT account_id,gmail_id FROM m10_email_messages ORDER BY account_id').fetchall()==[('account-a','same-provider-id'),('account-b','same-provider-id')]
+
+    blocked=subprocess.run([sys.executable,'-m','alembic','downgrade','20261007_m05_delivery_claims'],env=env,capture_output=True,text=True,timeout=120)
+    assert blocked.returncode!=0
+    assert 'losing account data' in blocked.stderr
+    with psycopg.connect(uri) as conn:
+        assert conn.execute('SELECT count(*) FROM m10_email_messages').fetchone()[0]==2
+        assert conn.execute('SELECT version_num FROM alembic_version').fetchone()[0]=='20261007_m10_account_messages'
