@@ -471,3 +471,37 @@ def test_concurrent_ingest_requires_single_draft_and_approval(tmp_path):
  assert len(repo.list_drafts())==1
  assert len(approvals.items)==1
  asyncio.run(client.aclose())
+
+
+def _retry_after_insert_before_draft_failure(tmp_path):
+ """Simulated process gap, SQLite/fake Gmail only. No send or provider call."""
+ gmail=FakeGmailClient(history={'100':['g']},messages={'g':raw_message('g','Please reply',snippet='please reply')})
+ svc,repo,approvals,client=make_service(tmp_path,gmail=gmail)
+ repo.save_account(account_id='a',email_address='a@example.com',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ original=svc._draft_reply
+ async def fail_before_draft(*args,**kwargs):raise RuntimeError('fixture crash after committed message')
+ svc._draft_reply=fail_before_draft
+ async def run():
+  with pytest.raises(RuntimeError,match='fixture crash'):
+   await svc.ingest_from_history('a@example.com','101')
+  assert len(repo.list_messages())==1
+  assert repo.get_account_by_email('a@example.com').history_id=='100'
+  assert repo.list_drafts()==[] and approvals.items==[]
+  svc._draft_reply=original
+  result=await svc.ingest_from_history('a@example.com','101')
+  await client.aclose()
+  return result,repo,approvals
+ return asyncio.run(run())
+
+
+def test_insert_before_draft_failure_currently_strands_retry(tmp_path):
+ result,repo,approvals=_retry_after_insert_before_draft_failure(tmp_path)
+ assert result.new_messages==0 and result.drafts_proposed==0
+ assert repo.get_account_by_email('a@example.com').history_id=='101'
+ assert len(repo.list_messages())==1 and repo.list_drafts()==[] and approvals.items==[]
+
+
+@pytest.mark.xfail(strict=True,reason='committed message dedupe skips unfinished draft pipeline; no reconciliation yet')
+def test_retry_recovers_inserted_message_missing_draft(tmp_path):
+ result,repo,approvals=_retry_after_insert_before_draft_failure(tmp_path)
+ assert len(repo.list_drafts())==1 and len(approvals.items)==1

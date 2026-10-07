@@ -827,7 +827,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "M10 contains Gmail OAuth/refresh/watch/history HTTP client, tenant SQL messages/actions/drafts/events, classifier/extractor and approval-gated drafts; lane triage/composer/policy and promise reconciliation also exist. Near-instant high-volume operation, Outlook/IMAP and complete M09 integration are not established by scoped read. No real mailbox/provider/OAuth/signup/email effect tested. Status unverified."
+      "notes": "M10 contains Gmail OAuth/refresh/watch/history HTTP client, tenant SQL messages/actions/drafts/events, classifier/extractor and approval-gated drafts; lane triage/composer/policy and promise reconciliation also exist. Near-instant high-volume operation, Outlook/IMAP and complete M09 integration are not established by scoped read. No real mailbox/provider/OAuth/signup/email effect tested. Status unverified. Local crash characterization commits message then fails before draft; replay retains one message but advances checkpoint with no draft/approval. Strict retry-recovery xfail exposes missing reconciliation, not provider acceptance."
     },
     {
       "row": 75,
