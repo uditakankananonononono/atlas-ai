@@ -39,7 +39,7 @@ async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tena
         failures=[]
         for node_id,cause in error.failures:
             item={"node_id":node_id,"retry_allowed":False}
-            if isinstance(cause,ConfidenceUnavailable):item.update({"state":"review_required","result":asdict(cause.result)})
+            if isinstance(cause,ConfidenceUnavailable):item.update({"state":"review_required","result":{key:getattr(cause.result,key) for key in ("text","model_id","confidence","logprobs","usage","metadata")}})
             elif isinstance(cause,ProviderOutcomeUnknown):item.update({"state":"unknown","reason":str(cause)})
             else:item.update({"state":"cancelled" if isinstance(cause,asyncio.CancelledError) else "failed","reason":str(cause)})
             failures.append(item)

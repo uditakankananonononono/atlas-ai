@@ -144,3 +144,19 @@ def test_response_json_cycle_and_depth_are_explicit_not_silent():
  cyclic={};cyclic['self']=cyclic
  result,paths=safe_workflow_json(cyclic)
  assert result=={'self':None} and paths==['$.self']
+
+def test_mounted_cyclic_review_candidate_survives_conversion_boundary():
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ from app.modules.m12_ai_research_lab.executor import ConfidenceUnavailable
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ cyclic={};cyclic['self']=cyclic
+ async def runner(*args):raise ConfidenceUnavailable(ModelResult('retained','fixture',usage={'input_tokens':12},metadata=cyclic))
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: review}]'})
+ assert response.status_code==422,response.text
+ detail=response.json()['detail'];assert detail['state']=='review_required'
+ assert detail['result']['text']=='retained' and detail['result']['usage']=={'input_tokens':12}
+ assert detail['result']['metadata']=={'self':None} and detail['invalid_json_paths']
