@@ -32,6 +32,9 @@ def _redact_url(url: str) -> str:
     userinfo (``https://user:password@host``). The fragment is left
     unchanged: recorded request URLs do not carry OAuth-style fragment
     tokens today. URLs with nothing to redact are returned byte-identical.
+    This is bounded redaction, not general credential hygiene: it does not
+    catch percent-encoded key names or every free-text secret shape (see
+    ``_scrub_text`` for the reason-text boundary).
     """
     parts = urlsplit(url)
     pairs = parse_qsl(parts.query, keep_blank_values=True)
@@ -41,9 +44,10 @@ def _redact_url(url: str) -> str:
         return url  # no credentials: keep the recorded URL byte-identical
     query = [(key, "[REDACTED]" if key.lower() in _SENSITIVE_QUERY_KEYS else value)
              for key, value in pairs]
-    netloc = parts.hostname or ""
-    if parts.port is not None:
-        netloc = f"{netloc}:{parts.port}"
+    # Keep the original authority verbatim minus userinfo: hostname/port are
+    # copied from the raw netloc so IPv6 brackets (``[::1]:8080``) survive and
+    # urlsplit().port - which raises on some inputs - is never consulted.
+    netloc = parts.netloc.rsplit("@", 1)[-1]
     return urlunsplit((parts.scheme, netloc, parts.path, urlencode(query), parts.fragment))
 
 

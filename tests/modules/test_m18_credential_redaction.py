@@ -6,6 +6,7 @@ are data". Every CollectionError, whoever constructed it, must not carry
 credential query parameters. Establishes recording hygiene only; fetch
 behavior is unchanged (the live request still uses the real URL).
 """
+from urllib.parse import urlsplit
 from app.modules.m18_side_hustle_scraper.lane_models import CollectionError
 
 def test_collection_error_never_records_credential_query_params():
@@ -55,3 +56,24 @@ def test_fragment_left_unchanged_characterization():
     # Recorded request URLs do not carry OAuth-style fragment tokens today.
     url = "https://h.test/cb#token=FRAG-SECRET"
     assert CollectionError(source="x", url=url, reason="r").url == url
+
+def test_ipv6_brackets_and_port_preserved_when_redacting():
+    # Regression: rebuilding the netloc from urlsplit().hostname drops IPv6
+    # brackets and .port can raise. The authority must survive verbatim.
+    url = "https://u:SECRET-PW@[::1]:8080/p?key=SECRET-KEY&q=1"
+    redacted = CollectionError(source="x", url=url, reason="r").url
+    assert "SECRET" not in redacted
+    assert "[::1]:8080" in redacted
+    assert urlsplit(redacted).port == 8080  # re-parseable
+
+def test_keyed_ipv6_url_keeps_brackets_without_userinfo():
+    url = "https://[2001:db8::1]/p?KEY=SECRET-KEY&q=1"
+    redacted = CollectionError(source="x", url=url, reason="r").url
+    assert "SECRET-KEY" not in redacted
+    assert "[2001:db8::1]" in redacted
+    assert urlsplit(redacted).hostname == "2001:db8::1"
+
+def test_username_only_userinfo_stripped():
+    # Characterization: userinfo without a password is also stripped.
+    err = CollectionError(source="x", url="https://user@h.test/p?a=1", reason="r")
+    assert err.url == "https://h.test/p?a=1"
