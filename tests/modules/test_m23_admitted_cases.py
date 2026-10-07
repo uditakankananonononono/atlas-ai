@@ -53,3 +53,60 @@ def test_reader_returns_source_without_touching_site():
     assert row['url'].startswith('https://www.hamilton.edu/')
     assert 'essay_text' not in row
     with pytest.raises(KeyError): reading_route('not-in-index')
+
+
+def _tracking_transport(pulled, page_bytes):
+    import httpx as _h
+    def handler(request):
+        if request.url.path == '/robots.txt':
+            return _h.Response(200, text='User-agent: *\nAllow: /\n')
+        def stream():
+            sent = 0
+            while sent < page_bytes:
+                chunk = b'x' * min(65536, page_bytes - sent)
+                sent += len(chunk)
+                pulled[0] = sent
+                yield chunk
+        return _h.Response(200, headers={'content-type': 'text/html'}, content=stream())
+    return _h.MockTransport(handler)
+
+def test_page_transfer_capped_mid_stream():
+    # KILL: the size gate was post-download - 1.5MB was consumed before
+    # too_large. Now the read aborts just past the cap.
+    import httpx, app.modules.m23_study_abroad.admitted_cases as ac
+    pulled = [0]
+    row = ac.fetch_case_metadata('hamilton', transport=_tracking_transport(pulled, 3_000_000))
+    assert row['live_status'] == 'too_large'
+    assert pulled[0] <= 1_000_000 + 65536
+
+def test_robots_over_cap_is_unverified_not_allowed():
+    # KILL: robots.txt previously had no size gate at all.
+    import httpx, app.modules.m23_study_abroad.admitted_cases as ac
+    def handler(request):
+        if request.url.path == '/robots.txt':
+            return httpx.Response(200, content=b'x' * (300 * 1024))
+        return httpx.Response(200, text='<html><title>t</title></html>',
+                              headers={'content-type': 'text/html'})
+    row = ac.fetch_case_metadata('hamilton', transport=httpx.MockTransport(handler))
+    assert row['live_status'] == 'robots_unverified'
+
+def test_aggregate_deadline_status(monkeypatch):
+    # KILL: 8s was a per-phase HTTP timeout, not an aggregate deadline.
+    import httpx, app.modules.m23_study_abroad.admitted_cases as ac
+    clock = iter([0.0] + [100.0] * 1000)
+    monkeypatch.setattr(ac.time, 'monotonic', lambda: next(clock))
+    def handler(request):
+        return httpx.Response(200, content=b'x' * 100)
+    row = ac.fetch_case_metadata('hamilton', transport=httpx.MockTransport(handler))
+    assert row['live_status'] in {'robots_unverified', 'too_large'}
+
+def test_catalog_returns_fresh_copies_mutation_cannot_retarget():
+    # KILL: the cached catalog list was shared and mutable in-process.
+    import app.modules.m23_study_abroad.admitted_cases as ac
+    original_len = len(ac.cases())
+    mutated = ac.cases()
+    mutated.append({'id': 'evil', 'url': 'https://evil.example/x', 'evidence_type': 'x'})
+    mutated[0]['url'] = 'https://evil.example/retarget'
+    fresh = ac.cases()
+    assert len(fresh) == original_len
+    assert all(row['url'] != 'https://evil.example/retarget' for row in fresh)
