@@ -1,6 +1,6 @@
 from __future__ import annotations
 import math,re
-from sqlalchemy.exc import IntegrityError
+from .repository import DuplicateEdgeError
 from datetime import datetime,timezone
 from uuid import uuid4
 from .schemas import *
@@ -20,7 +20,7 @@ class Service:
         if data.source_id==data.target_id:raise ConflictError("self edge")
         if data.relationship in {Relationship.CHILD_OF,Relationship.BLOCKS,Relationship.DEPENDS_ON} and self._reachable(data.target_id,data.source_id,data.relationship):raise ConflictError("edge would create a cycle")
         try:return self.repository.save_edge(Edge(id=str(uuid4()),confidence=confidence,created_at=datetime.now(timezone.utc),**data.model_dump()))
-        except IntegrityError as error:raise ConflictError("edge already exists") from error
+        except DuplicateEdgeError as error:raise ConflictError("edge already exists") from error
     def neighborhood(self,node_id,depth=1,limit=250):
         self._node(node_id);ids={node_id};edges=[];frontier={node_id};truncated=False
         for _ in range(min(depth,5)):

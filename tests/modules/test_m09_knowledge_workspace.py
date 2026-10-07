@@ -80,3 +80,28 @@ def test_duplicate_edge_route_returns_409():
   assert r.status_code==409,r.text
  finally:
   app.dependency_overrides.clear()
+
+
+def _sql_service_with_engine():
+ from sqlalchemy import create_engine,text
+ from sqlalchemy.orm import sessionmaker
+ from sqlalchemy.pool import StaticPool
+ from app.core.database import Base
+ from app.modules.m09_knowledge_workspace.repository import SqlGraphRepository
+ e=create_engine("sqlite://",connect_args={"check_same_thread":False},poolclass=StaticPool)
+ Base.metadata.create_all(e)
+ with e.begin() as conn:
+  conn.execute(text("CREATE TRIGGER m09_audit_insert_fails BEFORE INSERT ON m09_audit WHEN NEW.action='edge.created' BEGIN SELECT RAISE(ABORT,'audit trigger failure'); END"))
+ sf=sessionmaker(bind=e,expire_on_commit=False)
+ return Service(SqlGraphRepository("t","u",sf))
+
+def test_unrelated_integrity_failure_is_not_mislabeled_duplicate():
+ # A failing audit INSERT (e.g. a database trigger) on a brand-new edge is not a
+ # duplicate. It must propagate as the original IntegrityError, not be masked as
+ # ConflictError("edge already exists").
+ from sqlalchemy.exc import IntegrityError
+ svc=_sql_service_with_engine()
+ a=svc.create_node(NodeCreate(node_type="note",title="A"));b=svc.create_node(NodeCreate(node_type="note",title="B"))
+ import pytest
+ with pytest.raises(IntegrityError):
+  svc.create_edge(EdgeCreate(source_id=a.id,target_id=b.id,relationship="related_to"))
