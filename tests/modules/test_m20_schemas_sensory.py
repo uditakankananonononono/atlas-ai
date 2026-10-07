@@ -124,3 +124,21 @@ def test_dedupe_identity_scoped_by_source_modality_and_raw_bytes():
   assert a is not None and b is not None and a.text==b.text
   assert a.content_hash!=b.content_hash
   assert method(first,source='one') is None
+
+
+def test_disallowed_or_replayed_binary_never_calls_injected_model():
+ class Recorder:
+  def __init__(self):self.calls=0
+  def transcribe(self,*args,**kwargs):self.calls+=1;return 'fixture'
+  def describe(self,*args,**kwargs):self.calls+=1;return 'fixture'
+  def parse(self,*args,**kwargs):self.calls+=1;return 'fixture'
+ recorder=Recorder();layer=SensoryLayer(allowed_sources={'allowed'},transcriber=recorder,vision=recorder,document_parser=recorder)
+ for method in (layer.ingest_audio,layer.ingest_image,layer.ingest_pdf):
+  before=recorder.calls
+  assert method(b'private',source='disallowed') is None
+  assert recorder.calls==before
+  assert method(b'fixture',source='allowed',external_id='one') is not None
+  assert recorder.calls==before+1
+  assert method(b'fixture',source='allowed',external_id='two') is None
+  assert method(b'different',source='allowed',external_id='one') is None
+  assert recorder.calls==before+1
