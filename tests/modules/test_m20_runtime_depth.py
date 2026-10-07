@@ -1520,3 +1520,43 @@ def test_dispatch_invalid_structured_result_not_promoted_to_success(value):
     runtime.tools.register(ToolSpec(name='fixture',description='fixture',risk=Risk.READ,max_retries=1),handler)
     record=asyncio.run(runtime.dispatcher.dispatch('fixture',{}))
     assert not record.succeeded and record.result is None
+
+
+def test_supplied_plan_preflight_reports_all_known_tool_gaps_without_execution(mounted):
+    client, runtime, _, _ = mounted
+    calls=[]
+    async def handler(args): calls.append(args); return {'value': 42}
+    runtime.tools.register(ToolSpec(name='fixture',description='fixture',risk=Risk.READ,
+        parameters={'type':'object','properties':{'value':{'type':'integer'}},'required':['value']},
+        preconditions=['fixture_enabled']),handler)
+    task=runtime.submit_goal('fixture preflight',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[
+        {'id':'a','title':'bad static input','tool':'fixture','arguments':{'value':'wrong'}},
+        {'id':'b','title':'unknown tool','tool':'missing_fixture','depends_on':['a']},
+        {'id':'c','title':'bound input','tool':'fixture','depends_on':['a'],
+         'arguments':{'value':{'$step':'a','path':['value']}}}])
+    response=client.post(f'/api/modules/20/runtime/tasks/{task.id}/preflight',json={'context':{}})
+    assert response.status_code==200
+    data=response.json()
+    assert data['ready_for_dispatch'] is False
+    byid={row['step_id']:row for row in data['steps']}
+    assert 'arguments_schema' in byid['a']['issues']
+    assert 'missing_preconditions' in byid['a']['issues']
+    assert 'unknown_tool' in byid['b']['issues']
+    assert byid['c']['argument_check']=='deferred_until_dependency_output'
+    assert data['external_actions_executed'] is False and data['approval_granted'] is False
+    assert calls==[] and len(runtime.safety.approvals.requests)==0
+    assert client.post('/api/modules/20/runtime/tasks/missing/preflight',json={}).status_code==404
+
+
+def test_preflight_clean_static_inputs_never_grant_dispatch_permission():
+    runtime,_=make_runtime()
+    async def handler(args): return {}
+    runtime.tools.register(ToolSpec(name='fixture',description='fixture',risk=Risk.EXTERNAL),handler)
+    task=runtime.submit_goal('fixture',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[{'title':'fixture','tool':'fixture'}])
+    report=runtime.preflight_task(task.id)
+    assert report['static_checks_passed'] is True
+    assert report['ready_for_dispatch'] is False
+    assert report['steps'][0]['effective_risk']=='external'
+    assert not runtime.safety.approvals.requests

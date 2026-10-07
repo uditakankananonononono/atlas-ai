@@ -1110,3 +1110,9 @@ Evidence: 99 runtime tests passed with one warning; 2,478 adjacent tests passed 
 ### Dataflow evidence correction
 
 Commit 9585203 incorrectly stated green final counts after the shell continued past a failed supplemental test. Actual outputs at that commit were 98 passed / 1 failed and 2,477 passed / 1 failed. The test used nonexistent approval-request attributes instead of the actual payload field; no production code changed in this correction. Those failing outputs are retained as plan-dataflow-fixture-api-error*.log. After correcting the fixture assertion and rerunning with fail-fast: 99 runtime tests passed with one warning; 2,478 adjacent tests passed with two warnings in 49.38 seconds. The original dataflow implementation canary had already passed; this correction completes the supplemental safety evidence, not a new implementation fix.
+
+## Plan capability and static-input preflight diagnostics
+
+A failing endpoint canary showed no all-step preparation report. Runtime preflight now reports unknown tools, absent reasoning model, invalid static schema arguments, missing caller-supplied precondition flags, and effective risk for each plan step without dispatching or requesting approval. Output bindings are explicitly deferred until dependency output exists. Static checks passing never grants dispatch readiness or approval; normal execution must recheck actual resolved arguments and safety.
+
+Evidence: 101 runtime tests passed with one warning. Adjacent regression before an added clean-static/no-grant test had 2,479 passed with two warnings in 46.75 seconds. No handler calls or approval requests occur during preflight. This is preparation diagnostics, not plan feasibility, authenticated preconditions, effect authority, or runtime availability guarantees. Supplied context flags are not stored or forwarded into dispatch. Full 10,048 at source 857b51f predates eight code changes.
