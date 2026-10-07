@@ -29,6 +29,8 @@ class ToolScore:
     capability_match: float
     description_similarity: float
     historical_success: float
+    supplied_successes: float
+    supplied_failures: float
     risk_penalty: float
     preconditions_met: bool
     missing_preconditions: list[str] = field(default_factory=list)
@@ -53,6 +55,8 @@ class ToolSelection:
             "clarifying_question": self.clarifying_question,
             "score_kind":"heuristic lexical/embedding ranking, not calibrated statistical confidence",
             "margin_is_not_probability":True,
+            "history_status": "manual_supplied_counts_with_beta_1_1_prior",
+            "runtime_dispatch_history_connected": False,
         }
 
 
@@ -73,6 +77,9 @@ class ToolSelector:
         self._history: dict[str, tuple[float, float]] = {}
 
     def record_outcome(self, tool_name: str, succeeded: bool) -> None:
+        if type(succeeded) is not bool:
+            raise ValueError("supplied outcome must be exact boolean")
+        self.registry.get(tool_name)
         successes, failures = self._history.get(tool_name, (0.0, 0.0))
         if succeeded:
             successes += 1.0
@@ -114,6 +121,8 @@ class ToolSelector:
                 capability_match=round(capability_match, 4),
                 description_similarity=round(description_similarity, 4),
                 historical_success=round(historical, 4),
+                supplied_successes=self._history.get(spec.name,(0.0,0.0))[0],
+                supplied_failures=self._history.get(spec.name,(0.0,0.0))[1],
                 risk_penalty=risk_penalty,
                 preconditions_met=not missing,
                 missing_preconditions=missing,
