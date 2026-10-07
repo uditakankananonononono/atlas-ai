@@ -2214,3 +2214,55 @@ def test_failed_semantic_edge_write_does_not_publish_graph_neighbor(monkeypatch)
  monkeypatch.setattr(repo,'save_edge',fail)
  with pytest.raises(RuntimeError):runtime.semantic.link(a.id,'related',b.id)
  assert runtime.semantic.neighbors(a.id)==[] and repo.list_edges()==[]
+
+
+def test_skill_replacement_failed_commit_preserves_active_revision_and_reload(monkeypatch):
+ library=DurableSkillLibrary(fresh_repo());old=library.compile('fixture','fixture',[ActionRecord(tool='read')])
+ original=library.repo._session
+ def session():
+  result=original()
+  def fail():raise RuntimeError('fixture skill commit unavailable')
+  result.commit=fail
+  return result
+ monkeypatch.setattr(library.repo,'_session',session)
+ with pytest.raises(RuntimeError):library.compile('fixture','changed',[ActionRecord(tool='other')])
+ assert library.find_by_name('fixture').id==old.id
+ assert len(library.list())==1
+ assert DurableSkillLibrary.load(library.repo).find_by_name('fixture').id==old.id
+
+
+def test_skill_activation_failed_commit_keeps_proposal_not_live(monkeypatch):
+ from app.modules.m20_general_cognitive_worker.schemas import Episode
+ library=DurableSkillLibrary(fresh_repo())
+ episodes=[Episode(task_id=str(i),goal='fixture',actions=[ActionRecord(tool='a'),ActionRecord(tool='b')]) for i in range(2)]
+ proposed=library.propose_from_episodes(episodes)[0]
+ original=library.repo._session
+ def session():
+  result=original()
+  def fail():raise RuntimeError('fixture skill commit unavailable')
+  result.commit=fail
+  return result
+ monkeypatch.setattr(library.repo,'_session',session)
+ with pytest.raises(RuntimeError):library.activate(proposed.id)
+ assert library.list()[0].status==SkillStatus.PROPOSED
+ assert library.match('fixture')==[]
+ assert DurableSkillLibrary.load(library.repo).list()[0].status==SkillStatus.PROPOSED
+
+
+def test_skill_batch_owner_conflict_rolls_back_other_revision():
+ repo=fresh_repo();other=GCWRepository(repo.engine,tenant_id='other')
+ foreign=Skill(name='foreign',goal_pattern='foreign');other.save_skill(foreign)
+ local=Skill(name='local',goal_pattern='local');repo.save_skill(local)
+ revised=local.model_copy(update={'status':SkillStatus.RETIRED})
+ with pytest.raises(PermissionError):repo.save_skills([revised,foreign])
+ assert repo.list_skills()[0].status==local.status
+ assert other.list_skills()[0].name=='foreign'
+
+
+def test_skill_replacement_one_transaction_keeps_version_history_and_one_active():
+ library=DurableSkillLibrary(fresh_repo())
+ old=library.compile('fixture','old',[ActionRecord(tool='a')])
+ new=library.compile('fixture','new',[ActionRecord(tool='b')])
+ loaded=DurableSkillLibrary.load(library.repo)
+ assert loaded.find_by_name('fixture').id==new.id and new.version==2
+ assert {s.id:s.status for s in loaded.list()}=={old.id:SkillStatus.RETIRED,new.id:SkillStatus.ACTIVE}
