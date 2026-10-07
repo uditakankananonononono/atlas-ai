@@ -115,3 +115,18 @@ def test_signature_proposals_exclude_failed_actions_outcomes_and_duplicates():
  assert proposal.evidence['generalizable_skill_verified'] is False
  good.actions[0].arguments['changed']=True
  assert 'changed' not in proposal.steps[0].arguments
+
+
+def test_episode_snapshots_detached_from_input_and_all_readbacks():
+ from app.modules.m20_general_cognitive_worker.episodic_memory import EpisodicMemory
+ from app.modules.m20_general_cognitive_worker.schemas import Episode,EpisodeOutcome
+ mem=EpisodicMemory();source=Episode(task_id='t',goal='fixture',actions=actions('a','b'),outcome=EpisodeOutcome.SUCCEEDED)
+ stored=mem.record(source)
+ source.goal='changed';stored.actions[0].arguments['tampered']=True
+ for view in (mem.get(stored.id),mem.for_task('t')[0],mem.recall_similar('fixture')[0][0],mem.successful_patterns()[0]):
+  view.outcome=EpisodeOutcome.FAILED;view.actions[0].arguments['tampered']=True
+ original=mem.get(stored.id)
+ assert original.goal=='fixture' and original.outcome==EpisodeOutcome.SUCCEEDED
+ assert original.actions[0].arguments=={}
+ bad=original.model_copy(deep=True,update={'id':'bad'});bad.actions[0].succeeded=False;mem.record(bad)
+ assert [e.id for e in mem.successful_patterns()]==[stored.id]

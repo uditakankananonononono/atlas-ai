@@ -632,3 +632,7 @@ Dedupe used global external IDs and hashes of audio/image/PDF model-generated te
 Sensory source allowlist/replay checks now run BEFORE binary injected transcriber/vision/parser and CSV parsing. Previously discard happened after model/parser, risking processing disclosure for rejected source.42 sensory/runtime tests pass1warning prove zero injected calls for disallowed source and duplicate raw bytes/ID. Source values remain caller labels, not authentication; no network model endpoint ownership verified. Process-local replay check is not concurrent atomic or durable.
 
 Post-sensory/cooperative-budget adjacent regression after11c3192:90 M20/atomic/ledger named files2213pass2warnings36.75s. Evidence: post-sensory-budget-regression.log. Not whole repository or original-depth certification; last full495-file run predates subsequent memory/world/budget/sensory fixes.
+
+## Episode store detached snapshots
+
+record/get/for_task/recall/successful_patterns previously exposed same mutable history objects, allowing callers to rewrite outcomes/actions without updating vector/SQL. Store and reads now detach deeply; successful patterns reject episodes containing failed actions.57 executive/memory/runtime tests pass1warning incl mutations of input/record-return/all read paths. This is stored snapshot consistency, not independently verified execution truth. Explicit record of same ID remains caller-controlled update, no immutable authenticated receipt guarantee.
