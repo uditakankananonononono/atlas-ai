@@ -1,0 +1,57 @@
+.....FFFF                                                                [100%]
+=================================== FAILURES ===================================
+_ test_exact_next_query_splits_remaining_version_space_without_reasking_observed_case _
+
+    def test_exact_next_query_splits_remaining_version_space_without_reasking_observed_case():
+     r=run([obs('1',True,True,True)])
+>    query=r['next_query']
+           ^^^^^^^^^^^^^^^
+E    KeyError: 'next_query'
+
+tests/modules/test_m20_boolean_induction.py:38: KeyError
+___ test_ambiguous_prediction_has_concrete_disagreeing_rules_not_probability ___
+
+    def test_ambiguous_prediction_has_concrete_disagreeing_rules_not_probability():
+     r=run([obs('1',True,True,True)],induction_targets=[{'id':'x','features':{'a':False,'b':True}}])
+     prediction=r['predictions'][0]
+>    assert prediction['label_hypothesis_counts']=={'false':2,'true':2}
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'label_hypothesis_counts'
+
+tests/modules/test_m20_boolean_induction.py:49: KeyError
+_ test_resolved_or_inconsistent_space_does_not_invent_next_query[rows0-no_discriminating_query] _
+
+rows = [{'evidence_id': '1', 'features': {'a': True, 'b': True}, 'label': True}, {'evidence_id': '2', 'features': {'a': True,...: {'a': False, 'b': True}, 'label': False}, {'evidence_id': '4', 'features': {'a': False, 'b': False}, 'label': False}]
+status = 'no_discriminating_query'
+
+    @pytest.mark.parametrize('rows,status',[
+     ([obs('1',True,True,True),obs('2',True,False,True),obs('3',False,True,False),obs('4',False,False,False)],'no_discriminating_query'),
+     ([obs('1',True,True,True),obs('2',True,True,False)],'inconsistent_evidence')])
+    def test_resolved_or_inconsistent_space_does_not_invent_next_query(rows,status):
+     r=run(rows)
+>    assert r['next_query'] is None and r['query_selection_status']==status
+            ^^^^^^^^^^^^^^^
+E    KeyError: 'next_query'
+
+tests/modules/test_m20_boolean_induction.py:62: KeyError
+_ test_resolved_or_inconsistent_space_does_not_invent_next_query[rows1-inconsistent_evidence] _
+
+rows = [{'evidence_id': '1', 'features': {'a': True, 'b': True}, 'label': True}, {'evidence_id': '2', 'features': {'a': True, 'b': True}, 'label': False}]
+status = 'inconsistent_evidence'
+
+    @pytest.mark.parametrize('rows,status',[
+     ([obs('1',True,True,True),obs('2',True,False,True),obs('3',False,True,False),obs('4',False,False,False)],'no_discriminating_query'),
+     ([obs('1',True,True,True),obs('2',True,True,False)],'inconsistent_evidence')])
+    def test_resolved_or_inconsistent_space_does_not_invent_next_query(rows,status):
+     r=run(rows)
+>    assert r['next_query'] is None and r['query_selection_status']==status
+            ^^^^^^^^^^^^^^^
+E    KeyError: 'next_query'
+
+tests/modules/test_m20_boolean_induction.py:62: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_boolean_induction.py::test_exact_next_query_splits_remaining_version_space_without_reasking_observed_case
+FAILED tests/modules/test_m20_boolean_induction.py::test_ambiguous_prediction_has_concrete_disagreeing_rules_not_probability
+FAILED tests/modules/test_m20_boolean_induction.py::test_resolved_or_inconsistent_space_does_not_invent_next_query[rows0-no_discriminating_query]
+FAILED tests/modules/test_m20_boolean_induction.py::test_resolved_or_inconsistent_space_does_not_invent_next_query[rows1-inconsistent_evidence]
+4 failed, 5 passed in 1.36s

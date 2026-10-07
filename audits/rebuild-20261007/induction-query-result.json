@@ -1,0 +1,49 @@
+{
+  "next_query": {
+    "features": {
+      "a": false,
+      "b": true
+    },
+    "label_hypothesis_counts": {
+      "false": 2,
+      "true": 2
+    },
+    "worst_case_remaining_hypotheses": 2,
+    "guaranteed_eliminated_hypotheses": 2
+  },
+  "query_selection_status": "discriminating_query_available",
+  "query_candidates_evaluated": 3,
+  "query_selection_rule": "exact minimum worst-case remaining hypothesis count; lexicographic false-before-true tie break; hypothesis counts are not probabilities",
+  "hypothesis_class": "conjunctions of included/negated boolean literals including empty true conjunction",
+  "hypotheses_evaluated": 9,
+  "consistent_hypothesis_count": 4,
+  "simplest_consistent_rules": [
+    {}
+  ],
+  "minimum_literal_count": 0,
+  "minimum_training_errors": 0,
+  "observed_count": 1,
+  "predictions": [
+    {
+      "label_hypothesis_counts": {
+        "false": 2,
+        "true": 2
+      },
+      "disagreement_witnesses": {
+        "true": {},
+        "false": {
+          "a": true
+        }
+      },
+      "id": "unknown",
+      "possible_labels": [
+        false,
+        true
+      ],
+      "label": null,
+      "status": "ambiguous"
+    }
+  ],
+  "status": "consistent",
+  "boundary": "Actual finite conjunction version-space search from supplied labeled evidence. Exact training consistency is not real-world truth or future accuracy. Null predictions preserve disagreement/inconsistent evidence; rule simplicity is a declared selection convention, not learned probability. Caller pattern/strength ignored."
+}

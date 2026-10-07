@@ -33,14 +33,38 @@ def induce(p):
     simple=[h for h in consistent if sum(x!=-1 for x in h)==minimum]
     targets=p.get('induction_targets',[])
     if not isinstance(targets,list) or len(targets)>1000:raise ValueError('bounded induction_targets list required')
+    def votes(v):
+        counts={'false':0,'true':0};witnesses={}
+        for h in consistent:
+            label=str(predicts(h,v)).lower()
+            counts[label]+=1
+            witnesses.setdefault(label,literals(h))
+        return counts,witnesses
     predictions=[];target_ids=set()
     for target in targets:
         ident=text(target.get('id'),'target id');v=values(target.get('features'))
         if ident in target_ids:raise ValueError('unique target ids required')
         target_ids.add(ident);answers={predicts(h,v) for h in consistent}
-        predictions.append({'id':ident,'possible_labels':sorted(answers),'label':next(iter(answers)) if len(answers)==1 else None,
+        counts,witnesses=votes(v)
+        predictions.append({'label_hypothesis_counts':counts,'disagreement_witnesses':witnesses if len(answers)>1 else {},'id':ident,'possible_labels':sorted(answers),'label':next(iter(answers)) if len(answers)==1 else None,
                             'status':'agreed_within_hypothesis_class' if len(answers)==1 else 'ambiguous' if answers else 'inconsistent_evidence'})
-    return {'hypothesis_class':'conjunctions of included/negated boolean literals including empty true conjunction',
+    observed_vectors={v for v,label in observed};next_query=None;best_split=0
+    # Exact minimax split over all unobserved complete Boolean assignments.
+    # Votes count distinct hypotheses, not calibrated label probabilities.
+    for v in itertools.product((False,True),repeat=len(features)):
+        if v in observed_vectors:continue
+        counts,_=votes(v);split=min(counts.values())
+        if split>best_split:
+            best_split=split
+            next_query={'features':dict(zip(features,v)),
+                        'label_hypothesis_counts':counts,
+                        'worst_case_remaining_hypotheses':max(counts.values()),
+                        'guaranteed_eliminated_hypotheses':split}
+    return {'next_query':next_query,
+            'query_selection_status':'inconsistent_evidence' if not consistent else 'discriminating_query_available' if next_query else 'no_discriminating_query',
+            'query_candidates_evaluated':2**len(features)-len(observed_vectors),
+            'query_selection_rule':'exact minimum worst-case remaining hypothesis count; lexicographic false-before-true tie break; hypothesis counts are not probabilities',
+            'hypothesis_class':'conjunctions of included/negated boolean literals including empty true conjunction',
             'hypotheses_evaluated':3**len(features),'consistent_hypothesis_count':len(consistent),
             'simplest_consistent_rules':[literals(h) for h in simple], 'minimum_literal_count':minimum,
             'minimum_training_errors':best_error,'observed_count':len(observed),'predictions':predictions,
