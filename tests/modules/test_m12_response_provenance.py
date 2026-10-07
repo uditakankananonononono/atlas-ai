@@ -303,3 +303,23 @@ def test_mounted_invalid_returned_model_envelope_holds_after_one_call(bad,workfl
  assert response.status_code==409,response.text
  detail=response.json()['detail'];assert detail['state']=='unknown' and detail['retry_allowed'] is False
  assert calls==['first']
+
+@pytest.mark.parametrize('field,value',[('text',None),('text',{}),('text',1),('model_id',None),('model_id',''),('model_id',' '),('model_id',1)])
+def test_invalid_returned_text_or_model_identity_holds_without_backup(field,value):
+ from app.core.providers import ProviderOutcomeUnknown
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):
+   calls.append(kwargs['model_id']);result=ModelResult('fixture','reported',.9);setattr(result,field,value);return result
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['first','backup']]
+ with pytest.raises(ProviderOutcomeUnknown,match='text or reported model identity'):asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert calls==['first']
+
+def test_empty_returned_text_retained_without_inventing_missing_response():
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ class Provider:
+  async def generate(self,**kwargs):return ModelResult('','reported',.9)
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert result.text=='' and result.model_id=='reported'
