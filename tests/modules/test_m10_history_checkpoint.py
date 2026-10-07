@@ -4,7 +4,7 @@ from threading import Barrier
 import pytest
 from sqlalchemy import create_engine,event
 from sqlalchemy.orm import sessionmaker
-from app.modules.m10_email_assistant.sql_repository import SqlEmailRepository,GmailAccountRow,DraftWorkRow,EmailEventRow,EmailMessageRow,ActionItemRow,EmailDraftRow
+from app.modules.m10_email_assistant.sql_repository import SqlEmailRepository,GmailAccountRow,DraftWorkRow,EmailEventRow,EmailMessageRow,ActionItemRow,EmailDraftRow,IngestWorkRow
 
 @pytest.fixture(params=['sqlite','postgres'])
 def repo(request,tmp_path):
@@ -13,7 +13,7 @@ def repo(request,tmp_path):
   url=server.get_uri().replace('postgresql://','postgresql+psycopg://')
  else:url=f'sqlite:///{tmp_path}/checkpoint.db'
  engine=create_engine(url)
- for model in (GmailAccountRow,DraftWorkRow,EmailEventRow,EmailMessageRow,ActionItemRow,EmailDraftRow):model.__table__.create(engine)
+ for model in (GmailAccountRow,DraftWorkRow,EmailEventRow,EmailMessageRow,ActionItemRow,EmailDraftRow,IngestWorkRow):model.__table__.create(engine)
  sessions=sessionmaker(bind=engine);repo=SqlEmailRepository('a',sessions)
  repo.save_account(account_id='account',email_address='fixture@example.invalid',encrypted_refresh_token='fixture',history_id='100',watch_expiration=None)
  yield repo

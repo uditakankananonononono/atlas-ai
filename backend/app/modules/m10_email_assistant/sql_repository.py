@@ -58,6 +58,15 @@ class EmailMessageRow(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
+class IngestWorkRow(Base):
+    __tablename__='m10_ingest_work'
+    tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True)
+    account_id:Mapped[str]=mapped_column(String(36),primary_key=True)
+    gmail_id:Mapped[str]=mapped_column(String(64),primary_key=True)
+    phase:Mapped[str]=mapped_column(String(40),index=True)
+    data:Mapped[dict]=mapped_column(JSON)
+
+
 class DraftWorkRow(Base):
     """Durable post-ingest pipeline. In-flight phases never auto-retry."""
     __tablename__='m10_draft_work'
@@ -175,7 +184,8 @@ class SqlEmailRepository:
             # Gmail history IDs are decimal monotonic identifiers, not lexical.
             if not history_id.isdecimal() or (expected is not None and (not expected.isdecimal() or int(history_id)<int(expected))):return False
             pending=db.scalar(select(DraftWorkRow.message_id).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase!='complete').limit(1))
-            if pending is not None:return False
+            ingestion=db.scalar(select(IngestWorkRow.gmail_id).where(IngestWorkRow.tenant_id==self.tenant_id,IngestWorkRow.account_id==account_id,IngestWorkRow.phase!='complete').limit(1))
+            if pending is not None or ingestion is not None:return False
             row.history_id=history_id;row.updated_at=_utcnow()
             self._log(db,'gmail_account',account_id,'history_checkpoint',{'expected':expected,'history_id':history_id})
             return True
@@ -195,12 +205,39 @@ class SqlEmailRepository:
                 # Watch response is subscription state, not processed history.
                 if row.history_id is None:
                     pending=db.scalar(select(DraftWorkRow.message_id).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase!='complete').limit(1))
-                    if pending is None and history_id.isdecimal():row.history_id = history_id
+                    ingestion=db.scalar(select(IngestWorkRow.gmail_id).where(IngestWorkRow.tenant_id==self.tenant_id,IngestWorkRow.account_id==account_id,IngestWorkRow.phase!='complete').limit(1))
+                    if pending is None and ingestion is None and history_id.isdecimal():row.history_id = history_id
                 row.updated_at = _utcnow()
                 self._log(db, "gmail_account", account_id, "watch_renewed",
                           {"watch_expiration": expires_at.isoformat()})
 
     # -- messages ---------------------------------------------------------
+    def claim_ingest_work(self,account_id,gmail_id,data)->bool:
+        with self.sessions.begin() as db:
+            if self._lock_account(db,account_id) is None:raise ValueError('ingest work requires owning account')
+            if db.get_bind().dialect.name=='postgresql':
+                from sqlalchemy.dialects.postgresql import insert
+            else:
+                from sqlalchemy.dialects.sqlite import insert
+            won=db.execute(insert(IngestWorkRow).values(tenant_id=self.tenant_id,account_id=account_id,gmail_id=gmail_id,phase='extraction_inflight',data=data).on_conflict_do_nothing().returning(IngestWorkRow.gmail_id)).first()
+            return won is not None
+
+    def ingest_work(self,account_id,gmail_id):
+        with self.sessions() as db:
+            row=db.get(IngestWorkRow,(self.tenant_id,account_id,gmail_id))
+            return {'phase':row.phase,'data':dict(row.data)} if row else None
+
+    def transition_ingest_work(self,account_id,gmail_id,expected,target,data)->bool:
+        allowed={'extraction_inflight':'extraction_done','extraction_done':'embedding_inflight','embedding_inflight':'effects_done'}
+        if allowed.get(expected)!=target:raise ValueError('illegal ingest work transition')
+        with self.sessions.begin() as db:
+            if self._lock_account(db,account_id) is None:return False
+            return db.execute(update(IngestWorkRow).where(IngestWorkRow.tenant_id==self.tenant_id,IngestWorkRow.account_id==account_id,IngestWorkRow.gmail_id==gmail_id,IngestWorkRow.phase==expected).values(phase=target,data=data).returning(IngestWorkRow.gmail_id)).first() is not None
+
+    def pending_ingest_work(self,account_id):
+        with self.sessions() as db:
+            return [{'gmail_id':r.gmail_id,'phase':r.phase,'data':dict(r.data)} for r in db.scalars(select(IngestWorkRow).where(IngestWorkRow.tenant_id==self.tenant_id,IngestWorkRow.account_id==account_id,IngestWorkRow.phase!='complete'))]
+
     def has_message(self, gmail_id: str, *, account_id: str) -> bool:
         with self.sessions() as db:
             return db.scalar(select(EmailMessageRow.pk).where(
@@ -212,10 +249,15 @@ class SqlEmailRepository:
                      sender: str, recipients: list[str], snippet: str, body_text: str,
                      received_at: datetime | None, labels: list[str], headers: dict,
                      category: str | None, category_confidence: float,
-                     embedding: list[float] | None, unsubscribe_url: str | None, draft_work: dict | None = None) -> bool:
+                     embedding: list[float] | None, unsubscribe_url: str | None, draft_work: dict | None = None, ingest_work_data: dict | None = None) -> bool:
         with self.sessions.begin() as db:
             locked=self._lock_account(db,account_id)
             if draft_work is not None and locked is None:raise ValueError('draft work requires existing owning account')
+            if ingest_work_data is not None:
+                from sqlalchemy.dialects.postgresql import JSONB
+                matches=cast(IngestWorkRow.data,JSONB)==ingest_work_data if db.get_bind().dialect.name=='postgresql' else IngestWorkRow.data==ingest_work_data
+                claim=db.execute(update(IngestWorkRow).where(IngestWorkRow.tenant_id==self.tenant_id,IngestWorkRow.account_id==account_id,IngestWorkRow.gmail_id==gmail_id,IngestWorkRow.phase=='effects_done',matches).values(phase='complete').returning(IngestWorkRow.gmail_id)).first()
+                if claim is None:return False
             values=dict(
                 tenant_id=self.tenant_id, id=message_id, account_id=account_id,
                 gmail_id=gmail_id, thread_id=thread_id, history_id=history_id,
