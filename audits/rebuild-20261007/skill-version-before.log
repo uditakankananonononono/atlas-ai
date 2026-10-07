@@ -1,0 +1,34 @@
+................FF                                                       [100%]
+=================================== FAILURES ===================================
+______________ test_skill_versions_do_not_reset_after_retirement _______________
+
+    def test_skill_versions_do_not_reset_after_retirement():
+        library = SkillLibrary()
+        first = library.compile("fixture", "fixture", actions("a", "b"))
+        library.retire("fixture")
+        second = library.compile("fixture", "fixture", actions("a", "b"))
+>       assert second.version == first.version + 1
+E       AssertionError: assert 1 == (1 + 1)
+E        +  where 1 = Skill(id='7c8493ec-34f1-465b-ab3b-79cbb05850c1', name='fixture', goal_pattern='fixture', steps=[ActionRecord(id='7d35c...VE: 'active'>, evidence={}, created_at=datetime.datetime(2026, 10, 7, 4, 49, 55, 296097, tzinfo=datetime.timezone.utc)).version
+E        +  and   1 = Skill(id='d8515def-166c-431a-aba1-270c74fb3678', name='fixture', goal_pattern='fixture', steps=[ActionRecord(id='780ac...VE: 'active'>, evidence={}, created_at=datetime.datetime(2026, 10, 7, 4, 49, 55, 295981, tzinfo=datetime.timezone.utc)).version
+
+tests/modules/test_m20_long_term_memory.py:212: AssertionError
+___________ test_skill_activation_has_one_active_same_name_revision ____________
+
+    def test_skill_activation_has_one_active_same_name_revision():
+        library = SkillLibrary()
+        first = library.compile("fixture", "fixture", actions("a", "b"))
+        second = library.compile("fixture", "fixture", actions("a", "b"))
+        library.activate(first.id)
+        active = library.list(status=SkillStatus.ACTIVE)
+>       assert [s.id for s in active] == [first.id]
+E       AssertionError: assert ['f121ea61-f3...af304759aa53'] == ['f121ea61-f3...9f7b36c8930a']
+E         
+E         Left contains one more item: 'f039d555-c1cb-4ee4-b4ac-af304759aa53'
+E         Use -v to get more diff
+
+tests/modules/test_m20_long_term_memory.py:221: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_long_term_memory.py::test_skill_versions_do_not_reset_after_retirement
+FAILED tests/modules/test_m20_long_term_memory.py::test_skill_activation_has_one_active_same_name_revision
+2 failed, 16 passed in 1.43s

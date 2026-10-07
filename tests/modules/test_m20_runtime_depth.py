@@ -974,3 +974,19 @@ def test_scheduler_step_reports_surprise_consumed_during_run():
     report = runtime.step(max_ticks=2)
     assert report.surprises == ["fixture step"]
     assert runtime.calibration.claims[claim.id].resolved is True
+
+
+def test_skill_version_history_and_exclusive_activation_survive_restart():
+    repo = fresh_repo()
+    library = DurableSkillLibrary(repo)
+    first = library.register(Skill(name='fixture', goal_pattern='fixture'))
+    library.retire('fixture')
+    library = DurableSkillLibrary.load(repo)
+    second = library.register(Skill(name='fixture', goal_pattern='fixture'))
+    assert second.version == first.version + 1
+    library.activate(first.id)
+    restarted = DurableSkillLibrary.load(repo)
+    assert [s.id for s in restarted.list(status=SkillStatus.ACTIVE)] == [first.id]
+    third = restarted.register(Skill(name='fixture', goal_pattern='fixture'))
+    assert third.version == second.version + 1
+    assert [s.id for s in DurableSkillLibrary.load(repo).list(status=SkillStatus.ACTIVE)] == [third.id]

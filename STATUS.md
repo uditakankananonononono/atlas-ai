@@ -878,3 +878,7 @@ _run_and_persistresolved/consumedcallerexpectationsthenstepre-evaluated, reporte
 ## Approval resume exact waiting-node lifecycle correction
 
 resume acceptedanynode, resetsucceededREADtoPENDING/reexecuted it; unknownnode rejection blockedwholecontext. Two initialfailuresretained. Exactbool/existingWAITING_APPROVALnodewithapprovalID required before mutation; unknownKeyError/nonwaitingValueError, legacyHTTP404/409 andstrictboolrequest.106executive/service/routes/runtimepass1warning; recorded87adjacent2279pass2warnings39.95s before HTTPerrorcatch edit, focusedafter. Completedreadstayssucceeded/callsonce, unknowndenialdoesn'tblockwholecontext. Localresumesemanticsnot authenticatedreview/ownergrant; gate stillchecksboundtoken. No effectexecutedbeyondsyntheticfixture. Full9813pass predatesfifteenlaterfixes.
+
+## Skill revision bookkeeping
+
+register used active-only lookup: retiring all revisions reset next version to1; activating older revision left two active same-name entries. Two reproduced failures retained. Version now increments from maximum stored same-name revision; activation retires other same-name entries and durable adapter persists all changed entries.84memory/runtimepass1warning; recorded87adjacent2282pass2warnings38.78s. Restart fixture verifies retirement/version/activation continuity. Local registry bookkeeping only, not authenticated exact-revision approval, skill generality or multirow SQL crash atomicity. Full9813pass predatessixteenlaterfixes.

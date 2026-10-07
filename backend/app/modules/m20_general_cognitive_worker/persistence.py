@@ -131,7 +131,8 @@ class DurableSkillLibrary(SkillLibrary):
 
     def activate(self, skill_id: str) -> Skill:
         skill = super().activate(skill_id)
-        self.repo.save_skill(skill)
+        for entry in self._skills.values():
+            self.repo.save_skill(entry)
         return skill
 
     def retire(self, name: str) -> bool:
