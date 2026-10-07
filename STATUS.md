@@ -966,3 +966,7 @@ Five actual failures retained: bool/stringprobability/count coerce past rawguard
 ## Planning HTTP numeric and overflow boundary
 
 Five reproduced failures retained: bool/stringdurationcoercion and unhandledratio/correctedestimateoverflow. Strictfinite requestnumbers; arithmeticValueError translates422with ratio rejectionbeforepublication.156foresightHTTPpass1warning; recorded87adjacent2387pass2warnings41.11s. Supplieddurationarithmetic/transportconsistency only, not forecast validity or verifieddurations. Latestfull9944passsourcec5b11ab predatesfivelaterfixes.
+
+## Supplied outside-view blend inputs
+
+Five actual failures retained: nonfinite/bool insideestimate/weight and suppliedNaNreference median accepted. Strictfinite numeric/notboolinsideestimate/weight/median, weight0..1.161foresightHTTPpass1warning; recorded87adjacent2392pass2warnings38.83s. Convex arithmetic/framingtemplates only, not outside-view inference/reference relevanceverification. Transportcoercion separate. Latestfull9944passsourcec5b11ab predatessixlaterfixes.

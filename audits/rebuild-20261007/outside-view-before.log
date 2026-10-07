@@ -1,0 +1,64 @@
+........................................................................ [ 64%]
+...................................FFFFF                                 [100%]
+=================================== FAILURES ===================================
+__________ test_outside_view_invalid_supplied_inputs_reject[nan-0.5] ___________
+
+estimate = nan, weight = 0.5
+
+    @pytest.mark.parametrize('estimate,weight', [(float('nan'), 0.5), (float('inf'), 0.5), (True, 0.5), (10, True)])
+    def test_outside_view_invalid_supplied_inputs_reject(estimate, weight):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:665: Failed
+__________ test_outside_view_invalid_supplied_inputs_reject[inf-0.5] ___________
+
+estimate = inf, weight = 0.5
+
+    @pytest.mark.parametrize('estimate,weight', [(float('nan'), 0.5), (float('inf'), 0.5), (True, 0.5), (10, True)])
+    def test_outside_view_invalid_supplied_inputs_reject(estimate, weight):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:665: Failed
+__________ test_outside_view_invalid_supplied_inputs_reject[True-0.5] __________
+
+estimate = True, weight = 0.5
+
+    @pytest.mark.parametrize('estimate,weight', [(float('nan'), 0.5), (float('inf'), 0.5), (True, 0.5), (10, True)])
+    def test_outside_view_invalid_supplied_inputs_reject(estimate, weight):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:665: Failed
+__________ test_outside_view_invalid_supplied_inputs_reject[10-True] ___________
+
+estimate = 10, weight = True
+
+    @pytest.mark.parametrize('estimate,weight', [(float('nan'), 0.5), (float('inf'), 0.5), (True, 0.5), (10, True)])
+    def test_outside_view_invalid_supplied_inputs_reject(estimate, weight):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:665: Failed
+__________ test_outside_view_supplied_reference_median_must_be_finite __________
+
+    def test_outside_view_supplied_reference_median_must_be_finite():
+        from app.modules.m20_general_cognitive_worker.foresight import ReferenceClassForecast
+        forecast = ReferenceClassForecast(n_cases=1, mean=10, median=float('nan'), p25=10, p75=10, matched_cases=['fixture'], assumptions=[])
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:672: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_outside_view_invalid_supplied_inputs_reject[nan-0.5]
+FAILED tests/modules/test_m20_foresight.py::test_outside_view_invalid_supplied_inputs_reject[inf-0.5]
+FAILED tests/modules/test_m20_foresight.py::test_outside_view_invalid_supplied_inputs_reject[True-0.5]
+FAILED tests/modules/test_m20_foresight.py::test_outside_view_invalid_supplied_inputs_reject[10-True]
+FAILED tests/modules/test_m20_foresight.py::test_outside_view_supplied_reference_median_must_be_finite
+5 failed, 107 passed in 1.47s

@@ -658,3 +658,16 @@ def test_scenario_large_finite_weights_normalize_without_sum_overflow():
     result = ScenarioPlanner().plan(objective='fixture', drivers=['fixture'],
         probabilities={name: 1e308 for name in ScenarioPlanner.DEFAULTS})
     assert [row['probability'] for row in result['scenarios']] == pytest.approx([0.25] * 4)
+
+
+@pytest.mark.parametrize('estimate,weight', [(float('nan'), 0.5), (float('inf'), 0.5), (True, 0.5), (10, True)])
+def test_outside_view_invalid_supplied_inputs_reject(estimate, weight):
+    with pytest.raises(ValueError):
+        OutsideView().adopt(inside_estimate=estimate, reference_forecast=None, outside_weight=weight)
+
+
+def test_outside_view_supplied_reference_median_must_be_finite():
+    from app.modules.m20_general_cognitive_worker.foresight import ReferenceClassForecast
+    forecast = ReferenceClassForecast(n_cases=1, mean=10, median=float('nan'), p25=10, p75=10, matched_cases=['fixture'], assumptions=[])
+    with pytest.raises(ValueError):
+        OutsideView().adopt(inside_estimate=10, reference_forecast=forecast)
