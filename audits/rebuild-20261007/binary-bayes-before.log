@@ -1,0 +1,35 @@
+..................................FFF..                                  [100%]
+=================================== FAILURES ===================================
+____________ test_binary_bayes_impossible_conditioning_is_undefined ____________
+
+    def test_binary_bayes_impossible_conditioning_is_undefined():
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:207: Failed
+_______ test_binary_bayes_underflow_positive_likelihood_keeps_posterior ________
+
+    def test_binary_bayes_underflow_positive_likelihood_keeps_posterior():
+>       assert R.bayesian_update(1e-200, 1e-200, 1) == 1
+E       assert 0.0 == 1
+E        +  where 0.0 = <function bayesian_update at 0x7f57b17de700>(1e-200, 1e-200, 1)
+E        +    where <function bayesian_update at 0x7f57b17de700> = R.bayesian_update
+
+tests/modules/test_m20_reasoning.py:214: AssertionError
+________________ test_binary_bayes_rejects_invalid_rates[True] _________________
+
+value = True
+
+    @pytest.mark.parametrize("value", [True, float("nan"), float("inf")])
+    def test_binary_bayes_rejects_invalid_rates(value):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:219: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reasoning.py::test_binary_bayes_impossible_conditioning_is_undefined
+FAILED tests/modules/test_m20_reasoning.py::test_binary_bayes_underflow_positive_likelihood_keeps_posterior
+FAILED tests/modules/test_m20_reasoning.py::test_binary_bayes_rejects_invalid_rates[True]
+3 failed, 36 passed in 1.29s
