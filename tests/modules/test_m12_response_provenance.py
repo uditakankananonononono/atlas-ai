@@ -516,6 +516,6 @@ def test_validation_unencodable_extra_key_location_does_not_break_422():
  import json
  response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',content=json.dumps({'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100,'\ud800':'private-invalid-input'},ensure_ascii=True),headers={'content-type':'application/json'})
  assert response.status_code==422,response.text
- detail=response.json()['detail'];assert detail[0]['type']=='extra_forbidden'
- assert detail[0]['loc'][0]=='body'
+ detail=response.json()['detail'];assert detail[0]['type']=='string_unicode'
+ assert detail[0]['loc']==['body']
  assert 'private-invalid-input' not in response.text and not calls
