@@ -18,7 +18,7 @@ def _unique_mapping(loader,node,deep=False):
     return result
 _WorkflowLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,_unique_mapping)
 class WorkflowNodeFailure(RuntimeError):
-    def __init__(self,node_id:str,error:Exception,completed:dict[str,Any],failures:list[tuple[str,Exception]]):
+    def __init__(self,node_id:str,error:BaseException,completed:dict[str,Any],failures:list[tuple[str,BaseException]]):
         super().__init__(f"node {node_id} failed")
         self.node_id=node_id;self.error=error;self.completed=dict(completed);self.failures=failures
 
@@ -85,7 +85,7 @@ class DagEngine:
             # Retain their outputs, never label them cancelled or replay them.
             failures=[]
             for n,value in zip(ready,output):
-                if isinstance(value,Exception):failures.append((n.id,value))
+                if isinstance(value,BaseException):failures.append((n.id,value))
                 else:results[n.id]=value;pending.remove(n.id)
             if failures:
                 node_id,error=failures[0]

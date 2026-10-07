@@ -37,7 +37,8 @@ async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tena
         if isinstance(error.error,ProviderOutcomeUnknown):
             detail.update({"state":"unknown","reason":str(error.error)})
             raise HTTPException(409,detail) from error
-        detail.update({"state":"failed","reason":str(error.error)})
+        import asyncio
+        detail.update({"state":"cancelled" if isinstance(error.error,asyncio.CancelledError) else "failed","reason":str(error.error)})
         raise HTTPException(422,detail) from error
     except WorkflowValidationError as error: raise HTTPException(422,str(error)) from error
 
