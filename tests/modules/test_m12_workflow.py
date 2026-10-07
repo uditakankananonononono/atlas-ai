@@ -204,3 +204,16 @@ async def test_generic_dag_retains_custom_config_contract():
  config={'temperature':.2,'custom':{'flag':True}}
  result=await DagEngine(runner).run(Workflow.from_yaml('nodes: [{id: a, task: custom, config: {temperature: 0.2, custom: {flag: true}}}]'),{})
  assert calls==[config] and result=={'a':{'supplied':config}}
+
+@pytest.mark.parametrize('extra',[{'budget_cents':1},{'model_id':'unsupported'},{'tenant_id':'other'},{'input':{'prompt':'wrong'}}])
+def test_workflow_body_extra_options_not_silently_ignored(extra):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ calls=[]
+ async def runner(*args):calls.append(args);return {'text':'fixture'}
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: fixture}]',**extra})
+ assert response.status_code==422,response.text
+ assert response.json()['detail'][0]['type']=='extra_forbidden' and not calls
