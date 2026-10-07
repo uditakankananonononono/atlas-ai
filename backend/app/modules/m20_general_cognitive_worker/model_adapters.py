@@ -52,7 +52,22 @@ def extract_json(text: str) -> Any:
         if not math.isfinite(number):
             raise ValueError("JSON numeric exponent exceeds finite range")
         return number
-    return json.loads(body,object_pairs_hook=unique,parse_constant=invalid,parse_float=finite_number)
+    try:
+        result = json.loads(body,object_pairs_hook=unique,parse_constant=invalid,parse_float=finite_number)
+    except RecursionError as exc:
+        raise ValueError("model JSON nesting exceeds decoder boundary") from exc
+    stack = [(result, 0)]
+    count = 0
+    while stack:
+        value, depth = stack.pop()
+        count += 1
+        if depth > 64 or count > 20000:
+            raise ValueError("model JSON exceeds depth64/node20000 boundary")
+        if isinstance(value, dict):
+            stack.extend((item, depth + 1) for item in value.values())
+        elif isinstance(value, list):
+            stack.extend((item, depth + 1) for item in value)
+    return result
 
 
 def _model_name() -> str | None:

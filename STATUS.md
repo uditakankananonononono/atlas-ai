@@ -838,3 +838,7 @@ No pending node was treated as rootvalue1, even allFAILED/BLOCKED/WAITING_APPROV
 ## Model JSON exponent overflow correction
 
 parse_constant rejected literalNaN/Infinity but JSON1e999/-1e999 silently becameInfinity through float parser. Two failing parses retained; first test-file creation lacked imports and collection error also retained before moving canary to existing strict-output file. Finite parse_float now rejects exponent overflow.88strict-output/freefirst/private-route/runtimepass1warning; recorded87adjacent2248pass2warnings35.45s. Parser/fixture-only evidence, no new model run/provider routing change or model correctness claim. Large integer/depth bounds and broader model trust remain separate; latestfull9813pass predates five subsequentfixes.
+
+## Model JSON structural bounds
+
+Text100kbound didn't bound parsed nesting;100/1500deep JSON accepted, two failures retained. Initial assertion that1500would raise decoderRecursionError was wrong in this environment and corrected to parent. Iterative parsed-depth64/node20000 limits plus decoderRecursionError normalization added.92strict/freefirst/private/runtimepass1warning after final injected decoder-error canary;87adjacent2251pass2warnings38.75s before that extra test. Recursion branch tested by injected decoder failure, not observed production exception. Structural parser guard only, not model correctness/prompt injection/provenance/OS resource isolation. No actual model run/provider route changes. Latestfull9813pass predates latest sixfixes.

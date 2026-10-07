@@ -1,0 +1,28 @@
+.....................FF.                                                 [100%]
+=================================== FAILURES ===================================
+_____________ test_model_json_depth_is_controlled_value_error[100] _____________
+
+depth = 100
+
+    @pytest.mark.parametrize("depth", [100, 1500])
+    def test_model_json_depth_is_controlled_value_error(depth):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strict_model_output.py:55: Failed
+____________ test_model_json_depth_is_controlled_value_error[1500] _____________
+
+depth = 1500
+
+    @pytest.mark.parametrize("depth", [100, 1500])
+    def test_model_json_depth_is_controlled_value_error(depth):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strict_model_output.py:55: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strict_model_output.py::test_model_json_depth_is_controlled_value_error[100]
+FAILED tests/modules/test_m20_strict_model_output.py::test_model_json_depth_is_controlled_value_error[1500]
+2 failed, 22 passed in 1.36s
