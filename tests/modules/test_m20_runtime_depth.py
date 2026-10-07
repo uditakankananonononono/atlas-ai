@@ -908,3 +908,15 @@ def test_htn_reviewed_method_views_cannot_mutate_active_snapshot():
  assert runtime.planner.methods['fixture'].subtasks[0].arguments=={'n':[2]}
  assert repo.list_methods()[0][0].subtasks[0].title=='original'
  with pytest.raises(TypeError):runtime.planner.methods['fixture']=current
+
+
+def test_invalid_library_dag_never_persists_and_preset_success_does_execute():
+ from app.modules.m20_general_cognitive_worker.htn_planner import PlanError
+ runtime,repo=make_runtime();calls=[]
+ with pytest.raises(PlanError):runtime.planner.register_method(HTNMethod(name='bad',goal_pattern='fixture',subtasks=[PlanNode(title='bad',depends_on=['missing'])]))
+ assert not repo.list_methods()
+ async def compute(args):calls.append(3*3);return {'square':calls[-1]}
+ runtime.tools.register(ToolSpec(name='fixture_reset',description='fixture'),compute)
+ runtime.planner.register_method(HTNMethod(name='good',goal_pattern='fixture',subtasks=[PlanNode(title='compute',tool='fixture_reset',state=TaskState.SUCCEEDED,result_summary='fake')]))
+ result=runtime.submit_goal('fixture')
+ assert result.state==TaskState.SUCCEEDED and calls==[9] and result.plan[0].result_summary=="{'square': 9}"

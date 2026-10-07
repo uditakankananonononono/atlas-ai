@@ -169,3 +169,22 @@ def test_planner_rejects_ambiguous_title_dependency():
  with pytest.raises(PlanError,match='ambiguous'):HTNPlanner(FakePlannerModel(steps)).decompose('goal')
  steps[-1]['depends_on']=['a']
  assert len(HTNPlanner(FakePlannerModel(steps)).decompose('goal'))==3
+
+
+def test_library_instantiation_resets_unearned_terminal_states_and_approval():
+ planner=HTNPlanner()
+ planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='compute',state=TaskState.SUCCEEDED,attempts=2,approval_id='old',result_summary='not actually executed')]))
+ node=planner.decompose('fixture')[0]
+ assert node.state==TaskState.PENDING and node.attempts==0 and node.approval_id is None and node.result_summary==''
+
+
+@pytest.mark.parametrize('subtasks',[
+ [PlanNode(id='same',title='a'),PlanNode(id='same',title='b')],
+ [PlanNode(title='a',depends_on=['missing'])],
+ [PlanNode(id='a',title='a',depends_on=['b']),PlanNode(id='b',title='b',depends_on=['a'])],
+ [PlanNode(title='same'),PlanNode(title='same'),PlanNode(title='c',depends_on=['same'])],
+])
+def test_registered_library_rejects_invalid_or_ambiguous_dag(subtasks):
+ planner=HTNPlanner()
+ with pytest.raises(PlanError):planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=subtasks))
+ assert not planner.methods

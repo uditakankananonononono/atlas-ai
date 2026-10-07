@@ -40,9 +40,16 @@ class HTNPlanner:
         return MappingProxyType({name: method.model_copy(deep=True) for name, method in self._methods.items()})
 
     def register_method(self, method: HTNMethod) -> HTNMethod:
-        method = method.model_copy(deep=True)
+        method = self._validated_method(method)
         self._methods[method.name] = method
         return method.model_copy(deep=True)
+
+    def _validated_method(self, method: HTNMethod) -> HTNMethod:
+        method = method.model_copy(deep=True)
+        validated = self._validate([node.model_dump(mode="json") for node in method.subtasks])
+        for node, checked in zip(method.subtasks, validated):
+            node.depends_on = checked.depends_on
+        return method
 
     def _match_method(self, goal: str, *, context: str = "") -> HTNMethod | None:
         goal_tokens = set(tokenize(goal))
@@ -94,6 +101,10 @@ class HTNPlanner:
             id_map[template.id] = fresh
             title_map[template.title] = fresh
             copy.id = fresh
+            copy.state = TaskState.PENDING
+            copy.attempts = 0
+            copy.approval_id = None
+            copy.result_summary = ""
         for copy in copies:
             copy.depends_on = [
                 id_map.get(dep) or title_map.get(dep) or dep
