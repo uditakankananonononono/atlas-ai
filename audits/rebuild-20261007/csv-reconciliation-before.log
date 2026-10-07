@@ -1,0 +1,29 @@
+........................................................................ [ 65%]
+.....................................F                                   [100%]
+=================================== FAILURES ===================================
+_____ test_default_csv_reconciliation_reports_missing_and_changed_records ______
+
+    def test_default_csv_reconciliation_reports_missing_and_changed_records():
+        runtime,repo=make_runtime()
+        task=runtime.submit_goal('reconcile supplied invoice exports',run_immediately=False)
+        runtime.prepare_supplied_plan(task.id,steps=[{'title':'compare exports','tool':'csv_reconcile',
+            'arguments':{'left_csv':'id,amount,status\nA,10,open\nB,20,paid\nC,30,open\n',
+                'right_csv':'id,amount,status\nA,10,open\nB,21,paid\nD,40,open\n',
+                'key_column':'id','compare_columns':['amount','status']}}])
+        result=runtime.run_task(task.id)
+>       assert result.state==TaskState.SUCCEEDED
+E       AssertionError: assert <TaskState.FAILED: 'failed'> == <TaskState.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+tests/modules/test_m20_runtime_depth.py:1607: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_default_csv_reconciliation_reports_missing_and_changed_records
+1 failed, 109 passed, 1 warning in 6.72s
