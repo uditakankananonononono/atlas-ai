@@ -466,6 +466,7 @@ def test_concurrent_ingest_requires_single_draft_and_approval(tmp_path):
  svc._access_token=token
  with ThreadPoolExecutor(max_workers=2) as pool:
   results=list(pool.map(lambda _:asyncio.run(svc.ingest_from_history('a@example.com','101')),[1,2]))
+ assert sum(result.new_messages for result in results)==1
  assert len(repo.list_messages())==1
  assert len(repo.list_drafts())==1
  assert len(approvals.items)==1
