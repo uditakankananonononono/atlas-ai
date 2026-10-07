@@ -405,7 +405,8 @@ def test_draft_context_must_not_include_other_account_same_thread(tmp_path):
  async def draft():
   await service._draft_reply('message-b',raw,RuleBasedClassifier().classify(ClassifierInput(subject='Account B',sender=raw.sender,snippet='snip')),[],account_id='account-b')
  asyncio.run(draft())
- # No account selection exists in this context method, so this is unsafe.
+ assert approvals.items[-1][0].payload['account_id']=='account-b'
+ # Account-specific drafting must exclude the other account's thread snippet.
  assert 'private-account-a' not in service._context_window(raw,account_id="account-b")
  asyncio.run(client.aclose())
 
