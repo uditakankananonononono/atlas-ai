@@ -201,3 +201,31 @@ def test_expected_value_rejects_invalid_probability_or_value(outcomes):
 def test_raw_kelly_rejects_nonfinite_bool_odds(odds):
     with pytest.raises(ValueError):
         R.kelly_criterion(0.6, odds)
+
+
+def test_binary_bayes_impossible_conditioning_is_undefined():
+    with pytest.raises(ValueError):
+        R.bayesian_update(0.5, 0, 1)
+    with pytest.raises(ValueError):
+        R.bayesian_update(0.5, 1, 0, positive=False)
+
+
+def test_binary_bayes_underflow_positive_likelihood_keeps_posterior():
+    assert R.bayesian_update(1e-200, 1e-200, 1) == 1
+
+
+@pytest.mark.parametrize("value", [True, float("nan"), float("inf")])
+def test_binary_bayes_rejects_invalid_rates(value):
+    with pytest.raises(ValueError):
+        R.bayesian_update(0.5, value, 0.9)
+
+
+def test_binary_bayes_independent_decimal_posterior():
+    from decimal import Decimal, localcontext
+    with localcontext() as context:
+        context.prec = 80
+        prior = Decimal("0.001")
+        sensitivity = Decimal("0.97")
+        specificity = Decimal("0.999")
+        expected = sensitivity * prior / (sensitivity * prior + (1-specificity)*(1-prior))
+    assert R.bayesian_update(float(prior), float(sensitivity), float(specificity)) == pytest.approx(float(expected))

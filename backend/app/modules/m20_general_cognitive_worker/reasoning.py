@@ -50,16 +50,26 @@ def hyperbolic_discount(value: float, delay_days: float, k: float = 0.02) -> flo
 
 def bayesian_update(prior: float, sensitivity: float, specificity: float, *, positive: bool = True) -> float:
     """Bayesian Belief Updating with base-rate integration."""
-    for name, v in (("prior", prior), ("sensitivity", sensitivity), ("specificity", specificity)):
-        if not 0.0 <= v <= 1.0:
-            raise ValueError(f"{name} must be in [0, 1]")
-    if positive:
-        num = sensitivity * prior
-        den = num + (1 - specificity) * (1 - prior)
-    else:
-        num = (1 - sensitivity) * prior
-        den = num + specificity * (1 - prior)
-    return num / den if den else 0.0
+    for name, value in (("prior", prior), ("sensitivity", sensitivity), ("specificity", specificity)):
+        if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
+            raise ValueError(f"{name} must be finite numeric in [0,1]")
+    if type(positive) is not bool:
+        raise ValueError("positive must be bool")
+    likelihood_h = sensitivity if positive else 1 - sensitivity
+    likelihood_not_h = 1 - specificity if positive else specificity
+    log_h = math.log(prior) + math.log(likelihood_h) if prior > 0 and likelihood_h > 0 else -math.inf
+    log_not_h = math.log1p(-prior) + math.log(likelihood_not_h) if prior < 1 and likelihood_not_h > 0 else -math.inf
+    if log_h == log_not_h == -math.inf:
+        raise ValueError("conditioning event has zero probability; posterior undefined")
+    if log_h == -math.inf:
+        return 0.0
+    if log_not_h == -math.inf:
+        return 1.0
+    difference = log_h - log_not_h
+    if difference >= 0:
+        return 1 / (1 + math.exp(-difference))
+    odds = math.exp(difference)
+    return odds / (1 + odds)
 
 
 def monte_carlo_simulation(
