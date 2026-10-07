@@ -552,7 +552,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located cross-campaign cadence/cooldown checks and bounded follow-up drafts; hourly atlas.m05.draft_due_followups worker scans explicit tenants and queues reviews, not sends. Mounted send route invokes DeliveryService directly, with fresh durable send claims, not a dedicated email Celery queue. All-action queued execution, live SMTP daily limits and scalability benchmarks not established in scoped M05/worker read. No background enrollment or email execution run. Status stays unverified."
     },
     {
       "row": 50,
@@ -563,7 +563,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located content plan/draft generation, approval-backed scheduling, official adapter code, normalized snapshot statistics and A/B lifecycle. This is not proof of complete media production, external publishing or feedback learning. Scope: current M06 code read only, no platform/BYOK calls or effect acceptance. Status stays unverified."
     },
     {
       "row": 51,
@@ -574,7 +574,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.generate_content_plan prompts from brief/platform inputs and falls back to default platform formats if needed. Asset prompts attach after drafts. Analytics has best-day recommendations from supplied daily series separately; historical user metrics do not appear in the inspected content strategy prompt. Learned optimal content mix/frequency and historical-analytics scheduling bridge not established in this scoped service/analytics read. No provider output or planning behavior exercised. Status stays unverified."
     },
     {
       "row": 52,
@@ -585,7 +585,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service._with_asset_prompts and CreativeEngine produce specifications/prompts, explicitly no rendered media. technical_67_75 returns asset_generated=False. Source-named ComfyUI/SDXL and Bark/Tortoise engines are prompt targets, not installed/accepted generation pipelines. Personalized SDXL fine-tuning, neural engagement aesthetic scoring/top-three selection, OCR overlay positioning, ffmpeg video assembly and MusicGen/license-checked soundtrack integration not established in scoped M06 read. No image/audio/video generation, preference training or BYOK calls run. Status stays unverified."
     },
     {
       "row": 53,
@@ -596,7 +596,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located Meta Instagram, X v2, LinkedIn and TikTok adapter code, scheduler persisted approval IDs/media references, due-entry checks and approved-state lookup before platform publish. Pinterest/YouTube and source-wide Facebook coverage not established in the inspected adapter factory. execute_due reads due records then publishes before persistence, with no atomic execution claim or exact payload revalidation visible in that method; this is an untested race/drift risk, not a demonstrated external duplicate. Trend/news rescheduling and week-batch owner approval not established here. No platform calls or publishes run. Status stays unverified."
     },
     {
       "row": 54,
@@ -607,7 +607,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Analytics persists snapshots and computes engagement rates/deltas/best-day plus two-proportion A/B z-test; reports can use LLM narrative with deterministic fallback. A/B methods accept external variant IDs and supplied metrics rather than proving random audience assignment. Fine-tuned BERT comment sentiment, ARIMA/bandits, automatic platform experiments and daily live metrics job not established in scoped M06/worker read. Correlation does not establish causal engagement explanations. No metrics/model/platform run. Status stays unverified."
     },
     {
       "row": 55,
@@ -618,7 +618,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "social_reading consumes authorized/supplied social artifacts with provenance and knowledge/idea outputs, not proof of continuous brand/hashtag streams. X filtered-stream enrollment, Instagram hashtag scraping and mention/question/complaint sentiment-to-approved-reply workflow not established in scoped reader/routes/adapters read. Restrictive API access is not authority to evade platform controls. No listening enrollment, scraping or response publication run. Status stays unverified."
     },
     {
       "row": 56,
@@ -629,7 +629,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "compliance.py checks configured length/format/disclosure and warning patterns plus alt-text counts; these static rules are not current-policy/copyright assurance. Service sometimes counts image prompt text as alt-text availability, while scheduler media alt_texts are separate supplied data. Vision-generated descriptions and universal generated-content Knowledge Workspace campaign linkage not established in scoped M06 read. social_reading knowledge storage is a separate artifact path. No renderer/accessibility pixels or external storage effects inspected here. Status stays unverified."
     },
     {
       "row": 57,
