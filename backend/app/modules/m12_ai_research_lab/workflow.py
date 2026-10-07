@@ -71,7 +71,9 @@ class Workflow:
 
 class DagEngine:
     """Runs independent nodes concurrently and passes only declared parent outputs."""
-    def __init__(self, runner: NodeRunner, max_concurrency: int=8, validator:Callable[[Node,dict[str,Any]],None]|None=None): self.runner=runner; self.limit=asyncio.Semaphore(max_concurrency);self.validator=validator
+    def __init__(self, runner: NodeRunner, max_concurrency: int=8, validator:Callable[[Node,dict[str,Any]],None]|None=None):
+        if type(max_concurrency) is not int or max_concurrency<=0:raise WorkflowValidationError("workflow concurrency must be positive integer")
+        self.runner=runner;self.limit=asyncio.Semaphore(max_concurrency);self.validator=validator
     async def run(self, wf: Workflow, inputs: dict[str,Any]) -> dict[str,dict[str,Any]]:
         if self.validator is not None:
             for node in wf.nodes:self.validator(node,inputs)
