@@ -547,3 +547,19 @@ def test_returned_subclass_copy_failure_holds_without_repeat(workflow):
  assert response.status_code==409,response.text
  detail=response.json()['detail'];assert detail['state']=='unknown' and detail['retry_allowed'] is False
  assert calls==['first'] and len(copies)==2 and returned.metadata=={}
+
+@pytest.mark.parametrize('prompt',[' ','\t\n','\u2003'])
+def test_mounted_whitespace_prompt_rejected_before_actual_executor_provider(prompt):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:ResearchExecutor(ModelRouter(cat),Provider())
+ response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':prompt,'task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==422,response.text
+ assert response.json()['detail'][0]['loc']==['body','prompt'] and not calls
