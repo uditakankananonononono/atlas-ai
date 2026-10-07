@@ -1,0 +1,106 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+___ test_erlang_c_large_server_count_is_finite_and_matches_mm1_at_one_server ___
+
+    def test_erlang_c_large_server_count_is_finite_and_matches_mm1_at_one_server():
+     import json
+>    q=QueueAnalyzer();out=q.mmc(arrival_rate=450,service_rate=1,servers=500)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:570: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:524: in mmc
+    sum_terms = sum(a ** n / math.factorial(n) for n in range(servers))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+.0 = <range_iterator object at 0x7f1341444fc0>
+
+>   sum_terms = sum(a ** n / math.factorial(n) for n in range(servers))
+                    ^^^^^^
+E   OverflowError: (34, 'Numerical result out of range')
+
+backend/app/modules/m20_general_cognitive_worker/strategy.py:524: OverflowError
+_____________ test_queueing_invalid_rate_or_count_rejects[kwargs0] _____________
+
+kwargs = {'arrival_rate': nan, 'service_rate': 1, 'servers': 2}
+
+    @pytest.mark.parametrize('kwargs',[
+     {'arrival_rate':float('nan'),'service_rate':1,'servers':2},
+     {'arrival_rate':1,'service_rate':float('inf'),'servers':2},
+     {'arrival_rate':1,'service_rate':2,'servers':True},
+     {'arrival_rate':1,'service_rate':2,'servers':10001},
+    ])
+    def test_queueing_invalid_rate_or_count_rejects(kwargs):
+>    with pytest.raises(ValueError):QueueAnalyzer.mmc(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:585: Failed
+_____________ test_queueing_invalid_rate_or_count_rejects[kwargs1] _____________
+
+kwargs = {'arrival_rate': 1, 'service_rate': inf, 'servers': 2}
+
+    @pytest.mark.parametrize('kwargs',[
+     {'arrival_rate':float('nan'),'service_rate':1,'servers':2},
+     {'arrival_rate':1,'service_rate':float('inf'),'servers':2},
+     {'arrival_rate':1,'service_rate':2,'servers':True},
+     {'arrival_rate':1,'service_rate':2,'servers':10001},
+    ])
+    def test_queueing_invalid_rate_or_count_rejects(kwargs):
+>    with pytest.raises(ValueError):QueueAnalyzer.mmc(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:585: Failed
+_____________ test_queueing_invalid_rate_or_count_rejects[kwargs2] _____________
+
+kwargs = {'arrival_rate': 1, 'service_rate': 2, 'servers': True}
+
+    @pytest.mark.parametrize('kwargs',[
+     {'arrival_rate':float('nan'),'service_rate':1,'servers':2},
+     {'arrival_rate':1,'service_rate':float('inf'),'servers':2},
+     {'arrival_rate':1,'service_rate':2,'servers':True},
+     {'arrival_rate':1,'service_rate':2,'servers':10001},
+    ])
+    def test_queueing_invalid_rate_or_count_rejects(kwargs):
+>    with pytest.raises(ValueError):QueueAnalyzer.mmc(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:585: Failed
+_____________ test_queueing_invalid_rate_or_count_rejects[kwargs3] _____________
+
+kwargs = {'arrival_rate': 1, 'service_rate': 2, 'servers': 10001}
+
+    @pytest.mark.parametrize('kwargs',[
+     {'arrival_rate':float('nan'),'service_rate':1,'servers':2},
+     {'arrival_rate':1,'service_rate':float('inf'),'servers':2},
+     {'arrival_rate':1,'service_rate':2,'servers':True},
+     {'arrival_rate':1,'service_rate':2,'servers':10001},
+    ])
+    def test_queueing_invalid_rate_or_count_rejects(kwargs):
+>    with pytest.raises(ValueError):QueueAnalyzer.mmc(**kwargs)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:585: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:524: in mmc
+    sum_terms = sum(a ** n / math.factorial(n) for n in range(servers))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+.0 = <range_iterator object at 0x7f132f59b0f0>
+
+>   sum_terms = sum(a ** n / math.factorial(n) for n in range(servers))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   OverflowError: int too large to convert to float
+
+backend/app/modules/m20_general_cognitive_worker/strategy.py:524: OverflowError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy.py::test_erlang_c_large_server_count_is_finite_and_matches_mm1_at_one_server
+FAILED tests/modules/test_m20_strategy.py::test_queueing_invalid_rate_or_count_rejects[kwargs0]
+FAILED tests/modules/test_m20_strategy.py::test_queueing_invalid_rate_or_count_rejects[kwargs1]
+FAILED tests/modules/test_m20_strategy.py::test_queueing_invalid_rate_or_count_rejects[kwargs2]
+FAILED tests/modules/test_m20_strategy.py::test_queueing_invalid_rate_or_count_rejects[kwargs3]
+5 failed, 68 deselected in 1.51s

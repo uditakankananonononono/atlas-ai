@@ -495,41 +495,54 @@ class QueueAnalyzer:
     service rate) are flagged, never smoothed over."""
 
     @staticmethod
+    def _rates(arrival_rate, service_rate, servers):
+        if type(servers) is not int or not 1 <= servers <= 10000:
+            raise ValueError("servers must be integer1..10000")
+        if any(type(value) not in (int, float) or not math.isfinite(value) for value in (arrival_rate, service_rate)) or arrival_rate < 0 or service_rate <= 0:
+            raise ValueError("finite arrival>=0 and service>0 rates required")
+        offered = arrival_rate / service_rate
+        if not math.isfinite(offered):raise ValueError("offered load exceeds numeric range")
+        return offered
+
+    @staticmethod
     def mm1(*, arrival_rate: float, service_rate: float) -> dict[str, Any]:
-        if arrival_rate < 0 or service_rate <= 0:
-            raise ValueError("need arrival_rate >= 0 and service_rate > 0")
-        rho = arrival_rate / service_rate
-        if rho >= 1.0:
-            return {"stable": False, "utilization": rho,
-                    "reading": "unstable: arrivals outpace service; the queue grows without bound",
-                    "assumptions": ["M/M/1: Poisson arrivals, exponential service"]}
-        return {"stable": True, "utilization": rho,
-                "avg_in_system": rho / (1 - rho),
-                "avg_in_queue": rho * rho / (1 - rho),
-                "avg_wait_in_system": 1.0 / (service_rate - arrival_rate),
-                "avg_wait_in_queue": arrival_rate / (service_rate * (service_rate - arrival_rate)),
-                "reading": f"at {rho:.0%} utilization the wait is dominated by the 1/(1-rho) blowup",
-                "assumptions": ["M/M/1: Poisson arrivals, exponential service, one server"]}
+        out = QueueAnalyzer.mmc(arrival_rate=arrival_rate, service_rate=service_rate, servers=1)
+        if out["stable"]:
+            rho = out["utilization"]
+            out["avg_in_system"] = rho / (1-rho)
+            out["avg_in_queue"] = rho * rho / (1-rho)
+        out["assumptions"] = ["Supplied stationary M/M/1: Poisson arrivals, exponential service, one server"]
+        return out
 
     @staticmethod
     def mmc(*, arrival_rate: float, service_rate: float, servers: int) -> dict[str, Any]:
-        if servers < 1 or arrival_rate < 0 or service_rate <= 0:
-            raise ValueError("invalid rates or server count")
-        rho = arrival_rate / (servers * service_rate)
-        if rho >= 1.0:
+        offered = QueueAnalyzer._rates(arrival_rate, service_rate, servers)
+        rho = offered / servers
+        assumptions = ["Supplied stationary M/M/c: Poisson arrivals, exponential service, identical servers",
+                       "Numeric log-domain ErlangC; no measured arrival/service-fit verification"]
+        if rho >= 1:
             return {"stable": False, "utilization": rho,
-                    "reading": f"unstable: need more than {arrival_rate / service_rate:.2f} servers",
-                    "assumptions": ["M/M/c: Poisson arrivals, exponential service"]}
-        a = arrival_rate / service_rate
-        sum_terms = sum(a ** n / math.factorial(n) for n in range(servers))
-        erlang_c = (a ** servers / (math.factorial(servers) * (1 - rho))) / \
-                   (sum_terms + a ** servers / (math.factorial(servers) * (1 - rho)))
-        wq = erlang_c / (servers * service_rate - arrival_rate)
-        return {"stable": True, "utilization": rho, "p_wait": erlang_c,
-                "avg_wait_in_queue": wq,
-                "avg_wait_in_system": wq + 1.0 / service_rate,
-                "reading": f"P(an arrival waits) = {erlang_c:.0%} (Erlang C)",
-                "assumptions": ["M/M/c: Poisson arrivals, exponential service, c identical servers"]}
+                    "status": "supplied_mm_c_stationary_formula_only",
+                    "reading": "unstable under supplied stationary rates", "assumptions": assumptions}
+        if offered == 0:
+            probability = 0.0
+        else:
+            loga = math.log(offered)
+            logs = [n * loga - math.lgamma(n+1) for n in range(servers)]
+            tail = servers * loga - math.lgamma(servers+1) - math.log1p(-rho)
+            largest = max(max(logs), tail)
+            denominator = math.fsum(math.exp(value-largest) for value in logs) + math.exp(tail-largest)
+            probability = math.exp(tail-largest) / denominator
+        # Avoid c*service overflow by calculating reciprocal in stages.
+        gap_fraction = servers * (1-rho)
+        wait = probability / gap_fraction / service_rate
+        system = wait + 1 / service_rate
+        if not math.isfinite(wait) or not math.isfinite(system):
+            raise ValueError("wait exceeds numeric range")
+        return {"stable": True, "utilization": rho, "p_wait": probability,
+                "avg_wait_in_queue": wait, "avg_wait_in_system": system,
+                "status": "supplied_mm_c_stationary_formula_only",
+                "reading": "ErlangC under supplied stationary assumptions", "assumptions": assumptions}
 
 
 # ---------------------------------------------------------------- row 72 --
