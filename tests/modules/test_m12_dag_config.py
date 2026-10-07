@@ -109,3 +109,12 @@ def test_base_executor_catalog_preflight_stops_eligible_sibling_before_call():
  wf=Workflow.from_yaml('nodes: [{id: a, task: research, config: {latency_tolerance_ms: 100}}, {id: b, task: research, config: {latency_tolerance_ms: 99}}]')
  with pytest.raises(WorkflowValidationError,match='node b: no eligible model'):asyncio.run(build_dag_engine(executor).run(wf,{'tenant_id':'fixture'}))
  assert not calls
+
+@pytest.mark.parametrize('extra',['model_id: unconfigured-model','model: unconfigured-model','budget_cent: 999','temperature: 0.2'])
+def test_shipped_unknown_model_node_options_not_silently_ignored(extra):
+ calls=[]
+ class Service:
+  async def execute(self,*args):calls.append(args);return ModelResult('fixture','fixture',.9)
+ wf=Workflow.from_yaml('nodes: [{id: a, task: research}, {id: b, task: research, config: {'+extra+'}}]')
+ with pytest.raises(WorkflowValidationError,match='unsupported model node options'):asyncio.run(build_dag_engine(Service()).run(wf,{'tenant_id':'fixture'}))
+ assert not calls

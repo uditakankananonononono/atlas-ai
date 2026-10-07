@@ -196,3 +196,11 @@ def test_response_discarded_key_paths_identify_distinct_positions():
  result,paths=safe_workflow_json(value)
  assert result=={'normal':'retained'} and len(set(paths))==4
  assert paths==['$.<nontext-key:0>','$.<nontext-key:1>','$.<invalid-text-key:3>','$.<invalid-text-key:4>']
+
+@pytest.mark.asyncio
+async def test_generic_dag_retains_custom_config_contract():
+ calls=[]
+ async def runner(task,config,context):calls.append(config);return {'supplied':config}
+ config={'temperature':.2,'custom':{'flag':True}}
+ result=await DagEngine(runner).run(Workflow.from_yaml('nodes: [{id: a, task: custom, config: {temperature: 0.2, custom: {flag: true}}}]'),{})
+ assert calls==[config] and result=={'a':{'supplied':config}}
