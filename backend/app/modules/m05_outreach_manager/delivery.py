@@ -256,11 +256,13 @@ class DeliveryService:
             ),
         )
 
-    @staticmethod
     def _payload_mismatch(
-        message: OutreachMessage, approval: ApprovalView, recipient: str
+        self, message: OutreachMessage, approval: ApprovalView, recipient: str
     ) -> list[str]:
         expected = {
+            "tenant_id": self.campaigns.tenant_id,
+            "campaign_id": message.campaign_id,
+            "contact_id": message.contact_id,
             "message_id": message.id,
             "recipient": recipient,
             "subject": message.subject,
