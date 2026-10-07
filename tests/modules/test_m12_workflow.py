@@ -274,3 +274,16 @@ async def test_running_dag_uses_entry_input_snapshot_despite_caller_rebinding():
  await started.wait();inputs['tenant_id']='caller-changed';release.set()
  await running
  assert seen==[('a','original'),('b','original')] and inputs['tenant_id']=='caller-changed'
+
+@pytest.mark.asyncio
+async def test_descendant_cannot_rewrite_top_level_parent_for_parallel_consumer():
+ seen=[]
+ async def runner(task,config,context):
+  if task=='parent':return {'text':'original','model_id':'fixture'}
+  seen.append((task,context['parents']['a']['text']))
+  if task=='mutator':context['parents']['a']['text']='forged'
+  return {'text':task}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: parent}, {id: b, task: mutator, depends_on: [a]}, {id: c, task: consumer, depends_on: [a]}]')
+ result=await DagEngine(runner).run(wf,{})
+ assert seen==[('mutator','original'),('consumer','original')]
+ assert result['a']=={'text':'original','model_id':'fixture'}
