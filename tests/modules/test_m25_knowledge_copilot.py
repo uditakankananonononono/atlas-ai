@@ -68,3 +68,11 @@ def test_m25_25_live_exam_context_refuses_real_time_answer_assistance():
   CopilotRequest(mode='meeting',prompt='what should I say',citation_item_ids=[item.id],observed_context=['Lockdown Browser exam in progress']),
  ]:
   out=s.copilot('tenant-a','actor-a',sid,request);assert out.refused and out.reason=='live_assessment_context' and out.citations==[]
+
+
+def test_m25_hz8_invalid_redaction_pattern_rejected():
+    # KILL: an invalid regex compiled at ingest time and escaped as a raw
+    # re.error 500. (Catastrophic-backtracking DoS remains a carried gap.)
+    import pydantic
+    from app.modules.m25_knowledge_copilot.schemas import Redaction
+    with pytest.raises(pydantic.ValidationError): Redaction(pattern='([')

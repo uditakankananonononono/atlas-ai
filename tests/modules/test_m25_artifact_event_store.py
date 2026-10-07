@@ -16,3 +16,16 @@ def test_store_rejects_bad_base64_and_byte_hash_mismatch(tmp_path):
  store=ArtifactEventStore(tmp_path/'events.db');_,e=event()
  with pytest.raises(ValueError,match='valid base64'):store.put(e,'%%%')
  with pytest.raises(ValueError,match='hash mismatch'):store.put(e,base64.b64encode(b'wrong').decode())
+
+
+def test_m25_hz8_conflicting_duplicate_is_valueerror_not_integrityerror(tmp_path):
+    # KILL: the INSERT path had no IntegrityError boundary; a lost race leaked
+    # a raw sqlite3.IntegrityError (500). Policy unchanged: same content
+    # idempotent, different content rejected.
+    from app.modules.m25_knowledge_copilot.artifact_events import ArtifactEventStore
+    st=ArtifactEventStore(str(tmp_path/'e.db'))
+    ev={'event_id':'e1','tenant_id':'t1','module_id':25,'artifact_id':'a','artifact_kind':'k','content_sha256':'a'*64,'observed_at':'t','producer_version':'1'}
+    st.put(ev)
+    import pytest
+    with pytest.raises(ValueError): st.put({**ev,'artifact_kind':'other'})
+    assert st.put(ev)['created'] is False
