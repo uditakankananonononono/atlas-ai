@@ -463,10 +463,14 @@ class GCWRuntime:
             if self._persisted_actions:
                 del self.dispatcher.records[:self._persisted_actions]
                 self._persisted_actions = 0
-        new_traces = self.loop.traces[self._persisted_traces:]
-        for trace in new_traces:
-            self.repo.save_trace(trace)
-            self._persisted_traces += 1
+        try:
+            for trace in self.loop.traces[self._persisted_traces:]:
+                self.repo.save_trace(trace)
+                self._persisted_traces += 1
+        finally:
+            if self._persisted_traces:
+                del self.loop.traces[:self._persisted_traces]
+                self._persisted_traces = 0
 
     def _retrieve_review_lessons(self, context: TaskContext) -> None:
         """Bounded review suggestions, never facts or authorization for effects."""

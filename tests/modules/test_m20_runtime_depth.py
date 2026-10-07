@@ -679,7 +679,8 @@ def test_runtime_restart_persists_first_new_traces_without_skipping_history_coun
  restarted=make_runtime(hydrate_repo=repo)
  new=restarted.submit_goal('new fixture unavailable')
  new_traces=repo.list_traces(task_id=new.id)
- assert new_traces and {t.id for t in new_traces}=={t.id for t in restarted.loop.traces}
+ assert new_traces and all(t.task_id==new.id for t in new_traces)
+ assert restarted.loop.traces==[]
  assert old_ids<={t.id for t in repo.list_traces()}
 
 
@@ -691,7 +692,8 @@ def test_surprise_persistence_flushes_pending_trace_before_new_reflection():
  runtime.loop._trace('fixture','pending trace before evaluation',task_id=context.id)
  runtime._evaluate_expectations(context)
  traces=repo.list_traces(task_id=context.id)
- assert len(traces)==2 and {t.id for t in traces}=={t.id for t in runtime.loop.traces}
+ assert len(traces)==2 and {t.phase for t in traces}=={'fixture','reflect'}
+ assert runtime.loop.traces==[]
  runtime._persist_context(context)
  assert len(repo.list_traces(task_id=context.id))==2
 
@@ -2068,3 +2070,32 @@ def test_preflight_reveals_missing_actual_output_path_and_resolved_schema_error(
   step=runtime.preflight_task(task.id)['steps'][1]
   assert step['argument_check']==('dependency_output_path_invalid' if path==['missing'] else 'resolved_dependency_schema_invalid')
   assert len(repo.list_actions(task_id=task.id))==1
+
+
+def test_committed_trace_buffer_drains_but_task_journal_remains_after_many_workflows():
+ runtime,repo=make_runtime()
+ for i in range(10):
+  task=runtime.submit_goal(f'fixture trace {i}',run_immediately=False)
+  runtime.prepare_supplied_plan(task.id,steps=[{'title':'sum','tool':'csv_summary','arguments':{'csv_text':'amount\n42\n','value_column':'amount'}}])
+  runtime.run_task(task.id)
+  assert runtime.loop.traces==[]
+  assert any(t.phase=='act' and 'succeeded' in t.detail for t in repo.list_traces(task_id=task.id))
+ assert len(repo.list_episodes())==10
+
+
+def test_partial_trace_flush_keeps_only_uncommitted_entries(monkeypatch):
+ runtime,repo=make_runtime();task=runtime.submit_goal('fixture trace flush',run_immediately=False)
+ for i in range(3):runtime.loop._trace('fixture',str(i),task_id=task.id)
+ pending_ids=[t.id for t in runtime.loop.traces]
+ original=repo.save_trace;calls=0
+ def fail_second(trace):
+  nonlocal calls
+  calls+=1
+  if calls==2:raise RuntimeError('fixture write failure')
+  return original(trace)
+ monkeypatch.setattr(repo,'save_trace',fail_second)
+ with pytest.raises(RuntimeError):runtime._persist_context(task)
+ assert [t.id for t in runtime.loop.traces]==pending_ids[1:]
+ runtime._persist_context(task)
+ assert runtime.loop.traces==[]
+ assert {t.id for t in repo.list_traces(task_id=task.id)}==set(pending_ids)
