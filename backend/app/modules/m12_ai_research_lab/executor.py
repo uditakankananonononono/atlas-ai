@@ -37,6 +37,8 @@ class ResearchExecutor:
     async def execute(self, req:RouteRequest, prompt:str, context:dict[str,Any]|None=None)->ModelResult:
         if type(req.tenant_id) is not str or not req.tenant_id.strip():raise ValueError("research tenant must be nonblank text")
         if type(prompt) is not str or not prompt.strip():raise ValueError("research prompt must be nonblank text")
+        try:prompt.encode("utf-8")
+        except UnicodeEncodeError as error:raise ValueError("research prompt must encode as UTF-8") from error
         decision=self.router.route(req); diagnostics={"route_scores":{key:value if isfinite(value) else None for key,value in decision.scores.items()},"route_reasons":decision.reasons}; choices=(decision.primary,)+decision.fallbacks; history=[]; context=dict(context or {})
         for attempt in range(min(self.policy.max_attempts,len(choices))):
             model=choices[attempt]

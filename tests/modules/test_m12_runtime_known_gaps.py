@@ -244,3 +244,10 @@ def test_direct_executor_requires_nonblank_text_prompt_before_generation(prompt)
   async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
  with pytest.raises(ValueError,match='prompt'):asyncio.run(ResearchExecutor(ModelRouter(models()),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),prompt))
  assert not calls
+
+def test_direct_prompt_unencodable_as_utf8_rejected_before_provider():
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ with pytest.raises(ValueError,match='UTF-8'):asyncio.run(ResearchExecutor(ModelRouter(models()),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'unencodable\ud800'))
+ assert not calls

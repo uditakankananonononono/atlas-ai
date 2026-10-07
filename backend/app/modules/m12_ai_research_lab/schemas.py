@@ -7,6 +7,8 @@ class RunIn(BaseModel):
     @classmethod
     def nonblank_prompt(cls,value):
         if not value.strip():raise ValueError('prompt must be nonblank text')
+        try:value.encode('utf-8')
+        except UnicodeEncodeError as error:raise ValueError('prompt must encode as UTF-8') from error
         return value
 class WorkflowIn(BaseModel):
     model_config=ConfigDict(extra="forbid")
