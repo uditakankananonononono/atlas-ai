@@ -22,3 +22,7 @@ def safe_workflow_json(value):
             return [walk(child,path+f'[{i}]',depth+1) for i,child in enumerate(item)]
         finally:active.remove(id(item))
     return walk(value,'$'),invalid
+
+def model_result_fields(result):
+    """Shallow projection: diagnostic traversal owns cycles, not asdict."""
+    return {key:getattr(result,key) for key in ("text","model_id","confidence","logprobs","usage","metadata")}

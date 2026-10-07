@@ -2,8 +2,7 @@ from fastapi import APIRouter,Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from .models import RouteRequest
 from .executor import ConfidenceUnavailable
-from dataclasses import asdict
-from .response_json import safe_workflow_json
+from .response_json import safe_workflow_json,model_result_fields
 from .schemas import RunIn,WorkflowIn
 from .workflow import Workflow,WorkflowValidationError,WorkflowNodeFailure
 from app.core.providers import ProviderOutcomeUnknown
@@ -24,8 +23,16 @@ def get_dag_engine():
  return _dag
 @router.post("/run")
 async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
-    try:return await service.execute(RouteRequest(body.task_type,body.output_tokens,body.budget_cents,body.latency_tolerance_ms,tenant.tenant_id),body.prompt)
-    except ConfidenceUnavailable as error:raise HTTPException(422,{"state":"review_required","reason":str(error),"result":asdict(error.result)}) from error
+    try:
+        result=await service.execute(RouteRequest(body.task_type,body.output_tokens,body.budget_cents,body.latency_tolerance_ms,tenant.tenant_id),body.prompt)
+        safe,invalid=safe_workflow_json(model_result_fields(result))
+        if invalid:raise HTTPException(422,{"state":"invalid_output","result":safe,"invalid_json_paths":invalid,"retry_allowed":False})
+        return safe
+    except ConfidenceUnavailable as error:
+        detail={"state":"review_required","reason":str(error),"result":model_result_fields(error.result),"retry_allowed":False}
+        safe,invalid=safe_workflow_json(detail)
+        if invalid:safe["invalid_json_paths"]=invalid
+        raise HTTPException(422,safe) from error
     except RuntimeError as error: raise HTTPException(422,str(error)) from error
 @router.post("/workflows/run")
 async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tenant),engine=Depends(get_dag_engine)):
@@ -39,7 +46,7 @@ async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tena
         failures=[]
         for node_id,cause in error.failures:
             item={"node_id":node_id,"retry_allowed":False}
-            if isinstance(cause,ConfidenceUnavailable):item.update({"state":"review_required","result":{key:getattr(cause.result,key) for key in ("text","model_id","confidence","logprobs","usage","metadata")}})
+            if isinstance(cause,ConfidenceUnavailable):item.update({"state":"review_required","result":model_result_fields(cause.result)})
             elif isinstance(cause,ProviderOutcomeUnknown):item.update({"state":"unknown","reason":str(cause)})
             else:item.update({"state":"cancelled" if isinstance(cause,asyncio.CancelledError) else "failed","reason":str(cause)})
             failures.append(item)
