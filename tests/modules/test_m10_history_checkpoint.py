@@ -195,3 +195,21 @@ def test_work_claim_blocks_concurrent_null_watch_initialization(repo,monkeypatch
   assert insertion.result(timeout=10);watch.result(timeout=10)
  assert repo.get_account('account').history_id is None
  assert repo.draft_work('m','account')['phase']=='ready'
+
+
+def test_preinsert_completion_rolls_back_if_message_insert_fails(repo):
+ data={'raw_digest':'fixture','actions':[],'embedding':[]}
+ assert repo.claim_ingest_work('account','g',data)
+ for expected,target in [('extraction_inflight','extraction_done'),('extraction_done','embedding_inflight'),('embedding_inflight','effects_done')]:assert repo.transition_ingest_work('account','g',expected,target,data)
+ def fail(mapper,conn,target):raise RuntimeError('fixture message row failure')
+ event.listen(EmailMessageRow,'before_insert',fail)
+ # Core insert uses SQL directly. Inject failure at database execution boundary.
+ def fail_sql(conn,cursor,statement,params,context,many):
+  if statement.lstrip().upper().startswith('INSERT INTO M10_EMAIL_MESSAGES'):raise RuntimeError('fixture message row failure')
+ engine=repo.sessions.kw['bind'];event.listen(engine,'before_cursor_execute',fail_sql)
+ try:
+  with pytest.raises(RuntimeError,match='message row failure'):
+   repo.save_message(message_id='m',account_id='account',gmail_id='g',thread_id=None,history_id=None,subject='fixture',sender='s',recipients=[],snippet='',body_text='',received_at=None,labels=[],headers={},category='personal',category_confidence=1,embedding=None,unsubscribe_url=None,ingest_work_data=data)
+ finally:
+  event.remove(engine,'before_cursor_execute',fail_sql);event.remove(EmailMessageRow,'before_insert',fail)
+ assert repo.ingest_work('account','g')['phase']=='effects_done' and repo.list_messages()==[]
