@@ -950,3 +950,7 @@ Source c5b11ab: 496 files/20 isolated batches/9944passed/0failed/14skipped/26sum
 ## Supplied optimism metric inputs and snapshots
 
 Eight reproduced failures retained: invalidsampleminimum/confidence/outcometypes/publicrecordeditsrewrite signederror. Positiveintegerminsamples; strictfinite0..1numericconfidence/notbool/exactbooloutcome; private records/detachedread-onlymapping.134foresightHTTPpass1warning; recorded87adjacent2365pass2warnings39.47s. Snapshotedit leaves signederror0.8/count1. Supplied-labelmeanerror/heuristicsubtraction only, not verifiedoutcomes or fittedpredictivecalibration. Transportcoercion separate. Latestfull9944passsourcec5b11ab predatesonelaterfix.
+
+## Optimism HTTP strict numeric and outcome types
+
+Six actual failures retained: bool/stringconfidence/stringintegeroutcome coerce past rawguards. Strictfinite0..1numericfields/StrictBooloutcome422beforemutation.140foresightHTTPpass1warning; recorded87adjacent2371pass2warnings39.29s. Transport consistency only, not truth of suppliedoutcomes or empiricalpredictivecalibration. Latestfull9944passsourcec5b11ab predatestwolaterfixes.

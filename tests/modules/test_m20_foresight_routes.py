@@ -360,3 +360,20 @@ def test_simulation_http_actual_is_strict_numeric(client, actual):
     response = c.post(f'/api/modules/20/meta/simulations/{record.record_id}/resolve', json={'actual': actual})
     assert response.status_code == 422
     assert service.sim_fidelity.records[record.record_id].actual is None
+
+
+@pytest.mark.parametrize('field,value', [('predicted_confidence', True), ('predicted_confidence', '0.8'), ('succeeded', 'false'), ('succeeded', 1)])
+def test_optimism_http_rejects_coerced_record_inputs(client, field, value):
+    c, service = client
+    body = {'domain': 'fixture', 'predicted_confidence': 0.8, 'succeeded': False}
+    body[field] = value
+    response = c.post('/api/modules/20/meta/optimism/records', json=body)
+    assert response.status_code == 422
+    assert service.optimism.records == {}
+
+
+@pytest.mark.parametrize('confidence', [True, '0.8'])
+def test_optimism_http_rejects_coerced_adjust_inputs(client, confidence):
+    c, _ = client
+    response = c.post('/api/modules/20/meta/optimism/adjust', json={'domain': 'fixture', 'confidence': confidence})
+    assert response.status_code == 422

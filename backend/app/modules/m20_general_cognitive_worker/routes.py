@@ -764,13 +764,13 @@ class OverrunCorrectRequest(BaseModel):
 
 class OptimismRecordRequest(BaseModel):
     domain: str = Field(min_length=1)
-    predicted_confidence: float = Field(ge=0.0, le=1.0)
-    succeeded: bool
+    predicted_confidence: float = Field(ge=0.0, le=1.0, strict=True, allow_inf_nan=False)
+    succeeded: StrictBool
 
 
 class OptimismAdjustRequest(BaseModel):
     domain: str = Field(min_length=1)
-    confidence: float = Field(ge=0.0, le=1.0)
+    confidence: float = Field(ge=0.0, le=1.0, strict=True, allow_inf_nan=False)
 
 
 class ScenarioRequest(BaseModel):
