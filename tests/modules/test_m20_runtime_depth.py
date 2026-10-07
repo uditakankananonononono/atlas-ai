@@ -1560,3 +1560,37 @@ def test_preflight_clean_static_inputs_never_grant_dispatch_permission():
     assert report['ready_for_dispatch'] is False
     assert report['steps'][0]['effective_risk']=='external'
     assert not runtime.safety.approvals.requests
+
+
+def test_runtime_builtin_csv_summary_executes_real_data_without_model():
+    runtime, repo = make_runtime()
+    task = runtime.submit_goal('summarize supplied expenses', run_immediately=False)
+    runtime.prepare_supplied_plan(task.id, steps=[{'title':'summarize expenses','tool':'csv_summary',
+        'arguments':{'csv_text':'team,amount\nops,10\nops,20\nsales,5\n', 'value_column':'amount','group_column':'team'}}])
+    report = runtime.preflight_task(task.id)
+    assert report['static_checks_passed'] is True
+    result = runtime.run_task(task.id)
+    assert result.state == TaskState.SUCCEEDED
+    output = result.plan[0].output
+    assert output['rows'] == 3
+    assert output['groups'] == [{'group':'ops','count':2,'sum':30.0,'mean':15.0,'min':10.0,'max':20.0},
+                                {'group':'sales','count':1,'sum':5.0,'mean':5.0,'min':5.0,'max':5.0}]
+    assert output['source_verified'] is False
+    assert repo.list_actions(task_id=task.id)[0].result == output
+
+
+@pytest.mark.parametrize('csv_text', ['amount,amount\n1,2\n','amount\nnan\n','amount\nnot numeric\n','amount,x\n1\n','amount\n','amount\n1e308\n1e308\n'])
+def test_csv_summary_rejects_bad_data_without_success(csv_text):
+    import asyncio
+    runtime,_=make_runtime()
+    result=asyncio.run(runtime.dispatcher.dispatch('csv_summary',{'csv_text':csv_text,'value_column':'amount'}))
+    assert not result.succeeded and result.result is None
+
+
+def test_csv_summary_bounds_rows_groups_and_preserves_zero_negative_values():
+    from app.modules.m20_general_cognitive_worker.local_tools import summarize_csv
+    with pytest.raises(ValueError):summarize_csv({'csv_text':'amount\n'+'1\n'*1001,'value_column':'amount'})
+    with pytest.raises(ValueError):summarize_csv({'csv_text':'team,amount\n'+''.join(f'{i},1\n' for i in range(101)),
+                                               'value_column':'amount','group_column':'team'})
+    result=summarize_csv({'csv_text':'amount\n0\n-4\n6\n','value_column':'amount'})
+    assert result['groups'][0]['sum']==2 and result['groups'][0]['min']==-4
