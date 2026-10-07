@@ -72,7 +72,7 @@ class _GenerationGuard:
     def chat(self,*args,**kwargs):
         from instinct_models.providers import ProviderError
         try:return self.provider.chat(*args,**kwargs)
-        except (ProviderError,TimeoutError,ConnectionError,ValueError,KeyError,TypeError) as exc:
+        except (ProviderError,OSError,ValueError,KeyError,TypeError) as exc:
             raise SharedAttemptUnknown("Shared generation attempt failed; outcome unknown") from exc
 
 class SharedModelError(RuntimeError):
