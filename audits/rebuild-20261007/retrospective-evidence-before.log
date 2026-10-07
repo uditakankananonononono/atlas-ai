@@ -1,0 +1,47 @@
+........................................................................ [ 87%]
+........FF                                                               [100%]
+=================================== FAILURES ===================================
+_____ test_retrospective_reports_actual_action_evidence_not_trace_keywords _____
+
+    def test_retrospective_reports_actual_action_evidence_not_trace_keywords():
+        import asyncio
+        runtime, repo = make_runtime()
+        async def handler(args):
+            if args['fail']:
+                raise RuntimeError('retained diagnostic')
+            return {'value': 'error is a valid data label'}
+        runtime.tools.register(ToolSpec(name='fixture_report', description='fixture',
+                                       max_retries=1, risk=Risk.READ), handler)
+        task = TaskContext(goal='fixture')
+        for failed in (False, True):
+            asyncio.run(runtime.dispatcher.dispatch('fixture_report', {'fail': failed}, task_id=task.id))
+        runtime._persist_context(task)
+>       report = runtime.close(task.id)['retrospective']['execution_report']
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'execution_report'
+
+tests/modules/test_m20_runtime_depth.py:1211: KeyError
+____ test_retrospective_empty_cancelled_task_does_not_claim_goal_went_well _____
+
+    def test_retrospective_empty_cancelled_task_does_not_claim_goal_went_well():
+        runtime, _ = make_runtime()
+        task = TaskContext(goal='not executed')
+        runtime._persist_context(task)
+        retro = runtime.close(task.id)['retrospective']
+>       assert retro['went_well'] == []
+E       AssertionError: assert ['goal accepted'] == []
+E         
+E         Left contains one more item: 'goal accepted'
+E         Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:1228: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_retrospective_reports_actual_action_evidence_not_trace_keywords
+FAILED tests/modules/test_m20_runtime_depth.py::test_retrospective_empty_cancelled_task_does_not_claim_goal_went_well
+2 failed, 80 passed, 1 warning in 4.92s
