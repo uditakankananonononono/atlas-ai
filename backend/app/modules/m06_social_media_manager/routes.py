@@ -469,6 +469,14 @@ def get_schedule(schedule_id: str, scheduler: Scheduler = Depends(get_scheduler)
         raise HTTPException(status_code=404, detail="schedule entry not found") from error
 
 
+@router.post('/schedules/{schedule_id}/final-review',status_code=201)
+def prepare_final_review(schedule_id:str,tenant:TenantContext=Depends(require_tenant),scheduler:Scheduler=Depends(get_scheduler)):
+    from app.modules.m00_approval_center.service import default_service
+    try:return scheduler.request_final_review(schedule_id,tenant.tenant_id,default_service())
+    except ScheduleNotFoundError as error:raise HTTPException(404,'schedule entry not found') from error
+    except ScheduleStateError as error:raise HTTPException(409,str(error)) from error
+
+
 @router.post("/schedules/{schedule_id}/cancel", response_model=ScheduleEntryOut)
 def cancel_schedule(schedule_id: str, scheduler: Scheduler = Depends(get_scheduler)) -> object:
     try:
