@@ -1,4 +1,4 @@
-import {cleanup,render,screen,waitFor} from "@testing-library/react";
+import {act,cleanup,render,screen,waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {afterEach,beforeEach,describe,expect,it,vi} from "vitest";
 import ExecutiveDashboard from "./ExecutiveDashboard";
@@ -163,10 +163,30 @@ describe("Outreach approval card with contact timeline",()=>{
 });
 
 describe("Dashboard freshness claim",()=>{
- it.fails("does not call failed polling a live connection",async()=>{
+ it("does not call failed polling a live connection",async()=>{
   apiMock.snapshot.mockRejectedValue(new Error("snapshot unavailable"));
   render(<ExecutiveDashboard/>);
   await screen.findByText("snapshot unavailable");
   expect(screen.queryByText("Live")).toBeNull();
+  expect(screen.getByRole("status").textContent).toContain("Unavailable");
  });
+});
+
+it("keeps last successful data visibly stale after a refresh failure and recovers",async()=>{
+ let poll:()=>Promise<void>=async()=>{};
+ const timer=vi.spyOn(window,"setInterval").mockImplementation((callback,delay)=>{if(delay===30000)poll=callback as ()=>Promise<void>;return 123 as unknown as ReturnType<typeof window.setInterval>});
+ apiMock.rerunSchedules.mockResolvedValue(card);
+ render(<ExecutiveDashboard/>);
+ await screen.findByText("Agent 7 stalled");
+ expect(screen.getByRole("status").textContent).toContain("Updated");
+ apiMock.snapshot.mockRejectedValue(new Error("refresh unavailable"));
+ await act(async()=>{await poll()});
+ expect(screen.getByRole("status").textContent).toContain("Stale data");
+ expect(screen.getByRole("status").textContent).toContain("Last updated");
+ expect(screen.getByText("Agent 7 stalled")).toBeTruthy();
+ apiMock.snapshot.mockResolvedValue({version:2,last_sequence:1,generated_at:new Date().toISOString(),data:{}});
+ await act(async()=>{await poll()});
+ expect(screen.getByRole("status").textContent).toContain("Updated");
+ expect(screen.queryByText("refresh unavailable")).toBeNull();
+ timer.mockRestore();
 });
