@@ -217,12 +217,23 @@ class EmotionalStateModel:
 
 
 class UncertaintyGate:
-    """Uncertainty expression (spec 4.2.8): quantify confidence, ask
-    targeted questions, never guess recklessly on high-stakes matters."""
+    """Question generation from caller confidence and caller high-stakes flag.
+
+    Does not measure confidence or establish epistemic/high-stakes safety.
+    """
 
     def __init__(self, *, ask_threshold: float = 0.6, high_stakes_threshold: float = 0.85) -> None:
+        self._validate_probability(ask_threshold)
+        self._validate_probability(high_stakes_threshold)
+        if high_stakes_threshold < ask_threshold:
+            raise ValueError("high-stakes threshold cannot be lower than ask threshold")
         self.ask_threshold = ask_threshold
         self.high_stakes_threshold = high_stakes_threshold
+
+    @staticmethod
+    def _validate_probability(value: float) -> None:
+        if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
+            raise ValueError("confidence and thresholds must be finite numbers in [0,1], not bool")
 
     def assess(
         self,
@@ -232,7 +243,9 @@ class UncertaintyGate:
         gaps: list[str] | None = None,
         high_stakes: bool = False,
     ) -> Uncertainty:
-        confidence = max(0.0, min(1.0, confidence))
+        self._validate_probability(confidence)
+        if type(high_stakes) is not bool:
+            raise ValueError("high_stakes must be an exact bool")
         threshold = self.high_stakes_threshold if high_stakes else self.ask_threshold
         questions = [f"Can you confirm: {gap}?" for gap in (gaps or [])]
         if confidence < threshold and not questions:

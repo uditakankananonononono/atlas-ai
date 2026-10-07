@@ -137,3 +137,24 @@ def test_ideation_finite_weights_that_overflow_are_rejected_before_mutation():
     with pytest.raises(ValueError):
         IdeationEngine().converge(ideas, {'x': 1e308, 'y': 1e308})
     assert ideas[0].score == 7
+
+
+def test_uncertainty_rejects_invalid_confidence_instead_of_silent_certainty():
+    import pytest
+    for confidence in [float('nan'), float('inf'), -0.1, 1.1, True, '0.9']:
+        with pytest.raises(ValueError):
+            UncertaintyGate().assess(confidence)
+
+
+def test_uncertainty_thresholds_are_valid_probabilities_and_high_stakes_not_lower():
+    import pytest
+    for kwargs in [{'ask_threshold': float('nan')}, {'ask_threshold': True},
+                   {'high_stakes_threshold': 1.1}, {'ask_threshold': 0.9, 'high_stakes_threshold': 0.2}]:
+        with pytest.raises(ValueError):
+            UncertaintyGate(**kwargs)
+
+
+def test_uncertainty_high_stakes_flag_is_exact_bool():
+    import pytest
+    with pytest.raises(ValueError):
+        UncertaintyGate().assess(0.8, high_stakes='false')
