@@ -192,6 +192,7 @@ class DurableHTNPlanner(HTNPlanner):
         return self._review_status.get(name, "active")
 
     def register_method(self, method: HTNMethod, *, status: str = "active") -> HTNMethod:
+        method = self._validated_method(method)
         existing = self.methods.get(method.name)
         if existing is not None:
             method = method.model_copy(deep=True, update={"id": existing.id})

@@ -1,0 +1,90 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+___ test_library_instantiation_resets_unearned_terminal_states_and_approval ____
+
+    def test_library_instantiation_resets_unearned_terminal_states_and_approval():
+     planner=HTNPlanner()
+     planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='compute',state=TaskState.SUCCEEDED,attempts=2,approval_id='old',result_summary='not actually executed')]))
+     node=planner.decompose('fixture')[0]
+>    assert node.state==TaskState.PENDING and node.attempts==0 and node.approval_id is None and node.result_summary==''
+E    AssertionError: assert (<TaskState.SU...: 'succeeded'> == <TaskState.PENDING: 'pending'>
+E      
+E      - pending
+E      + succeeded)
+
+tests/modules/test_m20_planner_scheduler.py:178: AssertionError
+_____ test_registered_library_rejects_invalid_or_ambiguous_dag[subtasks0] ______
+
+subtasks = [PlanNode(id='same', title='a', kind='task', tool=None, arguments={}, depends_on=[], risk=<Risk.READ: 'read'>, state=<....READ: 'read'>, state=<TaskState.PENDING: 'pending'>, max_attempts=3, attempts=0, approval_id=None, result_summary='')]
+
+    @pytest.mark.parametrize('subtasks',[
+     [PlanNode(id='same',title='a'),PlanNode(id='same',title='b')],
+     [PlanNode(title='a',depends_on=['missing'])],
+     [PlanNode(id='a',title='a',depends_on=['b']),PlanNode(id='b',title='b',depends_on=['a'])],
+     [PlanNode(title='same'),PlanNode(title='same'),PlanNode(title='c',depends_on=['same'])],
+    ])
+    def test_registered_library_rejects_invalid_or_ambiguous_dag(subtasks):
+     planner=HTNPlanner()
+>    with pytest.raises(PlanError):planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=subtasks))
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE PlanError
+
+tests/modules/test_m20_planner_scheduler.py:189: Failed
+_____ test_registered_library_rejects_invalid_or_ambiguous_dag[subtasks1] ______
+
+subtasks = [PlanNode(id='9ab5037f-d46c-4a81-9e45-c38dd4c6a8d2', title='a', kind='task', tool=None, arguments={}, depends_on=['mis....READ: 'read'>, state=<TaskState.PENDING: 'pending'>, max_attempts=3, attempts=0, approval_id=None, result_summary='')]
+
+    @pytest.mark.parametrize('subtasks',[
+     [PlanNode(id='same',title='a'),PlanNode(id='same',title='b')],
+     [PlanNode(title='a',depends_on=['missing'])],
+     [PlanNode(id='a',title='a',depends_on=['b']),PlanNode(id='b',title='b',depends_on=['a'])],
+     [PlanNode(title='same'),PlanNode(title='same'),PlanNode(title='c',depends_on=['same'])],
+    ])
+    def test_registered_library_rejects_invalid_or_ambiguous_dag(subtasks):
+     planner=HTNPlanner()
+>    with pytest.raises(PlanError):planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=subtasks))
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE PlanError
+
+tests/modules/test_m20_planner_scheduler.py:189: Failed
+_____ test_registered_library_rejects_invalid_or_ambiguous_dag[subtasks2] ______
+
+subtasks = [PlanNode(id='a', title='a', kind='task', tool=None, arguments={}, depends_on=['b'], risk=<Risk.READ: 'read'>, state=<....READ: 'read'>, state=<TaskState.PENDING: 'pending'>, max_attempts=3, attempts=0, approval_id=None, result_summary='')]
+
+    @pytest.mark.parametrize('subtasks',[
+     [PlanNode(id='same',title='a'),PlanNode(id='same',title='b')],
+     [PlanNode(title='a',depends_on=['missing'])],
+     [PlanNode(id='a',title='a',depends_on=['b']),PlanNode(id='b',title='b',depends_on=['a'])],
+     [PlanNode(title='same'),PlanNode(title='same'),PlanNode(title='c',depends_on=['same'])],
+    ])
+    def test_registered_library_rejects_invalid_or_ambiguous_dag(subtasks):
+     planner=HTNPlanner()
+>    with pytest.raises(PlanError):planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=subtasks))
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE PlanError
+
+tests/modules/test_m20_planner_scheduler.py:189: Failed
+_____ test_registered_library_rejects_invalid_or_ambiguous_dag[subtasks3] ______
+
+subtasks = [PlanNode(id='8da5813d-eca4-4b43-9a39-5593928fdedb', title='same', kind='task', tool=None, arguments={}, depends_on=[]....READ: 'read'>, state=<TaskState.PENDING: 'pending'>, max_attempts=3, attempts=0, approval_id=None, result_summary='')]
+
+    @pytest.mark.parametrize('subtasks',[
+     [PlanNode(id='same',title='a'),PlanNode(id='same',title='b')],
+     [PlanNode(title='a',depends_on=['missing'])],
+     [PlanNode(id='a',title='a',depends_on=['b']),PlanNode(id='b',title='b',depends_on=['a'])],
+     [PlanNode(title='same'),PlanNode(title='same'),PlanNode(title='c',depends_on=['same'])],
+    ])
+    def test_registered_library_rejects_invalid_or_ambiguous_dag(subtasks):
+     planner=HTNPlanner()
+>    with pytest.raises(PlanError):planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=subtasks))
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE PlanError
+
+tests/modules/test_m20_planner_scheduler.py:189: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_planner_scheduler.py::test_library_instantiation_resets_unearned_terminal_states_and_approval
+FAILED tests/modules/test_m20_planner_scheduler.py::test_registered_library_rejects_invalid_or_ambiguous_dag[subtasks0]
+FAILED tests/modules/test_m20_planner_scheduler.py::test_registered_library_rejects_invalid_or_ambiguous_dag[subtasks1]
+FAILED tests/modules/test_m20_planner_scheduler.py::test_registered_library_rejects_invalid_or_ambiguous_dag[subtasks2]
+FAILED tests/modules/test_m20_planner_scheduler.py::test_registered_library_rejects_invalid_or_ambiguous_dag[subtasks3]
+5 failed, 22 deselected in 1.30s
