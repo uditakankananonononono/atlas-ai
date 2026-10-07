@@ -260,3 +260,17 @@ async def test_validator_top_level_input_mutation_does_not_rebind_execution():
  wf=Workflow.from_yaml('nodes: [{id: a, task: a}, {id: b, task: b}]')
  await DagEngine(runner,validator=validator).run(wf,inputs)
  assert validated==[('a','original'),('b','original')] and seen==['original','original'] and inputs=={'tenant_id':'original'}
+
+@pytest.mark.asyncio
+async def test_running_dag_uses_entry_input_snapshot_despite_caller_rebinding():
+ started=asyncio.Event();release=asyncio.Event();seen=[]
+ async def runner(task,config,context):
+  seen.append((task,context['workflow_inputs']['tenant_id']))
+  if task=='a':started.set();await release.wait()
+  return {'text':task}
+ inputs={'tenant_id':'original'}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: a}, {id: b, task: b, depends_on: [a]}]')
+ running=asyncio.create_task(DagEngine(runner).run(wf,inputs))
+ await started.wait();inputs['tenant_id']='caller-changed';release.set()
+ await running
+ assert seen==[('a','original'),('b','original')] and inputs['tenant_id']=='caller-changed'
