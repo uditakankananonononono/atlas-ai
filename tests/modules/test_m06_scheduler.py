@@ -262,4 +262,6 @@ def test_receipt_persistence_failure_leaves_claim_without_replay(monkeypatch):
  def fail(*args,**kwargs):raise RuntimeError('fixture receipt save failed')
  monkeypatch.setattr(repository,'save_publish_record',fail)
  with pytest.raises(RuntimeError,match='receipt save failed'):scheduler.execute_due(NOW)
+ assert repository.get_schedule(entry.id).status=='publishing'
+ assert repository.list_publish_records(entry.id)==[]
  assert scheduler.execute_due(NOW)==[] and len(adapter.published)==1
