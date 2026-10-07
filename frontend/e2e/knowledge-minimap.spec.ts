@@ -71,7 +71,7 @@ test('dragged positions survive a type filter toggle and a stale seed response i
  expect(Math.abs(d2-d1)).toBeLessThan(0.1);
 });
 
-test('layout follows container width on resize, refits, and a new seed resets positions',async({page})=>{
+test('layout follows container width on resize and refits (no seed-change or pan/zoom-preservation claim)',async({page})=>{
  await page.setViewportSize({width:1280,height:800});
  await signedIn(page);
  const nodes=Array.from({length:12},(_,i)=>({id:'n'+i,node_type:'source',title:'Node '+i,metadata:{}}));
