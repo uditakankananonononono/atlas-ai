@@ -377,3 +377,12 @@ def test_optimism_http_rejects_coerced_adjust_inputs(client, confidence):
     c, _ = client
     response = c.post('/api/modules/20/meta/optimism/adjust', json={'domain': 'fixture', 'confidence': confidence})
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize('field,value', [('base_rate', True), ('case_estimate', '0.8'), ('evidence_reliability', True), ('sample_size', True), ('sample_size', '10')])
+def test_base_rate_http_rejects_coerced_inputs(client, field, value):
+    c, _ = client
+    body = {'base_rate': 0.2, 'case_estimate': 0.8, 'evidence_reliability': 0.5, 'sample_size': 10}
+    body[field] = value
+    response = c.post('/api/modules/20/meta/base-rate/integrate', json=body)
+    assert response.status_code == 422

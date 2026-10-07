@@ -1,0 +1,105 @@
+.......................................FFFFF                             [100%]
+=================================== FAILURES ===================================
+__________ test_base_rate_http_rejects_coerced_inputs[base_rate-True] __________
+
+client = (<starlette.testclient.TestClient object at 0x7f9973bce960>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f9973ca7e30>)
+field = 'base_rate', value = True
+
+    @pytest.mark.parametrize('field,value', [('base_rate', True), ('case_estimate', '0.8'), ('evidence_reliability', True), ('sample_size', True), ('sample_size', '10')])
+    def test_base_rate_http_rejects_coerced_inputs(client, field, value):
+        c, _ = client
+        body = {'base_rate': 0.2, 'case_estimate': 0.8, 'evidence_reliability': 0.5, 'sample_size': 10}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/base-rate/integrate', json=body)
+>       assert response.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:388: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+________ test_base_rate_http_rejects_coerced_inputs[case_estimate-0.8] _________
+
+client = (<starlette.testclient.TestClient object at 0x7f997230e4e0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f9973ca4890>)
+field = 'case_estimate', value = '0.8'
+
+    @pytest.mark.parametrize('field,value', [('base_rate', True), ('case_estimate', '0.8'), ('evidence_reliability', True), ('sample_size', True), ('sample_size', '10')])
+    def test_base_rate_http_rejects_coerced_inputs(client, field, value):
+        c, _ = client
+        body = {'base_rate': 0.2, 'case_estimate': 0.8, 'evidence_reliability': 0.5, 'sample_size': 10}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/base-rate/integrate', json=body)
+>       assert response.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:388: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+____ test_base_rate_http_rejects_coerced_inputs[evidence_reliability-True] _____
+
+client = (<starlette.testclient.TestClient object at 0x7f9973a34530>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f99729c22d0>)
+field = 'evidence_reliability', value = True
+
+    @pytest.mark.parametrize('field,value', [('base_rate', True), ('case_estimate', '0.8'), ('evidence_reliability', True), ('sample_size', True), ('sample_size', '10')])
+    def test_base_rate_http_rejects_coerced_inputs(client, field, value):
+        c, _ = client
+        body = {'base_rate': 0.2, 'case_estimate': 0.8, 'evidence_reliability': 0.5, 'sample_size': 10}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/base-rate/integrate', json=body)
+>       assert response.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:388: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_________ test_base_rate_http_rejects_coerced_inputs[sample_size-True] _________
+
+client = (<starlette.testclient.TestClient object at 0x7f997272a600>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f99728a02c0>)
+field = 'sample_size', value = True
+
+    @pytest.mark.parametrize('field,value', [('base_rate', True), ('case_estimate', '0.8'), ('evidence_reliability', True), ('sample_size', True), ('sample_size', '10')])
+    def test_base_rate_http_rejects_coerced_inputs(client, field, value):
+        c, _ = client
+        body = {'base_rate': 0.2, 'case_estimate': 0.8, 'evidence_reliability': 0.5, 'sample_size': 10}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/base-rate/integrate', json=body)
+>       assert response.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:388: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+__________ test_base_rate_http_rejects_coerced_inputs[sample_size-10] __________
+
+client = (<starlette.testclient.TestClient object at 0x7f9973b3b050>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f997272bc50>)
+field = 'sample_size', value = '10'
+
+    @pytest.mark.parametrize('field,value', [('base_rate', True), ('case_estimate', '0.8'), ('evidence_reliability', True), ('sample_size', True), ('sample_size', '10')])
+    def test_base_rate_http_rejects_coerced_inputs(client, field, value):
+        c, _ = client
+        body = {'base_rate': 0.2, 'case_estimate': 0.8, 'evidence_reliability': 0.5, 'sample_size': 10}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/base-rate/integrate', json=body)
+>       assert response.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:388: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight_routes.py::test_base_rate_http_rejects_coerced_inputs[base_rate-True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_base_rate_http_rejects_coerced_inputs[case_estimate-0.8]
+FAILED tests/modules/test_m20_foresight_routes.py::test_base_rate_http_rejects_coerced_inputs[evidence_reliability-True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_base_rate_http_rejects_coerced_inputs[sample_size-True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_base_rate_http_rejects_coerced_inputs[sample_size-10]
+5 failed, 39 passed, 1 warning in 8.90s

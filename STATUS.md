@@ -958,3 +958,7 @@ Six actual failures retained: bool/stringconfidence/stringintegeroutcome coerce 
 ## Supplied scenario weight normalization
 
 Six reproduced failures retained: negative/nonfinite/bool/unknownweights and sumoverflow yieldsallzeroshares. Knownfixedscenario names/finite nonnegativenotboolweights/positive mass/scaled normalization.146foresightHTTPpass1warning; recorded87adjacent2377pass2warnings38.48s. Four1e308weights yield0.25each. Fixed driver narrative templates and supplied/defaultweightnormalization, not forecast validity/creative scenario discovery. Transportcoercion separate. Latestfull9944passsourcec5b11ab predatesthreelaterfixes.
+
+## Base-rate HTTP input types
+
+Five actual failures retained: bool/stringprobability/count coerce past rawguards. Strictfinite0..1numericprobabilities/exactintegercount0..10**308 now422beforearithmetic.151foresightHTTPpass1warning; recorded87adjacent2382pass2warnings41.25s. Transport type consistency only, not calibratedprobability or base-rateprovenance. Latestfull9944passsourcec5b11ab predatesfourlaterfixes.

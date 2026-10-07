@@ -729,10 +729,10 @@ class CausalRequest(BaseModel):
 
 
 class BaseRateRequest(BaseModel):
-    base_rate: float = Field(ge=0.0, le=1.0)
-    case_estimate: float = Field(ge=0.0, le=1.0)
-    evidence_reliability: float = Field(default=0.5, ge=0.0, le=1.0)
-    sample_size: int = Field(default=0, ge=0)
+    base_rate: float = Field(ge=0.0, le=1.0, strict=True, allow_inf_nan=False)
+    case_estimate: float = Field(ge=0.0, le=1.0, strict=True, allow_inf_nan=False)
+    evidence_reliability: float = Field(default=0.5, ge=0.0, le=1.0, strict=True, allow_inf_nan=False)
+    sample_size: int = Field(default=0, ge=0, le=10**308, strict=True)
 
 
 class ReferenceCaseRequest(BaseModel):
