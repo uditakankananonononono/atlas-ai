@@ -1010,3 +1010,7 @@ Source 69d6262: 496files/20isolatedbatches/10022passed/0failed/14skipped/26summe
 ## Supplied minimax regret table
 
 Five actual failures retained: empty/mismatched/malformed tables and extremefinite differencescollapse distinctregrets toinfinitytie. Nonempty matching scenario tables/finite numericnotboolpayoffs; commonscale regret comparison avoids differenceoverflow.190reasoningforesightpass; recorded87adjacent2440pass2warnings42.12s. Supplied table decisioncriterion only, not scenario validity/real-worldoptimal choice; common-scale finiteprecision can lose tiny relative distinctions. Latestfull10022passsource69d6262 predatesonelaterfix.
+
+## Bare-minimum ideation capability downgrade
+
+Observed count12produces6unique defaultframe strings; forcedanalogyjust formats suppliedpairs; convergerankssuppliedflags. No modelgeneration/independentconstraintevaluation/noveltyassessment/learnedanalogy. One initialboundarycanaryfailure retained. Outputs nowfixed_prompt_frame_only or supplied_concept_pair_formatting_only, creative_generation_executed=false; source descriptions and READMEexplicitlythin/unfinished.86reflectionruntimepass1warning; recorded87adjacent2441pass2warnings41.64s. This is an honest downgrade, not a creative implementation upgrade or original capability completion. Latestfull10022passsource69d6262 predatestwolaterfixes.

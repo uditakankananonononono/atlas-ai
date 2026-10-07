@@ -158,3 +158,16 @@ def test_uncertainty_high_stakes_flag_is_exact_bool():
     import pytest
     with pytest.raises(ValueError):
         UncertaintyGate().assess(0.8, high_stakes='false')
+
+
+def test_ideation_templates_do_not_claim_model_generation_or_creative_evaluation():
+    engine = IdeationEngine(seed=3)
+    ideas = engine.diverge('fixture', count=12)
+    assert len(set(idea.text for idea in ideas)) == 6  # repeated fixed frames, not12independent ideas
+    for idea in ideas:
+        assert idea.metadata['status'] == 'fixed_prompt_frame_only'
+        assert idea.metadata['creative_generation_executed'] is False
+    analogy = engine.forced_analogy('fixture', ['libraries'])[0]
+    assert analogy.text == 'fixture <- analogy -> libraries'
+    assert analogy.metadata['status'] == 'supplied_concept_pair_formatting_only'
+    assert analogy.metadata['creative_generation_executed'] is False

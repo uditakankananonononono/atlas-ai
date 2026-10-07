@@ -2,8 +2,8 @@
 
 - ScratchpadManager: structured "thinking mode" - chain-of-thought,
   hypotheses, decision matrices; resumable across sessions.
-- IdeationEngine: divergent generation + convergent constraint evaluation +
-  forced analogy from random long-term-memory concepts.
+- IdeationEngine: fixed prompt-frame formatting, supplied-flag ranking and
+  supplied concept-pair text formatting. No creative generation/evaluation.
 - RetrospectiveEngine: post-task self-critique, embedded for later
   retrieval (continual learning).
 - EmotionalStateModel: internal state vector biased by outcomes and user
@@ -77,15 +77,16 @@ class Idea:
 
 
 class IdeationEngine:
-    """Divergent + convergent creativity (spec 4.2.7)."""
+    """Prompt-frame formatting and supplied-flag ranking, not creative reasoning."""
 
     def __init__(self, seed: int | None = None) -> None:
         self.random = random.Random(seed)
 
     def diverge(self, prompt: str, *, count: int = 10, templates: list[str] | None = None) -> list[Idea]:
-        """Divergent thinking: many raw candidates. In production the model
-        runs at high temperature; the deterministic fallback combines prompt
-        tokens across strategy frames so ideation works offline."""
+        """Format repeated fixed prompt frames; no model generation occurs.
+
+        Count exceeds frame count by repeating frames, not creating new ideas.
+        """
         frames = templates or [
             "invert: what if the opposite of {t}?",
             "combine: {t} merged with an adjacent domain",
@@ -97,7 +98,8 @@ class IdeationEngine:
         ideas: list[Idea] = []
         for i in range(count):
             frame = frames[i % len(frames)]
-            ideas.append(Idea(text=frame.format(t=prompt), metadata={"frame": i % len(frames)}))
+            ideas.append(Idea(text=frame.format(t=prompt), metadata={"frame": i % len(frames), "status": "fixed_prompt_frame_only",
+                "creative_generation_executed": False}))
         self.random.shuffle(ideas)
         return ideas
 
@@ -124,10 +126,10 @@ class IdeationEngine:
         return sorted(ideas, key=lambda i: i.score, reverse=True)
 
     def forced_analogy(self, prompt: str, random_concepts: list[str]) -> list[Idea]:
-        """Serendipity engineering: force unusual associations between the
-        problem and random LTM concepts."""
+        """Format supplied prompt/concept pairs without evaluating associations."""
         return [
-            Idea(text=f"{prompt} <- analogy -> {concept}", metadata={"analogy": concept})
+            Idea(text=f"{prompt} <- analogy -> {concept}", metadata={"analogy": concept, "status": "supplied_concept_pair_formatting_only",
+                "creative_generation_executed": False})
             for concept in random_concepts
         ]
 
