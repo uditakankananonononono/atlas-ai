@@ -220,6 +220,44 @@ class GCWRuntime:
                 'external_outcomes_verified': False, 'status': 'durable_local_work_state_review',
                 'boundary': 'Persisted local work-state review only; no production health, liveness or externally verified outcome inference.'}
 
+    def prepare_read_step_retry(self, task_id, node_id, *, arguments):
+        from .htn_planner import HTNPlanner
+        from .safety import requires_approval
+        task = self.get_task(task_id)
+        if task is None: raise KeyError(task_id)
+        if self.repo.list_retrospectives(task_id=task_id):
+            raise ValueError('retry conflict; task is closed')
+        node = next((node for node in task.plan if node.id == node_id), None)
+        if node is None: raise KeyError(node_id)
+        if node.state != TaskState.FAILED or node.tool is None:
+            raise ValueError('retry conflict; only failed registered read steps can be corrected')
+        tool = self.tools.get(node.tool)
+        if node.risk != Risk.READ or tool.spec.risk != Risk.READ or node.approval_id:
+            raise ValueError('retry conflict; effectful or approval-bearing step needs reconciliation')
+        updated = task.model_copy(deep=True)
+        corrected = next(n for n in updated.plan if n.id == node_id)
+        corrected.arguments = arguments
+        validated = HTNPlanner()._validate([n.model_dump(mode='json') for n in updated.plan])
+        corrected.arguments = next(n.arguments for n in validated if n.id == node_id)
+        resolved = self.loop._resolved_arguments(updated, corrected)
+        if requires_approval(corrected.tool, tool.spec.risk, resolved):
+            raise ValueError('retry conflict; effectful arguments require reconciliation')
+        tool.validate_arguments(resolved)
+        descendants = {node_id}
+        while True:
+            additions = {n.id for n in task.plan if any(dep in descendants for dep in n.depends_on)} - descendants
+            if not additions: break
+            descendants.update(additions)
+        if any(n.id in descendants - {node_id} and (n.attempts or n.state != TaskState.PENDING) for n in task.plan):
+            raise ValueError('retry conflict; dependent work already started')
+        corrected.state = TaskState.PENDING; corrected.attempts = 0
+        corrected.output = None; corrected.result_summary = ''; corrected.approval_id = None
+        updated.state = TaskState.PLANNING
+        self.repo.save_task(updated); self.scheduler.add(updated)
+        self.loop._trace('plan', f'read step {node_id} corrected for explicit later retry; prior action evidence retained', task_id=task_id)
+        self._persist_context(updated)
+        return updated
+
     def preflight_task(self, task_id, *, context=None):
         from .tools import ToolError, ToolBlockedError
         task = self.get_task(task_id)
