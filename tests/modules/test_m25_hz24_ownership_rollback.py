@@ -7,7 +7,12 @@ through monkeypatched helpers / os.close wrappers (no fifo/device,
 blocking, or external probes) and fail behaviorally on the pre-hz24
 backend. Bounds: append-only interleaving within this process - no
 concurrency, transaction, or completed-rollback claim; deletion errors
-and failed identity matches stay carried."""
+and failed identity matches stay carried. hz25 narrows two comments here
+without changing any assertion: the pre-hz24 baseline deleted BOTH own
+and foreign suffix objects (not own-survives), the interleave fixture
+proves list preservation only (not durable foreign coherence), and the
+close mock models Linux semantics (POSIX leaves the fd state on a close
+error unspecified, so portable close ambiguity remains carried)."""
 import os
 from pathlib import Path
 from datetime import datetime, timezone
@@ -41,12 +46,16 @@ def fd_count():
 
 
 def test_hz24_interleaved_appends_survive_rollback(tmp_path, monkeypatch):
-    # KILL: pre-hz24 the suffix rollback (pop / delete-from-base) destroyed
-    # objects an interleaved writer appended DURING the persist window and
-    # kept this attempt's own unrecorded claim - the exact inversion of the
-    # truthful outcome. hz24 deletes only this attempt's own objects,
-    # verified by identity at their captured bases; the foreign version,
-    # chunks, and edge all survive.
+    # KILL: the pre-hz24 (hz23 base-slice) suffix rollback deleted BOTH
+    # this attempt's own objects AND any foreign objects an interleaved
+    # writer appended DURING the persist window; hz22's pop form deleted
+    # the foreign tail and kept our claim. hz24 deletes only this
+    # attempt's own objects, verified by identity at their captured bases;
+    # the foreign version, chunks, and edge all survive. Scope: this
+    # fixture proves LIST preservation only - the foreign v99 has no
+    # durable bytes and the restore rewrite records it without a v99
+    # directory, so durable coherence of foreign state is NOT asserted
+    # (carried).
     p = pipe(tmp_path)
     real_persist = LocalKnowledgePipeline._persist_manifest
     state = {'calls': 0}
@@ -79,8 +88,10 @@ def test_hz24_unexpected_close_error_never_masks_failure(tmp_path, monkeypatch):
     # KILL: pre-hz24 the unconditional finally swallowed only OSError from
     # close, so an unexpected close error replaced the original failure the
     # caller should see. hz24 swallows close errors of any type. The mock
-    # closes the held tmp dirfd for real, then raises - faithful to POSIX,
-    # where the descriptor is already gone when close reports an error.
+    # closes the held tmp dirfd for real, then raises - modeling the Linux
+    # behavior, where the descriptor is freed even when close reports an
+    # error. POSIX leaves the descriptor state on a close error
+    # UNSPECIFIED, so portable close-outcome ambiguity remains carried.
     p = pipe(tmp_path)
     def boom_write(self, ref, raw, segments_blob):
         raise OSError('write failed')

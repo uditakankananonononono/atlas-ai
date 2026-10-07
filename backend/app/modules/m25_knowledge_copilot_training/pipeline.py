@@ -435,19 +435,27 @@ class LocalKnowledgePipeline:
                     view=view[written:]
             finally:_os.close(fd)
     def _rollback_claim(self,rec,version,new_chunks,edge,vbase,cbase,ebase)->None:
-        # Undo exactly THIS attempt's memory claim: each object is deleted
-        # only while identity still matches at its captured base index, so
-        # an unrelated append interleaved during the persist window is
-        # preserved (no foreign deletes) and a base that no longer holds
-        # our object is left untouched. Correct for append-only
+        # Undo exactly THIS attempt's memory claim. The version and edge are
+        # single objects, deleted only while identity still matches at the
+        # captured base. Chunks are deleted as the contiguous PREFIX of
+        # positions still holding this attempt's own objects: an extend that
+        # raised partway (some of our chunks appended, none foreign) is
+        # still rolled back, and foreign objects after the prefix are
+        # preserved. The prefix stops at the first position that no longer
+        # holds our object - any of our objects left beyond a mismatch are
+        # NOT removed (carried: non-append-only interleaving can leave
+        # non-contiguous own survivors). Correct for append-only
         # interleaving within this process; NOT a concurrency guarantee.
         # A deletion that itself raises propagates and can mask the
         # original failure (carried); a failed identity match can leave
         # this attempt's claim in place (carried).
         if len(rec.versions)>vbase and rec.versions[vbase] is version:
             del rec.versions[vbase]
-        if all(len(self.chunks)>cbase+i and self.chunks[cbase+i] is new_chunks[i] for i in range(len(new_chunks))):
-            del self.chunks[cbase:cbase+len(new_chunks)]
+        k=0
+        while k<len(new_chunks) and len(self.chunks)>cbase+k and self.chunks[cbase+k] is new_chunks[k]:
+            k+=1
+        if k:
+            del self.chunks[cbase:cbase+k]
         if len(self.edges)>ebase and self.edges[ebase] is edge:
             del self.edges[ebase]
     def _cleanup_attempt(self,path,dfd)->None:
