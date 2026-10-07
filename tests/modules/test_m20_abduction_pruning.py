@@ -43,3 +43,35 @@ def test_pruned_search_matches_exhaustive_oracle_on_small_programs():
         result=reasoning.abductive_search({'facts':[],'observations':['o'],'forbidden':['bad'],
             'hypotheses':[{'atom':atom,'cost':1} for atom in atoms],'rules':raw})
         assert {tuple(sorted(r['hypotheses'])) for r in result['explanations']}==minimal
+
+
+def test_abduction_computes_discriminating_probe_from_actual_explanation_closures():
+ result=reasoning.abductive_search({'observations':['wet'],
+  'hypotheses':[{'atom':'rain','cost':1},{'atom':'sprinkler','cost':2}],
+  'rules':[{'if':['rain'],'then':'wet'},{'if':['sprinkler'],'then':'wet'},{'if':['rain'],'then':'cloudy'}],
+  'probe_atoms':['wet','cloudy','unknown']})
+ assert result['next_probe']['atom']=='cloudy'
+ assert result['next_probe']['entailed_explanation_count']==1
+ assert result['next_probe']['not_entailed_explanation_count']==1
+ assert result['next_probe']['worst_case_remaining_explanations']==1
+ assert result['next_probe']['not_entailed_is_not_predicted_false']
+ assert result['probe_results'][1]['atom']=='unknown' # sorted deterministic order
+ assert result['probe_results'][1]['entailed_explanation_count']==0
+
+
+def test_abduction_probe_split_counts_all_minimal_alternatives_not_just_cheapest():
+ result=reasoning.abductive_search({'observations':['o'],
+  'hypotheses':[{'atom':'a','cost':1},{'atom':'b','cost':5},{'atom':'c','cost':10}],
+  'rules':[{'if':[atom],'then':'o'} for atom in 'abc']+[{'if':['a'],'then':'probe'},{'if':['b'],'then':'probe'}],
+  'probe_atoms':['probe']})
+ assert result['explanation_count']==3 and len(result['best_explanations'])==1
+ assert result['next_probe']['entailed_explanation_count']==2
+ assert result['next_probe']['not_entailed_explanation_count']==1
+ assert result['next_probe']['worst_case_remaining_explanations']==2
+
+
+def test_abduction_no_explanation_or_no_disagreement_does_not_invent_probe():
+ for hypothesis,status in [('rain','no_discriminating_probe'),('sun','no_explanations')]:
+  result=reasoning.abductive_search({'observations':['wet'],'hypotheses':[{'atom':hypothesis,'cost':1}],
+   'rules':[{'if':['rain'],'then':'wet'}],'probe_atoms':['wet']})
+  assert result['next_probe'] is None and result['probe_status']==status

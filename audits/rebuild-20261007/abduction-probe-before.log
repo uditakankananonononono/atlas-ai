@@ -1,0 +1,43 @@
+...FFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_abduction_computes_discriminating_probe_from_actual_explanation_closures _
+
+    def test_abduction_computes_discriminating_probe_from_actual_explanation_closures():
+     result=reasoning.abductive_search({'observations':['wet'],
+      'hypotheses':[{'atom':'rain','cost':1},{'atom':'sprinkler','cost':2}],
+      'rules':[{'if':['rain'],'then':'wet'},{'if':['sprinkler'],'then':'wet'},{'if':['rain'],'then':'cloudy'}],
+      'probe_atoms':['wet','cloudy','unknown']})
+>    assert result['next_probe']['atom']=='cloudy'
+            ^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'next_probe'
+
+tests/modules/test_m20_abduction_pruning.py:53: KeyError
+_ test_abduction_probe_split_counts_all_minimal_alternatives_not_just_cheapest _
+
+    def test_abduction_probe_split_counts_all_minimal_alternatives_not_just_cheapest():
+     result=reasoning.abductive_search({'observations':['o'],
+      'hypotheses':[{'atom':'a','cost':1},{'atom':'b','cost':5},{'atom':'c','cost':10}],
+      'rules':[{'if':[atom],'then':'o'} for atom in 'abc']+[{'if':['a'],'then':'probe'},{'if':['b'],'then':'probe'}],
+      'probe_atoms':['probe']})
+     assert result['explanation_count']==3 and len(result['best_explanations'])==1
+>    assert result['next_probe']['entailed_explanation_count']==2
+            ^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'next_probe'
+
+tests/modules/test_m20_abduction_pruning.py:68: KeyError
+____ test_abduction_no_explanation_or_no_disagreement_does_not_invent_probe ____
+
+    def test_abduction_no_explanation_or_no_disagreement_does_not_invent_probe():
+     for hypothesis,status in [('rain','no_discriminating_probe'),('sun','no_explanations')]:
+      result=reasoning.abductive_search({'observations':['wet'],'hypotheses':[{'atom':hypothesis,'cost':1}],
+       'rules':[{'if':['rain'],'then':'wet'}],'probe_atoms':['wet']})
+>     assert result['next_probe'] is None and result['probe_status']==status
+             ^^^^^^^^^^^^^^^^^^^^
+E     KeyError: 'next_probe'
+
+tests/modules/test_m20_abduction_pruning.py:77: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_abduction_pruning.py::test_abduction_computes_discriminating_probe_from_actual_explanation_closures
+FAILED tests/modules/test_m20_abduction_pruning.py::test_abduction_probe_split_counts_all_minimal_alternatives_not_just_cheapest
+FAILED tests/modules/test_m20_abduction_pruning.py::test_abduction_no_explanation_or_no_disagreement_does_not_invent_probe
+3 failed, 3 passed in 1.34s

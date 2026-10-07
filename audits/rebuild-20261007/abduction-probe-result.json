@@ -1,0 +1,123 @@
+{
+  "probe_results": [
+    {
+      "atom": "cloudy",
+      "entailed_explanation_indices": [
+        0
+      ],
+      "not_entailed_explanation_indices": [
+        1
+      ],
+      "entailed_explanation_count": 1,
+      "not_entailed_explanation_count": 1,
+      "worst_case_remaining_explanations": 1,
+      "not_entailed_is_not_predicted_false": true
+    },
+    {
+      "atom": "unknown",
+      "entailed_explanation_indices": [],
+      "not_entailed_explanation_indices": [
+        0,
+        1
+      ],
+      "entailed_explanation_count": 0,
+      "not_entailed_explanation_count": 2,
+      "worst_case_remaining_explanations": 2,
+      "not_entailed_is_not_predicted_false": true
+    },
+    {
+      "atom": "wet",
+      "entailed_explanation_indices": [
+        0,
+        1
+      ],
+      "not_entailed_explanation_indices": [],
+      "entailed_explanation_count": 2,
+      "not_entailed_explanation_count": 0,
+      "worst_case_remaining_explanations": 2,
+      "not_entailed_is_not_predicted_false": true
+    }
+  ],
+  "next_probe": {
+    "atom": "cloudy",
+    "entailed_explanation_indices": [
+      0
+    ],
+    "not_entailed_explanation_indices": [
+      1
+    ],
+    "entailed_explanation_count": 1,
+    "not_entailed_explanation_count": 1,
+    "worst_case_remaining_explanations": 1,
+    "not_entailed_is_not_predicted_false": true
+  },
+  "probe_status": "discriminating_probe_available",
+  "probe_boundary": "Exact formal entailment partition over all inclusion-minimal explanations, not probabilities or real-world predictions. Unsupported is not false; a real observation cannot automatically eliminate unsupported explanations without an additional closed-world/measurement model. No evidence acquisition or action.",
+  "subsets_evaluated": 3,
+  "nonminimal_supersets_skipped": 1,
+  "explanations": [
+    {
+      "hypotheses": [
+        "rain"
+      ],
+      "cost": 1.0,
+      "derived_facts": [
+        "cloudy",
+        "rain",
+        "wet"
+      ],
+      "proof_trace": [
+        {
+          "rule": "0",
+          "fact": "wet"
+        },
+        {
+          "rule": "2",
+          "fact": "cloudy"
+        }
+      ]
+    },
+    {
+      "hypotheses": [
+        "sprinkler"
+      ],
+      "cost": 2.0,
+      "derived_facts": [
+        "sprinkler",
+        "wet"
+      ],
+      "proof_trace": [
+        {
+          "rule": "1",
+          "fact": "wet"
+        }
+      ]
+    }
+  ],
+  "best_explanations": [
+    {
+      "hypotheses": [
+        "rain"
+      ],
+      "cost": 1.0,
+      "derived_facts": [
+        "cloudy",
+        "rain",
+        "wet"
+      ],
+      "proof_trace": [
+        {
+          "rule": "0",
+          "fact": "wet"
+        },
+        {
+          "rule": "2",
+          "fact": "cloudy"
+        }
+      ]
+    }
+  ],
+  "explanation_count": 2,
+  "best_explanation_is_not_proof": true,
+  "boundary": "Exact finite minimum-cost symbolic Horn abduction from explicit hypotheses and observations. Costs are supplied, not inferred prior probabilities. Logical explanation does not establish truth."
+}

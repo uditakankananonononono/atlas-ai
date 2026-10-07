@@ -104,5 +104,22 @@ def abductive_search(p):
                 minimal.append({'hypotheses':selected,'cost':cost,'derived_facts':sorted(known),'proof_trace':trace})
     minimal.sort(key=lambda r:(r['cost'],len(r['hypotheses']),r['hypotheses']))
     best=min((r['cost'] for r in minimal),default=None)
-    return {'subsets_evaluated':evaluated,'nonminimal_supersets_skipped':skipped,'explanations':minimal,'best_explanations':[r for r in minimal if r['cost']==best],'explanation_count':len(minimal),
+    probes=sorted(labels(p.get('probe_atoms',[]),'probe_atoms'))
+    if len(probes)>1000:raise ValueError('at most1000 supplied probe atoms')
+    results=[];next_probe=None;best_split=0
+    for atom in probes:
+        entailed=[i for i,row in enumerate(minimal) if atom in row['derived_facts']]
+        unsupported=[i for i,row in enumerate(minimal) if atom not in row['derived_facts']]
+        item={'atom':atom,'entailed_explanation_indices':entailed,
+              'not_entailed_explanation_indices':unsupported,
+              'entailed_explanation_count':len(entailed),
+              'not_entailed_explanation_count':len(unsupported),
+              'worst_case_remaining_explanations':max(len(entailed),len(unsupported)),
+              'not_entailed_is_not_predicted_false':True}
+        results.append(item);split=min(len(entailed),len(unsupported))
+        if split>best_split:best_split=split;next_probe=item
+    return {'probe_results':results,'next_probe':next_probe,
+            'probe_status':'no_explanations' if not minimal else 'discriminating_probe_available' if next_probe else 'no_discriminating_probe',
+            'probe_boundary':'Exact formal entailment partition over all inclusion-minimal explanations, not probabilities or real-world predictions. Unsupported is not false; a real observation cannot automatically eliminate unsupported explanations without an additional closed-world/measurement model. No evidence acquisition or action.',
+            'subsets_evaluated':evaluated,'nonminimal_supersets_skipped':skipped,'explanations':minimal,'best_explanations':[r for r in minimal if r['cost']==best],'explanation_count':len(minimal),
             'best_explanation_is_not_proof':True,'boundary':'Exact finite minimum-cost symbolic Horn abduction from explicit hypotheses and observations. Costs are supplied, not inferred prior probabilities. Logical explanation does not establish truth.'}
