@@ -549,7 +549,11 @@ class PlanningFallacyCorrector:
         if type(shrinkage) not in (int, float) or not math.isfinite(shrinkage) or shrinkage < 0:
             raise ValueError("shrinkage must be finite nonnegative numeric, not bool")
         self.shrinkage = shrinkage
-        self.history: dict[str, list[float]] = {}
+        self._history: dict[str, list[float]] = {}
+
+    @property
+    def history(self):
+        return MappingProxyType(copy.deepcopy(self._history))
 
     def record(self, *, kind: str, estimated: float, actual: float) -> None:
         SimulationFidelityTracker._finite(estimated)
@@ -559,10 +563,10 @@ class PlanningFallacyCorrector:
         ratio = actual / estimated
         if not math.isfinite(ratio):
             raise ValueError("planning ratio overflow")
-        self.history.setdefault(kind, []).append(ratio)
+        self._history.setdefault(kind, []).append(ratio)
 
     def multiplier(self, kind: str) -> tuple[float, int]:
-        ratios = self.history.get(kind, [])
+        ratios = self._history.get(kind, [])
         if not ratios:
             return 1.0, 0
         raw = mean(ratios)
