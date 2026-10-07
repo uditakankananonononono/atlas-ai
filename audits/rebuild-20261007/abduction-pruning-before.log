@@ -1,0 +1,23 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_abduction_skips_supersets_of_proven_minimal_explanations _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9b2b0c85c0>
+
+    def test_abduction_skips_supersets_of_proven_minimal_explanations(monkeypatch):
+        original=reasoning.closure;calls=[]
+        def counted(facts,program):
+            calls.append(set(facts));return original(facts,program)
+        monkeypatch.setattr(reasoning,'closure',counted)
+        result=reasoning.abductive_search({'facts':[],'observations':['observed'],
+            'hypotheses':[{'atom':f'h{i}','cost':i} for i in range(8)],
+            'rules':[{'id':f'r{i}','if':[f'h{i}'],'then':'observed'} for i in range(8)]})
+        assert result['explanation_count']==8
+>       assert len(calls)==9
+E       AssertionError: assert 256 == 9
+E        +  where 256 = len([set(), {'h7'}, {'h6'}, {'h6', 'h7'}, {'h5'}, {'h5', 'h7'}, ...])
+
+tests/modules/test_m20_abduction_pruning.py:13: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_abduction_pruning.py::test_abduction_skips_supersets_of_proven_minimal_explanations
+1 failed in 1.34s
