@@ -153,6 +153,8 @@ class GCWRuntime:
         self._persisted_traces = 0
         if _hydrate:
             for context in repo.list_tasks():
+                if repo.list_retrospectives(task_id=context.id):
+                    continue
                 if context.state in (TaskState.PENDING, TaskState.PLANNING,
                                      TaskState.RUNNING, TaskState.RUMINATING,
                                      TaskState.WAITING_APPROVAL):
@@ -225,6 +227,8 @@ class GCWRuntime:
         context = self.get_task(task_id)
         if context is None:
             return None
+        if self.repo.list_retrospectives(task_id=task_id):
+            return context
         self.loop.max_ticks = max_ticks
         self._run_and_persist(context, budget=budget, yield_on_boundary=yield_on_boundary)
         self._evaluate_expectations(context)
@@ -234,6 +238,8 @@ class GCWRuntime:
         context = self.get_task(task_id)
         if context is None:
             return None
+        if self.repo.list_retrospectives(task_id=task_id):
+            return context
         result = self.loop.resume_after_approval(context, node_id, approved)
         self._persist_context(context)
         self._evaluate_expectations(context)
@@ -371,6 +377,13 @@ class GCWRuntime:
         retro = self.retrospectives.write(
             task_id, went_well=went_well, went_poorly=went_poorly, lessons=lessons,
         )
+        if context.state in (TaskState.PENDING, TaskState.PLANNING, TaskState.RUNNING,
+                              TaskState.RUMINATING, TaskState.WAITING_APPROVAL, TaskState.WAITING_USER):
+            context.state = TaskState.CANCELLED
+            for node in context.plan:
+                if node.state not in (TaskState.SUCCEEDED, TaskState.FAILED, TaskState.CANCELLED):
+                    node.state = TaskState.CANCELLED
+                    node.approval_id = None
         self.working_memory.clear_partition(task_id)
         self.scheduler.remove(task_id)
         self._persist_context(context)

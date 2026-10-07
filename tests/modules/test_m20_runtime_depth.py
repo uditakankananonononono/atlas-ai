@@ -822,3 +822,43 @@ def test_http_task_step_honors_cooperative_quantum_and_keeps_work_active(mounted
  monkeypatch.setattr(executive,'monotonic',original_clock)
  final=client.post(f'/api/modules/20/runtime/tasks/{context.id}/step',json={'quantum_seconds':1,'max_ticks':1})
  assert final.status_code==200 and final.json()['state']=='succeeded' and calls==[4,9]
+
+
+def test_closed_active_task_cannot_rehydrate_or_run_again():
+ runtime,repo=make_runtime();calls=[]
+ async def handler(args):calls.append(args);return {'n':len(calls)}
+ spec=ToolSpec(name='fixture_closed',description='fixture')
+ runtime.tools.register(spec,handler)
+ context=runtime.submit_goal('fixture',run_immediately=False)
+ context.plan=[PlanNode(title='must not run',tool=spec.name)];repo.save_task(context)
+ runtime.close(context.id)
+ assert repo.load_task(context.id).state==TaskState.CANCELLED
+ assert repo.load_task(context.id).plan[0].state==TaskState.CANCELLED
+ restarted=make_runtime(hydrate_repo=repo);restarted.tools.register(spec,handler)
+ assert restarted.step().state=='idle'
+ assert restarted.run_task(context.id).state==TaskState.CANCELLED and not calls
+ assert restarted.close(context.id)['idempotent'] is True
+
+
+def test_closed_success_task_run_does_not_create_duplicate_execution_episode():
+ runtime,repo=make_runtime()
+ async def handler(args):return {'n':2+2}
+ runtime.tools.register(ToolSpec(name='fixture_once',description='fixture'),handler)
+ context=runtime.submit_goal('fixture',run_immediately=False);context.plan=[PlanNode(title='compute',tool='fixture_once')]
+ runtime.run_task(context.id);runtime.close(context.id)
+ count=len(repo.list_episodes(task_id=context.id))
+ restarted=make_runtime(hydrate_repo=repo)
+ assert restarted.run_task(context.id).state==TaskState.SUCCEEDED
+ assert len(repo.list_episodes(task_id=context.id))==count==1
+
+
+def test_legacy_closed_active_row_excluded_from_scheduler_and_approval_resume():
+ runtime,repo=make_runtime()
+ context=runtime.submit_goal('fixture',run_immediately=False)
+ context.plan=[PlanNode(title='waiting',tool='fixture',state=TaskState.WAITING_APPROVAL,approval_id='old')]
+ context.state=TaskState.WAITING_APPROVAL;repo.save_task(context)
+ runtime.retrospectives.write(context.id,went_well=[],went_poorly=[],lessons=[])
+ restarted=make_runtime(hydrate_repo=repo)
+ assert restarted.step().state=='idle'
+ assert restarted.resume(context.id,context.plan[0].id,approved=True).state==TaskState.WAITING_APPROVAL
+ assert not restarted.dispatcher.records
