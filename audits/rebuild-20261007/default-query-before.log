@@ -1,0 +1,35 @@
+.......FFF                                                               [100%]
+=================================== FAILURES ===================================
+_ test_default_queries_preserve_concrete_support_and_countermodel_for_ambiguity _
+
+    def test_default_queries_preserve_concrete_support_and_countermodel_for_ambiguity():
+     p={'defaults':[{'id':'a-if-not-b','unless':['b'],'then':'a'},{'id':'b-if-not-a','unless':['a'],'then':'b'}], 'query_atoms':['a','unknown']}
+     r=default_inference(p)
+>    query=next(q for q in r['queries'] if q['atom']=='a')
+                           ^^^^^^^^^^^^
+E    KeyError: 'queries'
+
+tests/modules/test_m20_defeasible_reasoning.py:56: KeyError
+___ test_default_no_models_does_not_report_query_false_or_vacuously_cautious ___
+
+    def test_default_no_models_does_not_report_query_false_or_vacuously_cautious():
+     r=default_inference({'defaults':[{'unless':['a'],'then':'a'}],'query_atoms':['a']})
+>    q=r['queries'][0]
+       ^^^^^^^^^^^^
+E    KeyError: 'queries'
+
+tests/modules/test_m20_defeasible_reasoning.py:69: KeyError
+__ test_default_query_witness_uses_revised_facts_and_actual_reduct_derivation __
+
+    def test_default_query_witness_uses_revised_facts_and_actual_reduct_derivation():
+     r=default_inference({'facts':['bird','penguin'],'removed_facts':['penguin'], 'defaults':[{'id':'fly','if':['bird'],'unless':['penguin'],'then':'flies'}],'query_atoms':['flies']})
+>    q=r['queries'][0]
+       ^^^^^^^^^^^^
+E    KeyError: 'queries'
+
+tests/modules/test_m20_defeasible_reasoning.py:77: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_defeasible_reasoning.py::test_default_queries_preserve_concrete_support_and_countermodel_for_ambiguity
+FAILED tests/modules/test_m20_defeasible_reasoning.py::test_default_no_models_does_not_report_query_false_or_vacuously_cautious
+FAILED tests/modules/test_m20_defeasible_reasoning.py::test_default_query_witness_uses_revised_facts_and_actual_reduct_derivation
+3 failed, 7 passed in 1.45s

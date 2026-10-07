@@ -40,15 +40,18 @@ def stable_models(facts,program):
     for rule in program:atoms|={rule['then']}|rule['if']|rule['unless']
     optional=sorted(atoms-set(facts))
     if len(optional)>12:raise ValueError('stable model search supports at most12 optional atoms')
-    models=[]
+    models=[];witnesses=[]
     for bits in itertools.product([False,True],repeat=len(optional)):
         candidate=set(facts)|{atom for atom,bit in zip(optional,bits) if bit}
         reduct=[rule for rule in program if not rule['unless']&candidate]
-        least,_=closure(facts,reduct)
-        if candidate==least:models.append(sorted(candidate))
+        least,trace=closure(facts,reduct)
+        if candidate==least:
+            models.append(sorted(candidate))
+            witnesses.append({'model':sorted(candidate),'supplied_facts':sorted(facts),'derived_trace':trace,
+                              'defeated_rules':[{'rule_id':rule['id'],'blocking_atoms':sorted(rule['unless']&candidate)} for rule in program if rule['unless']&candidate]})
     cautious=set.intersection(*(set(m) for m in models)) if models else set()
     possible=set.union(*(set(m) for m in models)) if models else set()
-    return {'stable_models':models,'model_count':len(models),'cautious_conclusions':sorted(cautious),'possible_conclusions':sorted(possible),
+    return {'model_witnesses':witnesses,'stable_models':models,'model_count':len(models),'cautious_conclusions':sorted(cautious),'possible_conclusions':sorted(possible),
             'ambiguous_conclusions':sorted(possible-cautious),'consistent':bool(models)}
 
 
@@ -59,7 +62,16 @@ def default_inference(p):
     if not removed<=facts:raise ValueError('removed facts must be present in original facts')
     after=stable_models((facts-removed)|added,program)
     old=set(before['cautious_conclusions']);new=set(after['cautious_conclusions'])
-    return {**after,'before':before,'retracted_conclusions':sorted(old-new),'new_conclusions':sorted(new-old),
+    queries=[]
+    for atom in sorted(labels(p.get('query_atoms',[]),'query_atoms')):
+        support=next((model for model in after['stable_models'] if atom in model),None)
+        counter=next((model for model in after['stable_models'] if atom not in model),None)
+        possible=support is not None if after['consistent'] else None
+        cautious=atom in new if after['consistent'] else None
+        status='inconsistent_program' if not after['consistent'] else 'cautiously_entailed' if cautious else 'ambiguous' if possible else 'not_entailed'
+        queries.append({'atom':atom,'status':status,'possible':possible,'cautious':cautious,
+                        'supporting_model':support,'countermodel':counter,'not_entailed_does_not_mean_false':True})
+    return {**after,'queries':queries,'before':before,'retracted_conclusions':sorted(old-new),'new_conclusions':sorted(new-old),
             'beliefs_revisable':True,'boundary':'Exact finite normal logic-program stable models, symbolic Horn rules with unless literals. All alternative stable models preserved; no real-world truth or default-priority claim.'}
 
 

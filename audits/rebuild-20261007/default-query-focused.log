@@ -1,0 +1,21 @@
+.......F..                                                               [100%]
+=================================== FAILURES ===================================
+_ test_default_queries_preserve_concrete_support_and_countermodel_for_ambiguity _
+
+    def test_default_queries_preserve_concrete_support_and_countermodel_for_ambiguity():
+     p={'defaults':[{'id':'a-if-not-b','unless':['b'],'then':'a'},{'id':'b-if-not-a','unless':['a'],'then':'b'}], 'query_atoms':['a','unknown']}
+     r=default_inference(p)
+     query=next(q for q in r['queries'] if q['atom']=='a')
+     assert query['status']=='ambiguous' and query['possible'] and not query['cautious']
+     assert query['supporting_model']==['a'] and query['countermodel']==['b']
+     proofs=r['model_witnesses']
+>    assert proofs[0]['derived_trace']==[{'rule':'a-if-not-b','fact':'a'}]
+E    AssertionError: assert [{'rule': 'b-... 'fact': 'b'}] == [{'rule': 'a-... 'fact': 'a'}]
+E      
+E      At index 0 diff: {'rule': 'b-if-not-a', 'fact': 'b'} != {'rule': 'a-if-not-b', 'fact': 'a'}
+E      Use -v to get more diff
+
+tests/modules/test_m20_defeasible_reasoning.py:60: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_defeasible_reasoning.py::test_default_queries_preserve_concrete_support_and_countermodel_for_ambiguity
+1 failed, 9 passed in 1.36s
