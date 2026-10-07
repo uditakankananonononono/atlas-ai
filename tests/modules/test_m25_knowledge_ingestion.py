@@ -124,3 +124,42 @@ def test_m25_hz9_restart_reingest_refuses_to_overwrite_existing_version(tmp_path
     p2=pipe(tmp_path)
     with pytest.raises(KnowledgeError):ingest(p2,text='changed content')
     assert (tmp_path/'tenant-a'/'s1'/'v1'/'source.bin').read_bytes()==original
+
+
+def test_m25_hz10_escape_register_leaves_no_state(tmp_path):
+    # KILL (hz8-era): register('..') rejected the disk write but still left a
+    # '..' record in memory - mutation happened before the guard fired.
+    p=pipe(tmp_path)
+    with pytest.raises(KnowledgeError):p.register(src('..'))
+    assert '..' not in p.records
+
+def test_m25_hz10_workspace_root_is_never_a_delete_target(tmp_path):
+    # KILL (hz8-era): delete_verified('.') rmtree'd the whole tenant workspace.
+    p=pipe(tmp_path);ingest(p)
+    with pytest.raises(KnowledgeError):p.delete_verified('.')
+    assert p.records and (tmp_path/'tenant-a'/'s1'/'v1'/'source.bin').exists()
+
+def test_m25_hz10_persist_failure_rolls_back_memory_and_own_files(tmp_path, monkeypatch):
+    # KILL: a manifest write failure after memory mutation left source.bin,
+    # an empty-shell record and no rollback.
+    p=pipe(tmp_path)
+    calls=[0]
+    original=p._persist_manifest
+    def flaky(rec):
+        calls[0]+=1
+        if calls[0]==2: raise OSError('disk full')
+        return original(rec)
+    monkeypatch.setattr(p,'_persist_manifest',flaky)
+    with pytest.raises(KnowledgeError,match='rolled back'):ingest(p)
+    assert 's1' not in p.records and not p.chunks and not p.edges
+    assert not (tmp_path/'tenant-a'/'s1'/'v1').exists()
+
+def test_m25_hz10_delete_failure_retains_tracking_truthfully(tmp_path, monkeypatch):
+    # KILL: a no-op rmtree removed memory tracking while returning
+    # deleted=False - the store claimed nothing while serving nothing true.
+    p=pipe(tmp_path);ingest(p)
+    import shutil
+    monkeypatch.setattr(shutil,'rmtree',lambda *a,**k:None)
+    result=p.delete_verified('s1')
+    assert result['deleted'] is False and result['tracking_retained'] is True
+    assert 's1' in p.records and p.search('Alpha')

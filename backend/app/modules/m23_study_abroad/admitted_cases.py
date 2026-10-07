@@ -44,16 +44,21 @@ def _get_capped(client: httpx.Client, url: str, limit: int, started: float,
                 deadline: float) -> tuple[httpx.Response | None, bytes | None, str | None]:
     """Bounded streaming read. Returns (response, body, abort_reason).
 
-    Semantics, exactly: the deadline is checked BEFORE the request is sent
-    (response is None then), BEFORE consuming each decoded chunk, and once
-    more after the stream ends (EOF guard). The byte cap counts DECODED body
-    bytes as yielded by httpx iter_bytes - not TLS/wire bytes. iter_bytes is
-    pinned to READ_CHUNK, so at most limit + READ_CHUNK decoded bytes are
-    pulled through the decode boundary before a cap abort; a transport that
-    hands over a larger single chunk still delivers that chunk whole. The
-    deadline bounds time spent inside this function; time in redirects,
+    Semantics, exactly: the deadline is checked before the request is sent
+    (response is None then), once per loop iteration, and once more after
+    the stream ends (EOF guard). The loop obtains the next chunk from
+    iter_bytes BEFORE the budget check runs - this is a post-yield budget
+    check: a chunk that arrives after the deadline is still received and
+    only then rejected, and the check cannot interrupt a blocking socket
+    read. The per-request 8s timeout still governs each blocking phase, so
+    total wall time can exceed the nominal deadline (12s budget plus up to
+    one in-flight phase). The byte cap counts DECODED body bytes as yielded
+    by httpx iter_bytes - not TLS/wire bytes. iter_bytes is pinned to
+    READ_CHUNK, so at most limit + READ_CHUNK decoded bytes are pulled
+    through the decode boundary before a cap abort; a transport that hands
+    over a larger single chunk still delivers that chunk whole. Time in
     DNS or connection setup before the first read is covered only by the
-    pre-request check and the per-request 8s timeout, not measured here."""
+    pre-request check and the per-request timeout, not measured here."""
     if time.monotonic() - started > deadline:
         return None, None, 'deadline'
     chunks: list[bytes] = []
