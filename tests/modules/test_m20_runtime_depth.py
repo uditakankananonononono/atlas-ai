@@ -2156,3 +2156,31 @@ def test_repeated_run_of_failed_task_requires_explicit_prepared_correction():
  runtime.prepare_read_step_retry(task.id,'bad',arguments={'csv_text':'value\n42\n','value_column':'value'})
  assert runtime.run_task(task.id).state==TaskState.SUCCEEDED
  assert len(repo.list_actions(task_id=task.id))==2
+
+
+def test_failed_episode_write_never_becomes_recalled_execution_evidence(monkeypatch):
+ runtime,repo=make_runtime();task=runtime.submit_goal('fixture memory failure',run_immediately=False)
+ from app.modules.m20_general_cognitive_worker.schemas import Episode
+ episode=Episode(task_id=task.id,goal='fixture memory failure')
+ original=repo.save_episode
+ def fail(episode):raise RuntimeError('fixture episode write unavailable')
+ monkeypatch.setattr(repo,'save_episode',fail)
+ with pytest.raises(RuntimeError):runtime.episodic.record(episode)
+ assert runtime.episodic.get(episode.id) is None
+ assert runtime.episodic.recall_similar(episode.goal)==[]
+ assert repo.list_episodes()==[]
+ monkeypatch.setattr(repo,'save_episode',original)
+ runtime.episodic.record(episode)
+ assert runtime.episodic.get(episode.id) is not None and len(repo.list_episodes())==1
+
+
+def test_failed_episode_revision_keeps_previous_committed_recall_snapshot(monkeypatch):
+ runtime,repo=make_runtime();task=runtime.submit_goal('fixture old evidence',run_immediately=False)
+ from app.modules.m20_general_cognitive_worker.schemas import Episode
+ episode=runtime.episodic.record(Episode(task_id=task.id,goal='old committed goal'))
+ def fail(episode):raise RuntimeError('fixture episode write unavailable')
+ monkeypatch.setattr(repo,'save_episode',fail)
+ changed=episode.model_copy(update={'goal':'new uncommitted goal','embedding_text':''})
+ with pytest.raises(RuntimeError):runtime.episodic.record(changed)
+ assert runtime.episodic.get(episode.id).goal=='old committed goal'
+ assert repo.list_episodes()[0].goal=='old committed goal'

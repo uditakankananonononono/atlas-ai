@@ -1,0 +1,51 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____ test_failed_episode_write_never_becomes_recalled_execution_evidence ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6cb75f9550>
+
+    def test_failed_episode_write_never_becomes_recalled_execution_evidence(monkeypatch):
+     runtime,repo=make_runtime();task=runtime.submit_goal('fixture memory failure',run_immediately=False)
+     from app.modules.m20_general_cognitive_worker.schemas import Episode
+     episode=Episode(task_id=task.id,goal='fixture memory failure')
+     original=repo.save_episode
+     def fail(episode):raise RuntimeError('fixture episode write unavailable')
+     monkeypatch.setattr(repo,'save_episode',fail)
+     with pytest.raises(RuntimeError):runtime.episodic.record(episode)
+>    assert runtime.episodic.get(episode.id) is None
+E    AssertionError: assert Episode(id='56f4112c-7888-43c1-a15e-1ee2b3478fe7', task_id='486ff5b6-1ee4-46cb-9ebc-293aa3b81668', goal='fixture memor...tetime.datetime(2026, 10, 7, 12, 44, 8, 424701, tzinfo=datetime.timezone.utc), embedding_text='fixture memory failure') is None
+E     +  where Episode(id='56f4112c-7888-43c1-a15e-1ee2b3478fe7', task_id='486ff5b6-1ee4-46cb-9ebc-293aa3b81668', goal='fixture memor...tetime.datetime(2026, 10, 7, 12, 44, 8, 424701, tzinfo=datetime.timezone.utc), embedding_text='fixture memory failure') = get('56f4112c-7888-43c1-a15e-1ee2b3478fe7')
+E     +    where get = <app.modules.m20_general_cognitive_worker.persistence.DurableEpisodicMemory object at 0x7f6cb781c6e0>.get
+E     +      where <app.modules.m20_general_cognitive_worker.persistence.DurableEpisodicMemory object at 0x7f6cb781c6e0> = <app.modules.m20_general_cognitive_worker.runtime.GCWRuntime object at 0x7f6cb75c5f70>.episodic
+E     +    and   '56f4112c-7888-43c1-a15e-1ee2b3478fe7' = Episode(id='56f4112c-7888-43c1-a15e-1ee2b3478fe7', task_id='486ff5b6-1ee4-46cb-9ebc-293aa3b81668', goal='fixture memor...tags=[], created_at=datetime.datetime(2026, 10, 7, 12, 44, 8, 424701, tzinfo=datetime.timezone.utc), embedding_text='').id
+
+tests/modules/test_m20_runtime_depth.py:2169: AssertionError
+____ test_failed_episode_revision_keeps_previous_committed_recall_snapshot _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6cb730e4e0>
+
+    def test_failed_episode_revision_keeps_previous_committed_recall_snapshot(monkeypatch):
+     runtime,repo=make_runtime();task=runtime.submit_goal('fixture old evidence',run_immediately=False)
+     from app.modules.m20_general_cognitive_worker.schemas import Episode
+     episode=runtime.episodic.record(Episode(task_id=task.id,goal='old committed goal'))
+     def fail(episode):raise RuntimeError('fixture episode write unavailable')
+     monkeypatch.setattr(repo,'save_episode',fail)
+     changed=episode.model_copy(update={'goal':'new uncommitted goal','embedding_text':''})
+     with pytest.raises(RuntimeError):runtime.episodic.record(changed)
+>    assert runtime.episodic.get(episode.id).goal=='old committed goal'
+E    AssertionError: assert 'new uncommitted goal' == 'old committed goal'
+E      
+E      - old committed goal
+E      + new uncommitted goal
+
+tests/modules/test_m20_runtime_depth.py:2185: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_episode_write_never_becomes_recalled_execution_evidence
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_episode_revision_keeps_previous_committed_recall_snapshot
+2 failed, 151 deselected, 1 warning in 2.09s

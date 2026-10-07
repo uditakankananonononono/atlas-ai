@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 
-from .embeddings import EmbeddingProvider
+from .embeddings import EmbeddingProvider, embed_snapshot
 from .episodic_memory import EpisodicMemory
 from .htn_planner import HTNPlanner, PlannerModel
 from .metacognition import CalibrationEngine
@@ -72,9 +72,15 @@ class DurableEpisodicMemory(EpisodicMemory):
         self.repo = repo
 
     def record(self, episode: Episode) -> Episode:
-        result = super().record(episode)
+        # Stage embedding before the write, publish to recall only after commit.
+        result = episode.model_copy(deep=True)
+        if not result.embedding_text:
+            result.embedding_text = self._embed_text(result)
+        vector = embed_snapshot(self.embedder, result.embedding_text)
         self.repo.save_episode(result)
-        return result
+        self._episodes[result.id] = result
+        self._vectors[result.id] = vector
+        return result.model_copy(deep=True)
 
     @classmethod
     def load(cls, repo: GCWRepository, embedder: EmbeddingProvider | None = None) -> "DurableEpisodicMemory":
