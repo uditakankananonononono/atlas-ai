@@ -62,16 +62,25 @@ class LocalKnowledgePipeline:
         return p
     @staticmethod
     def _validate_disk_manifest(disk)->list:
-        # Exact schema: dict with tenant_id str, source dict, versions list of
-        # {number:int, hash:str}; anything else fails closed - [], null,
-        # dict-shaped or missing versions are never treated as zero versions.
-        if not isinstance(disk,dict): raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
-        if not isinstance(disk.get('tenant_id'),str): raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
+        # Exact schema: dict; tenant_id str; source dict with source_id str;
+        # versions a list of {number:int (not bool), hash:64-hex-lowercase}
+        # numbered exactly 1..N with no gaps or duplicates. Anything else
+        # fails closed - [], null, dict-shaped or missing versions are never
+        # treated as zero versions.
+        bad=KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
+        if not isinstance(disk,dict): raise bad
+        if not isinstance(disk.get('tenant_id'),str): raise bad
+        source=disk.get('source')
+        if not isinstance(source,dict) or not isinstance(source.get('source_id'),str): raise bad
         versions=disk.get('versions')
-        if not isinstance(versions,list): raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
-        for entry in versions:
-            if not isinstance(entry,dict) or not isinstance(entry.get('number'),int) or not isinstance(entry.get('hash'),str):
-                raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
+        if not isinstance(versions,list): raise bad
+        hexdigits=set('0123456789abcdef')
+        for i,entry in enumerate(versions,1):
+            number=entry.get('number') if isinstance(entry,dict) else None
+            digest=entry.get('hash') if isinstance(entry,dict) else None
+            if not isinstance(number,int) or isinstance(number,bool): raise bad
+            if number!=i: raise bad
+            if not isinstance(digest,str) or len(digest)!=64 or any(c not in hexdigits for c in digest): raise bad
         return versions
 
     def _check_consent(self,source:SourceRegistration)->None:
@@ -95,19 +104,30 @@ class LocalKnowledgePipeline:
             # require equivalence with what this pipeline is about to write;
             # anything else fails closed rather than silently overwriting.
             try: disk=json.loads(manifest.read_text(encoding='utf-8'))
-            except (OSError,json.JSONDecodeError) as exc: raise KnowledgeError('unreadable on-disk manifest; refusing to overwrite prior state') from exc
+            except (OSError,UnicodeDecodeError,json.JSONDecodeError) as exc: raise KnowledgeError('unreadable on-disk manifest; refusing to overwrite prior state') from exc
             dv=self._validate_disk_manifest(disk)
+            if disk.get('tenant_id')!=self.tenant_id: raise KnowledgeError('on-disk manifest tenant differs; refusing to overwrite prior state')
+            disk_source=disk['source']
+            if disk_source.get('source_id')!=source.source_id: raise KnowledgeError('on-disk manifest source_id differs; refusing to overwrite prior state')
             mem_versions=old.versions if old else []
-            if len(dv)>len(mem_versions): raise KnowledgeError('on-disk manifest records versions not loaded in this pipeline; refusing to overwrite prior state')
+            # Exact state equality, both directions: a disk record with fewer
+            # versions than memory (e.g. versions=[]) is divergence too, not
+            # a writable base.
+            if len(dv)!=len(mem_versions): raise KnowledgeError('on-disk manifest version count diverges from loaded state; refusing to overwrite prior state')
             for i,entry in enumerate(dv):
                 if entry['number']!=mem_versions[i].number or entry['hash']!=mem_versions[i].content_hash:
                     raise KnowledgeError('on-disk manifest diverges from loaded version state; refusing to overwrite prior state')
-            disk_source=disk.get('source')
-            if not isinstance(disk_source,dict): raise KnowledgeError('invalid on-disk manifest schema; refusing to overwrite prior state')
-            if disk.get('tenant_id')!=self.tenant_id: raise KnowledgeError('on-disk manifest tenant differs; refusing to overwrite prior state')
-            for field_name in ('kind','canonical_url','title','author'):
-                if disk_source.get(field_name)!=getattr(source,field_name):
+            # Registration equivalence guards overwrite only; it is not
+            # consent authority and treats no metadata field as verified.
+            expected=source.model_dump(mode='json')
+            for field_name in ('kind','canonical_url','title','author','published_at','metadata'):
+                if disk_source.get(field_name)!=expected.get(field_name):
                     raise KnowledgeError(f'on-disk registration identity differs on {field_name}; refusing to overwrite prior state')
+            disk_consent=disk_source.get('consent') if isinstance(disk_source.get('consent'),dict) else {}
+            expected_consent=expected.get('consent',{})
+            for field_name in ('granted_by','granted_at','purposes','expires_at','evidence'):
+                if disk_consent.get(field_name)!=expected_consent.get(field_name):
+                    raise KnowledgeError(f'on-disk consent record differs on {field_name}; refusing to overwrite prior state')
         rec=old or Record(source,self.tenant_id); self.records[source.source_id]=rec
         try: self._persist_manifest(rec)
         except OSError:
@@ -249,7 +269,13 @@ class LocalKnowledgePipeline:
         tmp=p/f'manifest.json.tmp-{_uuid.uuid4().hex}'
         # O_EXCL|O_NOFOLLOW: never write through a preexisting link or file,
         # uuid or not; a collision fails instead of truncating anything.
+        blob=json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True).encode('utf-8')
         fd=_os.open(tmp,_os.O_WRONLY|_os.O_CREAT|_os.O_EXCL|_os.O_NOFOLLOW,0o600)
-        try:_os.write(fd,json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True).encode('utf-8'))
+        try:
+            view=memoryview(blob)
+            while view:
+                written=_os.write(fd,view)
+                if written<=0: raise OSError('short write persisting manifest')
+                view=view[written:]
         finally:_os.close(fd)
         _os.replace(tmp,p/'manifest.json')
