@@ -1,0 +1,40 @@
+{
+  "scope": "actual_local_ideation_acceptance_no_mock",
+  "source": "0afcfca8a9d21b172d20528eb582b8d143a4c341",
+  "weights_sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+  "runner_commit": "8345f333951c661d166b00e6f9362e553768f292",
+  "requests": [
+    {
+      "objective": "Recruit students for a free library study club",
+      "constraints": [
+        "No money spent",
+        "Do not contact anyone during generation"
+      ],
+      "count": 1,
+      "prompt": "Generate distinct actionable proposals for the supplied objective. Respect the supplied constraints, but do not claim they are independently verified. Return ONLY a JSON object with ideas (exact requested count). Each candidate needs title, proposal, first_test (a concrete small test), risks (string list), and constraint_checks (each supplied constraint mapped to an explanation, including tradeoffs). Do not take actions or invent evidence. Input: {\"objective\": \"Recruit students for a free library study club\", \"constraints\": [\"No money spent\", \"Do not contact anyone during generation\"], \"count\": 1}",
+      "provider": "openai_compat",
+      "model": "qwen-trial",
+      "raw_text": "```json\n{\n  \"ideas\": [\n    {\n      \"title\": \"Host a virtual event\",\n      \"proposal\": \"Organize a virtual event where students can participate in a study club session. Use video conferencing tools to ensure confidentiality and accessibility.\",\n      \"first_test\": \"Demonstrate the event's accessibility and confidentiality through online testing.\",\n      \"risks\": [\n        \"Limited reach for participants\",\n        \"Potential issues with online security and data privacy\"\n      ],\n      \"constraint_checks\": [\n        \"Ensure the event is accessible to students across different regions and educational institutions.\",\n        \"Adopt secure data handling practices and privacy policies\"\n      ]\n    },\n    {\n      \"title\": \"Provide study materials\",\n      \"proposal\": \"Offer study materials such as textbooks, videos, and study guides to help students prepare for the study club sessions.\",\n      \"first_test\": \"Test the materials' effectiveness and relevance with students.\"\n    },\n    {\n      \"title\": \"Encourage group discussions\",\n      \"proposal\": \"Encourage students to participate in group discussions during the study club sessions to deepen their understanding of the topics.\",\n      \"first_test\": \"Ensure the discussions are clear, engaging, and constructive.\"\n    },\n    {\n      \"title\": \"Promote",
+      "workflow_accepted": false,
+      "error": "RuntimeError: ideation model unavailable; no template fallback",
+      "seconds": 10.665856862997316
+    },
+    {
+      "objective": "Reduce missed homework deadlines",
+      "constraints": [
+        "No paid software"
+      ],
+      "count": 1,
+      "prompt": "Generate distinct actionable proposals for the supplied objective. Respect the supplied constraints, but do not claim they are independently verified. Return ONLY a JSON object with ideas (exact requested count). Each candidate needs title, proposal, first_test (a concrete small test), risks (string list), and constraint_checks (each supplied constraint mapped to an explanation, including tradeoffs). Do not take actions or invent evidence. Input: {\"objective\": \"Reduce missed homework deadlines\", \"constraints\": [\"No paid software\"], \"count\": 1}",
+      "provider": "openai_compat",
+      "model": "qwen-trial",
+      "raw_text": "```json\n{\n  \"ideas\": [\n    {\n      \"title\": \"Implement a real-time monitoring system for student assignments\",\n      \"proposal\": \"Implement a system that continuously monitors student assignments for timely completion. This system will log progress and notify students when they are behind. By using real-time analytics, it will be possible to identify and address missed deadlines quickly.\",\n      \"first_test\": \"Test the system with a group of students to ensure it identifies missed deadlines in real-time\",\n      \"risks\": \"Real-time monitoring may require significant hardware investment, which could affect student performance and workload. Moreover, the system needs to be secure to prevent unauthorized access or manipulation of student data.\",\n      \"constraint_checks\": [\n        {\n          \"name\": \"Real-time monitoring may be affected by network latency, which could cause delays in data transmission. This could affect the system's performance and accuracy.\"\n        },\n        {\n          \"name\": \"Real-time monitoring may require constant monitoring, which could lead to increased workload and potential bottlenecks. This could affect student performance and overall system efficiency.\"\n        },\n        {\n          \"name\": \"Real-time monitoring may involve data analysis, which could be more complex than just logging tasks. This could increase the complexity and cost of the system",
+      "workflow_accepted": false,
+      "error": "RuntimeError: ideation model unavailable; no template fallback",
+      "seconds": 9.916690971000207
+    }
+  ],
+  "peak_rss_kib": 599896,
+  "total_seconds": 23.302659150002,
+  "exit_code": 0
+}
