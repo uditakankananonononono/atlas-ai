@@ -133,6 +133,9 @@ class GCWRuntime:
             approvals=approval_gate or InMemoryApprovalGate(), sandbox=sandbox_policy,
         )
         self.dispatcher = ToolDispatcher(self.tools, self.safety)
+        if _hydrate:
+            self.dispatcher.records = repo.list_actions()
+        self._persisted_actions = len(self.dispatcher.records)
         self.loop = DeliberativeLoop(
             planner=self.planner, dispatcher=self.dispatcher,
             working_memory=self.working_memory, episodic=self.episodic,
@@ -251,6 +254,9 @@ class GCWRuntime:
     def _persist_context(self, context: TaskContext) -> None:
         context.updated_at = datetime.now(timezone.utc)
         self.repo.save_task(context)
+        for action in self.dispatcher.records[self._persisted_actions:]:
+            self.repo.save_action(action)
+            self._persisted_actions += 1
         new_traces = self.loop.traces[self._persisted_traces:]
         for trace in new_traces:
             self.repo.save_trace(trace)

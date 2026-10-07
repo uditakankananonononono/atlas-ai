@@ -13,7 +13,7 @@ from typing import Any
 import sqlalchemy as sa
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-from .schemas import Episode, SemanticFact, Skill, TaskContext, TraceEntry
+from .schemas import ActionRecord, Episode, SemanticFact, Skill, TaskContext, TraceEntry
 
 
 class Base(DeclarativeBase):
@@ -33,6 +33,15 @@ class TaskRow(Base):
     standup_notes_json = sa.Column(sa.JSON, nullable=False, default=list)
     created_at = sa.Column(sa.DateTime(timezone=True), nullable=False)
     updated_at = sa.Column(sa.DateTime(timezone=True), nullable=False)
+
+
+class ActionRow(Base):
+    __tablename__ = "m20_action_records"
+    id = sa.Column(sa.String, primary_key=True)
+    tenant_id = sa.Column(sa.String, nullable=False, index=True)
+    task_id = sa.Column(sa.String, nullable=True, index=True)
+    payload_json = sa.Column(sa.JSON, nullable=False)
+    started_at = sa.Column(sa.DateTime(timezone=True), nullable=False)
 
 
 class EpisodeRow(Base):
@@ -151,6 +160,31 @@ class GCWRepository:
                 query = query.filter(TaskRow.state == state)
             ids = [row.id for row in query.all()]
         return [ctx for ctx in (self.load_task(i) for i in ids) if ctx is not None]
+
+    # -- reported local action journal -------------------------------------
+
+    def save_action(self, action: ActionRecord) -> ActionRecord:
+        payload = action.model_dump(mode="json")
+        with self._session() as session:
+            row = session.get(ActionRow, action.id)
+            if row is not None:
+                if row.tenant_id != self.tenant_id:
+                    raise PermissionError("action belongs to another tenant")
+                if row.payload_json != payload:
+                    raise PermissionError("stored action record differs for existing id")
+                return action
+            session.add(ActionRow(id=action.id, tenant_id=self.tenant_id,
+                                  task_id=action.task_id, payload_json=payload,
+                                  started_at=_aware(action.started_at)))
+            session.commit()
+        return action
+
+    def list_actions(self, *, task_id: str | None = None) -> list[ActionRecord]:
+        with self._session() as session:
+            query = session.query(ActionRow).filter(ActionRow.tenant_id == self.tenant_id)
+            if task_id is not None:
+                query = query.filter(ActionRow.task_id == task_id)
+            return [ActionRecord(**row.payload_json) for row in query.order_by(ActionRow.started_at, ActionRow.id).all()]
 
     # -- episodes ----------------------------------------------------------
 
