@@ -160,8 +160,12 @@ class ToolDispatcher:
                 record.finished_at = datetime.now(timezone.utc)
                 self.records.append(record)
                 return record
-            except (ToolError, ApprovalPending):
-                raise
+            except (ToolError, ApprovalPending) as exc:
+                # These came from the invoked handler, not safety preflight.
+                # A handler may raise them after completing an external effect.
+                if not effectful:raise
+                last_error=exc
+                break
             except Exception as exc:  # handler failure: retry within bound
                 last_error = exc
         record.succeeded = False

@@ -36,3 +36,18 @@ def test_persisted_unknown_survives_actual_sqlite_restart_and_manual_run(tmp_pat
  fresh.resume(ctx.id,loaded.plan[0].id,approved=True)
  assert len(calls)==1 and fresh.repo.load_task(ctx.id).plan[0].outcome_unknown
  fresh_engine.dispose()
+
+@pytest.mark.parametrize('kind',['toolerror','approvalpending'])
+def test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval(kind):
+ from app.modules.m20_general_cognitive_worker.tools import ToolError,ApprovalPending
+ calls=[];svc=CognitiveWorkerService(approval_gate=InMemoryApprovalGate())
+ async def effect_then_error(args):
+  calls.append(args)
+  if kind=='toolerror':raise ToolError('fixture post-effect error')
+  raise ApprovalPending('fixture_effect','unrelated-handler-token')
+ svc.tools.register(ToolSpec(name='fixture_effect',description='local fake effect',risk=Risk.EXTERNAL),effect_then_error)
+ ctx=execute(svc)
+ assert len(calls)==1 and ctx.plan[0].outcome_unknown and ctx.state==TaskState.BLOCKED
+ assert ctx.plan[0].approval_id!='unrelated-handler-token'
+ svc.loop.resume_after_approval(ctx,ctx.plan[0].id,True)
+ assert len(calls)==1 and ctx.state==TaskState.BLOCKED
