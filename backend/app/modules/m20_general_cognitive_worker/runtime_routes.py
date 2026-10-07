@@ -303,3 +303,20 @@ def add_task_context(task_id: str, request: TaskContextInputRequest,
         raise HTTPException(404, 'task not found')
     except ValueError as exc:
         raise HTTPException(409 if str(exc).startswith('context conflict') else 422, str(exc))
+
+
+class TaskSchedulePatchRequest(BaseModel):
+    importance: int | None = Field(default=None, ge=1, le=5, strict=True)
+    deadline: datetime | None = None
+
+
+@router.patch('/tasks/{task_id}/schedule')
+def update_task_schedule(task_id: str, request: TaskSchedulePatchRequest,
+                         runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        result = runtime.update_task_schedule(task_id, changes=request.model_dump(exclude_unset=True))
+        return _task_dict(result)
+    except KeyError:
+        raise HTTPException(404, 'task not found')
+    except ValueError as exc:
+        raise HTTPException(409 if str(exc).startswith('schedule conflict') else 422, str(exc))

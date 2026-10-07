@@ -203,6 +203,30 @@ class GCWRuntime:
         context = self.scheduler.get(task_id)
         return context or self.repo.load_task(task_id)
 
+    def update_task_schedule(self, task_id, *, changes):
+        if not isinstance(changes, dict) or not changes or not set(changes) <= {'importance', 'deadline'}:
+            raise ValueError('nonempty importance/deadline changes required')
+        context = self.get_task(task_id)
+        if context is None: raise KeyError(task_id)
+        if self.repo.list_retrospectives(task_id=task_id):
+            raise ValueError('schedule conflict; task is closed')
+        updated = context.model_copy(deep=True)
+        if 'importance' in changes:
+            importance = changes['importance']
+            if type(importance) is not int or not 1 <= importance <= 5:
+                raise ValueError('importance must be exact integer1..5')
+            updated.importance = importance
+        if 'deadline' in changes:
+            deadline = changes['deadline']
+            if deadline is not None and (not isinstance(deadline, datetime) or deadline.tzinfo is None or deadline.utcoffset() is None):
+                raise ValueError('deadline must be timezone-aware or null')
+            updated.deadline = deadline.astimezone(timezone.utc) if deadline is not None else None
+        updated.updated_at = datetime.now(timezone.utc)
+        self.repo.save_task(updated)
+        if self.scheduler.get(task_id) is not None:
+            self.scheduler.add(updated)
+        return updated
+
     def add_task_context(self, task_id, *, text, source, reference):
         context = self.get_task(task_id)
         if context is None: raise KeyError(task_id)

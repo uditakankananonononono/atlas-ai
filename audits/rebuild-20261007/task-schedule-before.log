@@ -1,0 +1,28 @@
+........................................................................ [ 81%]
+...............F                                                         [100%]
+=================================== FAILURES ===================================
+_ test_runtime_task_schedule_update_changes_service_order_and_survives_restart _
+
+mounted = (<starlette.testclient.TestClient object at 0x7fa65b73b260>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7fa6617d7f80>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7fa6617d6270>)
+
+    def test_runtime_task_schedule_update_changes_service_order_and_survives_restart(mounted):
+        from datetime import datetime, timezone
+        client, runtime, repo, _ = mounted
+        first = runtime.submit_goal('first fixture', importance=4, run_immediately=False)
+        second = runtime.submit_goal('second fixture', importance=1, run_immediately=False)
+        path = f'/api/modules/20/runtime/tasks/{second.id}/schedule'
+        response = client.patch(path, json={'importance': 5, 'deadline': '2026-10-08T10:00:00+05:30'})
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_m20_runtime_depth.py:1343: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_task_schedule_update_changes_service_order_and_survives_restart
+1 failed, 87 passed, 1 warning in 5.95s
