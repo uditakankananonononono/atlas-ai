@@ -54,7 +54,7 @@ def test_m05_delivery_claim_real_pg_multiprocess(tmp_path):
     assert migrated.returncode==0,migrated.stderr[-1500:]
     # Fresh historical baseline may create current models. Also prove the new
     # migration recreates its table for an already-existing prior schema.
-    previous=subprocess.run([sys.executable,"-m","alembic","downgrade","-1"],env=env,capture_output=True,text=True,timeout=120)
+    previous=subprocess.run([sys.executable,"-m","alembic","downgrade","20260927_m21_owner_journal"],env=env,capture_output=True,text=True,timeout=120)
     assert previous.returncode==0,previous.stderr[-1000:]
     with psycopg.connect(uri) as conn:
         assert conn.execute("select to_regclass('m05_delivery_claims')").fetchone()[0] is None
