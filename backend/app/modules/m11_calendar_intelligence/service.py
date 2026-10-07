@@ -192,6 +192,15 @@ class Service:
             has_sync_token=bool(row.sync_token), created_at=row.created_at,
         )
 
+    async def _google_access_token(self, row):
+        if self._google_access_token_provider is None:
+            raise RuntimeError("Google refresh-token exchange is not configured")
+        refresh_token = self.cipher.decrypt(row.encrypted_credentials)
+        access_token = await self._google_access_token_provider(refresh_token)
+        if not isinstance(access_token, str) or not access_token.strip() or access_token == refresh_token:
+            raise ValueError("Google refresh-token exchange returned invalid access token")
+        return access_token
+
     # -- watch channels ----------------------------------------------------------
     async def ensure_watch(self, source_id: str) -> CalendarSourceView:
         if self.google is None:
@@ -204,7 +213,7 @@ class Service:
             expiration = expiration.replace(tzinfo=timezone.utc)
         if expiration and expiration > datetime.now(timezone.utc) + timedelta(hours=24):
             return self._source_view(row)  # still healthy
-        access_token = self.cipher.decrypt(row.encrypted_credentials)
+        access_token = await self._google_access_token(row)
         channel_id = str(uuid4())
         channel_token = str(uuid4())
         info = await self.google.watch(
@@ -243,7 +252,7 @@ class Service:
     async def _sync_google(self, row) -> SyncResult:
         if self.google is None:
             raise RuntimeError("google calendar client not configured")
-        access_token = self.cipher.decrypt(row.encrypted_credentials)
+        access_token = await self._google_access_token(row)
         full_resync = False
         try:
             page = await self.google.list_events(
