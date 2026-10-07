@@ -1156,3 +1156,40 @@ def test_runtime_tool_history_uses_dispatch_journal_and_survives_restart():
     restarted.tools.register(spec, noop)
     for _ in range(2):
         assert restarted.select_tool('fixture read').as_dict()['candidates'][0]['historical_success'] == pytest.approx(1 / 3, abs=1e-4)
+
+
+def test_tool_history_actual_local_handlers_persisted_across_engine_reopen(tmp_path):
+    import asyncio
+    path = tmp_path / 'tool-history.sqlite'
+    engine = create_engine(f'sqlite:///{path}')
+    repo = GCWRepository(engine)
+    repo.create_schema()
+    runtime = GCWRuntime(repo)
+    calls = []
+    async def handler(args):
+        calls.append(args['fail'])
+        if args['fail']:
+            raise RuntimeError('fixture local failure')
+        return {'value': 42}
+    spec = ToolSpec(name='local_fixture', description='local fixture',
+                    capabilities=['fixture'], risk=Risk.READ, max_retries=1)
+    runtime.tools.register(spec, handler)
+    task = TaskContext(goal='local fixture')
+    for failed in (False, False, True):
+        action = asyncio.run(runtime.dispatcher.dispatch(
+            'local_fixture', {'fail': failed}, task_id=task.id))
+        assert action.succeeded is not failed
+        runtime._persist_context(task)
+    assert calls == [False, False, True]
+    assert len(repo.list_actions()) == 3
+    engine.dispose()
+    reopened_engine = create_engine(f'sqlite:///{path}')
+    reopened = GCWRuntime(GCWRepository(reopened_engine))
+    reopened.tools.register(spec, handler)
+    for _ in range(2):
+        candidate = reopened.select_tool('local fixture').as_dict()['candidates'][0]
+        assert candidate['supplied_successes'] == 2
+        assert candidate['supplied_failures'] == 1
+        assert candidate['historical_success'] == 0.6
+    assert calls == [False, False, True]
+    reopened_engine.dispose()
