@@ -827,7 +827,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M10 contains Gmail OAuth/refresh/watch/history HTTP client, tenant SQL messages/actions/drafts/events, classifier/extractor and approval-gated drafts; lane triage/composer/policy and promise reconciliation also exist. Near-instant high-volume operation, Outlook/IMAP and complete M09 integration are not established by scoped read. No real mailbox/provider/OAuth/signup/email effect tested. Status unverified."
     },
     {
       "row": 75,
@@ -838,7 +838,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Gmail REST client handles profile/history/full messages/watch; authenticated tenant route processes push inline via shared verification token, not established Celery message-ID ingestion. Parser picks plain text; SQL model stores body_text/headers/JSON recipients, not full specified HTML/sent/ref/status schema or attachment-GCS lifecycle. History/tenant idempotency seams exist, but multi-account message/thread keys lack account scoping in this read. No live provider/push/attachment acceptance. Status unverified."
     },
     {
       "row": 76,
@@ -849,7 +849,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Seven-label classifier offers lazy optional configured BERT checkpoint and deterministic keyword/label fallback. Input is subject/sender/snippet/labels/headers, not whole thread; trained checkpoint and ongoing corrections/fine-tuning are not established. Runtime Google translation/language detection and spaCy entity tags not established in scoped ingest. Embedding defaults NullEmbedder. No model/provider or classification-quality acceptance. Status unverified."
     },
     {
       "row": 77,
@@ -860,7 +860,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "extract_actions requests schema JSON through injected generator, validates/retries then heuristic fallback; stored action items retain source message ID/deadline/entity. Scoped ingest saves M10 action rows; automatic Planner task/dependency/comment creation not established. Prompt is simpler than specified few-shot examples. No external model or actual Planner synchronization acceptance. Status unverified."
     },
     {
       "row": 78,
@@ -871,7 +871,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Draft pipeline uses bounded five thread snippets (6000 characters), supplied graph hook default absent, current body capped 4000 and configurable generator default OpenAI. Stores pending SQL draft and approval, attempts review-state capture. Entire thread, historical style checker/provider draft/rich editor and successful dispatched reply not established here. Approval payload has tenant/draft/message/thread/recipient/body, but no explicit account_id; account ownership before multi-account send remains open. No email sent. Status unverified."
     },
     {
       "row": 79,
@@ -882,7 +882,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.follow_ups_due surfaces open action items with future deadlines within horizon, not unanswered-thread aging after five days. Lane follow-up policies/triage exist but provider bounce-triggered M05 contact invalidation and integrated approval suggestions not established in scoped read. No bounce/inbox/SMTP effect run. Status unverified."
     },
     {
       "row": 80,
@@ -893,7 +893,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Priority inbox uses fixed category weights, sender frequency and recency; SQL message/draft/event history exists. Complete M09 communication graph, Executive thread/search view, semantic search and preference-learning notification adjustments not established in scoped read. Lane mechanisms do not establish running full Smart Inbox experience. No real correspondence or user-style learning acceptance. Status unverified."
     },
     {
       "row": 81,
