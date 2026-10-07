@@ -459,3 +459,13 @@ def test_kelly_full_fraction_independent_numeric_optimum():
     result = minimize_scalar(lambda f: -(0.7 * math.log1p(2*f) + 0.3 * math.log1p(-f)), bounds=(0, 0.999999), method="bounded")
     assert row["recommended"] == pytest.approx(result.x, abs=1e-5)
     assert row["growth_rate"] == pytest.approx(-result.fun)
+
+
+@pytest.mark.parametrize("alpha,beta,successes,failures", [(float("nan"), 1, 0, 0), (float("inf"), 1, 0, 0), (1, 1, 0.5, 0), (1, 1, True, 0)])
+def test_beta_binomial_rejects_invalid_shapes_or_counts(alpha, beta, successes, failures):
+    with pytest.raises(ValueError):
+        BayesianUpdater.update_beta(alpha, beta, successes=successes, failures=failures)
+
+
+def test_beta_binomial_large_shapes_scaled_mean():
+    assert BayesianUpdater.update_beta(1e308, 1e308, successes=0, failures=0)["mean"] == pytest.approx(0.5)
