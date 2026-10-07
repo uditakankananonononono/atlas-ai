@@ -129,9 +129,25 @@ def test_real_sandbox_has_no_network_and_no_host_writes(env, tmp_path):
 def test_real_sandbox_timeout_is_enforced(env):
     make, center = env
     p = make(smoke_limits=SmokeLimits(timeout_seconds=2))
-    entry = install(p, center, b"while True:\n    pass\n")
+    # Sleeping consumes little CPU, separating wall-clock enforcement from
+    # the independent RLIMIT_CPU cap. A busy loop races both equal limits.
+    entry = install(p, center, b"import time\ntime.sleep(60)\n")
     job = smoke(p, center, entry["operation_id"])
     assert job["state"] == "failed" and job["receipt"]["timed_out"] is True
+    assert job["receipt"]["duration_seconds"] < 5
+
+
+@needs_bwrap
+def test_real_cpu_limit_exit_is_not_falsely_reported_as_wall_timeout(env):
+    make, center = env
+    p = make(smoke_limits=SmokeLimits(timeout_seconds=4))
+    # A lower CPU cap gives a deterministic resource exit before wall time.
+    entry = install(p, center, b"import resource\nresource.setrlimit(resource.RLIMIT_CPU, (1, 1))\nwhile True:\n    pass\n")
+    job = smoke(p, center, entry["operation_id"])
+    assert job["state"] == "failed"
+    assert job["receipt"]["timed_out"] is False
+    assert job["receipt"]["exit_code"] != 0
+    assert job["receipt"]["duration_seconds"] < 4
 
 
 def test_smoke_requires_active_install_and_matching_approval(env):
