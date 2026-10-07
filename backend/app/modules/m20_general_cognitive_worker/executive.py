@@ -259,6 +259,11 @@ class DeliberativeLoop:
                     try:
                         response = self.model.complete("reason", {"goal": context.goal,
                             "step": node.title, "arguments": node.arguments, "context": wm_context})
+                        if isinstance(response,dict) and response.get("outcome")=="unknown":
+                            node.state=TaskState.BLOCKED;context.state=TaskState.BLOCKED
+                            node.result_summary="reasoning generation outcome unknown; no automatic retry"
+                            self._trace("act",node.result_summary,task_id=context.id)
+                            return context
                         if isinstance(response, dict) and response.get("available") is not False:
                             candidate = response.get("result")
                             if isinstance(candidate, str) and candidate.strip():
@@ -361,6 +366,9 @@ class DeliberativeLoop:
             analysis = self.model.complete("reflect", {
                 "goal": context.goal, "failed_step": node.title, "error": error,
             })
+            if isinstance(analysis,dict) and analysis.get("outcome")=="unknown":
+                self._trace("reflect","reflection generation outcome unknown; no automatic retry",task_id=context.id)
+                return
             self._trace("reflect", f"model reflection: {str(analysis)[:200]}", task_id=context.id)
 
     def _close_episode(self, context: TaskContext, outcome: EpisodeOutcome) -> None:
