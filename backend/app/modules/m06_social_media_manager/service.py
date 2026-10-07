@@ -35,7 +35,7 @@ from typing import Any, Awaitable, Callable, Protocol
 import httpx
 
 from app.core.models import ApprovalRequest
-from app.core.providers import ProviderError
+from app.core.providers import ProviderError, ProviderOutcomeUnknown
 
 from .adapters import (
     AdapterError,
@@ -364,6 +364,8 @@ class Service:
         )
         try:
             _model, text = await self._generate(prompt, self._provider, self._model)
+        except ProviderOutcomeUnknown:
+            raise
         except ProviderError:
             return [self._fallback_draft(brief, p) for p in platforms]
         parsed = self._parse_strategist_json(text, platforms)
@@ -666,6 +668,8 @@ class Service:
         try:
             model, text = await self._generate(prompt, self._provider, self._model)
             suggestions = self._parse_suggestions(text)
+        except ProviderOutcomeUnknown:
+            raise
         except ProviderError:
             model, suggestions = self._model or "unavailable", ["Metrics retrieved, but the LLM provider is unavailable; review the raw metrics."]
         if not suggestions:
