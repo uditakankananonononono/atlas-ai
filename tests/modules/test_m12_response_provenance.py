@@ -222,3 +222,23 @@ def test_model_validation_boundary_does_not_catch_auth_http_failure():
  app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=denied;app.dependency_overrides[get_service]=lambda:Service()
  response=TestClient(app).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
  assert response.status_code==401 and response.json()=={'detail':'fixture denied'} and not calls
+
+@pytest.mark.parametrize('field,invalid',[
+ *[('output_tokens',x) for x in [True,False,'100',100.0]],
+ *[('latency_tolerance_ms',x) for x in [True,False,'100',100.0]],
+ *[('budget_cents',x) for x in [True,False,'1']],
+])
+def test_single_run_limits_not_coerced_before_execution(field,invalid):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Service:
+  async def execute(self,*args):calls.append(args);return ModelResult('fixture','fixture',.9)
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service()
+ body={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100};body[field]=invalid
+ response=TestClient(app).post('/ai-research-lab/run',json=body)
+ assert response.status_code==422,response.text
+ assert not calls
