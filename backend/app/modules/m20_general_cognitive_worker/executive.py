@@ -171,6 +171,7 @@ class DeliberativeLoop:
         # Optional hook invoked after planning and before each run, so the
         # durable runtime can register pre-dispatch expectations.
         self.before_run: Any = None
+        self.before_plan: Any = None
 
     def _trace(self, phase: str, detail: str, *, task_id: str | None = None, policy_basis: str = "") -> None:
         self.traces.append(TraceEntry(task_id=task_id, phase=phase, detail=detail, policy_basis=policy_basis))
@@ -200,6 +201,8 @@ class DeliberativeLoop:
             ), active_goal=context.goal, partition=context.id)
         context.state = TaskState.PLANNING
         if not context.plan:
+            if self.before_plan is not None:
+                self.before_plan(context)
             try:
                 context.plan = self.planner.decompose(
                     context.goal, context=self.wm.context(partition=context.id),

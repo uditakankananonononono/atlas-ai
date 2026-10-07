@@ -152,6 +152,7 @@ class GCWRuntime:
             tempfile.gettempdir(), "atlas-gcw-sandbox", owner_volume))
         self.meta = MetaReasoner()
         self.loop.before_run = self._register_expectations
+        self.loop.before_plan = self._retrieve_review_lessons
         self._persisted_traces = 0
         if _hydrate:
             for context in repo.list_tasks():
@@ -190,7 +191,8 @@ class GCWRuntime:
             from .htn_planner import PlanError
 
             try:
-                context.plan = self.planner.decompose(context.goal)
+                self._retrieve_review_lessons(context)
+                context.plan = self.planner.decompose(context.goal, context=self.working_memory.context(partition=context.id))
                 context.state = TaskState.PLANNING
             except PlanError:
                 context.state = TaskState.PENDING
@@ -266,6 +268,21 @@ class GCWRuntime:
         for trace in new_traces:
             self.repo.save_trace(trace)
             self._persisted_traces += 1
+
+    def _retrieve_review_lessons(self, context: TaskContext) -> None:
+        """Bounded review suggestions, never facts or authorization for effects."""
+        existing = {chunk.content for chunk in self.working_memory.focused(partition=context.id)
+                    if chunk.source == 'retrospective_retrieval'}
+        for retro, similarity in self.retrospectives.lessons_for(context.goal, limit=3):
+            if retro.task_id == context.id or similarity <= 0:
+                continue
+            for lesson in retro.lessons[:3]:
+                content = f"unverified review suggestion [retrospective {retro.id}]: {lesson[:1000]}"
+                if content in existing: continue
+                self.working_memory.put(MemoryChunk(
+                    type=ChunkType.HYPOTHESIS, content=content, confidence=0.0,
+                    source='retrospective_retrieval'), active_goal=context.goal, partition=context.id)
+                existing.add(content)
 
     def _register_expectations(self, context: TaskContext) -> None:
         """No fitted success predictor; heuristic weights are not probabilities."""

@@ -1,0 +1,31 @@
+........................................................................ [ 85%]
+...........F                                                             [100%]
+=================================== FAILURES ===================================
+______ test_planning_retrieves_prior_retrospective_lessons_after_restart _______
+
+    def test_planning_retrieves_prior_retrospective_lessons_after_restart():
+        runtime, repo = make_runtime()
+        prior = runtime.retrospectives.write('past', went_well=[], went_poorly=['fixture failure'],
+            lessons=['check fixture input before retry'], execution_report={'external_outcomes_verified': False})
+        class CapturePlanner:
+            def __init__(self): self.context = None
+            def decompose(self, goal, *, context=''):
+                self.context = context
+                return [{'title': 'review fixture', 'tool': None}]
+        model = CapturePlanner()
+        restored = make_runtime(hydrate_repo=repo, model=model)
+        task = restored.submit_goal('fixture retry', run_immediately=True)
+>       assert model.context and 'check fixture input before retry' in model.context
+E       AssertionError: assert ('')
+E        +  where '' = <test_m20_runtime_depth.test_planning_retrieves_prior_retrospective_lessons_after_restart.<locals>.CapturePlanner object at 0x7f884053ac30>.context
+
+tests/modules/test_m20_runtime_depth.py:1266: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_planning_retrieves_prior_retrospective_lessons_after_restart
+1 failed, 83 passed, 1 warning in 5.31s
