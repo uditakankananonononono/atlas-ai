@@ -1,0 +1,25 @@
+................................................................F        [100%]
+=================================== FAILURES ===================================
+___________ test_scheduler_step_reports_surprise_consumed_during_run ___________
+
+    def test_scheduler_step_reports_surprise_consumed_during_run():
+        runtime, _ = make_runtime()
+        async def work(args):
+            return {"value": 1}
+>       runtime.tools.register(ToolSpec(name="fixture", risk=Risk.READ), work)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for ToolSpec
+E       description
+E         Field required [type=missing, input_value={'name': 'fixture', 'risk': <Risk.READ: 'read'>}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.13/v/missing
+
+tests/modules/test_m20_runtime_depth.py:969: ValidationError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_scheduler_step_reports_surprise_consumed_during_run
+1 failed, 64 passed, 1 warning in 4.38s

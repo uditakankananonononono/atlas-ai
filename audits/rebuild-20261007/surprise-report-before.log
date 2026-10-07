@@ -1,0 +1,30 @@
+................................................................F        [100%]
+=================================== FAILURES ===================================
+___________ test_scheduler_step_reports_surprise_consumed_during_run ___________
+
+    def test_scheduler_step_reports_surprise_consumed_during_run():
+        runtime, _ = make_runtime()
+        async def work(args):
+            return {"value": 1}
+        runtime.tools.register(ToolSpec(name="fixture", description="synthetic fixture", risk=Risk.READ), work)
+        claim = runtime.calibration.assess_claim("unlikely success", 0.1)
+        context = TaskContext(goal="surprise", state=TaskState.RUNNING,
+            plan=[PlanNode(title="fixture step", tool="fixture", arguments={"_expectation_claim_id":claim.id})])
+        runtime.scheduler.add(context)
+        report = runtime.step(max_ticks=2)
+>       assert report.surprises == ["fixture step"]
+E       AssertionError: assert [] == ['fixture step']
+E         
+E         Right contains one more item: 'fixture step'
+E         Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:975: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_scheduler_step_reports_surprise_consumed_during_run
+1 failed, 64 passed, 1 warning in 4.18s
