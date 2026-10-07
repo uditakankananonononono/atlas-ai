@@ -1,0 +1,11 @@
+
+==================================== ERRORS ====================================
+__________ ERROR collecting tests/modules/test_m20_model_adapters.py ___________
+tests/modules/test_m20_model_adapters.py:3: in <module>
+    @pytest.mark.parametrize("body", ['{"value":1e999}', '[{"arguments":{"value":-1e999}}]'])
+     ^^^^^^
+E   NameError: name 'pytest' is not defined
+=========================== short test summary info ============================
+ERROR tests/modules/test_m20_model_adapters.py - NameError: name 'pytest' is ...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.18s

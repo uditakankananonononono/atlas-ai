@@ -834,3 +834,7 @@ Fractional/boolcounts and nonfinite shapes accepted;1e308equalshapes denominator
 ## Heuristic UCT no-ready state correction
 
 No pending node was treated as rootvalue1, even allFAILED/BLOCKED/WAITING_APPROVAL, falsely matching completed plan. Three initial failures retained. No-ready reports supplied succeeded/noncancelled fraction and no_ready_action unless all included succeeded; zero-visit clock stop retains time_budget instead of terminal.86runtime/plannerpass1warning; recorded87adjacent2246pass2warnings36.11s. Failed/blocked/waiting0, completed-plus-failed0.5 reproduced. Empty/allcancelled convention remains1 with no action, not verified success. Heuristic supplied-state report only, not output correctness, full stochastic tree model, actual predictive cognition or deployment. Latestfull9813pass predates subsequentcosine/Bayes/beta/thisfix.
+
+## Model JSON exponent overflow correction
+
+parse_constant rejected literalNaN/Infinity but JSON1e999/-1e999 silently becameInfinity through float parser. Two failing parses retained; first test-file creation lacked imports and collection error also retained before moving canary to existing strict-output file. Finite parse_float now rejects exponent overflow.88strict-output/freefirst/private-route/runtimepass1warning; recorded87adjacent2248pass2warnings35.45s. Parser/fixture-only evidence, no new model run/provider routing change or model correctness claim. Large integer/depth bounds and broader model trust remain separate; latestfull9813pass predates five subsequentfixes.
