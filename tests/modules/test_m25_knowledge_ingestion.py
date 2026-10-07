@@ -106,3 +106,21 @@ def test_m25_hz8_oversize_ingest_rejected(tmp_path):
     import pydantic
     with pytest.raises(pydantic.ValidationError):
         IngestRequest(source=src(),content='x'*20001,mime_type='text/plain',actor_id='actor-a')
+
+
+def test_m25_hz9_dot_source_id_cannot_target_workspace_root(tmp_path):
+    # KILL: source_id '.' resolved to the tenant workspace itself and wrote
+    # manifest.json at the workspace root.
+    p=pipe(tmp_path)
+    with pytest.raises(KnowledgeError):p.register(src('.'))
+    assert not (tmp_path/'tenant-a'/'manifest.json').exists()
+
+def test_m25_hz9_restart_reingest_refuses_to_overwrite_existing_version(tmp_path):
+    # KILL: after a restart (memory lost, disk persists) the old code reused
+    # v1 with exist_ok=True and silently overwrote prior source bytes; its
+    # failure cleanup could rmtree data it did not create.
+    p=pipe(tmp_path);ingest(p)
+    original=(tmp_path/'tenant-a'/'s1'/'v1'/'source.bin').read_bytes()
+    p2=pipe(tmp_path)
+    with pytest.raises(KnowledgeError):ingest(p2,text='changed content')
+    assert (tmp_path/'tenant-a'/'s1'/'v1'/'source.bin').read_bytes()==original
