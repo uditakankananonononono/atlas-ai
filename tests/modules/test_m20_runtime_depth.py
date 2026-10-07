@@ -616,3 +616,13 @@ def test_scheduler_step_reports_actual_ticks_and_cooperative_time_scope():
  assert report.task_id==context.id and report.ticks_run==0
  assert report.budget_status=='cooperative_between_steps_only'
  assert report.hard_wall_time_enforced is report.tokens_money_enforced is False
+
+
+def test_replanning_same_generated_cache_key_never_self_activates_review_required_method():
+ model=StubPlannerModel([{'title':'fixture'}]);runtime,repo=make_runtime(model=model,require_review=True)
+ for _ in range(3):runtime.planner.decompose('novel exact fixture',context='same')
+ assert model.calls==3
+ methods=[m for m in runtime.planner.methods.values() if m.name.startswith('learned:')]
+ assert len(methods)==1
+ assert runtime.planner.method_status(methods[0].name)=='proposed'
+ assert all(status=='proposed' for method,status in repo.list_methods() if method.name.startswith('learned:'))

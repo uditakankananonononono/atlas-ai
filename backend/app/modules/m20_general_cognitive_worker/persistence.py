@@ -15,7 +15,7 @@ from .htn_planner import HTNPlanner, PlannerModel
 from .metacognition import CalibrationEngine
 from .reflection import RetrospectiveEngine
 from .schemas import (
-    Episode, HTNMethod, KnowledgeEdge, MemoryChunk, Retrospective, SemanticFact, Skill,
+    Episode, HTNMethod, MethodSource, KnowledgeEdge, MemoryChunk, Retrospective, SemanticFact, Skill,
     SkillStatus,
 )
 from .semantic_memory import SemanticMemory
@@ -185,6 +185,8 @@ class DurableHTNPlanner(HTNPlanner):
         return self._review_status.get(name, "active")
 
     def register_method(self, method: HTNMethod, *, status: str = "active") -> HTNMethod:
+        if self.require_review and method.source == MethodSource.LEARNED:
+            status = "proposed"
         self._review_status[method.name] = status
         self.repo.save_method(method, status=status)
         return super().register_method(method)
@@ -194,18 +196,6 @@ class DurableHTNPlanner(HTNPlanner):
         if match is not None and self.method_status(match.name) != "active":
             return None
         return match
-
-    def decompose(self, goal: str, *, context: str = ""):
-        known = set(self.methods)
-        nodes = super().decompose(goal, context=context)
-        if self.require_review:
-            for name in set(self.methods) - known:
-                method = self.methods[name]
-                if name.startswith("learned:"):
-                    # base decompose registered it as active; demote to
-                    # proposed until a reviewer activates it (row M20-11)
-                    self.register_method(method, status="proposed")
-        return nodes
 
     def activate_method(self, name: str) -> bool:
         if name not in self.methods:
