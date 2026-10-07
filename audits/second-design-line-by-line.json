@@ -640,7 +640,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Located tenant-scoped brand/artifact/event repository, basic media-kit/sponsorship/invoice/report rendering, approval proposals, obligation tracker and contract-extraction draft review. Lane code has campaign/reminder/portfolio objects separately. Complete discovery/outreach/negotiation/renewal integration with M05 CRM not established in scoped M07 read. No financial/partner effects or renderer run. Status stays unverified."
+      "notes": "Located tenant-scoped brand/artifact/event repository, basic media-kit/sponsorship/invoice/report rendering, approval proposals, obligation tracker and contract-extraction draft review. Lane code has campaign/reminder/portfolio objects separately. Complete discovery/outreach/negotiation/renewal integration with M05 CRM not established in scoped M07 read. No financial/partner effects or renderer run. Status stays unverified. Local M07 collateral truth repair: caller metrics explicitly not independently verified in kit/report HTML/PDF and metadata. Report ledger count uses inclusive UTC calendar dates via SQL >=start/<nextday, tenant+brand preserved. Native datetime event persistence repaired.31 M07 tests incl real SQLite service log/report and boundary/tenant/brand checks; label/filter mutants killed. Actual local WeasyPrint PDFs rendered and pixels inspected; no provider metrics validation, real recipients, sends or wholeM07acceptance."
     },
     {
       "row": 58,
@@ -651,7 +651,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Mounted Service.discover scores supplied mission-word overlap, not a live discovery agent. discovery.py offers explicit JSON API/RSS registry sources; worker refresh_brand_discovery returns ready_for_registry_dispatch, not an executed continuous monitor. Named AspireIQ/Upfluence/Grapevine connectors, competitor scrape and Browser Agent official-page dossier extraction not established in scoped read. Alignment score is heuristic supplied-text overlap, not strategic fit validation. No network/monitor enrollment or paid accounts. Status stays unverified."
+      "notes": "Mounted Service.discover scores supplied mission-word overlap, not a live discovery agent. discovery.py offers explicit JSON API/RSS registry sources; worker refresh_brand_discovery returns ready_for_registry_dispatch, not an executed continuous monitor. Named AspireIQ/Upfluence/Grapevine connectors, competitor scrape and Browser Agent official-page dossier extraction not established in scoped read. Alignment score is heuristic supplied-text overlap, not strategic fit validation. No network/monitor enrollment or paid accounts. Status stays unverified. Local M07 collateral truth repair: caller metrics explicitly not independently verified in kit/report HTML/PDF and metadata. Report ledger count uses inclusive UTC calendar dates via SQL >=start/<nextday, tenant+brand preserved. Native datetime event persistence repaired.31 M07 tests incl real SQLite service log/report and boundary/tenant/brand checks; label/filter mutants killed. Actual local WeasyPrint PDFs rendered and pixels inspected; no provider metrics validation, real recipients, sends or wholeM07acceptance."
     },
     {
       "row": 59,
@@ -662,7 +662,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "media_kit renders supplied creator/mission/metrics through simple escaped HTML and WeasyPrint, falling back to HTML if import unavailable; template metadata says jinja-compatible but no Jinja template invocation is in this method. It labels metrics Verified while also saying supplied data requires checking, so source validation is not established. propose_send creates tenant-scoped approval for exact artifact hash/recipient, not delivery. Pitch generation with case studies and editable dashboard bridge not established in scoped M07 read. No rendering/pixels/send executed. Status stays unverified."
+      "notes": "media_kit renders supplied creator/mission/metrics through simple escaped HTML and WeasyPrint, falling back to HTML if import unavailable; template metadata says jinja-compatible but no Jinja template invocation is in this method. It labels metrics Verified while also saying supplied data requires checking, so source validation is not established. propose_send creates tenant-scoped approval for exact artifact hash/recipient, not delivery. Pitch generation with case studies and editable dashboard bridge not established in scoped M07 read. No rendering/pixels/send executed. Status stays unverified. Local M07 collateral truth repair: caller metrics explicitly not independently verified in kit/report HTML/PDF and metadata. Report ledger count uses inclusive UTC calendar dates via SQL >=start/<nextday, tenant+brand preserved. Native datetime event persistence repaired.31 M07 tests incl real SQLite service log/report and boundary/tenant/brand checks; label/filter mutants killed. Actual local WeasyPrint PDFs rendered and pixels inspected; no provider metrics validation, real recipients, sends or wholeM07acceptance."
     },
     {
       "row": 60,
@@ -673,7 +673,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Located sponsorship tiers and invoice from caller line items, partnership event log, obligation evidence/approval/invoice/payment event derivation, and lane reminder objects. Payment amounts/status are recorded inputs, not verified bank/processor settlement. Contract extraction has confirm/reject review before obligations. Automatic social-post scheduling on deal confirmation, communication repository integration and dispatched reminders not established in scoped read. No payment, invoice send or calendar/social effect run. Status stays unverified."
+      "notes": "Located sponsorship tiers and invoice from caller line items, partnership event log, obligation evidence/approval/invoice/payment event derivation, and lane reminder objects. Payment amounts/status are recorded inputs, not verified bank/processor settlement. Contract extraction has confirm/reject review before obligations. Automatic social-post scheduling on deal confirmation, communication repository integration and dispatched reminders not established in scoped read. No payment, invoice send or calendar/social effect run. Status stays unverified. Local M07 collateral truth repair: caller metrics explicitly not independently verified in kit/report HTML/PDF and metadata. Report ledger count uses inclusive UTC calendar dates via SQL >=start/<nextday, tenant+brand preserved. Native datetime event persistence repaired.31 M07 tests incl real SQLite service log/report and boundary/tenant/brand checks; label/filter mutants killed. Actual local WeasyPrint PDFs rendered and pixels inspected; no provider metrics validation, real recipients, sends or wholeM07acceptance."
     },
     {
       "row": 61,

@@ -31,5 +31,5 @@ class Repository:
         with self.sessions() as db: return db.scalar(select(ArtifactRow).where(ArtifactRow.tenant_id==self.tenant_id,ArtifactRow.id==artifact_id))
     def add_event(self,**data):
         with self.sessions.begin() as db: db.add(EventRow(tenant_id=self.tenant_id,**data))
-    def events(self,brand_id:str):
-        with self.sessions() as db: return list(db.scalars(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.brand_id==brand_id).order_by(EventRow.occurred_at)))
+    def events(self,brand_id:str,*,start_at:datetime,end_before:datetime):
+        with self.sessions() as db: return list(db.scalars(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.brand_id==brand_id,EventRow.occurred_at>=start_at,EventRow.occurred_at<end_before).order_by(EventRow.occurred_at)))
