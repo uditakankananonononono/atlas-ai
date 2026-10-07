@@ -99,3 +99,33 @@ def test_returned_propositional_support_matches_independent_assignment_oracle():
   return True
  assert indices==[0,1,2] and valid(indices)
  assert all(not valid(indices[:i]+indices[i+1:]) for i in range(len(indices)))
+
+
+def test_causal_effect_decomposes_signed_parent_channels_under_supplied_model():
+ equations={'X':{},'M':{'parents':{'X':3}},'N':{'parents':{'X':-2}},'Y':{'parents':{'X':1,'M':4,'N':5}}}
+ r=causal_effect({'equations':equations,'exposure':'X','outcome':'Y','intervention_values':[1,2]})
+ assert r['effect']==3
+ assert r['unit_sensitivities']=={'X':1.,'M':3.,'N':-2.,'Y':3.}
+ channels={c['parent']:c for c in r['outcome_channels']}
+ assert {k:v['effect_per_unit'] for k,v in channels.items()}=={'X':1.,'M':12.,'N':-10.}
+ assert sum(c['effect'] for c in channels.values())==pytest.approx(r['effect'])
+ assert r['channel_sum_residual']<1e-12
+
+
+def test_causal_channel_analysis_respects_intervention_cut_and_same_variable_effect():
+ equations={'X':{},'M':{'parents':{'X':3}},'Y':{'parents':{'M':4,'X':7}}}
+ r=causal_effect({'equations':equations,'exposure':'M','outcome':'Y','intervention_values':[1,3]})
+ assert r['unit_sensitivities']=={'X':0.,'M':1.,'Y':4.}
+ assert {c['parent']:c['effect_per_unit'] for c in r['outcome_channels']}=={'M':4.,'X':0.}
+ r=causal_effect({'equations':equations,'exposure':'M','outcome':'M','intervention_values':[1,3]})
+ assert r['effect_per_unit']==1 and r['outcome_channels']==[]
+ assert r['intervention_identity_effect']==2 and r['channel_sum_residual']==0
+
+
+def test_causal_sensitivity_matches_independent_path_products_with_negative_branch():
+ equations={'X':{},'A':{'parents':{'X':2}},'B':{'parents':{'X':-3}},'C':{'parents':{'A':5,'B':7}},'Y':{'parents':{'X':11,'C':13}}}
+ r=causal_effect({'equations':equations,'exposure':'X','outcome':'Y','intervention_values':[0,1]})
+ # Explicit independent path expansion X-Y + X-A-C-Y + X-B-C-Y.
+ expected=11+2*5*13-3*7*13
+ assert r['effect_per_unit']==expected and r['unit_sensitivities']['Y']==expected
+ assert r['channel_sum_residual']==0

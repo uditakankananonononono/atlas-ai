@@ -113,7 +113,23 @@ def causal_effect(p):
     if low==high:raise ValueError('intervention values must differ')
     noise=p.get('exogenous',{})
     baseline=execute(noise,{exposure:low});changed=execute(noise,{exposure:high})
-    return {'exposure':exposure,'outcome':outcome,'interventions':[baseline,changed],
+    sensitivities={}
+    for variable in order:
+        sensitivities[variable]=1. if variable==exposure else math.fsum(weight*sensitivities[parent] for parent,weight in parsed[variable]['parents'].items())
+        if not math.isfinite(sensitivities[variable]):raise ValueError('structural sensitivity overflow')
+    channels=[]
+    if outcome!=exposure:
+        for parent,weight in parsed[outcome]['parents'].items():
+            unit=weight*sensitivities[parent];effect=unit*(high-low)
+            if not math.isfinite(unit) or not math.isfinite(effect):raise ValueError('structural channel overflow')
+            channels.append({'parent':parent,'coefficient':weight,'parent_sensitivity':sensitivities[parent],
+                             'effect_per_unit':unit,'effect':effect})
+    identity=high-low if outcome==exposure else 0.
+    residual=abs(math.fsum([identity,*[channel['effect'] for channel in channels]])-(changed[outcome]-baseline[outcome]))
+    if not math.isfinite(residual):raise ValueError('structural decomposition overflow')
+    return {'unit_sensitivities':sensitivities,'outcome_channels':channels,'intervention_identity_effect':identity,
+            'channel_sum_residual':residual,'channel_boundary':'Signed algebraic parent-channel decomposition under supplied equations, not identified real-world causal contributions or verified model truth.',
+            'exposure':exposure,'outcome':outcome,'interventions':[baseline,changed],
             'effect':changed[outcome]-baseline[outcome],'effect_per_unit':(changed[outcome]-baseline[outcome])/(high-low),
             'topological_order':order,'association_is_not_causation':True,
             'boundary':'Computed do-intervention effect under caller-supplied acyclic linear structural equations. Not causal discovery, not an observed or experimentally identified effect.'}
