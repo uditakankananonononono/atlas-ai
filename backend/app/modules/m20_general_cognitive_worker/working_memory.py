@@ -67,7 +67,7 @@ class WorkingMemory:
         capacity: int = DEFAULT_CAPACITY,
         attention: AttentionController | None = None,
     ) -> None:
-        if capacity < 1:
+        if type(capacity) is not int or capacity < 1:
             raise ValueError("capacity must be >= 1")
         self.capacity = capacity
         self.attention = attention or HeuristicAttentionController()
@@ -81,6 +81,10 @@ class WorkingMemory:
         active_goal: str = "",
         partition: str = "",
     ) -> MemoryChunk:
+        existing = self._chunks.get(chunk.id)
+        if existing is not None and existing.context_id != (partition or None):
+            raise ValueError("chunk id already belongs to a different partition")
+        chunk = chunk.model_copy(deep=True)
         chunk.attention_score = self.attention.score(chunk, active_goal)
         chunk.context_id = partition or None
         self._chunks[chunk.id] = chunk
@@ -88,8 +92,8 @@ class WorkingMemory:
             self._partitions.setdefault(partition, [])
             if chunk.id not in self._partitions[partition]:
                 self._partitions[partition].append(chunk.id)
-        self._enforce_capacity(partition or None, active_goal)
-        return chunk
+        self._enforce_capacity(partition, active_goal)
+        return chunk.model_copy(deep=True)
 
     def _enforce_capacity(self, partition: str | None, active_goal: str) -> None:
         ids = self._ids_for(partition)
@@ -104,6 +108,8 @@ class WorkingMemory:
     def _ids_for(self, partition: str | None) -> list[str]:
         if partition is None:
             return list(self._chunks.keys())
+        if partition == "":
+            return [cid for cid, chunk in self._chunks.items() if chunk.context_id is None]
         return [cid for cid in self._partitions.get(partition, []) if cid in self._chunks]
 
     def _remove(self, chunk_id: str) -> None:
@@ -119,7 +125,8 @@ class WorkingMemory:
             chunk.attention_score = self.attention.score(chunk, active_goal)
 
     def get(self, chunk_id: str) -> MemoryChunk | None:
-        return self._chunks.get(chunk_id)
+        chunk = self._chunks.get(chunk_id)
+        return chunk.model_copy(deep=True) if chunk is not None else None
 
     def remove(self, chunk_id: str) -> bool:
         existed = chunk_id in self._chunks
@@ -141,7 +148,7 @@ class WorkingMemory:
             key=lambda c: c.attention_score,
             reverse=True,
         )
-        return chunks[:limit] if limit else chunks
+        return [chunk.model_copy(deep=True) for chunk in (chunks[:limit] if limit else chunks)]
 
     def context(self, *, partition: str | None = None, limit: int = 20) -> str:
         """Render the most-attended chunks as prompt-ready text."""

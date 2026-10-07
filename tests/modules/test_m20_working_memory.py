@@ -72,3 +72,25 @@ def test_remove_and_get():
     assert wm.remove(chunk.id) is False
     with pytest.raises(ValueError):
         WorkingMemory(capacity=0)
+
+
+def test_reused_chunk_id_cannot_leak_other_partition_content():
+ wm=WorkingMemory();a=make_chunk('a private');wm.put(a,partition='a')
+ b=a.model_copy(deep=True,update={'content':'b private'})
+ with pytest.raises(ValueError,match='different partition'):wm.put(b,partition='b')
+ assert 'b private' not in wm.context(partition='a') and wm.focused(partition='b')==[]
+ a.content='caller mutation'
+ assert wm.get(a.id).content=='a private'
+ returned=wm.get(a.id);returned.content='readback mutation'
+ assert wm.get(a.id).content=='a private'
+ wm.focused(partition='a')[0].context_id='b'
+ assert wm.get(a.id).context_id=='a'
+
+
+def test_default_partition_capacity_does_not_evict_other_tasks():
+ wm=WorkingMemory(capacity=1)
+ wm.put(make_chunk('a'),partition='a');wm.put(make_chunk('b'),partition='b')
+ wm.put(make_chunk('default1'));wm.put(make_chunk('default2'))
+ assert len(wm.focused(partition='a'))==len(wm.focused(partition='b'))==1
+ assert len(wm.focused(partition=''))==1
+ assert len(wm)==3
