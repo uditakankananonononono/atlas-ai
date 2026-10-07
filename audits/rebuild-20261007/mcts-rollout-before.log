@@ -1,0 +1,37 @@
+.....................................................F                   [100%]
+=================================== FAILURES ===================================
+______ test_mcts_rollout_failure_is_not_retried_and_sibling_remains_ready ______
+
+    def test_mcts_rollout_failure_is_not_retried_and_sibling_remains_ready():
+        parent = PlanNode(id="p", title="parent", risk=Risk.READ)
+        child = PlanNode(id="c", title="child", depends_on=["p"], risk=Risk.READ)
+        sibling = PlanNode(id="s", title="sibling", risk=Risk.READ)
+        search = BoundedMCTS(max_depth=5)
+        class FailRng:
+            choices = []
+            def choice(self, ready):
+                node = ready[0]
+                self.choices.append(node.id)
+                return node
+            def random(self):
+                return 1.0
+        rng = FailRng()
+        search.random = rng
+        search._rollout([parent, child, sibling], set(), 0)
+>       assert rng.choices == ["p", "s"]
+E       AssertionError: assert ['p', 'p', 'p', 'p', 'p'] == ['p', 's']
+E         
+E         At index 1 diff: 'p' != 's'
+E         Left contains 3 more items, first extra item: 'p'
+E         Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:941: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_rollout_failure_is_not_retried_and_sibling_remains_ready
+1 failed, 53 passed, 1 warning in 4.39s
