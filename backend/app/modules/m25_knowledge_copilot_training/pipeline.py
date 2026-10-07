@@ -225,7 +225,20 @@ class LocalKnowledgePipeline:
                 dfd=_os.open(tmp,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
                 segments_blob=json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True).encode('utf-8')
                 self._write_version_files(dfd,raw,segments_blob)
+                # Durability ORDERING, not a general durability guarantee:
+                # the file data is already fsynced; fsync the held dirfd so
+                # the files' directory entries are durable before the rename
+                # moves them, then fsync the parent dir after the rename so
+                # the version's final name is durable BEFORE the manifest
+                # can record it. A crash can still orphan a v*.tmp-* dir
+                # (carried; no startup sweep), and fsync semantics depend on
+                # the filesystem/mount (carried). fsync errors are OSErrors
+                # and join the ordinary failure lifecycle below.
+                _os.fsync(dfd)
                 _os.rename(tmp,target)
+                parent_fd=_os.open(target.parent,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
+                try: _os.fsync(parent_fd)
+                finally: _os.close(parent_fd)
             except OSError:
                 self._cleanup_attempt(tmp,dfd)
                 raise
@@ -433,6 +446,13 @@ class LocalKnowledgePipeline:
                     written=_os.write(fd,view)
                     if written<=0: raise OSError(f'short write persisting {name}')
                     view=view[written:]
+                # Data durability is ordered BEFORE the file's directory
+                # entry is made durable (the caller fsyncs the holding dirfd
+                # after these writes) and long before any manifest records
+                # the version. An fsync failure is an OSError and joins the
+                # ordinary failure lifecycle (ownership-checked cleanup,
+                # original error propagates).
+                _os.fsync(fd)
             finally:_os.close(fd)
     def _rollback_claim(self,rec,version,new_chunks,edge,vbase,cbase,ebase)->None:
         # Undo exactly THIS attempt's memory claim. The version and edge are
@@ -500,8 +520,13 @@ class LocalKnowledgePipeline:
         # BEFORE any mutation - no tmp file, no replace - so a refused write
         # preserves the prior manifest bytes exactly. Unbounded metadata or
         # version growth fails closed here instead of writing state the
-        # reader must reject. Durability beyond os.replace (fsync of file
-        # data and directory entries) is explicitly NOT claimed.
+        # reader must reject. Durability is ordered: the manifest bytes are
+        # fsynced before close, os.replace renames them into place, and the
+        # holding directory is fsynced after the replace so the manifest
+        # name is durable before this call returns. Still NOT claimed:
+        # durability under filesystems/mounts with weak fsync semantics, or
+        # any guarantee for state written by a call that FAILS partway
+        # (carried).
         if len(blob)>self.MANIFEST_MAX_BYTES:
             raise ManifestOversizeError(f'refusing to persist manifest: serialized manifest would exceed the manifest bound ({len(blob)} bytes)')
         fd=_os.open(tmp,_os.O_WRONLY|_os.O_CREAT|_os.O_EXCL|_os.O_NOFOLLOW,0o600)
@@ -511,5 +536,9 @@ class LocalKnowledgePipeline:
                 written=_os.write(fd,view)
                 if written<=0: raise OSError('short write persisting manifest')
                 view=view[written:]
+            _os.fsync(fd)
         finally:_os.close(fd)
         _os.replace(tmp,p/'manifest.json')
+        dir_fd=_os.open(p,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
+        try: _os.fsync(dir_fd)
+        finally: _os.close(dir_fd)
