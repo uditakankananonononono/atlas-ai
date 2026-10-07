@@ -80,11 +80,15 @@ def safe_artifact_segment(value: str) -> str:
 
 
 def artifact_directory(root: "str | Path", tenant_id: str, session_id: str) -> "Path":
-    """Build the per-tenant artifact directory and prove containment.
+    """Build the per-tenant artifact directory with resolution-time containment.
 
-    Segment validation alone trusts the existing directory entries: a
-    pre-existing symlink inside the root would still let writes escape.
-    Resolve the final path and require it to stay under the resolved root.
+    Rejects path-bearing ids and resolves the final path so a PRE-EXISTING
+    symlink inside the root cannot silently redirect writes outside it.
+
+    This is NOT atomic filesystem confinement: the check runs once, before the
+    writer creates or uses the directory, and a concurrent swap of a directory
+    entry for a symlink after this call would not be caught. The artifact root
+    must be a trusted directory whose entries are not attacker-writable.
     """
     from pathlib import Path
     base = Path(root).resolve()
