@@ -1,0 +1,27 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_htn_reviewed_method_views_cannot_mutate_active_snapshot _________
+
+    def test_htn_reviewed_method_views_cannot_mutate_active_snapshot():
+     runtime,repo=make_runtime()
+     original=HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='original',arguments={'n':[2]})])
+     view=runtime.planner.register_method(original)
+     original.subtasks[0].title='input mutation';view.subtasks[0].title='return mutation'
+     current=runtime.planner.methods['fixture'];current.subtasks[0].title='read mutation'
+     current.subtasks[0].arguments['n'].append(9)
+>    assert runtime.planner.decompose('fixture')[0].title=='original'
+E    AssertionError: assert 'read mutation' == 'original'
+E      
+E      - original
+E      + read mutation
+
+tests/modules/test_m20_runtime_depth.py:907: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_htn_reviewed_method_views_cannot_mutate_active_snapshot
+1 failed, 51 deselected, 1 warning in 1.33s

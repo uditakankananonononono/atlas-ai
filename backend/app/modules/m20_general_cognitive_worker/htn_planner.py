@@ -8,6 +8,7 @@ Plans are DAGs of PlanNode with explicit dependencies and risk tiers.
 from __future__ import annotations
 
 import hashlib
+from types import MappingProxyType
 from typing import Any, Protocol, runtime_checkable
 
 from .embeddings import tokenize
@@ -32,18 +33,23 @@ class PlanError(Exception):
 class HTNPlanner:
     def __init__(self, model: PlannerModel | None = None) -> None:
         self.model = model
-        self.methods: dict[str, HTNMethod] = {}
+        self._methods: dict[str, HTNMethod] = {}
+
+    @property
+    def methods(self):
+        return MappingProxyType({name: method.model_copy(deep=True) for name, method in self._methods.items()})
 
     def register_method(self, method: HTNMethod) -> HTNMethod:
-        self.methods[method.name] = method
-        return method
+        method = method.model_copy(deep=True)
+        self._methods[method.name] = method
+        return method.model_copy(deep=True)
 
     def _match_method(self, goal: str, *, context: str = "") -> HTNMethod | None:
         goal_tokens = set(tokenize(goal))
         if not goal_tokens:
             return None
         best: tuple[float, HTNMethod] | None = None
-        for method in self.methods.values():
+        for method in self._methods.values():
             if method.source == MethodSource.LEARNED:
                 if method.generated_goal != goal or method.generated_context_sha256 != hashlib.sha256(context.encode()).hexdigest():
                     continue
@@ -199,7 +205,7 @@ class HTNPlanner:
         )
 
     def record_outcome(self, method_name: str, succeeded: bool) -> None:
-        method = self.methods.get(method_name)
+        method = self._methods.get(method_name)
         if method is None:
             return
         total = method.times_used
