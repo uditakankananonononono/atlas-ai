@@ -8,7 +8,7 @@ class Repo:
  def add_artifact(s,**d):s.a[d['id']]=type('R',(),d)
  def artifact(s,i):return s.a.get(i)
  def add_event(s,**d):s.e.append(type('R',(),d))
- def events(s,i):return [x for x in s.e if x.brand_id==i]
+ def events(s,i,*,start_at,end_before):return [x for x in s.e if x.brand_id==i and start_at<=(x.occurred_at if isinstance(x.occurred_at,datetime) else datetime.fromisoformat(x.occurred_at))<end_before]
 class Approvals:
  def __init__(s):s.items=[]
  def put(s,x,*,user_id=None):s.items.append((x,user_id));return x

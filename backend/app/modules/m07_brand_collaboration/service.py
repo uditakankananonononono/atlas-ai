@@ -1,5 +1,5 @@
 """Brand discovery, collateral rendering, partnership ledger, and gated reporting."""
-from datetime import datetime, timezone
+from datetime import datetime, timezone, time, timedelta
 from hashlib import sha256
 from html import escape
 from io import BytesIO
@@ -37,8 +37,8 @@ class Service:
             return html.encode(),"text/html"
     def media_kit(self,data:MediaKitIn)->ArtifactOut:
         rows="".join(f"<li>{escape(str(k))}: {escape(str(v))}</li>" for k,v in data.metrics.items())
-        html=f"<html><body><h1>{escape(data.creator_name)} x Brand Partnership</h1><h2>Mission</h2><p>{escape(data.creator_mission)}</p><h2>Verified metrics</h2><ul>{rows}</ul><p>Generated from supplied data; verify before sharing.</p></body></html>"
-        content,ctype=self._pdf(html); return self._artifact("media_kit",data.brand_id,content,ctype,{"creator":data.creator_name,"template":"jinja-compatible-v1"})
+        html=f"<html><body><h1>{escape(data.creator_name)} x Brand Partnership</h1><h2>Mission</h2><p>{escape(data.creator_mission)}</p><h2>Supplied metrics (not independently verified)</h2><ul>{rows}</ul><p>Generated from supplied data; verify before sharing.</p></body></html>"
+        content,ctype=self._pdf(html); return self._artifact("media_kit",data.brand_id,content,ctype,{"creator":data.creator_name,"template":"jinja-compatible-v1","metrics_source":"caller_supplied","metrics_verified":False})
     def sponsorship(self,data:SponsorshipPackageIn)->ArtifactOut:
         html="<html><body><h1>Sponsorship packages</h1>"+"".join(f"<h2>{escape(str(t.get('name','Tier')))}</h2><pre>{escape(str(t))}</pre>" for t in data.tiers)+"</body></html>"
         content,ctype=self._pdf(html); return self._artifact("sponsorship_package",data.brand_id,content,ctype,{"currency":data.currency,"tier_count":len(data.tiers)})
@@ -48,11 +48,14 @@ class Service:
         html=f"<html><body><h1>Invoice {escape(data.invoice_number)}</h1><p>Due {data.due_on}</p><pre>{escape(str(data.line_items))}</pre><h2>Total {data.currency} {total:.2f}</h2></body></html>"
         content,ctype=self._pdf(html); return self._artifact("invoice",data.brand_id,content,ctype,{"invoice_number":data.invoice_number,"total":total,"currency":data.currency})
     def log_event(self,data:PartnershipEventIn)->PartnershipEventOut:
-        self._brand(data.brand_id); out=PartnershipEventOut(id=str(uuid4()),created_at=datetime.now(timezone.utc),**data.model_dump()); self.repo.add_event(**out.model_dump(mode="json")); return out
+        self._brand(data.brand_id); out=PartnershipEventOut(id=str(uuid4()),created_at=datetime.now(timezone.utc),**data.model_dump()); self.repo.add_event(**out.model_dump()); return out
     def report(self,data:ReportIn)->ArtifactOut:
         if data.period_end<data.period_start: raise ValueError("invalid reporting period")
-        events=self.repo.events(data.brand_id); html=f"<html><body><h1>Brand performance report</h1><p>{data.period_start} to {data.period_end}</p><pre>{escape(str(data.metrics))}</pre><p>{len(events)} partnership ledger events.</p></body></html>"
-        content,ctype=self._pdf(html); return self._artifact("performance_report",data.brand_id,content,ctype,{"period_start":str(data.period_start),"period_end":str(data.period_end),"event_count":len(events)})
+        self._brand(data.brand_id)
+        start=datetime.combine(data.period_start,time.min,tzinfo=timezone.utc)
+        end=datetime.combine(data.period_end,time.min,tzinfo=timezone.utc)+timedelta(days=1)
+        events=self.repo.events(data.brand_id,start_at=start,end_before=end); html=f"<html><body><h1>Brand performance report</h1><p>{data.period_start} to {data.period_end} (inclusive calendar dates, UTC)</p><h2>Supplied metrics (not independently verified)</h2><pre>{escape(str(data.metrics))}</pre><p>{len(events)} partnership ledger events within the reporting period.</p></body></html>"
+        content,ctype=self._pdf(html); return self._artifact("performance_report",data.brand_id,content,ctype,{"period_start":str(data.period_start),"period_end":str(data.period_end),"event_count":len(events),"period_timezone":"UTC","period_end_inclusive":True,"metrics_source":"caller_supplied","metrics_verified":False})
     def propose_send(self,artifact_id:str,recipient:str)->ApprovalProposal:
         row=self.repo.artifact(artifact_id)
         if not row: raise NotFoundError(artifact_id)
