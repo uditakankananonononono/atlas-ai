@@ -57,7 +57,10 @@ class Service:
         if p.expires_at<now:raise RuntimeError("command preview expired")
         if not p.read_only:
             a=Approval(id=str(uuid4()),module_id=16,action_type=p.intent,title=f"Command: {p.intent}",summary=p.utterance,risk="medium",evidence={"command_preview_id":p.id,"plan":p.plan},proposed_payload=p.parameters,created_at=now,expires_at=now+timedelta(hours=24));self.repository.save_approval(a);return {"status":"approval_required","approval_id":a.id}
-        result=self.executor(p.intent,p.parameters);self.repository.mark_command(cid,now);return {"status":"completed","result":result}
+        # Claim before running the executor: exactly one concurrent execute passes
+        # this conditional mark, so the read executor runs at most once. A failed
+        # executor leaves the command claimed; retry means a fresh preview.
+        self.repository.mark_command(cid,now);result=self.executor(p.intent,p.parameters);return {"status":"completed","result":result}
     def _execute_read(self,intent,params):
         now=_utcnow()
         if intent=="show_kpis":return {"kpis":[k.model_dump(mode="json") for k in self.kpis(now)]}

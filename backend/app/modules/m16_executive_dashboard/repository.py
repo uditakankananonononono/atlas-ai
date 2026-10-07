@@ -56,11 +56,15 @@ def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.int
 class SqlDashboardRepository:
     def __init__(self,tenant_id,actor_id,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def append_event(self,e:Event):
-        # Concurrent intakes can read the same max(sequence) and collide on the
-        # (tenant_id, sequence) unique constraint. Retry with a fresh read in a
-        # new transaction; bounded so a persistent conflict fails instead of
-        # looping. The per-attempt dedup re-check keeps repeated intake of the
-        # same event id idempotent.
+        # The row's only unique constraint is (tenant_id, sequence); concurrent
+        # intakes can read the same max(sequence) and collide there. Retry the
+        # whole dedup-check + read + insert in a fresh transaction, bounded at 3
+        # attempts so a persistent conflict fails instead of looping. Any
+        # IntegrityError retries (no vendor-specific error parsing); the only
+        # unique constraint this insert can violate is the sequence one. The
+        # per-attempt dedup re-check returns the winner's row when a same-id
+        # intake committed between attempts; event id has no DB unique
+        # constraint, so id uniqueness rests on that re-check, not the schema.
         attempts=0
         while True:
             try:
@@ -93,9 +97,10 @@ class SqlDashboardRepository:
     def get_command(self,cid):
         with self.sessions() as db:r=db.scalar(select(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid));return (r,_command(r)) if r else (None,None)
     def mark_command(self,cid,at):
-        # Single conditional UPDATE: exactly one concurrent execute can claim the
-        # command. A second execute whose earlier read saw executed_at=None loses
-        # the claim instead of silently overwriting the first execution marker.
+        # Single conditional UPDATE: a concurrent execute whose earlier read saw
+        # executed_at=None loses the claim instead of silently overwriting the
+        # first execution marker. This protects the marker; the service claims
+        # before running the executor so single execution holds.
         with self.sessions.begin() as db:
             claimed=db.execute(update(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid,CommandRow.executed_at.is_(None)).values(executed_at=at)).rowcount
             if not claimed:raise RuntimeError("command already executed")
