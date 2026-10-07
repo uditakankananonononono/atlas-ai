@@ -15,13 +15,22 @@ from typing import Any, Callable
 
 
 def expected_value(outcomes: list[tuple[float, float]]) -> float:
-    """Expected Value Calculation: sum of probability-weighted outcomes."""
-    if not outcomes:
-        raise ValueError("outcomes required")
-    total_p = sum(p for p, _ in outcomes)
-    if total_p <= 0:
-        raise ValueError("probabilities must sum to a positive value")
-    return sum(p * v for p, v in outcomes) / total_p
+    """Supplied sum(p*v); any missing probability mass has value zero."""
+    if not isinstance(outcomes, list) or not 1 <= len(outcomes) <= 10000:
+        raise ValueError("need1..10000 outcome pairs")
+    for item in outcomes:
+        if not isinstance(item, (list, tuple)) or len(item) != 2 or any(type(v) not in (int, float) or not math.isfinite(v) for v in item):
+            raise ValueError("finite numeric probability/value pairs required")
+        if not 0 <= item[0] <= 1:
+            raise ValueError("probabilities must be in [0,1]")
+    total = math.fsum(p for p, _ in outcomes)
+    if not 0 < total <= 1 + 1e-12:
+        raise ValueError("probability mass must be positive and at most1")
+    scale = max(abs(v) for _, v in outcomes) or 1.0
+    result = math.fsum(p * (v / scale) for p, v in outcomes) * scale
+    if not math.isfinite(result):
+        raise ValueError("expected value exceeds numeric range")
+    return result
 
 
 def kelly_criterion(prob_win: float, win_odds: float) -> float:

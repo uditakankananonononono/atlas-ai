@@ -1,0 +1,90 @@
+..........................FFFFF.......................................FF [100%]
+=================================== FAILURES ===================================
+_____ test_expected_value_partial_mass_is_not_conditional_renormalization ______
+
+    def test_expected_value_partial_mass_is_not_conditional_renormalization():
+>       assert R.expected_value([(0.2, 100)]) == pytest.approx(20)
+E       assert 100.0 == 20 ± 2.0e-05
+E         
+E         comparison failed
+E         Obtained: 100.0
+E         Expected: 20 ± 2.0e-05
+
+tests/modules/test_m20_reasoning.py:191: AssertionError
+_____ test_expected_value_rejects_invalid_probability_or_value[outcomes0] ______
+
+outcomes = [(-0.5, 0), (1, 10)]
+
+    @pytest.mark.parametrize("outcomes", [[(-0.5, 0), (1, 10)], [(float("nan"), 1)], [(0.5, float("inf"))], [(True, 5)]])
+    def test_expected_value_rejects_invalid_probability_or_value(outcomes):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:196: Failed
+_____ test_expected_value_rejects_invalid_probability_or_value[outcomes1] ______
+
+outcomes = [(nan, 1)]
+
+    @pytest.mark.parametrize("outcomes", [[(-0.5, 0), (1, 10)], [(float("nan"), 1)], [(0.5, float("inf"))], [(True, 5)]])
+    def test_expected_value_rejects_invalid_probability_or_value(outcomes):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:196: Failed
+_____ test_expected_value_rejects_invalid_probability_or_value[outcomes2] ______
+
+outcomes = [(0.5, inf)]
+
+    @pytest.mark.parametrize("outcomes", [[(-0.5, 0), (1, 10)], [(float("nan"), 1)], [(0.5, float("inf"))], [(True, 5)]])
+    def test_expected_value_rejects_invalid_probability_or_value(outcomes):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:196: Failed
+_____ test_expected_value_rejects_invalid_probability_or_value[outcomes3] ______
+
+outcomes = [(True, 5)]
+
+    @pytest.mark.parametrize("outcomes", [[(-0.5, 0), (1, 10)], [(float("nan"), 1)], [(0.5, float("inf"))], [(True, 5)]])
+    def test_expected_value_rejects_invalid_probability_or_value(outcomes):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:196: Failed
+_____________ test_ev_actual_ten_point_mass_preserving_sensitivity _____________
+
+    def test_ev_actual_ten_point_mass_preserving_sensitivity():
+        out = EVCalculator().compute(options=[{"name": "a", "outcomes": [[0.5, 100], [0.5, 0]]}])["options"][0]
+>       assert out["ev_if_best_+10pp"] == pytest.approx(60)
+E       assert 54.54545454545454 == 60 ± 6.0e-05
+E         
+E         comparison failed
+E         Obtained: 54.54545454545454
+E         Expected: 60 ± 6.0e-05
+
+tests/modules/test_m20_foresight.py:425: AssertionError
+________________ test_ev_partial_mass_has_explicit_zero_outcome ________________
+
+    def test_ev_partial_mass_has_explicit_zero_outcome():
+        out = EVCalculator().compute(options=[{"name": "a", "outcomes": [[0.2, 100]]}])
+>       assert out["options"][0]["ev"] == pytest.approx(20)
+E       assert 100.0 == 20 ± 2.0e-05
+E         
+E         comparison failed
+E         Obtained: 100.0
+E         Expected: 20 ± 2.0e-05
+
+tests/modules/test_m20_foresight.py:431: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reasoning.py::test_expected_value_partial_mass_is_not_conditional_renormalization
+FAILED tests/modules/test_m20_reasoning.py::test_expected_value_rejects_invalid_probability_or_value[outcomes0]
+FAILED tests/modules/test_m20_reasoning.py::test_expected_value_rejects_invalid_probability_or_value[outcomes1]
+FAILED tests/modules/test_m20_reasoning.py::test_expected_value_rejects_invalid_probability_or_value[outcomes2]
+FAILED tests/modules/test_m20_reasoning.py::test_expected_value_rejects_invalid_probability_or_value[outcomes3]
+FAILED tests/modules/test_m20_foresight.py::test_ev_actual_ten_point_mass_preserving_sensitivity
+FAILED tests/modules/test_m20_foresight.py::test_ev_partial_mass_has_explicit_zero_outcome
+7 failed, 65 passed in 1.54s

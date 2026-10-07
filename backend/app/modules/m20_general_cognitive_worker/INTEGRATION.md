@@ -171,3 +171,12 @@ The route now always says unverified/causality_verifiedfalse and reports only
 checklist coverage. Even all flags true require actual study/data/design and
 effect/uncertainty inspection. This is not implemented causal assessment or
 correlation analysis; the original feature remains incomplete.
+
+### Row57 expectation semantics correction
+
+Historical expectation normalized incomplete mass and sensitivity renormalized
+an added weight, overstating both. Now sum(p*v), missing mass explicitly
+zero-valued; one first-best index shifts up to10pp with other mass proportional.
+A certain selected outcome's shifted-away mass is assigned zero. This convention
+is not an empirical fact about omitted outcomes. Caller probabilities/values
+remain unverified and no actual financial decision is taken.
