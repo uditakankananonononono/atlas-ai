@@ -1784,3 +1784,31 @@ def test_default_temporal_check_executes_actual_constraint_reasoning_in_plan():
     assert repo.list_actions(task_id=task.id)[0].result==output
     # Successful execution of the checker never means the schedule is feasible.
     assert output['witness_relative_times'] is None
+
+
+def test_actual_dependency_output_check_stops_downstream_when_condition_fails():
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('check supplied timing before next work',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[
+        {'id':'check','title':'check timing','tool':'temporal_check','arguments':{
+            'temporal_events':['a','b'],'time_unit':'hours','time_constraints':[
+                {'from':'a','to':'b','minimum_gap':3,'maximum_gap':4},
+                {'from':'b','to':'a','minimum_gap':1}]}},
+        {'id':'require','title':'require consistent timing','tool':'require_value','max_attempts':1,'depends_on':['check'],
+         'arguments':{'actual':{'$step':'check','path':['status']},'expected':'consistent'}},
+        {'id':'later','title':'later work','tool':'csv_summary','depends_on':['require'],
+         'arguments':{'csv_text':'amount\n42\n','value_column':'amount'}}])
+    result=runtime.run_task(task.id)
+    assert result.state==TaskState.FAILED
+    assert result.plan[0].state==TaskState.SUCCEEDED
+    assert result.plan[1].state==TaskState.FAILED
+    assert result.plan[2].state==TaskState.PENDING
+    assert [a.tool for a in repo.list_actions(task_id=task.id)]==['temporal_check','require_value']
+
+
+def test_require_value_exact_json_is_not_truthiness_or_approval():
+    from app.modules.m20_general_cognitive_worker.local_tools import require_value
+    assert require_value({'actual':{'x':0},'expected':{'x':0}})['matched']
+    for actual,expected in [(True,1),(None,False),('Open','open'),(1,1.0)]:
+        with pytest.raises(ValueError):require_value({'actual':actual,'expected':expected})
+    with pytest.raises(ValueError):require_value({'actual':float('nan'),'expected':float('nan')})
