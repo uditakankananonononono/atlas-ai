@@ -159,6 +159,11 @@ def test_extract_verified_rejects_traversal_member(tmp_path):
 
 
 def test_extract_verified_rejects_absolute_member(tmp_path):
+    # Pre-hs failure mode note: on the old code this pin fails via
+    # PermissionError (the escaped write attempt hits filesystem
+    # permissions), NOT via a demonstrated successful outside write. The
+    # traversal pin above is the demonstrated outside write (confined to
+    # tmp_path).
     blob = artifact({"/abs-member.txt": b"x"})
     staging = tmp_path / "staging"
     with pytest.raises(InstallError, match="unsafe archive member"):
