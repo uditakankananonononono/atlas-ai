@@ -198,10 +198,16 @@ class SendReplyProbe:
                 EmailMessageRow.tenant_id == tenant_id, EmailMessageRow.id == payload["message_id"])).first()
             if message is None:
                 raise ProbeUnavailable("source message is not stored for this tenant")
+            if payload.get("account_id") != message.account_id:
+                raise ProbeUnavailable("reply account does not match source message")
+            if message.gmail_id != target or message.thread_id != thread_id:
+                raise ProbeUnavailable("reply target/thread does not match source message")
             account = db.scalars(select(GmailAccountRow).where(
                 GmailAccountRow.tenant_id == tenant_id, GmailAccountRow.id == message.account_id)).first()
             draft = None if not draft_id else db.scalars(select(EmailDraftRow).where(
                 EmailDraftRow.tenant_id == tenant_id, EmailDraftRow.id == draft_id)).first()
+            if draft is not None and draft.message_id != message.id:
+                raise ProbeUnavailable("reply draft does not match source message")
             if account is None:
                 raise ProbeUnavailable("Gmail account for this message is no longer connected")
             if draft is not None:
