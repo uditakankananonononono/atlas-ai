@@ -418,3 +418,23 @@ def test_causal_caller_flags_never_certify_causality():
 def test_causal_raw_flags_require_actual_bool(flag):
     with pytest.raises(ValueError):
         CausalAssessor().assess(cause="a", effect="b", evidence={"randomized": flag})
+
+
+def test_ev_actual_ten_point_mass_preserving_sensitivity():
+    out = EVCalculator().compute(options=[{"name": "a", "outcomes": [[0.5, 100], [0.5, 0]]}])["options"][0]
+    assert out["ev_if_best_+10pp"] == pytest.approx(60)
+    assert out["ev_if_best_-10pp"] == pytest.approx(40)
+
+
+def test_ev_partial_mass_has_explicit_zero_outcome():
+    out = EVCalculator().compute(options=[{"name": "a", "outcomes": [[0.2, 100]]}])
+    assert out["options"][0]["ev"] == pytest.approx(20)
+    assert "zero" in out["scope"]
+
+
+def test_ev_duplicate_best_selects_one_index_and_extreme_values():
+    row = EVCalculator().compute(options=[{"name": "a", "outcomes": [[0.3, 100], [0.3, 100], [0.4, 0]]}])["options"][0]
+    assert row["selected_best_index"] == 0
+    assert row["best_probability_up"] == pytest.approx(0.4)
+    assert row["ev_if_best_+10pp"] == pytest.approx(40 + 30 * 0.6 / 0.7)
+    assert EVCalculator().compute(options=[{"name": "huge", "outcomes": [[0.5, 1e308], [0.5, -1e308]]}])["options"][0]["ev"] == 0

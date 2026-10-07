@@ -185,3 +185,13 @@ def test_raw_decision_tree_rejects_invalid_probabilities_unknown_kind_and_cycles
 def test_raw_nash_validates_both_matrices(matrix):
     with pytest.raises(ValueError):
         R.nash_equilibria_2x2([[1, 0], [0, 1]], matrix)
+
+
+def test_expected_value_partial_mass_is_not_conditional_renormalization():
+    assert R.expected_value([(0.2, 100)]) == pytest.approx(20)
+
+
+@pytest.mark.parametrize("outcomes", [[(-0.5, 0), (1, 10)], [(float("nan"), 1)], [(0.5, float("inf"))], [(True, 5)]])
+def test_expected_value_rejects_invalid_probability_or_value(outcomes):
+    with pytest.raises(ValueError):
+        R.expected_value(outcomes)

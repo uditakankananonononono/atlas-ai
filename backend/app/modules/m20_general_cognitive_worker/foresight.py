@@ -1101,31 +1101,48 @@ class AsymmetryFinder:
 
 class EVCalculator:
     """Probability-weighted outcomes per option, with a simple sensitivity:
-    how EV moves if the best outcome's probability shifts by +/-10 points."""
+    one selected best outcome shifts by up to +/-10 points, redistributing
+    other mass proportionally. Missing mass and degenerate remainder are zero-valued."""
 
     def compute(self, *, options: list[dict[str, Any]]) -> dict[str, Any]:
         if not options:
             raise ValueError("at least one option is required")
         rows: list[dict[str, Any]] = []
         for o in options:
-            outcomes = [(float(p), float(v)) for p, v in o["outcomes"]]
-            total_p = sum(p for p, _ in outcomes)
-            if any(p < 0 for p, _ in outcomes) or not 0.0 < total_p <= 1.0 + 1e-9:
-                raise ValueError(f"invalid outcome probabilities for {o['name']}")
-            ev = expected_value(outcomes)
-            best = max(outcomes, key=lambda t: t[1])
-            shift = 0.1
-            # Sensitivity: shift the best outcome's probability by +/-10 points.
-            ev_up = expected_value([(min(p + shift, 1.0) if (p, v) == best else p, v)
-                                    for p, v in outcomes])
-            ev_down = expected_value([(max(p - shift, 0.0) if (p, v) == best else p, v)
-                                      for p, v in outcomes])
-            rows.append({"name": o["name"], "ev": ev, "ev_if_best_+10pp": ev_up,
-                         "ev_if_best_-10pp": ev_down, "probability_mass": total_p})
+            outcomes = o["outcomes"]
+            ev = expected_value(outcomes)  # validates before sensitivity
+            total_p = math.fsum(p for p, _ in outcomes)
+            best_index = max(range(len(outcomes)), key=lambda i: outcomes[i][1])
+            # Missing mass is explicitly assigned zero; retain a zero-mass
+            # zero outcome even for complete distributions for downshifts.
+            full = list(outcomes) + [(max(0.0, 1.0 - total_p), 0.0)]
+            best_p = full[best_index][0]
+            def shifted(target):
+                remaining = math.fsum(p for i, (p, _) in enumerate(full) if i != best_index)
+                changed = []
+                for i, (p, v) in enumerate(full):
+                    if i == best_index:
+                        mass = target
+                    elif remaining > 0:
+                        mass = p / remaining * (1.0 - target)
+                    else:
+                        mass = (1.0 - target) if i == len(full) - 1 else 0.0
+                    changed.append((mass, v))
+                return expected_value(changed)
+            up = min(1.0, best_p + 0.1); down = max(0.0, best_p - 0.1)
+            rows.append({"name": o["name"], "ev": ev,
+                         "ev_if_best_+10pp": shifted(up),
+                         "ev_if_best_-10pp": shifted(down),
+                         "probability_mass": total_p, "missing_mass_zero": max(0.0, 1.0-total_p),
+                         "selected_best_index": best_index,
+                         "best_probability_up": up, "best_probability_down": down})
         rows.sort(key=lambda r: r["ev"], reverse=True)
         return {"options": rows, "caveat": DECISION_SUPPORT_CAVEAT,
+                "scope": "supplied expectation with missing mass assigned zero; one best outcome shifts up to10pp, other mass redistributed proportionally",
                 "assumptions": ["Probabilities and values are caller estimates",
-                                 "Outcomes within an option should sum to <= 1.0 probability mass"]}
+                                 "Missing probability mass has explicitly assumed zero value",
+                                 "Best tie chooses first supplied index; remainder proportionally redistributed",
+                                 "At certain best outcome, shifted-away mass receives zero value"]}
 
 
 # ---------------------------------------------------------------- row 58 --
