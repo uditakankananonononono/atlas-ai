@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_horn_query_proof_tree_reaches_supplied_premises _____________
+
+    def test_horn_query_proof_tree_reaches_supplied_premises():
+        result=forward({'facts':['reviewed','budgeted'],'rules':[
+            {'id':'r1','if':['reviewed'],'then':'ready'},
+            {'id':'r2','if':['ready','budgeted'],'then':'launchable'}],'query_atoms':['launchable','unknown']})
+        query=next(q for q in result['queries'] if q['atom']=='launchable')
+>       tree=query['proof_tree']
+             ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'proof_tree'
+
+tests/modules/test_m20_horn_proof_tree.py:9: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_horn_proof_tree.py::test_horn_query_proof_tree_reaches_supplied_premises
+1 failed in 1.44s
