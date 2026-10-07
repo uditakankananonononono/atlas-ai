@@ -152,3 +152,17 @@ def test_invalid_retry_policy_rejected_before_provider(field,invalid):
 @pytest.mark.parametrize('minimum',[0,1])
 def test_valid_policy_confidence_boundaries_remain_constructible(minimum):
  assert RetryPolicy(min_confidence=minimum,max_attempts=1,base_delay_seconds=0,enable_self_critique=False).min_confidence==minimum
+
+@pytest.mark.parametrize('model_count,max_attempts',[(1,3),(2,1),(2,2)])
+def test_low_confidence_does_not_sleep_after_final_attempt(monkeypatch,model_count,max_attempts):
+ from app.modules.m12_ai_research_lab.executor import ConfidenceThresholdNotReached
+ import app.modules.m12_ai_research_lab.executor as module
+ calls=[];sleeps=[]
+ async def sleep(delay):sleeps.append(delay)
+ monkeypatch.setattr(module.asyncio,'sleep',sleep)
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs['model_id']);return ModelResult('candidate',kwargs['model_id'],.1)
+ executor=ResearchExecutor(ModelRouter(models()[:model_count]),Provider(),RetryPolicy(max_attempts=max_attempts,base_delay_seconds=.2))
+ with pytest.raises(ConfidenceThresholdNotReached):asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert len(calls)==min(model_count,max_attempts)
+ assert sleeps==([.2] if len(calls)==2 else [])

@@ -48,6 +48,7 @@ class ResearchExecutor:
                 result.metadata.update({"attempts":attempt+1,**diagnostics,"history":history}); return result
             if self.policy.enable_self_critique:
                 prompt=f"Critique and improve the candidate. Return only the improved answer.\nCandidate:\n{result.text}\nOriginal task:\n{prompt}"
-            await asyncio.sleep(self.policy.base_delay_seconds*(2**attempt))
+            if attempt+1 < min(self.policy.max_attempts,len(choices)):
+                await asyncio.sleep(self.policy.base_delay_seconds*(2**attempt))
         result.metadata.update({"review_required":True,"review_reason":"confidence_threshold_not_reached","attempts":len(history),"history":history,**diagnostics})
         raise ConfidenceThresholdNotReached(result)
