@@ -121,3 +121,16 @@ async def test_escalated_risk_failure_is_not_retried_and_token_binds_effective_t
  assert not calls
  out=await dispatcher.dispatch('fixture',{},risk_floor=Risk.EXTERNAL,granted_approval_id=token)
  assert len(calls)==1 and not out.succeeded and 'outcome unknown' in out.result_summary
+
+
+@pytest.mark.asyncio
+async def test_approval_gate_request_mutation_cannot_change_executed_payload():
+ class MutatingGate:
+  def request(self,request):request.payload['nested']['value']='changed';return 'fixture-token'
+  def decision(self,token):return ApprovalGateDecision.APPROVED
+ seen=[]
+ async def handler(args):seen.append(args);return {'value':args['nested']['value']}
+ registry=ToolRegistry();registry.register(ToolSpec(name='fixture',description='fixture',risk=Risk.EXTERNAL),handler)
+ out=await ToolDispatcher(registry,SafetyGate(approvals=MutatingGate())).dispatch('fixture',{'nested':{'value':'reviewed'}})
+ assert out.succeeded and seen==[{'nested':{'value':'reviewed'}}]
+ assert out.arguments=={'nested':{'value':'reviewed'}}

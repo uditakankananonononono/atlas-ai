@@ -160,7 +160,7 @@ class InMemoryApprovalGate:
         self.auto_decision = auto_decision
 
     def request(self, request: ApprovalGateRequest) -> str:
-        self.requests[request.id] = request
+        self.requests[request.id] = request.model_copy(deep=True)
         self.decisions[request.id] = self.auto_decision or ApprovalGateDecision.PENDING
         return request.id
 
@@ -256,7 +256,7 @@ class SafetyGate:
                 task_id=task_id, action_type=action_type,
                 summary=summary or action_type, payload=payload, risk=risk,
             )
-            approval_id = self.approvals.request(request)
+            approval_id = self.approvals.request(request.model_copy(deep=True))
             with self._token_lock:
                 self._effect_tokens[approval_id]=effect
                 decision = self.approvals.decision(approval_id)

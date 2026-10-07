@@ -1,0 +1,39 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_approval_gate_request_mutation_cannot_change_executed_payload ______
+
+    @pytest.mark.asyncio
+    async def test_approval_gate_request_mutation_cannot_change_executed_payload():
+     class MutatingGate:
+      def request(self,request):request.payload['nested']['value']='changed';return 'fixture-token'
+      def decision(self,token):return ApprovalGateDecision.APPROVED
+     seen=[]
+     async def handler(args):seen.append(args);return {'value':args['nested']['value']}
+     registry=ToolRegistry();registry.register(ToolSpec(name='fixture',description='fixture',risk=Risk.EXTERNAL),handler)
+     out=await ToolDispatcher(registry,SafetyGate(approvals=MutatingGate())).dispatch('fixture',{'nested':{'value':'reviewed'}})
+>    assert out.succeeded and seen==[{'nested':{'value':'reviewed'}}]
+E    AssertionError: assert (True and [{'nested': {...: 'changed'}}] == [{'nested': {... 'reviewed'}}]
+E     +  where True = ActionRecord(id='f4c6bd9b-fb41-4e8c-aab3-02551ddc794a', tool='fixture', task_id=None, arguments={'nested': {'value': '...nfo=datetime.timezone.utc), finished_at=datetime.datetime(2026, 10, 7, 2, 39, 7, 204329, tzinfo=datetime.timezone.utc)).succeeded
+E      
+E      At index 0 diff: {'nested': {'value': 'changed'}} != {'nested': {'value': 'reviewed'}}
+E      Use -v to get more diff)
+
+tests/modules/test_m20_dispatcher_effect_boundary.py:135: AssertionError
+__________ test_inmemory_review_request_snapshots_nested_caller_input __________
+
+    def test_inmemory_review_request_snapshots_nested_caller_input():
+     request=ApprovalGateRequest(action_type='fixture',summary='fixture',payload={'nested':{'value':'original'}})
+     gate=InMemoryApprovalGate();token=gate.request(request)
+     request.payload['nested']['value']='changed'
+>    assert gate.requests[token].payload=={'nested':{'value':'original'}}
+E    AssertionError: assert {'nested': {'...': 'changed'}} == {'nested': {'...: 'original'}}
+E      
+E      Differing items:
+E      {'nested': {'value': 'changed'}} != {'nested': {'value': 'original'}}
+E      Use -v to get more diff
+
+tests/modules/test_m20_safety_tools.py:140: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_dispatcher_effect_boundary.py::test_approval_gate_request_mutation_cannot_change_executed_payload
+FAILED tests/modules/test_m20_safety_tools.py::test_inmemory_review_request_snapshots_nested_caller_input
+2 failed, 67 deselected in 1.35s

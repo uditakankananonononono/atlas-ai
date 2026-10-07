@@ -131,3 +131,10 @@ def test_tool_registration_policy_snapshot_cannot_be_weakened_by_caller():
  assert registered.spec.risk==Risk.EXTERNAL and registered.check_preconditions({})==['ready']
  with pytest.raises(AttributeError):registered.spec=spec
  with pytest.raises(AttributeError):registered.handler=handler
+
+
+def test_inmemory_review_request_snapshots_nested_caller_input():
+ request=ApprovalGateRequest(action_type='fixture',summary='fixture',payload={'nested':{'value':'original'}})
+ gate=InMemoryApprovalGate();token=gate.request(request)
+ request.payload['nested']['value']='changed'
+ assert gate.requests[token].payload=={'nested':{'value':'original'}}
