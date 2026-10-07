@@ -1333,7 +1333,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Narrative _cluster greedily groups current batch by topic-token overlap .25; per-collection extraction attempts LLM tips then deterministic fallback. Not daily hierarchical embedding clustering/million-source anonymized summary knowledge base. Corpus held in service list. No actual collector/model/clustering-quality acceptance. Status unverified."
+      "notes": "Narrative _cluster greedily groups current batch by excerpt-token overlap .18; per-collection extraction attempts LLM tips then deterministic fallback. Not daily hierarchical embedding clustering/million-source anonymized summary knowledge base. Corpus held in service list. No actual collector/model/clustering-quality acceptance. Status unverified."
     },
     {
       "row": 121,
@@ -1388,7 +1388,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M18 service discover/analyze plus collection/validation/ranking/refresh/freshness pipeline and blueprint models exist. Source-backed entrepreneur guidance not income validation; no collector/model/business/paid effect. Status unverified."
     },
     {
       "row": 126,
@@ -1399,7 +1399,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Configured legal collectors include Reddit JSON/HN/DevTo, optional YouTube/Pinterest/X/Instagram API clients and public URLs/RSS. Pipeline rights/robots/rate limits/validation exist. No TikTok residential proxy/stealth distributed scraping or fine-tuned scam classifier established. Service discover passes scam signals to LLM rather than hard acceptance threshold here; pipeline validation separately applies checks. No actual social/account/collector effect. Status unverified."
     },
     {
       "row": 127,
@@ -1410,7 +1410,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "BlueprintOut schema and evidence-preserving lane extraction exist; supplied or generated steps/complexity/earnings timing/automation estimates are not independently validated business outcomes. Discover model output schema validation does not establish cross-source synthesis truth/source membership. No tool purchase/business launch/earnings acceptance. Status unverified."
     },
     {
       "row": 128,
@@ -1421,7 +1421,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Analyze sends blueprint/user plus optional injected search evidence for SWOT/scores/sensitivities/falsifiable experiment, no earnings promise; lane rank uses explicit user context. Runtime pytrends/market margins/competitor-backed quantitative GoNoGo report not established by scoped read. Model numeric result is not feasibility validation. No user profile/model/market effect. Status unverified."
     },
     {
       "row": 129,
@@ -1432,7 +1432,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Refresh/freshness monitoring and source ranking exist, but time-series trend prediction/Google Trends integration and M09 permanent blueprint graph sync not established by scoped read. Freshness is source-content check, not business demand forecast. No live scraping/trend/user business effect. Status unverified."
     },
     {
       "row": 130,
