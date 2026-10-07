@@ -942,3 +942,7 @@ Five actual failures retained: invalidnumericoutcomespublish; evenfinite median 
 ## Reference selection snapshots and midpoint correction
 
 Eight actual failures retained: invalid selectionconfig accepted, publiccase mutation bypasses guards, prior dividedoperandmedianfix loses equal smallestsubnormal. Positiveinteger minsimilar; finite0..1notbool overlap; privatecases/deepdetachedviews; signaware midpoint preserves equalminimumsubnormal and largefinitepair.126foresightHTTPpass1warning; recorded87adjacent2357pass2warnings39.40s. Corrects incompleteness of previousmedianfix. Lexicalreference selection only, not evidence relevance/forecast validity. Latestfull9869passsource724c275 predatesfourteenlaterfixes.
+
+## Full local regression after foresight corrections
+
+Source c5b11ab: 496 files/20 isolated batches/9944passed/0failed/14skipped/26summedwarningoccurrences/420.24s summedprocess time, everyexit0. Manifest/receipts/logs/runner/summary retained under full-regression-after-foresight-fixes. Includesfourteen source corrections since724c275. Historical9869and9813runs retainedunchanged. Localfixtures do not verify original cognition breadth, authenticated review authority, distributed effects or production provisioning.
