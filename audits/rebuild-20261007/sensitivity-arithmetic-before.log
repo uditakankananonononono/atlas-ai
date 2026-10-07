@@ -1,0 +1,140 @@
+F.FF.FF                                                                  [100%]
+=================================== FAILURES ===================================
+_ test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[1/x-params0] _
+
+expression = '1/x', params = {'x': 0}
+
+    @pytest.mark.parametrize('expression,params',[
+     ('1/x',{'x':0}),('x',{}),('x',{'x':float('nan')}),('x',{'x':True}),('"x"',{'x':1}),('x ** 1001',{'x':2}),('bad +',{'x':1})
+    ])
+    def test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs(expression,params):
+>    with pytest.raises(ValueError):SensitivityExplorer().analyze(expression=expression,params=params)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:565: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:640: in analyze
+    rows = sensitivity_analysis(evaluate, params, swing=swing)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:94: in sensitivity_analysis
+    base = evaluate(base_params)
+           ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:623: in evaluate
+    return float(eval(code, {"__builtins__": {}}, dict(p)))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ZeroDivisionError: division by zero
+
+<expr>:1: ZeroDivisionError
+__ test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[x-params2] __
+
+expression = 'x', params = {'x': nan}
+
+    @pytest.mark.parametrize('expression,params',[
+     ('1/x',{'x':0}),('x',{}),('x',{'x':float('nan')}),('x',{'x':True}),('"x"',{'x':1}),('x ** 1001',{'x':2}),('bad +',{'x':1})
+    ])
+    def test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs(expression,params):
+>    with pytest.raises(ValueError):SensitivityExplorer().analyze(expression=expression,params=params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:565: Failed
+__ test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[x-params3] __
+
+expression = 'x', params = {'x': True}
+
+    @pytest.mark.parametrize('expression,params',[
+     ('1/x',{'x':0}),('x',{}),('x',{'x':float('nan')}),('x',{'x':True}),('"x"',{'x':1}),('x ** 1001',{'x':2}),('bad +',{'x':1})
+    ])
+    def test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs(expression,params):
+>    with pytest.raises(ValueError):SensitivityExplorer().analyze(expression=expression,params=params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:565: Failed
+_ test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[x ** 1001-params5] _
+
+expression = 'x ** 1001', params = {'x': 2}
+
+    @pytest.mark.parametrize('expression,params',[
+     ('1/x',{'x':0}),('x',{}),('x',{'x':float('nan')}),('x',{'x':True}),('"x"',{'x':1}),('x ** 1001',{'x':2}),('bad +',{'x':1})
+    ])
+    def test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs(expression,params):
+>    with pytest.raises(ValueError):SensitivityExplorer().analyze(expression=expression,params=params)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:565: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:640: in analyze
+    rows = sensitivity_analysis(evaluate, params, swing=swing)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/reasoning.py:99: in sensitivity_analysis
+    low, high = evaluate(low_params), evaluate(high_params)
+                                      ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:623: in evaluate
+    return float(eval(code, {"__builtins__": {}}, dict(p)))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   OverflowError: (34, 'Numerical result out of range')
+
+<expr>:1: OverflowError
+_ test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[bad +-params6] _
+
+expression = 'bad +', params = {'x': 1}
+
+    @pytest.mark.parametrize('expression,params',[
+     ('1/x',{'x':0}),('x',{}),('x',{'x':float('nan')}),('x',{'x':True}),('"x"',{'x':1}),('x ** 1001',{'x':2}),('bad +',{'x':1})
+    ])
+    def test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs(expression,params):
+>    with pytest.raises(ValueError):SensitivityExplorer().analyze(expression=expression,params=params)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_strategy.py:565: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m20_general_cognitive_worker/strategy.py:639: in analyze
+    evaluate = _safe_evaluator(expression, params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/strategy.py:614: in _safe_evaluator
+    tree = ast.parse(expression, mode="eval")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+source = 'bad +', filename = '<unknown>', mode = 'eval', type_comments = False
+feature_version = -1
+
+    def parse(source, filename='<unknown>', mode='exec', *,
+              type_comments=False, feature_version=None):
+        """
+        Parse the source into an AST node.
+        Equivalent to compile(source, filename, mode, PyCF_ONLY_AST).
+        Pass type_comments=True to get back type comments where the syntax allows.
+        """
+        flags = PyCF_ONLY_AST
+        if type_comments:
+            flags |= PyCF_TYPE_COMMENTS
+        if feature_version is None:
+            feature_version = -1
+        elif isinstance(feature_version, tuple):
+            major, minor = feature_version  # Should be a 2-tuple.
+            if major != 3:
+                raise ValueError(f"Unsupported major version: {major}")
+            feature_version = minor
+        # Else it should be an int giving the minor version for 3.x.
+>       return compile(source, filename, mode, flags,
+                       _feature_version=feature_version)
+E         File "<unknown>", line 1
+E           bad +
+E       SyntaxError: invalid syntax
+
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/ast.py:52: SyntaxError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy.py::test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[1/x-params0]
+FAILED tests/modules/test_m20_strategy.py::test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[x-params2]
+FAILED tests/modules/test_m20_strategy.py::test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[x-params3]
+FAILED tests/modules/test_m20_strategy.py::test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[x ** 1001-params5]
+FAILED tests/modules/test_m20_strategy.py::test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs[bad +-params6]
+5 failed, 2 passed, 61 deselected in 1.45s
