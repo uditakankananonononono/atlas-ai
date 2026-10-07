@@ -29,7 +29,7 @@ import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Any, AsyncIterator, Callable, Iterator
-from urllib.parse import quote_plus, urlsplit
+from urllib.parse import quote_plus, urljoin, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 USER_AGENT = "AtlasAI-ToolsHub/1.0 (+https://github.com/uditakankananonononono/atlas-ai)"
@@ -85,16 +85,30 @@ class _HttpsOnlyRedirect(HTTPRedirectHandler):
     """Refuse redirects that leave the public https contract (downgrade or
     userinfo-bearing targets)."""
 
+    # The base class binds 301/303/307/308 as aliases of ITS http_error_302;
+    # overriding only 302 would leave those statuses on the unvalidated base
+    # implementation. Rebind every redirect status to the validated method.
     def http_error_302(self, req, fp, code, msg, headers):
         # Validate the RAW Location header before urllib normalizes it:
         # urllib strips newlines and percent-encodes spaces, so validating
         # only the processed form (redirect_request) would accept hosts a
-        # direct entry rejects. Relative Locations defer to redirect_request,
-        # which validates the resolved absolute form.
+        # direct entry rejects. Any whitespace/control byte in the raw value
+        # is rejected outright (stricter than urllib, deliberately), then the
+        # absolute or resolved candidate is contract-checked. Ordinary
+        # relative redirects (/feed) resolve against the request URL and pass.
         raw = headers.get("location") or headers.get("uri") or ""
-        if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*://", raw) and not _is_public_feed_url(raw):
-            raise SourceError(f"redirect Location outside the https public-web contract: {raw!r}")
+        if raw:
+            if any(ch.isspace() or ord(ch) < 0x21 or ord(ch) == 0x7F for ch in raw):
+                raise SourceError(f"redirect Location contains raw whitespace/control characters: {raw!r}")
+            candidate = raw if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*://", raw) else urljoin(req.full_url, raw)
+            if not _is_public_feed_url(candidate):
+                raise SourceError(f"redirect Location outside the https public-web contract: {raw!r}")
         return super().http_error_302(req, fp, code, msg, headers)
+
+    http_error_301 = http_error_302
+    http_error_303 = http_error_302
+    http_error_307 = http_error_302
+    http_error_308 = http_error_302
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         if not _is_public_feed_url(newurl):

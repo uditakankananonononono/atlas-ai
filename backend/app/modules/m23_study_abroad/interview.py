@@ -80,7 +80,20 @@ class IdentityInterviewRepository:
             row.question_index += 1
             row.status = "complete" if row.question_index == len(QUESTIONS) else "active"
             row.updated_at = datetime.now(timezone.utc)
-        self._refresh_brand(session_id)
+            db.flush()
+            # Brand refresh runs INSIDE the turn transaction: a refresh
+            # failure rolls the turn back instead of leaving the answer
+            # persisted with an advanced index and a stale brand.
+            turns = list(db.scalars(select(IdentityTurnRow).where(
+                IdentityTurnRow.session_id == session_id).order_by(IdentityTurnRow.ordinal)))
+            evidence = [{"session_id": session_id, "turn": t.ordinal,
+                         "modality": t.modality, "student_response": t.student_response}
+                        for t in turns]
+            values = sorted({tag for t in turns for tag in (t.evidence_tags or [])})
+            patterns = [t.student_response for t in turns[:3]]
+            strengths = [tag.removeprefix("strength:") for tag in values if tag.startswith("strength:")]
+            StoryRepository(self.tenant_id, self.sessions).evolve_brand(
+                values, patterns, strengths, evidence, _db=db)
         return self.get(session_id)
 
     def get(self, session_id: str) -> dict:
@@ -101,14 +114,3 @@ class IdentityInterviewRepository:
                            "evidence_tags": t.evidence_tags} for t in turns],
                 "student_owned": True, "final_essay_prose": None,
             }
-
-    def _refresh_brand(self, session_id: str) -> None:
-        interview = self.get(session_id)
-        turns = interview["turns"]
-        evidence = [{"session_id": session_id, "turn": t["ordinal"],
-                     "modality": t["modality"], "student_response": t["student_response"]}
-                    for t in turns]
-        values = sorted({tag for t in turns for tag in t["evidence_tags"]})
-        patterns = [t["student_response"] for t in turns[:3]]
-        strengths = [tag.removeprefix("strength:") for tag in values if tag.startswith("strength:")]
-        StoryRepository(self.tenant_id, self.sessions).evolve_brand(values, patterns, strengths, evidence)

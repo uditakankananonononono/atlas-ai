@@ -30,7 +30,8 @@ def test_conclusion_coach_flags_wholly_new_claim_and_lists_terms():
     out = EssayToolService().conclusion_coach(
         "I founded a Nobel winning company last year",
         "My robotics club taught me persistence")
-    assert out['checks']['introduces_new_claim'] is True
+    assert out['checks']['introduces_new_vocabulary'] is True
+    assert 'introduces_new_claim' not in out['checks']
     assert {'nobel', 'company', 'founded'} <= set(out['new_terms_beyond_thesis'])
 
 def test_conclusion_coach_restated_conclusion_does_not_flag():
@@ -38,7 +39,7 @@ def test_conclusion_coach_restated_conclusion_does_not_flag():
     from app.modules.m23_study_abroad.essay_tools import EssayToolService
     out = EssayToolService().conclusion_coach(
         "Community action rebuilds access", "Community action rebuilds access")
-    assert out['checks']['introduces_new_claim'] is False
+    assert out['checks']['introduces_new_vocabulary'] is False
 
 def test_hook_overlap_is_not_labeled_factual_support():
     # KILL: the old key implied factual support from term overlap.
@@ -48,3 +49,22 @@ def test_hook_overlap_is_not_labeled_factual_support():
     assert 'supported_by_evidence' not in out
     assert out['overlaps_student_evidence'] is True
     assert 'not factual verification' in out['support_note']
+
+
+def test_conclusion_novelty_basis_is_caller_visible():
+    # The novelty signal is a heuristic; the output must say so, not only
+    # the code comment.
+    from app.modules.m23_study_abroad.essay_tools import EssayToolService
+    out = EssayToolService().conclusion_coach("I founded a company", "My club taught me persistence")
+    assert "vocabulary_difference_note" in out
+    assert "not factual new-claim detection" in out["vocabulary_difference_note"]
+
+
+def test_conclusion_negation_keeps_vocabulary_characterization():
+    # Characterization of the documented limit: negation/numeric changes share
+    # vocabulary with the thesis, so they do NOT flag. This is why the output
+    # describes vocabulary difference, not claim detection.
+    from app.modules.m23_study_abroad.essay_tools import EssayToolService
+    out = EssayToolService().conclusion_coach(
+        "I did not win the Nobel prize", "I won the Nobel prize")
+    assert out['checks']['introduces_new_vocabulary'] is False
