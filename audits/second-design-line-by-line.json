@@ -1696,7 +1696,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "HTNPlanner and injected ExecutiveModel deliberative loop coexist. Hybrid mechanism presence not general novel-problem reasoning quality or fully integrated autonomous strategic decision acceptance. No model/tool work. Status unverified."
+      "notes": "HTNPlanner and injected ExecutiveModel deliberative loop coexist. Hybrid mechanism presence not general novel-problem reasoning quality or fully integrated autonomous strategic decision acceptance. No model/tool work. Status unverified. M20localmodelunknownclassification: plannerunknown subtype/no learnedmethod, executiveexplicitunknown/noretry; reasoningblockedno success/scheduler repeat, reflectionunknowntrace notanalysis.1957M20tests pass; adapterunknowncatchremoval mutantkills4fixtures. No durablecrossrestartreconciliation/manualresume/toolunknowneffectacceptance."
     },
     {
       "row": 154,
