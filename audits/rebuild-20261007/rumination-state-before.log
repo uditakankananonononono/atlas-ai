@@ -1,0 +1,73 @@
+...........................FFFF                                          [100%]
+=================================== FAILURES ===================================
+__ test_rumination_does_not_reactivate_terminal_or_waiting_context[succeeded] __
+
+state = <TaskState.SUCCEEDED: 'succeeded'>
+
+    @pytest.mark.parametrize("state", [TaskState.SUCCEEDED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_rumination_does_not_reactivate_terminal_or_waiting_context(state):
+        loop, _, _ = build_loop()
+        context = TaskContext(goal="inspect", state=state)
+        loop.ruminate(context)
+>       assert context.state == state
+E       AssertionError: assert <TaskState.RUNNING: 'running'> == <TaskState.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + running
+
+tests/modules/test_m20_executive.py:268: AssertionError
+___ test_rumination_does_not_reactivate_terminal_or_waiting_context[blocked] ___
+
+state = <TaskState.BLOCKED: 'blocked'>
+
+    @pytest.mark.parametrize("state", [TaskState.SUCCEEDED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_rumination_does_not_reactivate_terminal_or_waiting_context(state):
+        loop, _, _ = build_loop()
+        context = TaskContext(goal="inspect", state=state)
+        loop.ruminate(context)
+>       assert context.state == state
+E       AssertionError: assert <TaskState.RUNNING: 'running'> == <TaskState.BLOCKED: 'blocked'>
+E         
+E         - blocked
+E         + running
+
+tests/modules/test_m20_executive.py:268: AssertionError
+_ test_rumination_does_not_reactivate_terminal_or_waiting_context[waiting_approval] _
+
+state = <TaskState.WAITING_APPROVAL: 'waiting_approval'>
+
+    @pytest.mark.parametrize("state", [TaskState.SUCCEEDED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_rumination_does_not_reactivate_terminal_or_waiting_context(state):
+        loop, _, _ = build_loop()
+        context = TaskContext(goal="inspect", state=state)
+        loop.ruminate(context)
+>       assert context.state == state
+E       AssertionError: assert <TaskState.RUNNING: 'running'> == <TaskState.WA...ing_approval'>
+E         
+E         - waiting_approval
+E         + running
+
+tests/modules/test_m20_executive.py:268: AssertionError
+_______________ test_rumination_exception_restores_context_state _______________
+
+    def test_rumination_exception_restores_context_state():
+        loop, _, _ = build_loop()
+        context = TaskContext(goal="inspect", state=TaskState.RUNNING)
+        def fail(plan):
+            raise RuntimeError("rumination failed")
+        loop.ruminator.ruminate = fail
+        with pytest.raises(RuntimeError):
+            loop.ruminate(context)
+>       assert context.state == TaskState.RUNNING
+E       AssertionError: assert <TaskState.RU... 'ruminating'> == <TaskState.RUNNING: 'running'>
+E         
+E         - running
+E         + ruminating
+
+tests/modules/test_m20_executive.py:279: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_executive.py::test_rumination_does_not_reactivate_terminal_or_waiting_context[succeeded]
+FAILED tests/modules/test_m20_executive.py::test_rumination_does_not_reactivate_terminal_or_waiting_context[blocked]
+FAILED tests/modules/test_m20_executive.py::test_rumination_does_not_reactivate_terminal_or_waiting_context[waiting_approval]
+FAILED tests/modules/test_m20_executive.py::test_rumination_exception_restores_context_state
+4 failed, 27 passed in 1.45s

@@ -1,0 +1,49 @@
+...........................FFFF                                          [100%]
+=================================== FAILURES ===================================
+__ test_rumination_does_not_reactivate_terminal_or_waiting_context[succeeded] __
+
+state = <TaskState.SUCCEEDED: 'succeeded'>
+
+    @pytest.mark.parametrize("state", [TaskState.SUCCEEDED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_rumination_does_not_reactivate_terminal_or_waiting_context(state):
+>       loop = make_loop()
+               ^^^^^^^^^
+E       NameError: name 'make_loop' is not defined
+
+tests/modules/test_m20_executive.py:265: NameError
+___ test_rumination_does_not_reactivate_terminal_or_waiting_context[blocked] ___
+
+state = <TaskState.BLOCKED: 'blocked'>
+
+    @pytest.mark.parametrize("state", [TaskState.SUCCEEDED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_rumination_does_not_reactivate_terminal_or_waiting_context(state):
+>       loop = make_loop()
+               ^^^^^^^^^
+E       NameError: name 'make_loop' is not defined
+
+tests/modules/test_m20_executive.py:265: NameError
+_ test_rumination_does_not_reactivate_terminal_or_waiting_context[waiting_approval] _
+
+state = <TaskState.WAITING_APPROVAL: 'waiting_approval'>
+
+    @pytest.mark.parametrize("state", [TaskState.SUCCEEDED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+    def test_rumination_does_not_reactivate_terminal_or_waiting_context(state):
+>       loop = make_loop()
+               ^^^^^^^^^
+E       NameError: name 'make_loop' is not defined
+
+tests/modules/test_m20_executive.py:265: NameError
+_______________ test_rumination_exception_restores_context_state _______________
+
+    def test_rumination_exception_restores_context_state():
+>       loop = make_loop()
+               ^^^^^^^^^
+E       NameError: name 'make_loop' is not defined
+
+tests/modules/test_m20_executive.py:272: NameError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_executive.py::test_rumination_does_not_reactivate_terminal_or_waiting_context[succeeded]
+FAILED tests/modules/test_m20_executive.py::test_rumination_does_not_reactivate_terminal_or_waiting_context[blocked]
+FAILED tests/modules/test_m20_executive.py::test_rumination_does_not_reactivate_terminal_or_waiting_context[waiting_approval]
+FAILED tests/modules/test_m20_executive.py::test_rumination_exception_restores_context_state
+4 failed, 27 passed in 1.41s
