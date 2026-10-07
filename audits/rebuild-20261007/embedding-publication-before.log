@@ -1,0 +1,56 @@
+.........FF                                                              [100%]
+=================================== FAILURES ===================================
+_______ test_memory_embedding_failure_does_not_publish_content[semantic] _______
+
+kind = 'semantic'
+
+    @pytest.mark.parametrize("kind", ["semantic", "episodic"])
+    def test_memory_embedding_failure_does_not_publish_content(kind):
+        from app.modules.m20_general_cognitive_worker.schemas import SemanticFact, Episode
+        embedder = ToggleFailEmbedder()
+        memory = SemanticMemory(embedder) if kind == "semantic" else EpisodicMemory(embedder)
+        old = SemanticFact(content="old") if kind == "semantic" else Episode(task_id="t", goal="old")
+        publish = memory.store if kind == "semantic" else memory.record
+        publish(old)
+        new = old.model_copy(deep=True)
+        if kind == "semantic":
+            new.content = "new"
+        else:
+            new.goal = "new"
+            new.embedding_text = "new"
+        embedder.fail = True
+        with pytest.raises(RuntimeError):
+            publish(new)
+>       assert memory.get(old.id) == old.model_copy(update={"embedding_text": "old"}) if kind == "episodic" else memory.get(old.id) == old
+E       assert False
+
+tests/modules/test_m20_long_term_memory.py:174: AssertionError
+_______ test_memory_embedding_failure_does_not_publish_content[episodic] _______
+
+kind = 'episodic'
+
+    @pytest.mark.parametrize("kind", ["semantic", "episodic"])
+    def test_memory_embedding_failure_does_not_publish_content(kind):
+        from app.modules.m20_general_cognitive_worker.schemas import SemanticFact, Episode
+        embedder = ToggleFailEmbedder()
+        memory = SemanticMemory(embedder) if kind == "semantic" else EpisodicMemory(embedder)
+        old = SemanticFact(content="old") if kind == "semantic" else Episode(task_id="t", goal="old")
+        publish = memory.store if kind == "semantic" else memory.record
+        publish(old)
+        new = old.model_copy(deep=True)
+        if kind == "semantic":
+            new.content = "new"
+        else:
+            new.goal = "new"
+            new.embedding_text = "new"
+        embedder.fail = True
+        with pytest.raises(RuntimeError):
+            publish(new)
+>       assert memory.get(old.id) == old.model_copy(update={"embedding_text": "old"}) if kind == "episodic" else memory.get(old.id) == old
+E       assert False
+
+tests/modules/test_m20_long_term_memory.py:174: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_long_term_memory.py::test_memory_embedding_failure_does_not_publish_content[semantic]
+FAILED tests/modules/test_m20_long_term_memory.py::test_memory_embedding_failure_does_not_publish_content[episodic]
+2 failed, 9 passed in 1.31s

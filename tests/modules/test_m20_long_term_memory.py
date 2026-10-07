@@ -143,3 +143,37 @@ def test_semantic_fact_and_graph_views_are_detached():
  metadata={'label':'supplied'};edge=mem.link(a.id,'related',b.id,metadata=metadata)
  metadata['label']='caller';edge.metadata['label']='returned';mem.neighbors(a.id)[0].metadata['label']='view'
  assert mem.neighbors(a.id)[0].metadata=={'label':'supplied'}
+
+
+class ToggleFailEmbedder:
+    dimensions = 8
+    fail = False
+    def embed(self, text):
+        if self.fail:
+            raise RuntimeError("embedding unavailable")
+        return [1.0] + [0.0] * 7
+
+
+@pytest.mark.parametrize("kind", ["semantic", "episodic"])
+def test_memory_embedding_failure_does_not_publish_content(kind):
+    from app.modules.m20_general_cognitive_worker.schemas import SemanticFact, Episode
+    embedder = ToggleFailEmbedder()
+    memory = SemanticMemory(embedder) if kind == "semantic" else EpisodicMemory(embedder)
+    old = SemanticFact(content="old") if kind == "semantic" else Episode(task_id="t", goal="old")
+    publish = memory.store if kind == "semantic" else memory.record
+    publish(old)
+    before = memory.get(old.id)
+    new = old.model_copy(deep=True)
+    if kind == "semantic":
+        new.content = "new"
+    else:
+        new.goal = "new"
+        new.embedding_text = "new"
+    embedder.fail = True
+    with pytest.raises(RuntimeError):
+        publish(new)
+    assert memory.get(old.id) == before
+    fresh = SemanticFact(content="fresh") if kind == "semantic" else Episode(task_id="fresh", goal="fresh")
+    with pytest.raises(RuntimeError):
+        publish(fresh)
+    assert memory.get(fresh.id) is None
