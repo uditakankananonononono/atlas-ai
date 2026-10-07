@@ -251,3 +251,18 @@ def test_direct_prompt_unencodable_as_utf8_rejected_before_provider():
   async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
  with pytest.raises(ValueError,match='UTF-8'):asyncio.run(ResearchExecutor(ModelRouter(models()),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'unencodable\ud800'))
  assert not calls
+
+@pytest.mark.asyncio
+async def test_policy_replacement_mid_generation_only_applies_to_next_execution():
+ from app.modules.m12_ai_research_lab.executor import ConfidenceThresholdNotReached
+ started=asyncio.Event();release=asyncio.Event();calls=[]
+ class Provider:
+  async def generate(self,**kwargs):
+   calls.append(kwargs['model_id']);started.set();await release.wait();return ModelResult('fixture',kwargs['model_id'],.5)
+ executor=ResearchExecutor(ModelRouter(models()[:1]),Provider(),RetryPolicy(min_confidence=.7,max_attempts=1,base_delay_seconds=0))
+ req=RouteRequest(TaskType.RESEARCH,100,0,100,'fixture')
+ running=asyncio.create_task(executor.execute(req,'fixture'))
+ await started.wait();executor.policy=RetryPolicy(min_confidence=.1,max_attempts=1,base_delay_seconds=0);release.set()
+ with pytest.raises(ConfidenceThresholdNotReached):await running
+ result=await executor.execute(req,'fixture')
+ assert result.confidence==.5 and calls==['first','first']
