@@ -2133,3 +2133,26 @@ def test_boundary_failed_predecessor_does_not_hide_independent_ready_branch():
  result=runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
  assert result.plan[1].state==TaskState.SUCCEEDED and result.state==TaskState.FAILED
  assert len(repo.list_actions(task_id=task.id))==2
+
+
+def test_repeated_run_of_completed_task_does_not_duplicate_episode_or_evaluation_trace():
+ runtime,repo=make_runtime();task=runtime.submit_goal('fixture completed replay',run_immediately=False)
+ runtime.prepare_supplied_plan(task.id,steps=[{'title':'sum','tool':'csv_summary','arguments':{'csv_text':'value\n42\n','value_column':'value'}}])
+ runtime.run_task(task.id)
+ before=(len(repo.list_actions(task_id=task.id)),len(repo.list_episodes()),len(repo.list_traces(task_id=task.id)))
+ runtime.run_task(task.id)
+ assert (len(repo.list_actions(task_id=task.id)),len(repo.list_episodes()),len(repo.list_traces(task_id=task.id)))==before
+ restarted=GCWRuntime(repo);restarted.run_task(task.id)
+ assert len(repo.list_episodes())==1
+ assert len(repo.list_traces(task_id=task.id))==before[2]
+
+
+def test_repeated_run_of_failed_task_requires_explicit_prepared_correction():
+ runtime,repo=make_runtime();task=runtime.submit_goal('fixture failed replay',run_immediately=False)
+ runtime.prepare_supplied_plan(task.id,steps=[{'id':'bad','title':'sum','tool':'csv_summary','max_attempts':1,'arguments':{'csv_text':'value\nbad\n','value_column':'value'}}])
+ runtime.run_task(task.id)
+ runtime.run_task(task.id)
+ assert len(repo.list_episodes())==1 and len(repo.list_actions(task_id=task.id))==1
+ runtime.prepare_read_step_retry(task.id,'bad',arguments={'csv_text':'value\n42\n','value_column':'value'})
+ assert runtime.run_task(task.id).state==TaskState.SUCCEEDED
+ assert len(repo.list_actions(task_id=task.id))==2

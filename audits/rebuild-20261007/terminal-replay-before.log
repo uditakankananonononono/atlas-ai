@@ -1,0 +1,41 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_repeated_run_of_completed_task_does_not_duplicate_episode_or_evaluation_trace _
+
+    def test_repeated_run_of_completed_task_does_not_duplicate_episode_or_evaluation_trace():
+     runtime,repo=make_runtime();task=runtime.submit_goal('fixture completed replay',run_immediately=False)
+     runtime.prepare_supplied_plan(task.id,steps=[{'title':'sum','tool':'csv_summary','arguments':{'csv_text':'value\n42\n','value_column':'value'}}])
+     runtime.run_task(task.id)
+     before=(len(repo.list_actions(task_id=task.id)),len(repo.list_episodes()),len(repo.list_traces(task_id=task.id)))
+     runtime.run_task(task.id)
+>    assert (len(repo.list_actions(task_id=task.id)),len(repo.list_episodes()),len(repo.list_traces(task_id=task.id)))==before
+E    assert (1, 2, 5) == (1, 1, 4)
+E      
+E      At index 1 diff: 2 != 1
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2144: AssertionError
+____ test_repeated_run_of_failed_task_requires_explicit_prepared_correction ____
+
+    def test_repeated_run_of_failed_task_requires_explicit_prepared_correction():
+     runtime,repo=make_runtime();task=runtime.submit_goal('fixture failed replay',run_immediately=False)
+     runtime.prepare_supplied_plan(task.id,steps=[{'id':'bad','title':'sum','tool':'csv_summary','max_attempts':1,'arguments':{'csv_text':'value\nbad\n','value_column':'value'}}])
+     runtime.run_task(task.id)
+     runtime.run_task(task.id)
+>    assert len(repo.list_episodes())==1 and len(repo.list_actions(task_id=task.id))==1
+E    AssertionError: assert (2 == 1)
+E     +  where 2 = len([Episode(id='b7c5acce-1c5c-4fd2-aac1-be2636de0e70', task_id='ed205f86-e141-4188-b415-f640e93fe7c4', goal='fixture fail..., 40, 33, 490545, tzinfo=TzInfo(0)), embedding_text='fixture failed replay failed after plan of 1 steps  csv_summary')])
+E     +    where [Episode(id='b7c5acce-1c5c-4fd2-aac1-be2636de0e70', task_id='ed205f86-e141-4188-b415-f640e93fe7c4', goal='fixture fail..., 40, 33, 490545, tzinfo=TzInfo(0)), embedding_text='fixture failed replay failed after plan of 1 steps  csv_summary')] = list_episodes()
+E     +      where list_episodes = <app.modules.m20_general_cognitive_worker.sql_repository.GCWRepository object at 0x7f0575608770>.list_episodes
+
+tests/modules/test_m20_runtime_depth.py:2155: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_repeated_run_of_completed_task_does_not_duplicate_episode_or_evaluation_trace
+FAILED tests/modules/test_m20_runtime_depth.py::test_repeated_run_of_failed_task_requires_explicit_prepared_correction
+2 failed, 149 deselected, 1 warning in 1.79s
