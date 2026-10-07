@@ -458,3 +458,18 @@ def test_model_execution_verified_principal_overrides_claimed_input_tenant(monke
  response=TestClient(app).post('/api/v1/ai-research-lab/'+('workflows/run' if workflow else 'run'),json=body,headers={'authorization':'Bearer fixture-token','x-atlas-tenant':'spoofed','x-atlas-actor':'spoofed'})
  assert response.status_code==200,response.text
  assert tokens==['fixture-token'] and calls==['verified-tenant']
+
+def test_provider_context_cannot_rewrite_executor_attempt_history():
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):
+   calls.append(kwargs['model_id'])
+   if kwargs['context']['attempt_history']:
+    kwargs['context']['attempt_history'][0]['model']='forged-model'
+    kwargs['context']['attempt_history'].append({'model':'fake-extra','confidence':1})
+   return ModelResult('fixture',kwargs['model_id'],.1 if len(calls)==1 else .9)
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['first','backup']]
+ result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider(),RetryPolicy(base_delay_seconds=0)).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert calls==['first','backup']
+ assert result.metadata['history']==[{'model':'first','confidence':.1},{'model':'backup','confidence':.9}]
