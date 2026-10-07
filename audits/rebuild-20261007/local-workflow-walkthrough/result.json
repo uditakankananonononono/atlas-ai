@@ -1,0 +1,194 @@
+{
+  "task_state": "succeeded",
+  "output": {
+    "rows": 2,
+    "value_column": "amount",
+    "group_column": null,
+    "groups": [
+      {
+        "group": "all",
+        "count": 2,
+        "sum": 15.0,
+        "mean": 7.5,
+        "min": 5.0,
+        "max": 10.0
+      }
+    ],
+    "source_verified": false,
+    "status": "supplied_csv_numeric_summary",
+    "boundary": "Numeric summaries only; units, provenance and business meaning are caller supplied. No currency conversion or missing-value imputation."
+  },
+  "evidence": {
+    "actions": [
+      {
+        "id": "a89c1ea7-a77a-4d1e-9be4-0bb255dcd275",
+        "tool": "csv_summary",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "arguments": {
+          "csv_text": "id,status,amount\nA,open,10\nC,open,5\n",
+          "value_column": "amount"
+        },
+        "result_summary": "{'rows': 2, 'value_column': 'amount', 'group_column': None, 'groups': [{'group': 'all', 'count': 2, 'sum': 15.0, 'mean': 7.5, 'min': 5.0, 'max': 10.0}], 'source_verified': False, 'status': 'supplied_csv_numeric_summary', 'boundary': 'Numeric summaries only; units, provenance and business meaning are caller supplied. No currency conversion or missing-value imputation.'}",
+        "result": {
+          "rows": 2,
+          "value_column": "amount",
+          "group_column": null,
+          "groups": [
+            {
+              "group": "all",
+              "count": 2,
+              "sum": 15.0,
+              "mean": 7.5,
+              "min": 5.0,
+              "max": 10.0
+            }
+          ],
+          "source_verified": false,
+          "status": "supplied_csv_numeric_summary",
+          "boundary": "Numeric summaries only; units, provenance and business meaning are caller supplied. No currency conversion or missing-value imputation."
+        },
+        "succeeded": true,
+        "started_at": "2026-10-07T10:03:10.452728Z",
+        "finished_at": "2026-10-07T10:03:10.452908Z"
+      },
+      {
+        "id": "f15d9989-ae2e-4a5b-989c-46255eaaa658",
+        "tool": "csv_filter",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "arguments": {
+          "csv_text": "id,status,amount\nA,open,10\nB,paid,20\nC,open,5\n",
+          "where": {
+            "status": "open"
+          }
+        },
+        "result_summary": "{'csv_text': 'id,status,amount\\nA,open,10\\nC,open,5\\n', 'input_rows': 3, 'matched_rows': 2, 'columns': ['id', 'status', 'amount'], 'source_verified': False, 'status': 'supplied_csv_exact_filter_projection', 'boundary': 'Exact raw string AND predicates and selected columns only; no inferred status, normalization or external effects.'}",
+        "result": {
+          "csv_text": "id,status,amount\nA,open,10\nC,open,5\n",
+          "input_rows": 3,
+          "matched_rows": 2,
+          "columns": [
+            "id",
+            "status",
+            "amount"
+          ],
+          "source_verified": false,
+          "status": "supplied_csv_exact_filter_projection",
+          "boundary": "Exact raw string AND predicates and selected columns only; no inferred status, normalization or external effects."
+        },
+        "succeeded": true,
+        "started_at": "2026-10-07T10:03:10.417291Z",
+        "finished_at": "2026-10-07T10:03:10.417650Z"
+      }
+    ],
+    "traces": [
+      {
+        "id": "cb679ab2-e06b-40c0-8429-f47c1a549c07",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "phase": "evaluate",
+        "detail": "plan complete",
+        "policy_basis": "",
+        "created_at": "2026-10-07T10:03:10.453156Z"
+      },
+      {
+        "id": "ec57c42d-13a5-494f-b769-f51c52c3a840",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "phase": "act",
+        "detail": "csv_summary succeeded",
+        "policy_basis": "",
+        "created_at": "2026-10-07T10:03:10.453053Z"
+      },
+      {
+        "id": "f128582b-65f2-4d61-b6e9-53087356123a",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "phase": "decide",
+        "detail": "next action: Sum selected amounts (score=0.500)",
+        "policy_basis": "",
+        "created_at": "2026-10-07T10:03:10.452316Z"
+      },
+      {
+        "id": "adb5c12f-7c4a-4f17-9409-9598463f7cfa",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "phase": "evaluate",
+        "detail": "cooperative scheduler quantum yielded; work remains",
+        "policy_basis": "",
+        "created_at": "2026-10-07T10:03:10.418048Z"
+      },
+      {
+        "id": "73b6ba1a-56b8-4a14-94e8-75f8c3f2dcef",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "phase": "act",
+        "detail": "csv_filter succeeded",
+        "policy_basis": "",
+        "created_at": "2026-10-07T10:03:10.417938Z"
+      },
+      {
+        "id": "0d7150b4-e720-47b7-bd5b-9ec4bd1c0b5f",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "phase": "decide",
+        "detail": "next action: Select open rows (score=0.500)",
+        "policy_basis": "",
+        "created_at": "2026-10-07T10:03:10.416297Z"
+      },
+      {
+        "id": "2578b4b9-2a18-43ce-82f8-1339a690d726",
+        "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+        "phase": "plan",
+        "detail": "supplied DAG prepared only; not executed or approved",
+        "policy_basis": "",
+        "created_at": "2026-10-07T10:03:10.409902Z"
+      }
+    ],
+    "action_count": 2,
+    "trace_count": 7,
+    "actions_truncated": false,
+    "traces_truncated": false,
+    "limit_per_collection": 50,
+    "order": "newest_first",
+    "external_outcomes_verified": false,
+    "status": "persisted_reported_local_execution_evidence"
+  },
+  "retrospective": {
+    "id": "4f1437ef-2512-4b06-aea9-7456d0aed31b",
+    "task_id": "ffa5582c-259c-498a-81d4-c86652622d78",
+    "went_well": [
+      "completed step: Select open rows",
+      "completed step: Sum selected amounts"
+    ],
+    "went_poorly": [],
+    "lessons": [
+      "plan of 2 steps completed; method reusable"
+    ],
+    "execution_report": {
+      "status": "persisted_reported_local_execution_summary",
+      "external_outcomes_verified": false,
+      "final_task_state": "succeeded",
+      "local_action_count": 2,
+      "local_success_count": 2,
+      "local_failure_count": 0,
+      "tools": {
+        "csv_filter": {
+          "success_count": 1,
+          "failure_count": 0,
+          "succeeded_action_ids": [
+            "f15d9989-ae2e-4a5b-989c-46255eaaa658"
+          ],
+          "failed_action_ids": [],
+          "last_failure": null
+        },
+        "csv_summary": {
+          "success_count": 1,
+          "failure_count": 0,
+          "succeeded_action_ids": [
+            "a89c1ea7-a77a-4d1e-9be4-0bb255dcd275"
+          ],
+          "failed_action_ids": [],
+          "last_failure": null
+        }
+      },
+      "step_states": {
+        "succeeded": 2
+      }
+    },
+    "created_at": "2026-10-07T10:03:10.488066Z"
+  }
+}

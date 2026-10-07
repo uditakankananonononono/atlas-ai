@@ -1752,3 +1752,17 @@ def test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates(monk
     runtime._persist_context(task)
     assert len(repo.list_actions(task_id=task.id))==3
     assert runtime.dispatcher.records==[]
+
+
+def test_runtime_tool_catalog_exposes_actual_local_capabilities_and_schemas(mounted):
+    client,runtime,_,_=mounted
+    response=client.get('/api/modules/20/runtime/tools')
+    assert response.status_code==200
+    result=response.json()
+    assert result['status']=='registered_handlers_only'
+    tools={t['name']:t for t in result['tools']}
+    assert {'csv_filter','csv_summary','csv_reconcile'} <= set(tools)
+    assert tools['csv_summary']['parameters']['required']==['csv_text','value_column']
+    assert tools['csv_filter']['risk']=='read'
+    assert result['external_availability_verified'] is False
+    assert result['approval_granted'] is False

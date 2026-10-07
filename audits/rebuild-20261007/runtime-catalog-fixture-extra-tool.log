@@ -1,0 +1,33 @@
+........................................................................ [ 58%]
+...................................................F                     [100%]
+=================================== FAILURES ===================================
+___ test_runtime_tool_catalog_exposes_actual_local_capabilities_and_schemas ____
+
+mounted = (<starlette.testclient.TestClient object at 0x7f92f9b71070>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7f92f9aaf4a0>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7f92f9aae7e0>)
+
+    def test_runtime_tool_catalog_exposes_actual_local_capabilities_and_schemas(mounted):
+        client,runtime,_,_=mounted
+        response=client.get('/api/modules/20/runtime/tools')
+        assert response.status_code==200
+        result=response.json()
+        assert result['status']=='registered_handlers_only'
+        tools={t['name']:t for t in result['tools']}
+>       assert set(tools)=={'csv_filter','csv_summary','csv_reconcile'}
+E       AssertionError: assert {'csv_filter'... 'web_search'} == {'csv_filter'...'csv_summary'}
+E         
+E         Extra items in the left set:
+E         'web_search'
+E         Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:1764: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_tool_catalog_exposes_actual_local_capabilities_and_schemas
+1 failed, 123 passed, 1 warning in 7.16s
