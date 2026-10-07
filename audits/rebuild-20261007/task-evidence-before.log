@@ -1,0 +1,32 @@
+........................................................................ [ 80%]
+.................F                                                       [100%]
+=================================== FAILURES ===================================
+_ test_task_execution_evidence_readback_exposes_retained_records_after_restart _
+
+mounted = (<starlette.testclient.TestClient object at 0x7fc00adb8410>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7fc00b045400>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7fc00b044dd0>)
+
+    def test_task_execution_evidence_readback_exposes_retained_records_after_restart(mounted):
+        import asyncio
+        client, runtime, repo, _ = mounted
+        async def handler(args): return {'value': 42}
+        runtime.tools.register(ToolSpec(name='fixture', description='fixture', risk=Risk.READ), handler)
+        task = runtime.submit_goal('fixture', run_immediately=False)
+        action = asyncio.run(runtime.dispatcher.dispatch('fixture', {}, task_id=task.id))
+        runtime.loop._trace('act', 'retained fixture diagnostic', task_id=task.id)
+        runtime._persist_context(task)
+        path = f'/api/modules/20/runtime/tasks/{task.id}/evidence'
+        response = client.get(path, params={'limit': 1})
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_m20_runtime_depth.py:1383: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_task_execution_evidence_readback_exposes_retained_records_after_restart
+1 failed, 89 passed, 1 warning in 5.36s

@@ -30,7 +30,7 @@ from app.modules.m20_general_cognitive_worker.sandbox import (
 )
 from app.modules.m20_general_cognitive_worker.schemas import (
     ActionRecord, ChunkType, EpisodeOutcome, HTNMethod, MemoryChunk, PlanNode, Risk,
-    SemanticFact, Skill, SkillStatus, TaskContext, TaskState, ToolSpec,
+    SemanticFact, Skill, SkillStatus, TaskContext, TaskState, ToolSpec, TraceEntry,
 )
 from app.modules.m20_general_cognitive_worker.sql_repository import GCWRepository
 from app.modules.m20_general_cognitive_worker.tools import (
@@ -1367,3 +1367,45 @@ def test_task_schedule_failed_save_does_not_change_active_scheduler():
     assert runtime.get_task(task.id).importance == 2
     repo.save_task = original
     assert repo.load_task(task.id).importance == 2
+
+
+def test_task_execution_evidence_readback_exposes_retained_records_after_restart(mounted):
+    import asyncio
+    client, runtime, repo, _ = mounted
+    async def handler(args): return {'value': 42}
+    runtime.tools.register(ToolSpec(name='fixture', description='fixture', risk=Risk.READ), handler)
+    task = runtime.submit_goal('fixture', run_immediately=False)
+    action = asyncio.run(runtime.dispatcher.dispatch('fixture', {}, task_id=task.id))
+    runtime.loop._trace('act', 'retained fixture diagnostic', task_id=task.id)
+    runtime._persist_context(task)
+    path = f'/api/modules/20/runtime/tasks/{task.id}/evidence'
+    response = client.get(path, params={'limit': 1})
+    assert response.status_code == 200
+    data = response.json()
+    assert data['actions'][0]['id'] == action.id
+    assert data['traces'][0]['detail'] == 'retained fixture diagnostic'
+    assert data['external_outcomes_verified'] is False
+    assert data['action_count'] == 1 and data['trace_count'] == 1
+    restarted = make_runtime(hydrate_repo=repo)
+    assert restarted.task_evidence(task.id, limit=1)['actions'] == data['actions']
+    assert client.get(path, params={'limit': 101}).status_code == 422
+    assert client.get('/api/modules/20/runtime/tasks/missing/evidence').status_code == 404
+
+
+def test_task_evidence_db_bounded_latest_first_and_tenant_hidden():
+    from datetime import datetime, timedelta, timezone
+    engine = make_engine()
+    a = GCWRepository(engine, tenant_id='a'); a.create_schema()
+    b = GCWRepository(engine, tenant_id='b')
+    runtime = GCWRuntime(a)
+    task = runtime.submit_goal('fixture', run_immediately=False)
+    now = datetime.now(timezone.utc)
+    for i in range(3):
+        a.save_action(ActionRecord(tool='fixture', task_id=task.id, started_at=now + timedelta(seconds=i)))
+        a.save_trace(TraceEntry(task_id=task.id, phase='act', detail=str(i), created_at=now + timedelta(seconds=i)))
+    evidence = runtime.task_evidence(task.id, limit=2)
+    assert len(evidence['actions']) == len(evidence['traces']) == 2
+    assert evidence['action_count'] == evidence['trace_count'] == 3
+    assert evidence['actions_truncated'] and evidence['traces_truncated']
+    assert [t['detail'] for t in evidence['traces']] == ['2', '1']
+    with pytest.raises(KeyError): GCWRuntime(b).task_evidence(task.id)

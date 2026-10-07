@@ -249,6 +249,10 @@ class GCWRuntime:
         return {'chunk_id': identity, 'inserted': self.working_memory.get(identity) is not None,
                 'source_verified': False, 'replay_scope': 'retained_working_memory_only'}
 
+    def task_evidence(self, task_id, *, limit=50):
+        if self.repo.load_task(task_id) is None: raise KeyError(task_id)
+        return self.repo.task_evidence(task_id, limit=limit)
+
     def list_tasks(self) -> list[TaskContext]:
         return self.repo.list_tasks()
 

@@ -320,3 +320,14 @@ def update_task_schedule(task_id: str, request: TaskSchedulePatchRequest,
         raise HTTPException(404, 'task not found')
     except ValueError as exc:
         raise HTTPException(409 if str(exc).startswith('schedule conflict') else 422, str(exc))
+
+
+@router.get('/tasks/{task_id}/evidence')
+def task_execution_evidence(task_id: str, limit: int = 50,
+                            runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        return runtime.task_evidence(task_id, limit=limit)
+    except KeyError:
+        raise HTTPException(404, 'task not found')
+    except ValueError as exc:
+        raise HTTPException(422, str(exc))
