@@ -134,6 +134,13 @@ class DurableSkillLibrary(SkillLibrary):
         self.repo.save_skill(skill)
         return skill
 
+    def retire(self, name: str) -> bool:
+        retired = super().retire(name)
+        if retired:
+            for skill in self._skills.values():
+                self.repo.save_skill(skill)
+        return retired
+
     def propose_from_episodes(self, episodes, *, min_occurrences: int = 2) -> list[Skill]:
         proposals = super().propose_from_episodes(episodes, min_occurrences=min_occurrences)
         for skill in proposals:

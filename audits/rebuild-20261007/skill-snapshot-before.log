@@ -1,0 +1,37 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____ test_skill_snapshots_cannot_mutate_internal_steps_status_or_evidence _____
+
+    def test_skill_snapshots_cannot_mutate_internal_steps_status_or_evidence():
+     library=DurableSkillLibrary(fresh_repo())
+     original=Skill(name='fixture',goal_pattern='fixture',steps=[ActionRecord(tool='fixture',arguments={'n':[2]})],evidence={'ids':['a']})
+     view=library.register(original)
+     original.steps[0].arguments['n'].append(9);view.status=SkillStatus.RETIRED
+>    for read in (library.find_by_name('fixture'),library.match('fixture')[0],library.list()[0],library.activate(view.id)):
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    IndexError: list index out of range
+
+tests/modules/test_m20_runtime_depth.py:885: IndexError
+________________ test_skill_retirement_persists_across_restart _________________
+
+    def test_skill_retirement_persists_across_restart():
+     repo=fresh_repo();library=DurableSkillLibrary(repo)
+     library.register(Skill(name='fixture',goal_pattern='fixture'))
+     assert library.retire('fixture')
+     restarted=DurableSkillLibrary.load(repo)
+>    assert restarted.find_by_name('fixture') is None and restarted.list()[0].status==SkillStatus.RETIRED
+E    AssertionError: assert (Skill(id='53f71516-152f-477e-a35d-d09b64edd328', name='fixture', goal_pattern='fixture', steps=[], version=1, status=<SkillStatus.ACTIVE: 'active'>, evidence={}, created_at=datetime.datetime(2026, 10, 7, 2, 0, 9, 446021, tzinfo=TzInfo(0))) is None)
+E     +  where Skill(id='53f71516-152f-477e-a35d-d09b64edd328', name='fixture', goal_pattern='fixture', steps=[], version=1, status=<SkillStatus.ACTIVE: 'active'>, evidence={}, created_at=datetime.datetime(2026, 10, 7, 2, 0, 9, 446021, tzinfo=TzInfo(0))) = find_by_name('fixture')
+E     +    where find_by_name = <app.modules.m20_general_cognitive_worker.persistence.DurableSkillLibrary object at 0x7f64facb14c0>.find_by_name
+
+tests/modules/test_m20_runtime_depth.py:897: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_skill_snapshots_cannot_mutate_internal_steps_status_or_evidence
+FAILED tests/modules/test_m20_runtime_depth.py::test_skill_retirement_persists_across_restart
+2 failed, 49 deselected, 1 warning in 1.42s

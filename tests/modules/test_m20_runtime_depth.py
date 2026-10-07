@@ -875,3 +875,23 @@ def test_retrospective_restart_preserves_identity_time_and_detached_views():
  assert runtime.retrospectives.lessons_for('fixture')[0][0].lessons==['fixture lesson']
  restored=make_runtime(hydrate_repo=repo).retrospectives.lessons_for('fixture')[0][0]
  assert restored.id==original.id and restored.created_at==original.created_at and restored.lessons==original.lessons
+
+
+def test_skill_snapshots_cannot_mutate_internal_steps_status_or_evidence():
+ library=DurableSkillLibrary(fresh_repo())
+ original=Skill(name='fixture',goal_pattern='fixture',steps=[ActionRecord(tool='fixture',arguments={'n':[2]})],evidence={'ids':['a']})
+ view=library.register(original)
+ original.steps[0].arguments['n'].append(9);view.status=SkillStatus.RETIRED
+ for read in (library.find_by_name('fixture'),library.match('fixture')[0],library.list()[0],library.activate(view.id)):
+  read.steps[0].arguments['n'].append(8);read.evidence['ids'].append('bad')
+ stored=library.find_by_name('fixture')
+ assert stored.steps[0].arguments=={'n':[2]} and stored.evidence=={'ids':['a']}
+ assert stored.status==SkillStatus.ACTIVE
+
+
+def test_skill_retirement_persists_across_restart():
+ repo=fresh_repo();library=DurableSkillLibrary(repo)
+ library.register(Skill(name='fixture',goal_pattern='fixture'))
+ assert library.retire('fixture')
+ restarted=DurableSkillLibrary.load(repo)
+ assert restarted.find_by_name('fixture') is None and restarted.list()[0].status==SkillStatus.RETIRED
