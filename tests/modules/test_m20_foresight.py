@@ -520,3 +520,30 @@ def test_bayesian_sequence_retains_evidence_after_display_probability_rounds_to_
 def test_bayesian_empty_sequence_still_validates_initial_prior():
     with pytest.raises(ValueError):
         BayesianUpdater.sequence(float('nan'), [])
+
+
+@pytest.mark.parametrize('strength', [0, -1, float('nan'), float('inf'), True, '5'])
+def test_base_rate_strength_requires_positive_finite_numeric(strength):
+    with pytest.raises(ValueError):
+        BaseRateIntegrator(sample_strength=strength)
+
+
+@pytest.mark.parametrize('size', [-1, 0.5, True, '5'])
+def test_base_rate_sample_size_requires_nonnegative_integer(size):
+    with pytest.raises(ValueError):
+        BaseRateIntegrator().integrate(base_rate=0.2, case_estimate=0.8, sample_size=size)
+
+
+def test_base_rate_bool_probability_rejected_and_extreme_strength_stable():
+    with pytest.raises(ValueError):
+        BaseRateIntegrator().integrate(base_rate=True, case_estimate=0.8)
+    result = BaseRateIntegrator(sample_strength=1e308).integrate(
+        base_rate=0.2, case_estimate=0.8, evidence_reliability=1, sample_size=10**308)
+    assert result.weight_on_case == pytest.approx(0.5)
+    assert result.adjusted == pytest.approx(0.5)
+
+
+def test_base_rate_finite_denominator_overflow_keeps_sample_share():
+    result = BaseRateIntegrator(sample_strength=1e308).integrate(
+        base_rate=0.2, case_estimate=0.8, evidence_reliability=1, sample_size=10**308)
+    assert result.weight_on_case == pytest.approx(0.5)

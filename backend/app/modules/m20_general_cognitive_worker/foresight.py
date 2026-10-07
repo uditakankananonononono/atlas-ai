@@ -412,15 +412,25 @@ class BaseRateIntegrator:
     evidence lands near the base rate and strong evidence near the case."""
 
     def __init__(self, *, sample_strength: float = 5.0) -> None:
+        if type(sample_strength) not in (int, float) or not math.isfinite(sample_strength) or sample_strength <= 0:
+            raise ValueError("sample strength must be positive finite numeric, not bool")
         self.sample_strength = sample_strength
 
     def integrate(self, *, base_rate: float, case_estimate: float,
                   evidence_reliability: float = 0.5, sample_size: int = 0) -> BaseRateEstimate:
         for name, v in (("base_rate", base_rate), ("case_estimate", case_estimate),
                         ("evidence_reliability", evidence_reliability)):
-            if not 0.0 <= v <= 1.0:
-                raise ValueError(f"{name} must be in [0, 1]")
-        n_factor = sample_size / (sample_size + self.sample_strength) if sample_size > 0 else 0.0
+            if type(v) not in (int, float) or not math.isfinite(v) or not 0.0 <= v <= 1.0:
+                raise ValueError(f"{name} must be finite numeric in [0,1], not bool")
+        if type(sample_size) is not int or not 0 <= sample_size <= 10**308:
+            raise ValueError("sample_size must be integer in0..10**308, not bool")
+        if sample_size == 0:
+            n_factor = 0.0
+        elif sample_size >= self.sample_strength:
+            n_factor = 1.0 / (1.0 + self.sample_strength / sample_size)
+        else:
+            ratio = sample_size / self.sample_strength
+            n_factor = ratio / (1.0 + ratio)
         w = evidence_reliability * max(n_factor, 0.1)
         adjusted = w * case_estimate + (1.0 - w) * base_rate
         return BaseRateEstimate(
@@ -429,7 +439,8 @@ class BaseRateIntegrator:
             explanation=(f"Case estimate weighted {w:.0%}; base rate weighted {1 - w:.0%}. "
                          "Weak or thin evidence stays near the base rate."),
             assumptions=["The supplied base rate comes from a relevant reference class",
-                          "evidence_reliability and sample_size were caller-supplied"],
+                          "evidence_reliability and sample_size were caller-supplied",
+                          "Heuristic blend; minimum sample factor0.1 even with zero samples, not fitted calibration"],
         )
 
 
