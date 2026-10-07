@@ -1,0 +1,87 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_____ test_nonlinear_selection_compares_all_candidates_on_original_y_scale _____
+
+    def test_nonlinear_selection_compares_all_candidates_on_original_y_scale():
+     model=NonLinearModeler();xs=[1,2,3,4,5];ys=[1,2,3,4,12]
+     out=model.classify(xs=xs,ys=ys)
+>    assert out['selection_metric']=='original_y_r_squared'
+            ^^^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'selection_metric'
+
+tests/modules/test_m20_strategy.py:495: KeyError
+______ test_nonlinear_rejects_degenerate_nonfinite_or_bool_data[xs0-ys0] _______
+
+xs = [1, 1, 1], ys = [2, 3, 4]
+
+    @pytest.mark.parametrize('xs,ys',[
+     ([1,1,1],[2,3,4]),([1,2,float('nan')],[2,3,4]),([1,2,3],[2,3,float('inf')]),([True,2,3],[2,3,4])
+    ])
+    def test_nonlinear_rejects_degenerate_nonfinite_or_bool_data(xs,ys):
+>    with pytest.raises(ValueError):NonLinearModeler().classify(xs=xs,ys=ys)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:504: Failed
+______ test_nonlinear_rejects_degenerate_nonfinite_or_bool_data[xs1-ys1] _______
+
+xs = [1, 2, nan], ys = [2, 3, 4]
+
+    @pytest.mark.parametrize('xs,ys',[
+     ([1,1,1],[2,3,4]),([1,2,float('nan')],[2,3,4]),([1,2,3],[2,3,float('inf')]),([True,2,3],[2,3,4])
+    ])
+    def test_nonlinear_rejects_degenerate_nonfinite_or_bool_data(xs,ys):
+>    with pytest.raises(ValueError):NonLinearModeler().classify(xs=xs,ys=ys)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:504: Failed
+______ test_nonlinear_rejects_degenerate_nonfinite_or_bool_data[xs2-ys2] _______
+
+xs = [1, 2, 3], ys = [2, 3, inf]
+
+    @pytest.mark.parametrize('xs,ys',[
+     ([1,1,1],[2,3,4]),([1,2,float('nan')],[2,3,4]),([1,2,3],[2,3,float('inf')]),([True,2,3],[2,3,4])
+    ])
+    def test_nonlinear_rejects_degenerate_nonfinite_or_bool_data(xs,ys):
+>    with pytest.raises(ValueError):NonLinearModeler().classify(xs=xs,ys=ys)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:504: Failed
+______ test_nonlinear_rejects_degenerate_nonfinite_or_bool_data[xs3-ys3] _______
+
+xs = [True, 2, 3], ys = [2, 3, 4]
+
+    @pytest.mark.parametrize('xs,ys',[
+     ([1,1,1],[2,3,4]),([1,2,float('nan')],[2,3,4]),([1,2,3],[2,3,float('inf')]),([True,2,3],[2,3,4])
+    ])
+    def test_nonlinear_rejects_degenerate_nonfinite_or_bool_data(xs,ys):
+>    with pytest.raises(ValueError):NonLinearModeler().classify(xs=xs,ys=ys)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:504: Failed
+___________ test_nonlinear_large_finite_exact_line_remains_json_safe ___________
+
+    def test_nonlinear_large_finite_exact_line_remains_json_safe():
+     import json
+     out=NonLinearModeler().classify(xs=[1e150,2e150,3e150,4e150],ys=[2e150,4e150,6e150,8e150])
+>    assert out['best_fit']=='linear' and out['r_squared']==pytest.approx(1)
+E    AssertionError: assert ('linear' == 'linear'
+E      
+E        linear and nan == 1 ± 1.0e-06
+E      
+E      comparison failed
+E      Obtained: nan
+E      Expected: 1 ± 1.0e-06)
+
+tests/modules/test_m20_strategy.py:510: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy.py::test_nonlinear_selection_compares_all_candidates_on_original_y_scale
+FAILED tests/modules/test_m20_strategy.py::test_nonlinear_rejects_degenerate_nonfinite_or_bool_data[xs0-ys0]
+FAILED tests/modules/test_m20_strategy.py::test_nonlinear_rejects_degenerate_nonfinite_or_bool_data[xs1-ys1]
+FAILED tests/modules/test_m20_strategy.py::test_nonlinear_rejects_degenerate_nonfinite_or_bool_data[xs2-ys2]
+FAILED tests/modules/test_m20_strategy.py::test_nonlinear_rejects_degenerate_nonfinite_or_bool_data[xs3-ys3]
+FAILED tests/modules/test_m20_strategy.py::test_nonlinear_large_finite_exact_line_remains_json_safe
+6 failed, 42 deselected in 1.41s
