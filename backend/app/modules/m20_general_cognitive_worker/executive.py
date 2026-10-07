@@ -93,6 +93,8 @@ class MCTSRuminator:
     """
 
     def __init__(self, simulations: int = 32, seed: int | None = None) -> None:
+        if type(simulations) is not int or not 1 <= simulations <= 10000:
+            raise ValueError("simulations must be integer1..10000")
         self.simulations = simulations
         self.random = random.Random(seed)
 
@@ -114,8 +116,10 @@ class MCTSRuminator:
         if not any(n.state == TaskState.PENDING for n in plan):
             return {"simulations": 0, "best_ordering": [], "expected_success": None, "status":"random_ordering_heuristic_only", "predictive_model_available":False}
         best_order: list[str] = []
-        best_score = -1.0
+        best_score = -math.inf
+        attempts = 0
         for _ in range(self.simulations):
+            attempts += 1
             ordering = self._orderings(plan)
             if not ordering:
                 break
@@ -129,11 +133,11 @@ class MCTSRuminator:
             if score > best_score:
                 best_score = score
                 best_order = [n.title for n in ordering]
-        expected = math.exp(best_score) if best_score < 0 else 1.0
+        expected = math.exp(best_score) if best_order else None
         return {
-            "simulations": self.simulations,
+            "simulations": attempts,
             "best_ordering": best_order,
-            "expected_success": None, "heuristic_order_score": round(expected, 4),
+            "expected_success": None, "heuristic_order_score": round(expected, 4) if expected is not None else None,
             "status":"random_ordering_heuristic_only", "predictive_model_available":False,
         }
 

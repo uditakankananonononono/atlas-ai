@@ -206,3 +206,17 @@ def test_scheduler_deadline_selection_uses_one_clock_snapshot(monkeypatch):
     monkeypatch.setattr(module, "datetime", TickingClock)
     assert scheduler.next_context().id == context.id
     assert TickingClock.calls == 1
+
+
+def test_legacy_rumination_retains_low_scoring_long_order():
+    plan = [PlanNode(title=str(i), risk=Risk.IRREVERSIBLE) for i in range(5)]
+    result = MCTSRuminator(simulations=3, seed=1).ruminate(plan)
+    assert len(result["best_ordering"]) == 5
+    assert result["simulations"] == 3
+
+
+def test_legacy_rumination_blocked_counts_actual_attempts():
+    plan = [PlanNode(title="blocked", depends_on=["missing"])]
+    result = MCTSRuminator(simulations=16).ruminate(plan)
+    assert result["simulations"] == 1
+    assert result["heuristic_order_score"] is None

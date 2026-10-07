@@ -1,0 +1,25 @@
+............................FF                                           [100%]
+=================================== FAILURES ===================================
+____________ test_legacy_rumination_retains_low_scoring_long_order _____________
+
+    def test_legacy_rumination_retains_low_scoring_long_order():
+        plan = [PlanNode(title=str(i), risk=Risk.IRREVERSIBLE) for i in range(5)]
+        result = MCTSRuminator(simulations=3, seed=1).ruminate(plan)
+>       assert len(result["best_ordering"]) == 5
+E       assert 0 == 5
+E        +  where 0 = len([])
+
+tests/modules/test_m20_planner_scheduler.py:214: AssertionError
+____________ test_legacy_rumination_blocked_counts_actual_attempts _____________
+
+    def test_legacy_rumination_blocked_counts_actual_attempts():
+        plan = [PlanNode(title="blocked", depends_on=["missing"])]
+        result = MCTSRuminator(simulations=16).ruminate(plan)
+>       assert result["simulations"] == 1
+E       assert 16 == 1
+
+tests/modules/test_m20_planner_scheduler.py:221: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_planner_scheduler.py::test_legacy_rumination_retains_low_scoring_long_order
+FAILED tests/modules/test_m20_planner_scheduler.py::test_legacy_rumination_blocked_counts_actual_attempts
+2 failed, 28 passed in 1.40s
