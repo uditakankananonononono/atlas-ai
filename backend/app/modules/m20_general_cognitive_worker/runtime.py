@@ -364,7 +364,7 @@ class GCWRuntime:
         failures = [t for t in traces if "failed" in t.detail or "error" in t.detail]
         blocked = [t for t in traces if "blocked" in t.detail or "gated" in t.detail]
         succeeded_steps = [n for n in context.plan if n.state == TaskState.SUCCEEDED]
-        went_well = [f"completed step: {n.title}" for n in succeeded_steps] or ["goal accepted"]
+        went_well = [f"completed step: {n.title}" for n in succeeded_steps]
         went_poorly = [t.detail[:160] for t in failures] or []
         lessons: list[str] = []
         if failures:
@@ -377,9 +377,6 @@ class GCWRuntime:
             claim_id = node.arguments.pop("_expectation_claim_id", None)
             if claim_id and claim_id in self.calibration.claims:
                 self.calibration.resolve(claim_id, node.state == TaskState.SUCCEEDED)
-        retro = self.retrospectives.write(
-            task_id, went_well=went_well, went_poorly=went_poorly, lessons=lessons,
-        )
         if context.state in (TaskState.PENDING, TaskState.PLANNING, TaskState.RUNNING,
                               TaskState.RUMINATING, TaskState.WAITING_APPROVAL, TaskState.WAITING_USER):
             context.state = TaskState.CANCELLED
@@ -387,6 +384,40 @@ class GCWRuntime:
                 if node.state not in (TaskState.SUCCEEDED, TaskState.FAILED, TaskState.CANCELLED):
                     node.state = TaskState.CANCELLED
                     node.approval_id = None
+        actions = self.repo.list_actions(task_id=task_id)
+        tools = {}
+        for action in actions:
+            entry = tools.setdefault(action.tool, {
+                "success_count": 0, "failure_count": 0,
+                "succeeded_action_ids": [], "failed_action_ids": [], "last_failure": None,
+            })
+            if action.succeeded:
+                entry["success_count"] += 1
+                entry["succeeded_action_ids"].append(action.id)
+            else:
+                entry["failure_count"] += 1
+                entry["failed_action_ids"].append(action.id)
+                entry["last_failure"] = action.result_summary
+                diagnostic = f"local tool {action.tool} failed ({action.id}): {action.result_summary}"
+                if diagnostic not in went_poorly:
+                    went_poorly.append(diagnostic)
+        if any(not action.succeeded for action in actions) and not failures:
+            lessons.append("investigate failing tools before re-planning the same step shape")
+        report = {
+            "status": "persisted_reported_local_execution_summary",
+            "external_outcomes_verified": False,
+            "final_task_state": context.state.value,
+            "local_action_count": len(actions),
+            "local_success_count": sum(action.succeeded for action in actions),
+            "local_failure_count": sum(not action.succeeded for action in actions),
+            "tools": tools,
+            "step_states": {state.value: sum(node.state == state for node in context.plan)
+                            for state in TaskState if any(node.state == state for node in context.plan)},
+        }
+        retro = self.retrospectives.write(
+            task_id, went_well=went_well, went_poorly=went_poorly, lessons=lessons,
+            execution_report=report,
+        )
         self.working_memory.clear_partition(task_id)
         self.scheduler.remove(task_id)
         self._persist_context(context)

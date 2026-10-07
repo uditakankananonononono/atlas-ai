@@ -201,10 +201,12 @@ class RetrospectiveEngine:
         went_well: list[str],
         went_poorly: list[str],
         lessons: list[str],
+        execution_report: dict[str, Any] | None = None,
     ) -> Retrospective:
         retro = Retrospective(
             task_id=task_id, went_well=went_well,
             went_poorly=went_poorly, lessons=lessons,
+            execution_report=execution_report or {},
         )
         return self._store_snapshot(retro)
 

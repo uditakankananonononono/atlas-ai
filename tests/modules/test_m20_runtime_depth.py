@@ -1193,3 +1193,37 @@ def test_tool_history_actual_local_handlers_persisted_across_engine_reopen(tmp_p
         assert candidate['historical_success'] == 0.6
     assert calls == [False, False, True]
     reopened_engine.dispose()
+
+
+def test_retrospective_reports_actual_action_evidence_not_trace_keywords():
+    import asyncio
+    runtime, repo = make_runtime()
+    async def handler(args):
+        if args['fail']:
+            raise RuntimeError('retained diagnostic')
+        return {'value': 'error is a valid data label'}
+    runtime.tools.register(ToolSpec(name='fixture_report', description='fixture',
+                                   max_retries=1, risk=Risk.READ), handler)
+    task = TaskContext(goal='fixture')
+    for failed in (False, True):
+        asyncio.run(runtime.dispatcher.dispatch('fixture_report', {'fail': failed}, task_id=task.id))
+    runtime._persist_context(task)
+    report = runtime.close(task.id)['retrospective']['execution_report']
+    assert report['final_task_state'] == 'cancelled'
+    assert report['local_action_count'] == 2
+    assert report['local_success_count'] == 1
+    assert report['local_failure_count'] == 1
+    assert report['external_outcomes_verified'] is False
+    assert report['tools']['fixture_report']['failed_action_ids'] == [repo.list_actions(task_id=task.id)[1].id]
+    assert report['tools']['fixture_report']['last_failure'] == 'failed after 1 attempt(s): retained diagnostic'
+    assert runtime.close(task.id)['retrospective']['execution_report'] == report
+    assert make_runtime(hydrate_repo=repo).close(task.id)['retrospective']['execution_report'] == report
+
+
+def test_retrospective_empty_cancelled_task_does_not_claim_goal_went_well():
+    runtime, _ = make_runtime()
+    task = TaskContext(goal='not executed')
+    runtime._persist_context(task)
+    retro = runtime.close(task.id)['retrospective']
+    assert retro['went_well'] == []
+    assert retro['execution_report']['local_action_count'] == 0

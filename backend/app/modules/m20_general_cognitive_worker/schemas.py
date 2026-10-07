@@ -277,6 +277,7 @@ class Retrospective(BaseModel):
     went_well: list[str] = Field(default_factory=list)
     went_poorly: list[str] = Field(default_factory=list)
     lessons: list[str] = Field(default_factory=list)
+    execution_report: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=utcnow)
 
 

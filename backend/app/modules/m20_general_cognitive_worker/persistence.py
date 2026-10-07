@@ -163,8 +163,8 @@ class DurableRetrospectiveEngine(RetrospectiveEngine):
         super().__init__(embedder=embedder)
         self.repo = repo
 
-    def write(self, task_id: str, *, went_well, went_poorly, lessons) -> Retrospective:
-        retro = super().write(task_id, went_well=went_well, went_poorly=went_poorly, lessons=lessons)
+    def write(self, task_id: str, *, went_well, went_poorly, lessons, execution_report=None) -> Retrospective:
+        retro = super().write(task_id, went_well=went_well, went_poorly=went_poorly, lessons=lessons, execution_report=execution_report)
         self.repo.save_retrospective(retro)
         return retro
 
