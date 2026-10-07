@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from math import exp
+from math import exp, isfinite
 from .models import ModelCapability, RouteRequest
 
 class NoEligibleModel(RuntimeError): pass
@@ -12,6 +12,9 @@ class RouteDecision:
     scores: dict[str, float]
     reasons: dict[str, list[str]]
 
+def _positive_finite_latency(value) -> bool:
+    return type(value) in (int,float) and 0 < value <= 2**63-1 and (type(value) is int or isfinite(value))
+
 class ModelRouter:
     """Pluggable deterministic router. Replace score() with an ML policy without changing callers."""
     def __init__(self, catalog: list[ModelCapability]): self.catalog = catalog
@@ -22,7 +25,7 @@ class ModelRouter:
         estimated=(req.output_tokens/1000)*m.cents_per_1k_tokens
         if m.max_output_tokens < req.output_tokens: return float("-inf"), ["output limit"]
         if estimated > req.budget_cents: return float("-inf"), ["budget"]
-        if req.latency_tolerance_ms <= 0 or m.p95_latency_ms <= 0: return float("-inf"), ["invalid latency estimate or tolerance"]
+        if not _positive_finite_latency(req.latency_tolerance_ms) or not _positive_finite_latency(m.p95_latency_ms): return float("-inf"), ["invalid latency estimate or tolerance"]
         if m.p95_latency_ms > req.latency_tolerance_ms: return float("-inf"), ["latency estimate exceeds tolerance"]
         latency_fit=min(1.0, req.latency_tolerance_ms/max(1,m.p95_latency_ms))
         cost_fit=max(0.0, 1-estimated/max(.01, req.budget_cents))
