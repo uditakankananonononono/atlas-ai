@@ -593,3 +593,18 @@ def test_concurrent_recovery_claim_has_one_model_approval_and_draft(tmp_path,mon
   assert sum(pool.map(lambda _:asyncio.run(svc.recover_draft_pipeline('a')),[1,2]))==1
  assert calls==['draft'] and len(approvals.items)==1 and len(repo.list_drafts())==1
  asyncio.run(client.aclose())
+
+
+def test_new_unresolved_claim_during_ingest_prevents_end_checkpoint(tmp_path,monkeypatch):
+ from app.modules.m10_email_assistant.service import DraftPipelineUnresolvedError
+ svc,repo,approvals,client=make_service(tmp_path,gmail=FakeGmailClient(history={'100':[]}))
+ repo.save_account(account_id='a',email_address='a@example.com',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ checks=[]
+ def unresolved(aid):
+  checks.append(aid)
+  return [] if len(checks)==1 else [{'message_id':'fixture-other-worker','phase':'model_inflight'}]
+ monkeypatch.setattr(repo,'unresolved_draft_work',unresolved)
+ with pytest.raises(DraftPipelineUnresolvedError,match='no checkpoint advance'):
+  asyncio.run(svc.ingest_from_history('a@example.com','101'))
+ assert len(checks)==2 and repo.get_account_by_email('a@example.com').history_id=='100'
+ asyncio.run(client.aclose())
