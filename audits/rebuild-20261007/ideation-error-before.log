@@ -1,0 +1,41 @@
+..................F                                                      [100%]
+=================================== FAILURES ===================================
+__ test_model_ideation_distinguishes_invalid_output_from_provider_unavailable __
+
+    def test_model_ideation_distinguishes_invalid_output_from_provider_unavailable():
+        import pytest
+        from app.modules.m20_general_cognitive_worker.reflection import ModelIdeationEngine
+        class Model:
+            def complete(self, purpose, payload):
+                return {'available': False, 'failure_kind': 'invalid_output', 'error': 'executive model returned invalid JSON'}
+        with pytest.raises(ValueError, match='invalid JSON'):
+>           ModelIdeationEngine(Model()).generate('fixture', count=1)
+
+tests/modules/test_m20_reflection.py:237: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.reflection.ModelIdeationEngine object at 0x7f97cb260440>
+objective = 'fixture', constraints = [], count = 1
+
+    def generate(self, objective: str, *, constraints: list[str] | None = None, count: int = 5):
+        import copy
+        if not isinstance(objective, str) or not objective.strip() or len(objective) > 2000:
+            raise ValueError("objective must be nonempty text up to2000characters")
+        if type(count) is not int or not 1 <= count <= 10:
+            raise ValueError("count must be integer1..10")
+        constraints = [] if constraints is None else constraints
+        if not isinstance(constraints, list) or len(constraints) > 20 or any(not isinstance(c, str) or not c.strip() or len(c) > 200 for c in constraints) or len(set(constraints)) != len(constraints):
+            raise ValueError("need up to20unique nonempty constraint strings, each up to200characters")
+        if self.model is None:
+            raise RuntimeError("ideation model not configured; no template fallback")
+        response = self.model.complete("ideate", {"objective": objective, "constraints": list(constraints), "count": count})
+        if not isinstance(response, dict):
+            raise ValueError("ideation model must return an object")
+        if response.get("available") is False:
+>           raise RuntimeError("ideation model unavailable; no template fallback")
+E           RuntimeError: ideation model unavailable; no template fallback
+
+backend/app/modules/m20_general_cognitive_worker/reflection.py:160: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reflection.py::test_model_ideation_distinguishes_invalid_output_from_provider_unavailable
+1 failed, 18 passed in 1.41s

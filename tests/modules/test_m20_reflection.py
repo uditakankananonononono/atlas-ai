@@ -225,3 +225,13 @@ def test_model_ideation_rejects_duplicate_candidates_and_missing_constraints():
         ModelIdeationEngine(Model()).generate('fixture', count=2)
     with pytest.raises(ValueError, match='every supplied constraint'):
         ModelIdeationEngine(Model()).generate('fixture', count=1, constraints=['zero cash'])
+
+
+def test_model_ideation_distinguishes_invalid_output_from_provider_unavailable():
+    import pytest
+    from app.modules.m20_general_cognitive_worker.reflection import ModelIdeationEngine
+    class Model:
+        def complete(self, purpose, payload):
+            return {'available': False, 'failure_kind': 'invalid_output', 'error': 'executive model returned invalid JSON'}
+    with pytest.raises(ValueError, match='invalid JSON'):
+        ModelIdeationEngine(Model()).generate('fixture', count=1)
