@@ -1,0 +1,95 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+________ test_geometric_growth_ignores_zero_probability_zero_multiplier ________
+
+    def test_geometric_growth_ignores_zero_probability_zero_multiplier():
+     out=ErgodicityAnalyzer().analyze(outcomes=[(1,2),(0,0)])
+>    assert out['ensemble_average']==2 and out['time_average_growth']==2
+E    assert (2.0 == 2 and 0.0 == 2)
+
+tests/modules/test_m20_strategy.py:475: AssertionError
+_ test_positive_probability_zero_multiplier_reports_json_safe_extinction_limit _
+
+    def test_positive_probability_zero_multiplier_reports_json_safe_extinction_limit():
+     import json
+     out=ErgodicityAnalyzer().analyze(outcomes=[(.5,2),(.5,0)])
+>    assert out['time_average_growth']==0 and out['log_growth_rate'] is None
+E    assert (0.0 == 0 and -inf is None)
+
+tests/modules/test_m20_strategy.py:482: AssertionError
+______ test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes0] ______
+
+outcomes = [(1, -1)]
+
+    @pytest.mark.parametrize('outcomes',[[(1,-1)],[(1,float('nan'))],[(1,float('inf'))],[(True,2)],[(1,True)],[(1e-320,1e308)]])
+    def test_growth_operator_rejects_invalid_or_unstable_inputs(outcomes):
+>    with pytest.raises(ValueError):ErgodicityAnalyzer().analyze(outcomes=outcomes)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:489: Failed
+______ test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes1] ______
+
+outcomes = [(1, nan)]
+
+    @pytest.mark.parametrize('outcomes',[[(1,-1)],[(1,float('nan'))],[(1,float('inf'))],[(True,2)],[(1,True)],[(1e-320,1e308)]])
+    def test_growth_operator_rejects_invalid_or_unstable_inputs(outcomes):
+>    with pytest.raises(ValueError):ErgodicityAnalyzer().analyze(outcomes=outcomes)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:489: Failed
+______ test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes2] ______
+
+outcomes = [(1, inf)]
+
+    @pytest.mark.parametrize('outcomes',[[(1,-1)],[(1,float('nan'))],[(1,float('inf'))],[(True,2)],[(1,True)],[(1e-320,1e308)]])
+    def test_growth_operator_rejects_invalid_or_unstable_inputs(outcomes):
+>    with pytest.raises(ValueError):ErgodicityAnalyzer().analyze(outcomes=outcomes)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:489: Failed
+______ test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes3] ______
+
+outcomes = [(True, 2)]
+
+    @pytest.mark.parametrize('outcomes',[[(1,-1)],[(1,float('nan'))],[(1,float('inf'))],[(True,2)],[(1,True)],[(1e-320,1e308)]])
+    def test_growth_operator_rejects_invalid_or_unstable_inputs(outcomes):
+>    with pytest.raises(ValueError):ErgodicityAnalyzer().analyze(outcomes=outcomes)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:489: Failed
+______ test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes4] ______
+
+outcomes = [(1, True)]
+
+    @pytest.mark.parametrize('outcomes',[[(1,-1)],[(1,float('nan'))],[(1,float('inf'))],[(True,2)],[(1,True)],[(1e-320,1e308)]])
+    def test_growth_operator_rejects_invalid_or_unstable_inputs(outcomes):
+>    with pytest.raises(ValueError):ErgodicityAnalyzer().analyze(outcomes=outcomes)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:489: Failed
+______ test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes5] ______
+
+outcomes = [(1e-320, 1e+308)]
+
+    @pytest.mark.parametrize('outcomes',[[(1,-1)],[(1,float('nan'))],[(1,float('inf'))],[(True,2)],[(1,True)],[(1e-320,1e308)]])
+    def test_growth_operator_rejects_invalid_or_unstable_inputs(outcomes):
+>    with pytest.raises(ValueError):ErgodicityAnalyzer().analyze(outcomes=outcomes)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_strategy.py:489: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_strategy.py::test_geometric_growth_ignores_zero_probability_zero_multiplier
+FAILED tests/modules/test_m20_strategy.py::test_positive_probability_zero_multiplier_reports_json_safe_extinction_limit
+FAILED tests/modules/test_m20_strategy.py::test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes0]
+FAILED tests/modules/test_m20_strategy.py::test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes1]
+FAILED tests/modules/test_m20_strategy.py::test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes2]
+FAILED tests/modules/test_m20_strategy.py::test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes3]
+FAILED tests/modules/test_m20_strategy.py::test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes4]
+FAILED tests/modules/test_m20_strategy.py::test_growth_operator_rejects_invalid_or_unstable_inputs[outcomes5]
+8 failed, 34 deselected in 1.51s

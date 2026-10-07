@@ -21,7 +21,7 @@ def test_row60_ergodicity_time_vs_ensemble():
     assert out["ensemble_average"] == pytest.approx(1.05)   # looks attractive
     assert out["time_average_growth"] == pytest.approx(math.sqrt(0.9))  # < 1: ruins you
     assert not out["ergodic"]
-    assert "ruins you" in out["verdict"]
+    assert "geometric growth is below1" in out["verdict"]
     flat = ErgodicityAnalyzer().analyze(outcomes=[(0.5, 1.3), (0.5, 0.75)])
     assert flat["ensemble_average"] > 1.0 > flat["time_average_growth"]
     with pytest.raises(ValueError):
@@ -468,3 +468,22 @@ def test_vcg_declared_bounds_and_empty_item_reports():
  with pytest.raises(ValueError):MechanismDesigner().vcg(agents={'a':{1:2,'x':3}})
  out=MechanismDesigner().vcg(agents={'a':{},'b':{}})
  assert out['allocation']=={} and out['total_welfare']==0 and out['payments']=={'a':0,'b':0}
+
+
+def test_geometric_growth_ignores_zero_probability_zero_multiplier():
+ out=ErgodicityAnalyzer().analyze(outcomes=[(1,2),(0,0)])
+ assert out['ensemble_average']==2 and out['time_average_growth']==2
+ assert out['log_growth_rate']==pytest.approx(math.log(2))
+
+
+def test_positive_probability_zero_multiplier_reports_json_safe_extinction_limit():
+ import json
+ out=ErgodicityAnalyzer().analyze(outcomes=[(.5,2),(.5,0)])
+ assert out['time_average_growth']==0 and out['log_growth_rate'] is None
+ assert out['log_growth_status']=='negative_infinity_positive_probability_zero_multiplier'
+ json.dumps(out,allow_nan=False)
+
+
+@pytest.mark.parametrize('outcomes',[[(1,-1)],[(1,float('nan'))],[(1,float('inf'))],[(True,2)],[(1,True)],[(1e-320,1e308)]])
+def test_growth_operator_rejects_invalid_or_unstable_inputs(outcomes):
+ with pytest.raises(ValueError):ErgodicityAnalyzer().analyze(outcomes=outcomes)

@@ -39,29 +39,34 @@ class ErgodicityAnalyzer:
     def analyze(self, *, outcomes: list[tuple[float, float]]) -> dict[str, Any]:
         if not outcomes:
             raise ValueError("outcomes required")
-        total_p = sum(p for p, _ in outcomes)
-        if not 0.0 < total_p <= 1.0 + 1e-9 or any(p < 0 for p, _ in outcomes):
-            raise ValueError("invalid probabilities")
-        ensemble = sum(p * m for p, m in outcomes) / total_p
-        if any(m <= 0 for _, m in outcomes):
-            time_avg = 0.0
-            log_growth = -math.inf
+        if any(type(value) not in (int, float) or not math.isfinite(value) for pair in outcomes for value in pair):
+            raise ValueError("finite numeric probabilities/multipliers required")
+        if any(p < 0 or multiplier < 0 for p, multiplier in outcomes):
+            raise ValueError("probabilities and multipliers must be nonnegative")
+        total_p = math.fsum(p for p, _ in outcomes)
+        if not 1e-300 <= total_p <= 1.0 + 1e-9:
+            raise ValueError("probability mass must be between1e-300 and1")
+        support = [(p / total_p, multiplier) for p, multiplier in outcomes if p > 0]
+        ensemble = math.fsum(p * multiplier for p, multiplier in support)
+        if any(multiplier == 0 for _, multiplier in support):
+            time_avg, log_growth = 0.0, None
+            log_status = "negative_infinity_positive_probability_zero_multiplier"
         else:
-            log_growth = sum(p * math.log(m) for p, m in outcomes) / total_p
+            log_growth = math.fsum(p * math.log(multiplier) for p, multiplier in support)
             time_avg = math.exp(log_growth)
-        ergodic = abs(ensemble - time_avg) < 1e-9
-        verdict = ("ergodic: ensemble and time averages agree"
-                   if ergodic else
-                   "non-ergodic: positive ensemble average but NEGATIVE time-average growth - "
-                   "repeating this bet ruins you even though the mean looks attractive"
-                   if ensemble > 1.0 > time_avg else
-                   "non-ergodic: time average beats the ensemble average"
-                   if time_avg > ensemble else
-                   "non-ergodic: ensemble average beats the time average")
+            log_status = "finite"
+        equal = math.isclose(ensemble, time_avg, rel_tol=1e-12, abs_tol=1e-12)
+        verdict = ("supplied arithmetic and geometric growth agree" if equal else
+                   "supplied arithmetic growth exceeds1 while geometric growth is below1" if ensemble > 1 > time_avg else
+                   "supplied arithmetic and geometric growth differ")
         return {"ensemble_average": ensemble, "time_average_growth": time_avg,
-                "log_growth_rate": log_growth, "ergodic": ergodic, "verdict": verdict,
-                "assumptions": ["Multipliers apply to the whole stake each round",
-                                 "Rounds are independent with stable probabilities"]}
+                "log_growth_rate": log_growth, "log_growth_status": log_status,
+                "ergodic": equal, "verdict": verdict,
+                "status": "supplied_iid_multiplier_arithmetic_not_general_ergodicity_test",
+                "supplied_probability_mass": total_p,
+                "assumptions": ["Positive probability support only; supplied mass normalized to1",
+                                 "Nonnegative multipliers apply to whole stake; IID stable supplied probabilities",
+                                 "ergodic field only compares these two averages; not a general ergodicity test or financial forecast"]}
 
 
 # ---------------------------------------------------------------- row 61 --
