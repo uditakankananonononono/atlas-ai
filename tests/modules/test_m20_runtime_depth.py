@@ -1625,3 +1625,32 @@ def test_reconcile_csv_uses_exact_strings_and_allows_empty_export():
     assert result['changed'][0]['fields']['x']=={'left':'1.0','right':'1'}
     result=reconcile_csv({'left_csv':'id,x\n','right_csv':'id,x\nA,1\n','key_column':'id','compare_columns':['x']})
     assert result['right_only']==['A'] and result['left_count']==0
+
+
+def test_real_default_csv_filter_to_summary_pipeline_across_restart():
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('summarize open supplied invoices',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[
+        {'id':'filter','title':'select open records','tool':'csv_filter',
+         'arguments':{'csv_text':'id,status,amount\nA,open,10\nB,paid,20\nC,open,5\n',
+                      'where':{'status':'open'},'columns':['id','amount']}},
+        {'id':'summary','title':'sum selected records','tool':'csv_summary','depends_on':['filter'],
+         'arguments':{'csv_text':{'$step':'filter','path':['csv_text']},'value_column':'amount'}}])
+    runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+    restored=make_runtime(hydrate_repo=repo)
+    result=restored.run_task(task.id,max_ticks=2)
+    assert result.state==TaskState.SUCCEEDED
+    assert result.plan[0].output['matched_rows']==2
+    assert result.plan[1].output['groups'][0]['sum']==15
+    assert len(repo.list_actions(task_id=task.id))==2
+
+
+def test_csv_filter_exact_predicates_quoted_fields_and_empty_matches():
+    from app.modules.m20_general_cognitive_worker.local_tools import filter_csv
+    result=filter_csv({'csv_text':'id,status,note\nA,open,"a,b"\nB,Open,c\n','where':{'status':'open'},'columns':['note','id']})
+    assert result['csv_text']=='note,id\n"a,b",A\n'
+    assert result['matched_rows']==1
+    result=filter_csv({'csv_text':'id,status\nA,open\n','where':{'status':'paid'}})
+    assert result['csv_text']=='id,status\n' and result['matched_rows']==0
+    with pytest.raises(ValueError):filter_csv({'csv_text':'id\nA\n','where':{'missing':'x'}})
+    with pytest.raises(ValueError):filter_csv({'csv_text':'id\nA\n','columns':['id','id']})

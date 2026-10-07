@@ -42,6 +42,14 @@ def summarize_csv(arguments):
 
 
 def register_local_tools(registry):
+    async def filter_handler(arguments): return filter_csv(arguments)
+    registry.register(ToolSpec(name='csv_filter',description='Select rows and columns from supplied CSV using exact field matches',
+        capabilities=['csv','filter','select','records'],risk=Risk.READ,max_retries=1,
+        parameters={'type':'object','properties':{
+            'csv_text':{'type':'string','minLength':1,'maxLength':32000},
+            'where':{'type':'object','maxProperties':20,'additionalProperties':{'type':'string'}},
+            'columns':{'type':'array','minItems':1,'maxItems':50,'uniqueItems':True,'items':{'type':'string','minLength':1}}},
+            'required':['csv_text'],'additionalProperties':False}),filter_handler)
     async def reconcile_handler(arguments): return reconcile_csv(arguments)
     registry.register(ToolSpec(name='csv_reconcile',description='Compare two supplied CSV exports by exact unique keys and selected fields',
         capabilities=['csv','reconcile','compare','exports'],risk=Risk.READ,max_retries=1,
@@ -89,3 +97,29 @@ def reconcile_csv(arguments):
             'right_only':sorted(right.keys()-left.keys()),'changed':changed,'unchanged':unchanged,
             'source_verified':False,'status':'supplied_csv_exact_key_field_reconciliation',
             'boundary':'Exact raw string comparison on supplied unique keys and columns; no fuzzy matching, numeric normalization, source verification or external changes.'}
+
+
+def filter_csv(arguments):
+    text = arguments['csv_text']; where = arguments.get('where', {}); columns = arguments.get('columns')
+    if len(text.encode('utf-8')) > 32000: raise ValueError('CSV exceeds32000bytes')
+    reader = csv.reader(io.StringIO(text), strict=True)
+    try: header = next(reader)
+    except StopIteration: raise ValueError('CSV needs header')
+    if not header or len(header) != len(set(header)) or any(not name.strip() for name in header):
+        raise ValueError('unique nonempty headers required')
+    columns = header if columns is None else columns
+    if not columns or len(columns) != len(set(columns)) or any(c not in header for c in columns):
+        raise ValueError('unique known projection columns required')
+    if any(k not in header for k in where): raise ValueError('filter column missing')
+    output = io.StringIO(); writer = csv.writer(output, lineterminator='\n'); writer.writerow(columns)
+    count = matched = 0
+    for row in reader:
+        count += 1
+        if count > 1000: raise ValueError('CSV exceeds1000data rows')
+        if len(row) != len(header): raise ValueError('CSV row column count mismatch')
+        record = dict(zip(header, row))
+        if all(record[key] == value for key, value in where.items()):
+            writer.writerow([record[column] for column in columns]); matched += 1
+    return {'csv_text':output.getvalue(),'input_rows':count,'matched_rows':matched,'columns':columns,
+            'source_verified':False,'status':'supplied_csv_exact_filter_projection',
+            'boundary':'Exact raw string AND predicates and selected columns only; no inferred status, normalization or external effects.'}
