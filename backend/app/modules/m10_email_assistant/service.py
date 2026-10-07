@@ -208,6 +208,8 @@ class Service:
                 continue
             raw = await self.gmail.get_message(access_token, message_id)
             drafted = await self._ingest_message(account.id, raw)
+            if drafted is None:
+                continue
             new_messages += 1
             if drafted:
                 drafts += 1
@@ -217,9 +219,9 @@ class Service:
             fetched=fetched, new_messages=new_messages, drafts_proposed=drafts,
         )
 
-    async def _ingest_message(self, account_id: str, raw: GmailRawMessage) -> bool:
+    async def _ingest_message(self, account_id: str, raw: GmailRawMessage) -> bool | None:
         """Store, classify, extract, embed, and (when actionable) draft.
-        Returns True when a reply draft was proposed."""
+        Returns True when drafted, False when newly stored without a draft, None when duplicate insert lost."""
         classification: Classification = self.classifier.classify(
             ClassifierInput(
                 subject=raw.subject, sender=raw.sender, snippet=raw.snippet,
@@ -249,7 +251,7 @@ class Service:
             embedding=embedding or None, unsubscribe_url=unsubscribe_url,
         )
         if not inserted:
-            return False
+            return None
         self.repository.save_action_items(
             message_id,
             [
