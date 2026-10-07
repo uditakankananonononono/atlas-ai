@@ -25,11 +25,21 @@ def test_reconciliation_requires_claim_owner_status_version_and_one_winner(tmp_p
  event=MessageEvent(message_id='m',event='delivery_reconciled',at=now,details={'provider_message_id':'source-id'})
  repo.save_message(m,MessageEvent(message_id='m',event='approved',at=now))
  assert repo.reconcile_delivery(m,event) is None
+ unclaimed=m.model_copy(update={'id':'unclaimed','status':'delivery_unknown'})
+ repo.save_message(unclaimed,MessageEvent(message_id='unclaimed',event='fixture unknown withoutclaim',at=now))
+ assert repo.reconcile_delivery(unclaimed,MessageEvent(message_id='unclaimed',event='delivery_reconciled',at=now)) is None
+ assert repo.get_message('unclaimed').status=='delivery_unknown'
  assert repo.claim_delivery(m,MessageEvent(message_id='m',event='delivery_claimed',at=now))
  current=repo.get_message('m')
  assert repo.reconcile_delivery(current.model_copy(update={'version':999}),event) is None
  assert repo.reconcile_delivery(current.model_copy(update={'approval_id':'wrong'}),event) is None
- if kind!='memory':assert SqlCampaignRepository('other',sessions).reconcile_delivery(current,event) is None
+ if kind!='memory':
+  other=SqlCampaignRepository('other',sessions)
+  assert other.reconcile_delivery(current,event) is None
+  other.save_message(m,MessageEvent(message_id='m',event='approved',at=now))
+  assert other.claim_delivery(m,MessageEvent(message_id='m',event='delivery_claimed',at=now))
+  assert other.get_message('m').status=='sending'
+
  barrier=Barrier(2)
  def reconcile(_):
   worker=factory();candidate=worker.get_message('m');barrier.wait(timeout=5)
@@ -39,4 +49,7 @@ def test_reconciliation_requires_claim_owner_status_version_and_one_winner(tmp_p
  assert repo.get_message('m').status=='sent'
  assert sum(e.event=='delivery_reconciled' for e in repo.events('m'))==1
  assert not repo.claim_delivery(m,event)
+ if kind!='memory':
+  assert other.get_message('m').status=='sending'
+  assert not any(e.event=='delivery_reconciled' for e in other.events('m'))
  if kind!='memory':engine.dispose()
