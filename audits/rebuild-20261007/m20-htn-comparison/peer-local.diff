@@ -1,0 +1,157 @@
+--- /tmp/peer-htn_planner.py	2026-10-07 23:46:18.053658196 +0530
++++ backend/app/modules/m20_general_cognitive_worker/htn_planner.py	2026-10-07 16:48:40.731141568 +0530
+@@ -8,6 +8,7 @@
+ from __future__ import annotations
+ 
+ import hashlib
++from types import MappingProxyType
+ from typing import Any, Protocol, runtime_checkable
+ 
+ from .embeddings import tokenize
+@@ -32,10 +33,27 @@
+ class HTNPlanner:
+     def __init__(self, model: PlannerModel | None = None) -> None:
+         self.model = model
+-        self.methods: dict[str, HTNMethod] = {}
++        self._methods: dict[str, HTNMethod] = {}
++
++    @property
++    def methods(self):
++        return MappingProxyType({name: method.model_copy(deep=True) for name, method in self._methods.items()})
+ 
+     def register_method(self, method: HTNMethod) -> HTNMethod:
+-        self.methods[method.name] = method
++        method = self._validated_method(method)
++        self._methods[method.name] = method
++        return method.model_copy(deep=True)
++
++    def _validated_method(self, method: HTNMethod) -> HTNMethod:
++        method = method.model_copy(deep=True)
++        if method.successes_recorded > method.outcomes_recorded:
++            raise PlanError("reported successes exceed reported outcomes")
++        if method.outcomes_recorded:
++            method.success_rate = method.successes_recorded / method.outcomes_recorded
++        validated = self._validate([node.model_dump(mode="json") for node in method.subtasks])
++        for node, checked in zip(method.subtasks, validated):
++            node.depends_on = checked.depends_on
++            node.arguments = checked.arguments
+         return method
+ 
+     def _match_method(self, goal: str, *, context: str = "") -> HTNMethod | None:
+@@ -43,7 +61,7 @@
+         if not goal_tokens:
+             return None
+         best: tuple[float, HTNMethod] | None = None
+-        for method in self.methods.values():
++        for method in self._methods.values():
+             if method.source == MethodSource.LEARNED:
+                 if method.generated_goal != goal or method.generated_context_sha256 != hashlib.sha256(context.encode()).hexdigest():
+                     continue
+@@ -88,7 +106,21 @@
+             id_map[template.id] = fresh
+             title_map[template.title] = fresh
+             copy.id = fresh
++            copy.state = TaskState.PENDING
++            copy.attempts = 0
++            copy.approval_id = None
++            copy.result_summary = ""
++            copy.output = None
++        def remap(value):
++            if isinstance(value, dict):
++                result = {key: remap(item) for key, item in value.items()}
++                if isinstance(result.get('$step'), str):
++                    result['$step'] = id_map.get(result['$step']) or title_map.get(result['$step']) or result['$step']
++                return result
++            if isinstance(value, list): return [remap(item) for item in value]
++            return value
+         for copy in copies:
++            copy.arguments = remap(copy.arguments)
+             copy.depends_on = [
+                 id_map.get(dep) or title_map.get(dep) or dep
+                 for dep in copy.depends_on
+@@ -96,13 +128,27 @@
+         return copies
+ 
+     def _validate(self, raw_steps: list[dict[str, Any]]) -> list[PlanNode]:
+-        if not raw_steps:
+-            raise PlanError("planner model returned an empty decomposition")
++        if not isinstance(raw_steps, list) or not 1 <= len(raw_steps) <= 128:
++            raise PlanError("planner decomposition must be a list of 1..128 steps")
+         nodes: list[PlanNode] = []
+         ids: set[str] = set()
+         for raw in raw_steps:
+             if not isinstance(raw, dict) or not raw.get("title"):
+                 raise PlanError(f"invalid step: {raw!r}")
++            if not isinstance(raw["title"], str) or not raw["title"].strip():
++                raise PlanError("step title must be nonempty text")
++            if raw.get("tool") is not None and (not isinstance(raw["tool"], str) or not raw["tool"].strip()):
++                raise PlanError("step tool must be null or nonempty text")
++            if "arguments" in raw and not isinstance(raw["arguments"], dict):
++                raise PlanError("step arguments must be an object")
++            deps = raw.get("depends_on", [])
++            if not isinstance(deps, list) or any(not isinstance(dep,str) or not dep for dep in deps):
++                raise PlanError("dependencies must be a list of nonempty step identifiers")
++            attempts = raw.get("max_attempts", 3)
++            if type(attempts) is not int or not 1 <= attempts <= 100:
++                raise PlanError("max_attempts must be an integer in 1..100")
++            if "id" in raw and (not isinstance(raw["id"], str) or not raw["id"].strip()):
++                raise PlanError("step id must be nonempty text")
+             risk = raw.get("risk", Risk.READ.value)
+             if risk not in VALID_RISKS:
+                 raise PlanError(f"invalid risk tier {risk!r} in step {raw.get('title')!r}")
+@@ -122,14 +168,37 @@
+             nodes.append(node)
+         by_id = {n.id: n for n in nodes}
+         by_title = {n.title: n.id for n in nodes}
++        duplicate_titles = {n.title for n in nodes if sum(x.title == n.title for x in nodes) > 1}
+         for node in nodes:
+             resolved = []
+             for dep in node.depends_on:
++                if dep not in by_id and dep in duplicate_titles:
++                    raise PlanError("ambiguous dependency title; use unique step id")
+                 dep_id = dep if dep in by_id else by_title.get(dep)
+                 if dep_id is None:
+                     raise PlanError(f"step {node.title!r} depends on unknown step {dep!r}")
+                 resolved.append(dep_id)
+             node.depends_on = resolved
++        def resolve_bindings(value, node, depth=0):
++            if depth > 32: raise PlanError('argument nesting exceeds32')
++            if isinstance(value, dict):
++                if '$step' in value:
++                    if set(value) != {'$step', 'path'} or not isinstance(value['$step'], str) or not isinstance(value['path'], list):
++                        raise PlanError('binding requires exact $step/path object')
++                    reference = value['$step']
++                    if reference not in by_id and reference in duplicate_titles:
++                        raise PlanError('ambiguous output reference title; use step id')
++                    reference_id = reference if reference in by_id else by_title.get(reference)
++                    if reference_id not in node.depends_on:
++                        raise PlanError('output reference must identify direct dependency')
++                    if len(value['path']) > 32 or any(not (isinstance(part, str) or type(part) is int and part >= 0) for part in value['path']):
++                        raise PlanError('binding path requires up to32 string keys/nonnegative integer indices')
++                    return {'$step': reference_id, 'path': list(value['path'])}
++                return {key: resolve_bindings(item, node, depth+1) for key, item in value.items()}
++            if isinstance(value, list): return [resolve_bindings(item, node, depth+1) for item in value]
++            return value
++        for node in nodes:
++            node.arguments = resolve_bindings(node.arguments, node)
+         self._check_acyclic(nodes)
+         return nodes
+ 
+@@ -182,11 +251,11 @@
+         )
+ 
+     def record_outcome(self, method_name: str, succeeded: bool) -> None:
+-        method = self.methods.get(method_name)
++        method = self._methods.get(method_name)
+         if method is None:
+             return
+-        total = method.times_used
+-        method.success_rate = (
+-            (method.success_rate * (total - 1) + (1.0 if succeeded else 0.0)) / total
+-            if total > 0 else (1.0 if succeeded else 0.0)
+-        )
++        if type(succeeded) is not bool:
++            raise ValueError("method outcome must be boolean")
++        method.outcomes_recorded += 1
++        method.successes_recorded += int(succeeded)
++        method.success_rate = method.successes_recorded / method.outcomes_recorded
