@@ -75,7 +75,13 @@ class LocalKnowledgePipeline:
         old=self.records.get(source.source_id)
         if old and old.tenant_id!=self.tenant_id: raise KnowledgeError('cross-tenant source access denied')
         rec=old or Record(source,self.tenant_id); self.records[source.source_id]=rec
-        self._persist_manifest(rec); return rec
+        try: self._persist_manifest(rec)
+        except OSError:
+            # A brand-new registration must not linger in memory when its
+            # manifest never reached disk.
+            if old is None: self.records.pop(source.source_id,None)
+            raise
+        return rec
     def ingest(self,request:IngestRequest)->Version:
         if request.actor_id!=self.actor_id: raise KnowledgeError('actor is not authorized for this workspace')
         self._check_consent(request.source)
@@ -91,6 +97,10 @@ class LocalKnowledgePipeline:
         segments=self._extract(raw,request.mime_type,request.source.kind)
         version=Version((len(prior.versions) if prior else 0)+1,digest,segments,self.clock(),request.mime_type)
         new_chunks=self._chunk(prior or Record(request.source,self.tenant_id),version)
+        # Registration is durable before any version file is written: a later
+        # failure leaves a truthful registered record with no new version,
+        # never a false version claim.
+        rec=self.register(request.source)
         target=self._contained(request.source.source_id,f'v{version.number}')
         if target.exists():
             # In-memory versions are lost on restart while disk persists, so a
@@ -109,22 +119,23 @@ class LocalKnowledgePipeline:
             import os as _os; _os.rename(tmp,target)
         except OSError:
             shutil.rmtree(tmp,ignore_errors=True); raise
-        created_record=request.source.source_id not in self.records
-        rec=self.register(request.source)
         rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
         try:
             self._persist_manifest(rec)
         except OSError:
-            # Persist failed AFTER memory mutation: roll everything back so
-            # memory never claims a version the manifest does not record.
-            # The version dir was created by this attempt (rename from tmp),
-            # so removing it cannot touch preexisting data.
+            # Persist failed AFTER memory mutation: roll the version state
+            # back so memory never claims a version the manifest does not
+            # record. The durable registration (its own manifest was written
+            # before any version file) is PRESERVED. The version dir was
+            # created by this attempt (rename from tmp), so removing it
+            # cannot touch preexisting data; if that removal itself fails,
+            # an untracked but complete version dir remains on disk with no
+            # false memory claim.
             rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
-            if created_record: self.records.pop(request.source.source_id,None)
             shutil.rmtree(target,ignore_errors=True)
             try: self._persist_manifest(rec)
             except OSError: pass
-            raise KnowledgeError('manifest persistence failed; ingest rolled back')
+            raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
         return version
     def _extract(self,raw:bytes,mime:str,kind:str)->list[Segment]:
         if mime=='audio/wav':
@@ -200,4 +211,7 @@ class LocalKnowledgePipeline:
         return {'source_id':source_id,'deleted':verified,'tracking_retained':not verified,'verified_at':self.clock().isoformat()}
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
-        (p/'manifest.json').write_text(json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True),encoding='utf-8')
+        import os as _os
+        tmp=p/'manifest.json.tmp'
+        tmp.write_text(json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True),encoding='utf-8')
+        _os.replace(tmp,p/'manifest.json')
