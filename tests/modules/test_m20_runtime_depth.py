@@ -604,3 +604,12 @@ def test_durable_working_memory_eviction_and_rejected_weak_chunk_never_resurrect
  loaded.put(newer,active_goal='new fixture',partition='p')
  assert {x.id for x in repo.list_chunks()}=={newer.id}
  assert DurableWorkingMemory.load(repo,capacity=1).get(strong.id) is None
+
+
+def test_scheduler_step_reports_actual_ticks_and_cooperative_time_scope():
+ runtime,_=make_runtime()
+ context=runtime.submit_goal('no model no method',run_immediately=False)
+ report=runtime.step(quantum_seconds=.1,max_ticks=17)
+ assert report.task_id==context.id and report.ticks_run==0
+ assert report.budget_status=='cooperative_between_steps_only'
+ assert report.hard_wall_time_enforced is report.tokens_money_enforced is False

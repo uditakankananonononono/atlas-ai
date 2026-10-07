@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import math
 import random
+from time import monotonic
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
@@ -170,7 +171,7 @@ class DeliberativeLoop:
     def _trace(self, phase: str, detail: str, *, task_id: str | None = None, policy_basis: str = "") -> None:
         self.traces.append(TraceEntry(task_id=task_id, phase=phase, detail=detail, policy_basis=policy_basis))
 
-    def start(self, context: TaskContext) -> TaskContext:
+    def start(self, context: TaskContext, *, budget: Budget | None = None) -> TaskContext:
         """Plan the goal, seed working memory, and run the loop."""
         # start is a fresh execution, not a resume. Incoming states are not
         # execution evidence. Continuations must use run/resume.
@@ -209,16 +210,19 @@ class DeliberativeLoop:
         ), active_goal=context.goal, partition=context.id)
         if self.before_run is not None:
             self.before_run(context)
-        return self.run(context)
+        return self.run(context, budget=budget)
 
     def run(self, context: TaskContext, *, budget: Budget | None = None) -> TaskContext:
         budget = budget or Budget()
         if self.before_run is not None:
             self.before_run(context)
         ticks = 0
+        self.last_ticks_run = 0
+        started = monotonic()
         context.state = TaskState.RUNNING
-        while ticks < self.max_ticks and ticks < budget.seconds:
+        while ticks < self.max_ticks and monotonic() - started < budget.seconds:
             ticks += 1
+            self.last_ticks_run = ticks
             if HTNPlanner.is_complete(context.plan):
                 if not context.plan or all(n.state == TaskState.CANCELLED for n in context.plan):
                     context.state = TaskState.BLOCKED
@@ -311,7 +315,7 @@ class DeliberativeLoop:
                 self._trace("evaluate", f"{node.tool} error: {exc}", task_id=context.id)
                 self._reflect_on_failure(context, node, str(exc))
         context.state = TaskState.FAILED
-        self._trace("evaluate", "budget exhausted", task_id=context.id)
+        self._trace("evaluate", "cooperative time/tick boundary reached; tokens/money not enforced", task_id=context.id)
         self._close_episode(context, EpisodeOutcome.FAILED)
         return context
 

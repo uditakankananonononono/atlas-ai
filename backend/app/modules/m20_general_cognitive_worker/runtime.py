@@ -36,6 +36,7 @@ from .safety import ApprovalGate, InMemoryApprovalGate, SafetyGate, SandboxPolic
 from .sandbox import SandboxRunner
 from .scheduler import FairContextScheduler
 from .schemas import (
+    Budget,
     ChunkType, EpisodeOutcome, MemoryChunk, PlanNode, TaskContext, TaskState, TraceEntry,
 )
 from .sql_repository import GCWRepository
@@ -86,6 +87,9 @@ class StepReport:
     ticks_run: int
     elapsed_seconds: float
     surprises: list[str] = field(default_factory=list)
+    budget_status: str = "cooperative_between_steps_only"
+    hard_wall_time_enforced: bool = False
+    tokens_money_enforced: bool = False
 
 
 class GCWRuntime:
@@ -200,16 +204,17 @@ class GCWRuntime:
         if context is None:
             return StepReport(task_id=None, state="idle", ticks_run=0, elapsed_seconds=0.0)
         self.loop.max_ticks = max_ticks
-        before = context.state
+        self.loop.last_ticks_run = 0
+        budget = Budget(seconds=quantum_seconds)
         if context.state in (TaskState.PENDING, TaskState.PLANNING):
-            self._run_and_persist(context)
+            self._run_and_persist(context, budget=budget)
         elif context.state in (TaskState.RUNNING, TaskState.RUMINATING):
-            self._run_and_persist(context)
+            self._run_and_persist(context, budget=budget)
         elapsed = time.monotonic() - started
         surprises = self._evaluate_expectations(context)
         return StepReport(
             task_id=context.id, state=context.state.value,
-            ticks_run=min(max_ticks, self.loop.max_ticks),
+            ticks_run=self.loop.last_ticks_run,
             elapsed_seconds=round(elapsed, 4), surprises=surprises,
         )
 
@@ -233,13 +238,13 @@ class GCWRuntime:
 
     # -- evaluation depth ------------------------------------------------------
 
-    def _run_and_persist(self, context: TaskContext) -> None:
+    def _run_and_persist(self, context: TaskContext, *, budget: Budget | None = None) -> None:
         if context.state in (TaskState.PENDING, TaskState.PLANNING) and not context.plan:
-            self.loop.start(context)
+            self.loop.start(context, budget=budget)
         else:
             if context.state == TaskState.PLANNING:
                 context.state = TaskState.RUNNING
-            self.loop.run(context)
+            self.loop.run(context, budget=budget)
         self._persist_context(context)
         self._evaluate_expectations(context)
 

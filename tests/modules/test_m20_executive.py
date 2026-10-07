@@ -107,7 +107,7 @@ def test_budget_bound_and_episode_closure():
     ))
     ctx = TaskContext(goal="loop forever task")
     ctx = loop.start(ctx)
-    # 20 read steps at 0.9 info gain each: budget 5 seconds caps ticks
+    # Separate wall-time and tick bounds; completion is not output correctness.
     ctx2 = loop.run(ctx, budget=Budget(seconds=3))
     assert ctx2.state in (TaskState.FAILED, TaskState.SUCCEEDED)
     assert loop.episodic.for_task(ctx.id), "episode must be logged even on budget exhaustion"
@@ -192,3 +192,12 @@ def test_shared_dispatcher_episodes_are_task_scoped_and_detached():
  assert {x.task_id for x in b_episode.actions}=={b.id}
  loop.dispatcher.records[-1].arguments['fixture']='changed'
  assert b_episode.actions[0].arguments=={'fixture':'b'}
+
+
+def test_wall_time_boundary_is_not_a_tick_count_and_stops_between_steps(monkeypatch):
+ from app.modules.m20_general_cognitive_worker import executive
+ loop,_,calls=build_loop();clock=iter([0,0,.2]);monkeypatch.setattr(executive,'monotonic',lambda:next(clock))
+ context=TaskContext(goal='fixture',plan=[PlanNode(title='a',tool='web_search'),PlanNode(title='b',tool='web_search')])
+ loop.run(context,budget=Budget(seconds=.1))
+ assert calls['research']==1 and loop.last_ticks_run==1
+ assert context.state==TaskState.FAILED
