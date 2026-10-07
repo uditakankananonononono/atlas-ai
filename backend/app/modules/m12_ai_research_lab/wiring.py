@@ -48,7 +48,8 @@ def build_dag_engine(service):
  def request(task,config,inputs):
   allowed={'task_type','output_tokens','budget_cents','latency_tolerance_ms','prompt'}
   if set(config)-allowed:raise WorkflowValidationError("unsupported model node options")
-  values={"task_type":config.get('task_type',task if task in {x.value for x in TaskType} else 'research'),
+  if 'task_type' not in config and task not in {x.value for x in TaskType}:raise WorkflowValidationError("unknown model task requires explicit valid task_type")
+  values={"task_type":config.get('task_type',task),
    "output_tokens":config.get('output_tokens',1000),"budget_cents":config.get('budget_cents',1),
    "latency_tolerance_ms":config.get('latency_tolerance_ms',10000),
    "prompt":config.get('prompt',inputs.get('prompt',task))}

@@ -118,3 +118,20 @@ def test_shipped_unknown_model_node_options_not_silently_ignored(extra):
  wf=Workflow.from_yaml('nodes: [{id: a, task: research}, {id: b, task: research, config: {'+extra+'}}]')
  with pytest.raises(WorkflowValidationError,match='unsupported model node options'):asyncio.run(build_dag_engine(Service()).run(wf,{'tenant_id':'fixture'}))
  assert not calls
+
+@pytest.mark.parametrize('task',['reseach','unknown_task','creative_writing'])
+def test_shipped_unknown_task_not_silently_changed_to_research(task):
+ calls=[]
+ class Service:
+  async def execute(self,*args):calls.append(args);return ModelResult('fixture','fixture',.9)
+ wf=Workflow.from_yaml('nodes: [{id: a, task: research}, {id: b, task: '+task+'}]')
+ with pytest.raises(WorkflowValidationError,match='explicit valid task_type'):asyncio.run(build_dag_engine(Service()).run(wf,{'tenant_id':'fixture'}))
+ assert not calls
+
+def test_shipped_labelled_task_with_explicit_type_keeps_intent():
+ calls=[]
+ class Service:
+  async def execute(self,req,*args):calls.append(req);return ModelResult('fixture','fixture',.9)
+ wf=Workflow.from_yaml('nodes: [{id: a, task: custom_label, config: {task_type: code}}]')
+ result=asyncio.run(build_dag_engine(Service()).run(wf,{'tenant_id':'fixture'}))
+ assert len(calls)==1 and calls[0].task_type.value=='code' and result['a']['text']=='fixture'
