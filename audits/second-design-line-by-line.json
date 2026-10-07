@@ -1443,7 +1443,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "M19 lean-canvas intake/preview approval/package and separate lane/business/research/operations/luxury venture services exist. Autonomous validated working venture/idle-compute continuous parallel development not established by scoped read. No venture user profile/model/paid/deploy effect. Status unverified. Core /ideas and /packages omit tenant dependency and use singleton run_id-only state, unlike authenticated portfolio routes; isolated regression/repair pending."
+      "notes": "M19 lean-canvas intake/preview approval/package and separate lane/business/research/operations/luxury venture services exist. Autonomous validated working venture/idle-compute continuous parallel development not established by scoped read. No venture user profile/model/paid/deploy effect. Status unverified. Core /ideas and /packages omit tenant dependency and use singleton run_id-only state, unlike authenticated portfolio routes; isolated regression/repair pending. Recon enforces existing tenant dependency on core four routes, scopes process runs by tenant/run, and binds preview approval tenant/user. Isolated unauthorized/cross-tenant fake HTTP tests pass; no durable core run restart/provider auth acceptance."
     },
     {
       "row": 131,
