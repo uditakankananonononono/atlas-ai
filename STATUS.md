@@ -978,3 +978,7 @@ Six actual failures retained: bool/stringoutcome/estimate/weight coerce past raw
 ## Scenario HTTP supplied weight boundary
 
 Four actual failures retained: bool/stringweightcoercion and unhandlednegative/unknownweight errors. Strictfinite nonnegative mappingvalues; planvalidationValueError becomes422.171foresightHTTPpass1warning; recorded87adjacent2402pass2warnings45.30s. Fixed-template narrative/suppliedweightnormalization only, not forecasting or inferred scenario likelihood. Latestfull9944passsourcec5b11ab predateseightlaterfixes.
+
+## Supplied sampler subnormal median
+
+One actual failure retained: evenequalminimumsubnormalmedian lostto0 via divided operands. Signaware midpoint preserves equalminimumpositivevalue and avoidsoverflow forlargefinitepairs. 153foresight/reasoningpass; recorded87adjacent2403pass2warnings43.39s. Suppliedsampler descriptivestatistics only, not model/forecast validity. Latestfull9944passsourcec5b11ab predatesninelaterfixes.

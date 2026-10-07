@@ -1,0 +1,16 @@
+........................................................................ [ 63%]
+........................................F                                [100%]
+=================================== FAILURES ===================================
+________ test_monte_carlo_equal_subnormal_median_and_mean_are_preserved ________
+
+    def test_monte_carlo_equal_subnormal_median_and_mean_are_preserved():
+        from app.modules.m20_general_cognitive_worker.reasoning import monte_carlo_simulation
+        tiny = float.fromhex('0x0.0000000000001p-1022')
+        result = monte_carlo_simulation(lambda rng: tiny, trials=10)
+>       assert result['mean'] == tiny and result['median'] == tiny and result['std'] == 0
+E       assert (5e-324 == 5e-324 and 0.0 == 5e-324)
+
+tests/modules/test_m20_foresight.py:680: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_monte_carlo_equal_subnormal_median_and_mean_are_preserved
+1 failed, 112 passed in 1.47s
