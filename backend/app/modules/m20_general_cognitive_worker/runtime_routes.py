@@ -8,13 +8,14 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any
+from functools import wraps
 
 from fastapi import APIRouter, HTTPException, Depends
 from app.auth.context import TenantContext,require_tenant
 from app.auth.environment import insecure_development_auth_enabled
 from pydantic import BaseModel, Field
 
-from .runtime import GCWRuntime
+from .runtime import GCWRuntime,RuntimeBusy
 from .sandbox import SandboxViolation
 
 router = APIRouter(prefix="/api/modules/20/runtime", tags=["m20_runtime"])
@@ -77,7 +78,15 @@ class SandboxRunRequest(BaseModel):
     allowed_hosts: list[str] = Field(default_factory=list)
 
 
+def _busy_conflict(method):
+    @wraps(method)
+    def call(*args,**kwargs):
+        try:return method(*args,**kwargs)
+        except RuntimeBusy as error:raise HTTPException(409,str(error)) from error
+    return call
+
 @router.post("/tasks", status_code=201)
+@_busy_conflict
 def submit_task(request: GoalRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     context = runtime.submit_goal(
         request.goal, importance=request.importance,
@@ -100,14 +109,17 @@ def get_task(task_id: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any
 
 
 @router.post("/tasks/{task_id}/step")
+@_busy_conflict
 def step_task(task_id: str, request: StepRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     if runtime.get_task(task_id) is None:
         raise HTTPException(status_code=404, detail="unknown task")
-    context = runtime.run_task(task_id, max_ticks=request.max_ticks)
+    try:context = runtime.run_task(task_id, max_ticks=request.max_ticks)
+    except RuntimeBusy as error:raise HTTPException(409,str(error)) from error
     return _task_dict(context)
 
 
 @router.post("/step")
+@_busy_conflict
 def step_once(request: StepRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     report = runtime.step(
         quantum_seconds=request.quantum_seconds, max_ticks=request.max_ticks,
