@@ -1,0 +1,21 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ test_task_restart_preserves_owner_partition_and_scheduler_service_history ___
+
+    def test_task_restart_preserves_owner_partition_and_scheduler_service_history():
+     from datetime import datetime,timezone
+     repo=GCWRepository(make_engine(),tenant_id='fixture-owner');repo.create_schema()
+>    context=TaskContext(goal='fixture',tenant_id='fixture-owner',wm_partition='fixture-partition',ticks_served=7,last_run_at=datetime(2026,10,7,tzinfo=timezone.utc))
+             ^^^^^^^^^^^
+E    NameError: name 'TaskContext' is not defined
+
+tests/modules/test_m20_runtime_depth.py:786: NameError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_task_restart_preserves_owner_partition_and_scheduler_service_history
+1 failed, 42 deselected, 1 warning in 1.44s
