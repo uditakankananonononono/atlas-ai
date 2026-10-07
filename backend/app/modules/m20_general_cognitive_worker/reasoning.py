@@ -55,22 +55,31 @@ def bayesian_update(prior: float, sensitivity: float, specificity: float, *, pos
 
 def monte_carlo_simulation(
     sampler: Callable[[random.Random], float], *, trials: int = 1000, seed: int | None = None,
-) -> dict[str, float]:
+) -> dict[str, Any]:
     """Monte Carlo Simulation over an outcome sampler -> distribution stats."""
-    if trials < 10:
-        raise ValueError("trials must be >= 10")
+    if type(trials) is not int or not 10 <= trials <= 100000:
+        raise ValueError("trials must be integer10..100000")
     rng = random.Random(seed)
-    samples = sorted(sampler(rng) for _ in range(trials))
-    n = len(samples)
+    samples = []
+    for _ in range(trials):
+        value = sampler(rng)
+        if type(value) not in (int, float) or not math.isfinite(value):
+            raise ValueError("sampler must return finite numeric values, not bool")
+        samples.append(float(value))
+    samples.sort(); n = len(samples)
+    scale = max(abs(value) for value in samples) or 1.0
+    normalized = [value / scale for value in samples]
+    center = math.fsum(normalized) / n
+    average = center * scale
+    deviation = math.sqrt(math.fsum((value - center) ** 2 for value in normalized) / n) * scale
+    middle = samples[n // 2] if n % 2 else (samples[n // 2 - 1] / 2 + samples[n // 2] / 2)
     return {
-        "trials": float(n),
-        "mean": mean(samples),
-        "median": median(samples),
-        "p5": samples[int(0.05 * n)],
-        "p95": samples[min(n - 1, int(0.95 * n))],
-        "min": samples[0],
-        "max": samples[-1],
-        "std": math.sqrt(sum((s - mean(samples)) ** 2 for s in samples) / n),
+        "trials": float(n), "mean": average, "median": middle,
+        "p5": samples[int(0.05 * n)], "p95": samples[min(n - 1, int(0.95 * n))],
+        "min": samples[0], "max": samples[-1], "std": deviation,
+        "status": "supplied_sampler_simulation_statistics_only",
+        "quantile_method": "sorted_index_floor_percent_times_n",
+        "std_method": "scaled_population_standard_deviation",
     }
 
 

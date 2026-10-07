@@ -151,3 +151,24 @@ def test_minimax_regret_and_opportunity_cost():
     assert choice == "risky"
     assert R.opportunity_cost(50.0, [200.0, 75.0]) == 150.0
     assert R.opportunity_cost(50.0, []) == 0.0
+
+
+def test_monte_carlo_summary_computes_mean_once_not_per_sample(monkeypatch):
+ original=R.mean;calls=[]
+ def counted(values):calls.append(len(values));return original(values)
+ monkeypatch.setattr(R,'mean',counted)
+ out=R.monte_carlo_simulation(lambda rng:4,trials=100)
+ assert out['mean']==4 and out['std']==0 and len(calls)<=1
+
+
+@pytest.mark.parametrize('sample',[float('nan'),float('inf'),True,'4'])
+def test_monte_carlo_invalid_samples_reject(sample):
+ with pytest.raises(ValueError):R.monte_carlo_simulation(lambda rng:sample,trials=10)
+
+
+def test_monte_carlo_large_finite_population_statistics_are_json_safe():
+ import json
+ values=iter([-1e300,1e300]*5)
+ out=R.monte_carlo_simulation(lambda rng:next(values),trials=10)
+ assert out['mean']==0 and out['std']==pytest.approx(1e300)
+ json.dumps(out,allow_nan=False)
