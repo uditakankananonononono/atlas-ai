@@ -91,7 +91,11 @@ def monte_carlo_simulation(
     center = math.fsum(normalized) / n
     average = center * scale
     deviation = math.sqrt(math.fsum((value - center) ** 2 for value in normalized) / n) * scale
-    middle = samples[n // 2] if n % 2 else (samples[n // 2 - 1] / 2 + samples[n // 2] / 2)
+    if n % 2:
+        middle = samples[n // 2]
+    else:
+        left, right = samples[n // 2 - 1], samples[n // 2]
+        middle = left + (right - left) / 2 if (left >= 0) == (right >= 0) else (left + right) / 2
     return {
         "trials": float(n), "mean": average, "median": middle,
         "p5": samples[int(0.05 * n)], "p95": samples[min(n - 1, int(0.95 * n))],

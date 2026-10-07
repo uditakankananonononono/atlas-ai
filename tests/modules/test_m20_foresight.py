@@ -671,3 +671,10 @@ def test_outside_view_supplied_reference_median_must_be_finite():
     forecast = ReferenceClassForecast(n_cases=1, mean=10, median=float('nan'), p25=10, p75=10, matched_cases=['fixture'], assumptions=[])
     with pytest.raises(ValueError):
         OutsideView().adopt(inside_estimate=10, reference_forecast=forecast)
+
+
+def test_monte_carlo_equal_subnormal_median_and_mean_are_preserved():
+    from app.modules.m20_general_cognitive_worker.reasoning import monte_carlo_simulation
+    tiny = float.fromhex('0x0.0000000000001p-1022')
+    result = monte_carlo_simulation(lambda rng: tiny, trials=10)
+    assert result['mean'] == tiny and result['median'] == tiny and result['std'] == 0
