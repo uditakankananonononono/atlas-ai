@@ -653,7 +653,7 @@ def test_draft_finalize_rejects_payload_substitution(tmp_path,monkeypatch):
  asyncio.run(client.aclose())
 
 
-@pytest.mark.parametrize('case',['fresh_sink','missing','wrong_body','wrong_account'])
+@pytest.mark.parametrize('case',['fresh_sink','missing','wrong_body','wrong_account','wrong_id','wrong_module','wrong_action','wrong_tenant','missing_key'])
 def test_saved_approval_requires_source_matching_receipt_no_refile(tmp_path,monkeypatch,case):
  from app.modules.m10_email_assistant.service import DraftPipelineUnresolvedError
  svc,repo,approvals,client=make_service(tmp_path)
@@ -665,9 +665,14 @@ def test_saved_approval_requires_source_matching_receipt_no_refile(tmp_path,monk
  if case=='fresh_sink':svc.approval_sink=ApprovalSpy()
  elif case=='missing':monkeypatch.setattr(approvals,'get',lambda *args,**kwargs:None)
  else:
-  item=approvals.items[0][0];payload={**item.payload}
-  payload['body' if case=='wrong_body' else 'account_id']='wrong'
-  monkeypatch.setattr(approvals,'get',lambda *args,**kwargs:item.model_copy(update={'payload':payload}))
+  item=approvals.items[0][0];payload={**item.payload};update={}
+  if case=='wrong_id':update['id']='wrong'
+  elif case=='wrong_module':update['module_id']=11
+  elif case=='wrong_action':update['action_type']='other'
+  elif case=='missing_key':del payload['gmail_id']
+  else:payload[{'wrong_body':'body','wrong_account':'account_id','wrong_tenant':'tenant_id'}[case]]='wrong'
+  update['payload']=payload
+  monkeypatch.setattr(approvals,'get',lambda *args,**kwargs:item.model_copy(update=update))
  with pytest.raises(DraftPipelineUnresolvedError,match='missing or mismatched'):
   asyncio.run(svc.recover_draft_pipeline('a'))
  assert repo.list_drafts()==[] and len(approvals.items)==1

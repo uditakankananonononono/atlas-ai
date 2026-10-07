@@ -402,7 +402,7 @@ class Service:
             expected={'tenant_id':self.tenant_id,'account_id':account_id,'draft_id':data['draft_id'],
                 'message_id':message_id,'gmail_id':raw.gmail_id,'thread_id':raw.thread_id,
                 'to':data['to'],'subject':data['subject'],'body':data['body']}
-            if observed is None or observed.module_id!=10 or observed.action_type!='send_email_reply' or any(observed.payload.get(k)!=v for k,v in expected.items()):
+            if observed is None or observed.id!=data['approval_id'] or observed.module_id!=10 or observed.action_type!='send_email_reply' or any(observed.payload.get(k)!=v for k,v in expected.items()):
                 raise DraftPipelineUnresolvedError('saved approval missing or mismatched; source reconciliation required, no refile')
             if not self.repository.finalize_draft_work(message_id,account_id,data):return None
             if self.review_state_capturer is not None:
