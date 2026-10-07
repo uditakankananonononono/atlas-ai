@@ -1223,7 +1223,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Approved delivery renders native DOCX/PPTX/PDF/LaTeX; PDF path invokes LaTeX with timeout and repeated passes, output validation exists. General DOCX-to-PDF/pandoc/unoconv lossless containerized semantic conversion not established by scoped read. Existing render paths are not erased by this gap. No artifact pixels/output typography/provider publication accepted. Status unverified."
+      "notes": "Approved delivery renders native DOCX/PPTX/PDF/LaTeX; PDF path invokes pdflatex once with timeout/no-shell-escape and temporary-directory cleanup; repeated reference/bibliography passes are not established, output validation exists. General DOCX-to-PDF/pandoc/unoconv lossless containerized semantic conversion not established by scoped read. Existing render paths are not erased by this gap. No artifact pixels/output typography/provider publication accepted. Status unverified."
     },
     {
       "row": 111,
@@ -1245,7 +1245,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "ExecutiveDashboard React component/App Router and M16 snapshot/status/approval/KPI/blocker/command APIs exist. Package manifest React18.3.1 and Next16.3.6, not specified Next14. Whole-ecosystem unified readiness and visual fidelity not established by source presence; no Dashboard pixels inspected in this audit pass. Status unverified."
     },
     {
       "row": 113,
@@ -1256,7 +1256,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "ExecutiveDashboard polls refresh every30s and sets live true immediately, never resets on failure; Live badge is not stream proof. Backend event cursor/projection/SSE route exists but component does not subscribe in this read. Zustand/WebSocket/cross-tab/adaptive network handling not established. No production freshness acceptance. Status unverified."
     },
     {
       "row": 114,
@@ -1267,7 +1267,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Frontend widgets include timeline list with progress/risk, approvals/details/outreach history, agents/modules and configurable ordering/visibility surfaces. Timeline here is not draggable Gantt and Calendar dependency propagation not established. Approval cards and agent statuses require source-authoritative current records, not fixture readiness. No visual/full integration acceptance. Status unverified."
     },
     {
       "row": 115,
@@ -1278,7 +1278,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M16 computes windowed event KPIs/custom definitions, historical points and alerts; frontend displays KPI cards. Event-fed metrics are not verified submitted applications/grants/revenue/provider spend. Notification freshness, real source completeness and user configured data validity remain open. No real KPI or visual acceptance. Status unverified."
     },
     {
       "row": 116,
@@ -1289,7 +1289,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Command preview parser is keyword/mutation detection; read executor queries dashboard snapshot/KPI/status/timeline and mutation path stages approval. Not demonstrated Planner natural-language decomposition/competition bulk application/research/meeting execution or M09 entity autocomplete. No command-caused email/calendar/submit effects. Status unverified."
     },
     {
       "row": 117,
@@ -1300,7 +1300,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Responsive classes/native controls and widget preferences exist; full WCAG2.1AA keyboard/screen-reader/contrast audit and timezone/default approval/notification customization completeness not established by scoped read. No actual pixels or accessibility acceptance. Status unverified."
     },
     {
       "row": 118,
