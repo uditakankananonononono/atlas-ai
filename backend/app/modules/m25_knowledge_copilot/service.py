@@ -65,7 +65,9 @@ class Service:
    except TimeoutError as exc: raise ValueError('redaction pattern exceeded its time budget; event rejected, nothing stored') from exc
    except _regex.error as exc: raise ValueError(f'invalid redaction replacement or pattern at execution: {exc}; event rejected, nothing stored') from exc
    # Output cap: expansion past twice the ingest content bound (2x20000)
-   # rejects the event; bounded replacements alone do not bound match count.
+   # rejects the event; bounded replacements alone do not bound match
+   # count. This guards the STORED output size only - the expanded string
+   # is already allocated when the check runs, so it is not a memory cap.
    if len(text)>40000: raise ValueError('redaction expansion exceeds the output bound; event rejected, nothing stored')
   item=TimelineItem(id=str(uuid4()),source=data.source,content=text,source_ref=data.source_ref,observed_at=data.observed_at,speaker=data.speaker,speaker_confidence=data.speaker_confidence,language=data.language);s.timeline.append(item)
   if data.source in (SourceKind.MIC,SourceKind.SYSTEM_AUDIO):

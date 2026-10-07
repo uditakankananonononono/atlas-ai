@@ -291,12 +291,16 @@ class LocalKnowledgePipeline:
         return {'source_id':source_id,'deleted':verified,'tracking_retained':not verified,'verified_at':self.clock().isoformat()}
     def _read_source_bytes(self,source_id:str,number:int,refusal:str)->bytes:
         # The filename is part of the containment check (symlinked source.bin
-        # rejected), and size is guarded BEFORE reading: valid ingests are
-        # bounded at MAX_INGEST_CONTENT, so a larger on-disk file is
-        # divergence, never something to read.
+        # rejected), and size is guarded BEFORE reading. The bound is the
+        # largest ENCODED size of any accepted ingest: text content is
+        # bounded at MAX_INGEST_CONTENT characters (up to 4 UTF-8 bytes
+        # each), byte content at MAX_INGEST_CONTENT bytes. A larger on-disk
+        # file is divergence, never something to read. The stat/read gap
+        # (TOCTOU) and the unbounded read_bytes after this check remain
+        # carried residuals.
         blob=self._contained(source_id,f'v{number}','source.bin')
         try:
-            if blob.stat().st_size>MAX_INGEST_CONTENT:
+            if blob.stat().st_size>4*MAX_INGEST_CONTENT:
                 raise KnowledgeError(f'{refusal}: on-disk source bytes for version {number} exceed the ingest bound')
             return blob.read_bytes()
         except KnowledgeError: raise
