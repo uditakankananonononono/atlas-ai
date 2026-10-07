@@ -32,7 +32,7 @@ The original peer M13 combined-run failure remains unexplained. The peer reporte
 The following surfaces remain unassessed for combined semantic clearance, even where existing local tests pass:
 
 - `risk_register`
-- `local_tools`
+- `local_tools`: assessed as our additive bounded offline surface; absent from peer bundle tip b944215. Preserve ours, not a peer-parity claim. Selected runtime tests 27 passed; solver tests 22 passed with overlap; catalog canary 1 passed.
 - `htn_planner`, including method review hash binding
 - `function_schemas`: assessed-compatible for the two export methods against peer b944215; six new canaries pass. Preserve our stronger surrounding spec isolation/schema validation. Live provider compatibility is not established.
 - `retrospectives`: assessed-compatible by retaining our detached snapshots, stage/save/publish ordering, stable restart identity and local execution reports rather than the older peer implementation; focused comparison suite 16 passed. Lesson truth is not independently verified.
