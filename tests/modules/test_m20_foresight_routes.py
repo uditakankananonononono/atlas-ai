@@ -316,3 +316,16 @@ def test_row59_kelly_route(client):
     no_edge = c.post("/api/modules/20/meta/kelly/size",
                      json={"win_prob": 0.4, "payoff_ratio": 1.0})
     assert no_edge.json()["recommended"] == 0.0
+
+
+def test_hypothesis_invalid_batch_http_has_no_partial_update(client):
+    c, service = client
+    h = service.hypotheses.add("candidate", prior=0.4)
+    response = c.post("/api/modules/20/meta/hypotheses/evidence", json={"likelihood_ratios": {h.hypothesis_id: 3, "missing": 2}})
+    assert response.status_code == 404
+    assert service.hypotheses.hypotheses[h.hypothesis_id].probability == 0.4
+    response = c.post("/api/modules/20/meta/hypotheses/evidence", json={"likelihood_ratios": {h.hypothesis_id: -1}})
+    assert response.status_code == 422
+    response = c.post("/api/modules/20/meta/hypotheses/evidence", json={"likelihood_ratios": {h.hypothesis_id: 2}})
+    assert response.status_code == 200
+    assert "heuristic" in response.json()["scope"]

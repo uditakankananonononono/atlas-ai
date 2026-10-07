@@ -362,3 +362,40 @@ def test_row59_kelly_sizing():
         sizer.size(win_prob=1.5, payoff_ratio=1.0)
     with pytest.raises(ValueError):
         KellySizer(fraction=0.0, cap=0.25)
+
+
+def test_hypothesis_single_survivor_accepts_next_evidence():
+    tracker = HypothesisTracker()
+    a = tracker.add("only remaining candidate", prior=0.8)
+    tracker.update({a.hypothesis_id: 1.0})
+    assert tracker.update({a.hypothesis_id: 2.0})[0].probability == 1.0
+
+
+def test_hypothesis_invalid_batch_leaves_state_unchanged():
+    tracker = HypothesisTracker()
+    a = tracker.add("candidate", prior=0.4)
+    with pytest.raises(KeyError):
+        tracker.update({a.hypothesis_id: 3.0, "missing": 2.0})
+    assert tracker.hypotheses[a.hypothesis_id].probability == 0.4
+    assert tracker.hypotheses[a.hypothesis_id].evidence_count == 0
+
+
+@pytest.mark.parametrize("ratio", [float("nan"), float("inf"), True])
+def test_bayesian_ratio_rejects_nonfinite_or_bool(ratio):
+    with pytest.raises(ValueError):
+        BayesianUpdater.update(0.5, ratio)
+
+
+@pytest.mark.parametrize("prior,ratio,expected", [(0.0, 1e300, 0.0), (1.0, 1e-300, 1.0), (0.5, 1e300, 1.0), (0.5, 1e-300, 1e-300)])
+def test_binary_bayes_boundary_and_extreme_ratio(prior, ratio, expected):
+    assert BayesianUpdater.update(prior, ratio) == pytest.approx(expected, rel=1e-12, abs=0)
+
+
+def test_hypothesis_invalid_ratio_batch_is_atomic():
+    tracker = HypothesisTracker()
+    a = tracker.add("a", prior=0.4)
+    b = tracker.add("b", prior=0.6)
+    with pytest.raises(ValueError):
+        tracker.update({a.hypothesis_id: 2.0, b.hypothesis_id: float("nan")})
+    assert tracker.hypotheses[a.hypothesis_id].probability == 0.4
+    assert tracker.hypotheses[a.hypothesis_id].evidence_count == 0

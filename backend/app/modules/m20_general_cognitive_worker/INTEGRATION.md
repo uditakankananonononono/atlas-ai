@@ -144,3 +144,13 @@ unbound real tenants return503. The initial local runtime is development-only.
 The reserved tenant name local is rejected for authenticated GCW access, even
 with a valid OIDC token. A configured temporary multi-tenant test is not evidence
 that this deployment integration is live.
+
+### Supplied hypothesis ranking scope correction
+
+Row38's independent binary odds updates followed by normalization are a
+ranking heuristic, not categorical Bayesian inference. The fixed retirement
+threshold does not prove a hypothesis false. Supplied statements, priors and
+likelihood ratios are not discovered or independently verified. The API now
+states this scope. Validation of a complete update batch precedes local
+mutation, and row39's binary update uses finite log odds with absorbing0/1
+boundaries. This repairs arithmetic/validation only, not full row38 cognition.
