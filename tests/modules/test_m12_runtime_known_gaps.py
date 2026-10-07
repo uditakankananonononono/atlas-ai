@@ -302,17 +302,30 @@ def test_reported_model_identity_mismatch_currently_accepted():
  assert result.model_id=='substituted-unrequested-model'
  assert result.metadata['requested_model_id']=='first'
 
-def test_non_dict_usage_currently_accepted_without_shape_validation():
- # Characterization, not usage-schema advice: the executor copies usage only when it is
- # already a dict and lets any other shape through unvalidated, so a provider returning
- # a list (or any custom shape) is accepted as success. Usage field completeness is not
- # established here.
+@pytest.mark.parametrize('bad_usage',[['not','a','dict'],'usage',900,None,{1:12},{'input_tokens':'900'},{'input_tokens':True},{'input_tokens':1.5}])
+def test_declared_usage_shape_violation_held_unknown_without_fallback(bad_usage):
+ # Repair pin: the declared ModelResult usage shape is a string-to-integer mapping.
+ # A provider returning any other shape (non-dict, non-string keys, non-integer or
+ # boolean values) is held as ProviderOutcomeUnknown after the first call, with no
+ # fallback invocation, because the generation effect already happened. This replaces
+ # the earlier characterization that such results were accepted as success.
+ from app.core.providers import ProviderOutcomeUnknown
+ calls=[]
  class Provider:
   async def generate(self,*,model_id,prompt,context):
-   return ModelResult('fixture',model_id,.95,usage=['not','a','dict'])
+   calls.append(model_id);return ModelResult('fixture',model_id,.95,usage=bad_usage)
+ executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
+ with pytest.raises(ProviderOutcomeUnknown):asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
+ assert calls==['first']
+
+def test_valid_usage_mapping_still_accepted_after_shape_guard():
+ calls=[]
+ class Provider:
+  async def generate(self,*,model_id,prompt,context):
+   calls.append(model_id);return ModelResult('fixture',model_id,.95,usage={'input_tokens':900,'output_tokens':100})
  executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
  result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
- assert result.model_id=='first' and result.usage==['not','a','dict']
+ assert result.usage=={'input_tokens':900,'output_tokens':100} and calls==['first']
 
 def test_per_request_budget_only_no_aggregate_spend_tracking():
  # Characterization, not billing advice: budget is enforced per request inside router
@@ -346,11 +359,12 @@ def test_low_confidence_provider_text_interpolated_verbatim_into_critique_prompt
  assert 'UNTRUSTED-PROVIDER-MARKER' in prompts[1] and 'original-task' in prompts[1]
 
 def test_arbitrary_provider_metadata_flows_through_unfiltered():
- # Characterization, not metadata-schema advice: the envelope guard already requires an
- # exact ModelResult with metadata of exact dict type, plus typed text/model_id, UTF-8
- # encodable text, and confidence/logprob constraints. Within that exact-dict metadata,
- # custom nested values of any shape are shallow-copied through unvetted; this pin covers
- # only that passthrough, not the envelope guards.
+ # Characterization, not metadata-schema advice: the envelope guard already requires a
+ # ModelResult instance (isinstance, so subclasses pass) with metadata of exact dict
+ # type, plus typed text/model_id, UTF-8 encodable text, and confidence/logprob
+ # constraints. Within that exact-dict metadata, custom nested values pass through
+ # unvetted; this pin tests a nested dict/list example, not every shape, and does not
+ # cover the envelope guards.
  class Provider:
   async def generate(self,*,model_id,prompt,context):
    return ModelResult('fixture',model_id,.95,metadata={'unvetted_provider_field':{'nested':[1,2,3]}})
@@ -362,7 +376,8 @@ def test_failed_dag_rerun_reexecutes_completed_nodes_no_durable_replay():
  # Characterization, not replay advice: DagEngine run state is in-memory only.
  # WorkflowNodeFailure retains completed sibling outputs in the raised object, but a
  # later run of the same workflow re-executes every node, including completed ones.
- # Durable DAG resume/replay and rollback are not established here.
+ # This pin shows durable resume/replay is absent; it does not show rollback behavior
+ # or any acceptance.
  from app.modules.m12_ai_research_lab.workflow import DagEngine,Workflow,WorkflowNodeFailure
  wf=Workflow.from_yaml("name: replay-check\nnodes:\n  - id: a\n    task: t\n  - id: b\n    task: t\n    depends_on: [a]\n")
  calls=[]
