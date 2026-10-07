@@ -1,0 +1,47 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_failed_method_activation_write_keeps_proposed_method_unmatchable _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3c5c5441a0>
+
+    def test_failed_method_activation_write_keeps_proposed_method_unmatchable(monkeypatch):
+     runtime,repo=make_runtime(model=StubPlannerModel([{'title':'read'}]))
+     runtime.planner.decompose('fixture method approval')
+     method=next(iter(runtime.planner.methods.values()))
+     def fail(*args,**kwargs):raise RuntimeError('fixture method status write unavailable')
+     monkeypatch.setattr(repo,'set_method_status',fail)
+     with pytest.raises(RuntimeError):runtime.planner.activate_method(method.name,expected_hash=runtime.planner.method_review_hash(method))
+>    assert runtime.planner.method_status(method.name)=='proposed'
+E    AssertionError: assert 'active' == 'proposed'
+E      
+E      - proposed
+E      + active
+
+tests/modules/test_m20_runtime_depth.py:2278: AssertionError
+_____ test_failed_method_usage_or_outcome_write_keeps_committed_statistics _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3c5c4134a0>
+
+    def test_failed_method_usage_or_outcome_write_keeps_committed_statistics(monkeypatch):
+     runtime,repo=make_runtime()
+     runtime.planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='read')]))
+     original=runtime.planner.methods['fixture']
+     def fail(*args,**kwargs):raise RuntimeError('fixture method write unavailable')
+     monkeypatch.setattr(repo,'save_method',fail)
+     with pytest.raises(RuntimeError):runtime.planner.decompose('fixture')
+>    assert runtime.planner.methods['fixture']==original
+E    assert HTNMethod(id=...cess_rate=0.0) == HTNMethod(id=...cess_rate=0.0)
+E      
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2289: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_method_activation_write_keeps_proposed_method_unmatchable
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_method_usage_or_outcome_write_keeps_committed_statistics
+2 failed, 160 deselected, 1 warning in 1.87s

@@ -2266,3 +2266,39 @@ def test_skill_replacement_one_transaction_keeps_version_history_and_one_active(
  loaded=DurableSkillLibrary.load(library.repo)
  assert loaded.find_by_name('fixture').id==new.id and new.version==2
  assert {s.id:s.status for s in loaded.list()}=={old.id:SkillStatus.RETIRED,new.id:SkillStatus.ACTIVE}
+
+
+def test_failed_method_activation_write_keeps_proposed_method_unmatchable(monkeypatch):
+ runtime,repo=make_runtime(model=StubPlannerModel([{'title':'read'}]))
+ runtime.planner.decompose('fixture method approval')
+ method=next(iter(runtime.planner.methods.values()))
+ def fail(*args,**kwargs):raise RuntimeError('fixture method status write unavailable')
+ monkeypatch.setattr(repo,'set_method_status',fail)
+ with pytest.raises(RuntimeError):runtime.planner.activate_method(method.name,expected_hash=runtime.planner.method_review_hash(method))
+ assert runtime.planner.method_status(method.name)=='proposed'
+ assert runtime.planner._match_method('fixture method approval') is None
+
+
+def test_failed_method_usage_or_outcome_write_keeps_committed_statistics(monkeypatch):
+ runtime,repo=make_runtime()
+ runtime.planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='read')]))
+ original=runtime.planner.methods['fixture']
+ def fail(*args,**kwargs):raise RuntimeError('fixture method write unavailable')
+ monkeypatch.setattr(repo,'save_method',fail)
+ with pytest.raises(RuntimeError):runtime.planner.decompose('fixture')
+ assert runtime.planner.methods['fixture']==original
+ with pytest.raises(RuntimeError):runtime.planner.record_outcome('fixture',True)
+ assert runtime.planner.methods['fixture']==original
+ assert repo.list_methods()[0][0]==original
+
+
+def test_failed_method_replacement_keeps_active_review_status_and_old_content(monkeypatch):
+ runtime,repo=make_runtime()
+ original=runtime.planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='old')]))
+ from app.modules.m20_general_cognitive_worker.schemas import MethodSource
+ def fail(*args,**kwargs):raise RuntimeError('fixture replacement unavailable')
+ monkeypatch.setattr(repo,'save_method',fail)
+ with pytest.raises(RuntimeError):runtime.planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,subtasks=[PlanNode(title='new')]))
+ assert runtime.planner.method_status('fixture')=='active'
+ assert runtime.planner.methods['fixture']==original
+ assert runtime.planner._match_method('fixture').subtasks[0].title=='old'
