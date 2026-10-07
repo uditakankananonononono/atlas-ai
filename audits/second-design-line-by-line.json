@@ -1498,7 +1498,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M20 CognitiveWorkerService composes sensory/memory/planning/tool/safety/reflection mechanisms plus runtime/product adapters. Any nonphysical cognitive task/human-superior general autonomy is not an acceptance criterion established by component count; no AGI/general-capability readiness. No external worker/model/device action. Status unverified."
     },
     {
       "row": 136,
@@ -1509,7 +1509,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only. M20 audit scope continues; no capability evidence supplied by a heading. Status unverified."
     },
     {
       "row": 137,
@@ -1520,7 +1520,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Facade has memories/task contexts/HTN/scheduler/tools/safety seams and judgment prompt skills explicitly marked scaffolds. Durable runtime adapters exist separately; all-modal interface, every-interaction learning and weeks-long autonomous outcomes require grounded integration/performance/permission tests. Not universal action authority. No provider/irreversible effect. Status unverified."
     },
     {
       "row": 138,
@@ -1531,7 +1531,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only, not implementation acceptance. Status unverified."
     },
     {
       "row": 139,
@@ -1542,7 +1542,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Facade composition instantiates subsystems, not scientific validation of a unified mind/Soar/ACTR/deep-learning equivalence. Specific mechanisms require separate code/test scope; no broad cognitive claims accepted. Status unverified."
     },
     {
       "row": 140,
@@ -1553,7 +1553,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only. No multimodal acceptance from heading. Status unverified."
     },
     {
       "row": 141,
@@ -1564,7 +1564,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "SensoryLayer has text/JSON/CSV/image/audio/document handlers with injected vision/transcriber/parser; source hashes/timestamps and outputs exist. Production spaCy/transformer relationships/OCR/Whisper diarization/all-database-to-M09 ingestion not established by scoped read. No image/audio/user-source/model effect. Status unverified."
     },
     {
       "row": 142,
@@ -1575,7 +1575,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "WorkingMemory default attention uses lexical goal overlap/salience/confidence/recency priors. SensoryLayer normalizes inputs/dedupes, not adaptive salience learning by user interactions. No personalized learned attention acceptance. Status unverified."
     },
     {
       "row": 143,
@@ -1586,7 +1586,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only; no working-memory acceptance. Status unverified."
     },
     {
       "row": 144,
@@ -1597,7 +1597,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "WorkingMemory bounded chunk store defaults50 with configurable attention controller, SQL/Redis persistence adapters separate. Literal Redis-list runtime backend for all contexts and scientifically human-memory-span equivalence not established by scoped read. Typed chunk fields exist; no whole-system persisted continuity acceptance. Status unverified."
     },
     {
       "row": 145,
@@ -1608,7 +1608,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "WorkingMemory scores/re-scores on capacity enforcement and removes weakest chunk; explicit refresh_attention exists. Background specialized-LLM merging/episodic promotion/age-based forgetting not established in this in-process implementation. No user/model memory mutation. Status unverified."
     },
     {
       "row": 146,
@@ -1619,7 +1619,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Working-memory add/query/context mechanisms and reasoning scaffolds exist; demonstrated automatic chunk abstraction/decomposition with numerically grounded hierarchical reasoning requires specific tests. No cognitive generalization acceptance. Status unverified."
     },
     {
       "row": 147,
