@@ -3,7 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime
 from threading import RLock
-from sqlalchemy import JSON,DateTime,Float,Integer,String,Text,select
+from sqlalchemy import JSON,DateTime,Float,Integer,String,Text,select,update
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 from .schemas import *
@@ -28,11 +28,22 @@ def _decision(r):return Decision(id=r.id,idea_id=r.idea_id,from_stage=IdeaStage(
 class SqlIdeaRepository:
     def __init__(self,tenant_id:str,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def save_idea(self,x,expected_version=None):
+        values={"title":x.title,"problem":x.problem,"proposed_solution":x.proposed_solution,"tags":x.tags,"metadata_json":x.metadata,"stage":x.stage.value,"version":x.version,"created_at":x.created_at,"updated_at":x.updated_at}
+        if expected_version is not None:
+            # A single conditional UPDATE closes the gap between the service's
+            # read and this write: a concurrent save that already moved the
+            # version makes this claim match no row. The write transaction holds
+            # no earlier read of the row, so the check is evaluated at write time.
+            with self.sessions.begin() as db:
+                claimed=db.execute(update(IdeaRow).where(IdeaRow.tenant_id==self.tenant_id,IdeaRow.id==x.id,IdeaRow.version==expected_version).values(**values))
+                if claimed.rowcount!=1:
+                    db.rollback()
+                    raise RuntimeError("idea changed; refresh before deciding")
+            return x
         with self.sessions.begin() as db:
             r=db.scalar(select(IdeaRow).where(IdeaRow.tenant_id==self.tenant_id,IdeaRow.id==x.id))
-            if r and expected_version is not None and r.version!=expected_version:raise RuntimeError("idea changed; refresh before deciding")
             if r is None:r=IdeaRow(tenant_id=self.tenant_id,id=x.id);db.add(r)
-            for k,v in {"title":x.title,"problem":x.problem,"proposed_solution":x.proposed_solution,"tags":x.tags,"metadata_json":x.metadata,"stage":x.stage.value,"version":x.version,"created_at":x.created_at,"updated_at":x.updated_at}.items():setattr(r,k,v)
+            for k,v in values.items():setattr(r,k,v)
         return x
     def get_idea(self,i):
         with self.sessions() as db:r=db.scalar(select(IdeaRow).where(IdeaRow.tenant_id==self.tenant_id,IdeaRow.id==i));return _idea(r) if r else None
