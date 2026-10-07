@@ -866,3 +866,7 @@ Raw resolve acceptedstring"false"as truthycorrect, assess acceptedboolconfidence
 ## Observed calibration public snapshots
 
 assess/resolve returnedinternalclaim and publicmapping exposed it, permitting uncheckedconfidence/outcomechange withoutSQLwrite. One failingcanary retained. Privateclaimstore/detachedread-onlymapping/deepreturn snapshots; durableloader usesprivatehydration.120metacognition/HTTP/runtimepass1warning; recorded87adjacent2271pass2warnings36.90s. Mutatingreturnedpredictiondoesn'tresolvemetric, mutatingresolved/publicsnapshot leaveserror0.8. Localintegrityonly, not empirical label truth, privatePythonisolation,SQLcrashatomicity, immutableprovenance or predictivecalibration. HTTPcoercion unchanged; full9813pass predatestwelvelaterfixes.
+
+## Calibration HTTP strict-input boundary
+
+Priorrawguards were bypassed by requestcoercion: bool/stringconfidence,stringcount/stringoutcomeaccepted; countabove10**15raisedunhandledValueError. Five initialfailuresretained. Claimrequest strictfiniteboundednumber/count and StrictBooloutcome return422beforeengine.125metacognition/HTTP/runtimepass1warning; recorded87adjacent2276pass2warnings41.47s. This binds transport to rawtypedmetrics, not labeltruth/authenticatedobservation/predictivecalibration. Full9813pass predatesthirteenlaterfixes; no productionclaim.
