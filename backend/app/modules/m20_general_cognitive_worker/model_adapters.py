@@ -153,13 +153,13 @@ class FreeFirstExecutiveModel:
         try:
             provider, model, text = _run(model_catalog.generate_free_first(prompt, self.model_name, private=True))
         except ProviderError as exc:
-            return {"available": False, "error": str(exc)}
+            return {"available": False, "failure_kind": "provider_unavailable", "error": str(exc)}
         try:
             data = extract_json(text)
         except ValueError:
-            return {"available":False,"error":"executive model returned invalid JSON","route":f"{provider}/{model}"}
+            return {"available":False,"failure_kind":"invalid_output","error":"executive model returned invalid JSON","route":f"{provider}/{model}"}
         if not isinstance(data, dict):
-            return {"available":False,"error":"executive model must return JSON object","route":f"{provider}/{model}"}
+            return {"available":False,"failure_kind":"invalid_output","error":"executive model must return JSON object","route":f"{provider}/{model}"}
         valid = True
         if purpose == "reason":
             valid = isinstance(data.get("result"), str) and bool(data["result"].strip())
@@ -168,7 +168,7 @@ class FreeFirstExecutiveModel:
                      and isinstance(data.get("fix"), str) and bool(data["fix"].strip())
                      and type(data.get("retry")) is bool)
         if not valid:
-            return {"available": False, "error": "executive model purpose schema mismatch",
+            return {"available": False, "failure_kind": "invalid_output", "error": "executive model purpose schema mismatch",
                     "route": f"{provider}/{model}"}
         data.setdefault("route", f"{provider}/{model}")
         return data

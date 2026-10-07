@@ -1022,3 +1022,7 @@ User1:24:29scope sharpened towardreal-worldfunctionalbuildout. Two actual initia
 ## Actual local ideation acceptance failed
 
 Parent authorized pinnedlocaltrial afteruserbuildmandate. SameverifiedGGUF/runner, freshloopback18961/2threads/1024ctx/256outputtokens/syntheticonly. Actualproductionprovider/adapter transport withrecordingwrapper thatforwardsrealcalls, no mock/native-schema/promptsubstitution.0/2accepted: both truncatedinvalidJSON, librarysamplewrongcount/checktypes; homeworkcomplexsurveillanceproposal/stringrisks/unrelatedchecks. Vaguefirsttests. Rawoutputsverbatim/logs/scriptretained underlocal-qwen-ideation-acceptance.23.30stotal/599896KiBpeak/serverstopped. Explicitstatus: plumbingworksfixtures, pinnedmodeltooweakforconfiguredworkflow, real-worldideationnotfunctional.256tokenlimitcontributes;2samplesnotproofalldifferentconfigurationsfail. Legacyfixedframedowngrade staysnamed. Noexternalaction/spend/newweights. Latestfull10022source69d6262 predatesthreecodefixes.
+
+## Ideation output failure diagnostics
+
+Actuallocaltrial exposed malformedoutput misreported as providerunavailable. One reproducedcanary retained. Executiveadapterfailurekind distinguishesinvalid_output/provider_unavailable; ideationinvalidoutput nowValueError/HTTP422, unavailableRuntimeError/503.96reflection/routes/runtimepass1warning; recorded87adjacent2448pass2warnings45.13s. Diagnosticcorrection only; failedliveideation0/2unchanged, no rerun or qualityupgradeclaim. Latestfull10022passsource69d6262 predatesfourlatercodefixes.

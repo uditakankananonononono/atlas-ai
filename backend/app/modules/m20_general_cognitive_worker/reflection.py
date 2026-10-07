@@ -157,6 +157,8 @@ class ModelIdeationEngine:
         if not isinstance(response, dict):
             raise ValueError("ideation model must return an object")
         if response.get("available") is False:
+            if response.get("failure_kind") == "invalid_output":
+                raise ValueError(str(response.get("error", "invalid model output")))
             raise RuntimeError("ideation model unavailable; no template fallback")
         ideas = response.get("ideas")
         if not isinstance(ideas, list) or len(ideas) != count:
