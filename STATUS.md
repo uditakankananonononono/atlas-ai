@@ -862,3 +862,7 @@ Constructor acceptedNaN/Infinityclock, boolsimulations/fractionaldepth and inval
 ## Observed calibration raw-input correction
 
 Raw resolve acceptedstring"false"as truthycorrect, assess acceptedboolconfidence/fractionalorboolcount, zero bins silently empty. Five initial failures retained. Exactbooloutcome/finite numericconfidence0..1/integercount0..10**15/integerbins1..1000 validate.119metacognition/HTTP/runtimepass1warning; recorded87adjacent2270pass2warnings40.30s. Invalid correctness rejected before mutation. Observed supplied-label metrics only, not truth of outcome labels, predictive recalibration/epistemic boundary, mutable-public-claim immunity or production certification. HTTPpydanticcoercion separate; no claim that raw guard establishes strict transport inputs. Full9813pass predates elevenlaterfixes.
+
+## Observed calibration public snapshots
+
+assess/resolve returnedinternalclaim and publicmapping exposed it, permitting uncheckedconfidence/outcomechange withoutSQLwrite. One failingcanary retained. Privateclaimstore/detachedread-onlymapping/deepreturn snapshots; durableloader usesprivatehydration.120metacognition/HTTP/runtimepass1warning; recorded87adjacent2271pass2warnings36.90s. Mutatingreturnedpredictiondoesn'tresolvemetric, mutatingresolved/publicsnapshot leaveserror0.8. Localintegrityonly, not empirical label truth, privatePythonisolation,SQLcrashatomicity, immutableprovenance or predictivecalibration. HTTPcoercion unchanged; full9813pass predatestwelvelaterfixes.

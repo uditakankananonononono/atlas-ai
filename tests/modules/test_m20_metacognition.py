@@ -403,3 +403,16 @@ def test_calibration_exact_numeric_confidence_integer_count(confidence, count):
 def test_calibration_zero_bins_is_invalid_not_empty_evidence():
     with pytest.raises(ValueError):
         CalibrationEngine().calibration_curve(bins=0)
+
+
+def test_calibration_public_snapshots_cannot_change_metrics():
+    engine = CalibrationEngine()
+    claim = engine.assess_claim("claim", 0.8)
+    claim.confidence = 0
+    claim.resolved = True
+    claim.correct = True
+    assert engine.calibration_curve() == []
+    resolved = engine.resolve(claim.id, False)
+    resolved.correct = True
+    engine.claims[claim.id].confidence = 0
+    assert engine.calibration_error() == pytest.approx(0.8)

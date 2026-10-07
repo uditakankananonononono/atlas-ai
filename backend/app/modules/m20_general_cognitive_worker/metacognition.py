@@ -331,7 +331,12 @@ class CalibrationEngine:
     predictive confidence correction are unavailable, not invented."""
 
     def __init__(self) -> None:
-        self.claims: dict[str, Claim] = {}
+        self._claims: dict[str, Claim] = {}
+
+    @property
+    def claims(self):
+        from types import MappingProxyType
+        return MappingProxyType(deepcopy(self._claims))
 
     def _confidence_ceiling(self, evidence_count: int) -> None:
         return None  # Counts alone do not establish evidence-supported odds.
@@ -343,21 +348,21 @@ class CalibrationEngine:
         reason = "Knowledge-boundary assessment unavailable; confidence and evidence count are caller supplied"
         claim = Claim(id=_uid(), text=text, confidence=confidence,
                       evidence_count=evidence_count, flagged=flagged, flag_reason=reason)
-        self.claims[claim.id] = claim
-        return claim
+        self._claims[claim.id] = claim
+        return deepcopy(claim)
 
     def resolve(self, claim_id: str, correct: bool) -> Claim:
         if type(correct) is not bool:
             raise ValueError("correctness must be exact bool")
-        claim = self.claims[claim_id]
+        claim = self._claims[claim_id]
         claim.resolved = True
         claim.correct = correct
-        return claim
+        return deepcopy(claim)
 
     def calibration_curve(self, *, bins: int = 5) -> list[dict[str, float]]:
         if type(bins) is not int or not 1 <= bins <= 1000:
             raise ValueError("bins must be integer1..1000")
-        resolved = [c for c in self.claims.values() if c.resolved]
+        resolved = [c for c in self._claims.values() if c.resolved]
         out = []
         for i in range(bins):
             lo, hi = i / bins, (i + 1) / bins
