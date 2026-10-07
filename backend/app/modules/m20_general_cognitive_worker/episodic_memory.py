@@ -20,11 +20,12 @@ class EpisodicMemory:
         self._vectors: dict[str, list[float]] = {}
 
     def record(self, episode: Episode) -> Episode:
+        episode = episode.model_copy(deep=True)
         if not episode.embedding_text:
             episode.embedding_text = self._embed_text(episode)
         self._episodes[episode.id] = episode
         self._vectors[episode.id] = self.embedder.embed(episode.embedding_text)
-        return episode
+        return episode.model_copy(deep=True)
 
     def log_execution(
         self,
@@ -55,20 +56,22 @@ class EpisodicMemory:
         ]
         scored = [(ep, s) for ep, s in scored if s >= min_score]
         scored.sort(key=lambda pair: pair[1], reverse=True)
-        return scored[:limit]
+        return [(ep.model_copy(deep=True),score) for ep,score in scored[:limit]]
 
     def for_task(self, task_id: str) -> list[Episode]:
-        return [ep for ep in self._episodes.values() if ep.task_id == task_id]
+        return [ep.model_copy(deep=True) for ep in self._episodes.values() if ep.task_id == task_id]
 
     def successful_patterns(self, *, min_actions: int = 2) -> list[Episode]:
         """Successful multi-step episodes: candidates for skill learning."""
         return [
-            ep for ep in self._episodes.values()
+            ep.model_copy(deep=True) for ep in self._episodes.values()
             if ep.outcome == EpisodeOutcome.SUCCEEDED and len(ep.actions) >= min_actions
+            and all(action.succeeded for action in ep.actions)
         ]
 
     def get(self, episode_id: str) -> Episode | None:
-        return self._episodes.get(episode_id)
+        episode = self._episodes.get(episode_id)
+        return episode.model_copy(deep=True) if episode is not None else None
 
     def __len__(self) -> int:
         return len(self._episodes)
