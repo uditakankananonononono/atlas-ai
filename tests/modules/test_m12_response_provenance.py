@@ -576,3 +576,13 @@ def test_provider_usage_and_logprob_containers_not_rewriteable_through_retained_
  if mutate=='usage':usage['input_tokens']=999
  else:logprobs[0]=-100
  assert result.usage=={'input_tokens':12} and result.logprobs==[0,-.2] and result.confidence==original_confidence
+
+def test_direct_executor_provider_context_uses_request_tenant_not_caller_override():
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ seen=[];context={'tenant_id':'spoofed','custom':'retained'}
+ class Provider:
+  async def generate(self,**kwargs):seen.append(kwargs['context']);return ModelResult('fixture','first',.9)
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'request-tenant'),'fixture',context))
+ assert seen[0]['tenant_id']=='request-tenant' and seen[0]['custom']=='retained'
+ assert context=={'tenant_id':'spoofed','custom':'retained'} and result.text=='fixture'

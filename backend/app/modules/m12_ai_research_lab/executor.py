@@ -43,7 +43,7 @@ class ResearchExecutor:
         decision=self.router.route(req); diagnostics={"route_scores":{key:value if isfinite(value) else None for key,value in decision.scores.items()},"route_reasons":decision.reasons}; choices=(decision.primary,)+decision.fallbacks; history=[]; context=dict(context or {})
         for attempt in range(min(policy.max_attempts,len(choices))):
             model=choices[attempt]
-            result=await self.provider.generate(model_id=model.model_id,prompt=prompt,context={**context,"attempt_history":[dict(item) for item in history]})
+            result=await self.provider.generate(model_id=model.model_id,prompt=prompt,context={**context,"tenant_id":req.tenant_id,"attempt_history":[dict(item) for item in history]})
             if not isinstance(result,ModelResult) or type(result.metadata) is not dict:
                 raise ProviderOutcomeUnknown("Returned model result envelope or metadata is unusable; no automatic retry")
             if type(result.text) is not str or type(result.model_id) is not str or not result.model_id.strip():
