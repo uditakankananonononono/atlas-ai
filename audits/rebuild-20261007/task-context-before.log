@@ -1,0 +1,27 @@
+........................................................................ [ 83%]
+.............F                                                           [100%]
+=================================== FAILURES ===================================
+__ test_runtime_task_context_input_is_durable_replay_safe_and_reaches_planner __
+
+mounted = (<starlette.testclient.TestClient object at 0x7fb4c2b8e930>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7fb4c3511d90>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7fb4c3513bc0>)
+
+    def test_runtime_task_context_input_is_durable_replay_safe_and_reaches_planner(mounted):
+        client, runtime, repo, _ = mounted
+        task = runtime.submit_goal('fixture input', run_immediately=False)
+        path = f'/api/modules/20/runtime/tasks/{task.id}/context'
+        payload = {'text': 'Supplier cutoff is 16:00 in supplied note', 'source': 'supplied-note', 'reference': 'note-1'}
+        response = client.post(path, json=payload)
+>       assert response.status_code == 201
+E       assert 404 == 201
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_m20_runtime_depth.py:1299: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_task_context_input_is_durable_replay_safe_and_reaches_planner
+1 failed, 85 passed, 1 warning in 5.23s

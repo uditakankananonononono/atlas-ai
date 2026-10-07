@@ -203,6 +203,28 @@ class GCWRuntime:
         context = self.scheduler.get(task_id)
         return context or self.repo.load_task(task_id)
 
+    def add_task_context(self, task_id, *, text, source, reference):
+        context = self.get_task(task_id)
+        if context is None: raise KeyError(task_id)
+        if self.repo.list_retrospectives(task_id=task_id):
+            raise ValueError('context conflict; task is closed')
+        for value, limit in ((text, 4000), (source, 200), (reference, 200)):
+            if not isinstance(value, str) or not value.strip() or len(value) > limit:
+                raise ValueError('bounded nonempty text/source/reference required')
+        import json
+        identity = hashlib.sha256(json.dumps([self.tenant_id, task_id, source, reference]).encode()).hexdigest()
+        content = f"unverified supplied context [source {source}; reference {reference}]: {text}"
+        previous = self.working_memory.get(identity)
+        if previous is not None:
+            if previous.content != content:
+                raise ValueError('context conflict; reference already has different content')
+            return {'chunk_id': identity, 'inserted': False, 'source_verified': False}
+        self.working_memory.put(MemoryChunk(id=identity, type=ChunkType.HYPOTHESIS,
+            content=content, confidence=0.0, source='supplied_task_context'),
+            active_goal=context.goal, partition=task_id)
+        return {'chunk_id': identity, 'inserted': self.working_memory.get(identity) is not None,
+                'source_verified': False, 'replay_scope': 'retained_working_memory_only'}
+
     def list_tasks(self) -> list[TaskContext]:
         return self.repo.list_tasks()
 
