@@ -105,7 +105,17 @@ class HTNPlanner:
             copy.attempts = 0
             copy.approval_id = None
             copy.result_summary = ""
+            copy.output = None
+        def remap(value):
+            if isinstance(value, dict):
+                result = {key: remap(item) for key, item in value.items()}
+                if isinstance(result.get('$step'), str):
+                    result['$step'] = id_map.get(result['$step']) or title_map.get(result['$step']) or result['$step']
+                return result
+            if isinstance(value, list): return [remap(item) for item in value]
+            return value
         for copy in copies:
+            copy.arguments = remap(copy.arguments)
             copy.depends_on = [
                 id_map.get(dep) or title_map.get(dep) or dep
                 for dep in copy.depends_on

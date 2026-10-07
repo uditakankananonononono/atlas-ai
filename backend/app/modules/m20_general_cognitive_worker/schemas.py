@@ -120,6 +120,7 @@ class ActionRecord(BaseModel):
     task_id: str | None = None
     arguments: dict[str, Any] = Field(default_factory=dict)
     result_summary: str = ""
+    result: dict[str, Any] | None = None
     succeeded: bool = True
     started_at: datetime = Field(default_factory=utcnow)
     finished_at: datetime | None = None
@@ -178,6 +179,7 @@ class PlanNode(BaseModel):
     attempts: int = 0
     approval_id: str | None = None
     result_summary: str = ""
+    output: dict[str, Any] | None = None
 
 
 class HTNMethod(BaseModel):

@@ -217,6 +217,7 @@ class GCWRuntime:
             node.attempts = 0
             node.approval_id = None
             node.result_summary = ''
+            node.output = None
         updated = context.model_copy(deep=True)
         updated.plan = nodes
         updated.state = TaskState.PLANNING

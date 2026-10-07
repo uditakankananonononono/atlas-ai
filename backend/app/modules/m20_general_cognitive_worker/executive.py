@@ -18,6 +18,7 @@ Everything the executive thinks lands in a transparent TraceEntry stream.
 from __future__ import annotations
 
 import math
+import copy
 import random
 from time import monotonic
 from dataclasses import dataclass, field
@@ -185,6 +186,7 @@ class DeliberativeLoop:
             node.attempts = 0
             node.approval_id = None
             node.result_summary = ""
+            node.output = None
         self._trace("observe", f"goal accepted: {context.goal}", task_id=context.id)
         analogies = self.episodic.recall_similar(context.goal, limit=3)
         for episode, score in analogies:
@@ -218,6 +220,30 @@ class DeliberativeLoop:
         if self.before_run is not None:
             self.before_run(context)
         return self.run(context, budget=budget, yield_on_boundary=yield_on_boundary)
+
+    def _resolved_arguments(self, context, node):
+        predecessors = {n.id: n for n in context.plan if n.id in node.depends_on}
+        def resolve(value, depth=0):
+            if depth > 32: raise ToolBlockedError(node.tool, ['argument binding depth exceeds32'])
+            if isinstance(value, dict):
+                if '$step' in value:
+                    if set(value) != {'$step', 'path'} or not isinstance(value['$step'], str) or not isinstance(value['path'], list):
+                        raise ToolBlockedError(node.tool, ['invalid step output reference'])
+                    prior = predecessors.get(value['$step'])
+                    if prior is None or prior.state != TaskState.SUCCEEDED or prior.output is None:
+                        raise ToolBlockedError(node.tool, ['reference requires successful direct dependency with structured output'])
+                    output = prior.output
+                    for part in value['path']:
+                        if isinstance(output, dict) and isinstance(part, str) and part in output:
+                            output = output[part]
+                        elif isinstance(output, list) and type(part) is int and 0 <= part < len(output):
+                            output = output[part]
+                        else: raise ToolBlockedError(node.tool, ['step output reference path not found'])
+                    return copy.deepcopy(output)
+                return {k: resolve(v, depth+1) for k, v in value.items()}
+            if isinstance(value, list): return [resolve(v, depth+1) for v in value]
+            return copy.deepcopy(value)
+        return resolve(node.arguments)
 
     def run(self, context: TaskContext, *, budget: Budget | None = None, yield_on_boundary: bool = False) -> TaskContext:
         budget = budget or Budget()
@@ -289,13 +315,14 @@ class DeliberativeLoop:
             try:
                 import asyncio
                 record = _run_async(self.dispatcher.dispatch(
-                    node.tool, node.arguments, task_id=context.id,
+                    node.tool, self._resolved_arguments(context, node), task_id=context.id,
                     granted_approval_id=node.approval_id, risk_floor=node.risk,
                 ))
                 if record.succeeded:
                     node.state = TaskState.SUCCEEDED
                     node.approval_id = None
                     node.result_summary = record.result_summary
+                    node.output = copy.deepcopy(record.result)
                     self._trace("act", f"{node.tool} succeeded", task_id=context.id)
                     self._evaluate_expectation(context, node, record)
                 else:

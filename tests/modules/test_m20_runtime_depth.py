@@ -1451,3 +1451,72 @@ def test_supplied_plan_cannot_bypass_external_step_approval_or_import_success():
     assert result.state == TaskState.WAITING_APPROVAL
     assert result.plan[0].approval_id != 'invented'
     assert result.plan[0].attempts == 1
+
+
+def test_runtime_plan_structured_dataflow_survives_between_step_restart():
+    runtime, repo = make_runtime()
+    task = runtime.submit_goal('fixture data flow', run_immediately=False)
+    runtime.prepare_supplied_plan(task.id, steps=[
+        {'id': 'fetch', 'title': 'fetch fixture', 'tool': 'fixture_fetch'},
+        {'id': 'sum', 'title': 'sum fixture', 'tool': 'fixture_sum', 'depends_on': ['fetch'],
+         'arguments': {'values': {'$step': 'fetch', 'path': ['values']}}},
+    ])
+    async def fetch(args): return {'values': [20, 22], 'metadata': {'source': 'fixture'}}
+    runtime.tools.register(ToolSpec(name='fixture_fetch', description='fixture', risk=Risk.READ), fetch)
+    runtime.run_task(task.id, max_ticks=1, yield_on_boundary=True)
+    assert repo.load_task(task.id).plan[0].output == {'values': [20, 22], 'metadata': {'source': 'fixture'}}
+    restored = make_runtime(hydrate_repo=repo)
+    calls = []
+    async def total(args):
+        calls.append(args['values']); return {'total': sum(args['values'])}
+    restored.tools.register(ToolSpec(name='fixture_sum', description='fixture', risk=Risk.READ,
+        parameters={'type': 'object', 'properties': {'values': {'type': 'array', 'items': {'type': 'number'}}}, 'required': ['values']}), total)
+    result = restored.run_task(task.id, max_ticks=2)
+    assert result.state == TaskState.SUCCEEDED
+    assert calls == [[20, 22]]
+    assert result.plan[1].output == {'total': 42}
+    assert repo.list_actions(task_id=task.id)[-1].result == {'total': 42}
+
+
+def test_bound_arguments_review_uses_actual_output_and_invalid_path_blocks():
+    runtime, repo = make_runtime()
+    task = runtime.submit_goal('fixture bindings', run_immediately=False)
+    runtime.prepare_supplied_plan(task.id, steps=[
+        {'id':'a','title':'fetch','tool':'fetch'},
+        {'id':'b','title':'send','tool':'fixture_external','depends_on':['a'],
+         'arguments':{'recipient':{'$step':'a','path':['address']}}}])
+    async def fetch(args): return {'address':'fixture@example.invalid'}
+    calls=[]
+    async def send(args): calls.append(args); return {}
+    runtime.tools.register(ToolSpec(name='fetch',description='fixture',risk=Risk.READ),fetch)
+    runtime.tools.register(ToolSpec(name='fixture_external',description='fixture',risk=Risk.EXTERNAL),send)
+    context=runtime.run_task(task.id)
+    assert context.state == TaskState.WAITING_APPROVAL and calls == []
+    approval = runtime.safety.approvals.requests[context.plan[1].approval_id]
+    assert approval.arguments == {'recipient':'fixture@example.invalid'}
+    context.plan[1].state=TaskState.PENDING
+    context.plan[1].approval_id=None
+    context.plan[1].arguments['recipient']['path']=['absent']
+    context=runtime.run_task(task.id)
+    assert context.state == TaskState.BLOCKED and calls == []
+
+
+def test_method_instantiation_remaps_dataflow_and_clears_imported_output():
+    from app.modules.m20_general_cognitive_worker.htn_planner import HTNPlanner
+    method=HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[
+        PlanNode(id='a',title='fetch',tool='fetch',output={'imported':True}),
+        PlanNode(id='b',title='sum',tool='sum',depends_on=['a'],arguments={'data':{'$step':'a','path':[]}})])
+    planner=HTNPlanner();planner.register_method(method)
+    plan=planner.decompose('fixture')
+    assert plan[0].output is None
+    assert plan[1].arguments['data']['$step']==plan[0].id
+
+
+@pytest.mark.parametrize('value',[{'x':float('nan')},{'x':'x'*64001},['wrong type']])
+def test_dispatch_invalid_structured_result_not_promoted_to_success(value):
+    import asyncio
+    runtime,_=make_runtime()
+    async def handler(args): return value
+    runtime.tools.register(ToolSpec(name='fixture',description='fixture',risk=Risk.READ,max_retries=1),handler)
+    record=asyncio.run(runtime.dispatcher.dispatch('fixture',{}))
+    assert not record.succeeded and record.result is None

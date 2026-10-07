@@ -1,0 +1,65 @@
+........................................................................ [ 76%]
+.....................F                                                   [100%]
+=================================== FAILURES ===================================
+_____ test_runtime_plan_structured_dataflow_survives_between_step_restart ______
+
+    def test_runtime_plan_structured_dataflow_survives_between_step_restart():
+        runtime, repo = make_runtime()
+        task = runtime.submit_goal('fixture data flow', run_immediately=False)
+        runtime.prepare_supplied_plan(task.id, steps=[
+            {'id': 'fetch', 'title': 'fetch fixture', 'tool': 'fixture_fetch'},
+            {'id': 'sum', 'title': 'sum fixture', 'tool': 'fixture_sum', 'depends_on': ['fetch'],
+             'arguments': {'values': {'$step': 'fetch', 'path': ['values']}}},
+        ])
+        async def fetch(args): return {'values': [20, 22], 'metadata': {'source': 'fixture'}}
+        runtime.tools.register(ToolSpec(name='fixture_fetch', description='fixture', risk=Risk.READ), fetch)
+        runtime.run_task(task.id, max_ticks=1, yield_on_boundary=True)
+>       assert repo.load_task(task.id).plan[0].output == {'values': [20, 22], 'metadata': {'source': 'fixture'}}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_runtime_depth.py:1467: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PlanNode(id='fetch', title='fetch fixture', kind='task', tool='fixture_fetch', arguments={}, depends_on=[], risk=<Risk...max_attempts=3, attempts=1, approval_id=None, result_summary="{'values': [20, 22], 'metadata': {'source': 'fixture'}}")
+item = 'output'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+    
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+    
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'PlanNode' object has no attribute 'output'
+
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: AttributeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_plan_structured_dataflow_survives_between_step_restart
+1 failed, 93 passed, 1 warning in 5.55s
