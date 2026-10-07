@@ -40,6 +40,8 @@ class Chunk:
 
 class LocalKnowledgePipeline:
     SUPPORTED={'text/plain','text/html','text/markdown','application/json','audio/wav'}
+    # Upper bound for an on-disk manifest.json; see register().
+    MANIFEST_MAX_BYTES=1_000_000
     # application/pdf was removed: extraction was a UTF-8 paragraph split, not
     # genuine PDF decoding; accepting it as PDF would overstate the evidence.
     def __init__(self,root:Path,tenant_id:str,actor_id:str,*,embedder:Embedder|None=None,transcriber:Transcriber|None=None,clock=lambda:datetime.now(timezone.utc)):
@@ -103,14 +105,19 @@ class LocalKnowledgePipeline:
         self._check_consent(source)
         old=self.records.get(source.source_id)
         if old and old.tenant_id!=self.tenant_id: raise KnowledgeError('cross-tenant source access denied')
-        manifest=self._contained(source.source_id)/'manifest.json'
+        manifest=self._contained(source.source_id,'manifest.json')
         if manifest.exists():
             # The disk may record state from a prior process or another actor
             # of this tenant. Validate the manifest schema exactly, then
             # require equivalence with what this pipeline is about to write;
             # anything else fails closed rather than silently overwriting.
-            try: disk=json.loads(manifest.read_text(encoding='utf-8'))
-            except (OSError,UnicodeDecodeError,json.JSONDecodeError) as exc: raise KnowledgeError('unreadable on-disk manifest; refusing to overwrite prior state') from exc
+            # The read itself is bounded: a manifest records roughly 120
+            # bytes per version, so MANIFEST_MAX_BYTES admits on the order of
+            # 8000 recorded versions; larger refuses instead of reading
+            # unbounded.
+            raw=self._read_bounded_file(manifest,self.MANIFEST_MAX_BYTES,'refusing to overwrite prior state','on-disk manifest','exceed the manifest bound')
+            try: disk=json.loads(raw.decode('utf-8'))
+            except (UnicodeDecodeError,json.JSONDecodeError) as exc: raise KnowledgeError('unreadable on-disk manifest; refusing to overwrite prior state') from exc
             dv=self._validate_disk_manifest(disk)
             if disk.get('tenant_id')!=self.tenant_id: raise KnowledgeError('on-disk manifest tenant differs; refusing to overwrite prior state')
             disk_source=disk['source']
@@ -291,20 +298,32 @@ class LocalKnowledgePipeline:
         return {'source_id':source_id,'deleted':verified,'tracking_retained':not verified,'verified_at':self.clock().isoformat()}
     def _read_source_bytes(self,source_id:str,number:int,refusal:str)->bytes:
         # The filename is part of the containment check (symlinked source.bin
-        # rejected), and size is guarded BEFORE reading. The bound is the
-        # largest ENCODED size of any accepted ingest: text content is
-        # bounded at MAX_INGEST_CONTENT characters (up to 4 UTF-8 bytes
-        # each), byte content at MAX_INGEST_CONTENT bytes. A larger on-disk
-        # file is divergence, never something to read. The stat/read gap
-        # (TOCTOU) and the unbounded read_bytes after this check remain
-        # carried residuals.
+        # rejected). The bound is the largest ENCODED size of any accepted
+        # ingest: text content is bounded at MAX_INGEST_CONTENT characters
+        # (up to 4 UTF-8 bytes each), byte content at MAX_INGEST_CONTENT
+        # bytes. A larger on-disk file is divergence.
         blob=self._contained(source_id,f'v{number}','source.bin')
-        try:
-            if blob.stat().st_size>4*MAX_INGEST_CONTENT:
-                raise KnowledgeError(f'{refusal}: on-disk source bytes for version {number} exceed the ingest bound')
-            return blob.read_bytes()
-        except KnowledgeError: raise
-        except OSError as exc: raise KnowledgeError(f'{refusal}: on-disk source bytes for version {number} unreadable') from exc
+        return self._read_bounded_file(blob,4*MAX_INGEST_CONTENT,refusal,
+                                       f'on-disk source bytes for version {number}','exceed the ingest bound')
+
+    @staticmethod
+    def _read_bounded_file(blob:Path,limit:int,refusal:str,what:str,over:str)->bytes:
+        # Bounded, swap-resistant read: only regular files, and at most
+        # limit+1 bytes are ever pulled into memory, so a file grown or
+        # swapped after any earlier stat check cannot drive an unbounded
+        # allocation. O_NOFOLLOW refuses the file itself being swapped to a
+        # symlink between the containment check and the open. A swap of a
+        # PARENT component between check and open remains a carried TOCTOU
+        # residual; the CONTENT read may still differ from stat-time state.
+        import os as _os, stat as _stat
+        try: st=blob.stat()
+        except OSError as exc: raise KnowledgeError(f'{refusal}: {what} unreadable') from exc
+        if not _stat.S_ISREG(st.st_mode): raise KnowledgeError(f'{refusal}: {what} is not a regular file')
+        try: fd=_os.open(blob,_os.O_RDONLY|_os.O_NOFOLLOW)
+        except OSError as exc: raise KnowledgeError(f'{refusal}: {what} unreadable') from exc
+        with _os.fdopen(fd,'rb') as fh: data=fh.read(limit+1)
+        if len(data)>limit: raise KnowledgeError(f'{refusal}: {what} {over}')
+        return data
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
         import os as _os, uuid as _uuid
