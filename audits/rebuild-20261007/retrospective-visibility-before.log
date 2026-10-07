@@ -1,0 +1,50 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_failed_retrospective_write_never_publishes_uncommitted_lesson ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f11bbb6ea20>
+
+    def test_failed_retrospective_write_never_publishes_uncommitted_lesson(monkeypatch):
+     runtime,repo=make_runtime()
+     def fail(retro):raise RuntimeError('fixture retrospective write unavailable')
+     monkeypatch.setattr(repo,'save_retrospective',fail)
+     with pytest.raises(RuntimeError):
+      runtime.retrospectives.write('fixture',went_well=[],went_poorly=[],lessons=['uncommitted fixture lesson'])
+>    assert len(runtime.retrospectives)==0
+E    assert 1 == 0
+E     +  where 1 = len(<app.modules.m20_general_cognitive_worker.persistence.DurableRetrospectiveEngine object at 0x7f11bbbe9e80>)
+E     +    where <app.modules.m20_general_cognitive_worker.persistence.DurableRetrospectiveEngine object at 0x7f11bbbe9e80> = <app.modules.m20_general_cognitive_worker.runtime.GCWRuntime object at 0x7f11bbc152e0>.retrospectives
+
+tests/modules/test_m20_runtime_depth.py:2331: AssertionError
+________ test_failed_retrospective_commit_preserves_only_prior_lessons _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f11bba44050>
+
+    def test_failed_retrospective_commit_preserves_only_prior_lessons(monkeypatch):
+     runtime,repo=make_runtime()
+     prior=runtime.retrospectives.write('prior',went_well=[],went_poorly=[],lessons=['committed fixture lesson'])
+     original=repo._session
+     def session():
+      result=original()
+      def fail():raise RuntimeError('fixture retrospective commit unavailable')
+      result.commit=fail
+      return result
+     monkeypatch.setattr(repo,'_session',session)
+     with pytest.raises(RuntimeError):
+      runtime.retrospectives.write('later',went_well=[],went_poorly=[],lessons=['uncommitted later lesson'])
+>    assert len(runtime.retrospectives)==1
+E    assert 2 == 1
+E     +  where 2 = len(<app.modules.m20_general_cognitive_worker.persistence.DurableRetrospectiveEngine object at 0x7f11bba44ad0>)
+E     +    where <app.modules.m20_general_cognitive_worker.persistence.DurableRetrospectiveEngine object at 0x7f11bba44ad0> = <app.modules.m20_general_cognitive_worker.runtime.GCWRuntime object at 0x7f11cd2bbb30>.retrospectives
+
+tests/modules/test_m20_runtime_depth.py:2348: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_retrospective_write_never_publishes_uncommitted_lesson
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_retrospective_commit_preserves_only_prior_lessons
+2 failed, 165 deselected, 1 warning in 2.12s
