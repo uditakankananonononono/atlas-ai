@@ -443,7 +443,9 @@ class Service:
                 'to':data['to'],'subject':data['subject'],'body':data['body']}
             if observed is None or observed.id!=data['approval_id'] or observed.module_id!=10 or observed.action_type!='send_email_reply' or any(observed.payload.get(k)!=v for k,v in expected.items()):
                 raise DraftPipelineUnresolvedError('saved approval missing or mismatched; source reconciliation required, no refile')
-            if not self.repository.finalize_draft_work(message_id,account_id,data):return None
+            atomic_finalize=getattr(self.approval_sink,'finalize_recovered_m10_draft',None)
+            finalized=atomic_finalize(self.repository,message_id,account_id,data) if atomic_finalize else self.repository.finalize_draft_work(message_id,account_id,data)
+            if not finalized:return None
             if self.review_state_capturer is not None:
                 try:await asyncio.to_thread(self.review_state_capturer,data['approval_id'])
                 except Exception as exc:

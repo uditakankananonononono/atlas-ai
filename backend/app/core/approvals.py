@@ -22,6 +22,10 @@ class ApprovalStore:
             return None
         return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"])
 
+    def finalize_recovered_m10_draft(self,repository,message_id,account_id,data)->bool:
+        # Re-read M00 inside the same SQL transaction as local finalization.
+        return repository.finalize_draft_work(message_id,account_id,data,verify_m00_source=True)
+
     def matching_source_approvals(self,*,user_id:str,module_id:int,action_type:str,payload:dict)->builtins.list[ApprovalRequest]:
         return [ApprovalRequest(id=v['id'],module_id=v['module_id'],action_type=v['action_type'],payload=v['payload'],status=v['status'])
             for v in default_service().matching_source_approvals(user_id=user_id,module_id=module_id,action_type=action_type,payload=payload)]

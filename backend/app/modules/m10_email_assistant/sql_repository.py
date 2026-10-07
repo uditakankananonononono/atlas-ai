@@ -265,9 +265,16 @@ class SqlEmailRepository:
         with self.sessions() as db:
             return [{'message_id':r.message_id,'phase':r.phase} for r in db.scalars(select(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase.in_(['model_inflight','approval_inflight'])))]
 
-    def finalize_draft_work(self,message_id:str,account_id:str,data:dict)->bool:
+    def finalize_draft_work(self,message_id:str,account_id:str,data:dict,*,verify_m00_source:bool=False)->bool:
         with self.sessions.begin() as db:
             if self._lock_account(db,account_id) is None:return False
+            if verify_m00_source:
+                from app.modules.m00_approval_center.service import ApprovalRequestRow
+                source=db.scalar(select(ApprovalRequestRow).where(ApprovalRequestRow.id==data['approval_id'],ApprovalRequestRow.user_id==self.tenant_id).with_for_update())
+                message=db.scalar(select(EmailMessageRow).where(EmailMessageRow.tenant_id==self.tenant_id,EmailMessageRow.id==message_id,EmailMessageRow.account_id==account_id))
+                if source is None or message is None:return False
+                expected={'tenant_id':self.tenant_id,'account_id':account_id,'draft_id':data['draft_id'],'message_id':message_id,'gmail_id':message.gmail_id,'thread_id':message.thread_id,'to':data['to'],'subject':data['subject'],'body':data['body']}
+                if source.module_id!=10 or source.action_type!='send_email_reply' or any(k not in source.payload or source.payload[k]!=v for k,v in expected.items()):return False
             from sqlalchemy.dialects.postgresql import JSONB
             matches=cast(DraftWorkRow.data,JSONB)==data if db.get_bind().dialect.name=='postgresql' else DraftWorkRow.data==data
             claimed=db.execute(update(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.message_id==message_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase=='approval_done',matches).values(phase='complete').returning(DraftWorkRow.message_id)).first()
