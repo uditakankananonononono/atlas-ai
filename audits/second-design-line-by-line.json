@@ -1036,7 +1036,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "M13 PlaywrightSessions maps tenant/session contexts in process and records HAR; persistent flag marks mode but new_context does not load/save persisted storage here. REST/PC bridge/application stores exist; prior PG CAS proves persistence only. Actual durable cookies, stealth patches and horizontal pool not established. Page effects preceding persistence remain open. No live site/device/auth effects. Status unverified."
     },
     {
       "row": 94,
@@ -1047,7 +1047,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "NavigationLoop consumes injected screenshot planner, allowed click/extract/scroll/done actions and max-step bound; is_submit flag stages approval. No DOM input in planner protocol, built-in GPT4o planner, input/wait/CAPTCHA/cookie handler established in this file. Planner done is self-report, not positive receipt. No visual robustness/science/device/model effect. Status unverified."
     },
     {
       "row": 95,
@@ -1058,7 +1058,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "FieldDescriptor supplies selector/label/name/placeholder/input_type; match_fields uses token overlap/type hints and conservative tie rejection, not aria field or broad synonym ontology. Service.fill calls locator.fill for mapped values. Discovery/select/radio/check/upload/conditional DOM behavior requires application-flow grounding, not generalized text fill. No all-field/cloud-storage acceptance. Status unverified."
     },
     {
       "row": 96,
@@ -1069,7 +1069,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "request_submit captures screenshot/digest/values/page URL and stages browser_submit approval; submit validates supplied values/digest/session/URL, consumes then clicks. It returns submitted after click/audit, without positive confirmation-number/status validation in that service method. Capture-bound/readback flows exist but must not imply successful external submission. M13 CAS closes stale session save only, not effects-before-save reconciliation. No actual submission. Status unverified."
     },
     {
       "row": 97,
@@ -1080,7 +1080,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.extract returns HTML string; PlaywrightSessions configures record_har_path and SSRF guard per request. Structured vision/selector JSON extraction, robots/TOS review, rotating proxy/random-UA not established by scoped read. HAR finalization requires context close; no production retention or downstream ingestion acceptance. No actual scraping/device effect. Status unverified."
     },
     {
       "row": 98,
