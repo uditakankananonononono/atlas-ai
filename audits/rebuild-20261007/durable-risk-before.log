@@ -1,0 +1,19 @@
+........................................................................ [ 98%]
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_durable_risk_register_restart_revision_and_tenant_isolation _______
+
+    def test_durable_risk_register_restart_revision_and_tenant_isolation():
+>       from app.modules.m20_general_cognitive_worker.risk_register import DurableRiskRegister
+E       ModuleNotFoundError: No module named 'app.modules.m20_general_cognitive_worker.risk_register'
+
+tests/modules/test_m20_runtime_depth.py:1015: ModuleNotFoundError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_durable_risk_register_restart_revision_and_tenant_isolation
+1 failed, 72 passed, 1 warning in 4.28s

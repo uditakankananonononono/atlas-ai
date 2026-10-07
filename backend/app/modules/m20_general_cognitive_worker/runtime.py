@@ -39,6 +39,7 @@ from .schemas import (
     Budget,
     ChunkType, EpisodeOutcome, MemoryChunk, PlanNode, TaskContext, TaskState, TraceEntry,
 )
+from .risk_register import DurableRiskRegister
 from .sql_repository import GCWRepository
 from .tool_selection import ToolSelection, ToolSelector
 from .tools import ToolDispatcher, ToolRegistry
@@ -108,6 +109,7 @@ class GCWRuntime:
         seed: int | None = None,
         _hydrate: bool = True,
     ) -> None:
+        self.risk_registers = DurableRiskRegister(repo)
         self.repo = repo
         self.tenant_id = repo.tenant_id
         self.working_memory = (

@@ -1,0 +1,85 @@
+........................................................................ [ 96%]
+.F.                                                                      [100%]
+=================================== FAILURES ===================================
+____ test_clean_database_upgrades_to_head_with_product_and_cognitive_tables ____
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-326/test_clean_database_upgrades_t0')
+
+    def test_clean_database_upgrades_to_head_with_product_and_cognitive_tables(tmp_path):
+        database=tmp_path/'clean.sqlite'
+        env={**os.environ,'ATLAS_DATABASE_URL':f'sqlite:///{database}'}
+        result=subprocess.run([sys.executable,'-m','alembic','upgrade','head'],env=env,
+                              text=True,capture_output=True,timeout=90)
+        assert result.returncode==0,result.stderr
+        with sqlite3.connect(database) as db:
+            tables={row[0] for row in db.execute("select name from sqlite_master where type='table'")}
+            revision=db.execute('select version_num from alembic_version').fetchone()[0]
+            m01_columns={row[1] for row in db.execute("pragma table_info('m01_opportunities')")}
+            task_columns={row[1] for row in db.execute("pragma table_info('m20_tasks')")}
+        from alembic.config import Config
+        from alembic.script import ScriptDirectory
+>       expected_head=ScriptDirectory.from_config(Config('alembic.ini')).get_current_head()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/migrations/test_clean_database_upgrade.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/alembic/script/base.py:354: in get_current_head
+    return self.revision_map.get_current_head()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/alembic/script/revision.py:495: in get_current_head
+    current_heads: Sequence[str] = self.heads
+                                   ^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:1337: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/alembic/script/revision.py:150: in heads
+    self._revision_map
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:1337: in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/alembic/script/revision.py:204: in _revision_map
+    for revision in self._generator():
+                    ^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/alembic/script/base.py:149: in _load_revisions
+    script = Script._from_path(self, real_path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/alembic/script/base.py:1039: in _from_path
+    module = util.load_python_file(dir_, filename)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py:114: in load_python_file
+    module = load_module_py(module_id, path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py:132: in load_module_py
+    spec.loader.exec_module(module)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:999: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Create the durable Module 20 cognitive-runtime schema.
+    
+    The initial generated migration treated the separately declared GCW metadata as
+    pre-existing and emitted destructive drops. This revision creates those tables
+    from frozen historical metadata, in dependency order. Live runtime metadata
+    would incorrectly create future tables/columns before their additive revisions.
+    """
+    from alembic import op
+>   from migrations.gcw_schema_20260922 import Base as GCWBase
+E   ModuleNotFoundError: No module named 'migrations.gcw_schema_20260922'
+
+migrations/versions/20260922_m20_runtime_schema.py:9: ModuleNotFoundError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/migrations/test_clean_database_upgrade.py::test_clean_database_upgrades_to_head_with_product_and_cognitive_tables
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/config.py:604: DeprecationWarning: No path_separator found in configuration; falling back to legacy splitting on spaces, commas, and colons for prepend_sys_path.  Consider adding path_separator=os to Alembic config.
+    util.warn_deprecated(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/migrations/test_clean_database_upgrade.py::test_clean_database_upgrades_to_head_with_product_and_cognitive_tables
+1 failed, 74 passed, 2 warnings in 17.75s

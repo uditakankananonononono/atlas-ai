@@ -23,6 +23,7 @@ def test_clean_database_upgrades_to_head_with_product_and_cognitive_tables(tmp_p
     assert {'match_engine','deadline_engine'} <= m01_columns
     assert {'m10_reviewer_public_keys','m10_reviewer_key_events'} <= tables
     assert {'m00_approval_requests','collection_sources','m20_tasks','m20_semantic_facts','m20_episodes','m22_install_proposals','m22_install_jobs','m22_tool_portfolio'} <= tables
+    assert {'m20_risk_registers', 'm20_risk_revisions'} <= tables
     assert 'm20_action_records' in tables and 'runtime_metadata_json' in task_columns
     assert len(tables) >= 110
 
