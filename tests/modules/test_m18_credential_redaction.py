@@ -27,3 +27,31 @@ def test_collection_error_redacts_all_sensitive_key_names():
 def test_urls_without_credentials_pass_through_unchanged():
     url = "https://hn.algolia.com/api/v1/search?query=side%20hustle&tags=story"
     assert CollectionError(source="hn", url=url, reason="r").url == url
+
+def test_reason_text_is_scrubbed_for_embedded_credentials():
+    # An arbitrary reason string (e.g. an upstream error embedding the failing
+    # URL) is not trusted to be secret-free.
+    err = CollectionError(
+        source="youtube",
+        url="https://h.test/p",
+        reason="HTTP 500 for https://www.googleapis.com/youtube/v3/search?part=snippet&key=SECRET-KEY-123&q=x: boom",
+    )
+    assert "SECRET-KEY-123" not in err.reason
+    assert "key=[REDACTED]" in err.reason
+
+def test_userinfo_is_stripped_from_recorded_url():
+    err = CollectionError(source="x", url="https://user:SECRET-PW@h.test/p?a=1", reason="r")
+    assert "SECRET-PW" not in err.url
+    assert "user" not in err.url.split("/")[2]  # no userinfo in netloc
+    assert err.url.startswith("https://h.test/p")
+
+def test_userinfo_in_reason_text_is_scrubbed():
+    err = CollectionError(source="x", url="https://h.test", reason="auth failed for https://u:SECRET-PW@h.test/p")
+    assert "SECRET-PW" not in err.reason
+    assert "[REDACTED]@" in err.reason
+
+def test_fragment_left_unchanged_characterization():
+    # Characterization of the accepted limitation: fragments are not redacted.
+    # Recorded request URLs do not carry OAuth-style fragment tokens today.
+    url = "https://h.test/cb#token=FRAG-SECRET"
+    assert CollectionError(source="x", url=url, reason="r").url == url
