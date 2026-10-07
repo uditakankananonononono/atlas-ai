@@ -56,6 +56,9 @@ class ExtractionError(RuntimeError):
     pass
 
 
+class ExtractionOutcomeUnknown(ExtractionError):
+    outcome="unknown"
+
 class DraftNotFound(LookupError):
     pass
 
@@ -71,6 +74,8 @@ async def private_generate(prompt: str) -> tuple[str, str, str]:
 
     try:
         return await shared_model_layer.generate(prompt, private=True)
+    except shared_model_layer.SharedAttemptUnknown as exc:
+        raise ExtractionOutcomeUnknown("Private extraction attempt outcome unknown; no automatic retry. Contract text is not sent to hosted models.") from exc
     except shared_model_layer.SharedModelError as exc:
         raise ExtractionError("no local/self-hosted model answered; contract text is not sent to hosted models. "
                               + str(exc)) from exc

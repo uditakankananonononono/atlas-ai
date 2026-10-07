@@ -125,3 +125,27 @@ def test_attention_digest_lists_due_soon_and_overdue(tmp_path):
     assert a["count"] == 1 and a["items"][0]["reasons"] == ["due_soon"]
     tracker.clock = lambda: datetime(2026, 10, 22, tzinfo=timezone.utc)
     assert tracker.attention()["items"][0]["reasons"] == ["deliverable_overdue"]
+
+
+def test_mounted_private_dispatch_failure_unknown_no_hosted_or_draft(tmp_path,monkeypatch):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.core import shared_model_layer as sml
+ from app.modules.m07_brand_collaboration.contract_extraction import private_generate
+ from app.modules.m07_brand_collaboration.routes import router,get_extractor
+ from instinct_models import Router
+ from instinct_models.providers import LOCAL,HOSTED,Provider,ProviderError
+ used=[]
+ class P(Provider):
+  def __init__(self,name,locality):self.name=name;self.locality=locality
+  def available(self):return True
+  def chat(self,*args,**kwargs):used.append(self.name);raise ProviderError('fixture dispatched failure')
+ monkeypatch.setattr(sml,'atlas_router',lambda:Router([P('local',LOCAL),P('hosted',HOSTED)]))
+ x,tracker,_=build(tmp_path);x.generate=private_generate
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('t1','fixture');app.dependency_overrides[get_extractor]=lambda:x
+ path=router.prefix+'/contracts/extract'
+ response=TestClient(app,raise_server_exceptions=False).post(path,json={'brand_id':'b1','contract_text':CONTRACT})
+ assert response.status_code==409,response.text
+ detail=response.json()['detail'];assert detail['state']=='unknown' and detail['retry_allowed'] is False
+ assert used==['local'] and x.pending('b1')==[] and tracker.brand_tracker('b1')['obligations']==[]
