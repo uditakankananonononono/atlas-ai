@@ -69,7 +69,10 @@ async def generate_result(prompt: str, provider: str, model: str | None = None) 
         from app.core import shared_model_layer
         try:
             used,chosen,text=await shared_model_layer.generate(prompt,private=provider=="shared")
+        except shared_model_layer.SharedAttemptUnknown as exc:
+            raise ProviderOutcomeUnknown(str(exc)) from exc
         except shared_model_layer.SharedModelError as exc:
+            if any(a.outcome=="error" for a in exc.attempts):raise ProviderOutcomeUnknown("Shared generation attempt failed; outcome unknown, no fallback") from exc
             raise ProviderError(str(exc)) from exc
         return ProviderResult(f"{used}:{chosen}",text,used)
     if provider=="openai":

@@ -63,6 +63,18 @@ def run(messages: list[dict], *, tools: list[dict] | None = None, private: bool 
     return (router or atlas_router()).run(Task(messages=messages, tools=tools, private=private, max_tokens=max_tokens))
 
 
+class SharedAttemptUnknown(RuntimeError):
+    """Stop Atlas generation after a configured provider was invoked and failed."""
+
+class _GenerationGuard:
+    def __init__(self,provider):self.provider=provider
+    def __getattr__(self,name):return getattr(self.provider,name)
+    def chat(self,*args,**kwargs):
+        from instinct_models.providers import ProviderError
+        try:return self.provider.chat(*args,**kwargs)
+        except (ProviderError,TimeoutError,ConnectionError,ValueError,KeyError,TypeError) as exc:
+            raise SharedAttemptUnknown("Shared generation attempt failed; outcome unknown") from exc
+
 class SharedModelError(RuntimeError):
     """No route in the shared chain answered; ``attempts`` says why for each one."""
 
@@ -82,7 +94,11 @@ async def generate(prompt: str, *, private: bool = True, max_tokens: int = 2048,
     import asyncio
 
     r = router or atlas_router()
-    res = await asyncio.to_thread(r.run, Task(messages=[{"role": "user", "content": prompt}], private=private,
+    # Keep the vendored router unchanged. Generation skips Needle (tool-only)
+    # and guards every invoked route so its ProviderError cannot trigger fallback.
+    from instinct_models.providers import NeedleLocal
+    guarded=Router([_GenerationGuard(p) for p in r.providers if not isinstance(p,NeedleLocal)])
+    res = await asyncio.to_thread(guarded.run, Task(messages=[{"role": "user", "content": prompt}], private=private,
                                               max_tokens=max_tokens))
     if not res.ok:
         raise SharedModelError("no shared-model route answered: " + _describe(res), res.attempts)
