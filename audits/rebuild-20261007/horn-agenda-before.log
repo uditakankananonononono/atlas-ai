@@ -1,0 +1,31 @@
+......FF                                                                 [100%]
+=================================== FAILURES ===================================
+___ test_reverse_chain_uses_indexed_agenda_not_repeated_whole_program_scans ____
+
+    def test_reverse_chain_uses_indexed_agenda_not_repeated_whole_program_scans():
+     size=100
+     rules=[{'id':str(i),'if':[str(i)],'then':str(i+1)} for i in reversed(range(size))]
+     result=forward({'facts':['0'],'rules':rules,'query_atoms':['100']})
+     assert result['queries'][0]['entailed']
+>    assert result['closure_metrics']['premise_notifications']==size
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'closure_metrics'
+
+tests/modules/test_m20_horn_inference.py:33: KeyError
+_ test_indexed_horn_closure_keeps_ordered_sweep_first_proof_and_conjunction_semantics _
+
+    def test_indexed_horn_closure_keeps_ordered_sweep_first_proof_and_conjunction_semantics():
+     rules=[{'id':'early','if':['b'],'then':'x'}, {'id':'make-b','if':['a'],'then':'b'},
+            {'id':'late','if':['b'],'then':'x'},{'id':'join','if':['b','x'],'then':'done'},
+            {'id':'cycle','if':['unsupported'],'then':'unsupported'}]
+     result=forward({'facts':['a'],'rules':rules})
+     assert result['rule_trace']==[{'rule':'make-b','fact':'b'},{'rule':'late','fact':'x'},{'rule':'join','fact':'done'}]
+>    assert result['closure_metrics']['rules_processed']<=4
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'closure_metrics'
+
+tests/modules/test_m20_horn_inference.py:44: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_horn_inference.py::test_reverse_chain_uses_indexed_agenda_not_repeated_whole_program_scans
+FAILED tests/modules/test_m20_horn_inference.py::test_indexed_horn_closure_keeps_ordered_sweep_first_proof_and_conjunction_semantics
+2 failed, 6 passed in 1.39s
