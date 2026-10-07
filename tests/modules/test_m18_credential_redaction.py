@@ -52,7 +52,8 @@ def test_userinfo_in_reason_text_is_scrubbed():
     assert "[REDACTED]@" in err.reason
 
 def test_fragment_left_unchanged_characterization():
-    # Characterization of the accepted limitation: fragments are not redacted.
+    # Characterization of a documented residual (not owner-accepted):
+    # fragments are not redacted.
     # Recorded request URLs do not carry OAuth-style fragment tokens today.
     url = "https://h.test/cb#token=FRAG-SECRET"
     assert CollectionError(source="x", url=url, reason="r").url == url
@@ -77,3 +78,11 @@ def test_username_only_userinfo_stripped():
     # Characterization: userinfo without a password is also stripped.
     err = CollectionError(source="x", url="https://user@h.test/p?a=1", reason="r")
     assert err.url == "https://h.test/p?a=1"
+
+def test_single_percent_encoded_query_key_is_redacted():
+    # Characterization: parse_qsl percent-decodes key names before matching,
+    # so a single-encoded api%5fkey in the URL IS redacted. The encoding gap
+    # applies only to the reason-text regex, which does not decode.
+    url = "https://h.test/p?api%5fkey=SECRET-KEY&q=1"
+    redacted = CollectionError(source="x", url=url, reason="r").url
+    assert "SECRET-KEY" not in redacted

@@ -212,9 +212,11 @@ class CollectionError:
     occurred_at: datetime = field(default_factory=utcnow)
 
     def __post_init__(self) -> None:
-        # Recorded failures never carry credentials, whoever constructed the
-        # record: the URL is redacted and the free-text reason is scrubbed
-        # for credential-shaped assignments and userinfo.
+        # Records are redacted at construction, whoever constructed the
+        # record: the URL loses sensitive query keys and userinfo, and the
+        # free-text reason is scrubbed for credential-shaped assignments and
+        # userinfo. This is bounded redaction, not a guarantee that no
+        # credential-shaped text survives (residuals: see _scrub_text).
         object.__setattr__(self, "url", _redact_url(self.url))
         object.__setattr__(self, "reason", _scrub_text(self.reason))
 
