@@ -910,3 +910,7 @@ Six actual failures retained: malformed/nonfinite/negative/bool aging rates acce
 ## Supplied simulation fidelity metric integrity
 
 Two reproduced failures retained: malformed/nonfinite/bool numeric predictions publish, returned/public records rewrite computed score. Strictfinite numeric prediction/actual/confidence, boundedconfidence, private records with detachedread-onlymapping/deepreturns. Scaled operands avoid unneeded difference overflow.81foresight/HTTPpass1warning; recorded87adjacent2312pass2warnings41.69s. Relativeerror arithmetic on supplied prediction/actual only; futureconfidence multiplier is legacy heuristic, not fitted calibration or independent outcome verification. Raw validation does not establish HTTP strict input types. Latestfull9869passsource724c275 predatessixlaterfixes. Original cognition/production incomplete.
+
+## Simulation HTTP numeric boundary
+
+Six reproduced failures retained: bool/string prediction/confidence/actual coerce into accepted raw numbers. Strictfinite numeric fields now422beforetracker mutation; integer JSON numbers remain accepted.87foresight/HTTPpass1warning; recorded87adjacent2318pass2warnings40.95s. Transport input consistency only, not supplied outcome truth/independent verification/fitted calibration. Latestfull9869passsource724c275 predatessevenlaterfixes.

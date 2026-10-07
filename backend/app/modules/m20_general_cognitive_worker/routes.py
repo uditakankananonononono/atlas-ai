@@ -700,12 +700,12 @@ class InsightDevelopRequest(BaseModel):
 
 class SimulationPredictRequest(BaseModel):
     domain: str = Field(min_length=1)
-    predicted: float
-    confidence: float = Field(default=0.5, ge=0.0, le=1.0)
+    predicted: float = Field(strict=True, allow_inf_nan=False)
+    confidence: float = Field(default=0.5, ge=0.0, le=1.0, strict=True, allow_inf_nan=False)
 
 
 class SimulationResolveRequest(BaseModel):
-    actual: float
+    actual: float = Field(strict=True, allow_inf_nan=False)
 
 
 class HypothesisRequest(BaseModel):

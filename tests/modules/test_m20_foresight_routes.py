@@ -341,3 +341,22 @@ def test_causal_randomized_flag_http_is_not_verified(client):
     for flags in [{"randomized": "false"}, {"unknown": True}]:
         response = c.post("/api/modules/20/meta/causal/assess", json={"cause": "a", "effect": "b", "evidence": flags})
         assert response.status_code == 422
+
+
+@pytest.mark.parametrize('field,value', [('predicted', True), ('predicted', '10'), ('confidence', True), ('confidence', '0.8')])
+def test_simulation_http_does_not_coerce_numeric_inputs(client, field, value):
+    c, service = client
+    body = {'domain': 'fixture', 'predicted': 10, 'confidence': 0.8}
+    body[field] = value
+    response = c.post('/api/modules/20/meta/simulations', json=body)
+    assert response.status_code == 422
+    assert len(service.sim_fidelity.records) == 0
+
+
+@pytest.mark.parametrize('actual', [True, '20'])
+def test_simulation_http_actual_is_strict_numeric(client, actual):
+    c, service = client
+    record = service.sim_fidelity.record_prediction('fixture', 10)
+    response = c.post(f'/api/modules/20/meta/simulations/{record.record_id}/resolve', json={'actual': actual})
+    assert response.status_code == 422
+    assert service.sim_fidelity.records[record.record_id].actual is None
