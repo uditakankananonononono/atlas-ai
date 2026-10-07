@@ -85,7 +85,7 @@ def brand_obligations(brand_id: str, t: ObligationTracker = Depends(get_tracker)
 
 
 # -- contract -> draft obligations (owner confirms each row) -----------------------
-from .contract_extraction import ContractExtractor, DraftNotFound, ExtractionError
+from .contract_extraction import ContractExtractor, DraftNotFound, ExtractionError,ExtractionOutcomeUnknown
 
 
 class ContractIn(_BM):
@@ -112,6 +112,7 @@ def _dx(call):
 async def extract_contract(data: ContractIn, x: ContractExtractor = Depends(get_extractor)):
     try: return await x.extract(brand_id=data.brand_id, contract_text=data.contract_text)
     except DraftNotFound as e: raise HTTPException(404, str(e)) from e
+    except ExtractionOutcomeUnknown as e:raise HTTPException(409,{"state":"unknown","reason":str(e),"retry_allowed":False}) from e
     except ExtractionError as e: raise HTTPException(503 if "no local" in str(e) else 422, str(e)) from e
 @router.get("/brands/{brand_id}/obligation-drafts")
 def pending_drafts(brand_id: str, x: ContractExtractor = Depends(get_extractor)): return x.pending(brand_id)
