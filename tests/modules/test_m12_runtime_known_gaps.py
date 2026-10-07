@@ -92,3 +92,21 @@ def test_invalid_price_excluded_without_poisoning_valid_free_catalog():
  invalid=ModelCapability('nan-price',frozenset({TaskType.RESEARCH}),1000,float('nan'),100,1)
  decision=ModelRouter([invalid,*models()]).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'))
  assert decision.primary.model_id=='first' and [m.model_id for m in decision.fallbacks]==['backup']
+
+@pytest.mark.parametrize('quality',[float('nan'),float('inf'),float('-inf'),-.1,1.1,True,False,'0.8',None,10**1000])
+def test_invalid_catalog_quality_rejected_before_provider(quality):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','invalid',.9)
+ model=ModelCapability('invalid',frozenset({TaskType.RESEARCH}),1000,0,100,quality)
+ req=RouteRequest(TaskType.RESEARCH,100,0,100,'fixture');router=ModelRouter([model])
+ assert router.score(model,req)==(float('-inf'),['invalid catalog quality'])
+ with pytest.raises(NoEligibleModel):asyncio.run(ResearchExecutor(router,Provider()).execute(req,'fixture'))
+ assert not calls
+ decision=ModelRouter([model,*models()]).route(req)
+ assert decision.primary.model_id=='first' and [m.model_id for m in decision.fallbacks]==['backup']
+
+@pytest.mark.parametrize('quality',[0,1,.8])
+def test_valid_catalog_quality_retains_eligibility(quality):
+ model=ModelCapability('fixture',frozenset({TaskType.RESEARCH}),1000,0,100,quality)
+ assert ModelRouter([model]).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture')).primary==model
