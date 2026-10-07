@@ -290,3 +290,12 @@ def test_unknown_sender_receipt_blocks_retry():
     assert service.get_message(draft.id).status=="delivery_unknown"
     with pytest.raises(DeliveryApprovalError):asyncio.run(delivery.send_approved(draft.id))
     assert len(sender.calls)==1
+
+@pytest.mark.parametrize("field,value",[("tenant_id","foreign"),("campaign_id","other"),("contact_id","other")])
+def test_approval_owner_and_relationship_bindings_reject_before_sender(field,value):
+    service, _, _, _, draft, approval=make_world(datetime(2026,9,20,tzinfo=timezone.utc))
+    gate=gate_for(approval);gate.views[approval.id].payload={**approval.payload,field:value}
+    sender=FakeSender();delivery=DeliveryService(service,gate,sender)
+    with pytest.raises(DeliveryApprovalError,match="re-approval"):
+        asyncio.run(delivery.send_approved(draft.id))
+    assert sender.calls==[] and service.get_message(draft.id).status=="approved"

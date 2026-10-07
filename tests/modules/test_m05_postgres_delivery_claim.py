@@ -20,6 +20,8 @@ SCRIPT=textwrap.dedent('''
     assert not SqlCampaignRepository("b").claim_delivery(candidate,event)
     assert not repo.claim_delivery(candidate.model_copy(update={"version":99}),event)
     assert not repo.claim_delivery(candidate.model_copy(update={"approval_id":"wrong"}),event)
+    sibling=candidate.model_copy(update={"id":"other"})
+    repo.save_message(sibling,MessageEvent(message_id="other",event="approved",at=now))
     def claim(_):
         # Each process creates an independent DB engine, pool and repository.
         from sqlalchemy import create_engine
@@ -34,6 +36,7 @@ SCRIPT=textwrap.dedent('''
         outcomes=list(pool.map(claim,[1,2]))
     assert sorted(outcomes)==[False,True],outcomes
     assert repo.get_message("m").status=="sending"
+    assert repo.get_message("other").status=="approved" and repo.get_message("other").version==1
     # Crash after claim/before effect: a new process/store refuses blind retry.
     assert not SqlCampaignRepository("a").claim_delivery(candidate,event)
     # Status corruption/legacy stale restore cannot delete the independent claim.
