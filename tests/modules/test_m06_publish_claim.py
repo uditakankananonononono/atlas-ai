@@ -68,3 +68,31 @@ def test_sql_finalize_receipt_failure_rolls_back_claim_status(tmp_path,kind):
  with pytest.raises(ValueError,match='no longer active'):repo.finalize_publish(claimed,receipt)
  assert len(repo.list_publish_records('s'))==1
  engine.dispose()
+
+
+@pytest.mark.parametrize('kind',['memory','sqlite','postgres'])
+def test_finalize_rejects_mismatched_receipt_and_state(tmp_path,kind):
+ from dataclasses import replace
+ from datetime import timedelta
+ from app.modules.m06_social_media_manager.sql_repository import SocialPublishRow
+ from app.modules.m06_social_media_manager.scheduler import PublishRecord
+ from app.modules.m06_social_media_manager.service import MemorySocialRepository
+ if kind=='memory':repo=MemorySocialRepository()
+ else:
+  if kind=='postgres':
+   pgserver=pytest.importorskip('pgserver');server=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop')
+   url=server.get_uri().replace('postgresql://','postgresql+psycopg://')
+  else:url=f'sqlite:///{tmp_path}/mismatch.db'
+  engine=create_engine(url);SocialScheduleRow.__table__.create(engine);SocialPublishRow.__table__.create(engine)
+  repo=SqlSocialRepository('a',sessionmaker(bind=engine))
+ entry=ScheduleEntry(id='s',plan_id='p',platform=Platform.TWITTER,format='thread',text='fixture',publish_at=datetime.now(timezone.utc),approval_id='approval',status='approved')
+ repo.save_schedule(entry);claimed=repo.claim_publish(entry)
+ claimed.status='published';claimed.external_id='receipt';claimed.external_url='https://fixture.invalid/post';claimed.published_at=entry.publish_at
+ receipt=PublishRecord(schedule_id='s',platform='twitter',external_id='receipt',external_url=claimed.external_url,draft_only=False,published_at=entry.publish_at)
+ for changes in ({'schedule_id':'other'},{'external_id':'other'},{'platform':'instagram'},{'external_url':'https://other.invalid/'},{'draft_only':True},{'published_at':entry.publish_at+timedelta(seconds=1)}):
+  with pytest.raises(ValueError,match='receipt does not match'):repo.finalize_publish(claimed,replace(receipt,**changes))
+ for status in ['approved','outcome_unknown','publishing']:
+  with pytest.raises(ValueError,match='requires published'):repo.finalize_publish(replace(claimed,status=status),receipt)
+ assert repo.get_schedule('s').status=='publishing' and repo.list_publish_records('s')==[]
+ assert repo.finalize_publish(claimed,receipt)==receipt
+ if kind!='memory':engine.dispose()

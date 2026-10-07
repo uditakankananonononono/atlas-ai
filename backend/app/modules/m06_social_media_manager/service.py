@@ -47,7 +47,7 @@ from .adapters import (
 )
 from .analytics import ABTest
 from .compliance import ComplianceIssue, is_blocking, validate_draft
-from .scheduler import Scheduler, ScheduleEntry
+from .scheduler import Scheduler, ScheduleEntry, validate_publish_receipt
 
 # Signature of the shared BYOK generator (app.core.providers.generate).
 GenerateFn = Callable[..., Awaitable[tuple[str, str]]]
@@ -208,6 +208,7 @@ class MemorySocialRepository:
     def save_report(self, report: AnalysisReport) -> AnalysisReport: self.reports[report.id]=report; return report
     def get_report(self, report_id: str) -> AnalysisReport | None: return self.reports.get(report_id)
     def finalize_publish(self, entry, record):
+        validate_publish_receipt(entry,record)
         with self._schedule_lock:
             previous = deepcopy(self.schedules.get(entry.id))
             if previous is None or previous.status != 'publishing':raise ValueError('publish claim no longer active')
