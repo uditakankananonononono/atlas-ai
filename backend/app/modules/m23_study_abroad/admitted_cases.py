@@ -37,21 +37,38 @@ MAX_PAGE_BYTES = 1_000_000
 AGGREGATE_DEADLINE_SECONDS = 12.0
 
 
-def _get_capped(client: httpx.Client, url: str, limit: int, started: float,
-                deadline: float) -> tuple[httpx.Response, bytes | None]:
-    """Stream a response with a hard transfer cap and an aggregate deadline.
+READ_CHUNK = 65536
 
-    Returns (response, body) or (response, None) when the cap/deadline was
-    exceeded - in which case the body was NOT fully consumed."""
+
+def _get_capped(client: httpx.Client, url: str, limit: int, started: float,
+                deadline: float) -> tuple[httpx.Response | None, bytes | None, str | None]:
+    """Bounded streaming read. Returns (response, body, abort_reason).
+
+    Semantics, exactly: the deadline is checked BEFORE the request is sent
+    (response is None then), BEFORE consuming each decoded chunk, and once
+    more after the stream ends (EOF guard). The byte cap counts DECODED body
+    bytes as yielded by httpx iter_bytes - not TLS/wire bytes. iter_bytes is
+    pinned to READ_CHUNK, so at most limit + READ_CHUNK decoded bytes are
+    pulled through the decode boundary before a cap abort; a transport that
+    hands over a larger single chunk still delivers that chunk whole. The
+    deadline bounds time spent inside this function; time in redirects,
+    DNS or connection setup before the first read is covered only by the
+    pre-request check and the per-request 8s timeout, not measured here."""
+    if time.monotonic() - started > deadline:
+        return None, None, 'deadline'
     chunks: list[bytes] = []
     size = 0
     with client.stream("GET", url) as response:
-        for chunk in response.iter_bytes():
+        for chunk in response.iter_bytes(chunk_size=READ_CHUNK):
+            if time.monotonic() - started > deadline:
+                return response, None, 'deadline'
             size += len(chunk)
-            if size > limit or time.monotonic() - started > deadline:
-                return response, None
+            if size > limit:
+                return response, None, 'capped'
             chunks.append(chunk)
-    return response, b"".join(chunks)
+    if time.monotonic() - started > deadline:
+        return response, None, 'deadline'
+    return response, b"".join(chunks), None
 
 
 def search_cases(query: str = '', evidence_type: str = '', limit: int = 20) -> list[dict]:
@@ -77,26 +94,35 @@ def fetch_case_metadata(case_id: str, transport: httpx.BaseTransport | None = No
     started = time.monotonic()
     with httpx.Client(timeout=8, follow_redirects=False, transport=transport,
                       headers={'User-Agent': USER_AGENT}) as client:
-        robots, robots_body = _get_capped(client, base + '/robots.txt', MAX_ROBOTS_BYTES,
+        robots, robots_body, robots_abort = _get_capped(client, base + '/robots.txt', MAX_ROBOTS_BYTES,
                                           started, AGGREGATE_DEADLINE_SECONDS)
-        # A robots file over the transfer cap or past the aggregate deadline
-        # is unverified, never silently allowed.
-        if robots.status_code != 200 or robots_body is None:
-            return {**row, 'live_status': 'robots_unverified', 'http_status': robots.status_code}
+        # A robots file over the decoded-byte cap, past the aggregate deadline,
+        # or never requested because the deadline already passed: unverified,
+        # never silently allowed.
+        if robots is None or robots.status_code != 200 or robots_body is None:
+            return {**row, 'live_status': 'robots_unverified',
+                    'http_status': robots.status_code if robots is not None else None,
+                    'abort_reason': robots_abort}
         parser = RobotFileParser()
         parser.parse(robots_body.decode('utf-8', 'replace').splitlines())
         if not parser.can_fetch(USER_AGENT, row['url']):
             return {**row, 'live_status': 'robots_denied'}
-        response, body = _get_capped(client, row['url'], MAX_PAGE_BYTES,
+        response, body, abort = _get_capped(client, row['url'], MAX_PAGE_BYTES,
                                      started, AGGREGATE_DEADLINE_SECONDS)
+    if response is None:
+        # Deadline already spent before the page request was sent; no page
+        # fetch was attempted.
+        return {**row, 'live_status': 'deadline_exceeded', 'http_status': None}
     if response.status_code != 200:
         return {**row, 'live_status': 'unavailable', 'http_status': response.status_code}
     if 'text/html' not in response.headers.get('content-type', '').lower():
         return {**row, 'live_status': 'unsupported_content_type'}
     if body is None:
-        # Transfer cap or aggregate deadline hit mid-stream; the full body
-        # was not consumed.
-        return {**row, 'live_status': 'too_large'}
+        # 'capped': decoded body exceeded MAX_PAGE_BYTES mid-stream.
+        # 'deadline': elapsed budget spent mid-stream or at EOF - the body,
+        # however small, is not treated as verified content.
+        return {**row, 'live_status': 'too_large' if abort == 'capped' else 'deadline_exceeded',
+                'http_status': response.status_code, 'abort_reason': abort}
     soup = BeautifulSoup(body.decode('utf-8', 'replace'), 'html.parser')
     title = soup.title.get_text(' ', strip=True) if soup.title else ''
     meta = soup.find('meta', attrs={'name': 'description'})
