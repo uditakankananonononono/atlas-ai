@@ -3,6 +3,7 @@ from app.auth.context import TenantContext,require_tenant
 from .models import RouteRequest
 from .executor import ConfidenceUnavailable
 from dataclasses import asdict
+from .response_json import safe_workflow_json
 from .schemas import RunIn,WorkflowIn
 from .workflow import Workflow,WorkflowValidationError,WorkflowNodeFailure
 from app.core.providers import ProviderOutcomeUnknown
@@ -28,7 +29,11 @@ async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=De
     except RuntimeError as error: raise HTTPException(422,str(error)) from error
 @router.post("/workflows/run")
 async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tenant),engine=Depends(get_dag_engine)):
-    try:return await engine.run(Workflow.from_yaml(body.yaml),{**body.inputs,"tenant_id":tenant.tenant_id})
+    try:
+        result=await engine.run(Workflow.from_yaml(body.yaml),{**body.inputs,"tenant_id":tenant.tenant_id})
+        safe,invalid=safe_workflow_json(result)
+        if invalid:raise HTTPException(422,{"state":"invalid_output","completed":safe,"invalid_json_paths":invalid,"retry_allowed":False})
+        return safe
     except WorkflowNodeFailure as error:
         import asyncio
         failures=[]
@@ -42,7 +47,9 @@ async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tena
         state="unknown" if "unknown" in states else "review_required" if "review_required" in states else failures[0]["state"]
         primary=next(item for item in failures if item["state"]==state)
         detail={**primary,"state":state,"completed":error.completed,"failed_nodes":[item["node_id"] for item in failures],"failures":failures}
-        raise HTTPException(409 if state=="unknown" else 422,detail) from error
+        safe,invalid=safe_workflow_json(detail)
+        if invalid:safe["invalid_json_paths"]=invalid
+        raise HTTPException(409 if state=="unknown" else 422,safe) from error
     except WorkflowValidationError as error: raise HTTPException(422,str(error)) from error
 
 from pydantic import BaseModel,Field

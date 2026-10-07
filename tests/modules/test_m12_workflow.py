@@ -119,3 +119,28 @@ def test_mounted_multiple_failures_preserve_unknown_and_review_evidence():
  assert [f['state'] for f in detail['failures']]==['failed','unknown','review_required']
  assert detail['failures'][2]['result']['text']=='candidate' and detail['failures'][2]['result']['usage']=={'input_tokens':12}
  assert calls==['failed','unknown','review','sibling']
+
+@pytest.mark.parametrize('failed',[True,False])
+def test_mounted_unsafe_sibling_metadata_reported_without_losing_result(failed):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ import json
+ async def runner(task,config,context):
+  if task=='fail':raise RuntimeError('fixture failure')
+  return {'text':'retained','metadata':{'bad':float('nan'),'unsupported':object()}}
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ raw='nodes: [{id: a, task: sibling}'+(', {id: b, task: fail}' if failed else '')+']'
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw})
+ assert response.status_code==422,response.text
+ detail=response.json()['detail'];assert detail['completed']['a']['text']=='retained'
+ assert detail['completed']['a']['metadata']=={'bad':None,'unsupported':None}
+ assert len(detail['invalid_json_paths'])==2
+ json.dumps(detail,allow_nan=False)
+
+def test_response_json_cycle_and_depth_are_explicit_not_silent():
+ from app.modules.m12_ai_research_lab.response_json import safe_workflow_json
+ cyclic={};cyclic['self']=cyclic
+ result,paths=safe_workflow_json(cyclic)
+ assert result=={'self':None} and paths==['$.self']
