@@ -130,3 +130,23 @@ def test_successful_execute_claims_then_runs_executor_once():
     assert calls==["show_kpis"]
     with pytest.raises(RuntimeError,match="command already executed"):service.execute("c1")
     assert calls==["show_kpis"]
+def test_intake_preserves_offset_instants_and_rejects_naive():
+    from pydantic import ValidationError
+    from app.modules.m16_executive_dashboard.schemas import EventIn
+    repo=SqlDashboardRepository("t","u",session_factory=factory())
+    service=Service(repo)
+    # 15:00+05:30 is 09:30Z: the stored/read instant must stay 09:30Z, not be relabeled 15:00Z.
+    service.intake(EventIn(topic="task.completed",aggregate_type="task",aggregate_id="a1",occurred_at=datetime(2026,10,7,15,0,tzinfo=timezone(timedelta(hours=5,minutes=30)))))
+    (read,)=repo.events_after(0)
+    assert read.occurred_at==datetime(2026,10,7,9,30,tzinfo=timezone.utc)
+    with pytest.raises(ValidationError,match="timezone-aware"):
+        EventIn(topic="task.completed",aggregate_type="task",aggregate_id="a2",occurred_at=datetime(2026,10,7,15,0))
+def test_read_boundary_coercion_pins():
+    from app.modules.m16_executive_dashboard.schemas import AgentHeartbeat,AgentState,Approval
+    aware=datetime(2026,10,7,9,30,tzinfo=timezone.utc)
+    repo=SqlDashboardRepository("t","u",session_factory=factory())
+    repo.save_approval(Approval(id="ap1",module_id=16,action_type="send",title="t",summary="s",risk="medium",evidence={},proposed_payload={},created_at=aware,expires_at=aware+timedelta(hours=1)))
+    assert repo.pending_approvals()[0].expires_at==aware+timedelta(hours=1)  # same instant, tz-attached
+    repo.heartbeat(AgentHeartbeat(module_id=16,agent_id="w1",state=AgentState.RUNNING,current_task=None,detail={}),aware)
+    assert repo.list_agents()[0].last_heartbeat==aware
+    assert repo.snapshot().generated_at.tzinfo is not None

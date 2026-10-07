@@ -184,7 +184,7 @@ class Service:
     # --- event intake ---
     def intake(self,data:EventIn):
         now=_utcnow()
-        e=Event(id=data.id or str(uuid4()),sequence=0,topic=data.topic,aggregate_type=data.aggregate_type,aggregate_id=data.aggregate_id,payload=data.payload,occurred_at=data.occurred_at or now)
+        e=Event(id=data.id or str(uuid4()),sequence=0,topic=data.topic,aggregate_type=data.aggregate_type,aggregate_id=data.aggregate_id,payload=data.payload,occurred_at=data.occurred_at.astimezone(timezone.utc) if data.occurred_at else now)
         return self.repository.append_event(e)
     def intake_batch(self,items):
         return [self.intake(i) for i in items]
