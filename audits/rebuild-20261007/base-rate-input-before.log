@@ -1,0 +1,163 @@
+.........................................................FFFFFFFFFFFF    [100%]
+=================================== FAILURES ===================================
+_________ test_base_rate_strength_requires_positive_finite_numeric[0] __________
+
+strength = 0
+
+    @pytest.mark.parametrize('strength', [0, -1, float('nan'), float('inf'), True, '5'])
+    def test_base_rate_strength_requires_positive_finite_numeric(strength):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:527: Failed
+_________ test_base_rate_strength_requires_positive_finite_numeric[-1] _________
+
+strength = -1
+
+    @pytest.mark.parametrize('strength', [0, -1, float('nan'), float('inf'), True, '5'])
+    def test_base_rate_strength_requires_positive_finite_numeric(strength):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:527: Failed
+________ test_base_rate_strength_requires_positive_finite_numeric[nan] _________
+
+strength = nan
+
+    @pytest.mark.parametrize('strength', [0, -1, float('nan'), float('inf'), True, '5'])
+    def test_base_rate_strength_requires_positive_finite_numeric(strength):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:527: Failed
+________ test_base_rate_strength_requires_positive_finite_numeric[inf] _________
+
+strength = inf
+
+    @pytest.mark.parametrize('strength', [0, -1, float('nan'), float('inf'), True, '5'])
+    def test_base_rate_strength_requires_positive_finite_numeric(strength):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:527: Failed
+________ test_base_rate_strength_requires_positive_finite_numeric[True] ________
+
+strength = True
+
+    @pytest.mark.parametrize('strength', [0, -1, float('nan'), float('inf'), True, '5'])
+    def test_base_rate_strength_requires_positive_finite_numeric(strength):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:527: Failed
+_________ test_base_rate_strength_requires_positive_finite_numeric[5] __________
+
+strength = '5'
+
+    @pytest.mark.parametrize('strength', [0, -1, float('nan'), float('inf'), True, '5'])
+    def test_base_rate_strength_requires_positive_finite_numeric(strength):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:527: Failed
+_________ test_base_rate_sample_size_requires_nonnegative_integer[-1] __________
+
+size = -1
+
+    @pytest.mark.parametrize('size', [-1, 0.5, True, '5'])
+    def test_base_rate_sample_size_requires_nonnegative_integer(size):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:533: Failed
+_________ test_base_rate_sample_size_requires_nonnegative_integer[0.5] _________
+
+size = 0.5
+
+    @pytest.mark.parametrize('size', [-1, 0.5, True, '5'])
+    def test_base_rate_sample_size_requires_nonnegative_integer(size):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:533: Failed
+________ test_base_rate_sample_size_requires_nonnegative_integer[True] _________
+
+size = True
+
+    @pytest.mark.parametrize('size', [-1, 0.5, True, '5'])
+    def test_base_rate_sample_size_requires_nonnegative_integer(size):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:533: Failed
+__________ test_base_rate_sample_size_requires_nonnegative_integer[5] __________
+
+size = '5'
+
+    @pytest.mark.parametrize('size', [-1, 0.5, True, '5'])
+    def test_base_rate_sample_size_requires_nonnegative_integer(size):
+        with pytest.raises(ValueError):
+>           BaseRateIntegrator().integrate(base_rate=0.2, case_estimate=0.8, sample_size=size)
+
+tests/modules/test_m20_foresight.py:534: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.foresight.BaseRateIntegrator object at 0x7ff5c4a30140>
+base_rate = 0.2, case_estimate = 0.8, evidence_reliability = 0.5
+sample_size = '5'
+
+    def integrate(self, *, base_rate: float, case_estimate: float,
+                  evidence_reliability: float = 0.5, sample_size: int = 0) -> BaseRateEstimate:
+        for name, v in (("base_rate", base_rate), ("case_estimate", case_estimate),
+                        ("evidence_reliability", evidence_reliability)):
+            if not 0.0 <= v <= 1.0:
+                raise ValueError(f"{name} must be in [0, 1]")
+>       n_factor = sample_size / (sample_size + self.sample_strength) if sample_size > 0 else 0.0
+                                                                         ^^^^^^^^^^^^^^^
+E       TypeError: '>' not supported between instances of 'str' and 'int'
+
+backend/app/modules/m20_general_cognitive_worker/foresight.py:423: TypeError
+_____ test_base_rate_bool_probability_rejected_and_extreme_strength_stable _____
+
+    def test_base_rate_bool_probability_rejected_and_extreme_strength_stable():
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:538: Failed
+________ test_base_rate_finite_denominator_overflow_keeps_sample_share _________
+
+    def test_base_rate_finite_denominator_overflow_keeps_sample_share():
+        result = BaseRateIntegrator(sample_strength=1e308).integrate(
+            base_rate=0.2, case_estimate=0.8, evidence_reliability=1, sample_size=10**308)
+>       assert result.weight_on_case == pytest.approx(0.5)
+E       assert 0.1 == 0.5 ± 5.0e-07
+E         
+E         comparison failed
+E         Obtained: 0.1
+E         Expected: 0.5 ± 5.0e-07
+
+tests/modules/test_m20_foresight.py:549: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_strength_requires_positive_finite_numeric[0]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_strength_requires_positive_finite_numeric[-1]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_strength_requires_positive_finite_numeric[nan]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_strength_requires_positive_finite_numeric[inf]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_strength_requires_positive_finite_numeric[True]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_strength_requires_positive_finite_numeric[5]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_sample_size_requires_nonnegative_integer[-1]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_sample_size_requires_nonnegative_integer[0.5]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_sample_size_requires_nonnegative_integer[True]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_sample_size_requires_nonnegative_integer[5]
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_bool_probability_rejected_and_extreme_strength_stable
+FAILED tests/modules/test_m20_foresight.py::test_base_rate_finite_denominator_overflow_keeps_sample_share
+12 failed, 57 passed in 1.63s

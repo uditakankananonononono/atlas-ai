@@ -922,3 +922,7 @@ One actual failure retained: returned/public/ranking views rewrite internal prob
 ## Binary Bayesian sequence odds preservation
 
 Two reproduced failures retained: displayedposterior rounds1afterLR1e300 then LR1e-300 cannotrecover0.5; invalidprior skippedonemptysequence. Accumulate supplied loglikelihood ratios independently of displayed posterior, fsum prefix terms; validateinitialprior evenemptysequence.90foresightHTTPpass1warning; recorded87adjacent2321pass2warnings38.27s. Synthetic reciprocalLRsequence now0.5final. Finiteprecision binary suppliedlikelihood arithmetic, not independent likelihood verification/categoricalinference or cognition. Latestfull9869passsource724c275 predatesninelaterfixes.
+
+## Supplied base-rate heuristic blend
+
+Twelve actual initial failures retained: malformedstrength/count/probabilityinput and finite denominator overflow collapses0.5samplefactor to0.1floor. Positivefinite numericstrength/notbool; finite0..1suppliedprobabilities/notbool; exactintegercount0..10**308; scaled ratio avoids denominator overflow.102foresightHTTPpass1warning; recorded87adjacent2333pass2warnings41.03s. Syntheticstrength1e308/count10**308 nowweight0.5andadjusted0.5. Explicitheuristicblend, minimumsamplefactor0.1evenzero samples, not inferred base rate/empirical calibration. Raw guards do not prove strictHTTPinputs. Latestfull9869passsource724c275 predatestenlaterfixes.
