@@ -39,6 +39,14 @@ def test_store_rejects_stale_detached_save(tmp_path, kind):
         assert persisted.status == "inspected"
         assert persisted.label == original.label
         assert persisted.revision == 1 and stale.revision == 0
+        store.create(ApplicationSession(tenant_id="a", session_id="other", actor_id="u", url="https://example.invalid", revision=1))
+        persisted.label = "repeat"
+        store.save(persisted)
+        assert persisted.revision == 2
+        persisted.label = "repeat twice"
+        store.save(persisted)
+        assert persisted.revision == 3
+        assert store.get("a", "other").revision == 1
         with pytest.raises(SessionRevisionConflict):
             store.save(ApplicationSession(tenant_id="b", session_id="s", actor_id="u", url="https://example.invalid"))
         assert store.get("b", "s") is None

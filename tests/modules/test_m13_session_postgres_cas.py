@@ -32,6 +32,12 @@ SCRIPT = textwrap.dedent('''
     assert sorted(outcomes) == ["conflict", "saved"], outcomes
     final = store.get("a", "s")
     assert final.revision == 1 and final.label in {"one", "two"}
+    store.create(ApplicationSession(tenant_id="a", session_id="other", actor_id="u", url="https://example.invalid", label="other original", revision=1))
+    final.label = "repeat one"
+    assert store.save(final).revision == 2 and final.revision == 2
+    final.label = "repeat two"
+    assert store.save(final).revision == 3 and final.revision == 3
+    assert store.get("a", "other").revision == 1 and store.get("a", "other").label == "other original"
     foreign = ApplicationSession.from_dict({**final.to_dict(), "tenant_id": "b", "label": "foreign"})
     try:
         store.save(foreign)
@@ -69,4 +75,4 @@ def test_session_cas_on_postgres(tmp_path):
     assert migration.returncode == 0, migration.stderr[-1000:]
     run = subprocess.run([sys.executable, "-c", SCRIPT], env=env, capture_output=True, text=True, timeout=120)
     assert run.returncode == 0, run.stderr[-1500:]
-    assert json.loads(run.stdout.strip().splitlines()[-1]) == {"race": ["conflict", "saved"], "revision": 1, "legacy_revision": 1}
+    assert json.loads(run.stdout.strip().splitlines()[-1]) == {"race": ["conflict", "saved"], "revision": 3, "legacy_revision": 1}
