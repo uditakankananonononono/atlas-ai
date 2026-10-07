@@ -1088,3 +1088,9 @@ Evidence: 87 runtime tests passed with one warning; adjacent regression before t
 A failing HTTP canary exposed the missing schedule edit for existing runtime work. PATCH now updates importance (exact integer 1..5) and/or deadline, persists before changing the in-process scheduler, and supports explicit deadline clearing. Update deadlines require an explicit timezone and are normalized to UTC. Unknown tasks return 404 and closed tasks 409. This changes local runtime service order, not any real calendar or notification.
 
 Evidence: 89 runtime tests passed with one warning. The adjacent regression before an added failed-save rollback test had 2,467 passed with two warnings in 49.70 seconds. Restart preserves importance/deadline and scheduling order. A failed repository save leaves the in-process task importance unchanged. Cross-process task edits still lack revision CAS, and no distributed scheduler or deadline guarantee is claimed. Full 10,048 at source 857b51f predates four code changes.
+
+## Retained task execution evidence readback
+
+A missing HTTP endpoint canary failed first. Durable runtime tasks now expose the newest retained action and trace records, each independently bounded to 1..100 rows at the database query, with total counts and truncation flags. Restart reads the same persisted evidence; unknown and other-tenant tasks return not found. Returned records retain timestamps, action IDs, local results, trace detail and policy labels.
+
+Evidence: 91 runtime tests passed with one warning; 2,470 adjacent tests passed with two warnings in 48.05 seconds. These are reported local records, not authenticated external effects or independent verification. Counts and record reads are separate queries, so concurrent writers can change totals during readback. There is no pagination, export UI, or deployed acceptance. Full 10,048 at source 857b51f predates five code changes.

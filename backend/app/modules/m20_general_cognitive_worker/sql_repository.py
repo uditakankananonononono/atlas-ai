@@ -285,6 +285,26 @@ class GCWRepository:
             session.commit()
         return trace
 
+    def task_evidence(self, task_id: str, *, limit: int = 50) -> dict:
+        if type(limit) is not int or not 1 <= limit <= 100:
+            raise ValueError('limit must be exact integer1..100')
+        with self._session() as session:
+            actions = session.query(ActionRow).filter(ActionRow.tenant_id == self.tenant_id, ActionRow.task_id == task_id)
+            traces = session.query(TraceRow).filter(TraceRow.tenant_id == self.tenant_id, TraceRow.task_id == task_id)
+            action_count, trace_count = actions.count(), traces.count()
+            action_rows = actions.order_by(ActionRow.started_at.desc(), ActionRow.id.desc()).limit(limit).all()
+            trace_rows = traces.order_by(TraceRow.created_at.desc(), TraceRow.id.desc()).limit(limit).all()
+            return {
+                'actions': [ActionRecord(**row.payload_json).model_dump(mode='json') for row in action_rows],
+                'traces': [TraceEntry(id=row.id, task_id=row.task_id, phase=row.phase,
+                    detail=row.detail, policy_basis=row.policy_basis,
+                    created_at=_aware(row.created_at)).model_dump(mode='json') for row in trace_rows],
+                'action_count': action_count, 'trace_count': trace_count,
+                'actions_truncated': action_count > limit, 'traces_truncated': trace_count > limit,
+                'limit_per_collection': limit, 'order': 'newest_first',
+                'external_outcomes_verified': False, 'status': 'persisted_reported_local_execution_evidence',
+            }
+
     def list_traces(self, *, task_id: str | None = None) -> list[TraceEntry]:
         with self._session() as session:
             query = session.query(TraceRow).filter(TraceRow.tenant_id == self.tenant_id).order_by(TraceRow.created_at)
