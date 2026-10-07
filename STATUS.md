@@ -1438,3 +1438,9 @@ Evidence: 182 runtime tests passed with one warning, including restart recovery 
 Three failing canaries showed task close labeled pending, approval-waiting and cancelled steps as false prediction outcomes despite no executed result. Close now resolves predictions only for succeeded or failed steps, leaving unobserved claims unresolved and out of calibration metrics.
 
 Evidence: 185 runtime tests passed with one warning; 2,526 M20 adjacent tests passed with two warnings in 57.89 seconds. Original three failures retained in audits/rebuild-20261007/unobserved-close-before.log. This distinguishes local observed terminal steps from cancellation, not independently verified outcome labels or a fitted predictive model. Full 10,186 source 7c805da predates three code areas. No model trial, external action, account change or migration.
+
+## Full regression after task admission and close recovery
+
+All 499 test files at source 0a69ed0 passed on their first run across 20 isolated batches: 10,193 passed, zero failed, 14 skipped, 26 summed warning occurrences, 502.44 seconds summed batch time. Every receipt exit is zero; no failed-batch rerun substitution. Covers durable initial-task admission, retryable close cleanup and exclusion of unobserved cancelled steps from calibration outcomes. Manifest, raw outputs, receipts and summary retained in audits/rebuild-20261007/full-regression-after-close-recovery.
+
+This is local regression, not production, model-quality or broad cognition acceptance. Actual ideation remains zero of two accepted trials. Two code commits and this evidence commit are held locally during the reported GitHub incident; last verified remote was 0cc12f2. No model trial, spending, account mutation, external action or migration. Peer integration remains blocked on missing base objects and prerequisite comparison; no peer changes applied.
