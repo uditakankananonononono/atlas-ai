@@ -706,7 +706,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Service.landing_page interpolates supplied product/hero/features into a fixed Next/Tailwind page plus Supabase waitlist route and stores a zip archive. No LLM copy, domain palette/type rule engine, complete standalone project build, built-in editor or one-click Vercel execution established in this method. Input text interpolation can affect TSX syntax; route table interpolation also needs validation before acceptance. Push/deploy is an approval proposal, not execution. No generated site build/pixels/deployment or signup run. Status stays unverified."
+      "notes": "Service.landing_page stores supplied product/hero/features in a fixed Next/Tailwind page with Supabase waitlist route. Identifier-only waitlist_table validation already exists. Recon now wraps text as JSON string JSX expressions; regression rejects old raw-text implementation and checks TypeScript parsing of adversarial braces/markup/newlines. No LLM/domain palette/type engine, complete standalone project build, editor or actual Vercel execution established. Push/deploy is an approval proposal. No generated site pixels/deploy/signup acceptance. Status stays unverified."
     },
     {
       "row": 64,
@@ -728,7 +728,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Service.documentation regex-extracts explicit router/app decorators from supplied code and creates minimal OpenAPI/ReDoc plus feature-list manual and path-list blog/evidence hashes. It does not model parameters/request schemas/class/config structures or infer router prefixes. Paths dict comprehension overwrites methods sharing a URL, a code-read defect needing regression. Screenshot-captured MVP guides/LLM brand-voice docs not established in this method. No artifact build/pixels/publish performed. Status stays unverified."
+      "notes": "Service.documentation regex-extracts explicit decorators from supplied code into minimal OpenAPI/ReDoc, feature-list manual and path-list blog/evidence hashes. Recon merges multiple HTTP methods per URL and rejects duplicate method/URL rather than silent overwrite; regression fails old code. Router prefixes, parameters/request schemas/classes/config structures, screenshot MVP guides and LLM brand voice not established. Parsed archive JSON proof only, no artifact pixels/publish or broad semantic API-doc acceptance. Status stays unverified."
     },
     {
       "row": 66,
@@ -739,7 +739,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Lane planning supplies reviewable GTM validation/pricing/channel/launch objects from explicit evidence and assumptions; experiment board records observations and paid proposals. Automatic M01/Browser live market research and successful-startup knowledge retrieval feeding a launched strategy not established in scoped M08 read. Plans/targets do not establish validation or revenue. No provider/browser/paid experiment or launch effect. Status stays unverified."
+      "notes": "Scoped M08 read finds experiment/funnel/customer-evidence/measurement lane services, RICE initiatives/cohort planning, and a free-first experiment board with paid approval proposals. A distinct pricing/distribution/launch GTM strategy assistant, automatic M01/Browser market research and successful-startup knowledge retrieval were not established by this scoped read. Experiment objects do not establish validation or revenue. No provider/browser/paid experiment or launch effect. Status stays unverified."
     },
     {
       "row": 67,
