@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import random
+import math
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -101,14 +102,24 @@ class IdeationEngine:
         return ideas
 
     def converge(self, ideas: list[Idea], constraints: dict[str, Any]) -> list[Idea]:
-        """Convergent thinking: score ideas against weighted constraints.
-        constraints: {criterion: weight}; an idea earns a criterion's weight
-        when its metadata flags that criterion."""
+        """Weighted ranking of exact-True supplied criterion flags.
+
+        Does not independently evaluate feasibility or constraint satisfaction.
+        """
+        if any(type(weight) not in (int, float) or not math.isfinite(weight)
+               for weight in constraints.values()):
+            raise ValueError("constraint weights must be finite numbers, not bool")
+        scores = []
         for idea in ideas:
-            score = 0.0
-            for criterion, weight in constraints.items():
-                if idea.metadata.get(criterion):
-                    score += float(weight)
+            try:
+                score = math.fsum(weight for criterion, weight in constraints.items()
+                                  if idea.metadata.get(criterion) is True)
+            except OverflowError as exc:
+                raise ValueError("criterion score overflow") from exc
+            if not math.isfinite(score):
+                raise ValueError("criterion score must be finite")
+            scores.append(score)
+        for idea, score in zip(ideas, scores):
             idea.score = score
         return sorted(ideas, key=lambda i: i.score, reverse=True)
 

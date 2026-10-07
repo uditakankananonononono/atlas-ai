@@ -109,3 +109,31 @@ def test_retrospective_failed_embedding_does_not_publish_record():
     with pytest.raises(RuntimeError):
         engine.write("new", went_well=[], went_poorly=[], lessons=["new"])
     assert len(engine) == 1
+
+
+def test_ideation_invalid_weights_do_not_change_supplied_ideas():
+    import pytest
+    from app.modules.m20_general_cognitive_worker.reflection import Idea
+    engine = IdeationEngine()
+    for weight in [float('nan'), float('inf'), True, '2']:
+        ideas = [Idea('a', score=7, metadata={'x': True}), Idea('b', score=9)]
+        with pytest.raises(ValueError):
+            engine.converge(ideas, {'x': weight})
+        assert [idea.score for idea in ideas] == [7, 9]
+
+
+def test_ideation_only_exact_true_flags_earn_supplied_weight():
+    from app.modules.m20_general_cognitive_worker.reflection import Idea
+    ideas = [Idea('string flag', metadata={'x': 'false'}), Idea('bool flag', metadata={'x': True})]
+    ranked = IdeationEngine().converge(ideas, {'x': 2})
+    assert [idea.text for idea in ranked] == ['bool flag', 'string flag']
+    assert [idea.score for idea in ranked] == [2, 0]
+
+
+def test_ideation_finite_weights_that_overflow_are_rejected_before_mutation():
+    import pytest
+    from app.modules.m20_general_cognitive_worker.reflection import Idea
+    ideas = [Idea('a', score=7, metadata={'x': True, 'y': True})]
+    with pytest.raises(ValueError):
+        IdeationEngine().converge(ideas, {'x': 1e308, 'y': 1e308})
+    assert ideas[0].score == 7

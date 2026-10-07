@@ -1,0 +1,44 @@
+.......FFF                                                               [100%]
+=================================== FAILURES ===================================
+__________ test_ideation_invalid_weights_do_not_change_supplied_ideas __________
+
+    def test_ideation_invalid_weights_do_not_change_supplied_ideas():
+        import pytest
+        from app.modules.m20_general_cognitive_worker.reflection import Idea
+        engine = IdeationEngine()
+        for weight in [float('nan'), float('inf'), True, '2']:
+            ideas = [Idea('a', score=7, metadata={'x': True}), Idea('b', score=9)]
+>           with pytest.raises(ValueError):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reflection.py:120: Failed
+___________ test_ideation_only_exact_true_flags_earn_supplied_weight ___________
+
+    def test_ideation_only_exact_true_flags_earn_supplied_weight():
+        from app.modules.m20_general_cognitive_worker.reflection import Idea
+        ideas = [Idea('string flag', metadata={'x': 'false'}), Idea('bool flag', metadata={'x': True})]
+        ranked = IdeationEngine().converge(ideas, {'x': 2})
+>       assert [idea.text for idea in ranked] == ['bool flag', 'string flag']
+E       AssertionError: assert ['string flag', 'bool flag'] == ['bool flag', 'string flag']
+E         
+E         At index 0 diff: 'string flag' != 'bool flag'
+E         Use -v to get more diff
+
+tests/modules/test_m20_reflection.py:129: AssertionError
+___ test_ideation_finite_weights_that_overflow_are_rejected_before_mutation ____
+
+    def test_ideation_finite_weights_that_overflow_are_rejected_before_mutation():
+        import pytest
+        from app.modules.m20_general_cognitive_worker.reflection import Idea
+        ideas = [Idea('a', score=7, metadata={'x': True, 'y': True})]
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reflection.py:137: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reflection.py::test_ideation_invalid_weights_do_not_change_supplied_ideas
+FAILED tests/modules/test_m20_reflection.py::test_ideation_only_exact_true_flags_earn_supplied_weight
+FAILED tests/modules/test_m20_reflection.py::test_ideation_finite_weights_that_overflow_are_rejected_before_mutation
+3 failed, 7 passed in 1.32s

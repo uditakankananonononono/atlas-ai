@@ -894,3 +894,7 @@ Eight reproduced failures: invalid supplied scores accepted and callback failure
 ## Embedding buffer publication
 
 Seven reproduced failures: semantic/episodic/retrospective stores alias provider reusable buffer, giving unrelated stored entries queryscore1; malformed fact vectors publish. Initial retrospective fixture used nonexistent recall method, retained separately and corrected before reproduced similarity failure. Shared finite exact-dimension vector validation and detached list snapshots used for stores and queries.91memory/runtimepass1warning; recorded87adjacent2298pass2warnings38.06s. Synthetic orthogonal supplied vectors now return1and0; invalid fact publication rejects. Local vector integrity only, not semantic retrieval quality, cognition or SQL crash atomicity. Latest full9869pass source724c275 predates two later source corrections.
+
+## Supplied ideation flag ranking
+
+Three actual initial failures retained: malformed/NaN weights accepted, truthy string false earns weight, finite weight addition overflows. Finite numeric/notbool weights, exactTrue criterion flags, fsum with overflow rejection and batch validation before score mutation.76reflection/runtimepass1warning; recorded87adjacent2301pass2warnings40.28s. Explicit weighted ranking of supplied flags only, not independent feasibility/constraint evaluation, creative cognition or original divergent/convergent capability. Latest full9869pass source724c275 predates three later source corrections.
