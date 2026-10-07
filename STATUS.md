@@ -1006,3 +1006,7 @@ Seven actual failures retained: malformedestimate/ratios accepted/discarded and 
 ## Full local regression after reasoning corrections
 
 Source 69d6262: 496files/20isolatedbatches/10022passed/0failed/14skipped/26summedwarningoccurrences/433.55s summedprocess time, everyexit0. Manifest/receipts/logs/runner/summary under full-regression-after-reasoning-fixes. Includesfourteen sourcecorrections sincec5b11ab. Historical9944/9869/9813runs retainedunchanged. Localfixtures do not establish original cognition breadth, authenticated review authority, distributed effects or production provisioning.
+
+## Supplied minimax regret table
+
+Five actual failures retained: empty/mismatched/malformed tables and extremefinite differencescollapse distinctregrets toinfinitytie. Nonempty matching scenario tables/finite numericnotboolpayoffs; commonscale regret comparison avoids differenceoverflow.190reasoningforesightpass; recorded87adjacent2440pass2warnings42.12s. Supplied table decisioncriterion only, not scenario validity/real-worldoptimal choice; common-scale finiteprecision can lose tiny relative distinctions. Latestfull10022passsource69d6262 predatesonelaterfix.

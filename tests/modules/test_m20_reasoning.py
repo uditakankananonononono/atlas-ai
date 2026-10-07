@@ -288,3 +288,14 @@ def test_planning_median_helper_large_finite_ratios_do_not_overflow_midpoint():
     assert R.planning_fallacy_correction(1, [1.6e308, 1.7e308]) == pytest.approx(1.65e308)
     with pytest.raises(ValueError):
         R.planning_fallacy_correction(10, [1e308])
+
+
+@pytest.mark.parametrize('options', [{'a': {}}, {'a': {'x': 1}, 'b': {'x': 1, 'y': 2}}, {'a': {'x': float('nan')}}, {'a': {'x': True}}])
+def test_minimax_requires_nonempty_matching_finite_payoff_table(options):
+    with pytest.raises(ValueError):
+        R.minimax_regret(options)
+
+
+def test_minimax_finite_extreme_payoffs_do_not_collapse_overflowed_regrets():
+    options = {'bad': {'x': -1.7e308, 'y': 1.7e308}, 'better': {'x': -1e307, 'y': -1e307}, 'other': {'x': 1.7e308, 'y': -1.7e308}}
+    assert R.minimax_regret(options) == 'better'
