@@ -155,3 +155,14 @@ def test_mounted_shipped_invalid_parent_never_reaches_descendant_model(kind):
  assert 'parent output is not JSON-safe source data' in detail['reason']
  retained=detail['completed']['a'];assert retained['text']=='retained parent' and retained['usage']=={'input_tokens':12}
  assert retained['metadata']=={'unsafe':None} and detail['invalid_json_paths'] and calls==['upstream']
+
+@pytest.mark.parametrize('metadata',[{1:'numeric','1':'text'},{'bad':'\ud800'}])
+def test_parent_source_requires_lossless_json_text_keys_and_utf8(metadata):
+ calls=[]
+ class Service:
+  async def execute(self,req,prompt,context):calls.append(prompt);return ModelResult('parent','fixture',.9,metadata=metadata)
+ wf=Workflow.from_yaml('nodes: [{id: a, task: research, config: {prompt: upstream}}, {id: b, task: research, depends_on: [a], config: {prompt: downstream}}]')
+ from app.modules.m12_ai_research_lab.workflow import WorkflowNodeFailure
+ with pytest.raises(WorkflowNodeFailure) as error:asyncio.run(build_dag_engine(Service()).run(wf,{'tenant_id':'fixture'}))
+ assert error.value.node_id=='b' and isinstance(error.value.error,WorkflowValidationError)
+ assert calls==['upstream'] and error.value.completed['a']['metadata']==metadata
