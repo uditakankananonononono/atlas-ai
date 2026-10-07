@@ -30,7 +30,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Any, AsyncIterator, Callable, Iterator
 from urllib.parse import quote_plus
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 USER_AGENT = "AtlasAI-ToolsHub/1.0 (+https://github.com/uditakankananonononono/atlas-ai)"
 TIMEOUT_SECONDS = 15
@@ -45,13 +45,39 @@ class SourceError(ValueError):
 
 Fetch = Callable[[str], bytes]
 
+# Public-web boundary for feed discovery/fetch (source-grounded in the repo's
+# public-web policy: https-only entry URLs, robots/domain allowlisting in
+# m18). Discovered feed URLs and redirect targets must stay https and carry
+# no userinfo. Explicitly NOT established here (no repo policy): private-range
+# IP blocking and DNS-rebinding protection - those remain open limits.
+_FEED_URL_RE = re.compile(r"https://[^/@]+(/.*)?")
+
+
+def _is_public_feed_url(url: str) -> bool:
+    """https URL with a host and no userinfo (the m22 feed fetch contract)."""
+    return bool(_FEED_URL_RE.fullmatch(url or ""))
+
+
+class _HttpsOnlyRedirect(HTTPRedirectHandler):
+    """Refuse redirects that leave the public https contract (downgrade or
+    userinfo-bearing targets)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not _is_public_feed_url(newurl):
+            raise SourceError(f"redirect outside the https public-web contract refused: {newurl!r}")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_SAFE_OPENER = build_opener(_HttpsOnlyRedirect())
+
+
 
 def http_get(url: str, *, accept: str = "application/json, */*", limit: int = MAX_JSON_BYTES,
              headers: dict[str, str] | None = None, truncate_ok: bool = False) -> bytes:
     """HTTPS GET with Atlas UA and a byte cap. ``truncate_ok`` keeps the first
     ``limit`` bytes instead of failing (for HTML pages and feed probes)."""
     request = Request(url, headers={"User-Agent": USER_AGENT, "Accept": accept, **(headers or {})})
-    with urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+    with _SAFE_OPENER.open(request, timeout=TIMEOUT_SECONDS) as response:
         data = response.read(limit + 1)
     if len(data) > limit:
         if truncate_ok:
@@ -221,7 +247,7 @@ class FeedCollector:
         if self._opener is not None:
             return self._opener(self.feed_url)
         request = Request(self.feed_url, headers={"User-Agent": USER_AGENT, "Accept": "application/rss+xml, application/atom+xml, application/xml, */*"})
-        return urlopen(request, timeout=TIMEOUT_SECONDS)
+        return _SAFE_OPENER.open(request, timeout=TIMEOUT_SECONDS)
 
     async def collect(self, query: str = "") -> AsyncIterator[dict[str, Any]]:
         def read_entries() -> list[dict[str, Any]]:
@@ -497,7 +523,10 @@ def find_feed_links(html_text: str, base_url: str) -> list[str]:
         if rel and "alternate" in rel.group(1).lower() and typ and href:
             if typ.group(1).lower().split(";")[0].strip() in FEED_MIME_TYPES:
                 url = urljoin(base_url, html_lib.unescape(href.group(1)))
-                if url not in out:
+                # Discovered URLs are fetched next - keep only ones inside the
+                # https/no-userinfo contract instead of probing whatever a
+                # page advertises (e.g. http or credential-bearing targets).
+                if _is_public_feed_url(url) and url not in out:
                     out.append(url)
     return out
 
