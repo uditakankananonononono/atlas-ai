@@ -173,6 +173,7 @@ class DeliberativeLoop:
         # durable runtime can register pre-dispatch expectations.
         self.before_run: Any = None
         self.before_plan: Any = None
+        self.action_history: Any = None
 
     def _trace(self, phase: str, detail: str, *, task_id: str | None = None, policy_basis: str = "") -> None:
         self.traces.append(TraceEntry(task_id=task_id, phase=phase, detail=detail, policy_basis=policy_basis))
@@ -429,7 +430,12 @@ class DeliberativeLoop:
             self._trace("reflect", f"model reflection hypothesis: {str(analysis)[:200]}; correctness unverified", task_id=context.id)
 
     def _close_episode(self, context: TaskContext, outcome: EpisodeOutcome) -> None:
-        actions = [r.model_copy(deep=True) for r in self.dispatcher.records if r.task_id == context.id]
+        retained = self.action_history(context.id) if self.action_history is not None else []
+        by_id = {record.id: record.model_copy(deep=True) for record in retained}
+        for record in self.dispatcher.records:
+            if record.task_id == context.id:
+                by_id[record.id] = record.model_copy(deep=True)
+        actions = sorted(by_id.values(), key=lambda record: (record.started_at, record.id))
         self.episodic.log_execution(
             task_id=context.id, goal=context.goal,
             start_state=context.goal, actions=actions,

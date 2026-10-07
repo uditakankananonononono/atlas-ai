@@ -40,7 +40,7 @@ persistence, and the FastAPI surface.
    Normal context persistence writes task, reported action records and traces;
    these are separate commits, not atomic effect receipts. Memory stores write
    through separately. Clean restart is tested, crash-complete or exactly-once
-   effects are not. The action journal is unbounded and hydrates all tenant rows.
+   effects are not. The action journal is unbounded in SQL, but runtime startup no longer hydrates all tenant action payloads. Episode completion reads only that task's retained actions and merges current-run records. Other memory/task hydration remains unbounded.
 4. Celery: a beat task calling `service.tick()` runs the time-sliced
    scheduler; a daily task posts `service.standup()` to the Executive
    Dashboard (spec 4.3). Resume waiting tasks from Module 0 webhooks via

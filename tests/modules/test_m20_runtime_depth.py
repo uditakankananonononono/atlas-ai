@@ -1700,3 +1700,24 @@ def test_dispatch_aggregate_counts_are_tenant_scoped():
     b.save_action(ActionRecord(tool='csv_summary', succeeded=True))
     assert a.dispatch_outcome_counts() == {'csv_summary': {'successes': 0, 'failures': 1}}
     assert b.dispatch_outcome_counts() == {'csv_summary': {'successes': 1, 'failures': 0}}
+
+
+def test_runtime_startup_avoids_all_tenant_action_payloads_but_episode_keeps_history():
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('fixture pipeline',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[
+        {'id':'a','title':'filter','tool':'csv_filter','arguments':{'csv_text':'amount\n42\n'}},
+        {'id':'b','title':'summary','tool':'csv_summary','depends_on':['a'],
+         'arguments':{'csv_text':{'$step':'a','path':['csv_text']},'value_column':'amount'}}])
+    runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+    original=repo.list_actions
+    def scoped_only(*,task_id=None):
+        if task_id is None:raise AssertionError('unbounded startup journal read')
+        return original(task_id=task_id)
+    repo.list_actions=scoped_only
+    restored=make_runtime(hydrate_repo=repo)
+    assert restored.dispatcher.records==[]
+    result=restored.run_task(task.id,max_ticks=2)
+    assert result.state==TaskState.SUCCEEDED
+    episode=repo.list_episodes()[-1]
+    assert [a.tool for a in episode.actions]==['csv_filter','csv_summary']

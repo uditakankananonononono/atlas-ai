@@ -1150,3 +1150,9 @@ Evidence: 118 runtime tests passed with one warning; 2,497 adjacent tests passed
 Two failing canaries exposed the missing aggregate path: runtime selection loaded every retained action payload, and no tenant-scoped count query existed. Tool selection now rebuilds counts from a grouped SQL query over reported outcome fields; supervision totals use the same aggregate. Large result payloads are not materialized into Python during either count operation. Local SQLite tests cover exact success/failure counts and tenant separation.
 
 Evidence: 120 runtime tests passed with one warning; 2,499 adjacent tests passed with two warnings in 49.07 seconds. This changes data access, not score calibration or independent evidence status. Database work still scans tenant action rows and startup still hydrates the full journal; no indexed count cache or PostgreSQL live acceptance is claimed. Full 10,081 at source 539fda3 predates three code changes.
+
+## Task-scoped action history instead of startup journal hydration
+
+A failing restart canary showed runtime initialization loaded all tenant action payloads. Startup now begins with an empty process-local dispatcher record buffer. Episode completion reads that task's retained actions and merges current-run records by ID, preserving pre-restart work without duplicate action entries.
+
+Evidence: 121 runtime tests passed with one warning; 2,500 adjacent tests passed with two warnings in 48.88 seconds. The actual default filter-to-summary pipeline resumes with no global action read and its final episode includes both handlers. This removes one unbounded startup payload load, not all scaling limits: task/memory hydration, current-process action buffers and long single-task episode history still grow. SQL action history remains retained; no archival policy or distributed exactly-once guarantee is claimed. Full 10,081 at source 539fda3 predates four code changes.
