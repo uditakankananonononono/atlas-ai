@@ -254,3 +254,16 @@ def test_retracted_meta_http_outputs_carry_nonexecution_status(client):
   assert r.status_code==200 and r.json()['status'] and r.json()['capability_executed'] is False
  r=c.post('/api/modules/20/meta/perspectives',json={'proposal':{}})
  assert all(v['status'] and not v['capability_executed'] for v in r.json()['perspectives'])
+
+
+@pytest.mark.parametrize("extra", [{"confidence":True}, {"confidence":"0.5"}, {"evidence_count":"2"}, {"evidence_count":10**15+1}])
+def test_calibration_http_rejects_coercion_and_oversized_counts(client, extra):
+    c, _ = client
+    r = c.post("/api/modules/20/meta/calibration/claims", json={"text":"claim", "confidence":0.5, **extra})
+    assert r.status_code == 422
+
+
+def test_calibration_http_string_outcome_is_not_coerced(client):
+    c, _ = client
+    claim = c.post("/api/modules/20/meta/calibration/claims", json={"text":"claim", "confidence":0.5}).json()["claim_id"]
+    assert c.post(f"/api/modules/20/meta/calibration/claims/{claim}/resolve", json={"correct":"false"}).status_code == 422

@@ -1,0 +1,187 @@
+.......................FFFFF                                             [100%]
+=================================== FAILURES ===================================
+_____ test_calibration_http_rejects_coercion_and_oversized_counts[extra0] ______
+
+client = (<starlette.testclient.TestClient object at 0x7fa9e263e4e0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7fa9e261d220>)
+extra = {'confidence': True}
+
+    @pytest.mark.parametrize("extra", [{"confidence":True}, {"confidence":"0.5"}, {"evidence_count":"2"}, {"evidence_count":10**15+1}])
+    def test_calibration_http_rejects_coercion_and_oversized_counts(client, extra):
+        c, _ = client
+        r = c.post("/api/modules/20/meta/calibration/claims", json={"text":"claim", "confidence":0.5, **extra})
+>       assert r.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_metacognition_routes.py:263: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_____ test_calibration_http_rejects_coercion_and_oversized_counts[extra1] ______
+
+client = (<starlette.testclient.TestClient object at 0x7fa9e0e00d10>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7fa9f447d340>)
+extra = {'confidence': '0.5'}
+
+    @pytest.mark.parametrize("extra", [{"confidence":True}, {"confidence":"0.5"}, {"evidence_count":"2"}, {"evidence_count":10**15+1}])
+    def test_calibration_http_rejects_coercion_and_oversized_counts(client, extra):
+        c, _ = client
+        r = c.post("/api/modules/20/meta/calibration/claims", json={"text":"claim", "confidence":0.5, **extra})
+>       assert r.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_metacognition_routes.py:263: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_____ test_calibration_http_rejects_coercion_and_oversized_counts[extra2] ______
+
+client = (<starlette.testclient.TestClient object at 0x7fa9e245ddc0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7fa9e0e03b60>)
+extra = {'evidence_count': '2'}
+
+    @pytest.mark.parametrize("extra", [{"confidence":True}, {"confidence":"0.5"}, {"evidence_count":"2"}, {"evidence_count":10**15+1}])
+    def test_calibration_http_rejects_coercion_and_oversized_counts(client, extra):
+        c, _ = client
+        r = c.post("/api/modules/20/meta/calibration/claims", json={"text":"claim", "confidence":0.5, **extra})
+>       assert r.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_metacognition_routes.py:263: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_____ test_calibration_http_rejects_coercion_and_oversized_counts[extra3] ______
+
+client = (<starlette.testclient.TestClient object at 0x7fa9e26dad50>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7fa9e245f860>)
+extra = {'evidence_count': 1000000000000001}
+
+    @pytest.mark.parametrize("extra", [{"confidence":True}, {"confidence":"0.5"}, {"evidence_count":"2"}, {"evidence_count":10**15+1}])
+    def test_calibration_http_rejects_coercion_and_oversized_counts(client, extra):
+        c, _ = client
+>       r = c.post("/api/modules/20/meta/calibration/claims", json={"text":"claim", "confidence":0.5, **extra})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_metacognition_routes.py:262: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:552: in post
+    return super().post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/routes.py:437: in row13_assess_claim
+    claim = service.calibration.assess_claim(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.metacognition.CalibrationEngine object at 0x7fa9e245d580>
+text = 'claim', confidence = 0.5, evidence_count = 1000000000000001
+
+    def assess_claim(self, text: str, confidence: float, *, evidence_count: int = 0) -> Claim:
+        if type(confidence) not in (int, float) or not math.isfinite(confidence) or not 0 <= confidence <= 1 or type(evidence_count) is not int or not 0 <= evidence_count <= 10**15:
+>           raise ValueError("finite confidence in [0,1] and nonnegative count required")
+E           ValueError: finite confidence in [0,1] and nonnegative count required
+
+backend/app/modules/m20_general_cognitive_worker/metacognition.py:346: ValueError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_____________ test_calibration_http_string_outcome_is_not_coerced ______________
+
+client = (<starlette.testclient.TestClient object at 0x7fa9e1417170>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7fa9e245de80>)
+
+    def test_calibration_http_string_outcome_is_not_coerced(client):
+        c, _ = client
+        claim = c.post("/api/modules/20/meta/calibration/claims", json={"text":"claim", "confidence":0.5}).json()["claim_id"]
+>       assert c.post(f"/api/modules/20/meta/calibration/claims/{claim}/resolve", json={"correct":"false"}).status_code == 422
+E       AssertionError: assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+E        +    where <Response [200 OK]> = post('/api/modules/20/meta/calibration/claims/92da22c8-c219-4d20-8c71-56175a0e8a0b/resolve', json={'correct': 'false'})
+E        +      where post = <starlette.testclient.TestClient object at 0x7fa9e1417170>.post
+
+tests/modules/test_m20_metacognition_routes.py:269: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_metacognition_routes.py::test_calibration_http_rejects_coercion_and_oversized_counts[extra0]
+FAILED tests/modules/test_m20_metacognition_routes.py::test_calibration_http_rejects_coercion_and_oversized_counts[extra1]
+FAILED tests/modules/test_m20_metacognition_routes.py::test_calibration_http_rejects_coercion_and_oversized_counts[extra2]
+FAILED tests/modules/test_m20_metacognition_routes.py::test_calibration_http_rejects_coercion_and_oversized_counts[extra3]
+FAILED tests/modules/test_m20_metacognition_routes.py::test_calibration_http_string_outcome_is_not_coerced
+5 failed, 23 passed, 1 warning in 6.41s

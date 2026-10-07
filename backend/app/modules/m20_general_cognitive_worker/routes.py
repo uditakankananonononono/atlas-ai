@@ -257,12 +257,12 @@ class TransferRequest(BaseModel):
 
 class ClaimRequest(BaseModel):
     text: str = Field(min_length=1)
-    confidence: float = Field(ge=0.0, le=1.0)
-    evidence_count: int = Field(default=0, ge=0)
+    confidence: float = Field(ge=0.0, le=1.0, strict=True)
+    evidence_count: int = Field(default=0, ge=0, le=10**15, strict=True)
 
 
 class ClaimResolveRequest(BaseModel):
-    correct: bool
+    correct: StrictBool
 
 
 class CounterfactualRequest(BaseModel):
