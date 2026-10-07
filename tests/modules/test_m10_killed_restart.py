@@ -11,6 +11,18 @@ ns=runpy.run_path('tests/modules/test_m10_email_assistant.py')
 svc,repo,approvals,client=ns['make_service'](Path(os.environ['FIXTURE_DIR']))
 repo.save_account(account_id='a',email_address='fixture-a@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
 phase=os.environ['KILL_PHASE']
+# Persisted hermetic approval sink across actual process death. Not a provider.
+import pickle
+from app.core.models import ApprovalRequest
+approval_path=Path(os.environ['FIXTURE_DIR'])/'approval.pkl'
+original_put=approvals.put
+def put(item,*,user_id=None):
+ result=original_put(item,user_id=user_id);approval_path.write_bytes(pickle.dumps(result));return result
+def get(item_id,*,user_id=None):
+ if not approval_path.exists():return None
+ value=pickle.loads(approval_path.read_bytes())
+ return value if value.id==item_id and value.payload.get('tenant_id')==user_id else None
+approvals.put=put;approvals.get=get
 mode=os.environ['MODE']
 original=repo.transition_draft_work
 if mode=='kill':

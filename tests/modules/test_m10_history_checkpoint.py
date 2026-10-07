@@ -115,3 +115,9 @@ def test_orphan_account_work_mutations_fail_closed(repo):
  assert not repo.transition_draft_work('orphan','missing','ready','model_inflight',{})
  assert not repo.finalize_draft_work('orphan','missing',{})
  assert repo.draft_work('orphan','missing')['phase']=='ready'
+ data={'draft_id':'d','approval_id':'ap','to':'fixture@example.invalid','subject':'fixture','body':'fixture','model':'fake'}
+ with repo.sessions.begin() as db:
+  row=db.get(DraftWorkRow,('a','orphan'));row.phase='approval_done';row.data=data
+ assert not repo.finalize_draft_work('orphan','missing',data)
+ assert repo.draft_work('orphan','missing')['phase']=='approval_done' and repo.list_drafts()==[]
+
