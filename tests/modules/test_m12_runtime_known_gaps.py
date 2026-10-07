@@ -332,8 +332,8 @@ def test_per_request_budget_only_no_aggregate_spend_tracking():
 def test_low_confidence_provider_text_interpolated_verbatim_into_critique_prompt():
  # Characterization, not injection-safety advice: with self-critique enabled, the
  # provider's low-confidence text is interpolated verbatim into the next attempt's
- # prompt. Provider-influenced text shaping later prompts is not sanitized or
- # delimited beyond the fixed template; prompt-injection resistance is not established.
+ # prompt. The template does not sanitize or delimit that text. This shows verbatim
+ # interpolation only; it does not measure attack success or resistance.
  prompts=[]
  class Provider:
   async def generate(self,*,model_id,prompt,context):
@@ -346,9 +346,11 @@ def test_low_confidence_provider_text_interpolated_verbatim_into_critique_prompt
  assert 'UNTRUSTED-PROVIDER-MARKER' in prompts[1] and 'original-task' in prompts[1]
 
 def test_arbitrary_provider_metadata_flows_through_unfiltered():
- # Characterization, not metadata-schema advice: provider metadata of any shape is
- # shallow-copied into the returned result unfiltered. Only the envelope type and text/
- # model_id typing are validated; all remaining fields are unvetted passthrough.
+ # Characterization, not metadata-schema advice: the envelope guard already requires an
+ # exact ModelResult with metadata of exact dict type, plus typed text/model_id, UTF-8
+ # encodable text, and confidence/logprob constraints. Within that exact-dict metadata,
+ # custom nested values of any shape are shallow-copied through unvetted; this pin covers
+ # only that passthrough, not the envelope guards.
  class Provider:
   async def generate(self,*,model_id,prompt,context):
    return ModelResult('fixture',model_id,.95,metadata={'unvetted_provider_field':{'nested':[1,2,3]}})
