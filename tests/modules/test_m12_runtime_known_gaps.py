@@ -266,3 +266,22 @@ async def test_policy_replacement_mid_generation_only_applies_to_next_execution(
  with pytest.raises(ConfidenceThresholdNotReached):await running
  result=await executor.execute(req,'fixture')
  assert result.confidence==.5 and calls==['first','first']
+
+@pytest.mark.asyncio
+async def test_policy_attempt_and_critique_replacement_preserves_original_run(monkeypatch):
+ import app.modules.m12_ai_research_lab.executor as module
+ started=asyncio.Event();release=asyncio.Event();calls=[];sleeps=[]
+ async def sleep(delay):sleeps.append(delay)
+ monkeypatch.setattr(module.asyncio,'sleep',sleep)
+ class Provider:
+  async def generate(self,**kwargs):
+   calls.append((kwargs['model_id'],kwargs['prompt']))
+   if len(calls)==1:started.set();await release.wait()
+   return ModelResult('candidate',kwargs['model_id'],.1 if len(calls)==1 else .9)
+ executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(max_attempts=2,base_delay_seconds=.2,enable_self_critique=True))
+ running=asyncio.create_task(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'original'))
+ await started.wait();executor.policy=RetryPolicy(max_attempts=1,base_delay_seconds=.8,enable_self_critique=False);release.set()
+ result=await running
+ assert [x[0] for x in calls]==['first','backup']
+ assert calls[1][1].startswith('Critique and improve the candidate.') and sleeps==[.2]
+ assert result.metadata['attempts']==2
