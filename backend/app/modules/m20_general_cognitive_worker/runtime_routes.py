@@ -285,3 +285,21 @@ def patch_risk_control(identifier: str, risk_id: str, request: RiskControlPatchR
         raise HTTPException(404, 'register or risk not found')
     except ValueError as exc:
         raise HTTPException(409 if str(exc).startswith('revision conflict') else 422, str(exc))
+
+
+class TaskContextInputRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=4000)
+    source: str = Field(min_length=1, max_length=200)
+    reference: str = Field(min_length=1, max_length=200)
+
+
+@router.post('/tasks/{task_id}/context', status_code=201)
+def add_task_context(task_id: str, request: TaskContextInputRequest,
+                     runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        return runtime.add_task_context(task_id, text=request.text, source=request.source,
+                                        reference=request.reference)
+    except KeyError:
+        raise HTTPException(404, 'task not found')
+    except ValueError as exc:
+        raise HTTPException(409 if str(exc).startswith('context conflict') else 422, str(exc))

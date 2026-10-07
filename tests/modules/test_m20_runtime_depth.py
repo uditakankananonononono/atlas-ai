@@ -1288,3 +1288,46 @@ def test_review_lessons_prepared_plan_deduplicates_and_stays_task_partitioned():
     chunks = [c for c in runtime.working_memory.focused(partition=task.id) if c.source == 'retrospective_retrieval']
     assert len(chunks) == 1 and chunks[0].confidence == 0
     assert runtime.working_memory.focused(partition='other') == []
+
+
+def test_runtime_task_context_input_is_durable_replay_safe_and_reaches_planner(mounted):
+    client, runtime, repo, _ = mounted
+    task = runtime.submit_goal('fixture input', run_immediately=False)
+    path = f'/api/modules/20/runtime/tasks/{task.id}/context'
+    payload = {'text': 'Supplier cutoff is 16:00 in supplied note', 'source': 'supplied-note', 'reference': 'note-1'}
+    response = client.post(path, json=payload)
+    assert response.status_code == 201
+    first = response.json()
+    assert first['source_verified'] is False
+    assert first['inserted'] is True
+    assert client.post(path, json=payload).json()['inserted'] is False
+    assert client.post(path, json=dict(payload, text='changed')).status_code == 409
+    class CapturePlanner:
+        def decompose(self, goal, *, context=''):
+            self.context = context
+            return [{'title': 'review input', 'tool': None}]
+    model = CapturePlanner()
+    restored = make_runtime(hydrate_repo=repo, model=model)
+    restored.run_task(task.id)
+    assert 'Supplier cutoff is 16:00' in model.context
+    assert 'unverified supplied context' in model.context
+    assert 'note-1' in model.context
+    assert restored.working_memory.focused(partition='other') == []
+    runtime.close(task.id)
+    assert client.post(path, json=dict(payload, reference='note-2')).status_code == 409
+    assert client.post('/api/modules/20/runtime/tasks/missing/context', json=payload).status_code == 404
+
+
+def test_task_context_reference_replay_after_runtime_restart_and_tenant_isolation():
+    engine = make_engine()
+    a = GCWRepository(engine, tenant_id='a'); a.create_schema()
+    b = GCWRepository(engine, tenant_id='b')
+    runtime = GCWRuntime(a)
+    task = runtime.submit_goal('fixture', run_immediately=False)
+    payload = dict(text='fixture retained note', source='caller', reference='r1')
+    first = runtime.add_task_context(task.id, **payload)
+    restarted = GCWRuntime(a)
+    assert restarted.add_task_context(task.id, **payload)['inserted'] is False
+    assert restarted.working_memory.get(first['chunk_id']).confidence == 0
+    with pytest.raises(KeyError): GCWRuntime(b).add_task_context(task.id, **payload)
+    with pytest.raises(ValueError): restarted.add_task_context(task.id, text=' ', source='caller', reference='r2')
