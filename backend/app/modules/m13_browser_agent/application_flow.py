@@ -627,7 +627,10 @@ class ApplicationFlow:
         negative = bool(re.search(r'\b(?:error|failed|not received|not submitted|could not|unable to)\b', text))
         form_remains = bool(BeautifulSoup(html, 'html.parser').find('form'))
         positive = receipt and not negative and not form_remains and final_url != payload['page_url']
-        record.confirmation['positive_receipt'] = positive
+        record.confirmation['positive_text_observed'] = positive
+        record.confirmation['transaction_bound'] = False
+        positive = False # Generic text is not proof of original transaction acceptance.
+        record.confirmation['positive_receipt'] = False
         record.confirmation['receipt_contract'] = 'application receipt text, changed URL, no form or error; unsupported sites remain unknown'
         record.status = WorkflowStatus.SUBMITTED.value if positive else WorkflowStatus.OUTCOME_UNKNOWN.value
         record.error = '' if positive else 'click observed but no positive application receipt; confirm outcome manually, do not retry'
