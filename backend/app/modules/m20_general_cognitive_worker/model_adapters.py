@@ -141,6 +141,15 @@ class FreeFirstExecutiveModel:
             '{"cause": "...", "fix": "...", "retry": true|false}.\n'
             f"Input: {json.dumps(payload, default=str)[:6000]}"
         )
+        if purpose == "ideate":
+            prompt = (
+                "Generate distinct actionable proposals for the supplied objective. "
+                "Respect the supplied constraints, but do not claim they are independently verified. "
+                "Return ONLY a JSON object with ideas (exact requested count). Each candidate needs "
+                "title, proposal, first_test (a concrete small test), risks (string list), and "
+                "constraint_checks (each supplied constraint mapped to an explanation, including tradeoffs). "
+                "Do not take actions or invent evidence. Input: " + json.dumps(payload)
+            )
         try:
             provider, model, text = _run(model_catalog.generate_free_first(prompt, self.model_name, private=True))
         except ProviderError as exc:

@@ -1610,3 +1610,19 @@ def execution_truth(body:ExecutionTruthIn):
 # cross-domain evaluation. The outer module mount applies tenant auth.
 from .agi_routes import router as agi_runtime_router
 router.include_router(agi_runtime_router)
+
+
+class ModelIdeationRequest(BaseModel):
+    objective: str = Field(min_length=1, max_length=2000)
+    constraints: list[str] = Field(default_factory=list, max_length=20)
+    count: int = Field(default=5, ge=1, le=10, strict=True)
+
+
+@router.post("/meta/ideation/generate")
+def generate_model_ideas(request: ModelIdeationRequest, service: Any = Depends(get_service)):
+    try:
+        return service.model_ideation.generate(request.objective, constraints=request.constraints, count=request.count)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))

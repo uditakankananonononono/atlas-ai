@@ -1,0 +1,28 @@
+..............FF                                                         [100%]
+=================================== FAILURES ===================================
+_ test_model_ideation_generates_actionable_candidates_and_constraints_not_frames _
+
+    def test_model_ideation_generates_actionable_candidates_and_constraints_not_frames():
+        class Model:
+            def complete(self, purpose, payload):
+                assert purpose == 'ideate'
+                assert payload['constraints'] == ['no paid ads']
+                return {'ideas': [{'title': 'Library referral', 'proposal': 'Partner with librarians for student referrals',
+                                  'first_test': 'Interview two librarians', 'risks': ['staff time'],
+                                  'constraint_checks': {'no paid ads': 'No ad spend; staff time still needed'}}], 'route': 'fixture/model'}
+>       from app.modules.m20_general_cognitive_worker.reflection import ModelIdeationEngine
+E       ImportError: cannot import name 'ModelIdeationEngine' from 'app.modules.m20_general_cognitive_worker.reflection' (/home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/reflection.py)
+
+tests/modules/test_m20_reflection.py:184: ImportError
+_____ test_model_ideation_unavailable_or_invalid_has_no_template_fallback ______
+
+    def test_model_ideation_unavailable_or_invalid_has_no_template_fallback():
+        import pytest
+>       from app.modules.m20_general_cognitive_worker.reflection import ModelIdeationEngine
+E       ImportError: cannot import name 'ModelIdeationEngine' from 'app.modules.m20_general_cognitive_worker.reflection' (/home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/reflection.py)
+
+tests/modules/test_m20_reflection.py:193: ImportError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reflection.py::test_model_ideation_generates_actionable_candidates_and_constraints_not_frames
+FAILED tests/modules/test_m20_reflection.py::test_model_ideation_unavailable_or_invalid_has_no_template_fallback
+2 failed, 14 passed in 1.21s

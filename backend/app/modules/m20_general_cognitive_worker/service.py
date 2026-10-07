@@ -16,7 +16,7 @@ from .episodic_memory import EpisodicMemory
 from .executive import DeliberativeLoop, ExecutiveModel, MCTSRuminator
 from .htn_planner import HTNPlanner, PlannerModel
 from .reflection import (
-    CreativityMode, EmotionalStateModel, IdeationEngine, RetrospectiveEngine,
+    CreativityMode, EmotionalStateModel, IdeationEngine, ModelIdeationEngine, RetrospectiveEngine,
     ScratchpadManager, UncertaintyGate,
 )
 from .safety import ApprovalGate, ConstitutionalRules, InMemoryApprovalGate, SafetyGate, SandboxPolicy
@@ -137,6 +137,7 @@ class CognitiveWorkerService:
         self.scheduler = ContextScheduler()
         self.scratchpads = ScratchpadManager()
         self.ideation = IdeationEngine()
+        self.model_ideation = ModelIdeationEngine(executive_model)
         self.retrospectives = RetrospectiveEngine(embedder=embedder)
         self.emotions = EmotionalStateModel()
         self.uncertainty = UncertaintyGate()
