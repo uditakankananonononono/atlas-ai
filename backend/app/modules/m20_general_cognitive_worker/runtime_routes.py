@@ -376,3 +376,22 @@ def runtime_tool_catalog(runtime: GCWRuntime = Depends(get_runtime)):
     return {'tools': [dict(item, parameters=schemas[item['name']]) for item in runtime.tools.describe()],
             'status': 'registered_handlers_only', 'external_availability_verified': False,
             'approval_granted': False}
+
+
+class ReadStepRetryRequest(BaseModel):
+    arguments: dict[str, Any]
+
+
+@router.post('/tasks/{task_id}/steps/{node_id}/retry')
+def prepare_read_step_retry(task_id: str, node_id: str, request: ReadStepRetryRequest,
+                            runtime: GCWRuntime = Depends(get_runtime)):
+    from .htn_planner import PlanError
+    from .tools import ToolError
+    try:
+        return _task_dict(runtime.prepare_read_step_retry(task_id, node_id, arguments=request.arguments))
+    except KeyError:
+        raise HTTPException(404, 'task or step not found')
+    except (PlanError, ToolError) as exc:
+        raise HTTPException(422, str(exc))
+    except ValueError as exc:
+        raise HTTPException(409 if str(exc).startswith('retry conflict') else 422, str(exc))

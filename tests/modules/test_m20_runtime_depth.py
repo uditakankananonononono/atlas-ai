@@ -1830,3 +1830,35 @@ def test_supplied_plan_validates_and_resolves_output_reference_titles_before_exe
             {'id':'a','title':'source','tool':'csv_filter','arguments':{'csv_text':'amount\n42\n'}},
             {'title':'target','tool':'csv_summary','depends_on':['a'],'arguments':{'csv_text':reference,'value_column':'amount'}}])
         assert repo.load_task(bad.id).plan==[]
+
+
+def test_failed_read_step_can_be_corrected_without_rerunning_successful_predecessor(mounted):
+    client,runtime,repo,_=mounted
+    task=runtime.submit_goal('fixture correction',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[
+        {'id':'a','title':'filter','tool':'csv_filter','arguments':{'csv_text':'amount\n42\n'}},
+        {'id':'b','title':'sum','tool':'csv_summary','max_attempts':1,'depends_on':['a'],
+         'arguments':{'csv_text':{'$step':'a','path':['csv_text']},'value_column':'missing'}}])
+    assert runtime.run_task(task.id).state==TaskState.FAILED
+    path=f'/api/modules/20/runtime/tasks/{task.id}/steps/b/retry'
+    response=client.post(path,json={'arguments':{'csv_text':{'$step':'a','path':['csv_text']},'value_column':'amount'}})
+    assert response.status_code==200
+    assert response.json()['state']=='planning'
+    assert len(repo.list_actions(task_id=task.id))==2
+    completed=client.post(f'/api/modules/20/runtime/tasks/{task.id}/step',json={'max_ticks':2,'quantum_seconds':5})
+    assert completed.json()['state']=='succeeded'
+    assert [a.tool for a in repo.list_actions(task_id=task.id)]==['csv_filter','csv_summary','csv_summary']
+    assert runtime.get_task(task.id).plan[1].output['groups'][0]['sum']==42
+    assert client.post(path,json={'arguments':{}}).status_code==409
+
+
+def test_read_retry_refuses_effectful_failed_step_and_preserves_evidence():
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('fixture external',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[{'id':'a','title':'effect','tool':'fixture_external','risk':'external'}])
+    async def handler(args):return {}
+    runtime.tools.register(ToolSpec(name='fixture_external',description='fixture',risk=Risk.EXTERNAL),handler)
+    task=runtime.get_task(task.id);task.plan[0].state=TaskState.FAILED;task.state=TaskState.FAILED
+    runtime._persist_context(task)
+    with pytest.raises(ValueError,match='effectful'):runtime.prepare_read_step_retry(task.id,'a',arguments={})
+    assert repo.load_task(task.id).plan[0].state==TaskState.FAILED

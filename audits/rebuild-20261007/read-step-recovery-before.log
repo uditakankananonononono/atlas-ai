@@ -1,0 +1,31 @@
+........................................................................ [ 55%]
+........................................................F                [100%]
+=================================== FAILURES ===================================
+_ test_failed_read_step_can_be_corrected_without_rerunning_successful_predecessor _
+
+mounted = (<starlette.testclient.TestClient object at 0x7f215ebb8bf0>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7f215ea71a90>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7f215ea72540>)
+
+    def test_failed_read_step_can_be_corrected_without_rerunning_successful_predecessor(mounted):
+        client,runtime,repo,_=mounted
+        task=runtime.submit_goal('fixture correction',run_immediately=False)
+        runtime.prepare_supplied_plan(task.id,steps=[
+            {'id':'a','title':'filter','tool':'csv_filter','arguments':{'csv_text':'amount\n42\n'}},
+            {'id':'b','title':'sum','tool':'csv_summary','max_attempts':1,'depends_on':['a'],
+             'arguments':{'csv_text':{'$step':'a','path':['csv_text']},'value_column':'missing'}}])
+        assert runtime.run_task(task.id).state==TaskState.FAILED
+        path=f'/api/modules/20/runtime/tasks/{task.id}/steps/b/retry'
+        response=client.post(path,json={'arguments':{'csv_text':{'$step':'a','path':['csv_text']},'value_column':'amount'}})
+>       assert response.status_code==200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_m20_runtime_depth.py:1845: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_read_step_can_be_corrected_without_rerunning_successful_predecessor
+1 failed, 128 passed, 1 warning in 8.13s
