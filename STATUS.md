@@ -886,3 +886,7 @@ register used active-only lookup: retiring all revisions reset next version to1;
 ## Full local regression after skill revision corrections
 
 Source 724c275: 496 files in 20 isolated batches, 9869passed/0failed/14skipped/26 summed warning occurrences, 417.2s summed process time; every exit0. Manifest, receipts, logs, runner and summary retained under full-regression-after-skill-revisions. This refresh includes the sixteen source corrections since e2fe166. Green local fixtures do not verify original cognition breadth, authenticated review authority, distributed effects or production provisioning. Historical full-regression evidence retained unchanged.
+
+## Working-memory supplied attention publication
+
+Eight reproduced failures: invalid supplied scores accepted and callback failures leave overcapacity store or partial refresh scores. Finite numeric0..1/notbool validation; isolated callback inputs and staged score/capacity selection before shared publication.83working-memory/runtimepass1warning; recorded87adjacent2291pass2warnings39.90s. Callback content mutation canary also passes. Local callback-failure consistency only, not semantic attention, cognition, reentrant/concurrent isolation or durable multirow SQL crash atomicity. Latest full9869pass source724c275 predates this correction.

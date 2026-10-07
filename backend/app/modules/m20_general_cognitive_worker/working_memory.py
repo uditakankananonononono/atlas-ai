@@ -85,25 +85,31 @@ class WorkingMemory:
         if existing is not None and existing.context_id != (partition or None):
             raise ValueError("chunk id already belongs to a different partition")
         chunk = chunk.model_copy(deep=True)
-        chunk.attention_score = self.attention.score(chunk, active_goal)
+        chunk.attention_score = self._score(chunk, active_goal)
         chunk.context_id = partition or None
-        self._chunks[chunk.id] = chunk
+        staged = {cid: self._chunks[cid].model_copy(deep=True) for cid in self._ids_for(partition)}
+        staged[chunk.id] = chunk
+        evicted = []
+        while len(staged) > self.capacity:
+            for entry in staged.values():
+                entry.attention_score = self._score(entry, active_goal)
+            weakest = min(staged, key=lambda cid: staged[cid].attention_score)
+            evicted.append(weakest)
+            staged.pop(weakest)
+        # Scoring is complete before the shared store or partition indexes change.
+        for cid in evicted:
+            if cid in self._chunks:
+                self._remove(cid)
+        self._chunks.update(staged)
         if partition:
-            self._partitions.setdefault(partition, [])
-            if chunk.id not in self._partitions[partition]:
-                self._partitions[partition].append(chunk.id)
-        self._enforce_capacity(partition, active_goal)
+            self._partitions[partition] = list(staged)
         return chunk.model_copy(deep=True)
 
-    def _enforce_capacity(self, partition: str | None, active_goal: str) -> None:
-        ids = self._ids_for(partition)
-        while len(ids) > self.capacity:
-            for chunk_id in ids:
-                chunk = self._chunks[chunk_id]
-                chunk.attention_score = self.attention.score(chunk, active_goal)
-            weakest = min(ids, key=lambda cid: self._chunks[cid].attention_score)
-            self._remove(weakest)
-            ids = self._ids_for(partition)
+    def _score(self, chunk: MemoryChunk, active_goal: str) -> float:
+        score = self.attention.score(chunk.model_copy(deep=True), active_goal)
+        if type(score) not in (int, float) or not math.isfinite(score) or not 0 <= score <= 1:
+            raise ValueError("attention score must be a finite number in [0,1], not bool")
+        return float(score)
 
     def _ids_for(self, partition: str | None) -> list[str]:
         if partition is None:
@@ -120,9 +126,12 @@ class WorkingMemory:
                 ids.remove(chunk_id)
 
     def refresh_attention(self, active_goal: str, *, partition: str | None = None) -> None:
+        staged = {}
         for chunk_id in self._ids_for(partition):
-            chunk = self._chunks[chunk_id]
-            chunk.attention_score = self.attention.score(chunk, active_goal)
+            chunk = self._chunks[chunk_id].model_copy(deep=True)
+            chunk.attention_score = self._score(chunk, active_goal)
+            staged[chunk_id] = chunk
+        self._chunks.update(staged)
 
     def get(self, chunk_id: str) -> MemoryChunk | None:
         chunk = self._chunks.get(chunk_id)
