@@ -623,3 +623,26 @@ def test_reference_case_views_cannot_rewrite_outcomes_or_tokens():
     forecaster.cases.append({'outcome': 99})
     forecast = forecaster.forecast('fixture')
     assert forecast.n_cases == 1 and forecast.mean == 10
+
+
+@pytest.mark.parametrize('minimum', [0, -1, True, 1.5])
+def test_optimism_min_samples_is_positive_integer(minimum):
+    with pytest.raises(ValueError):
+        OptimismCalibrator(min_samples=minimum)
+
+
+@pytest.mark.parametrize('confidence,outcome', [(True, False), (0.8, 'false'), (0.8, 1)])
+def test_optimism_inputs_are_numeric_probability_and_exact_bool(confidence, outcome):
+    cal = OptimismCalibrator()
+    with pytest.raises(ValueError):
+        cal.record(domain='fixture', predicted_confidence=confidence, succeeded=outcome)
+    assert cal.records == {}
+
+
+def test_optimism_public_records_cannot_rewrite_signed_bias():
+    cal = OptimismCalibrator(min_samples=1)
+    cal.record(domain='fixture', predicted_confidence=0.8, succeeded=False)
+    cal.records['fixture'][0] = (0.2, True)
+    assert cal.bias('fixture') == pytest.approx((0.8, 1))
+    with pytest.raises(ValueError):
+        cal.adjust(domain='fixture', confidence=True)

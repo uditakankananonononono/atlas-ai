@@ -1,0 +1,109 @@
+........................................................................ [ 71%]
+.....................FFFFFFFF                                            [100%]
+=================================== FAILURES ===================================
+_______________ test_optimism_min_samples_is_positive_integer[0] _______________
+
+minimum = 0
+
+    @pytest.mark.parametrize('minimum', [0, -1, True, 1.5])
+    def test_optimism_min_samples_is_positive_integer(minimum):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:630: Failed
+______________ test_optimism_min_samples_is_positive_integer[-1] _______________
+
+minimum = -1
+
+    @pytest.mark.parametrize('minimum', [0, -1, True, 1.5])
+    def test_optimism_min_samples_is_positive_integer(minimum):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:630: Failed
+_____________ test_optimism_min_samples_is_positive_integer[True] ______________
+
+minimum = True
+
+    @pytest.mark.parametrize('minimum', [0, -1, True, 1.5])
+    def test_optimism_min_samples_is_positive_integer(minimum):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:630: Failed
+______________ test_optimism_min_samples_is_positive_integer[1.5] ______________
+
+minimum = 1.5
+
+    @pytest.mark.parametrize('minimum', [0, -1, True, 1.5])
+    def test_optimism_min_samples_is_positive_integer(minimum):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:630: Failed
+___ test_optimism_inputs_are_numeric_probability_and_exact_bool[True-False] ____
+
+confidence = True, outcome = False
+
+    @pytest.mark.parametrize('confidence,outcome', [(True, False), (0.8, 'false'), (0.8, 1)])
+    def test_optimism_inputs_are_numeric_probability_and_exact_bool(confidence, outcome):
+        cal = OptimismCalibrator()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:637: Failed
+____ test_optimism_inputs_are_numeric_probability_and_exact_bool[0.8-false] ____
+
+confidence = 0.8, outcome = 'false'
+
+    @pytest.mark.parametrize('confidence,outcome', [(True, False), (0.8, 'false'), (0.8, 1)])
+    def test_optimism_inputs_are_numeric_probability_and_exact_bool(confidence, outcome):
+        cal = OptimismCalibrator()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:637: Failed
+______ test_optimism_inputs_are_numeric_probability_and_exact_bool[0.8-1] ______
+
+confidence = 0.8, outcome = 1
+
+    @pytest.mark.parametrize('confidence,outcome', [(True, False), (0.8, 'false'), (0.8, 1)])
+    def test_optimism_inputs_are_numeric_probability_and_exact_bool(confidence, outcome):
+        cal = OptimismCalibrator()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:637: Failed
+___________ test_optimism_public_records_cannot_rewrite_signed_bias ____________
+
+    def test_optimism_public_records_cannot_rewrite_signed_bias():
+        cal = OptimismCalibrator(min_samples=1)
+        cal.record(domain='fixture', predicted_confidence=0.8, succeeded=False)
+        cal.records['fixture'][0] = (0.2, True)
+>       assert cal.bias('fixture') == pytest.approx((0.8, 1))
+E       assert (-0.8, 1) == approx((0.8 ±... 1 ± 1.0e-06))
+E         
+E         comparison failed. Mismatched elements: 1 / 2:
+E         Max absolute difference: 1.6
+E         Max relative difference: 2.0
+E         Index | Obtained | Expected     
+E         0     | -0.8     | 0.8 ± 8.0e-07
+
+tests/modules/test_m20_foresight.py:646: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_optimism_min_samples_is_positive_integer[0]
+FAILED tests/modules/test_m20_foresight.py::test_optimism_min_samples_is_positive_integer[-1]
+FAILED tests/modules/test_m20_foresight.py::test_optimism_min_samples_is_positive_integer[True]
+FAILED tests/modules/test_m20_foresight.py::test_optimism_min_samples_is_positive_integer[1.5]
+FAILED tests/modules/test_m20_foresight.py::test_optimism_inputs_are_numeric_probability_and_exact_bool[True-False]
+FAILED tests/modules/test_m20_foresight.py::test_optimism_inputs_are_numeric_probability_and_exact_bool[0.8-false]
+FAILED tests/modules/test_m20_foresight.py::test_optimism_inputs_are_numeric_probability_and_exact_bool[0.8-1]
+FAILED tests/modules/test_m20_foresight.py::test_optimism_public_records_cannot_rewrite_signed_bias
+8 failed, 93 passed in 1.58s
