@@ -546,13 +546,20 @@ class PlanningFallacyCorrector:
     new estimates. Multipliers are shrunk toward 1.0 while samples are few."""
 
     def __init__(self, *, shrinkage: float = 5.0) -> None:
+        if type(shrinkage) not in (int, float) or not math.isfinite(shrinkage) or shrinkage < 0:
+            raise ValueError("shrinkage must be finite nonnegative numeric, not bool")
         self.shrinkage = shrinkage
         self.history: dict[str, list[float]] = {}
 
     def record(self, *, kind: str, estimated: float, actual: float) -> None:
+        SimulationFidelityTracker._finite(estimated)
+        SimulationFidelityTracker._finite(actual)
         if estimated <= 0 or actual < 0:
             raise ValueError("estimated must be > 0 and actual >= 0")
-        self.history.setdefault(kind, []).append(actual / estimated)
+        ratio = actual / estimated
+        if not math.isfinite(ratio):
+            raise ValueError("planning ratio overflow")
+        self.history.setdefault(kind, []).append(ratio)
 
     def multiplier(self, kind: str) -> tuple[float, int]:
         ratios = self.history.get(kind, [])
@@ -560,16 +567,21 @@ class PlanningFallacyCorrector:
             return 1.0, 0
         raw = mean(ratios)
         n = len(ratios)
-        return 1.0 + (raw - 1.0) * n / (n + self.shrinkage), n
+        weight = n / (n + self.shrinkage)
+        return (1.0 - weight) + raw * weight, n
 
     def correct(self, *, kind: str, estimate: float) -> dict[str, Any]:
+        SimulationFidelityTracker._finite(estimate)
         if estimate <= 0:
             raise ValueError("estimate must be > 0")
         mult, n = self.multiplier(kind)
-        return {"estimate": estimate, "corrected": estimate * mult, "multiplier": mult,
+        corrected = estimate * mult
+        if not math.isfinite(corrected):
+            raise ValueError("corrected estimate overflow")
+        return {"estimate": estimate, "corrected": corrected, "multiplier": mult,
                 "samples": n,
                 "assumptions": [f"Multiplier shrunk toward 1.0 (shrinkage {self.shrinkage})",
-                                 "Past overruns of this task kind predict future ones"]}
+                                 "Supplied historical ratios treated as relevant, not independently verified or validated forecasts"]}
 
 
 # ---------------------------------------------------------------- row 45 --

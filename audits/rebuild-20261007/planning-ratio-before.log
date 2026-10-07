@@ -1,0 +1,132 @@
+.....................................................................FFF [ 91%]
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+_______ test_planning_shrinkage_validates_finite_nonnegative_numeric[-1] _______
+
+shrinkage = -1
+
+    @pytest.mark.parametrize('shrinkage', [-1, float('nan'), float('inf'), True, '5'])
+    def test_planning_shrinkage_validates_finite_nonnegative_numeric(shrinkage):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:554: Failed
+______ test_planning_shrinkage_validates_finite_nonnegative_numeric[nan] _______
+
+shrinkage = nan
+
+    @pytest.mark.parametrize('shrinkage', [-1, float('nan'), float('inf'), True, '5'])
+    def test_planning_shrinkage_validates_finite_nonnegative_numeric(shrinkage):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:554: Failed
+______ test_planning_shrinkage_validates_finite_nonnegative_numeric[inf] _______
+
+shrinkage = inf
+
+    @pytest.mark.parametrize('shrinkage', [-1, float('nan'), float('inf'), True, '5'])
+    def test_planning_shrinkage_validates_finite_nonnegative_numeric(shrinkage):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:554: Failed
+______ test_planning_shrinkage_validates_finite_nonnegative_numeric[True] ______
+
+shrinkage = True
+
+    @pytest.mark.parametrize('shrinkage', [-1, float('nan'), float('inf'), True, '5'])
+    def test_planning_shrinkage_validates_finite_nonnegative_numeric(shrinkage):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:554: Failed
+_______ test_planning_shrinkage_validates_finite_nonnegative_numeric[5] ________
+
+shrinkage = '5'
+
+    @pytest.mark.parametrize('shrinkage', [-1, float('nan'), float('inf'), True, '5'])
+    def test_planning_shrinkage_validates_finite_nonnegative_numeric(shrinkage):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:554: Failed
+_______ test_planning_invalid_or_overflowed_ratios_do_not_publish[nan-1] _______
+
+estimated = nan, actual = 1
+
+    @pytest.mark.parametrize('estimated,actual', [(float('nan'), 1), (1, float('inf')), (True, 1), (1e-308, 1e308)])
+    def test_planning_invalid_or_overflowed_ratios_do_not_publish(estimated, actual):
+        corrector = PlanningFallacyCorrector()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:561: Failed
+_______ test_planning_invalid_or_overflowed_ratios_do_not_publish[1-inf] _______
+
+estimated = 1, actual = inf
+
+    @pytest.mark.parametrize('estimated,actual', [(float('nan'), 1), (1, float('inf')), (True, 1), (1e-308, 1e308)])
+    def test_planning_invalid_or_overflowed_ratios_do_not_publish(estimated, actual):
+        corrector = PlanningFallacyCorrector()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:561: Failed
+______ test_planning_invalid_or_overflowed_ratios_do_not_publish[True-1] _______
+
+estimated = True, actual = 1
+
+    @pytest.mark.parametrize('estimated,actual', [(float('nan'), 1), (1, float('inf')), (True, 1), (1e-308, 1e308)])
+    def test_planning_invalid_or_overflowed_ratios_do_not_publish(estimated, actual):
+        corrector = PlanningFallacyCorrector()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:561: Failed
+___ test_planning_invalid_or_overflowed_ratios_do_not_publish[1e-308-1e+308] ___
+
+estimated = 1e-308, actual = 1e+308
+
+    @pytest.mark.parametrize('estimated,actual', [(float('nan'), 1), (1, float('inf')), (True, 1), (1e-308, 1e308)])
+    def test_planning_invalid_or_overflowed_ratios_do_not_publish(estimated, actual):
+        corrector = PlanningFallacyCorrector()
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:561: Failed
+_______ test_planning_shrinkage_arithmetic_does_not_overflow_finite_mean _______
+
+    def test_planning_shrinkage_arithmetic_does_not_overflow_finite_mean():
+        corrector = PlanningFallacyCorrector(shrinkage=0)
+        for _ in range(3):
+            corrector.record(kind='fixture', estimated=1, actual=1e308)
+>       assert corrector.multiplier('fixture')[0] == pytest.approx(1e308)
+E       assert inf == 1e+308 ± 1.0e+302
+E         
+E         comparison failed
+E         Obtained: inf
+E         Expected: 1e+308 ± 1.0e+302
+
+tests/modules/test_m20_foresight.py:570: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_planning_shrinkage_validates_finite_nonnegative_numeric[-1]
+FAILED tests/modules/test_m20_foresight.py::test_planning_shrinkage_validates_finite_nonnegative_numeric[nan]
+FAILED tests/modules/test_m20_foresight.py::test_planning_shrinkage_validates_finite_nonnegative_numeric[inf]
+FAILED tests/modules/test_m20_foresight.py::test_planning_shrinkage_validates_finite_nonnegative_numeric[True]
+FAILED tests/modules/test_m20_foresight.py::test_planning_shrinkage_validates_finite_nonnegative_numeric[5]
+FAILED tests/modules/test_m20_foresight.py::test_planning_invalid_or_overflowed_ratios_do_not_publish[nan-1]
+FAILED tests/modules/test_m20_foresight.py::test_planning_invalid_or_overflowed_ratios_do_not_publish[1-inf]
+FAILED tests/modules/test_m20_foresight.py::test_planning_invalid_or_overflowed_ratios_do_not_publish[True-1]
+FAILED tests/modules/test_m20_foresight.py::test_planning_invalid_or_overflowed_ratios_do_not_publish[1e-308-1e+308]
+FAILED tests/modules/test_m20_foresight.py::test_planning_shrinkage_arithmetic_does_not_overflow_finite_mean
+10 failed, 69 passed in 1.52s

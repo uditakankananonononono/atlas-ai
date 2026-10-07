@@ -926,3 +926,7 @@ Two reproduced failures retained: displayedposterior rounds1afterLR1e300 then LR
 ## Supplied base-rate heuristic blend
 
 Twelve actual initial failures retained: malformedstrength/count/probabilityinput and finite denominator overflow collapses0.5samplefactor to0.1floor. Positivefinite numericstrength/notbool; finite0..1suppliedprobabilities/notbool; exactintegercount0..10**308; scaled ratio avoids denominator overflow.102foresightHTTPpass1warning; recorded87adjacent2333pass2warnings41.03s. Syntheticstrength1e308/count10**308 nowweight0.5andadjusted0.5. Explicitheuristicblend, minimumsamplefactor0.1evenzero samples, not inferred base rate/empirical calibration. Raw guards do not prove strictHTTPinputs. Latestfull9869passsource724c275 predatestenlaterfixes.
+
+## Supplied planning ratio arithmetic
+
+Ten actual failures retained: malformedshrinkage/nonfinite/boolnumericinput/overflowratio publication and avoidablemultiplieroverflow. Finite nonnegative shrinkage, validfiniteestimated/actual, ratiofinitebeforeappend; shrinkageweightcomputedbeforemultiply, corrected-resultoverflowrejects.112foresightHTTPpass1warning; recorded87adjacent2343pass2warnings38.71s. Three1e308ratios withzeroshrinkage nowfinite1e308multiplier; estimate10correctedresultrejects. Supplied ratio shrinkage heuristic only, not verified durations/validated forecasting; publichistory mutation remains separate. Latestfull9869passsource724c275 predateselevenlaterfixes.
