@@ -391,3 +391,20 @@ def test_failed_dag_rerun_reexecutes_completed_nodes_no_durable_replay():
  assert sorted(failure.value.completed)==['a']
  result=asyncio.run(engine.run(wf,{}))
  assert calls==['a','b','a','b'] and sorted(result)==['a','b']
+
+@pytest.mark.parametrize('bad_logprobs',[5,'abc',{'a':1},(-.5,-.2),None])
+def test_declared_logprobs_shape_violation_held_unknown_on_success_path(bad_logprobs):
+ # Repair pin: the declared ModelResult logprobs shape is a list. A provider supplying
+ # valid confidence alongside non-list logprob evidence previously returned success
+ # carrying the malformed evidence (the logprob evaluation path only runs when
+ # confidence is absent). Such results are now held as ProviderOutcomeUnknown after
+ # the first call, with no fallback invocation. Element-level validity on the carried
+ # evidence path remains separate.
+ from app.core.providers import ProviderOutcomeUnknown
+ calls=[]
+ class Provider:
+  async def generate(self,*,model_id,prompt,context):
+   calls.append(model_id);return ModelResult('fixture',model_id,.95,logprobs=bad_logprobs)
+ executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
+ with pytest.raises(ProviderOutcomeUnknown):asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
+ assert calls==['first']
