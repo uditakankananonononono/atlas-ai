@@ -946,3 +946,7 @@ Eight actual failures retained: invalid selectionconfig accepted, publiccase mut
 ## Full local regression after foresight corrections
 
 Source c5b11ab: 496 files/20 isolated batches/9944passed/0failed/14skipped/26summedwarningoccurrences/420.24s summedprocess time, everyexit0. Manifest/receipts/logs/runner/summary retained under full-regression-after-foresight-fixes. Includesfourteen source corrections since724c275. Historical9869and9813runs retainedunchanged. Localfixtures do not verify original cognition breadth, authenticated review authority, distributed effects or production provisioning.
+
+## Supplied optimism metric inputs and snapshots
+
+Eight reproduced failures retained: invalidsampleminimum/confidence/outcometypes/publicrecordeditsrewrite signederror. Positiveintegerminsamples; strictfinite0..1numericconfidence/notbool/exactbooloutcome; private records/detachedread-onlymapping.134foresightHTTPpass1warning; recorded87adjacent2365pass2warnings39.47s. Snapshotedit leaves signederror0.8/count1. Supplied-labelmeanerror/heuristicsubtraction only, not verifiedoutcomes or fittedpredictivecalibration. Transportcoercion separate. Latestfull9944passsourcec5b11ab predatesonelaterfix.

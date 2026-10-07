@@ -613,21 +613,31 @@ class OptimismCalibrator:
     of error, not just magnitude."""
 
     def __init__(self, *, min_samples: int = 3) -> None:
+        if type(min_samples) is not int or min_samples < 1:
+            raise ValueError("min_samples must be a positive integer")
         self.min_samples = min_samples
-        self.records: dict[str, list[tuple[float, bool]]] = {}
+        self._records: dict[str, list[tuple[float, bool]]] = {}
+
+    @property
+    def records(self):
+        return MappingProxyType(copy.deepcopy(self._records))
 
     def record(self, *, domain: str, predicted_confidence: float, succeeded: bool) -> None:
+        SimulationFidelityTracker._finite(predicted_confidence)
+        if type(succeeded) is not bool:
+            raise ValueError("succeeded must be an exact bool")
         if not 0.0 <= predicted_confidence <= 1.0:
             raise ValueError("predicted_confidence must be in [0, 1]")
-        self.records.setdefault(domain, []).append((predicted_confidence, succeeded))
+        self._records.setdefault(domain, []).append((predicted_confidence, succeeded))
 
     def bias(self, domain: str) -> tuple[float, int]:
-        rows = self.records.get(domain, [])
+        rows = self._records.get(domain, [])
         if not rows:
             return 0.0, 0
         return mean(p - (1.0 if s else 0.0) for p, s in rows), len(rows)
 
     def adjust(self, *, domain: str, confidence: float) -> dict[str, Any]:
+        SimulationFidelityTracker._finite(confidence)
         if not 0.0 <= confidence <= 1.0:
             raise ValueError("confidence must be in [0, 1]")
         b, n = self.bias(domain)
@@ -637,7 +647,7 @@ class OptimismCalibrator:
         return {"confidence": confidence, "adjusted": adjusted, "bias": applied,
                 "direction": direction, "samples": n,
                 "assumptions": [f"Bias applied only with >= {self.min_samples} samples",
-                                 "Historical bias in this domain persists"]}
+                                 "Heuristic subtraction assumes supplied-label mean error persists; not independently verified or fitted predictive calibration"]}
 
 
 # ---------------------------------------------------------------- row 46 --
