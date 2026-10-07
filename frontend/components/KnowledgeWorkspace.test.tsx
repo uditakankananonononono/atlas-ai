@@ -26,3 +26,15 @@ it("does not render unsafe source URI and preserves draft on save failure",async
  const user=userEvent.setup();render(<KnowledgeWorkspace seedId="n1"/>);await user.dblClick(await screen.findByRole("button",{name:"Original"}));
  expect(screen.queryByRole("link")).toBeNull();await user.click(screen.getByRole("button",{name:"Save changes"}));expect(await screen.findByRole("alert")).toHaveTextContent("offline");expect(screen.getByLabelText("Node title")).toHaveValue("Original");
 });
+it("ignores a save reply after closing and does not send a second PATCH while pending",async()=>{
+ let finish:any;api.mockResolvedValueOnce(ok({nodes:[node],edges:[]})).mockImplementationOnce(()=>new Promise(resolve=>{finish=resolve}));
+ const user=userEvent.setup();render(<KnowledgeWorkspace seedId="n1"/>);await user.dblClick(await screen.findByRole("button",{name:"Original"}));
+ const save=screen.getByRole("button",{name:"Save changes"});await user.dblClick(save);expect(api).toHaveBeenCalledTimes(2);expect(screen.getByRole("button",{name:"Working..."})).toBeDisabled();
+ await user.click(screen.getByRole("button",{name:"Close"}));finish(ok({...node,title:"Late save",version:2}));
+ await new Promise(resolve=>setTimeout(resolve,20));expect(screen.queryByLabelText("Node details")).toBeNull();expect(screen.queryByRole("button",{name:"Late save"})).toBeNull();
+});
+it("ignores a reload reply after selecting another node",async()=>{
+ let finish:any;const other={...node,id:"n2",title:"Other"};api.mockResolvedValueOnce(ok({nodes:[node,other],edges:[]})).mockImplementationOnce(()=>new Promise(resolve=>{finish=resolve}));
+ const user=userEvent.setup();render(<KnowledgeWorkspace seedId="n1"/>);await user.dblClick(await screen.findByRole("button",{name:"Original"}));await user.click(screen.getByRole("button",{name:"Reload latest (discard draft)"}));await user.dblClick(screen.getByRole("button",{name:"Other"}));
+ finish(ok({nodes:[{...node,title:"Late reload",version:2}],edges:[]}));await new Promise(resolve=>setTimeout(resolve,20));expect(screen.getByLabelText("Node title")).toHaveValue("Other");expect(screen.queryByRole("button",{name:"Late reload"})).toBeNull();
+});
