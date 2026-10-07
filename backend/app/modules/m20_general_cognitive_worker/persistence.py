@@ -254,5 +254,5 @@ class DurableCalibrationEngine(CalibrationEngine):
     def load(cls, repo: GCWRepository, **kwargs) -> "DurableCalibrationEngine":
         engine = cls(repo, **kwargs)
         for claim in repo.list_claims():
-            engine.claims[claim.id] = claim
+            engine._claims[claim.id] = claim
         return engine

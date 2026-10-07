@@ -1,0 +1,20 @@
+................................F                                        [100%]
+=================================== FAILURES ===================================
+___________ test_calibration_public_snapshots_cannot_change_metrics ____________
+
+    def test_calibration_public_snapshots_cannot_change_metrics():
+        engine = CalibrationEngine()
+        claim = engine.assess_claim("claim", 0.8)
+        claim.confidence = 0
+        claim.resolved = True
+        claim.correct = True
+>       assert engine.calibration_curve() == []
+E       AssertionError: assert [{'bin_midpoi...'count': 1.0}] == []
+E         
+E         Left contains one more item: {'bin_midpoint': 0.1, 'mean_confidence': 0, 'observed_accuracy': 1.0, 'count': 1.0}
+E         Use -v to get more diff
+
+tests/modules/test_m20_metacognition.py:414: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_metacognition.py::test_calibration_public_snapshots_cannot_change_metrics
+1 failed, 32 passed in 1.44s
