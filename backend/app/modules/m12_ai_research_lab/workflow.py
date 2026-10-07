@@ -29,7 +29,7 @@ class Workflow:
     @classmethod
     def from_yaml(cls, raw: str) -> "Workflow":
         try:doc=yaml.load(raw,Loader=_WorkflowLoader)
-        except yaml.YAMLError as exc:raise WorkflowValidationError("invalid workflow YAML") from exc
+        except (yaml.YAMLError,RecursionError) as exc:raise WorkflowValidationError("invalid or excessively nested workflow YAML") from exc
         if not isinstance(doc,dict):raise WorkflowValidationError("workflow must be a mapping")
         items=doc.get("nodes")
         if not isinstance(items,list) or not items:raise WorkflowValidationError("workflow nodes must be a nonempty list")
