@@ -1,0 +1,35 @@
+........................................................................ [ 12%]
+........................................................................ [ 24%]
+........................................................................ [ 36%]
+........................................................................ [ 48%]
+........................................................................ [ 61%]
+........................................................................ [ 73%]
+........................................................................ [ 85%]
+...............................................F........................ [ 97%]
+............                                                             [100%]
+=================================== FAILURES ===================================
+____________________ test_langchain_pipeline_executes_steps ____________________
+
+>   def test_langchain_pipeline_executes_steps():assert LangChainPipeline([lambda x:{**x,'a':1},lambda x:{**x,'b':x['a']+1}]).invoke({})['b']==2
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/platform/test_literal_stack_integrations.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.platform.integrations.LangChainPipeline object at 0x7f7456a512e0>
+payload = {}
+
+    def invoke(self,payload:dict[str,Any]):
+>    from langchain_core.runnables import RunnableLambda
+E    ModuleNotFoundError: No module named 'langchain_core'
+
+backend/app/platform/integrations.py:41: ModuleNotFoundError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/platform/test_literal_stack_integrations.py::test_langchain_pipeline_executes_steps
+1 failed, 587 passed, 1 warning in 9.72s

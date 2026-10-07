@@ -1,0 +1,13 @@
+{
+  "revision": "b60c013",
+  "files": 495,
+  "batches": 20,
+  "counts": {
+    "passed": 9608,
+    "failed": 0,
+    "skipped": 18,
+    "warnings": 26
+  },
+  "batch_wall_seconds": 398.87227917800146,
+  "warnings_scope": "summed occurrences across isolated batches, not unique categories"
+}

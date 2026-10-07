@@ -1,0 +1,44 @@
+...............F........................................................ [  5%]
+........................................................................ [ 11%]
+........................................................................ [ 16%]
+........................................................................ [ 22%]
+........................................................................ [ 28%]
+........................................................................ [ 33%]
+........................................................................ [ 39%]
+........................................................................ [ 45%]
+........................................................................ [ 50%]
+........................................................................ [ 56%]
+........................................................................ [ 62%]
+........................................................................ [ 67%]
+........................................................................ [ 73%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 90%]
+........................................................................ [ 96%]
+......................ssssss......................                       [100%]
+=================================== FAILURES ===================================
+____ test_clean_database_upgrades_to_head_with_product_and_cognitive_tables ____
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-17/test_clean_database_upgrades_t0')
+
+    def test_clean_database_upgrades_to_head_with_product_and_cognitive_tables(tmp_path):
+        database=tmp_path/'clean.sqlite'
+        env={**os.environ,'ATLAS_DATABASE_URL':f'sqlite:///{database}'}
+        result=subprocess.run([sys.executable,'-m','alembic','upgrade','head'],env=env,
+                              text=True,capture_output=True,timeout=90)
+>       assert result.returncode==0,result.stderr
+E       AssertionError: /home/sandbox/atlas-ai/.venv/bin/python: No module named alembic
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'upgrade', 'head'], returncode=1, stdout='', stderr='/home/sandbox/atlas-ai/.venv/bin/python: No module named alembic\n').returncode
+
+tests/migrations/test_clean_database_upgrade.py:13: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/migrations/test_clean_database_upgrade.py::test_clean_database_upgrades_to_head_with_product_and_cognitive_tables
+1 failed, 1267 passed, 6 skipped, 1 warning in 24.94s
