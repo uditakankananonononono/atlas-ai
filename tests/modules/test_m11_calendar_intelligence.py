@@ -616,3 +616,45 @@ def test_apply_reschedule_replay_is_refused_without_duplicating(tmp_path):
         service.apply_reschedule(proposal.approval_id)
     scheduled = [t.title for t in repo.list_tasks(status="scheduled")]
     assert scheduled.count("New deadline") == 1
+
+
+def test_apply_reschedule_mid_apply_failure_leaves_no_partial_state(tmp_path):
+    # A failure at the plan write must roll the whole apply back: no orphan
+    # pending task, no consumption marker, and the approval stays retryable.
+    # Pre-atomic code committed the task before the plan write, so the retry
+    # created a scheduled replacement next to the pending orphan.
+    from sqlalchemy import event
+    service, repo, gate = make_service(tmp_path)
+    tiny = SchedulingPrefsSchema(
+        working_hours={0: [WindowSchema(start="09:00", end="10:00")]},
+        energy_curve={h: 3 for h in range(24)},
+    )
+    service.save_prefs(tiny)
+    today = datetime.now(UTC).date()
+    days_ahead = (0 - today.weekday()) % 7 or 7
+    monday = today + timedelta(days=days_ahead)
+    service.create_task(SchedulingTaskCreate(
+        title="Existing high priority", duration_minutes=60,
+        deadline=dt(monday, 17), priority=5))
+    report, proposal = service.request_reschedule(SchedulingTaskCreate(
+        title="New deadline", duration_minutes=60,
+        deadline=dt(monday, 12), priority=3))
+    assert proposal is not None
+    gate.approve(proposal.approval_id)
+
+    engine = repo.sessions.kw["bind"]
+    fail = {"on": True}
+    @event.listens_for(engine, "before_cursor_execute")
+    def fail_plan_insert(conn, cursor, statement, parameters, context, executemany):
+        if fail["on"] and statement.lstrip().upper().startswith("INSERT") and "m11_plans" in statement:
+            raise RuntimeError("simulated failure at plan write")
+
+    with pytest.raises(Exception, match="simulated failure at plan write"):
+        service.apply_reschedule(proposal.approval_id)
+    fail["on"] = False
+    applied = service.apply_reschedule(proposal.approval_id)
+    assert applied.status == "scheduled"
+    scheduled = [t.title for t in repo.list_tasks(status="scheduled")]
+    assert scheduled.count("New deadline") == 1
+    pending = [t.title for t in repo.list_tasks(status="pending")]
+    assert pending.count("New deadline") == 0

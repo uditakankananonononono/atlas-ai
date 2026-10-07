@@ -598,29 +598,33 @@ class Service:
         return report, proposal
 
     def apply_reschedule(self, approval_id: str) -> SchedulingTaskView:
-        """Apply an approved reschedule: persist the task and its new blocks."""
+        """Apply an approved reschedule. The task, plan, blocks and displaced
+        statuses persist in one transaction, so a mid-apply failure leaves no
+        partial state and the approval stays retryable."""
         self._require_approved(approval_id)
         payload = self.approval_gate_payload(approval_id)
         if self.repository.get_plan_by_approval(approval_id) is not None:
-            # An approved reschedule applies exactly once: the applied plan row is
-            # the consumption marker, so a replay cannot duplicate the task/blocks.
+            # Sequential successful-application replay protection: the applied
+            # plan row is the module-local consumption marker. Two simultaneous
+            # applies can still race this read; that concurrency gap stays open.
             raise ApprovalNotGrantedError(f"approval {approval_id} was already consumed")
         task_data = payload["task"]
-        view = self.create_task(SchedulingTaskCreate(**{
-            k: v for k, v in task_data.items() if k != "id"}))
+        create = SchedulingTaskCreate(**{k: v for k, v in task_data.items() if k != "id"})
+        task_id = str(uuid4())
         plan_id = str(uuid4())
-        self.repository.save_plan(plan_id=plan_id, week_start=payload["week_start"],
-                                  status="applied", approval_id=approval_id)
-        self.repository.replace_plan_blocks(plan_id, [
-            {"task_id": view.id, "kind": b["kind"],
+        blocks = [
+            {"task_id": task_id, "kind": b["kind"],
              "start": _parse_iso(b["start"]), "end": _parse_iso(b["end"]),
              "location": b.get("location")}
             for b in payload["blocks"]
-        ])
-        for displaced in payload.get("displaced_task_ids", []):
-            self.repository.set_task_status(displaced, "deferred")
-        self.repository.set_task_status(view.id, "scheduled")
-        return view.model_copy(update={"status": "scheduled"})
+        ]
+        self.repository.apply_reschedule_effect(
+            task_id=task_id, **create.model_dump(),
+            plan_id=plan_id, week_start=payload["week_start"], approval_id=approval_id,
+            blocks=blocks, displaced_task_ids=payload.get("displaced_task_ids", []))
+        return SchedulingTaskView(
+            id=task_id, created_at=datetime.now(timezone.utc), status="scheduled",
+            **create.model_dump())
 
     # -- analytics (advancement pass) -------------------------------------------------------
     def meeting_load(self, week_start: date, *, timezone_name: str = "UTC") -> MeetingLoadReport:
