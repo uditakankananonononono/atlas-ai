@@ -1,0 +1,69 @@
+..........................................FFFF                           [100%]
+=================================== FAILURES ===================================
+______ test_kelly_certain_win_full_fraction_has_no_zero_weight_log_error _______
+
+    def test_kelly_certain_win_full_fraction_has_no_zero_weight_log_error():
+>       row = KellySizer(fraction=1, cap=1).size(win_prob=1, payoff_ratio=2)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_foresight.py:444: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.foresight.KellySizer object at 0x7f57beb173b0>
+win_prob = 1, payoff_ratio = 2
+
+    def size(self, *, win_prob: float, payoff_ratio: float) -> dict[str, Any]:
+        if not 0.0 <= win_prob <= 1.0 or payoff_ratio <= 0:
+            raise ValueError("need 0<=win_prob<=1 and payoff_ratio>0")
+        full = kelly_criterion(win_prob, payoff_ratio)
+        if full <= 0.0:
+            return {"full_kelly": 0.0, "recommended": 0.0, "growth_rate": 0.0,
+                    "note": "No edge: the Kelly fraction is zero; do not size this position",
+                    "caveat": DECISION_SUPPORT_CAVEAT,
+                    "assumptions": ["win_prob and payoff_ratio are estimates; sizing amplifies estimate error"]}
+        recommended = min(full * self.fraction, self.cap)
+        p, q, b = win_prob, 1.0 - win_prob, payoff_ratio
+>       growth = p * math.log(1 + recommended * b) + q * math.log(1 - recommended)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: math domain error
+
+backend/app/modules/m20_general_cognitive_worker/foresight.py:1224: ValueError
+_________________ test_kelly_rejects_nonfinite_bool_odds[inf] __________________
+
+odds = inf
+
+    @pytest.mark.parametrize("odds", [float("inf"), float("nan"), True])
+    def test_kelly_rejects_nonfinite_bool_odds(odds):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:451: Failed
+_________________ test_kelly_rejects_nonfinite_bool_odds[nan] __________________
+
+odds = nan
+
+    @pytest.mark.parametrize("odds", [float("inf"), float("nan"), True])
+    def test_kelly_rejects_nonfinite_bool_odds(odds):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:451: Failed
+_________________ test_kelly_rejects_nonfinite_bool_odds[True] _________________
+
+odds = True
+
+    @pytest.mark.parametrize("odds", [float("inf"), float("nan"), True])
+    def test_kelly_rejects_nonfinite_bool_odds(odds):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:451: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_kelly_certain_win_full_fraction_has_no_zero_weight_log_error
+FAILED tests/modules/test_m20_foresight.py::test_kelly_rejects_nonfinite_bool_odds[inf]
+FAILED tests/modules/test_m20_foresight.py::test_kelly_rejects_nonfinite_bool_odds[nan]
+FAILED tests/modules/test_m20_foresight.py::test_kelly_rejects_nonfinite_bool_odds[True]
+4 failed, 42 passed in 1.42s

@@ -438,3 +438,24 @@ def test_ev_duplicate_best_selects_one_index_and_extreme_values():
     assert row["best_probability_up"] == pytest.approx(0.4)
     assert row["ev_if_best_+10pp"] == pytest.approx(40 + 30 * 0.6 / 0.7)
     assert EVCalculator().compute(options=[{"name": "huge", "outcomes": [[0.5, 1e308], [0.5, -1e308]]}])["options"][0]["ev"] == 0
+
+
+def test_kelly_certain_win_full_fraction_has_no_zero_weight_log_error():
+    row = KellySizer(fraction=1, cap=1).size(win_prob=1, payoff_ratio=2)
+    assert row["recommended"] == 1
+    assert row["growth_rate"] == pytest.approx(math.log(3))
+
+
+@pytest.mark.parametrize("odds", [float("inf"), float("nan"), True])
+def test_kelly_rejects_nonfinite_bool_odds(odds):
+    with pytest.raises(ValueError):
+        KellySizer().size(win_prob=0.6, payoff_ratio=odds)
+
+
+def test_kelly_full_fraction_independent_numeric_optimum():
+    sizer = KellySizer(fraction=1, cap=1)
+    row = sizer.size(win_prob=0.7, payoff_ratio=2)
+    from scipy.optimize import minimize_scalar
+    result = minimize_scalar(lambda f: -(0.7 * math.log1p(2*f) + 0.3 * math.log1p(-f)), bounds=(0, 0.999999), method="bounded")
+    assert row["recommended"] == pytest.approx(result.x, abs=1e-5)
+    assert row["growth_rate"] == pytest.approx(-result.fun)

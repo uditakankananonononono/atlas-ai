@@ -1205,25 +1205,25 @@ class KellySizer:
     a no-edge position above zero."""
 
     def __init__(self, *, fraction: float = 0.5, cap: float = 0.25) -> None:
-        if not 0.0 < fraction <= 1.0 or not 0.0 < cap <= 1.0:
+        if any(type(v) not in (int, float) or not math.isfinite(v) for v in (fraction, cap)) or not 0.0 < fraction <= 1.0 or not 0.0 < cap <= 1.0:
             raise ValueError("fraction and cap must be in (0, 1]")
         self.fraction = fraction
         self.cap = cap
 
     def size(self, *, win_prob: float, payoff_ratio: float) -> dict[str, Any]:
-        if not 0.0 <= win_prob <= 1.0 or payoff_ratio <= 0:
-            raise ValueError("need 0<=win_prob<=1 and payoff_ratio>0")
         full = kelly_criterion(win_prob, payoff_ratio)
         if full <= 0.0:
             return {"full_kelly": 0.0, "recommended": 0.0, "growth_rate": 0.0,
                     "note": "No edge: the Kelly fraction is zero; do not size this position",
                     "caveat": DECISION_SUPPORT_CAVEAT,
+                    "scope": "supplied IID binary-return Kelly arithmetic, not verified edge or financial advice",
                     "assumptions": ["win_prob and payoff_ratio are estimates; sizing amplifies estimate error"]}
         recommended = min(full * self.fraction, self.cap)
         p, q, b = win_prob, 1.0 - win_prob, payoff_ratio
-        growth = p * math.log(1 + recommended * b) + q * math.log(1 - recommended)
+        growth = (p * math.log1p(recommended * b) if p else 0.0) + (q * math.log1p(-recommended) if q else 0.0)
         return {"full_kelly": full, "recommended": recommended,
                 "growth_rate": growth,
+                "scope": "supplied IID binary-return Kelly arithmetic, not verified edge or financial advice",
                 "note": f"{self.fraction:.0%}-Kelly capped at {self.cap:.0%}",
                 "caveat": DECISION_SUPPORT_CAVEAT,
                 "assumptions": ["win_prob and payoff_ratio are estimates; Kelly is sensitive to their error",

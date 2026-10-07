@@ -195,3 +195,9 @@ def test_expected_value_partial_mass_is_not_conditional_renormalization():
 def test_expected_value_rejects_invalid_probability_or_value(outcomes):
     with pytest.raises(ValueError):
         R.expected_value(outcomes)
+
+
+@pytest.mark.parametrize("odds", [float("inf"), float("nan"), True])
+def test_raw_kelly_rejects_nonfinite_bool_odds(odds):
+    with pytest.raises(ValueError):
+        R.kelly_criterion(0.6, odds)
