@@ -1,0 +1,65 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_failed_semantic_write_does_not_publish_new_or_revised_fact ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb8d4220440>
+
+    def test_failed_semantic_write_does_not_publish_new_or_revised_fact(monkeypatch):
+     runtime,repo=make_runtime();old=runtime.semantic.remember('committed fact')
+     def fail(fact):raise RuntimeError('fixture fact write unavailable')
+     monkeypatch.setattr(repo,'save_fact',fail)
+     with pytest.raises(RuntimeError):runtime.semantic.store(old.model_copy(update={'content':'uncommitted revision'}))
+>    assert runtime.semantic.get(old.id).content=='committed fact'
+E    AssertionError: assert 'uncommitted revision' == 'committed fact'
+E      
+E      - committed fact
+E      + uncommitted revision
+
+tests/modules/test_m20_runtime_depth.py:2194: AssertionError
+____________ test_failed_semantic_confirmation_keeps_old_timestamp _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb8d40da9f0>
+
+    def test_failed_semantic_confirmation_keeps_old_timestamp(monkeypatch):
+     from datetime import timedelta
+     runtime,repo=make_runtime();fact=runtime.semantic.remember('committed fact')
+     def fail(fact):raise RuntimeError('fixture confirmation write unavailable')
+     monkeypatch.setattr(repo,'save_fact',fail)
+     with pytest.raises(RuntimeError):runtime.semantic.confirm(fact.id,now=fact.last_confirmed_at+timedelta(days=1))
+>    assert runtime.semantic.get(fact.id).last_confirmed_at==fact.last_confirmed_at
+E    AssertionError: assert datetime.datetime(2026, 10, 8, 12, 47, 39, 382516, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 10, 7, 12, 47, 39, 382516, tzinfo=datetime.timezone.utc)
+E     +  where datetime.datetime(2026, 10, 8, 12, 47, 39, 382516, tzinfo=datetime.timezone.utc) = SemanticFact(id='a2603218-605f-4514-85fa-3786f61a03c7', content='committed fact', kind='fact', provenance={}, confiden...time.timezone.utc), last_confirmed_at=datetime.datetime(2026, 10, 8, 12, 47, 39, 382516, tzinfo=datetime.timezone.utc)).last_confirmed_at
+E     +    where SemanticFact(id='a2603218-605f-4514-85fa-3786f61a03c7', content='committed fact', kind='fact', provenance={}, confiden...time.timezone.utc), last_confirmed_at=datetime.datetime(2026, 10, 8, 12, 47, 39, 382516, tzinfo=datetime.timezone.utc)) = get('a2603218-605f-4514-85fa-3786f61a03c7')
+E     +      where get = <app.modules.m20_general_cognitive_worker.persistence.DurableSemanticMemory object at 0x7fb8d4102780>.get
+E     +        where <app.modules.m20_general_cognitive_worker.persistence.DurableSemanticMemory object at 0x7fb8d4102780> = <app.modules.m20_general_cognitive_worker.runtime.GCWRuntime object at 0x7fb8d40db500>.semantic
+E     +      and   'a2603218-605f-4514-85fa-3786f61a03c7' = SemanticFact(id='a2603218-605f-4514-85fa-3786f61a03c7', content='committed fact', kind='fact', provenance={}, confiden...time.timezone.utc), last_confirmed_at=datetime.datetime(2026, 10, 7, 12, 47, 39, 382516, tzinfo=datetime.timezone.utc)).id
+E     +  and   datetime.datetime(2026, 10, 7, 12, 47, 39, 382516, tzinfo=datetime.timezone.utc) = SemanticFact(id='a2603218-605f-4514-85fa-3786f61a03c7', content='committed fact', kind='fact', provenance={}, confiden...time.timezone.utc), last_confirmed_at=datetime.datetime(2026, 10, 7, 12, 47, 39, 382516, tzinfo=datetime.timezone.utc)).last_confirmed_at
+
+tests/modules/test_m20_runtime_depth.py:2207: AssertionError
+_______ test_failed_semantic_edge_write_does_not_publish_graph_neighbor ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb8d41a5a30>
+
+    def test_failed_semantic_edge_write_does_not_publish_graph_neighbor(monkeypatch):
+     runtime,repo=make_runtime();a=runtime.semantic.remember('a');b=runtime.semantic.remember('b')
+     def fail(edge):raise RuntimeError('fixture edge write unavailable')
+     monkeypatch.setattr(repo,'save_edge',fail)
+     with pytest.raises(RuntimeError):runtime.semantic.link(a.id,'related',b.id)
+>    assert runtime.semantic.neighbors(a.id)==[] and repo.list_edges()==[]
+E    AssertionError: assert ([KnowledgeEdg... metadata={})] == []
+E      
+E      Left contains one more item: KnowledgeEdge(id='c6898435-1b02-474c-9797-02f3263e84f2', from_id='ed2e87de-630c-43cb-81bf-ab71724d0a78', relation='related', to_id='13773841-65a5-4328-8bf3-9ae871347ed4', metadata={})
+E      Use -v to get more diff)
+
+tests/modules/test_m20_runtime_depth.py:2216: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_semantic_write_does_not_publish_new_or_revised_fact
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_semantic_confirmation_keeps_old_timestamp
+FAILED tests/modules/test_m20_runtime_depth.py::test_failed_semantic_edge_write_does_not_publish_graph_neighbor
+3 failed, 153 deselected, 1 warning in 1.94s
