@@ -48,6 +48,8 @@ class ResearchExecutor:
                 raise ProviderOutcomeUnknown("Returned model result envelope or metadata is unusable; no automatic retry")
             if type(result.text) is not str or type(result.model_id) is not str or not result.model_id.strip():
                 raise ProviderOutcomeUnknown("Returned model text or reported model identity is unusable; no automatic retry")
+            try:result.text.encode("utf-8")
+            except UnicodeEncodeError as error:raise ProviderOutcomeUnknown("Returned model text is not UTF-8 encodable; no automatic retry") from error
             try:result=replace(result,metadata=dict(result.metadata),usage=dict(result.usage) if type(result.usage) is dict else result.usage,logprobs=list(result.logprobs) if type(result.logprobs) is list else result.logprobs)
             except Exception as error:raise ProviderOutcomeUnknown("Returned model result could not be copied safely; no automatic retry") from error
             result.metadata["requested_model_id"]=model.model_id
