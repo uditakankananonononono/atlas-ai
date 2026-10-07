@@ -412,6 +412,27 @@ def _repository_extension(cls):
             session.commit()
         return chunk
 
+    def change_chunks(self, chunks, removed):
+        """Commit a bounded-memory revision and its evictions together."""
+        with self._session() as session:
+            for chunk_id in removed:
+                row = session.get(ChunkRow, chunk_id)
+                if row is not None:
+                    if row.tenant_id != self.tenant_id:
+                        raise PermissionError("chunk belongs to another tenant")
+                    session.delete(row)
+            for chunk in chunks:
+                row = session.get(ChunkRow, chunk.id)
+                if row is not None and row.tenant_id != self.tenant_id:
+                    raise PermissionError("chunk belongs to another tenant")
+                if row is None:
+                    row = ChunkRow(id=chunk.id, tenant_id=self.tenant_id,
+                                   created_at=_aware(chunk.created_at))
+                    session.add(row)
+                row.partition = chunk.context_id or ""
+                row.payload_json = chunk.model_dump(mode="json")
+            session.commit()
+
     def list_chunks(self, *, partition: str | None = None) -> list:
         with self._session() as session:
             query = session.query(ChunkRow).filter(ChunkRow.tenant_id == self.tenant_id)
@@ -561,7 +582,7 @@ def _repository_extension(cls):
         return claims
 
     for name, fn in {
-        "save_chunk": save_chunk, "list_chunks": list_chunks,
+        "save_chunk": save_chunk, "change_chunks": change_chunks, "list_chunks": list_chunks,
         "delete_chunk": delete_chunk, "clear_chunks": clear_chunks,
         "save_edge": save_edge, "list_edges": list_edges,
         "save_retrospective": save_retrospective,

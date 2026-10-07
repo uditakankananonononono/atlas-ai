@@ -2373,3 +2373,52 @@ def test_retrospective_success_reloads_and_detaches_nested_report():
   recalled=engine.lessons_for('original source')[0][0]
   assert recalled.lessons==['check original source']
   assert recalled.execution_report['actions'][0]['status']=='succeeded'
+
+
+@pytest.mark.parametrize('operation',['replace','remove','clear','prune'])
+def test_failed_working_memory_commit_keeps_live_and_sql_chunks(monkeypatch,operation):
+ repo=fresh_repo();memory=DurableWorkingMemory(repo,capacity=1)
+ old=memory.put(MemoryChunk(type=ChunkType.FACT,content='committed',salience=.1),partition='p')
+ original=repo._session
+ def session():
+  result=original()
+  def fail():raise RuntimeError('fixture chunk commit unavailable')
+  result.commit=fail
+  return result
+ monkeypatch.setattr(repo,'_session',session)
+ with pytest.raises(RuntimeError):
+  if operation=='replace':memory.put(old.model_copy(update={'content':'uncommitted'}),partition='p')
+  elif operation=='remove':memory.remove(old.id)
+  elif operation=='clear':memory.clear_partition('p')
+  else:memory.put(MemoryChunk(type=ChunkType.GOAL,content='replacement',salience=1),partition='p')
+ assert memory.focused(partition='p')==[old]
+ assert repo.list_chunks(partition='p')==[old]
+
+
+def test_working_chunk_revision_owner_conflict_rolls_back_eviction():
+ repo=fresh_repo();other=GCWRepository(repo.engine,tenant_id='other')
+ old=MemoryChunk(type=ChunkType.FACT,content='old');foreign=MemoryChunk(type=ChunkType.FACT,content='foreign')
+ repo.save_chunk(old);other.save_chunk(foreign)
+ with pytest.raises(PermissionError):repo.change_chunks([foreign],[old.id])
+ assert repo.list_chunks()==[old]
+ assert other.list_chunks()==[foreign]
+
+
+def test_working_memory_pruning_and_attention_survive_reload():
+ class Attention:
+  def score(self,chunk,goal):return 1.0 if chunk.content==goal else .1
+ repo=fresh_repo();memory=DurableWorkingMemory(repo,capacity=1,attention=Attention())
+ old=memory.put(MemoryChunk(type=ChunkType.FACT,content='old'),active_goal='old',partition='p')
+ new=memory.put(MemoryChunk(type=ChunkType.FACT,content='new'),active_goal='new',partition='p')
+ assert memory.get(old.id) is None and repo.list_chunks(partition='p')==[new]
+ memory.refresh_attention('old',partition='p')
+ assert memory.get(new.id).attention_score==.1
+ assert repo.list_chunks(partition='p')==[memory.get(new.id)]
+ assert DurableWorkingMemory.load(repo,capacity=1,attention=Attention()).get(new.id) is not None
+
+
+def test_working_memory_small_capacity_hydration_does_not_delete_durable_rows():
+ repo=fresh_repo();memory=DurableWorkingMemory(repo,capacity=3)
+ for i in range(3):memory.put(MemoryChunk(type=ChunkType.FACT,content=str(i)),partition='p')
+ assert len(DurableWorkingMemory.load(repo,capacity=1))==1
+ assert len(repo.list_chunks(partition='p'))==3
