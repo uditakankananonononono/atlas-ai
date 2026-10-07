@@ -145,9 +145,10 @@ class RetrospectiveEngine:
 
     def _store_snapshot(self, retro: Retrospective) -> Retrospective:
         retro = retro.model_copy(deep=True)
-        self._retros[retro.id] = retro
         text = " ".join(retro.went_well + retro.went_poorly + retro.lessons)
-        self._vectors[retro.id] = self.embedder.embed(text)
+        vector = self.embedder.embed(text)
+        self._retros[retro.id] = retro
+        self._vectors[retro.id] = vector
         return retro.model_copy(deep=True)
 
     def lessons_for(self, situation: str, *, limit: int = 3) -> list[tuple[Retrospective, float]]:
