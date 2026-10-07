@@ -318,3 +318,27 @@ async def test_kind_flows_from_raw_candidate_to_candidate():
     s = Service(FakeApprovals(), [WorkingCollector()])
     items = await s.discover("anything")
     assert items[0].kind == "repository"
+
+
+def test_find_feed_links_drops_non_contract_urls():
+    # KILL pin: discovered feed hrefs must stay inside the https/no-userinfo
+    # public-web contract before any fetch happens.
+    from app.modules.m22_tools_hub.sources import find_feed_links
+    html = ('<link rel="alternate" type="application/rss+xml" href="/feed.xml">'
+            '<link rel="alternate" type="application/rss+xml" href="http://internal.example/feed">'
+            '<link rel="alternate" type="application/rss+xml" href="https://u:p@evil.example/f">')
+    assert find_feed_links(html, "https://blog.example/") == ["https://blog.example/feed.xml"]
+
+def test_redirect_leaving_https_contract_refused():
+    from urllib.request import Request
+    from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect, SourceError
+    handler = _HttpsOnlyRedirect()
+    import pytest as _pt
+    with _pt.raises(SourceError, match="redirect outside the https"):
+        handler.redirect_request(Request("https://a.example/"), None, 302, "", {}, "http://internal.example/x")
+
+def test_https_redirect_within_contract_allowed():
+    from urllib.request import Request
+    from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect
+    req = _HttpsOnlyRedirect().redirect_request(Request("https://a.example/"), None, 302, "", {"x": "y"}, "https://b.example/feed")
+    assert req.full_url == "https://b.example/feed"
