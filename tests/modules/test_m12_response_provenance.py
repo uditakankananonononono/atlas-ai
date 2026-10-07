@@ -503,3 +503,18 @@ def test_provider_result_object_not_mutated_by_local_confidence_or_routing(revie
  original.text='changed by provider';original.model_id='changed identity';original.metadata={'forged':True}
  assert result.text=='fixture' and result.model_id=='reported' and result.metadata['requested_model_id']=='first'
  assert result.confidence==(None if review else 1)
+
+def test_validation_unencodable_extra_key_location_does_not_break_422():
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ calls=[]
+ class Service:
+  async def execute(self,*args):calls.append(args)
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service()
+ response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100,'\ud800':'private-invalid-input'})
+ assert response.status_code==422,response.text
+ detail=response.json()['detail'];assert detail['errors'][0]['type']=='extra_forbidden'
+ assert detail['errors'][0]['loc']==['body',None] and detail['invalid_json_paths']
+ assert 'private-invalid-input' not in response.text and not calls
