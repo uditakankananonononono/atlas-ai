@@ -1,0 +1,59 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_mcts_scores_selected_prefix_risk_and_failure_at_depth_limit _______
+
+    def test_mcts_scores_selected_prefix_risk_and_failure_at_depth_limit():
+        low = PlanNode(title='read', risk=Risk.READ)
+        high = PlanNode(title='effect', risk=Risk.IRREVERSIBLE)
+        def value(node):
+            return BoundedMCTS(max_simulations=5000, max_depth=1, seed=19).search([node]).heuristic_root_value
+        # One attempted action: expected progress .9, minus declared attempt cost.
+>       assert value(low) == pytest.approx(.9 - .1 * .05, abs=.025)
+E       assert 1.0 == 0.895 ± 0.025
+E         
+E         comparison failed
+E         Obtained: 1.0
+E         Expected: 0.895 ± 0.025
+
+tests/modules/test_m20_runtime_depth.py:1922: AssertionError
+_____________ test_mcts_never_recommends_started_or_exhausted_step _____________
+
+    def test_mcts_never_recommends_started_or_exhausted_step():
+        for node in [PlanNode(title='already running', state=TaskState.RUNNING),
+                     PlanNode(title='attempts exhausted', attempts=1, max_attempts=1)]:
+            result = BoundedMCTS(max_simulations=20, seed=1).search([node])
+>           assert result.best_action_id is None
+E           AssertionError: assert '16b653e2-40e7-4f8f-877a-99b4b683ae34' is None
+E            +  where '16b653e2-40e7-4f8f-877a-99b4b683ae34' = MCTSResult(best_action_id='16b653e2-40e7-4f8f-877a-99b4b683ae34', best_action_title='already running', simulations_run...running', visits=20, mean_value=1.0, standard_error=0.0)], heuristic_root_value=1.0, heuristic_root_standard_error=0.0).best_action_id
+
+tests/modules/test_m20_runtime_depth.py:1931: AssertionError
+_____ test_mcts_selected_prefix_failure_blocks_dependent_but_runs_sibling ______
+
+    def test_mcts_selected_prefix_failure_blocks_dependent_but_runs_sibling():
+        parent = PlanNode(id='p',title='parent')
+        child = PlanNode(id='c',title='child',depends_on=['p'])
+        sibling = PlanNode(id='s',title='sibling')
+        search = BoundedMCTS(max_depth=3)
+        class FailParent:
+            def choice(self, nodes):
+                assert all(n.id != 'c' for n in nodes)
+                return nodes[0]
+            def random(self):
+                return 1.0
+        search.random = FailParent()
+>       reward = search._rollout([parent,child,sibling], set(), 2, prefix=['p','c'])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: BoundedMCTS._rollout() got an unexpected keyword argument 'prefix'
+
+tests/modules/test_m20_runtime_depth.py:1947: TypeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_scores_selected_prefix_risk_and_failure_at_depth_limit
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_never_recommends_started_or_exhausted_step
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_selected_prefix_failure_blocks_dependent_but_runs_sibling
+3 failed, 133 deselected, 1 warning in 1.73s

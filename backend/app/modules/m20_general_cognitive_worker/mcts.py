@@ -124,7 +124,7 @@ class BoundedMCTS:
     def _pending(plan: list[PlanNode], completed: frozenset[str]) -> list[PlanNode]:
         return [
             n for n in plan
-            if n.state in (TaskState.PENDING, TaskState.RUNNING) and n.id not in completed
+            if n.state == TaskState.PENDING and n.attempts < n.max_attempts and n.id not in completed
         ]
 
     @classmethod
@@ -163,6 +163,7 @@ class BoundedMCTS:
             node = root
             completed = set(node.completed)
             depth = 0
+            prefix = []
             # select + expand
             while depth < self.max_depth:
                 if node.untried:
@@ -176,15 +177,17 @@ class BoundedMCTS:
                     node.children[action] = child
                     node = child
                     completed.add(action)
+                    prefix.append(action)
                     depth += 1
                     break
                 if not node.children:
                     break
                 node = self._uct_select(node)
                 completed = set(node.completed)
+                prefix.append(node.action_taken)
                 depth += 1
             # rollout from the frontier
-            reward = self._rollout(plan, completed, depth)
+            reward = self._rollout(plan, set(), depth, prefix=prefix)
             # backpropagate
             while node is not None:
                 node.visits += 1
@@ -226,11 +229,23 @@ class BoundedMCTS:
 
         return max(node.children.values(), key=score)
 
-    def _rollout(self, plan: list[PlanNode], completed: set[str], depth: int) -> float:
+    def _rollout(self, plan: list[PlanNode], completed: set[str], depth: int, *, prefix: list[str] | None = None) -> float:
         """Simulate one plausible completion; reward blends progress and risk."""
         done = set(completed)
         failed = set()
         risk_paid = 0.0
+        # Tree nodes encode candidate orderings, not observed success. Sample
+        # their attempted actions too, including costs at the depth boundary.
+        by_id = {n.id: n for n in plan}
+        for ident in prefix or []:
+            node = by_id[ident]
+            if node not in self._ready(plan, frozenset(done)) or any(dep in failed for dep in node.depends_on):
+                continue
+            risk_paid += RISK_COST.get(node.risk, 0.1)
+            if self.random.random() < _success_probability(node):
+                done.add(node.id)
+            else:
+                failed.add(node.id)
         steps = 0
         while depth + steps < self.max_depth:
             ready = [node for node in self._ready(plan, frozenset(done))
