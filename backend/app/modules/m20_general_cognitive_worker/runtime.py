@@ -282,8 +282,31 @@ class GCWRuntime:
                 row['missing_preconditions'] = tool.check_preconditions(context)
                 if row['missing_preconditions']: row['issues'].append('missing_preconditions')
                 if bindings(node.arguments):
-                    row['argument_check'] = 'deferred_until_dependency_output'
-                    row['issues'].append('argument_binding_unresolved')
+                    predecessors={n.id:n for n in task.plan if n.id in node.depends_on}
+                    references=[]
+                    def collect(value):
+                        if isinstance(value,dict):
+                            if '$step' in value:references.append(value.get('$step'))
+                            else:
+                                for item in value.values():collect(item)
+                        elif isinstance(value,list):
+                            for item in value:collect(item)
+                    collect(node.arguments)
+                    available=all(ident in predecessors and predecessors[ident].state==TaskState.SUCCEEDED and predecessors[ident].output is not None for ident in references)
+                    if not available:
+                        row['argument_check'] = 'deferred_until_dependency_output'
+                        row['issues'].append('argument_binding_unresolved')
+                    else:
+                        try:resolved=self.loop._resolved_arguments(task,node)
+                        except ToolBlockedError:
+                            row['argument_check']='dependency_output_path_invalid'
+                            row['issues'].append('argument_binding_invalid')
+                        else:
+                            try:tool.validate_arguments(resolved)
+                            except ToolBlockedError:
+                                row['argument_check']='resolved_dependency_schema_invalid'
+                                row['issues'].append('arguments_schema')
+                            else:row['argument_check']='resolved_dependency_schema_valid'
                 else:
                     try:
                         tool.validate_arguments(node.arguments)
