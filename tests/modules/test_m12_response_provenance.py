@@ -151,3 +151,30 @@ def test_single_run_nonfinite_budget_rejected_before_service(budget):
  response=TestClient(app).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':budget,'latency_tolerance_ms':100})
  assert response.status_code==422,response.text
  assert not calls
+
+@pytest.mark.parametrize('workflow',[True,False])
+def test_mounted_exhausted_low_confidence_retains_last_candidate_and_usage(workflow):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service,get_dag_engine
+ from app.modules.m12_ai_research_lab.service import Service
+ from app.modules.m12_ai_research_lab.wiring import build_dag_engine
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):
+   calls.append(kwargs['model_id']);return ModelResult('candidate '+kwargs['model_id'],kwargs['model_id'],.1,usage={'input_tokens':12})
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['first','backup']]
+ service=Service(ModelRouter(cat),Provider(),RetryPolicy(base_delay_seconds=0))
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:service;app.dependency_overrides[get_dag_engine]=lambda:build_dag_engine(service)
+ if workflow:
+  response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: research, config: {output_tokens: 100}}, {id: b, task: research, depends_on: [a]}]'})
+ else:
+  response=TestClient(app).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==422,response.text
+ detail=response.json()['detail'];assert detail['state']=='review_required' and detail['retry_allowed'] is False
+ result=detail['result'];assert result['text']=='candidate backup' and result['usage']=={'input_tokens':12}
+ assert result['metadata']['review_reason']=='confidence_threshold_not_reached'
+ assert result['metadata']['attempts']==2 and len(result['metadata']['history'])==2
+ assert calls==['first','backup']
