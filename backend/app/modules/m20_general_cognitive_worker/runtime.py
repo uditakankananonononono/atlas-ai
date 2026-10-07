@@ -598,7 +598,8 @@ class GCWRuntime:
             lessons.append(f"plan of {len(context.plan)} steps completed; method reusable")
         for node in context.plan:
             claim_id = node.arguments.get("_expectation_claim_id")
-            if claim_id and claim_id in self.calibration.claims:
+            if (claim_id and claim_id in self.calibration.claims
+                    and node.state in (TaskState.SUCCEEDED, TaskState.FAILED)):
                 if not self.calibration.claims[claim_id].resolved:
                     self.calibration.resolve(claim_id, node.state == TaskState.SUCCEEDED)
             node.arguments.pop("_expectation_claim_id", None)
