@@ -119,3 +119,15 @@ async def test_dispatcher_preconditions():
         await dispatcher.dispatch("deploy", {}, context={"tests_passing": False})
     record = await dispatcher.dispatch("deploy", {}, context={"tests_passing": True})
     assert record.succeeded
+
+
+def test_tool_registration_policy_snapshot_cannot_be_weakened_by_caller():
+ spec=ToolSpec(name='fixture_effect',description='fixture',risk=Risk.EXTERNAL,preconditions=['ready'])
+ registry=ToolRegistry()
+ async def handler(arguments):return {}
+ registered=registry.register(spec,handler)
+ spec.risk=Risk.READ;spec.preconditions.clear()
+ view=registered.spec;view.risk=Risk.READ;view.preconditions.clear()
+ assert registered.spec.risk==Risk.EXTERNAL and registered.check_preconditions({})==['ready']
+ with pytest.raises(AttributeError):registered.spec=spec
+ with pytest.raises(AttributeError):registered.handler=handler

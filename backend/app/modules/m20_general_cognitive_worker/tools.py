@@ -44,9 +44,19 @@ class ApprovalPending(ToolError):
 
 
 class RegisteredTool:
+    __slots__ = ("_spec", "_handler")
+
     def __init__(self, spec: ToolSpec, handler: ToolHandler) -> None:
-        self.spec = spec
-        self.handler = handler
+        self._spec = spec.model_copy(deep=True)
+        self._handler = handler
+
+    @property
+    def spec(self):
+        return self._spec.model_copy(deep=True)
+
+    @property
+    def handler(self):
+        return self._handler
 
     def check_preconditions(self, context: dict[str, Any]) -> list[str]:
         """Each precondition is a context key that must be truthy."""
