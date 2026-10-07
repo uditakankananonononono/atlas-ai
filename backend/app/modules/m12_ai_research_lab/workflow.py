@@ -79,7 +79,7 @@ class DagEngine:
     async def run(self, wf: Workflow, inputs: dict[str,Any]) -> dict[str,dict[str,Any]]:
         inputs=dict(inputs)
         if self.validator is not None:
-            for node in wf.nodes:self.validator(node,dict(inputs))
+            for node in wf.nodes:self.validator(Node(node.id,node.task,node.depends_on,dict(node.config)),dict(inputs))
         nodes={n.id:n for n in wf.nodes}; results={}; pending=set(nodes)
         async def execute(n: Node):
             context={"workflow_inputs":dict(inputs),"parents":{d:dict(results[d]) if type(results[d]) is dict else results[d] for d in n.depends_on}}
