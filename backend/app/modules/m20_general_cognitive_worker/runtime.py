@@ -344,7 +344,8 @@ class GCWRuntime:
         existing = self.repo.list_retrospectives(task_id=task_id)
         if existing:
             return {"retrospective": existing[0].model_dump(mode="json"), "idempotent": True}
-        traces = [t for t in self.loop.traces if t.task_id == task_id]
+        self._persist_context(context)
+        traces = self.repo.list_traces(task_id=task_id)
         failures = [t for t in traces if "failed" in t.detail or "error" in t.detail]
         blocked = [t for t in traces if "blocked" in t.detail or "gated" in t.detail]
         succeeded_steps = [n for n in context.plan if n.state == TaskState.SUCCEEDED]
