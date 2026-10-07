@@ -35,7 +35,7 @@ class GmailAccountRow(Base):
 
 class EmailMessageRow(Base):
     __tablename__ = "m10_email_messages"
-    __table_args__ = (UniqueConstraint("tenant_id", "gmail_id"),)
+    __table_args__ = (UniqueConstraint("tenant_id", "account_id", "gmail_id", name="uq_m10_account_message"),)
     pk: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     tenant_id: Mapped[str] = mapped_column(String(120), index=True)
     id: Mapped[str] = mapped_column(String(36), index=True)
@@ -172,11 +172,11 @@ class SqlEmailRepository:
                           {"watch_expiration": expires_at.isoformat()})
 
     # -- messages ---------------------------------------------------------
-    def has_message(self, gmail_id: str) -> bool:
+    def has_message(self, gmail_id: str, *, account_id: str) -> bool:
         with self.sessions() as db:
             return db.scalar(select(EmailMessageRow.pk).where(
                 EmailMessageRow.tenant_id == self.tenant_id,
-                EmailMessageRow.gmail_id == gmail_id)) is not None
+                EmailMessageRow.gmail_id == gmail_id, EmailMessageRow.account_id == account_id)) is not None
 
     def save_message(self, *, message_id: str, account_id: str, gmail_id: str,
                      thread_id: str | None, history_id: str | None, subject: str,
@@ -187,7 +187,7 @@ class SqlEmailRepository:
         with self.sessions.begin() as db:
             if db.scalar(select(EmailMessageRow.pk).where(
                     EmailMessageRow.tenant_id == self.tenant_id,
-                    EmailMessageRow.gmail_id == gmail_id)) is not None:
+                    EmailMessageRow.gmail_id == gmail_id, EmailMessageRow.account_id == account_id)) is not None:
                 return  # idempotent on (tenant, gmail_id)
             db.add(EmailMessageRow(
                 tenant_id=self.tenant_id, id=message_id, account_id=account_id,
@@ -213,11 +213,11 @@ class SqlEmailRepository:
             return db.scalar(select(EmailMessageRow).where(
                 EmailMessageRow.tenant_id == self.tenant_id, EmailMessageRow.id == message_id))
 
-    def thread_messages(self, thread_id: str, limit: int = 10) -> list[EmailMessageRow]:
+    def thread_messages(self, thread_id: str, limit: int = 10, *, account_id: str) -> list[EmailMessageRow]:
         with self.sessions() as db:
             return list(db.scalars(select(EmailMessageRow).where(
                 EmailMessageRow.tenant_id == self.tenant_id,
-                EmailMessageRow.thread_id == thread_id,
+                EmailMessageRow.thread_id == thread_id, EmailMessageRow.account_id == account_id,
             ).order_by(EmailMessageRow.received_at.desc()).limit(limit)))
 
     def sender_counts(self) -> dict[str, int]:

@@ -205,7 +205,7 @@ def test_tenant_isolation(tmp_path):
         subject="s", sender="s@x.com", recipients=[], snippet="", body_text="",
         received_at=None, labels=[], headers={}, category="personal",
         category_confidence=0.5, embedding=None, unsubscribe_url=None)
-    assert repo_b.has_message("g1") is False
+    assert repo_b.has_message("g1", account_id="other-account") is False
     assert service_b.list_messages() == []
     asyncio.run(client_a.aclose())
     asyncio.run(client_b.aclose())
@@ -384,7 +384,6 @@ def test_bert_classifier_loads_configured_pipeline_and_preserves_provenance(monk
     assert out.category.value == "action_required" and out.confidence == .97
     assert out.reasons == ["bert:ACTION_REQUIRED"]
 
-@pytest.mark.xfail(strict=True, reason="M10 provider message ID is not account-scoped; pending schema/service repair")
 def test_same_tenant_accounts_do_not_collide_messages_or_share_thread_context(tmp_path):
  engine=create_engine(f'sqlite:///{tmp_path}/multi.db');Base.metadata.create_all(engine)
  repo=SqlEmailRepository('same-tenant',sessionmaker(bind=engine))
@@ -393,17 +392,40 @@ def test_same_tenant_accounts_do_not_collide_messages_or_share_thread_context(tm
  save('account-a','message-a','same-provider-id','private-account-a')
  save('account-b','message-b','same-provider-id','private-account-b')
  assert len(repo.list_messages())==2
+ assert repo.has_message('same-provider-id',account_id='account-b')
+ assert not repo.has_message('same-provider-id',account_id='account-c')
+ assert {r.account_id for r in repo.thread_messages('same-thread',account_id='account-b')}=={'account-b'}
 
 
 
-@pytest.mark.xfail(strict=True, reason="M10 thread context is tenant-only; pending account ownership repair")
 def test_draft_context_must_not_include_other_account_same_thread(tmp_path):
  service,repo,approvals,client=make_service(tmp_path)
  repo.save_message(message_id='a',account_id='account-a',gmail_id='gid-a',thread_id='same-thread',history_id=None,subject='Private A',sender='sender@example.com',recipients=[],snippet='private-account-a',body_text='private-account-a',received_at=datetime.now(timezone.utc),labels=[],headers={},category='personal',category_confidence=1,embedding=None,unsubscribe_url=None)
  raw=raw_message('gid-b','Account B',thread='same-thread')
  async def draft():
-  await service._draft_reply('message-b',raw,RuleBasedClassifier().classify(ClassifierInput(subject='Account B',sender=raw.sender,snippet='snip')),[])
+  await service._draft_reply('message-b',raw,RuleBasedClassifier().classify(ClassifierInput(subject='Account B',sender=raw.sender,snippet='snip')),[],account_id='account-b')
  asyncio.run(draft())
  # No account selection exists in this context method, so this is unsafe.
- assert 'private-account-a' not in service._context_window(raw)
+ assert 'private-account-a' not in service._context_window(raw,account_id="account-b")
  asyncio.run(client.aclose())
+
+def test_account_message_migration_preserves_rows_and_refuses_lossy_downgrade(tmp_path):
+ import importlib.util
+ from pathlib import Path
+ from alembic.migration import MigrationContext
+ from alembic.operations import Operations
+ from sqlalchemy import text
+ path=Path('migrations/versions/20261007_m10_account_messages.py')
+ spec=importlib.util.spec_from_file_location('account_migration',path);mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+ engine=create_engine(f'sqlite:///{tmp_path}/migration.db')
+ with engine.begin() as conn:
+  conn.execute(text('CREATE TABLE m10_email_messages (tenant_id TEXT NOT NULL, account_id TEXT NOT NULL, gmail_id TEXT NOT NULL, UNIQUE (tenant_id, gmail_id))'))
+  conn.execute(text("INSERT INTO m10_email_messages VALUES ('t','a','g')"))
+  mod.op=Operations(MigrationContext.configure(conn))
+  mod.upgrade();mod.upgrade()
+  conn.execute(text("INSERT INTO m10_email_messages VALUES ('t','b','g')"))
+  assert conn.execute(text('SELECT count(*) FROM m10_email_messages')).scalar()==2
+  with pytest.raises(RuntimeError,match='losing account data'):mod.downgrade()
+  conn.execute(text("DELETE FROM m10_email_messages WHERE account_id='b'"))
+  mod.downgrade();mod.upgrade()
+  assert conn.execute(text('SELECT count(*) FROM m10_email_messages')).scalar()==1
