@@ -1,0 +1,239 @@
+{
+  "scope": "small_model_plumbing_verification_only",
+  "weights_revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+  "weights_sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+  "runner_commit": "8345f333951c661d166b00e6f9362e553768f292",
+  "transport": "trial_only_native_schema_generation_injected_into_actual_adapter",
+  "requests": [
+    {
+      "purpose": "planner",
+      "prompt": "Return exactly two steps. First id s1 title Count blocks, no dependencies. Second id s2 title Report count, depends on s1. Both tool null, arguments {}, risk read. No actual tool execution.",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "tool": {
+              "type": "null"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "risk": {
+              "type": "string",
+              "enum": [
+                "read"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "tool",
+            "arguments",
+            "depends_on",
+            "risk"
+          ],
+          "additionalProperties": false
+        },
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "adapter_original_prompt": "Break the goal into 2-8 concrete steps. Reply with ONLY a JSON array. Each item: {\"id\": \"s1\", \"title\": \"...\", \"tool\": \"<one of the tools or null>\", \"arguments\": {}, \"depends_on\": [\"s0\"], \"risk\": \"read|reversible|external|irreversible\"}. Mark anything that sends, publishes, pays or deletes as external or irreversible.\nTools: none registered\nContext: \nGoal: Return exactly two steps. First id s1 title Count blocks, no dependencies. Second id s2 title Report count, depends on s1. Both tool null, arguments {}, risk read. No actual tool execution.",
+      "native_response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "[\n  {\n    \"id\": \"s1\",\n    \"title\": \"Count blocks\",\n    \"tool\": null,\n    \"arguments\": {},\n    \"depends_on\": [\n      \"s2\"\n    ],\n    \"risk\": \"read\"\n  },\n  {\n    \"id\": \"s2\",\n    \"title\": \"Report count\",\n    \"tool\": null,\n    \"arguments\": {},\n    \"depends_on\": [\n      \"s1\"\n    ],\n    \"risk\": \"read\"\n  }\n]"
+            }
+          }
+        ],
+        "created": 1791339207,
+        "model": "/home/sandbox/atlas-local-trial/qwen.gguf",
+        "system_fingerprint": "b11430-8345f3339",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 111,
+          "prompt_tokens": 72,
+          "total_tokens": 183,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-PqCMDxaqmmPDTWQdHitXpIDs48DOhGoY",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 72,
+          "prompt_ms": 548.135,
+          "prompt_per_token_ms": 7.612986111111111,
+          "prompt_per_second": 131.35450208434054,
+          "predicted_n": 111,
+          "predicted_ms": 3968.944,
+          "predicted_per_token_ms": 36.08130909090909,
+          "predicted_per_second": 27.71518066266493
+        }
+      },
+      "raw_text": "[\n  {\n    \"id\": \"s1\",\n    \"title\": \"Count blocks\",\n    \"tool\": null,\n    \"arguments\": {},\n    \"depends_on\": [\n      \"s2\"\n    ],\n    \"risk\": \"read\"\n  },\n  {\n    \"id\": \"s2\",\n    \"title\": \"Report count\",\n    \"tool\": null,\n    \"arguments\": {},\n    \"depends_on\": [\n      \"s1\"\n    ],\n    \"risk\": \"read\"\n  }\n]",
+      "schema_valid": true,
+      "adapter_accepted": false,
+      "exact_task_pass": false,
+      "error": "PlanError: cyclic dependency in plan",
+      "seconds": 4.526975976999893
+    },
+    {
+      "purpose": "reason",
+      "prompt": "Compute 17+25. Return JSON object with result as the decimal answer string only.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "additionalProperties": false
+      },
+      "adapter_original_prompt": "Task: reason. Reply with ONLY a JSON object. For 'reason' use a nonempty result string. For 'reflect' use {\"cause\": \"...\", \"fix\": \"...\", \"retry\": true|false}.\nInput: {\"synthetic_prompt\": \"Compute 17+25. Return JSON object with result as the decimal answer string only.\"}",
+      "native_response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"result\": \"42\"\n}"
+            }
+          }
+        ],
+        "created": 1791339208,
+        "model": "/home/sandbox/atlas-local-trial/qwen.gguf",
+        "system_fingerprint": "b11430-8345f3339",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 15,
+          "prompt_tokens": 49,
+          "total_tokens": 64,
+          "prompt_tokens_details": {
+            "cached_tokens": 24
+          }
+        },
+        "id": "chatcmpl-je0lDtPqlnJo0xO4bQcGMVfpF8HRi80r",
+        "timings": {
+          "cache_n": 24,
+          "prompt_n": 25,
+          "prompt_ms": 198.82,
+          "prompt_per_token_ms": 7.9528,
+          "prompt_per_second": 125.74187707474098,
+          "predicted_n": 15,
+          "predicted_ms": 480.499,
+          "predicted_per_token_ms": 34.321357142857146,
+          "predicted_per_second": 29.136376974769973
+        }
+      },
+      "raw_text": "{\n  \"result\": \"42\"\n}",
+      "schema_valid": true,
+      "adapter_output": {
+        "result": "42",
+        "route": "trial_native_schema/qwen-trial"
+      },
+      "adapter_accepted": true,
+      "exact_task_pass": true,
+      "seconds": 0.6862144719998469
+    },
+    {
+      "purpose": "reflect",
+      "prompt": "Synthetic failed count had empty input. Return cause as exactly empty_input, fix as exactly request_nonempty_input, retry false. Do not claim to have fixed it.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "cause": {
+            "type": "string"
+          },
+          "fix": {
+            "type": "string"
+          },
+          "retry": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "cause",
+          "fix",
+          "retry"
+        ],
+        "additionalProperties": false
+      },
+      "adapter_original_prompt": "Task: reflect. Reply with ONLY a JSON object. For 'reason' use a nonempty result string. For 'reflect' use {\"cause\": \"...\", \"fix\": \"...\", \"retry\": true|false}.\nInput: {\"synthetic_prompt\": \"Synthetic failed count had empty input. Return cause as exactly empty_input, fix as exactly request_nonempty_input, retry false. Do not claim to have fixed it.\"}",
+      "native_response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"cause\": \"empty_input\",\n  \"fix\": \"request_nonempty_input\",\n  \"retry\": false\n}"
+            }
+          }
+        ],
+        "created": 1791339209,
+        "model": "/home/sandbox/atlas-local-trial/qwen.gguf",
+        "system_fingerprint": "b11430-8345f3339",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 31,
+          "prompt_tokens": 63,
+          "total_tokens": 94,
+          "prompt_tokens_details": {
+            "cached_tokens": 24
+          }
+        },
+        "id": "chatcmpl-OsHnHBdvoIKG3rBcoUyuaROb0MZBz4zH",
+        "timings": {
+          "cache_n": 24,
+          "prompt_n": 39,
+          "prompt_ms": 318.672,
+          "prompt_per_token_ms": 8.171076923076924,
+          "prompt_per_second": 122.3828889893056,
+          "predicted_n": 31,
+          "predicted_ms": 1059.608,
+          "predicted_per_token_ms": 35.32026666666666,
+          "predicted_per_second": 28.312357022597038
+        }
+      },
+      "raw_text": "{\n  \"cause\": \"empty_input\",\n  \"fix\": \"request_nonempty_input\",\n  \"retry\": false\n}",
+      "schema_valid": true,
+      "adapter_output": {
+        "cause": "empty_input",
+        "fix": "request_nonempty_input",
+        "retry": false,
+        "route": "trial_native_schema/qwen-trial"
+      },
+      "adapter_accepted": true,
+      "exact_task_pass": true,
+      "seconds": 1.3850737569991907
+    }
+  ],
+  "startup_seconds": 0.8111335870016774,
+  "peak_rss_kib": 675012,
+  "total_seconds": 9.063987963001637,
+  "exit_code": 0
+}
