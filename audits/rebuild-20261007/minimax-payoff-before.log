@@ -1,0 +1,65 @@
+........................................................................ [ 93%]
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+____ test_minimax_requires_nonempty_matching_finite_payoff_table[options0] _____
+
+options = {'a': {}}
+
+    @pytest.mark.parametrize('options', [{'a': {}}, {'a': {'x': 1}, 'b': {'x': 1, 'y': 2}}, {'a': {'x': float('nan')}}, {'a': {'x': True}}])
+    def test_minimax_requires_nonempty_matching_finite_payoff_table(options):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:295: Failed
+____ test_minimax_requires_nonempty_matching_finite_payoff_table[options1] _____
+
+options = {'a': {'x': 1}, 'b': {'x': 1, 'y': 2}}
+
+    @pytest.mark.parametrize('options', [{'a': {}}, {'a': {'x': 1}, 'b': {'x': 1, 'y': 2}}, {'a': {'x': float('nan')}}, {'a': {'x': True}}])
+    def test_minimax_requires_nonempty_matching_finite_payoff_table(options):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:295: Failed
+____ test_minimax_requires_nonempty_matching_finite_payoff_table[options2] _____
+
+options = {'a': {'x': nan}}
+
+    @pytest.mark.parametrize('options', [{'a': {}}, {'a': {'x': 1}, 'b': {'x': 1, 'y': 2}}, {'a': {'x': float('nan')}}, {'a': {'x': True}}])
+    def test_minimax_requires_nonempty_matching_finite_payoff_table(options):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:295: Failed
+____ test_minimax_requires_nonempty_matching_finite_payoff_table[options3] _____
+
+options = {'a': {'x': True}}
+
+    @pytest.mark.parametrize('options', [{'a': {}}, {'a': {'x': 1}, 'b': {'x': 1, 'y': 2}}, {'a': {'x': float('nan')}}, {'a': {'x': True}}])
+    def test_minimax_requires_nonempty_matching_finite_payoff_table(options):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:295: Failed
+____ test_minimax_finite_extreme_payoffs_do_not_collapse_overflowed_regrets ____
+
+    def test_minimax_finite_extreme_payoffs_do_not_collapse_overflowed_regrets():
+        options = {'bad': {'x': -1.7e308, 'y': 1.7e308}, 'better': {'x': -1e307, 'y': -1e307}, 'other': {'x': 1.7e308, 'y': -1.7e308}}
+>       assert R.minimax_regret(options) == 'better'
+E       AssertionError: assert 'bad' == 'better'
+E         
+E         - better
+E         + bad
+
+tests/modules/test_m20_reasoning.py:301: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reasoning.py::test_minimax_requires_nonempty_matching_finite_payoff_table[options0]
+FAILED tests/modules/test_m20_reasoning.py::test_minimax_requires_nonempty_matching_finite_payoff_table[options1]
+FAILED tests/modules/test_m20_reasoning.py::test_minimax_requires_nonempty_matching_finite_payoff_table[options2]
+FAILED tests/modules/test_m20_reasoning.py::test_minimax_requires_nonempty_matching_finite_payoff_table[options3]
+FAILED tests/modules/test_m20_reasoning.py::test_minimax_finite_extreme_payoffs_do_not_collapse_overflowed_regrets
+5 failed, 72 passed in 1.33s

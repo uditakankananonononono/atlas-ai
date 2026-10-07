@@ -393,17 +393,22 @@ def second_order_effects(causal_edges: list[tuple[str, str]], start: str, *, dep
 def minimax_regret(options: dict[str, dict[str, float]]) -> str:
     """Regret Minimization Framework: choose the option whose worst-case
     regret across scenarios is smallest. options: {name: {scenario: payoff}}."""
-    if not options:
+    if not isinstance(options, dict) or not options:
         raise ValueError("options required")
-    scenarios = next(iter(options.values())).keys()
-    regrets: dict[str, float] = {}
-    for name, payoffs in options.items():
-        worst = 0.0
-        for scenario in scenarios:
-            best_in_scenario = max(o[scenario] for o in options.values())
-            worst = max(worst, best_in_scenario - payoffs[scenario])
-        regrets[name] = worst
-    return min(regrets, key=regrets.get)  # type: ignore[arg-type]
+    tables = list(options.values())
+    if any(not isinstance(table, dict) or not table for table in tables):
+        raise ValueError("nonempty scenario payoff tables required")
+    scenarios = list(tables[0])
+    if any(set(table) != set(scenarios) for table in tables):
+        raise ValueError("all payoff tables must use identical scenarios")
+    if any(type(value) not in (int, float) or not math.isfinite(value) for table in tables for value in table.values()):
+        raise ValueError("finite numeric payoffs required, not bool")
+    scale = max(abs(value) for table in tables for value in table.values()) or 1.0
+    normalized = {name: {scenario: value / scale for scenario, value in table.items()} for name, table in options.items()}
+    best = {scenario: max(table[scenario] for table in normalized.values()) for scenario in scenarios}
+    regrets = {name: max(best[scenario] - table[scenario] for scenario in scenarios)
+               for name, table in normalized.items()}
+    return min(regrets, key=regrets.get)
 
 
 def opportunity_cost(chosen_value: float, alternatives: list[float]) -> float:
