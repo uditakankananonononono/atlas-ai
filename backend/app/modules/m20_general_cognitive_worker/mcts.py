@@ -4,8 +4,8 @@ row M20-16).
 Unlike the earlier random-ordering ruminator, this is a real UCT search: the
 tree's levels are the plan's pending steps, an action is "execute step X
 next", and the chance of step failure is folded into the rollout. The search
-is hard-bounded on three axes - simulations, wall-clock seconds, and tree
-depth - and every result carries visit counts, mean values and standard
+has bounded simulation/depth counts and a cooperative clock check between
+simulations (not preemption during an inner rollout) - and every result carries visit counts, mean values and standard
 errors so the executive (and the user) can see how confident the
 recommendation is. A fixed seed makes runs reproducible for audits.
 """
@@ -102,12 +102,14 @@ class BoundedMCTS:
         exploration: float = math.sqrt(2.0),
         seed: int | None = None,
     ) -> None:
-        if max_simulations < 1:
-            raise ValueError("max_simulations must be >= 1")
-        if max_seconds <= 0:
-            raise ValueError("max_seconds must be positive")
-        if max_depth < 1:
-            raise ValueError("max_depth must be >= 1")
+        if type(max_simulations) is not int or not 1 <= max_simulations <= 100000:
+            raise ValueError("max_simulations must be integer1..100000")
+        if type(max_seconds) not in (int, float) or not math.isfinite(max_seconds) or not 0 < max_seconds <= 60:
+            raise ValueError("max_seconds must be finite numeric in(0,60]")
+        if type(max_depth) is not int or not 1 <= max_depth <= 128:
+            raise ValueError("max_depth must be integer1..128")
+        if type(exploration) not in (int, float) or not math.isfinite(exploration) or not 0 <= exploration <= 100:
+            raise ValueError("exploration must be finite numeric in[0,100]")
         self.max_simulations = max_simulations
         self.max_seconds = max_seconds
         self.max_depth = max_depth

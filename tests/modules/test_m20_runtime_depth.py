@@ -954,3 +954,9 @@ def test_mcts_partial_no_ready_reports_supplied_progress():
     result = BoundedMCTS().search([PlanNode(title="done", state=TaskState.SUCCEEDED), PlanNode(title="failed", state=TaskState.FAILED)])
     assert result.heuristic_root_value == 0.5
     assert result.stopped_by == "no_ready_action"
+
+
+@pytest.mark.parametrize("kwargs", [{"max_seconds":float("nan")}, {"max_seconds":float("inf")}, {"max_simulations":True}, {"max_depth":1.5}, {"exploration":float("nan")}, {"exploration":-1}])
+def test_mcts_budget_configuration_requires_finite_bounded_values(kwargs):
+    with pytest.raises(ValueError):
+        BoundedMCTS(**kwargs)

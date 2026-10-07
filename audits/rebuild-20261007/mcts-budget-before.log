@@ -1,0 +1,82 @@
+..........................................................FFFFFF         [100%]
+=================================== FAILURES ===================================
+____ test_mcts_budget_configuration_requires_finite_bounded_values[kwargs0] ____
+
+kwargs = {'max_seconds': nan}
+
+    @pytest.mark.parametrize("kwargs", [{"max_seconds":float("nan")}, {"max_seconds":float("inf")}, {"max_simulations":True}, {"max_depth":1.5}, {"exploration":float("nan")}, {"exploration":-1}])
+    def test_mcts_budget_configuration_requires_finite_bounded_values(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:961: Failed
+____ test_mcts_budget_configuration_requires_finite_bounded_values[kwargs1] ____
+
+kwargs = {'max_seconds': inf}
+
+    @pytest.mark.parametrize("kwargs", [{"max_seconds":float("nan")}, {"max_seconds":float("inf")}, {"max_simulations":True}, {"max_depth":1.5}, {"exploration":float("nan")}, {"exploration":-1}])
+    def test_mcts_budget_configuration_requires_finite_bounded_values(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:961: Failed
+____ test_mcts_budget_configuration_requires_finite_bounded_values[kwargs2] ____
+
+kwargs = {'max_simulations': True}
+
+    @pytest.mark.parametrize("kwargs", [{"max_seconds":float("nan")}, {"max_seconds":float("inf")}, {"max_simulations":True}, {"max_depth":1.5}, {"exploration":float("nan")}, {"exploration":-1}])
+    def test_mcts_budget_configuration_requires_finite_bounded_values(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:961: Failed
+____ test_mcts_budget_configuration_requires_finite_bounded_values[kwargs3] ____
+
+kwargs = {'max_depth': 1.5}
+
+    @pytest.mark.parametrize("kwargs", [{"max_seconds":float("nan")}, {"max_seconds":float("inf")}, {"max_simulations":True}, {"max_depth":1.5}, {"exploration":float("nan")}, {"exploration":-1}])
+    def test_mcts_budget_configuration_requires_finite_bounded_values(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:961: Failed
+____ test_mcts_budget_configuration_requires_finite_bounded_values[kwargs4] ____
+
+kwargs = {'exploration': nan}
+
+    @pytest.mark.parametrize("kwargs", [{"max_seconds":float("nan")}, {"max_seconds":float("inf")}, {"max_simulations":True}, {"max_depth":1.5}, {"exploration":float("nan")}, {"exploration":-1}])
+    def test_mcts_budget_configuration_requires_finite_bounded_values(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:961: Failed
+____ test_mcts_budget_configuration_requires_finite_bounded_values[kwargs5] ____
+
+kwargs = {'exploration': -1}
+
+    @pytest.mark.parametrize("kwargs", [{"max_seconds":float("nan")}, {"max_seconds":float("inf")}, {"max_simulations":True}, {"max_depth":1.5}, {"exploration":float("nan")}, {"exploration":-1}])
+    def test_mcts_budget_configuration_requires_finite_bounded_values(kwargs):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_runtime_depth.py:961: Failed
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_budget_configuration_requires_finite_bounded_values[kwargs0]
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_budget_configuration_requires_finite_bounded_values[kwargs1]
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_budget_configuration_requires_finite_bounded_values[kwargs2]
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_budget_configuration_requires_finite_bounded_values[kwargs3]
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_budget_configuration_requires_finite_bounded_values[kwargs4]
+FAILED tests/modules/test_m20_runtime_depth.py::test_mcts_budget_configuration_requires_finite_bounded_values[kwargs5]
+6 failed, 58 passed, 1 warning in 4.21s
