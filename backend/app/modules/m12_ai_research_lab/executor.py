@@ -50,7 +50,9 @@ class ResearchExecutor:
                 raise ProviderOutcomeUnknown("Returned model text or reported model identity is unusable; no automatic retry")
             try:result.text.encode("utf-8")
             except UnicodeEncodeError as error:raise ProviderOutcomeUnknown("Returned model text is not UTF-8 encodable; no automatic retry") from error
-            try:result=replace(result,metadata=dict(result.metadata),usage=dict(result.usage) if type(result.usage) is dict else result.usage,logprobs=list(result.logprobs) if type(result.logprobs) is list else result.logprobs)
+            if type(result.usage) is not dict or any(type(key) is not str or type(value) is not int for key,value in result.usage.items()):
+                raise ProviderOutcomeUnknown("Returned model usage is not the declared string-to-integer mapping; no automatic retry")
+            try:result=replace(result,metadata=dict(result.metadata),usage=dict(result.usage),logprobs=list(result.logprobs) if type(result.logprobs) is list else result.logprobs)
             except Exception as error:raise ProviderOutcomeUnknown("Returned model result could not be copied safely; no automatic retry") from error
             result.metadata["requested_model_id"]=model.model_id
             confidence=(result.confidence if valid_confidence(result.confidence) else None) if result.confidence is not None else confidence_from_logprobs(result.logprobs)
