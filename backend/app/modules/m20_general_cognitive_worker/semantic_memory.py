@@ -23,9 +23,10 @@ class SemanticMemory:
         self._edges: list[KnowledgeEdge] = []
 
     def store(self, fact: SemanticFact) -> SemanticFact:
+        fact = fact.model_copy(deep=True)
         self._facts[fact.id] = fact
         self._vectors[fact.id] = self.embedder.embed(fact.content)
-        return fact
+        return fact.model_copy(deep=True)
 
     def remember(
         self,
@@ -52,20 +53,20 @@ class SemanticMemory:
         ]
         scored = [(f, s) for f, s in scored if s >= min_score]
         scored.sort(key=lambda pair: pair[1], reverse=True)
-        return scored[:limit]
+        return [(fact.model_copy(deep=True),score) for fact,score in scored[:limit]]
 
     def link(self, from_id: str, relation: str, to_id: str, *, metadata: dict | None = None) -> KnowledgeEdge:
         if from_id not in self._facts and from_id not in {e.from_id for e in self._edges}:
             raise KeyError(f"unknown node: {from_id}")
         if to_id not in self._facts and to_id not in {e.to_id for e in self._edges}:
             raise KeyError(f"unknown node: {to_id}")
-        edge = KnowledgeEdge(from_id=from_id, relation=relation, to_id=to_id, metadata=metadata or {})
+        edge = KnowledgeEdge(from_id=from_id, relation=relation, to_id=to_id, metadata=metadata or {}).model_copy(deep=True)
         self._edges.append(edge)
-        return edge
+        return edge.model_copy(deep=True)
 
     def neighbors(self, node_id: str, *, relation: str | None = None) -> list[KnowledgeEdge]:
         return [
-            e for e in self._edges
+            e.model_copy(deep=True) for e in self._edges
             if (e.from_id == node_id or e.to_id == node_id)
             and (relation is None or e.relation == relation)
         ]
@@ -83,10 +84,11 @@ class SemanticMemory:
     def confirm(self, fact_id: str, *, now: datetime | None = None) -> SemanticFact:
         fact = self._facts[fact_id]
         fact.last_confirmed_at = now or datetime.now(timezone.utc)
-        return fact
+        return fact.model_copy(deep=True)
 
     def get(self, fact_id: str) -> SemanticFact | None:
-        return self._facts.get(fact_id)
+        fact = self._facts.get(fact_id)
+        return fact.model_copy(deep=True) if fact is not None else None
 
     def __len__(self) -> int:
         return len(self._facts)
