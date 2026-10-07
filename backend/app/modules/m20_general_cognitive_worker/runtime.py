@@ -342,7 +342,11 @@ class GCWRuntime:
         return self.mcts.search(context.plan)
 
     def select_tool(self, description: str, *, context: dict[str, Any] | None = None) -> ToolSelection:
-        return self.selector.select(description, context=context)
+        self.selector.use_dispatch_records(self.repo.list_actions())
+        selection = self.selector.select(description, context=context)
+        selection.history_status = "reported_local_dispatch_journal_with_beta_1_1_prior"
+        selection.runtime_dispatch_history_connected = True
+        return selection
 
     # -- retrospective and close (row M20-28) -----------------------------------
 

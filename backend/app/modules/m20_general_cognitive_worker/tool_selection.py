@@ -45,6 +45,8 @@ class ToolSelection:
     margin: float
     needs_clarification: bool
     clarifying_question: str
+    history_status: str = "manual_supplied_counts_with_beta_1_1_prior"
+    runtime_dispatch_history_connected: bool = False
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -55,8 +57,8 @@ class ToolSelection:
             "clarifying_question": self.clarifying_question,
             "score_kind":"heuristic lexical/embedding ranking, not calibrated statistical confidence",
             "margin_is_not_probability":True,
-            "history_status": "manual_supplied_counts_with_beta_1_1_prior",
-            "runtime_dispatch_history_connected": False,
+            "history_status": self.history_status,
+            "runtime_dispatch_history_connected": self.runtime_dispatch_history_connected,
         }
 
 
@@ -86,6 +88,18 @@ class ToolSelector:
         else:
             failures += 1.0
         self._history[tool_name] = (successes, failures)
+
+    def use_dispatch_records(self, records) -> None:
+        """Rebuild counts from distinct reported local records, never cumulative replay."""
+        history = {}; seen = set()
+        for record in records:
+            if record.id in seen: continue
+            if type(record.succeeded) is not bool:
+                raise ValueError("dispatch outcome must be an exact bool")
+            seen.add(record.id)
+            success, failure = history.get(record.tool, (0.0, 0.0))
+            history[record.tool] = (success + float(record.succeeded), failure + float(not record.succeeded))
+        self._history = history
 
     def historical_success(self, tool_name: str) -> float:
         successes, failures = self._history.get(tool_name, (0.0, 0.0))
