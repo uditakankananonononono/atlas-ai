@@ -1002,3 +1002,7 @@ Five actual failures retained: string/integeroutcomes/bool/outofrange/NaNprobabi
 ## Standalone supplied planning median ratio
 
 Seven actual failures retained: malformedestimate/ratios accepted/discarded and largefinite evenmedianoverflow. Positivefinite numeric/notboolestimate/ratios; stablepositive midpoint; finitecorrectedresult.185reasoningforesightpass; recorded87adjacent2435pass2warnings41.99s. Explicit0.05ratiofloor/emptyhistoryfactor1heuristic, not verifieddurations/reference relevance or validatedforecasting. Latestfull9944passsourcec5b11ab predatesfourteenlaterfixes.
+
+## Full local regression after reasoning corrections
+
+Source 69d6262: 496files/20isolatedbatches/10022passed/0failed/14skipped/26summedwarningoccurrences/433.55s summedprocess time, everyexit0. Manifest/receipts/logs/runner/summary under full-regression-after-reasoning-fixes. Includesfourteen sourcecorrections sincec5b11ab. Historical9944/9869/9813runs retainedunchanged. Localfixtures do not establish original cognition breadth, authenticated review authority, distributed effects or production provisioning.
