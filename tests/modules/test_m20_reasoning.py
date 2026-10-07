@@ -276,3 +276,15 @@ def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
 def test_brier_rejects_invalid_probability_and_nonbool_labels(predictions):
     with pytest.raises(ValueError):
         R.brier_score(predictions)
+
+
+@pytest.mark.parametrize('estimate,ratios', [(True, [2]), (float('nan'), [2]), (1, [float('nan')]), (1, [float('inf')]), (1, [True]), (1, [-1])])
+def test_planning_median_helper_rejects_invalid_supplied_ratios(estimate, ratios):
+    with pytest.raises(ValueError):
+        R.planning_fallacy_correction(estimate, ratios)
+
+
+def test_planning_median_helper_large_finite_ratios_do_not_overflow_midpoint():
+    assert R.planning_fallacy_correction(1, [1.6e308, 1.7e308]) == pytest.approx(1.65e308)
+    with pytest.raises(ValueError):
+        R.planning_fallacy_correction(10, [1e308])

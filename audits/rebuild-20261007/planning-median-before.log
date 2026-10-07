@@ -1,0 +1,88 @@
+.................................................................FFFFFFF [100%]
+=================================== FAILURES ===================================
+__ test_planning_median_helper_rejects_invalid_supplied_ratios[True-ratios0] ___
+
+estimate = True, ratios = [2]
+
+    @pytest.mark.parametrize('estimate,ratios', [(True, [2]), (float('nan'), [2]), (1, [float('nan')]), (1, [float('inf')]), (1, [True]), (1, [-1])])
+    def test_planning_median_helper_rejects_invalid_supplied_ratios(estimate, ratios):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:283: Failed
+___ test_planning_median_helper_rejects_invalid_supplied_ratios[nan-ratios1] ___
+
+estimate = nan, ratios = [2]
+
+    @pytest.mark.parametrize('estimate,ratios', [(True, [2]), (float('nan'), [2]), (1, [float('nan')]), (1, [float('inf')]), (1, [True]), (1, [-1])])
+    def test_planning_median_helper_rejects_invalid_supplied_ratios(estimate, ratios):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:283: Failed
+____ test_planning_median_helper_rejects_invalid_supplied_ratios[1-ratios2] ____
+
+estimate = 1, ratios = [nan]
+
+    @pytest.mark.parametrize('estimate,ratios', [(True, [2]), (float('nan'), [2]), (1, [float('nan')]), (1, [float('inf')]), (1, [True]), (1, [-1])])
+    def test_planning_median_helper_rejects_invalid_supplied_ratios(estimate, ratios):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:283: Failed
+____ test_planning_median_helper_rejects_invalid_supplied_ratios[1-ratios3] ____
+
+estimate = 1, ratios = [inf]
+
+    @pytest.mark.parametrize('estimate,ratios', [(True, [2]), (float('nan'), [2]), (1, [float('nan')]), (1, [float('inf')]), (1, [True]), (1, [-1])])
+    def test_planning_median_helper_rejects_invalid_supplied_ratios(estimate, ratios):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:283: Failed
+____ test_planning_median_helper_rejects_invalid_supplied_ratios[1-ratios4] ____
+
+estimate = 1, ratios = [True]
+
+    @pytest.mark.parametrize('estimate,ratios', [(True, [2]), (float('nan'), [2]), (1, [float('nan')]), (1, [float('inf')]), (1, [True]), (1, [-1])])
+    def test_planning_median_helper_rejects_invalid_supplied_ratios(estimate, ratios):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:283: Failed
+____ test_planning_median_helper_rejects_invalid_supplied_ratios[1-ratios5] ____
+
+estimate = 1, ratios = [-1]
+
+    @pytest.mark.parametrize('estimate,ratios', [(True, [2]), (float('nan'), [2]), (1, [float('nan')]), (1, [float('inf')]), (1, [True]), (1, [-1])])
+    def test_planning_median_helper_rejects_invalid_supplied_ratios(estimate, ratios):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:283: Failed
+___ test_planning_median_helper_large_finite_ratios_do_not_overflow_midpoint ___
+
+    def test_planning_median_helper_large_finite_ratios_do_not_overflow_midpoint():
+>       assert R.planning_fallacy_correction(1, [1.6e308, 1.7e308]) == pytest.approx(1.65e308)
+E       assert inf == 1.65e+308 ± 1.7e+302
+E         
+E         comparison failed
+E         Obtained: inf
+E         Expected: 1.65e+308 ± 1.7e+302
+
+tests/modules/test_m20_reasoning.py:288: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reasoning.py::test_planning_median_helper_rejects_invalid_supplied_ratios[True-ratios0]
+FAILED tests/modules/test_m20_reasoning.py::test_planning_median_helper_rejects_invalid_supplied_ratios[nan-ratios1]
+FAILED tests/modules/test_m20_reasoning.py::test_planning_median_helper_rejects_invalid_supplied_ratios[1-ratios2]
+FAILED tests/modules/test_m20_reasoning.py::test_planning_median_helper_rejects_invalid_supplied_ratios[1-ratios3]
+FAILED tests/modules/test_m20_reasoning.py::test_planning_median_helper_rejects_invalid_supplied_ratios[1-ratios4]
+FAILED tests/modules/test_m20_reasoning.py::test_planning_median_helper_rejects_invalid_supplied_ratios[1-ratios5]
+FAILED tests/modules/test_m20_reasoning.py::test_planning_median_helper_large_finite_ratios_do_not_overflow_midpoint
+7 failed, 65 passed in 1.38s

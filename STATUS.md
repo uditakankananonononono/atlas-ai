@@ -998,3 +998,7 @@ Six actual failures retained: bool/negative/nonfiniteinput/undefinedzerodenomina
 ## Brier supplied label score types
 
 Five actual failures retained: string/integeroutcomes/bool/outofrange/NaNprobabilities accepted. Malformedpair alreadyValueError, not countednewfailure. Finite numeric0..1notboolprobability/exactbooloutcome/validpairs/fsum meansquareerror.178reasoningforesightpass; recorded87adjacent2428pass2warnings42.47s. Proper score on supplied labels only; lowermeansquareerror not independent calibration or labeltruth. Latestfull9944passsourcec5b11ab predatesthirteenlaterfixes.
+
+## Standalone supplied planning median ratio
+
+Seven actual failures retained: malformedestimate/ratios accepted/discarded and largefinite evenmedianoverflow. Positivefinite numeric/notboolestimate/ratios; stablepositive midpoint; finitecorrectedresult.185reasoningforesightpass; recorded87adjacent2435pass2warnings41.99s. Explicit0.05ratiofloor/emptyhistoryfactor1heuristic, not verifieddurations/reference relevance or validatedforecasting. Latestfull9944passsourcec5b11ab predatesfourteenlaterfixes.
