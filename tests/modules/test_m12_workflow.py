@@ -143,7 +143,7 @@ def test_response_json_cycle_and_depth_are_explicit_not_silent():
  from app.modules.m12_ai_research_lab.response_json import safe_workflow_json
  cyclic={};cyclic['self']=cyclic
  result,paths=safe_workflow_json(cyclic)
- assert result=={'self':None} and paths==['$.self']
+ assert result=={'self':None} and paths==['$["self"]']
 
 def test_mounted_cyclic_review_candidate_survives_conversion_boundary():
  from fastapi import FastAPI
@@ -178,3 +178,21 @@ async def test_valid_dag_concurrency_serializes_independent_nodes():
   active-=1;return {'text':task}
  out=await DagEngine(runner,max_concurrency=1).run(Workflow.from_yaml('nodes: [{id: a, task: a}, {id: b, task: b}]'),{})
  assert peak==1 and calls==['a','b'] and out=={'a':{'text':'a'},'b':{'text':'b'}}
+
+def test_response_loss_paths_distinguish_nested_dotted_and_index_like_keys():
+ from app.modules.m12_ai_research_lab.response_json import safe_workflow_json
+ from math import nan
+ value={'a.b':nan,'a':{'b':nan},'x[0]':nan,'x':[nan],'quote"key':nan}
+ result,paths=safe_workflow_json(value)
+ assert len(set(paths))==5
+ assert '$["a.b"]' in paths and '$["a"]["b"]' in paths
+ assert '$["x[0]"]' in paths and '$["x"][0]' in paths
+ assert '$["quote\\"key"]' in paths
+ assert result=={'a.b':None,'a':{'b':None},'x[0]':None,'x':[None],'quote"key':None}
+
+def test_response_discarded_key_paths_identify_distinct_positions():
+ from app.modules.m12_ai_research_lab.response_json import safe_workflow_json
+ value={1:'discard',2:'discard','normal':'retained','\ud800':'discard','\udfff':'discard'}
+ result,paths=safe_workflow_json(value)
+ assert result=={'normal':'retained'} and len(set(paths))==4
+ assert paths==['$.<nontext-key:0>','$.<nontext-key:1>','$.<invalid-text-key:3>','$.<invalid-text-key:4>']
