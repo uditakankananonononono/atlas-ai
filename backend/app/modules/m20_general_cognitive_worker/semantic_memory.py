@@ -24,8 +24,9 @@ class SemanticMemory:
 
     def store(self, fact: SemanticFact) -> SemanticFact:
         fact = fact.model_copy(deep=True)
+        vector = self.embedder.embed(fact.content)
         self._facts[fact.id] = fact
-        self._vectors[fact.id] = self.embedder.embed(fact.content)
+        self._vectors[fact.id] = vector
         return fact.model_copy(deep=True)
 
     def remember(

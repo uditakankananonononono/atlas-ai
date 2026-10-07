@@ -23,8 +23,9 @@ class EpisodicMemory:
         episode = episode.model_copy(deep=True)
         if not episode.embedding_text:
             episode.embedding_text = self._embed_text(episode)
+        vector = self.embedder.embed(episode.embedding_text)
         self._episodes[episode.id] = episode
-        self._vectors[episode.id] = self.embedder.embed(episode.embedding_text)
+        self._vectors[episode.id] = vector
         return episode.model_copy(deep=True)
 
     def log_execution(
