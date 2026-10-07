@@ -35,7 +35,7 @@ The following surfaces remain unassessed for combined semantic clearance, even w
 - `local_tools`
 - `htn_planner`, including method review hash binding
 - `function_schemas`: assessed-compatible for the two export methods against peer b944215; six new canaries pass. Preserve our stronger surrounding spec isolation/schema validation. Live provider compatibility is not established.
-- `retrospectives`
+- `retrospectives`: assessed-compatible by retaining our detached snapshots, stage/save/publish ordering, stable restart identity and local execution reports rather than the older peer implementation; focused comparison suite 16 passed. Lesson truth is not independently verified.
 - `model_ideation`
 - `premortem`
 - `ActionRow` migration
