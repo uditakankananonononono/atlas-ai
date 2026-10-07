@@ -652,3 +652,5 @@ Post-isolated-pure-code adjacent regression: initial1failed2218pass due runaway 
 ## AGI ledger historical-claim correction
 
 Original audits/agi-capability-ledger.json still said AGI-01 reliability-weighted confidence, AGI-03 executable admission/typed tool dispatch, AGI-04 implemented-bounded recursive improvement, AGI-05 held-out transfer. Those are stale overclaims, not source-grounded current capability. Schema2 preserves original entries verbatim under historical_capabilities; current AGI-01..06 are PARTIAL with exact supplied-rollup/heuristic/pure-code-test/caller-evaluator/cache scopes and missing model/admission/production/durable guarantees. No aggregate original2000-feature verdict counts changed by this separate8-row ledger.
+
+World supplied-weight rollup now scales before summing to prevent NaN shares from individually finite1e308weights. Relative supplied shares stay finite; overflowing raw support returnsnull with sum_exceeds_float_range instead of invalid Infinity.34 autonomy/API tests pass1warning incl2:1shares and snapshot JSON. These remain caller weight shares, not predictive confidence or truth.
