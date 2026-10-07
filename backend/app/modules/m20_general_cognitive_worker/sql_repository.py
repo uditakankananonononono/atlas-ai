@@ -30,6 +30,7 @@ class TaskRow(Base):
     importance = sa.Column(sa.Integer, nullable=False, default=3)
     deadline = sa.Column(sa.DateTime(timezone=True), nullable=True)
     plan_json = sa.Column(sa.JSON, nullable=False, default=list)
+    runtime_metadata_json = sa.Column(sa.JSON, nullable=False, default=dict)
     standup_notes_json = sa.Column(sa.JSON, nullable=False, default=list)
     created_at = sa.Column(sa.DateTime(timezone=True), nullable=False)
     updated_at = sa.Column(sa.DateTime(timezone=True), nullable=False)
@@ -131,6 +132,8 @@ class GCWRepository:
             row.deadline = context.deadline
             row.plan_json = [n.model_dump(mode="json") for n in context.plan]
             row.standup_notes_json = list(context.standup_notes)
+            row.runtime_metadata_json = {"wm_partition": context.wm_partition, "ticks_served": context.ticks_served,
+                                         "last_run_at": context.last_run_at.isoformat() if context.last_run_at else None}
             row.updated_at = _aware(datetime.now(timezone.utc))
             session.commit()
         return context
@@ -142,13 +145,18 @@ class GCWRepository:
             if row is None or row.tenant_id != self.tenant_id:
                 return None
             context = TaskContext(
-                id=row.id, goal=row.goal, importance=row.importance,
+                id=row.id, goal=row.goal, importance=row.importance, tenant_id=row.tenant_id,
                 deadline=_aware(row.deadline) if row.deadline else None,
             )
             from .schemas import TaskState
             context.state = TaskState(row.state)
             context.plan = [PlanNode(**n) for n in (row.plan_json or [])]
             context.standup_notes = list(row.standup_notes_json or [])
+            metadata = row.runtime_metadata_json or {}
+            context.wm_partition = metadata.get("wm_partition", row.id)
+            context.ticks_served = metadata.get("ticks_served", 0)
+            last_run = metadata.get("last_run_at")
+            context.last_run_at = _aware(datetime.fromisoformat(last_run)) if last_run else None
             context.created_at = _aware(row.created_at)
             context.updated_at = _aware(row.updated_at)
             return context

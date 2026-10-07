@@ -30,7 +30,7 @@ from app.modules.m20_general_cognitive_worker.sandbox import (
 )
 from app.modules.m20_general_cognitive_worker.schemas import (
     ActionRecord, ChunkType, EpisodeOutcome, HTNMethod, MemoryChunk, PlanNode, Risk,
-    SemanticFact, Skill, SkillStatus, TaskState, ToolSpec,
+    SemanticFact, Skill, SkillStatus, TaskContext, TaskState, ToolSpec,
 )
 from app.modules.m20_general_cognitive_worker.sql_repository import GCWRepository
 from app.modules.m20_general_cognitive_worker.tools import (
@@ -778,3 +778,30 @@ def test_action_journal_additive_migration_on_local_sqlite():
    assert {idx['name'] for idx in inspect(connection).get_indexes('m20_action_records')}=={'ix_m20_action_records_task_id','ix_m20_action_records_tenant_id'}
    module.downgrade()
    assert 'm20_action_records' not in inspect(connection).get_table_names()
+
+
+def test_task_restart_preserves_owner_partition_and_scheduler_service_history():
+ from datetime import datetime,timezone
+ repo=GCWRepository(make_engine(),tenant_id='fixture-owner');repo.create_schema()
+ context=TaskContext(goal='fixture',tenant_id='fixture-owner',wm_partition='fixture-partition',ticks_served=7,last_run_at=datetime(2026,10,7,tzinfo=timezone.utc))
+ repo.save_task(context);loaded=repo.load_task(context.id)
+ assert loaded.tenant_id=='fixture-owner' and loaded.wm_partition=='fixture-partition'
+ assert loaded.ticks_served==7 and loaded.last_run_at==context.last_run_at
+
+
+def test_task_runtime_metadata_migration_preserves_legacy_rows():
+ import importlib.util
+ import sqlalchemy as sa
+ from alembic.migration import MigrationContext
+ from alembic.operations import Operations
+ spec=importlib.util.spec_from_file_location('task_migration','migrations/versions/20261007_m20_task_runtime_metadata.py')
+ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+ engine=make_engine()
+ with engine.begin() as connection:
+  connection.execute(sa.text('CREATE TABLE m20_tasks (id TEXT PRIMARY KEY)'))
+  connection.execute(sa.text("INSERT INTO m20_tasks(id) VALUES ('legacy')"))
+  with Operations.context(MigrationContext.configure(connection)):
+   module.upgrade()
+   assert connection.execute(sa.text('SELECT runtime_metadata_json FROM m20_tasks')).scalar()=='{}'
+   module.downgrade()
+   assert connection.execute(sa.text('SELECT id FROM m20_tasks')).scalar()=='legacy'
