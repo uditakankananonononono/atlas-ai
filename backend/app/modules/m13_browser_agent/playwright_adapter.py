@@ -85,7 +85,8 @@ class PlaywrightSessions:
                 if len(self._sessions) >= self.max_sessions:
                     raise RuntimeError("browser session capacity reached")
                 assert self._browser is not None
-                path = self.root / tenant_id / session_id
+                from .security import artifact_directory
+                path = artifact_directory(self.root, tenant_id, session_id)
                 path.mkdir(parents=True, exist_ok=True)
                 context = await self._browser.new_context(record_har_path=str(path / "audit.har"))
                 await context.route("**/*", self._guard_route)

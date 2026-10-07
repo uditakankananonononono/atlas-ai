@@ -160,3 +160,21 @@ def test_direct_append_event_normalizes_aware_and_rejects_naive():
     naive=event("e-naive").model_copy(update={"occurred_at":datetime(2026,10,7,15,0)})
     with pytest.raises(ValueError,match="timezone-aware"):repo.append_event(naive)
     assert [x.id for x in repo.events_after(0)]==["e-off"]
+
+def test_append_event_dedup_stays_idempotent_for_any_input_form():
+    # Dedup is checked before the storage-boundary instant policy: re-intaking
+    # an already-stored id with a naive occurred_at returns the stored event
+    # instead of raising, preserving the append idempotency contract.
+    repo=SqlDashboardRepository("t","u",session_factory=factory())
+    repo.append_event(event("d1"))
+    out=repo.append_event(event("d1").model_copy(update={"occurred_at":datetime(2026,10,7,12,0)}))
+    assert out.id=="d1" and out.sequence==1
+def test_append_event_does_not_mutate_caller_event():
+    # Normalization happens on the stored row only; the caller's Event keeps
+    # its original offset form (the same instant, unmutated).
+    repo=SqlDashboardRepository("t","u",session_factory=factory())
+    original=datetime(2026,10,7,15,0,tzinfo=timezone(timedelta(hours=5,minutes=30)))
+    e=event("m1").model_copy(update={"occurred_at":original})
+    out=repo.append_event(e)
+    assert e.occurred_at is original
+    assert out.occurred_at==datetime(2026,10,7,9,30,tzinfo=timezone.utc)
