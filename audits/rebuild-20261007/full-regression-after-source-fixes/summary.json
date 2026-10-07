@@ -1,0 +1,15 @@
+{
+  "revision": "e2fe16694e449caf3309c9e769761e1422609e23",
+  "files": 496,
+  "batches": 20,
+  "counts": {
+    "passed": 9813,
+    "failed": 0,
+    "skipped": 14,
+    "warnings": 26
+  },
+  "batch_wall_seconds": 419.2670923429978,
+  "all_exit_zero": true,
+  "warnings_scope": "summed occurrences across isolated batches, not unique categories",
+  "scope": "local repository compatibility; not original depth, model capability or production deployment"
+}
