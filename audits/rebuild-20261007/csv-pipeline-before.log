@@ -1,0 +1,33 @@
+........................................................................ [ 62%]
+...........................................F                             [100%]
+=================================== FAILURES ===================================
+_______ test_real_default_csv_filter_to_summary_pipeline_across_restart ________
+
+    def test_real_default_csv_filter_to_summary_pipeline_across_restart():
+        runtime,repo=make_runtime()
+        task=runtime.submit_goal('summarize open supplied invoices',run_immediately=False)
+        runtime.prepare_supplied_plan(task.id,steps=[
+            {'id':'filter','title':'select open records','tool':'csv_filter',
+             'arguments':{'csv_text':'id,status,amount\nA,open,10\nB,paid,20\nC,open,5\n',
+                          'where':{'status':'open'},'columns':['id','amount']}},
+            {'id':'summary','title':'sum selected records','tool':'csv_summary','depends_on':['filter'],
+             'arguments':{'csv_text':{'$step':'filter','path':['csv_text']},'value_column':'amount'}}])
+        runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+        restored=make_runtime(hydrate_repo=repo)
+        result=restored.run_task(task.id,max_ticks=2)
+>       assert result.state==TaskState.SUCCEEDED
+E       AssertionError: assert <TaskState.FAILED: 'failed'> == <TaskState.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+tests/modules/test_m20_runtime_depth.py:1642: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_real_default_csv_filter_to_summary_pipeline_across_restart
+1 failed, 115 passed, 1 warning in 6.75s

@@ -1132,3 +1132,9 @@ Evidence: 115 runtime tests passed with one warning; 2,494 adjacent tests passed
 ## Full regression after structured dataflow and default local tools
 
 All 496 test files at source 539fda3 were checked in 20 isolated batches: 10,081 passed, zero failed, 14 skipped, 26 summed warning occurrences. Every batch exited zero; summed process time is recorded in the retained summary. Evidence is in audits/rebuild-20261007/full-regression-after-dataflow-tools. This includes the ten post-857b51f code changes and supersedes the historical 10,048 count as current local test evidence. It does not establish production deployment, general cognition, verified external effects, or successful model ideation; the pinned model trial remains zero accepted out of two.
+
+## Real CSV filter-to-summary pipeline
+
+A failing default-handler canary exposed the missing row selection step. csv_filter now supports exact raw-string AND predicates and column projection over supplied CSV, capped at 32,000 input bytes and 1,000 rows. Headers and selected/filter columns are validated; output uses CSV quoting. Empty matches retain the header and an explicit zero count.
+
+Evidence: 117 runtime tests passed with one warning; 2,496 adjacent tests passed with two warnings in 49.97 seconds. The actual default filter handler selects open rows, its structured CSV output persists, and after runtime restart the actual default summary handler consumes that output through a dependency binding to compute total 15. No injected handlers or model were needed. This is a bounded exact data pipeline, not authenticated invoice truth, inferred business rules, fuzzy filtering or external execution. Full 10,081 at source 539fda3 predates one code change.
