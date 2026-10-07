@@ -509,6 +509,7 @@ def test_retry_recovers_inserted_message_missing_draft(tmp_path):
 @pytest.mark.parametrize('failure_phase',['model','approval','model_result_save','approval_result_save'])
 def test_draft_pipeline_ambiguous_phases_never_repeat_effect(tmp_path,monkeypatch,failure_phase):
  svc,repo,approvals,client=make_service(tmp_path)
+ repo.save_account(account_id='a',email_address='fixture-a@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
  calls=[];original=fake_generate;original_put=approvals.put;original_transition=repo.transition_draft_work
  async def generate(prompt,provider,model):
   if prompt.startswith('Extract action items'):return await original(prompt,provider,model)
@@ -539,6 +540,7 @@ def test_draft_pipeline_ambiguous_phases_never_repeat_effect(tmp_path,monkeypatc
 
 def test_draft_finalization_crash_recovers_saved_approval_without_model_or_refile(tmp_path,monkeypatch):
  svc,repo,approvals,client=make_service(tmp_path);calls=[]
+ repo.save_account(account_id='a',email_address='fixture-a@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
  async def generate(prompt,provider,model):
   calls.append('extract' if prompt.startswith('Extract action items') else 'draft')
   return await fake_generate(prompt,provider,model)
@@ -578,6 +580,7 @@ def test_concurrent_recovery_claim_has_one_model_approval_and_draft(tmp_path,mon
  from concurrent.futures import ThreadPoolExecutor
  from threading import Barrier
  svc,repo,approvals,client=make_service(tmp_path)
+ repo.save_account(account_id='a',email_address='fixture-a@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
  original=svc._draft_reply
  async def stop(*args,**kwargs):raise RuntimeError('fixture ready stop')
  svc._draft_reply=stop
@@ -612,6 +615,7 @@ def test_new_unresolved_claim_during_ingest_prevents_end_checkpoint(tmp_path,mon
 
 def test_saved_model_result_recovers_without_second_model_call(tmp_path,monkeypatch):
  svc,repo,approvals,client=make_service(tmp_path);calls=[];original_transition=repo.transition_draft_work
+ repo.save_account(account_id='a',email_address='fixture-a@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
  async def generate(prompt,provider,model):
   if not prompt.startswith('Extract action items'):calls.append('draft')
   return await fake_generate(prompt,provider,model)
@@ -631,6 +635,7 @@ def test_saved_model_result_recovers_without_second_model_call(tmp_path,monkeypa
 
 def test_draft_finalize_rejects_payload_substitution(tmp_path,monkeypatch):
  svc,repo,approvals,client=make_service(tmp_path);original=repo.finalize_draft_work
+ repo.save_account(account_id='a',email_address='fixture-a@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
  monkeypatch.setattr(repo,'finalize_draft_work',lambda *args:False)
  assert asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply'))) is False
  message=repo.list_messages()[0];work=repo.draft_work(message.id,'a')

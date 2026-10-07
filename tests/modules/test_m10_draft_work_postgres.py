@@ -15,6 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Barrier
 from app.modules.m10_email_assistant.sql_repository import SqlEmailRepository
 repo=SqlEmailRepository('a')
+repo.save_account(account_id='account',email_address='fixture@example.invalid',encrypted_refresh_token='fixture',history_id='100',watch_expiration=None)
 assert repo.save_message(message_id='m',account_id='account',gmail_id='g',thread_id='t',history_id=None,subject='fixture',sender='sender@example.invalid',recipients=[],snippet='',body_text='',received_at=None,labels=[],headers={},category='action_required',category_confidence=1,embedding=None,unsubscribe_url=None,draft_work={'actions':[]})
 assert not repo.transition_draft_work('m','other','ready','model_inflight',{})
 assert not SqlEmailRepository('b').transition_draft_work('m','account','ready','model_inflight',{})
