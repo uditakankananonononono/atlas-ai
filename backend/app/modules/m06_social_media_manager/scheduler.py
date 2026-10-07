@@ -40,8 +40,10 @@ STATUS_DENIED = "denied"
 STATUS_PUBLISHED = "published"
 STATUS_FAILED = "failed"
 STATUS_CANCELLED = "cancelled"
+STATUS_PUBLISHING = "publishing"
+STATUS_UNKNOWN = "outcome_unknown"
 
-TERMINAL_STATUSES = {STATUS_PUBLISHED, STATUS_FAILED, STATUS_DENIED, STATUS_CANCELLED}
+TERMINAL_STATUSES = {STATUS_PUBLISHED, STATUS_FAILED, STATUS_DENIED, STATUS_CANCELLED, STATUS_PUBLISHING, STATUS_UNKNOWN}
 
 #: Platforms whose official APIs reject posts without media.
 MEDIA_REQUIRED_PLATFORMS = {"instagram", "tiktok"}
@@ -104,6 +106,7 @@ class PublishRecord:
 class ScheduleRepository(Protocol):
     """Persistence boundary for schedule entries and publish receipts."""
 
+    def claim_publish(self, entry: ScheduleEntry) -> ScheduleEntry | None: ...
     def save_schedule(self, entry: ScheduleEntry) -> ScheduleEntry: ...
     def get_schedule(self, schedule_id: str) -> ScheduleEntry | None: ...
     def list_schedules(self, plan_id: str | None = None) -> list[ScheduleEntry]: ...
@@ -266,6 +269,9 @@ class Scheduler:
                 )
                 self._repository.save_schedule(entry)
                 continue
+            entry = self._repository.claim_publish(entry)
+            if entry is None:
+                continue
             try:
                 adapter = self._adapters.for_platform(entry.platform)
                 result = asyncio.run(
@@ -281,9 +287,14 @@ class Scheduler:
                         )
                     )
                 )
-            except AdapterError as error:
-                entry.status = STATUS_FAILED
+            except Exception as error:
+                entry.status = STATUS_UNKNOWN
                 entry.failure = str(error)
+                self._repository.save_schedule(entry)
+                continue
+            if not result.external_id:
+                entry.status = STATUS_UNKNOWN
+                entry.failure = 'adapter returned no positive external receipt; do not retry'
                 self._repository.save_schedule(entry)
                 continue
             published_at = self._clock()

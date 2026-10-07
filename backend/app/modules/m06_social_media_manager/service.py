@@ -26,6 +26,8 @@ work at import time. All dependencies are injected through the constructor.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
+from threading import RLock
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Awaitable, Callable, Protocol
@@ -195,6 +197,7 @@ class MemorySocialRepository:
         self.plans: dict[str, ContentPlan] = {}
         self.reports: dict[str, AnalysisReport] = {}
         self.schedules: dict[str, ScheduleEntry] = {}
+        self._schedule_lock = RLock()
         self.publish_records: list = []
         self.snapshots: dict[str, Any] = {}
         self.ab_tests: dict[str, ABTest] = {}
@@ -204,10 +207,29 @@ class MemorySocialRepository:
     def get_plan(self, plan_id: str) -> ContentPlan | None: return self.plans.get(plan_id)
     def save_report(self, report: AnalysisReport) -> AnalysisReport: self.reports[report.id]=report; return report
     def get_report(self, report_id: str) -> AnalysisReport | None: return self.reports.get(report_id)
-    def save_schedule(self, entry: ScheduleEntry) -> ScheduleEntry: self.schedules[entry.id]=entry; return entry
-    def get_schedule(self, schedule_id: str) -> ScheduleEntry | None: return self.schedules.get(schedule_id)
+    def claim_publish(self, entry: ScheduleEntry) -> ScheduleEntry | None:
+        with self._schedule_lock:
+            current = self.schedules.get(entry.id)
+            if current is None or current.status != 'approved' or current != entry:return None
+            claimed = deepcopy(current);claimed.status = 'publishing'
+            self.schedules[entry.id] = claimed
+            return deepcopy(claimed)
+    def save_schedule(self, entry: ScheduleEntry) -> ScheduleEntry:
+        with self._schedule_lock:
+            current = self.schedules.get(entry.id)
+            if current is not None and current.status in {'publishing','outcome_unknown','published'}:
+                if current.status != 'publishing' and current != entry:raise ValueError('final publish outcome cannot change without reconciliation')
+                if entry.status not in {'published','outcome_unknown'}:raise ValueError('immutable publish claim cannot be reset')
+                old = deepcopy(current);new = deepcopy(entry)
+                for key in ('status','failure','published_at','external_id','external_url','draft_only'):
+                    setattr(old,key,None);setattr(new,key,None)
+                if old != new:raise ValueError('immutable publish payload cannot change')
+            self.schedules[entry.id] = deepcopy(entry)
+            return entry
+    def get_schedule(self, schedule_id: str) -> ScheduleEntry | None:
+        with self._schedule_lock:return deepcopy(self.schedules.get(schedule_id))
     def list_schedules(self, plan_id: str | None = None) -> list[ScheduleEntry]:
-        return [e for e in self.schedules.values() if plan_id is None or e.plan_id == plan_id]
+        with self._schedule_lock:return deepcopy([e for e in self.schedules.values() if plan_id is None or e.plan_id == plan_id])
     def save_publish_record(self, record: Any) -> Any: self.publish_records.append(record); return record
     def list_publish_records(self, schedule_id: str | None = None) -> list:
         return [r for r in self.publish_records if schedule_id is None or r.schedule_id == schedule_id]
