@@ -46,6 +46,10 @@ class HTNPlanner:
 
     def _validated_method(self, method: HTNMethod) -> HTNMethod:
         method = method.model_copy(deep=True)
+        if method.successes_recorded > method.outcomes_recorded:
+            raise PlanError("reported successes exceed reported outcomes")
+        if method.outcomes_recorded:
+            method.success_rate = method.successes_recorded / method.outcomes_recorded
         validated = self._validate([node.model_dump(mode="json") for node in method.subtasks])
         for node, checked in zip(method.subtasks, validated):
             node.depends_on = checked.depends_on
@@ -250,8 +254,8 @@ class HTNPlanner:
         method = self._methods.get(method_name)
         if method is None:
             return
-        total = method.times_used
-        method.success_rate = (
-            (method.success_rate * (total - 1) + (1.0 if succeeded else 0.0)) / total
-            if total > 0 else (1.0 if succeeded else 0.0)
-        )
+        if type(succeeded) is not bool:
+            raise ValueError("method outcome must be boolean")
+        method.outcomes_recorded += 1
+        method.successes_recorded += int(succeeded)
+        method.success_rate = method.successes_recorded / method.outcomes_recorded

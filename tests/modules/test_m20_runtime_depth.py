@@ -1949,3 +1949,64 @@ def test_mcts_selected_prefix_failure_blocks_dependent_but_runs_sibling():
     reward = search._rollout([parent,child,sibling], set(), 2, prefix=['p','c'])
     assert reward == 0
     assert search.random.chosen == ['s']
+
+
+def test_method_outcomes_count_observations_not_unfinished_plans_and_survive_reload():
+    runtime, repo = make_runtime()
+    planner = runtime.planner
+    planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='read')]))
+    reviewed = planner.method_review_hash(planner.methods['fixture'])
+    for _ in range(3): planner.decompose('fixture')
+    planner.record_outcome('fixture', True)
+    planner.record_outcome('fixture', False)
+    current = planner.methods['fixture']
+    assert current.success_rate == .5
+    assert current.outcomes_recorded == 2 and current.successes_recorded == 1
+    assert current.times_used == 3
+    assert planner.method_review_hash(current) == reviewed
+    from app.modules.m20_general_cognitive_worker.persistence import DurableHTNPlanner
+    restarted = DurableHTNPlanner.load(repo, require_review=True)
+    assert restarted.methods['fixture'].model_dump() == current.model_dump()
+    assert restarted.method_status('fixture') == 'active'
+    restarted.record_outcome('fixture', True)
+    assert restarted.methods['fixture'].success_rate == pytest.approx(2/3)
+
+
+def test_method_outcome_requires_boolean_and_does_not_use_legacy_unbacked_rate():
+    from app.modules.m20_general_cognitive_worker.htn_planner import HTNPlanner
+    planner = HTNPlanner()
+    planner.register_method(HTNMethod(name='fixture',goal_pattern='fixture',times_used=100,success_rate=.99,subtasks=[PlanNode(title='read')]))
+    with pytest.raises(ValueError): planner.record_outcome('fixture', 'false')
+    planner.record_outcome('fixture', False)
+    assert planner.methods['fixture'].success_rate == 0
+    assert planner.methods['fixture'].outcomes_recorded == 1
+
+
+def test_method_reported_counts_reopen_file_sql_and_keep_proposed_review_gate(tmp_path):
+    from app.modules.m20_general_cognitive_worker.persistence import DurableHTNPlanner
+    from app.modules.m20_general_cognitive_worker.schemas import MethodSource
+    path = tmp_path / 'methods.sqlite'
+    engine = create_engine('sqlite:///' + str(path))
+    repo = GCWRepository(engine); repo.create_schema()
+    planner = DurableHTNPlanner(repo, require_review=True)
+    planner.register_method(HTNMethod(name='proposed',goal_pattern='fixture',source=MethodSource.LEARNED,subtasks=[PlanNode(title='read')]))
+    reviewed = planner.method_review_hash(planner.methods['proposed'])
+    planner.record_outcome('proposed', True)
+    engine.dispose()
+    engine2 = create_engine('sqlite:///' + str(path))
+    loaded = DurableHTNPlanner.load(GCWRepository(engine2), require_review=True)
+    assert loaded.methods['proposed'].success_rate == 1
+    assert loaded.methods['proposed'].outcomes_recorded == 1
+    assert loaded.method_status('proposed') == 'proposed'
+    assert loaded.method_review_hash(loaded.methods['proposed']) == reviewed
+    assert loaded._match_method('fixture') is None
+    engine2.dispose()
+
+
+def test_method_inconsistent_reported_counts_reject_and_ratio_is_derived():
+    from app.modules.m20_general_cognitive_worker.htn_planner import HTNPlanner, PlanError
+    planner = HTNPlanner()
+    with pytest.raises(PlanError):
+        planner.register_method(HTNMethod(name='bad',goal_pattern='fixture',outcomes_recorded=1,successes_recorded=2,subtasks=[PlanNode(title='read')]))
+    planner.register_method(HTNMethod(name='good',goal_pattern='fixture',outcomes_recorded=2,successes_recorded=1,success_rate=.99,subtasks=[PlanNode(title='read')]))
+    assert planner.methods['good'].success_rate == .5

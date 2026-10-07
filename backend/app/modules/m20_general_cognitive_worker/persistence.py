@@ -209,11 +209,28 @@ class DurableHTNPlanner(HTNPlanner):
             return None
         return match
 
+    def decompose(self, goal: str, *, context: str = ""):
+        # Persist usage only for a matched method. A newly proposed method is
+        # already saved by register_method and is not activated by this path.
+        matched = self._match_method(goal, context=context)
+        nodes = super().decompose(goal, context=context)
+        if matched is not None:
+            self.repo.save_method(matched, status=self.method_status(matched.name))
+        return nodes
+
+    def record_outcome(self, method_name: str, succeeded: bool) -> None:
+        super().record_outcome(method_name, succeeded)
+        method = self._methods.get(method_name)
+        if method is not None:
+            self.repo.save_method(method, status=self.method_status(method_name))
+
     @staticmethod
     def method_review_hash(method):
         payload=method.model_dump(mode="json")
         payload.pop("times_used", None)
         payload.pop("success_rate", None)
+        payload.pop("outcomes_recorded", None)
+        payload.pop("successes_recorded", None)
         return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
 
     def activate_method(self, name: str, *, expected_hash: str) -> bool:
