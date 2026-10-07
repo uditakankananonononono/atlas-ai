@@ -49,6 +49,7 @@ class HTNPlanner:
         validated = self._validate([node.model_dump(mode="json") for node in method.subtasks])
         for node, checked in zip(method.subtasks, validated):
             node.depends_on = checked.depends_on
+            node.arguments = checked.arguments
         return method
 
     def _match_method(self, goal: str, *, context: str = "") -> HTNMethod | None:
@@ -174,6 +175,26 @@ class HTNPlanner:
                     raise PlanError(f"step {node.title!r} depends on unknown step {dep!r}")
                 resolved.append(dep_id)
             node.depends_on = resolved
+        def resolve_bindings(value, node, depth=0):
+            if depth > 32: raise PlanError('argument nesting exceeds32')
+            if isinstance(value, dict):
+                if '$step' in value:
+                    if set(value) != {'$step', 'path'} or not isinstance(value['$step'], str) or not isinstance(value['path'], list):
+                        raise PlanError('binding requires exact $step/path object')
+                    reference = value['$step']
+                    if reference not in by_id and reference in duplicate_titles:
+                        raise PlanError('ambiguous output reference title; use step id')
+                    reference_id = reference if reference in by_id else by_title.get(reference)
+                    if reference_id not in node.depends_on:
+                        raise PlanError('output reference must identify direct dependency')
+                    if len(value['path']) > 32 or any(not (isinstance(part, str) or type(part) is int and part >= 0) for part in value['path']):
+                        raise PlanError('binding path requires up to32 string keys/nonnegative integer indices')
+                    return {'$step': reference_id, 'path': list(value['path'])}
+                return {key: resolve_bindings(item, node, depth+1) for key, item in value.items()}
+            if isinstance(value, list): return [resolve_bindings(item, node, depth+1) for item in value]
+            return value
+        for node in nodes:
+            node.arguments = resolve_bindings(node.arguments, node)
         self._check_acyclic(nodes)
         return nodes
 

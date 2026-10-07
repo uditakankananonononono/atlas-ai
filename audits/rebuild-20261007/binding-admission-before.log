@@ -1,0 +1,28 @@
+........................................................................ [ 56%]
+.......................................................F                 [100%]
+=================================== FAILURES ===================================
+_ test_supplied_plan_validates_and_resolves_output_reference_titles_before_execution _
+
+    def test_supplied_plan_validates_and_resolves_output_reference_titles_before_execution():
+        runtime,repo=make_runtime()
+        task=runtime.submit_goal('fixture binding review',run_immediately=False)
+        prepared=runtime.prepare_supplied_plan(task.id,steps=[
+            {'id':'a','title':'select records','tool':'csv_filter','arguments':{'csv_text':'amount\n42\n'}},
+            {'title':'sum','tool':'csv_summary','depends_on':['select records'],
+             'arguments':{'csv_text':{'$step':'select records','path':['csv_text']},'value_column':'amount'}}])
+>       assert prepared.plan[1].arguments['csv_text']['$step']=='a'
+E       AssertionError: assert 'select records' == 'a'
+E         
+E         - a
+E         + select records
+
+tests/modules/test_m20_runtime_depth.py:1824: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_supplied_plan_validates_and_resolves_output_reference_titles_before_execution
+1 failed, 127 passed, 1 warning in 7.35s
