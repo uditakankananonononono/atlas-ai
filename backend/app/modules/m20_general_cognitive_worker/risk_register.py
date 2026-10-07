@@ -62,6 +62,24 @@ class DurableRiskRegister:
             session.commit()
         return {'id': identifier, 'revision': next_revision, 'report': copy.deepcopy(report)}
 
+    def patch_risk(self, identifier, risk_id, *, expected_revision, changes):
+        fields = {'cause', 'severity', 'occurrence', 'detection', 'owner', 'mitigation', 'test', 'evidence'}
+        if type(expected_revision) is not int or expected_revision < 1:
+            raise ValueError('expected_revision must be a positive exact integer')
+        if not isinstance(changes, dict) or not changes or not set(changes) <= fields:
+            raise ValueError('changes must contain allowed risk fields; id cannot change')
+        current = self.get(identifier)
+        if current is None: raise KeyError(identifier)
+        if current['revision'] != expected_revision:
+            raise ValueError('revision conflict; reload current register')
+        risks = current['report']['risks']
+        target = next((risk for risk in risks if risk['id'] == risk_id), None)
+        if target is None: raise KeyError(risk_id)
+        target.update(copy.deepcopy(changes))
+        # revise performs validation and atomic CAS. A concurrent write between
+        # this read and commit conflicts instead of overwriting unrelated risks.
+        return self.revise(identifier, expected_revision=expected_revision, risks=risks)
+
     def history(self, identifier):
         with self.repo._session() as session:
             rows = session.scalars(sa.select(RiskRevisionRow).where(

@@ -268,3 +268,20 @@ def compare_risk_register(identifier: str, from_revision: int, to_revision: int,
         raise HTTPException(404, 'register revision not found')
     except ValueError as exc:
         raise HTTPException(422, str(exc))
+
+
+class RiskControlPatchRequest(BaseModel):
+    expected_revision: int = Field(ge=1, strict=True)
+    changes: dict[str, Any]
+
+
+@router.patch('/risk-registers/{identifier}/risks/{risk_id}')
+def patch_risk_control(identifier: str, risk_id: str, request: RiskControlPatchRequest,
+                       runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        return runtime.risk_registers.patch_risk(identifier, risk_id,
+            expected_revision=request.expected_revision, changes=request.changes)
+    except KeyError:
+        raise HTTPException(404, 'register or risk not found')
+    except ValueError as exc:
+        raise HTTPException(409 if str(exc).startswith('revision conflict') else 422, str(exc))
