@@ -82,10 +82,15 @@ class IdentityInterviewRepository:
         # under a question it was not written for. Bounded to three attempts,
         # then a domain error. A raw IntegrityError never escapes.
         # Deterministic handler-path contract only; no real-race closure is
-        # claimed. An identical-text resubmission after the first answer
-        # committed is rejected as stale like any other late answer - it is
-        # NOT deduplicated and NOT re-filed (client idempotency semantics
-        # are not invented here).
+        # claimed. Binding scope: expected_index is captured on THIS call's
+        # first attempt, so stale rejection covers only advancement during
+        # this call's own retry window (tested: a competitor committing
+        # between attempts). A separate LATE call - e.g. an identical-text
+        # resubmission after the first answer committed - captures the
+        # already-advanced index and files its response under the current
+        # question; cross-call late answers are NOT rejected or deduplicated
+        # (client idempotency/expected-question semantics are not invented
+        # here).
         from sqlalchemy.exc import IntegrityError as _IE
         expected_index: int | None = None
         last = None
