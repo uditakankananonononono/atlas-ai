@@ -618,7 +618,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "social_reading consumes authorized/supplied social artifacts with provenance and knowledge/idea outputs, not proof of continuous brand/hashtag streams. X filtered-stream enrollment, Instagram hashtag scraping and mention/question/complaint sentiment-to-approved-reply workflow not established in scoped reader/routes/adapters read. Restrictive API access is not authority to evade platform controls. No listening enrollment, scraping or response publication run. Status stays unverified."
+      "notes": "SocialReader includes paired-PC LinkedIn connections/feed navigation and Instagram daemon transport, with SQL people/work/run knowledge and blocked/error recording; these are code presence, not device/browser acceptance or continuous brand streams. X filtered-stream enrollment, Instagram hashtag scraping and mention/question/complaint sentiment-to-approved-reply workflow not established in scoped reader/routes/adapters read. Restrictive API access is not authority to evade platform controls. No listening enrollment, scraping or response publication run. Status stays unverified."
     },
     {
       "row": 56,

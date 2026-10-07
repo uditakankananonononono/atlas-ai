@@ -109,7 +109,7 @@ def draft_due_followups() -> dict[str, int]:
     drafted = submitted = 0
     for tenant_id in tenants:
         service = CampaignService(
-            SqlCampaignRepository(tenant_id), SqlContactRepository(tenant_id), approvals
+            SqlCampaignRepository(tenant_id), SqlContactRepository(tenant_id), approvals, tenant_id=tenant_id
         )
         for message in service.due_follow_ups():
             followup = asyncio.run(service.draft_follow_up(message.id, generate))
