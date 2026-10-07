@@ -279,6 +279,28 @@ class Service:
             return await self._draft_reply(message_id, raw, classification, actions, account_id=account_id) is not None
         return False
 
+    def reconcile_approval_claim(self,message_id:str,account_id:str)->bool:
+        """Read-only durable M00 receipt reconciliation, never approval refile.
+
+        Only a unique exact source record can close approval_inflight. Model
+        unknowns cannot be solved by the approval store and stay held.
+        """
+        row=self.repository.get_message(message_id)
+        work=self.repository.draft_work(message_id,account_id)
+        if row is None or row.account_id!=account_id or work is None or work['phase']!='approval_inflight':return False
+        lookup=getattr(self.approval_sink,'list',None)
+        if lookup is None:return False
+        data=work['data']
+        expected={'tenant_id':self.tenant_id,'account_id':account_id,'draft_id':data['draft_id'],
+            'message_id':message_id,'gmail_id':row.gmail_id,'thread_id':row.thread_id,
+            'to':data['to'],'subject':data['subject'],'body':data['body']}
+        matches=[item for item in lookup(user_id=self.tenant_id)
+            if item.module_id==10 and item.action_type=='send_email_reply'
+            and all(key in item.payload and item.payload[key]==value for key,value in expected.items())]
+        if len(matches)!=1:return False
+        data={**data,'approval_id':matches[0].id}
+        return self.repository.transition_draft_work(message_id,account_id,'approval_inflight','approval_done',data)
+
     async def recover_draft_pipeline(self,account_id:str)->int:
         """Resume durable safe phases only. In-flight model/approval stays held.
 

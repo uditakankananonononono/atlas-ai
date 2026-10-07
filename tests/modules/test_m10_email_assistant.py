@@ -678,3 +678,28 @@ def test_saved_approval_requires_source_matching_receipt_no_refile(tmp_path,monk
  assert repo.list_drafts()==[] and len(approvals.items)==1
  assert repo.draft_work(message.id,'a')['phase']=='approval_done'
  asyncio.run(client.aclose())
+
+
+def test_approval_inflight_reconcile_requires_unique_exact_source_and_never_refiles(tmp_path,monkeypatch):
+ svc,repo,approvals,client=make_service(tmp_path)
+ repo.save_account(account_id='a',email_address='fixture@example.invalid',encrypted_refresh_token=svc.cipher.encrypt('rt'),history_id='100',watch_expiration=None)
+ original_put=approvals.put
+ def fail_after_put(*args,**kwargs):original_put(*args,**kwargs);raise RuntimeError('fixture returned receipt lost')
+ monkeypatch.setattr(approvals,'put',fail_after_put)
+ with pytest.raises(RuntimeError):asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply')))
+ row=repo.list_messages()[0];item=approvals.items[0][0]
+ assert repo.draft_work(row.id,'a')['phase']=='approval_inflight'
+ monkeypatch.setattr(approvals,'list',lambda **kwargs:[],raising=False)
+ assert not svc.reconcile_approval_claim(row.id,'a')
+ wrong=item.model_copy(update={'payload':{**item.payload,'body':'wrong'}})
+ monkeypatch.setattr(approvals,'list',lambda **kwargs:[wrong],raising=False)
+ assert not svc.reconcile_approval_claim(row.id,'a')
+ monkeypatch.setattr(approvals,'list',lambda **kwargs:[item,item.model_copy(update={'id':'duplicate'})],raising=False)
+ assert not svc.reconcile_approval_claim(row.id,'a')
+ assert repo.draft_work(row.id,'a')['phase']=='approval_inflight' and len(approvals.items)==1
+ monkeypatch.setattr(approvals,'list',lambda **kwargs:[item],raising=False)
+ assert svc.reconcile_approval_claim(row.id,'a')
+ assert not svc.reconcile_approval_claim(row.id,'a')
+ assert asyncio.run(svc.recover_draft_pipeline('a'))==1
+ assert len(approvals.items)==1 and len(repo.list_drafts())==1
+ asyncio.run(client.aclose())
