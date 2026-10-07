@@ -94,3 +94,28 @@ def test_mounted_cancelled_node_is_controlled_failure_without_dependent():
  app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
  response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: cancel}, {id: b, task: dependent, depends_on: [a]}]'})
  assert response.status_code==422 and response.json()['detail']['state']=='cancelled' and calls==['cancel']
+
+def test_mounted_multiple_failures_preserve_unknown_and_review_evidence():
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.core.providers import ProviderOutcomeUnknown
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ from app.modules.m12_ai_research_lab.executor import ConfidenceUnavailable
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ async def runner(task,config,context):
+  calls.append(task)
+  if task=='failed':raise RuntimeError('fixture failure')
+  if task=='unknown':raise ProviderOutcomeUnknown('fixture dispatched')
+  if task=='review':raise ConfidenceUnavailable(ModelResult('candidate','fixture',usage={'input_tokens':12}))
+  return {'text':'completed'}
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ raw='nodes: [{id: a, task: failed}, {id: b, task: unknown}, {id: c, task: review}, {id: d, task: sibling}, {id: e, task: dependent, depends_on: [a,b,c,d]}]'
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw})
+ assert response.status_code==409 and response.json()['detail']['state']=='unknown'
+ detail=response.json()['detail'];assert detail['node_id']=='b' and detail['reason']=='fixture dispatched'
+ assert detail['failed_nodes']==['a','b','c'] and detail['completed']=={'d':{'text':'completed'}}
+ assert [f['state'] for f in detail['failures']]==['failed','unknown','review_required']
+ assert detail['failures'][2]['result']['text']=='candidate' and detail['failures'][2]['result']['usage']=={'input_tokens':12}
+ assert calls==['failed','unknown','review','sibling']
