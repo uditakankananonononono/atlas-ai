@@ -18,14 +18,19 @@ def temporal(p):
         a=row.get('from');b=row.get('to')
         if a not in index or b not in index:raise ValueError('known temporal event ids required')
         return index[a],index[b]
-    for row in constraints:
+    edges=[]
+    for constraint_index, row in enumerate(constraints):
         a,b=pair(row);low=row.get('minimum_gap');high=row.get('maximum_gap')
         if low is None and high is None:raise ValueError('at least one finite gap bound required')
         for v in (low,high):
             if v is not None and (type(v) not in (int,float) or not math.isfinite(v)):raise ValueError('finite gap bounds required')
         if low is not None and high is not None and low>high:raise ValueError('minimum_gap exceeds maximum_gap')
-        if high is not None:d[a][b]=min(d[a][b],float(high))
-        if low is not None:d[b][a]=min(d[b][a],-float(low))
+        if high is not None:
+            d[a][b]=min(d[a][b],float(high))
+            edges.append((a,b,float(high),constraint_index,'maximum_gap'))
+        if low is not None:
+            d[b][a]=min(d[b][a],-float(low))
+            edges.append((b,a,-float(low),constraint_index,'minimum_gap'))
     for k in range(n):
         for i in range(n):
             if not math.isfinite(d[i][k]):continue
@@ -35,7 +40,35 @@ def temporal(p):
                 if not math.isfinite(candidate):raise ValueError('time-bound arithmetic overflow')
                 if candidate<d[i][j]:d[i][j]=candidate
     if any(d[i][i]<-1e-9 for i in range(n)):
-        return {'status':'inconsistent','time_unit':unit,'queries':[],'witness_relative_times':None,'boundary':'Negative constraint cycle: no assignment satisfies all supplied time-gap bounds.'}
+        # Bellman-Ford predecessor edges recover a concrete negative cycle.
+        distances=[0.]*n; predecessor=[None]*n; updated=None
+        for _ in range(n):
+            updated=None
+            for edge in edges:
+                a,b,weight,_,_=edge
+                candidate=distances[a]+weight
+                if not math.isfinite(candidate):raise ValueError('conflict witness arithmetic overflow')
+                if candidate<distances[b]-1e-12:
+                    distances[b]=candidate;predecessor[b]=edge;updated=b
+        if updated is None:raise ValueError('negative cycle witness unavailable at numerical tolerance')
+        vertex=updated
+        for _ in range(n):
+            edge=predecessor[vertex]
+            if edge is None:raise ValueError('incomplete negative cycle witness')
+            vertex=edge[0]
+        start=vertex;cycle=[]
+        while True:
+            edge=predecessor[vertex]
+            if edge is None or len(cycle)>n:raise ValueError('invalid negative cycle witness')
+            cycle.append(edge);vertex=edge[0]
+            if vertex==start:break
+        cycle.reverse();total=math.fsum(edge[2] for edge in cycle)
+        if not math.isfinite(total) or total>=-1e-9:raise ValueError('conflict cycle failed validation')
+        witness={'edges':[{'from':events[a],'to':events[b],'upper_bound':weight,
+                          'constraint_index':index,'bound':bound} for a,b,weight,index,bound in cycle],
+                 'total_upper_bound':total,'minimal_conflict_claimed':False}
+        return {'status':'inconsistent','time_unit':unit,'queries':[],'witness_relative_times':None,
+                'conflict_witness':witness,'boundary':'Negative constraint cycle: no assignment satisfies all supplied time-gap bounds. Witness references supplied bounds, not independent temporal evidence; not a minimal conflict set.'}
     queries=p.get('time_queries',[])
     if not isinstance(queries,list) or len(queries)>1000:raise ValueError('bounded time_queries list required')
     answers=[]
@@ -55,5 +88,5 @@ def temporal(p):
         if row.get('maximum_gap') is not None:violations.append(max(0,gap-row['maximum_gap']))
     residual=max(violations,default=0.)
     if residual>1e-8:raise ValueError('temporal witness failed numerical validation')
-    return {'status':'consistent','time_unit':unit,'queries':answers,'witness_relative_times':dict(zip(events,times)),'constraint_violation':residual,
+    return {'status':'consistent','conflict_witness':None,'time_unit':unit,'queries':answers,'witness_relative_times':dict(zip(events,times)),'constraint_violation':residual,
             'boundary':'Actual finite relative-time difference-constraint closure. Null bounds mean unbounded, not fabricated timestamps. Witness is one feasible assignment; absolute anchor unspecified. Tolerance1e-9. No calendar scheduling, timezone conversion or real-world temporal evidence verification.'}

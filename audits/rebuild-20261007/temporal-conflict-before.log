@@ -1,0 +1,31 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____ test_temporal_conflict_reports_constraint_cycle_not_all_constraints ______
+
+    def test_temporal_conflict_reports_constraint_cycle_not_all_constraints():
+        result = temporal({'temporal_events': ['start','review','finish','other'], 'time_unit':'hours',
+            'time_constraints': [
+                {'from':'start','to':'review','minimum_gap':3},
+                {'from':'review','to':'finish','minimum_gap':4},
+                {'from':'start','to':'finish','maximum_gap':5},
+                {'from':'start','to':'other','minimum_gap':0}], 'time_queries':[]})
+        assert result['status']=='inconsistent'
+>       witness = result['conflict_witness']
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'conflict_witness'
+
+tests/modules/test_m20_temporal_conflict_witness.py:12: KeyError
+___________ test_consistent_temporal_network_has_no_conflict_witness ___________
+
+    def test_consistent_temporal_network_has_no_conflict_witness():
+        result=temporal({'temporal_events':['a','b'],'time_unit':'hours',
+            'time_constraints':[{'from':'a','to':'b','minimum_gap':1,'maximum_gap':2}]})
+>       assert result['conflict_witness'] is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'conflict_witness'
+
+tests/modules/test_m20_temporal_conflict_witness.py:23: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_temporal_conflict_witness.py::test_temporal_conflict_reports_constraint_cycle_not_all_constraints
+FAILED tests/modules/test_m20_temporal_conflict_witness.py::test_consistent_temporal_network_has_no_conflict_witness
+2 failed in 1.40s
