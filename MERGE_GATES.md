@@ -42,7 +42,7 @@ mapping alone does not acquire a lock; each mutation wrapper does.
 
 ## Peer M13 failure and collection discrepancy
 
-The original peer M13 combined-run failure remains unexplained. The peer reported 159 passed and 1 failed; the independent reproduction reported 159 passed, 1 skipped and 0 failed. Collection parity remains unresolved: the peer reported 160 tests, while independent collection found 161. Do not treat the absence of a reproduced failure as clearance.
+The original peer M13 combined-run failure remains unexplained. The peer reported 159 passed and 1 failed; the independent reproduction reported 159 passed, 1 skipped and 0 failed. Correction: the recovered independent original log and current collected list both contain 160 tests. The earlier 161 figure was a reporting arithmetic error, not evidence of an extra test. Exact cross-environment node-list parity remains to be compared. Do not treat the absence of a reproduced failure as clearance.
 
 ## Scoped assessed surfaces
 
