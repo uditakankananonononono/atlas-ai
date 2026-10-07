@@ -228,3 +228,19 @@ def test_direct_route_task_type_must_be_declared_enum(task):
  req=RouteRequest(task,100,0,100,'fixture')
  with pytest.raises(NoEligibleModel,match='TaskType'):asyncio.run(ResearchExecutor(ModelRouter(models()),Provider()).execute(req,'fixture'))
  assert not calls
+
+@pytest.mark.parametrize('tenant',['',' ',None,True,1])
+def test_direct_executor_requires_nonblank_tenant_before_generation(tenant):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ with pytest.raises(ValueError,match='tenant'):asyncio.run(ResearchExecutor(ModelRouter(models()),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,tenant),'fixture'))
+ assert not calls
+
+@pytest.mark.parametrize('prompt',['',' ',None,{},True])
+def test_direct_executor_requires_nonblank_text_prompt_before_generation(prompt):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ with pytest.raises(ValueError,match='prompt'):asyncio.run(ResearchExecutor(ModelRouter(models()),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),prompt))
+ assert not calls
