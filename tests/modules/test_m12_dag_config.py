@@ -135,3 +135,23 @@ def test_shipped_labelled_task_with_explicit_type_keeps_intent():
  wf=Workflow.from_yaml('nodes: [{id: a, task: custom_label, config: {task_type: code}}]')
  result=asyncio.run(build_dag_engine(Service()).run(wf,{'tenant_id':'fixture'}))
  assert len(calls)==1 and calls[0].task_type.value=='code' and result['a']['text']=='fixture'
+
+@pytest.mark.parametrize('kind',['nan','cycle','object'])
+def test_mounted_shipped_invalid_parent_never_reaches_descendant_model(kind):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ calls=[]
+ metadata={}
+ metadata['unsafe']=float('nan') if kind=='nan' else metadata if kind=='cycle' else object()
+ class Service:
+  async def execute(self,req,prompt,context):calls.append(prompt);return ModelResult('retained parent','fixture',.9,usage={'input_tokens':12},metadata=metadata)
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:build_dag_engine(Service())
+ raw='nodes: [{id: a, task: research, config: {prompt: upstream}}, {id: b, task: research, depends_on: [a], config: {prompt: downstream}}]'
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw})
+ assert response.status_code==422,response.text
+ detail=response.json()['detail'];assert detail['state']=='failed' and detail['node_id']=='b' and detail['retry_allowed'] is False
+ assert 'parent output is not JSON-safe source data' in detail['reason']
+ retained=detail['completed']['a'];assert retained['text']=='retained parent' and retained['usage']=={'input_tokens':12}
+ assert retained['metadata']=={'unsafe':None} and detail['invalid_json_paths'] and calls==['upstream']
