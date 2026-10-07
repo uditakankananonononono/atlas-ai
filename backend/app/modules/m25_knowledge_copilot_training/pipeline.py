@@ -123,6 +123,17 @@ class LocalKnowledgePipeline:
             for i,entry in enumerate(dv):
                 if entry['number']!=mem_versions[i].number or entry['hash']!=mem_versions[i].content_hash:
                     raise KnowledgeError('on-disk manifest diverges from loaded version state; refusing to overwrite prior state')
+            # Manifest-vs-bytes: every version the on-disk manifest records
+            # must still have source.bin bytes hashing to the recorded
+            # content hash. Establishes byte-equivalence of manifest-recorded
+            # versions at register time ONLY - segments.json is not verified
+            # and untracked files or directories are neither collected nor
+            # claimed; this is not a whole-persistence guarantee. Cost is
+            # O(recorded versions) bounded-content hashing per register.
+            for entry in dv:
+                on_disk=self._read_source_bytes(source.source_id,entry['number'],'refusing to overwrite prior state')
+                if hashlib.sha256(on_disk).hexdigest()!=entry['hash']:
+                    raise KnowledgeError(f"on-disk source bytes for version {entry['number']} diverge from the recorded hash; refusing to overwrite prior state")
             # Registration equivalence guards overwrite only; it is not
             # consent authority and treats no metadata field as verified.
             expected=source.model_dump(mode='json')
@@ -157,9 +168,7 @@ class LocalKnowledgePipeline:
             # equivalence at serve time; older versions and segments.json are
             # not re-validated here - whole-store byte integrity stays carried.
             last=prior.versions[-1]
-            blob=self._contained(request.source.source_id,f'v{last.number}')/'source.bin'
-            try: on_disk=blob.read_bytes()
-            except OSError as exc: raise KnowledgeError('dedup validation failed: on-disk source bytes unreadable; refusing to serve unverified content') from exc
+            on_disk=self._read_source_bytes(request.source.source_id,last.number,'dedup validation failed')
             if hashlib.sha256(on_disk).hexdigest()!=last.content_hash:
                 raise KnowledgeError('dedup validation failed: on-disk source bytes diverge from the recorded hash; refusing to serve unverified content')
             return last
@@ -280,6 +289,18 @@ class LocalKnowledgePipeline:
         # keeps the record and the result says so - never deleted=False with
         # the tracking silently gone.
         return {'source_id':source_id,'deleted':verified,'tracking_retained':not verified,'verified_at':self.clock().isoformat()}
+    def _read_source_bytes(self,source_id:str,number:int,refusal:str)->bytes:
+        # The filename is part of the containment check (symlinked source.bin
+        # rejected), and size is guarded BEFORE reading: valid ingests are
+        # bounded at MAX_INGEST_CONTENT, so a larger on-disk file is
+        # divergence, never something to read.
+        blob=self._contained(source_id,f'v{number}','source.bin')
+        try:
+            if blob.stat().st_size>MAX_INGEST_CONTENT:
+                raise KnowledgeError(f'{refusal}: on-disk source bytes for version {number} exceed the ingest bound')
+            return blob.read_bytes()
+        except KnowledgeError: raise
+        except OSError as exc: raise KnowledgeError(f'{refusal}: on-disk source bytes for version {number} unreadable') from exc
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
         import os as _os, uuid as _uuid

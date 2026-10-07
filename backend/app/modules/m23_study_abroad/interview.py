@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from sqlalchemy import JSON, DateTime, Integer, String, Text, select
+from sqlalchemy import JSON, DateTime, Integer, String, Text, UniqueConstraint, select
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
 from app.core.database import Base, SessionLocal, engine
@@ -30,6 +30,11 @@ class IdentityInterviewRow(Base):
 
 class IdentityTurnRow(Base):
     __tablename__ = "m23_identity_interview_turns"
+    # One turn per (session, ordinal): concurrent answers can no longer both
+    # land on the same ordinal. NOTE: create_all does not ALTER pre-existing
+    # tables - deployments with an existing turns table need a migration for
+    # the constraint to exist.
+    __table_args__ = (UniqueConstraint("session_id", "ordinal"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     session_id: Mapped[str] = mapped_column(String(36), index=True)
     ordinal: Mapped[int] = mapped_column(Integer)
@@ -69,42 +74,59 @@ class IdentityInterviewRepository:
             raise ValueError("student response must contain at least 10 characters")
         if modality not in {"chat", "voice"}:
             raise ValueError("modality must be chat or voice")
-        with self.sessions.begin() as db:
-            row = db.scalar(select(IdentityInterviewRow).where(
-                IdentityInterviewRow.id == session_id,
-                IdentityInterviewRow.tenant_id == self.tenant_id))
-            if row is None:
-                raise LookupError(session_id)
-            if row.status != "active":
-                raise ValueError("interview is already complete")
-            question = QUESTIONS[row.question_index]
-            db.add(IdentityTurnRow(session_id=session_id, ordinal=row.question_index + 1,
-                                   modality=modality, question=question,
-                                   student_response=response,
-                                   evidence_tags=evidence_tags or [],
-                                   created_at=datetime.now(timezone.utc)))
-            row.question_index += 1
-            row.status = "complete" if row.question_index == len(QUESTIONS) else "active"
-            row.updated_at = datetime.now(timezone.utc)
-            db.flush()
-            # Brand refresh runs INSIDE the turn transaction: a refresh
-            # failure rolls the turn back instead of leaving the answer
-            # persisted with an advanced index and a stale brand.
-            turns = list(db.scalars(select(IdentityTurnRow).where(
-                IdentityTurnRow.session_id == session_id).order_by(IdentityTurnRow.ordinal)))
-            evidence = [{"session_id": session_id, "turn": t.ordinal,
-                         "modality": t.modality, "student_response": t.student_response}
-                        for t in turns]
-            values = sorted({tag for t in turns for tag in (t.evidence_tags or [])})
-            patterns = [t.student_response for t in turns[:3]]
-            strengths = [tag.removeprefix("strength:") for tag in values if tag.startswith("strength:")]
-            StoryRepository(self.tenant_id, self.sessions).evolve_brand(
-                values, patterns, strengths, evidence, _db=db)
-            # Returned view built inside the committing transaction: what the
-            # caller gets is exactly what this call committed, never a
-            # post-commit re-read that could observe interleaved writes.
-            view = self._view(row, turns)
-        return view
+        # Serialization contract: a (session_id, ordinal) unique collision -
+        # two concurrent answers reading the same question_index - retries
+        # with a re-read row in a fresh transaction, bounded to three
+        # attempts, then fails with a domain error. A raw IntegrityError
+        # never escapes. Deterministic handler-path contract only; no
+        # real-race closure is claimed. An identical-text resubmission after
+        # the first answer committed is treated as the answer to the NEXT
+        # question - it is NOT deduplicated (that would need client
+        # idempotency semantics, which are not invented here).
+        from sqlalchemy.exc import IntegrityError as _IE
+        last = None
+        for _ in range(3):
+            try:
+                with self.sessions.begin() as db:
+                    row = db.scalar(select(IdentityInterviewRow).where(
+                        IdentityInterviewRow.id == session_id,
+                        IdentityInterviewRow.tenant_id == self.tenant_id))
+                    if row is None:
+                        raise LookupError(session_id)
+                    if row.status != "active":
+                        raise ValueError("interview is already complete")
+                    question = QUESTIONS[row.question_index]
+                    db.add(IdentityTurnRow(session_id=session_id, ordinal=row.question_index + 1,
+                                           modality=modality, question=question,
+                                           student_response=response,
+                                           evidence_tags=evidence_tags or [],
+                                           created_at=datetime.now(timezone.utc)))
+                    row.question_index += 1
+                    row.status = "complete" if row.question_index == len(QUESTIONS) else "active"
+                    row.updated_at = datetime.now(timezone.utc)
+                    db.flush()
+                    # Brand refresh runs INSIDE the turn transaction: a refresh
+                    # failure rolls the turn back instead of leaving the answer
+                    # persisted with an advanced index and a stale brand.
+                    turns = list(db.scalars(select(IdentityTurnRow).where(
+                        IdentityTurnRow.session_id == session_id).order_by(IdentityTurnRow.ordinal)))
+                    evidence = [{"session_id": session_id, "turn": t.ordinal,
+                                 "modality": t.modality, "student_response": t.student_response}
+                                for t in turns]
+                    values = sorted({tag for t in turns for tag in (t.evidence_tags or [])})
+                    patterns = [t.student_response for t in turns[:3]]
+                    strengths = [tag.removeprefix("strength:") for tag in values if tag.startswith("strength:")]
+                    StoryRepository(self.tenant_id, self.sessions).evolve_brand(
+                        values, patterns, strengths, evidence, _db=db)
+                    # Returned view built inside the committing transaction:
+                    # what the caller gets is exactly what this call
+                    # committed, never a post-commit re-read that could
+                    # observe interleaved writes.
+                    view = self._view(row, turns)
+                return view
+            except _IE as exc:
+                last = exc
+        raise ValueError("interview answer collided repeatedly; resubmit the answer") from last
 
     @staticmethod
     def _view(row, turns) -> dict:
