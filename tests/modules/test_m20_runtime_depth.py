@@ -1409,3 +1409,45 @@ def test_task_evidence_db_bounded_latest_first_and_tenant_hidden():
     assert evidence['actions_truncated'] and evidence['traces_truncated']
     assert [t['detail'] for t in evidence['traces']] == ['2', '1']
     with pytest.raises(KeyError): GCWRuntime(b).task_evidence(task.id)
+
+
+def test_runtime_supplied_plan_preparation_without_model_executes_only_on_step(mounted):
+    client, runtime, repo, _ = mounted
+    calls = []
+    async def handler(args):
+        calls.append(args['value']); return {'value': args['value'] * 2}
+    runtime.tools.register(ToolSpec(name='fixture_compute', description='fixture', risk=Risk.READ), handler)
+    task = runtime.submit_goal('fixture needs plan', run_immediately=False)
+    path = f'/api/modules/20/runtime/tasks/{task.id}/plan'
+    response = client.put(path, json={'steps': [{'id': 'a', 'title': 'compute fixture', 'tool': 'fixture_compute', 'arguments': {'value': 21}}]})
+    assert response.status_code == 200
+    assert response.json()['state'] == 'planning'
+    assert calls == []
+    assert repo.load_task(task.id).plan[0].tool == 'fixture_compute'
+    assert client.put(path, json={'steps': [{'title': 'replace'}]}).status_code == 409
+    result = client.post(f'/api/modules/20/runtime/tasks/{task.id}/step', json={'max_ticks': 2, 'quantum_seconds': 5})
+    assert result.status_code == 200 and calls == [21]
+    assert result.json()['state'] == 'succeeded'
+    assert len(repo.list_actions(task_id=task.id)) == 1
+    bad = runtime.submit_goal('invalid fixture plan', run_immediately=False)
+    badpath = f'/api/modules/20/runtime/tasks/{bad.id}/plan'
+    assert client.put(badpath, json={'steps': [{'id': 'a', 'title': 'cycle', 'depends_on': ['a']}]}).status_code == 422
+    assert repo.load_task(bad.id).plan == []
+    assert client.put('/api/modules/20/runtime/tasks/missing/plan', json={'steps': [{'title': 'fixture'}]}).status_code == 404
+
+
+def test_supplied_plan_cannot_bypass_external_step_approval_or_import_success():
+    runtime, repo = make_runtime()
+    calls = []
+    async def handler(args): calls.append('effect'); return {}
+    runtime.tools.register(ToolSpec(name='fixture_external', description='fixture', risk=Risk.EXTERNAL), handler)
+    task = runtime.submit_goal('fixture effect', run_immediately=False)
+    runtime.prepare_supplied_plan(task.id, steps=[{'title': 'fixture effect', 'tool': 'fixture_external',
+        'state': 'succeeded', 'approval_id': 'invented', 'attempts': 99}])
+    restored = make_runtime(hydrate_repo=repo)
+    restored.tools.register(ToolSpec(name='fixture_external', description='fixture', risk=Risk.EXTERNAL), handler)
+    result = restored.run_task(task.id)
+    assert calls == []
+    assert result.state == TaskState.WAITING_APPROVAL
+    assert result.plan[0].approval_id != 'invented'
+    assert result.plan[0].attempts == 1

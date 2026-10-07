@@ -331,3 +331,21 @@ def task_execution_evidence(task_id: str, limit: int = 50,
         raise HTTPException(404, 'task not found')
     except ValueError as exc:
         raise HTTPException(422, str(exc))
+
+
+class SuppliedTaskPlanRequest(BaseModel):
+    steps: list[dict[str, Any]] = Field(min_length=1, max_length=128)
+
+
+@router.put('/tasks/{task_id}/plan')
+def prepare_supplied_task_plan(task_id: str, request: SuppliedTaskPlanRequest,
+                               runtime: GCWRuntime = Depends(get_runtime)):
+    from .htn_planner import PlanError
+    try:
+        return _task_dict(runtime.prepare_supplied_plan(task_id, steps=request.steps))
+    except KeyError:
+        raise HTTPException(404, 'task not found')
+    except PlanError as exc:
+        raise HTTPException(422, str(exc))
+    except ValueError as exc:
+        raise HTTPException(409 if str(exc).startswith('plan conflict') else 422, str(exc))

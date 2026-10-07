@@ -203,6 +203,29 @@ class GCWRuntime:
         context = self.scheduler.get(task_id)
         return context or self.repo.load_task(task_id)
 
+    def prepare_supplied_plan(self, task_id, *, steps):
+        from .htn_planner import HTNPlanner
+        context = self.get_task(task_id)
+        if context is None: raise KeyError(task_id)
+        if (self.repo.list_retrospectives(task_id=task_id) or context.plan
+                or self.repo.list_actions(task_id=task_id)
+                or context.state not in (TaskState.PENDING, TaskState.PLANNING, TaskState.BLOCKED)):
+            raise ValueError('plan conflict; only empty unexecuted tasks accept supplied plans')
+        nodes = HTNPlanner()._validate(steps)
+        for node in nodes:
+            node.state = TaskState.PENDING
+            node.attempts = 0
+            node.approval_id = None
+            node.result_summary = ''
+        updated = context.model_copy(deep=True)
+        updated.plan = nodes
+        updated.state = TaskState.PLANNING
+        self.repo.save_task(updated)
+        self.scheduler.add(updated)
+        self.loop._trace('plan', 'supplied DAG prepared only; not executed or approved', task_id=task_id)
+        self._persist_context(updated)
+        return updated
+
     def update_task_schedule(self, task_id, *, changes):
         if not isinstance(changes, dict) or not changes or not set(changes) <= {'importance', 'deadline'}:
             raise ValueError('nonempty importance/deadline changes required')

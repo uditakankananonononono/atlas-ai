@@ -1,0 +1,30 @@
+........................................................................ [ 78%]
+...................F                                                     [100%]
+=================================== FAILURES ===================================
+__ test_runtime_supplied_plan_preparation_without_model_executes_only_on_step __
+
+mounted = (<starlette.testclient.TestClient object at 0x7f28c5cb3350>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7f28c5f74560>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7f28c5f75af0>)
+
+    def test_runtime_supplied_plan_preparation_without_model_executes_only_on_step(mounted):
+        client, runtime, repo, _ = mounted
+        calls = []
+        async def handler(args):
+            calls.append(args['value']); return {'value': args['value'] * 2}
+        runtime.tools.register(ToolSpec(name='fixture_compute', description='fixture', risk=Risk.READ), handler)
+        task = runtime.submit_goal('fixture needs plan', run_immediately=False)
+        path = f'/api/modules/20/runtime/tasks/{task.id}/plan'
+        response = client.put(path, json={'steps': [{'id': 'a', 'title': 'compute fixture', 'tool': 'fixture_compute', 'arguments': {'value': 21}}]})
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_m20_runtime_depth.py:1423: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_runtime_supplied_plan_preparation_without_model_executes_only_on_step
+1 failed, 91 passed, 1 warning in 5.68s
