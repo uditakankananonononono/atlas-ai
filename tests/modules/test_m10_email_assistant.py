@@ -205,7 +205,7 @@ def test_tenant_isolation(tmp_path):
         subject="s", sender="s@x.com", recipients=[], snippet="", body_text="",
         received_at=None, labels=[], headers={}, category="personal",
         category_confidence=0.5, embedding=None, unsubscribe_url=None)
-    assert repo_b.has_message("g1", account_id="other-account") is False
+    assert repo_b.has_message("g1", account_id="acc") is False
     assert service_b.list_messages() == []
     asyncio.run(client_a.aclose())
     asyncio.run(client_b.aclose())
@@ -430,3 +430,19 @@ def test_account_message_migration_preserves_rows_and_refuses_lossy_downgrade(tm
   conn.execute(text("DELETE FROM m10_email_messages WHERE account_id='b'"))
   mod.downgrade();mod.upgrade()
   assert conn.execute(text('SELECT count(*) FROM m10_email_messages')).scalar()==1
+
+
+def test_same_tenant_two_account_history_ingest_preserves_approvals_and_retries(tmp_path):
+ gmail=FakeGmailClient(history={'100':['same-id']},messages={'same-id':raw_message('same-id','Please respond',snippet='please reply',thread='same-thread')})
+ svc,repo,approvals,client=make_service(tmp_path,gmail=gmail)
+ for account,email in [('a','a@example.com'),('b','b@example.com')]:
+  repo.save_account(account_id=account,email_address=email,encrypted_refresh_token=svc.cipher.encrypt('fixture-refresh'),history_id='100',watch_expiration=None)
+ async def run():
+  assert (await svc.ingest_from_history('a@example.com','101')).new_messages==1
+  assert (await svc.ingest_from_history('b@example.com','101')).new_messages==1
+  assert (await svc.ingest_from_history('b@example.com','102')).new_messages==0
+  await client.aclose()
+ asyncio.run(run())
+ assert len(repo.list_messages())==2
+ assert [p.payload['account_id'] for p,_ in approvals.items]==['a','b']
+ assert len(repo.list_drafts())==2

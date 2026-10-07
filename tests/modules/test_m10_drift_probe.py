@@ -78,7 +78,7 @@ def env(tmp_path):
     return approvals, registry, gmail, sessions
 
 
-PAYLOAD = {"tenant_id": "t1", "draft_id": "d-1", "message_id": "m-2", "gmail_id": "g-2", "thread_id": "th-1",
+PAYLOAD = {"tenant_id": "t1", "account_id": "acct-1", "draft_id": "d-1", "message_id": "m-2", "gmail_id": "g-2", "thread_id": "th-1",
            "to": "rao@uni.edu", "subject": "Re: RA role", "body": "Thank you, I can start in October."}
 
 
@@ -230,3 +230,26 @@ def test_routes_wire_the_m00_capturer():
     from app.modules.m10_email_assistant import routes
 
     assert callable(routes._capture_review_state)
+
+
+def test_probe_rejects_mismatched_account_before_http(env):
+ _,_,gmail,sessions=env
+ probe=dp.SendReplyProbe(reader=dp.HttpThreadReader(httpx.Client(transport=httpx.MockTransport(gmail.handler))),tokens=dp.RefreshTokenSource(httpx.Client(transport=httpx.MockTransport(gmail.handler)),client_id='cid',client_secret='csec',cipher_factory=lambda _:Cipher()),session_factory=sessions)
+ with pytest.raises(dp.ProbeUnavailable,match='account'):
+  probe({**PAYLOAD,'account_id':'other-account'})
+ assert gmail.requests==[]
+
+@pytest.mark.parametrize('changes',[{'account_id':None},{'gmail_id':'other-target'},{'thread_id':'other-thread'}])
+def test_probe_rejects_missing_or_mismatched_source_binding_before_http(env,changes):
+ _,registry,gmail,_=env
+ probe=registry.find(10,'send_email_reply')[1]
+ with pytest.raises(dp.ProbeUnavailable):probe({**PAYLOAD,**changes})
+ assert gmail.requests==[]
+
+def test_probe_rejects_cross_message_draft_before_http(env):
+ _,registry,gmail,sessions=env
+ with sessions.begin() as db:
+  db.execute(update(EmailDraftRow).where(EmailDraftRow.id=='d-1').values(message_id='other-message'))
+ with pytest.raises(dp.ProbeUnavailable,match='draft'):
+  registry.find(10,'send_email_reply')[1](PAYLOAD)
+ assert gmail.requests==[]
