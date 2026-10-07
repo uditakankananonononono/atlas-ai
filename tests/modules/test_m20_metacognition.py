@@ -384,3 +384,22 @@ def test_prompt_registry_same_input_replacement_does_not_mutate_caller():
     row = registry.register(supplied)
     assert row.version == 2 and row.active is True
     assert supplied.version == 1 and supplied.active is True
+
+
+def test_calibration_string_false_does_not_become_correct():
+    engine = CalibrationEngine()
+    claim = engine.assess_claim("claim", 0.8)
+    with pytest.raises(ValueError):
+        engine.resolve(claim.id, "false")
+    assert engine.claims[claim.id].resolved is False
+
+
+@pytest.mark.parametrize("confidence,count", [(True, 0), (0.5, 1.5), (0.5, True)])
+def test_calibration_exact_numeric_confidence_integer_count(confidence, count):
+    with pytest.raises(ValueError):
+        CalibrationEngine().assess_claim("claim", confidence, evidence_count=count)
+
+
+def test_calibration_zero_bins_is_invalid_not_empty_evidence():
+    with pytest.raises(ValueError):
+        CalibrationEngine().calibration_curve(bins=0)

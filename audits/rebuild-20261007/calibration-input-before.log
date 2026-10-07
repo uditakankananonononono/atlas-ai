@@ -1,0 +1,60 @@
+...........................FFFFF                                         [100%]
+=================================== FAILURES ===================================
+____________ test_calibration_string_false_does_not_become_correct _____________
+
+    def test_calibration_string_false_does_not_become_correct():
+        engine = CalibrationEngine()
+        claim = engine.assess_claim("claim", 0.8)
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_metacognition.py:392: Failed
+_______ test_calibration_exact_numeric_confidence_integer_count[True-0] ________
+
+confidence = True, count = 0
+
+    @pytest.mark.parametrize("confidence,count", [(True, 0), (0.5, 1.5), (0.5, True)])
+    def test_calibration_exact_numeric_confidence_integer_count(confidence, count):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_metacognition.py:399: Failed
+_______ test_calibration_exact_numeric_confidence_integer_count[0.5-1.5] _______
+
+confidence = 0.5, count = 1.5
+
+    @pytest.mark.parametrize("confidence,count", [(True, 0), (0.5, 1.5), (0.5, True)])
+    def test_calibration_exact_numeric_confidence_integer_count(confidence, count):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_metacognition.py:399: Failed
+______ test_calibration_exact_numeric_confidence_integer_count[0.5-True] _______
+
+confidence = 0.5, count = True
+
+    @pytest.mark.parametrize("confidence,count", [(True, 0), (0.5, 1.5), (0.5, True)])
+    def test_calibration_exact_numeric_confidence_integer_count(confidence, count):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_metacognition.py:399: Failed
+___________ test_calibration_zero_bins_is_invalid_not_empty_evidence ___________
+
+    def test_calibration_zero_bins_is_invalid_not_empty_evidence():
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_metacognition.py:404: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_metacognition.py::test_calibration_string_false_does_not_become_correct
+FAILED tests/modules/test_m20_metacognition.py::test_calibration_exact_numeric_confidence_integer_count[True-0]
+FAILED tests/modules/test_m20_metacognition.py::test_calibration_exact_numeric_confidence_integer_count[0.5-1.5]
+FAILED tests/modules/test_m20_metacognition.py::test_calibration_exact_numeric_confidence_integer_count[0.5-True]
+FAILED tests/modules/test_m20_metacognition.py::test_calibration_zero_bins_is_invalid_not_empty_evidence
+5 failed, 27 passed in 1.48s

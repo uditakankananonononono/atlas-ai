@@ -858,3 +858,7 @@ Rows1210-1259template said authorityverifiedTruefromURL/title/jurisdiction/as-of
 ## Heuristic UCT budget input correction
 
 Constructor acceptedNaN/Infinityclock, boolsimulations/fractionaldepth and invalid exploration;NaNtimecomparison never fires. Six initial failures retained. Exactinteger simulations1..100000/depth1..128, finite seconds(0,60]/exploration[0,100] validate.94runtime/plannerpass1warning; recorded87adjacent2265pass2warnings39.02s. This rejects bad configured limits; clock remains cooperative between simulations, NOT hard preemption inside traversal/rollout, now source wording corrected. Heuristic reward/unfittedprobabilities unchanged, no cognition or deployment claim. Full9813pass predates tenlaterfixes.
+
+## Observed calibration raw-input correction
+
+Raw resolve acceptedstring"false"as truthycorrect, assess acceptedboolconfidence/fractionalorboolcount, zero bins silently empty. Five initial failures retained. Exactbooloutcome/finite numericconfidence0..1/integercount0..10**15/integerbins1..1000 validate.119metacognition/HTTP/runtimepass1warning; recorded87adjacent2270pass2warnings40.30s. Invalid correctness rejected before mutation. Observed supplied-label metrics only, not truth of outcome labels, predictive recalibration/epistemic boundary, mutable-public-claim immunity or production certification. HTTPpydanticcoercion separate; no claim that raw guard establishes strict transport inputs. Full9813pass predates elevenlaterfixes.
