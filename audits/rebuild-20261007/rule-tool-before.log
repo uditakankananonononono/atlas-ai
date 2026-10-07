@@ -1,0 +1,30 @@
+........................................................................ [ 54%]
+..........................................................F              [100%]
+=================================== FAILURES ===================================
+_____ test_default_rule_check_derives_review_prerequisites_with_full_proof _____
+
+    def test_default_rule_check_derives_review_prerequisites_with_full_proof():
+        runtime,repo=make_runtime()
+        task=runtime.submit_goal('check supplied release prerequisites',run_immediately=False)
+        runtime.prepare_supplied_plan(task.id,steps=[{'title':'check release rules','tool':'rule_check',
+            'arguments':{'facts':['tests_passed','owner_reviewed'], 'rules':[
+                {'id':'r1','if':['tests_passed'],'then':'technically_ready'},
+                {'id':'r2','if':['technically_ready','owner_reviewed'],'then':'release_ready'}],
+                'query_atoms':['release_ready','approved_payment']}}])
+        result=runtime.run_task(task.id)
+>       assert result.state==TaskState.SUCCEEDED
+E       AssertionError: assert <TaskState.FAILED: 'failed'> == <TaskState.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+tests/modules/test_m20_runtime_depth.py:1876: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_default_rule_check_derives_review_prerequisites_with_full_proof
+1 failed, 130 passed, 1 warning in 7.57s
