@@ -954,3 +954,7 @@ Eight reproduced failures retained: invalidsampleminimum/confidence/outcometypes
 ## Optimism HTTP strict numeric and outcome types
 
 Six actual failures retained: bool/stringconfidence/stringintegeroutcome coerce past rawguards. Strictfinite0..1numericfields/StrictBooloutcome422beforemutation.140foresightHTTPpass1warning; recorded87adjacent2371pass2warnings39.29s. Transport consistency only, not truth of suppliedoutcomes or empiricalpredictivecalibration. Latestfull9944passsourcec5b11ab predatestwolaterfixes.
+
+## Supplied scenario weight normalization
+
+Six reproduced failures retained: negative/nonfinite/bool/unknownweights and sumoverflow yieldsallzeroshares. Knownfixedscenario names/finite nonnegativenotboolweights/positive mass/scaled normalization.146foresightHTTPpass1warning; recorded87adjacent2377pass2warnings38.48s. Four1e308weights yield0.25each. Fixed driver narrative templates and supplied/defaultweightnormalization, not forecast validity/creative scenario discovery. Transportcoercion separate. Latestfull9944passsourcec5b11ab predatesthreelaterfixes.

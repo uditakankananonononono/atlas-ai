@@ -676,10 +676,16 @@ class ScenarioPlanner:
             raise ValueError("at least one driver is required")
         probs = dict(self.DEFAULTS)
         if probabilities:
+            if any(name not in self.DEFAULTS for name in probabilities):
+                raise ValueError("unknown scenario name")
             probs.update(probabilities)
-        total = sum(probs.values())
-        if total <= 0:
-            raise ValueError("probabilities must sum to a positive value")
+        if any(type(p) not in (int, float) or not math.isfinite(p) or p < 0 for p in probs.values()):
+            raise ValueError("scenario weights must be finite nonnegative numeric, not bool")
+        scale = max(probs.values())
+        if scale == 0:
+            raise ValueError("scenario weights must have positive mass")
+        scaled = {name: p / scale for name, p in probs.items()}
+        total = math.fsum(scaled.values())
         scenarios: list[Scenario] = []
         for name, p in probs.items():
             developments = {
@@ -695,14 +701,15 @@ class ScenarioPlanner:
                 "wildcard": f"Keep slack and optionality so '{objective}' can absorb a surprise",
             }[name]
             scenarios.append(Scenario(
-                name=name, probability=p / total, key_developments=developments,
+                name=name, probability=scaled[name] / total, key_developments=developments,
                 strategy=strategy,
                 early_indicators=[f"Movement in: {d}" for d in drivers],
             ))
         return {"objective": objective, "drivers": list(drivers),
                 "scenarios": [s.__dict__ for s in scenarios],
                 "assumptions": ["Probabilities are defaults unless overridden",
-                                 "Developments are constructed from the supplied drivers"]}
+                                 "Developments are fixed narrative templates from supplied drivers, not validated forecasts",
+                                 "Weights normalize supplied overrides and defaults, not inferred probabilities"]}
 
 
 # ---------------------------------------------------------------- row 47 --

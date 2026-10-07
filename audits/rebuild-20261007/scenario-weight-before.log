@@ -1,0 +1,109 @@
+........................................................................ [ 67%]
+.............................FFFFFF                                      [100%]
+=================================== FAILURES ===================================
+_ test_scenario_weights_validate_finite_nonnegative_known_names[probabilities0] _
+
+probabilities = {'best': -0.2}
+
+    @pytest.mark.parametrize('probabilities', [{'best': -0.2}, {'best': float('nan')}, {'best': float('inf')}, {'best': True}, {'unknown': 0.1}])
+    def test_scenario_weights_validate_finite_nonnegative_known_names(probabilities):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:653: Failed
+_ test_scenario_weights_validate_finite_nonnegative_known_names[probabilities1] _
+
+probabilities = {'best': nan}
+
+    @pytest.mark.parametrize('probabilities', [{'best': -0.2}, {'best': float('nan')}, {'best': float('inf')}, {'best': True}, {'unknown': 0.1}])
+    def test_scenario_weights_validate_finite_nonnegative_known_names(probabilities):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:653: Failed
+_ test_scenario_weights_validate_finite_nonnegative_known_names[probabilities2] _
+
+probabilities = {'best': inf}
+
+    @pytest.mark.parametrize('probabilities', [{'best': -0.2}, {'best': float('nan')}, {'best': float('inf')}, {'best': True}, {'unknown': 0.1}])
+    def test_scenario_weights_validate_finite_nonnegative_known_names(probabilities):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:653: Failed
+_ test_scenario_weights_validate_finite_nonnegative_known_names[probabilities3] _
+
+probabilities = {'best': True}
+
+    @pytest.mark.parametrize('probabilities', [{'best': -0.2}, {'best': float('nan')}, {'best': float('inf')}, {'best': True}, {'unknown': 0.1}])
+    def test_scenario_weights_validate_finite_nonnegative_known_names(probabilities):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:653: Failed
+_ test_scenario_weights_validate_finite_nonnegative_known_names[probabilities4] _
+
+probabilities = {'unknown': 0.1}
+
+    @pytest.mark.parametrize('probabilities', [{'best': -0.2}, {'best': float('nan')}, {'best': float('inf')}, {'best': True}, {'unknown': 0.1}])
+    def test_scenario_weights_validate_finite_nonnegative_known_names(probabilities):
+        with pytest.raises(ValueError):
+>           ScenarioPlanner().plan(objective='fixture', drivers=['fixture'], probabilities=probabilities)
+
+tests/modules/test_m20_foresight.py:654: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.foresight.ScenarioPlanner object at 0x7f0aa603f620>
+objective = 'fixture', drivers = ['fixture'], probabilities = {'unknown': 0.1}
+
+    def plan(self, *, objective: str, drivers: list[str],
+             probabilities: dict[str, float] | None = None) -> dict[str, Any]:
+        if not drivers:
+            raise ValueError("at least one driver is required")
+        probs = dict(self.DEFAULTS)
+        if probabilities:
+            probs.update(probabilities)
+        total = sum(probs.values())
+        if total <= 0:
+            raise ValueError("probabilities must sum to a positive value")
+        scenarios: list[Scenario] = []
+        for name, p in probs.items():
+>           developments = {
+                "best": [f"{d} resolves favorably" for d in drivers],
+                "base": [f"{d} continues on its current path" for d in drivers],
+                "worst": [f"{d} turns adverse" for d in drivers],
+                "wildcard": [f"An unexpected event changes the meaning of {drivers[0]}"],
+            }[name]
+E           KeyError: 'unknown'
+
+backend/app/modules/m20_general_cognitive_worker/foresight.py:685: KeyError
+______ test_scenario_large_finite_weights_normalize_without_sum_overflow _______
+
+    def test_scenario_large_finite_weights_normalize_without_sum_overflow():
+        result = ScenarioPlanner().plan(objective='fixture', drivers=['fixture'],
+            probabilities={name: 1e308 for name in ScenarioPlanner.DEFAULTS})
+>       assert [row['probability'] for row in result['scenarios']] == pytest.approx([0.25] * 4)
+E       assert [0.0, 0.0, 0.0, 0.0] == approx([0.25 ...25 ± 2.5e-07])
+E         
+E         comparison failed. Mismatched elements: 4 / 4:
+E         Max absolute difference: 0.25
+E         Max relative difference: inf
+E         Index | Obtained | Expected      
+E         0     | 0.0      | 0.25 ± 2.5e-07
+E         1     | 0.0      | 0.25 ± 2.5e-07
+E         2     | 0.0      | 0.25 ± 2.5e-07
+E         3     | 0.0      | 0.25 ± 2.5e-07
+
+tests/modules/test_m20_foresight.py:660: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_scenario_weights_validate_finite_nonnegative_known_names[probabilities0]
+FAILED tests/modules/test_m20_foresight.py::test_scenario_weights_validate_finite_nonnegative_known_names[probabilities1]
+FAILED tests/modules/test_m20_foresight.py::test_scenario_weights_validate_finite_nonnegative_known_names[probabilities2]
+FAILED tests/modules/test_m20_foresight.py::test_scenario_weights_validate_finite_nonnegative_known_names[probabilities3]
+FAILED tests/modules/test_m20_foresight.py::test_scenario_weights_validate_finite_nonnegative_known_names[probabilities4]
+FAILED tests/modules/test_m20_foresight.py::test_scenario_large_finite_weights_normalize_without_sum_overflow
+6 failed, 101 passed in 1.49s
