@@ -88,7 +88,7 @@ def test_approved_message_sends_and_audits_delivery():
     assert sent.status == "sent" and sent.thread_id == "thread-1"
     assert sender.calls == [{"to": "rao@example.edu", "subject": "Hello", "body": "Body text"}]
     audit = delivery.delivery_audit(draft.id)
-    assert [event.event for event in audit] == ["sent"]
+    assert [event.event for event in audit] == ["delivery_claimed", "sent"]
 
     report = delivery.delivery_report(campaign.id)
     assert report["counts"] == {"sent": 1}
@@ -157,14 +157,13 @@ def test_sender_failure_marks_failed_and_audits():
     with pytest.raises(DeliverySendError):
         asyncio.run(delivery.send_approved(draft.id))
 
-    assert service.get_message(draft.id).status == "failed"
-    assert [event.event for event in delivery.delivery_audit(draft.id)] == ["failed"]
-
-    service.record_decision(draft.id, approved=True)
-    sender = FakeSender()
-    delivery = DeliveryService(service, gate_for(approval), sender)
-    asyncio.run(delivery.send_approved(draft.id))
-    assert service.get_message(draft.id).status == "sent"
+    assert service.get_message(draft.id).status == "delivery_unknown"
+    assert [event.event for event in delivery.delivery_audit(draft.id)] == ["delivery_claimed", "delivery_unknown"]
+    from app.modules.m05_outreach_manager.campaigns import CampaignStateError
+    with pytest.raises(CampaignStateError):
+        service.record_decision(draft.id, approved=True)
+    with pytest.raises(DeliveryApprovalError):
+        asyncio.run(delivery.send_approved(draft.id))
 
 
 def test_smtp_sender_builds_and_transmits_real_message():
@@ -207,32 +206,87 @@ def test_smtp_sender_builds_and_transmits_real_message():
     assert "secret" not in str(receipt)
 
 
-def test_current_concurrent_delivery_calls_invoke_fake_sender_twice():
-    """Characterizes an open race, not safe-delivery acceptance. No SMTP used.
-
-    Both calls pass approval checks before awaiting the sender. Persistence
-    rejects one later, but that is too late to prevent a duplicate send call.
-    Replace this expectation with one invocation when an atomic claim lands.
-    """
-    from app.modules.m05_outreach_manager.campaigns import CampaignStateError
+def test_concurrent_delivery_calls_invoke_fake_sender_once():
     service, _, _, _, draft, approval = make_world(datetime(2026, 9, 20, tzinfo=timezone.utc))
-    class BarrierSender:
-        name = "hermetic-barrier"
-        def __init__(self):
-            self.calls = []
-            self.both_entered = asyncio.Event()
+    class DelayedSender(FakeSender):
         async def send(self, **kwargs):
             self.calls.append(kwargs)
-            if len(self.calls) == 2:
-                self.both_entered.set()
-            await asyncio.wait_for(self.both_entered.wait(), timeout=2)
+            await asyncio.sleep(.05)
             return DeliveryReceipt(provider_message_id="fixture-message")
     async def race():
-        sender = BarrierSender()
+        sender = DelayedSender()
         delivery = DeliveryService(service, gate_for(approval), sender)
         outcomes = await asyncio.gather(delivery.send_approved(draft.id), delivery.send_approved(draft.id), return_exceptions=True)
-        assert len(sender.calls) == 2
-        assert sum(isinstance(x, CampaignStateError) for x in outcomes) == 1
+        assert len(sender.calls) == 1
+        assert sum(isinstance(x, DeliveryApprovalError) for x in outcomes) == 1
         assert sum(getattr(x, "status", None) == "sent" for x in outcomes) == 1
         assert [x.event for x in service.message_events(draft.id)].count("sent") == 1
     asyncio.run(race())
+
+def test_unexpected_sender_exception_keeps_unknown_and_blocks_retry():
+    service, _, _, _, draft, approval = make_world(datetime(2026, 9, 20, tzinfo=timezone.utc))
+    class Sender(FakeSender):
+        async def send(self, **kwargs):
+            self.calls.append(kwargs)
+            raise RuntimeError("connection lost after possible acceptance")
+    sender=Sender();delivery=DeliveryService(service,gate_for(approval),sender)
+    with pytest.raises(RuntimeError):
+        asyncio.run(delivery.send_approved(draft.id))
+    assert service.get_message(draft.id).status == "delivery_unknown"
+    with pytest.raises(DeliveryApprovalError):
+        asyncio.run(delivery.send_approved(draft.id))
+    assert len(sender.calls)==1
+
+
+def test_cancellation_after_claim_never_reopens_delivery():
+    service, _, _, _, draft, approval = make_world(datetime(2026, 9, 20, tzinfo=timezone.utc))
+    async def scenario():
+        entered=asyncio.Event()
+        class Sender(FakeSender):
+            async def send(self, **kwargs):
+                self.calls.append(kwargs);entered.set()
+                await asyncio.Future()
+        sender=Sender();delivery=DeliveryService(service,gate_for(approval),sender)
+        task=asyncio.create_task(delivery.send_approved(draft.id))
+        await asyncio.wait_for(entered.wait(),2);task.cancel()
+        with pytest.raises(asyncio.CancelledError):await task
+        assert service.get_message(draft.id).status=="delivery_unknown"
+        with pytest.raises(DeliveryApprovalError):await delivery.send_approved(draft.id)
+        assert len(sender.calls)==1
+    asyncio.run(scenario())
+
+
+def test_receipt_persistence_failure_and_stale_approved_restore_do_not_resend(monkeypatch):
+    service, _, _, _, draft, approval = make_world(datetime(2026, 9, 20, tzinfo=timezone.utc))
+    approved=service.get_message(draft.id)
+    sender=FakeSender();delivery=DeliveryService(service,gate_for(approval),sender)
+    monkeypatch.setattr(service,"mark_sent",lambda *a,**k:(_ for _ in ()).throw(RuntimeError("database lost")))
+    with pytest.raises(DeliverySendError,match="persistence failed"):
+        asyncio.run(delivery.send_approved(draft.id))
+    assert service.get_message(draft.id).status=="sending"
+    # A legacy/stale write may restore approved, but cannot erase the separate claim.
+    service.campaigns.save_message(approved,service._event(approved,"stale_restore"))
+    with pytest.raises(DeliveryApprovalError,match="already claimed"):
+        asyncio.run(delivery.send_approved(draft.id))
+    assert len(sender.calls)==1
+
+
+def test_wrong_action_approval_is_rejected_before_claim():
+    service, _, _, _, draft, approval=make_world(datetime(2026,9,20,tzinfo=timezone.utc))
+    gate=gate_for(approval);gate.views[approval.id].action_type="delete_contact"
+    sender=FakeSender();delivery=DeliveryService(service,gate,sender)
+    with pytest.raises(DeliveryApprovalError,match="action type"):
+        asyncio.run(delivery.send_approved(draft.id))
+    assert sender.calls==[] and service.get_message(draft.id).status=="approved"
+
+def test_unknown_sender_receipt_blocks_retry():
+    service, _, _, _, draft, approval=make_world(datetime(2026,9,20,tzinfo=timezone.utc))
+    class Unknown(FakeSender):
+        async def send(self,**kwargs):
+            self.calls.append(kwargs);return DeliveryReceipt(status="unknown")
+    sender=Unknown();delivery=DeliveryService(service,gate_for(approval),sender)
+    with pytest.raises(DeliverySendError,match="uncertain"):
+        asyncio.run(delivery.send_approved(draft.id))
+    assert service.get_message(draft.id).status=="delivery_unknown"
+    with pytest.raises(DeliveryApprovalError):asyncio.run(delivery.send_approved(draft.id))
+    assert len(sender.calls)==1
