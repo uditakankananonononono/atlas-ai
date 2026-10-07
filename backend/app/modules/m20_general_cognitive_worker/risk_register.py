@@ -67,3 +67,18 @@ class DurableRiskRegister:
             rows = session.scalars(sa.select(RiskRevisionRow).where(
                 RiskRevisionRow.tenant_id == self.repo.tenant_id, RiskRevisionRow.register_id == identifier).order_by(RiskRevisionRow.revision)).all()
             return [{'id': identifier, 'revision': row.revision, 'report': copy.deepcopy(row.report_json)} for row in rows]
+
+    def list(self, *, limit=50):
+        if type(limit) is not int or not 1 <= limit <= 100:
+            raise ValueError('limit must be exact integer1..100')
+        with self.repo._session() as session:
+            rows = session.execute(sa.select(RiskRegisterRow, RiskRevisionRow).join(
+                RiskRevisionRow, sa.and_(RiskRevisionRow.tenant_id == RiskRegisterRow.tenant_id,
+                RiskRevisionRow.register_id == RiskRegisterRow.id, RiskRevisionRow.revision == RiskRegisterRow.revision)
+            ).where(RiskRegisterRow.tenant_id == self.repo.tenant_id).order_by(
+                RiskRegisterRow.updated_at.desc(), RiskRegisterRow.id).limit(limit)).all()
+            return [{'id': row.id, 'goal': row.goal, 'revision': row.revision,
+                     'open_control_gaps': sum(len(risk['missing_controls']) for risk in revision.report_json['risks']),
+                     'highest_priority': max(risk['risk_priority_number'] for risk in revision.report_json['risks']),
+                     'ready_for_owner_review': revision.report_json['ready_for_owner_review'],
+                     'evidence_verified': False} for row, revision in rows]
