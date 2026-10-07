@@ -219,3 +219,45 @@ def test_skill_activation_has_one_active_same_name_revision():
     library.activate(first.id)
     active = library.list(status=SkillStatus.ACTIVE)
     assert [s.id for s in active] == [first.id]
+
+
+@pytest.mark.parametrize('kind', ['semantic', 'episodic', 'retrospective'])
+def test_embedding_provider_buffer_cannot_change_stored_similarity(kind):
+    from app.modules.m20_general_cognitive_worker.reflection import RetrospectiveEngine
+    class ReusingEmbedder:
+        dimensions = 2
+        buffer = [1.0, 0.0]
+        def embed(self, text):
+            self.buffer[:] = [1.0, 0.0] if 'first' in text else [0.0, 1.0]
+            return self.buffer
+    provider = ReusingEmbedder()
+    if kind == 'semantic':
+        memory = SemanticMemory(provider)
+        first = memory.remember('first')
+        memory.remember('second')
+        hits = memory.query('first')
+    elif kind == 'episodic':
+        memory = EpisodicMemory(provider)
+        first = memory.log_execution(task_id='first', goal='first')
+        memory.log_execution(task_id='second', goal='second')
+        hits = memory.recall_similar('first')
+    else:
+        memory = RetrospectiveEngine(provider)
+        first = memory.write('first', went_well=['first'], went_poorly=[], lessons=[])
+        memory.write('second', went_well=['second'], went_poorly=[], lessons=[])
+        hits = memory.lessons_for('first')
+    scores = {item.id: score for item, score in hits}
+    assert scores[first.id] == pytest.approx(1.0)
+    assert sorted(scores.values()) == pytest.approx([0.0, 1.0])
+
+
+@pytest.mark.parametrize('vector', [[float('nan'), 0.0], [1.0], [True, 0.0], []])
+def test_invalid_embedding_does_not_publish_fact(vector):
+    class BadEmbedder:
+        dimensions = 2
+        def embed(self, text):
+            return vector
+    memory = SemanticMemory(BadEmbedder())
+    with pytest.raises(ValueError):
+        memory.remember('fixture')
+    assert len(memory) == 0

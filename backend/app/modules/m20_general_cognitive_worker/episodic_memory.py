@@ -7,7 +7,7 @@ DB. Retrieval is embedding-similarity over goal + reflection text.
 """
 from __future__ import annotations
 
-from .embeddings import DeterministicEmbedding, EmbeddingProvider, cosine_similarity
+from .embeddings import DeterministicEmbedding, EmbeddingProvider, cosine_similarity, embed_snapshot
 from .schemas import ActionRecord, Episode, EpisodeOutcome
 
 
@@ -23,7 +23,7 @@ class EpisodicMemory:
         episode = episode.model_copy(deep=True)
         if not episode.embedding_text:
             episode.embedding_text = self._embed_text(episode)
-        vector = self.embedder.embed(episode.embedding_text)
+        vector = embed_snapshot(self.embedder, episode.embedding_text)
         self._episodes[episode.id] = episode
         self._vectors[episode.id] = vector
         return episode.model_copy(deep=True)
@@ -50,7 +50,7 @@ class EpisodicMemory:
         """Analogical transfer: 'have I solved something like this before?'"""
         if not query.strip():
             return []
-        vector = self.embedder.embed(query)
+        vector = embed_snapshot(self.embedder, query)
         scored = [
             (self._episodes[eid], cosine_similarity(vector, vec))
             for eid, vec in self._vectors.items()

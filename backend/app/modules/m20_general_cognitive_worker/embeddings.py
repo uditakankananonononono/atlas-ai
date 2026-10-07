@@ -73,3 +73,16 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
     norm_a = math.sqrt(math.fsum(x * x for x in aa))
     norm_b = math.sqrt(math.fsum(y * y for y in bb))
     return max(-1.0, min(1.0, dot / norm_a / norm_b))
+
+
+def embed_snapshot(provider: EmbeddingProvider, text: str) -> list[float]:
+    """Validate and detach a supplied embedding, including reusable buffers."""
+    dimensions = provider.dimensions
+    if type(dimensions) is not int or dimensions < 1:
+        raise ValueError("embedding dimensions must be a positive integer")
+    supplied = provider.embed(text)
+    if not isinstance(supplied, (list, tuple)) or len(supplied) != dimensions:
+        raise ValueError("embedding vector must match provider dimensions")
+    if any(type(value) not in (int, float) or not math.isfinite(value) for value in supplied):
+        raise ValueError("embedding components must be finite numbers, not bool")
+    return list(supplied)

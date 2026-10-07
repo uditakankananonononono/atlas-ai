@@ -890,3 +890,7 @@ Source 724c275: 496 files in 20 isolated batches, 9869passed/0failed/14skipped/2
 ## Working-memory supplied attention publication
 
 Eight reproduced failures: invalid supplied scores accepted and callback failures leave overcapacity store or partial refresh scores. Finite numeric0..1/notbool validation; isolated callback inputs and staged score/capacity selection before shared publication.83working-memory/runtimepass1warning; recorded87adjacent2291pass2warnings39.90s. Callback content mutation canary also passes. Local callback-failure consistency only, not semantic attention, cognition, reentrant/concurrent isolation or durable multirow SQL crash atomicity. Latest full9869pass source724c275 predates this correction.
+
+## Embedding buffer publication
+
+Seven reproduced failures: semantic/episodic/retrospective stores alias provider reusable buffer, giving unrelated stored entries queryscore1; malformed fact vectors publish. Initial retrospective fixture used nonexistent recall method, retained separately and corrected before reproduced similarity failure. Shared finite exact-dimension vector validation and detached list snapshots used for stores and queries.91memory/runtimepass1warning; recorded87adjacent2298pass2warnings38.06s. Synthetic orthogonal supplied vectors now return1and0; invalid fact publication rejects. Local vector integrity only, not semantic retrieval quality, cognition or SQL crash atomicity. Latest full9869pass source724c275 predates two later source corrections.
