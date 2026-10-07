@@ -82,7 +82,7 @@ class DagEngine:
             for node in wf.nodes:self.validator(node,dict(inputs))
         nodes={n.id:n for n in wf.nodes}; results={}; pending=set(nodes)
         async def execute(n: Node):
-            context={"workflow_inputs":dict(inputs),"parents":{d:results[d] for d in n.depends_on}}
+            context={"workflow_inputs":dict(inputs),"parents":{d:dict(results[d]) if type(results[d]) is dict else results[d] for d in n.depends_on}}
             async with self.limit: return await self.runner(n.task,n.config,context)
         while pending:
             ready=[nodes[i] for i in sorted(pending) if set(nodes[i].depends_on)<=results.keys()]
