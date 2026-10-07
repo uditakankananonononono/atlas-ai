@@ -118,14 +118,17 @@ def test_hz24_unexpected_close_error_never_masks_failure(tmp_path, monkeypatch):
 def test_hz24_plain_rollback_removes_whole_claim(tmp_path, monkeypatch):
     # Compat: with no interleaving, the ownership-aware rollback removes
     # exactly this attempt's claim - same outcome as the prior suffix form.
+    # Only the claim persist fails; the restore rewrite (hz27) runs for
+    # real, so the pre-claim manifest is confirmed restored and the owned
+    # version dir is removed.
     p = pipe(tmp_path)
     real_persist = LocalKnowledgePipeline._persist_manifest
     state = {'calls': 0}
     def fail_second_persist(self, rec):
         state['calls'] += 1
-        if state['calls'] == 1:
-            return real_persist(self, rec)
-        raise OSError('persist failed')
+        if state['calls'] == 2:
+            raise OSError('persist failed')
+        return real_persist(self, rec)
     monkeypatch.setattr(LocalKnowledgePipeline, '_persist_manifest', fail_second_persist)
     before = fd_count()
     with pytest.raises(KnowledgeError, match='manifest persistence failed'):

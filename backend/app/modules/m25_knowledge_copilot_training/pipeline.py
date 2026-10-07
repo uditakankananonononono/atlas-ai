@@ -209,6 +209,7 @@ class LocalKnowledgePipeline:
         # best-effort, never a completed rollback of on-disk state. Close
         # errors remain ambiguous (carried).
         try:
+            renamed=False
             try:
                 # Build the version in a private temp dir, then rename it into
                 # place. After open, the attempt HOLDS that dir: the descriptor
@@ -221,6 +222,9 @@ class LocalKnowledgePipeline:
                 # remains: a different real directory swapped in BEFORE open
                 # can be adopted. After-open replacement checks narrow the
                 # race, but do not atomically close check-to-rmtree (carried).
+                # Once the rename lands, failure cleanup must remove the
+                # RENAMED target - tmp no longer denotes anything, and the
+                # held dirfd pins the same inode now living at target.
                 tmp.mkdir(parents=True)
                 dfd=_os.open(tmp,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
                 segments_blob=json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True).encode('utf-8')
@@ -236,11 +240,17 @@ class LocalKnowledgePipeline:
                 # and join the ordinary failure lifecycle below.
                 _os.fsync(dfd)
                 _os.rename(tmp,target)
+                renamed=True
                 parent_fd=_os.open(target.parent,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
                 try: _os.fsync(parent_fd)
                 finally: _os.close(parent_fd)
             except OSError:
-                self._cleanup_attempt(tmp,dfd)
+                # Post-rename the only object this attempt still owns on
+                # disk is the renamed target; cleaning tmp would do nothing
+                # and would leave a complete version dir no manifest
+                # records. Pre-claim, no live manifest references these
+                # bytes, so owned-target removal is truthful.
+                self._cleanup_attempt(target if renamed else tmp,dfd)
                 raise
             except BaseException:
                 # Unexpected failure while the attempt holds its tmp dir and
@@ -250,7 +260,7 @@ class LocalKnowledgePipeline:
                 # rollback; the cleanup wrapper can never mask the original
                 # failure, so the exception reaching the caller is always
                 # the one that actually failed.
-                self._cleanup_attempt(tmp,dfd)
+                self._cleanup_attempt(target if renamed else tmp,dfd)
                 raise
             # The memory claim and the manifest persist are guarded as ONE
             # region. Rollback removes exactly the OBJECTS this attempt
@@ -282,19 +292,40 @@ class LocalKnowledgePipeline:
                 # happens before any manifest mutation, so the recorded
                 # manifest bytes survive.
                 self._rollback_claim(rec,version,new_chunks,edge,vbase,cbase,ebase)
-                self._cleanup_attempt(target,dfd)
+                # Restore BEFORE delete: persist_exc may have escaped AFTER
+                # os.replace (e.g. the post-replace directory fsync), so the
+                # live manifest can already RECORD this version. The
+                # version's bytes are removed only once the pre-claim
+                # manifest is CONFIRMED rewritten; while the restore is
+                # unconfirmed the bytes are LEFT in place - deleting bytes a
+                # live manifest still references would strand a recorded
+                # hash with no content behind it. The restore rewrite never
+                # masks the original failure. This is still not a completed
+                # rollback: an unconfirmed restore leaves the version dir
+                # behind (carried), and a crash mid-sequence can leave
+                # either artifact (carried).
+                restore_ok=True
                 try: self._persist_manifest(rec)
-                except BaseException: pass  # best-effort restore rewrite never masks the original failure
+                except BaseException: restore_ok=False
+                if restore_ok: self._cleanup_attempt(target,dfd)
                 if isinstance(persist_exc, ManifestOversizeError): raise persist_exc
-                raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
+                if restore_ok:
+                    raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
+                raise KnowledgeError('manifest persistence failed and the pre-claim manifest could not be confirmed restored; the memory claim was removed but the on-disk manifest may still record the version, whose bytes were left in place')
             except BaseException:
                 # Unexpected failure AFTER the memory version claim: roll the
                 # claim back so memory stays truthful (no version the manifest
-                # does not record), attempt the ownership-checked removal of
-                # the renamed dir (a replaced object is preserved), and
-                # propagate. Best-effort, not a completed rollback.
+                # does not record), then restore-before-delete exactly as in
+                # the OSError path: the renamed dir is removed only once the
+                # pre-claim manifest is confirmed rewritten, because this
+                # failure may also have escaped after os.replace. A replaced
+                # object or an unconfirmed restore leaves the bytes in place.
+                # Best-effort, not a completed rollback.
                 self._rollback_claim(rec,version,new_chunks,edge,vbase,cbase,ebase)
-                self._cleanup_attempt(target,dfd)
+                restore_ok=True
+                try: self._persist_manifest(rec)
+                except BaseException: restore_ok=False
+                if restore_ok: self._cleanup_attempt(target,dfd)
                 raise
         finally:
             # Close errors of ANY type are swallowed: a close that fails
