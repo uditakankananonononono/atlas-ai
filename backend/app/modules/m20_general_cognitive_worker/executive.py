@@ -171,7 +171,7 @@ class DeliberativeLoop:
     def _trace(self, phase: str, detail: str, *, task_id: str | None = None, policy_basis: str = "") -> None:
         self.traces.append(TraceEntry(task_id=task_id, phase=phase, detail=detail, policy_basis=policy_basis))
 
-    def start(self, context: TaskContext, *, budget: Budget | None = None) -> TaskContext:
+    def start(self, context: TaskContext, *, budget: Budget | None = None, yield_on_boundary: bool = False) -> TaskContext:
         """Plan the goal, seed working memory, and run the loop."""
         # start is a fresh execution, not a resume. Incoming states are not
         # execution evidence. Continuations must use run/resume.
@@ -210,9 +210,9 @@ class DeliberativeLoop:
         ), active_goal=context.goal, partition=context.id)
         if self.before_run is not None:
             self.before_run(context)
-        return self.run(context, budget=budget)
+        return self.run(context, budget=budget, yield_on_boundary=yield_on_boundary)
 
-    def run(self, context: TaskContext, *, budget: Budget | None = None) -> TaskContext:
+    def run(self, context: TaskContext, *, budget: Budget | None = None, yield_on_boundary: bool = False) -> TaskContext:
         budget = budget or Budget()
         if self.before_run is not None:
             self.before_run(context)
@@ -314,6 +314,15 @@ class DeliberativeLoop:
                 node.state = TaskState.FAILED if node.attempts >= node.max_attempts else TaskState.PENDING
                 self._trace("evaluate", f"{node.tool} error: {exc}", task_id=context.id)
                 self._reflect_on_failure(context, node, str(exc))
+        if yield_on_boundary:
+            if context.plan and HTNPlanner.is_complete(context.plan) and any(n.state == TaskState.SUCCEEDED for n in context.plan):
+                context.state = TaskState.SUCCEEDED
+                self._trace("evaluate", "plan complete at scheduler boundary", task_id=context.id)
+                self._close_episode(context, EpisodeOutcome.SUCCEEDED)
+            else:
+                context.state = TaskState.RUNNING
+                self._trace("evaluate", "cooperative scheduler quantum yielded; work remains", task_id=context.id)
+            return context
         context.state = TaskState.FAILED
         self._trace("evaluate", "cooperative time/tick boundary reached; tokens/money not enforced", task_id=context.id)
         self._close_episode(context, EpisodeOutcome.FAILED)

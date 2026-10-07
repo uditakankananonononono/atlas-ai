@@ -1,0 +1,31 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ test_scheduler_quantum_yields_unfinished_work_and_completes_across_restart __
+
+    def test_scheduler_quantum_yields_unfinished_work_and_completes_across_restart():
+     runtime,repo=make_runtime();calls=[]
+     async def compute(arguments):
+      result=arguments['n']*arguments['n'];calls.append(result);return {'square':result}
+     spec=ToolSpec(name='fixture_square',description='fixture')
+     runtime.tools.register(spec,compute)
+     nodes=[PlanNode(title=f'square {n}',tool=spec.name,arguments={'n':n}) for n in (2,3,4)]
+     for i in range(1,len(nodes)):nodes[i].depends_on=[nodes[i-1].id]
+     runtime.planner.register_method(HTNMethod(name='square fixture',goal_pattern='square fixture',subtasks=nodes))
+     context=runtime.submit_goal('square fixture',run_immediately=False)
+     first=runtime.step(max_ticks=1)
+>    assert first.state=='running' and first.ticks_run==1 and calls==[4]
+E    AssertionError: assert ('failed' == 'running'
+E      
+E      - running
+E      + failed)
+
+tests/modules/test_m20_runtime_depth.py:743: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_scheduler_quantum_yields_unfinished_work_and_completes_across_restart
+1 failed, 39 deselected, 1 warning in 1.31s

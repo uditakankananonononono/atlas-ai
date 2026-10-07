@@ -201,3 +201,12 @@ def test_wall_time_boundary_is_not_a_tick_count_and_stops_between_steps(monkeypa
  loop.run(context,budget=Budget(seconds=.1))
  assert calls['research']==1 and loop.last_ticks_run==1
  assert context.state==TaskState.FAILED
+
+
+def test_scheduler_wall_quantum_yields_instead_of_false_failure(monkeypatch):
+ from app.modules.m20_general_cognitive_worker import executive
+ loop,_,calls=build_loop();clock=iter([0,0,.2]);monkeypatch.setattr(executive,'monotonic',lambda:next(clock))
+ context=TaskContext(goal='fixture',plan=[PlanNode(title='a',tool='web_search'),PlanNode(title='b',tool='web_search')])
+ loop.run(context,budget=Budget(seconds=.1),yield_on_boundary=True)
+ assert calls['research']==1 and context.state==TaskState.RUNNING and loop.last_ticks_run==1
+ assert not loop.episodic.for_task(context.id)
