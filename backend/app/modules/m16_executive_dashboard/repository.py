@@ -1,6 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
-from sqlalchemy import JSON,Boolean,DateTime,Float,Integer,String,Text,UniqueConstraint,func,select
+from sqlalchemy import JSON,Boolean,DateTime,Float,Integer,String,Text,UniqueConstraint,func,select,update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 from .schemas import *
@@ -55,10 +56,21 @@ def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.int
 class SqlDashboardRepository:
     def __init__(self,tenant_id,actor_id,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def append_event(self,e:Event):
-        with self.sessions.begin() as db:
-            existing=db.scalar(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.id==e.id))
-            if existing:return _event(existing)
-            max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1;db.add(EventRow(tenant_id=self.tenant_id,**e.model_dump()));return e
+        # Concurrent intakes can read the same max(sequence) and collide on the
+        # (tenant_id, sequence) unique constraint. Retry with a fresh read in a
+        # new transaction; bounded so a persistent conflict fails instead of
+        # looping. The per-attempt dedup re-check keeps repeated intake of the
+        # same event id idempotent.
+        attempts=0
+        while True:
+            try:
+                with self.sessions.begin() as db:
+                    existing=db.scalar(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.id==e.id))
+                    if existing:return _event(existing)
+                    max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1;db.add(EventRow(tenant_id=self.tenant_id,**e.model_dump()));return e
+            except IntegrityError:
+                attempts+=1
+                if attempts>=3:raise
     def events_after(self,cursor,limit=500):
         with self.sessions() as db:return [_event(r) for r in db.scalars(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.sequence>cursor).order_by(EventRow.sequence).limit(limit))]
     def snapshot(self):
@@ -81,7 +93,12 @@ class SqlDashboardRepository:
     def get_command(self,cid):
         with self.sessions() as db:r=db.scalar(select(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid));return (r,_command(r)) if r else (None,None)
     def mark_command(self,cid,at):
-        with self.sessions.begin() as db:r=db.scalar(select(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid));r.executed_at=at
+        # Single conditional UPDATE: exactly one concurrent execute can claim the
+        # command. A second execute whose earlier read saw executed_at=None loses
+        # the claim instead of silently overwriting the first execution marker.
+        with self.sessions.begin() as db:
+            claimed=db.execute(update(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid,CommandRow.executed_at.is_(None)).values(executed_at=at)).rowcount
+            if not claimed:raise RuntimeError("command already executed")
     def heartbeat(self,data,at):
         with self.sessions.begin() as db:
             r=db.scalar(select(AgentStatusRow).where(AgentStatusRow.tenant_id==self.tenant_id,AgentStatusRow.agent_id==data.agent_id))
