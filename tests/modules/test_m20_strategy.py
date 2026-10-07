@@ -522,3 +522,24 @@ def test_nonlinear_report_scores_match_independent_polyfit_original_residuals():
   prediction=np.exp(target) if name in ('exponential','power_law') else target
   expected=1-sum((y-prediction)**2)/sst
   assert out['all_r_squared'][name]==pytest.approx(expected,abs=1e-12)
+
+
+def test_critical_path_parallel_equal_branches_are_all_zero_slack_critical():
+ out=CriticalPathAnalyzer().analyze(tasks=[{'id':'a','duration':2},{'id':'b','duration':2},{'id':'end','duration':1,'depends_on':['a','b']}])
+ assert out['duration']==3
+ assert all(row['critical'] and row['slack']==0 for row in out['tasks'])
+
+
+@pytest.mark.parametrize('tasks',[
+ [{'id':'a','duration':1},{'id':'a','duration':2}],
+ [{'id':'a','duration':1,'depends_on':['missing']}],
+ [{'id':'a','duration':-1}], [{'id':'a','duration':float('inf')}],
+])
+def test_critical_path_rejects_invalid_task_graph(tasks):
+ with pytest.raises(ValueError):CriticalPathAnalyzer().analyze(tasks=tasks)
+
+
+def test_critical_path_long_chain_avoids_python_recursion_limit():
+ tasks=[{'id':str(i),'duration':1,'depends_on':[str(i-1)] if i else []} for i in range(1200)]
+ out=CriticalPathAnalyzer().analyze(tasks=tasks)
+ assert out['duration']==1200 and len(out['critical_path'])==1200

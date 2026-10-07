@@ -566,49 +566,12 @@ class CriticalPathAnalyzer:
     other task can slip before it joins the critical path."""
 
     def analyze(self, *, tasks: list[dict[str, Any]]) -> dict[str, Any]:
-        if not tasks:
-            raise ValueError("tasks required")
         cp = critical_path(tasks)
-        by_id = {t["id"]: t for t in tasks}
-
-        def longest_through(task_id: str) -> float:
-            task = by_id[task_id]
-            deps = task.get("depends_on", [])
-            back = (max((longest_through(d) for d in deps), default=0.0)
-                    + float(task["duration"]))
-            dependents = [t["id"] for t in tasks if task_id in t.get("depends_on", [])]
-            forward = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
-                          default=0.0)
-            return back + forward
-
-        memo_forward: dict[str, float] = {}
-
-        def forward_from(task_id: str) -> float:
-            if task_id in memo_forward:
-                return memo_forward[task_id]
-            dependents = [t["id"] for t in tasks if task_id in t.get("depends_on", [])]
-            value = max((float(by_id[d]["duration"]) + forward_from(d) for d in dependents),
-                        default=0.0)
-            memo_forward[task_id] = value
-            return value
-
-        def earliest_finish(task_id: str, seen: frozenset[str] = frozenset()) -> float:
-            task = by_id[task_id]
-            deps = task.get("depends_on", [])
-            base = max((earliest_finish(d, seen | {task_id}) for d in deps if d not in seen),
-                       default=0.0)
-            return base + float(task["duration"])
-
-        rows = []
-        for t in tasks:
-            ef = earliest_finish(t["id"])
-            path_through = ef + forward_from(t["id"])
-            slack = cp["duration"] - path_through
-            rows.append({"task": t["id"], "duration": float(t["duration"]),
-                         "slack": slack, "critical": t["id"] in cp["path"]})
-        return {"duration": cp["duration"], "critical_path": cp["path"], "tasks": rows,
-                "assumptions": ["Durations are point estimates; dependencies are as supplied",
-                                 "Zero-slack tasks are exactly the critical path"]}
+        return {"duration": cp["duration"], "critical_path": cp["path"], "tasks": cp["tasks"],
+                "status": cp["status"],
+                "assumptions": ["Supplied DAG point durations; no resource capacities or uncertainty",
+                                 "critical_path is one longest path; parallel zero-slack nodes are all marked critical",
+                                 "Critical comparison uses float tolerance1e-12 times project duration"]}
 
 
 # ---------------------------------------------------------------- row 74 --
