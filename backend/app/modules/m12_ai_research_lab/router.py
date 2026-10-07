@@ -22,6 +22,8 @@ class ModelRouter:
         estimated=(req.output_tokens/1000)*m.cents_per_1k_tokens
         if m.max_output_tokens < req.output_tokens: return float("-inf"), ["output limit"]
         if estimated > req.budget_cents: return float("-inf"), ["budget"]
+        if req.latency_tolerance_ms <= 0 or m.p95_latency_ms <= 0: return float("-inf"), ["invalid latency estimate or tolerance"]
+        if m.p95_latency_ms > req.latency_tolerance_ms: return float("-inf"), ["latency estimate exceeds tolerance"]
         latency_fit=min(1.0, req.latency_tolerance_ms/max(1,m.p95_latency_ms))
         cost_fit=max(0.0, 1-estimated/max(.01, req.budget_cents))
         score=.62*m.quality+.23*latency_fit+.15*cost_fit
