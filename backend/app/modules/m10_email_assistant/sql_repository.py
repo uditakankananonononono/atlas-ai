@@ -162,6 +162,24 @@ class SqlEmailRepository:
             return list(db.scalars(select(GmailAccountRow).where(
                 GmailAccountRow.tenant_id == self.tenant_id)))
 
+    def _lock_account(self,db,account_id):
+        # Shared serialization rail for work mutation and checkpoint. SQLite
+        # obtains its write lock here; PG locks the exact tenant/account row.
+        return db.execute(update(GmailAccountRow).where(GmailAccountRow.tenant_id==self.tenant_id,GmailAccountRow.id==account_id).values(updated_at=GmailAccountRow.updated_at).returning(GmailAccountRow.pk)).first()
+
+    def checkpoint_history(self,account_id:str,expected:str|None,history_id:str)->bool:
+        with self.sessions.begin() as db:
+            if self._lock_account(db,account_id) is None:return False
+            row=db.scalar(select(GmailAccountRow).where(GmailAccountRow.tenant_id==self.tenant_id,GmailAccountRow.id==account_id))
+            if row.history_id!=expected and row.history_id!=history_id:return False
+            # Gmail history IDs are decimal monotonic identifiers, not lexical.
+            if not history_id.isdecimal() or (expected is not None and (not expected.isdecimal() or int(history_id)<int(expected))):return False
+            pending=db.scalar(select(DraftWorkRow.message_id).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase!='complete').limit(1))
+            if pending is not None:return False
+            row.history_id=history_id;row.updated_at=_utcnow()
+            self._log(db,'gmail_account',account_id,'history_checkpoint',{'expected':expected,'history_id':history_id})
+            return True
+
     def update_history_id(self, account_id: str, history_id: str) -> None:
         with self.sessions.begin() as db:
             row = db.scalar(select(GmailAccountRow).where(
@@ -195,6 +213,7 @@ class SqlEmailRepository:
                      category: str | None, category_confidence: float,
                      embedding: list[float] | None, unsubscribe_url: str | None, draft_work: dict | None = None) -> bool:
         with self.sessions.begin() as db:
+            self._lock_account(db,account_id)
             values=dict(
                 tenant_id=self.tenant_id, id=message_id, account_id=account_id,
                 gmail_id=gmail_id, thread_id=thread_id, history_id=history_id,
@@ -217,7 +236,7 @@ class SqlEmailRepository:
                 from uuid import uuid4
                 for action in draft_work.get('actions',[]):
                     deadline=datetime.fromisoformat(action['deadline'].replace('Z','+00:00')) if action.get('deadline') else None
-                    db.add(ActionItemRow(tenant_id=self.tenant_id,id=str(uuid4()),message_id=message_id,action=action['action'],deadline=deadline,related_entity=action.get('related_entity'),confidence=category_confidence,status='open',created_at=_utcnow()))
+                    db.add(ActionItemRow(tenant_id=self.tenant_id,id=str(uuid4()),message_id=message_id,action=action['action'],deadline=deadline,related_entity=action.get('related_entity'),confidence=category_confidence,status='open'))
             self._log(db, "email_message", message_id, "ingested",
                       {"gmail_id": gmail_id, "category": category})
         return True
@@ -231,6 +250,7 @@ class SqlEmailRepository:
         allowed={'ready':'model_inflight','model_inflight':'model_done','model_done':'approval_inflight','approval_inflight':'approval_done'}
         if allowed.get(expected)!=target:raise ValueError('illegal draft ownership phase transition')
         with self.sessions.begin() as db:
+            self._lock_account(db,account_id)
             won=db.execute(update(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.message_id==message_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase==expected).values(phase=target,data=data).returning(DraftWorkRow.message_id)).first()
             if won:self._log(db,'draft_work',message_id,target,{})
             return won is not None
@@ -246,6 +266,7 @@ class SqlEmailRepository:
 
     def finalize_draft_work(self,message_id:str,account_id:str,data:dict)->bool:
         with self.sessions.begin() as db:
+            self._lock_account(db,account_id)
             from sqlalchemy.dialects.postgresql import JSONB
             matches=cast(DraftWorkRow.data,JSONB)==data if db.get_bind().dialect.name=='postgresql' else DraftWorkRow.data==data
             claimed=db.execute(update(DraftWorkRow).where(DraftWorkRow.tenant_id==self.tenant_id,DraftWorkRow.message_id==message_id,DraftWorkRow.account_id==account_id,DraftWorkRow.phase=='approval_done',matches).values(phase='complete').returning(DraftWorkRow.message_id)).first()
