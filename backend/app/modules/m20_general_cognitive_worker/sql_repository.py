@@ -5,6 +5,7 @@ PostgreSQL in production via the shared ATLAS_DATABASE_URL - the integrator
 passes an engine. No connection happens at import time.
 """
 from __future__ import annotations
+from contextvars import ContextVar
 
 import json
 from datetime import datetime, timezone
@@ -26,6 +27,7 @@ class TaskRow(Base):
     id = sa.Column(sa.String, primary_key=True)
     tenant_id = sa.Column(sa.String, nullable=False, default="default", index=True)
     goal = sa.Column(sa.Text, nullable=False)
+    model_outcome_unknown = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa.false())
     state = sa.Column(sa.String, nullable=False)
     importance = sa.Column(sa.Integer, nullable=False, default=3)
     deadline = sa.Column(sa.DateTime(timezone=True), nullable=True)
@@ -107,15 +109,34 @@ class GCWRepository:
             raise ValueError("tenant_id is required")
         self.engine = engine
         self.tenant_id = tenant_id
+        self._execution_session = ContextVar("gcw_execution_session", default=None)
         self._session_factory = sessionmaker(bind=engine, expire_on_commit=False)
 
     def create_schema(self) -> None:
         Base.metadata.create_all(self.engine)
 
     def _session(self) -> Session:
-        return self._session_factory()
+        borrowed = self._execution_session.get()
+        if borrowed is None: return self._session_factory()
+        class BorrowedSession:
+            def __enter__(self): return self
+            def __exit__(self, *args): return False
+            def __getattr__(self, name): return getattr(borrowed, name)
+            def commit(self): borrowed.flush()
+        return BorrowedSession()
 
-    # -- tasks -----------------------------------------------------------
+    def save_execution(self, context, actions, traces):
+        """Task state and local action/trace evidence commit in one transaction."""
+        with self._session_factory() as session:
+            token = self._execution_session.set(session)
+            try:
+                self.save_task(context)
+                for action in actions: self.save_action(action)
+                for trace in traces: self.save_trace(trace)
+                session.commit()
+            finally:
+                self._execution_session.reset(token)
+        return context
 
     def save_task(self, context: TaskContext) -> TaskContext:
         with self._session() as session:
@@ -126,6 +147,7 @@ class GCWRepository:
                 row = TaskRow(id=context.id, goal=context.goal, tenant_id=self.tenant_id,
                               created_at=_aware(context.created_at))
                 session.add(row)
+            row.model_outcome_unknown = context.model_outcome_unknown
             row.goal = context.goal
             row.state = context.state.value
             row.importance = context.importance
@@ -133,7 +155,8 @@ class GCWRepository:
             row.plan_json = [n.model_dump(mode="json") for n in context.plan]
             row.standup_notes_json = list(context.standup_notes)
             row.runtime_metadata_json = {"wm_partition": context.wm_partition, "ticks_served": context.ticks_served,
-                                         "last_run_at": context.last_run_at.isoformat() if context.last_run_at else None}
+                                         "last_run_at": context.last_run_at.isoformat() if context.last_run_at else None,
+                                         "reconciliation_evidence": context.reconciliation_evidence}
             row.updated_at = _aware(datetime.now(timezone.utc))
             session.commit()
         return context
@@ -146,6 +169,7 @@ class GCWRepository:
                 return None
             context = TaskContext(
                 id=row.id, goal=row.goal, importance=row.importance, tenant_id=row.tenant_id,
+                model_outcome_unknown=row.model_outcome_unknown,
                 deadline=_aware(row.deadline) if row.deadline else None,
             )
             from .schemas import TaskState
@@ -154,6 +178,7 @@ class GCWRepository:
             context.standup_notes = list(row.standup_notes_json or [])
             metadata = row.runtime_metadata_json or {}
             context.wm_partition = metadata.get("wm_partition", row.id)
+            context.reconciliation_evidence = metadata.get("reconciliation_evidence", [])
             context.ticks_served = metadata.get("ticks_served", 0)
             last_run = metadata.get("last_run_at")
             context.last_run_at = _aware(datetime.fromisoformat(last_run)) if last_run else None
@@ -291,19 +316,27 @@ class GCWRepository:
         return trace
 
     def dispatch_outcome_counts(self):
-        failed = ActionRow.payload_json['succeeded'].as_boolean() == sa.false()
+        # Missing legacy uncertainty flags mean false, not SQL NULL. Unknown
+        # takes precedence over succeeded so inconsistent flags cannot inflate
+        # either known-outcome category.
+        unknown = sa.func.coalesce(ActionRow.payload_json['outcome_unknown'].as_boolean(), sa.false())
+        succeeded = sa.func.coalesce(ActionRow.payload_json['succeeded'].as_boolean(), sa.false())
         with self._session() as session:
             rows = session.execute(sa.select(ActionRow.payload_json['tool'].as_string(),
-                sa.func.count(), sa.func.sum(sa.case((failed, 1), else_=0)))
+                sa.func.sum(sa.case((sa.and_(sa.not_(unknown), succeeded), 1), else_=0)),
+                sa.func.sum(sa.case((sa.and_(sa.not_(unknown), sa.not_(succeeded)), 1), else_=0)),
+                sa.func.sum(sa.case((unknown, 1), else_=0)))
                 .where(ActionRow.tenant_id == self.tenant_id)
                 .group_by(ActionRow.payload_json['tool'].as_string())).all()
-            return {name: {'successes': count - failures, 'failures': failures}
-                    for name, count, failures in rows}
+            return {name: {'successes': successes, 'failures': failures, 'unknowns': unknowns}
+                    for name, successes, failures, unknowns in rows}
 
     def action_summary(self):
         counts = self.dispatch_outcome_counts()
-        return {'local_action_count': sum(row['successes'] + row['failures'] for row in counts.values()),
-                'local_failure_count': sum(row['failures'] for row in counts.values())}
+        return {'local_action_count': sum(row['successes'] + row['failures'] + row['unknowns'] for row in counts.values()),
+                'local_success_count': sum(row['successes'] for row in counts.values()),
+                'local_failure_count': sum(row['failures'] for row in counts.values()),
+                'local_unknown_count': sum(row['unknowns'] for row in counts.values())}
 
     def task_evidence(self, task_id: str, *, limit: int = 50) -> dict:
         if type(limit) is not int or not 1 <= limit <= 100:

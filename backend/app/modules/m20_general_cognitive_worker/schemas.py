@@ -122,6 +122,7 @@ class ActionRecord(BaseModel):
     result_summary: str = ""
     result: dict[str, Any] | None = None
     succeeded: bool = True
+    outcome_unknown: bool = False
     started_at: datetime = Field(default_factory=utcnow)
     finished_at: datetime | None = None
 
@@ -180,6 +181,7 @@ class PlanNode(BaseModel):
     approval_id: str | None = None
     result_summary: str = ""
     output: dict[str, Any] | None = None
+    outcome_unknown: bool = False
 
 
 class HTNMethod(BaseModel):
@@ -230,6 +232,8 @@ class TaskContext(BaseModel):
 
     id: str = Field(default_factory=new_id)
     goal: str
+    model_outcome_unknown: bool = False
+    reconciliation_evidence: list[dict[str, Any]] = Field(default_factory=list)
     state: TaskState = TaskState.PENDING
     importance: int = 3
     deadline: datetime | None = None

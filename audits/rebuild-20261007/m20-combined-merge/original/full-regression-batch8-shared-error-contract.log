@@ -1,0 +1,49 @@
+.............................F........................                   [100%]
+=================================== FAILURES ===================================
+________________ test_bad_model_output_and_private_routes_only _________________
+tests/modules/test_m07_contract_extraction.py:102: in chat
+    raise ProviderError("down")
+E   instinct_models.providers.ProviderError: down
+
+The above exception was the direct cause of the following exception:
+tests/modules/test_m07_contract_extraction.py:107: in test_bad_model_output_and_private_routes_only
+    asyncio.run(ce.private_generate("contract"))
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m07_brand_collaboration/contract_extraction.py:73: in private_generate
+    return await shared_model_layer.generate(prompt, private=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/core/shared_model_layer.py:101: in generate
+    res = await asyncio.to_thread(guarded.run, Task(messages=[{"role": "user", "content": prompt}], private=private,
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/threads.py:25: in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/instinct_models/router.py:76: in run
+    res = p.chat(task.messages, tools=task.tools, max_tokens=task.max_tokens)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/core/shared_model_layer.py:77: in chat
+    raise SharedAttemptUnknown("shared generation outcome unknown; no fallback") from exc
+E   app.core.shared_model_layer.SharedAttemptUnknown: shared generation outcome unknown; no fallback
+=============================== warnings summary ===============================
+../../atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/modules/test_m07_brand_collaboration.py::test_full_brand_flow_is_gated
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/weasyprint/text/ffi.py:528: DeprecationWarning: HarfBuzz-Subset will be required by future versions of WeasyPrint. Please install this library with your package manager.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m07_contract_extraction.py::test_bad_model_output_and_private_routes_only
+1 failed, 53 passed, 2 warnings in 8.46s

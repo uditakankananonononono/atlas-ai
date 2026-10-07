@@ -1,0 +1,17 @@
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 64%]
+........................................................................ [ 85%]
+.................................................                        [100%]
+=============================== warnings summary ===============================
+../../atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/modules/test_m17_coaching_state_machines_710_809.py::test_route_mounted_owner_scoped_and_validated
+tests/modules/test_m17_coaching_state_machines_710_809.py::test_route_mounted_owner_scoped_and_validated
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    result = context.run(func, *args)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+337 passed, 3 warnings in 8.36s

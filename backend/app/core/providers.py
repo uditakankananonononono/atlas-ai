@@ -8,6 +8,9 @@ from app.platform.observability import inject_trace
 from app.platform.reliability import CircuitBreaker, CircuitOpen
 
 class ProviderError(RuntimeError): pass
+class ProviderOutcomeUnknown(ProviderError):
+    """Invoked generation has no usable result; automatic retry is forbidden."""
+    outcome = "unknown"
 @dataclass(frozen=True)
 class ProviderUsage:
     provider:str; model:str; input_tokens:int; output_tokens:int
@@ -39,13 +42,16 @@ async def _post(provider:str,url:str,*,headers:dict[str,str]|None=None,params:di
     async def operation():
         async with httpx.AsyncClient(timeout=60) as client:
             response=await client.post(url,headers=inject_trace(headers or {}),params=params,json=payload)
-        if response.status_code in {408,425,429,500,502,503,504}: raise httpx.HTTPStatusError("retryable provider response",request=response.request,response=response)
-        if response.is_error: raise ProviderError(f"{provider.title()} request failed ({response.status_code})")
-        try: return response.json()
-        except ValueError as exc: raise ProviderError(f"{provider.title()} returned invalid JSON") from exc
-    try:return await _BREAKERS[provider].call(operation,60,retries=2)
+        if response.status_code in {408,425,429,500,502,503,504}: raise ProviderOutcomeUnknown(f"{provider.title()} generation HTTP {response.status_code}; outcome unknown")
+        if response.is_error: raise ProviderOutcomeUnknown(f"{provider.title()} request failed ({response.status_code})")
+        try:
+            data = response.json()
+            if not isinstance(data, dict): raise ValueError("response is not an object")
+            return data
+        except ValueError as exc: raise ProviderOutcomeUnknown(f"{provider.title()} returned invalid JSON") from exc
+    try:return await _BREAKERS[provider].call(operation,60,retries=0)
     except CircuitOpen as exc:raise ProviderError(f"{provider.title()} circuit is open") from exc
-    except httpx.HTTPError as exc:raise ProviderError(f"{provider.title()} request failed after retries") from exc
+    except (httpx.HTTPError, TimeoutError) as exc:raise ProviderOutcomeUnknown(f"{provider.title()} generation transport failed; outcome unknown, no retry") from exc
 
 async def generate(prompt: str, provider: str, model: str | None = None) -> tuple[str, str]:
     provider=provider.lower().strip()
@@ -56,7 +62,11 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         from app.core import shared_model_layer
         try:
             used,chosen,text=await shared_model_layer.generate(prompt,private=provider=="shared")
+        except shared_model_layer.SharedAttemptUnknown as exc:
+            raise ProviderOutcomeUnknown(str(exc)) from exc
         except shared_model_layer.SharedModelError as exc:
+            if any(a.outcome == "error" for a in exc.attempts):
+                raise ProviderOutcomeUnknown("shared invoked generation failed; no fallback") from exc
             raise ProviderError(str(exc)) from exc
         return f"{used}:{chosen}",text
     if provider=="openai":
@@ -65,33 +75,33 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         chosen=_model(model or os.getenv("ATLAS_OPENAI_MODEL","gpt-4o-mini"))
         data=await _post(provider,"https://api.openai.com/v1/chat/completions",headers={"Authorization":f"Bearer {key}"},payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
         try:text=data["choices"][0]["message"]["content"]
-        except (KeyError,IndexError,TypeError) as exc:raise ProviderError("OpenAI response schema rejected") from exc
+        except (KeyError,IndexError,TypeError) as exc:raise ProviderOutcomeUnknown("OpenAI response schema rejected") from exc
     elif provider=="anthropic":
         key=os.getenv("ANTHROPIC_API_KEY")
         if not key: raise ProviderError("ANTHROPIC_API_KEY is not configured")
         chosen=_model(model or os.getenv("ATLAS_ANTHROPIC_MODEL","claude-3-5-haiku-latest"))
         data=await _post(provider,"https://api.anthropic.com/v1/messages",headers={"x-api-key":key,"anthropic-version":"2023-06-01"},payload={"model":chosen,"max_tokens":2048,"messages":[{"role":"user","content":prompt}]})
         try:text="".join(x["text"] for x in data["content"] if x.get("type")=="text")
-        except (KeyError,TypeError) as exc:raise ProviderError("Anthropic response schema rejected") from exc
+        except (KeyError,TypeError) as exc:raise ProviderOutcomeUnknown("Anthropic response schema rejected") from exc
     elif provider in {"gemini","google"}:
         provider="gemini";key=os.getenv("GEMINI_API_KEY")
         if not key: raise ProviderError("GEMINI_API_KEY is not configured")
         chosen=_model(model or os.getenv("ATLAS_GEMINI_MODEL","gemini-2.5-flash"))
         data=await _post(provider,f"https://generativelanguage.googleapis.com/v1beta/models/{chosen}:generateContent",params={"key":key},payload={"contents":[{"parts":[{"text":prompt}]}]})
         try:text="".join(x.get("text","") for x in data["candidates"][0]["content"]["parts"])
-        except (KeyError,IndexError,TypeError) as exc:raise ProviderError("Gemini response schema rejected") from exc
+        except (KeyError,IndexError,TypeError) as exc:raise ProviderOutcomeUnknown("Gemini response schema rejected") from exc
     elif provider=="deepseek":
         key=os.getenv("DEEPSEEK_API_KEY")
         if not key: raise ProviderError("DEEPSEEK_API_KEY is not configured")
         chosen=_model(model or os.getenv("ATLAS_DEEPSEEK_MODEL","deepseek-chat"))
         data=await _post(provider,"https://api.deepseek.com/chat/completions",headers={"Authorization":f"Bearer {key}"},payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
         try:text=data["choices"][0]["message"]["content"]
-        except (KeyError,IndexError,TypeError) as exc:raise ProviderError("DeepSeek response schema rejected") from exc
+        except (KeyError,IndexError,TypeError) as exc:raise ProviderOutcomeUnknown("DeepSeek response schema rejected") from exc
     elif provider in {"ollama","local"}:
         provider="ollama";chosen=_model(model or os.getenv("ATLAS_OLLAMA_MODEL","llama3.1:70b"));base=os.getenv("ATLAS_OLLAMA_URL","http://ollama:11434").rstrip("/")
         data=await _post(provider,f"{base}/api/chat",payload={"model":chosen,"stream":False,"messages":[{"role":"user","content":prompt}]})
         try:text=data["message"]["content"]
-        except (KeyError,TypeError) as exc:raise ProviderError("Ollama response schema rejected") from exc
+        except (KeyError,TypeError) as exc:raise ProviderOutcomeUnknown("Ollama response schema rejected") from exc
     elif provider in {"openai_compat","llamacpp","vllm","lmstudio","sglang"}:
         # Any OpenAI-compatible server on her own PC (llama.cpp `llama-server`, vLLM, LM Studio, SGLang). Free: no key.
         provider="openai_compat";base=os.getenv("ATLAS_LOCAL_OPENAI_URL","http://localhost:8080/v1").rstrip("/")
@@ -99,7 +109,7 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         headers={"Authorization":f"Bearer {os.getenv('ATLAS_LOCAL_OPENAI_KEY')}"} if os.getenv("ATLAS_LOCAL_OPENAI_KEY") else None
         data=await _post(provider,f"{base}/chat/completions",headers=headers,payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
         try:text=data["choices"][0]["message"]["content"]
-        except (KeyError,IndexError,TypeError) as exc:raise ProviderError("Local OpenAI-compatible response schema rejected") from exc
+        except (KeyError,IndexError,TypeError) as exc:raise ProviderOutcomeUnknown("Local OpenAI-compatible response schema rejected") from exc
     elif provider in {"huggingface","hf"}:
         # Hugging Face Inference Providers router; a free HF account includes monthly credits. Optional config.
         provider="huggingface";key=os.getenv("HF_TOKEN")
@@ -107,11 +117,11 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         chosen=_hf_model(model or os.getenv("ATLAS_HF_MODEL","thinkingmachines/Inkling-Small"))
         try:data=await _post(provider,"https://router.huggingface.co/v1/chat/completions",headers={"Authorization":f"Bearer {key}"},payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
         except ProviderError as exc:
-            if "(402)" in str(exc): raise ProviderError("Hugging Face credits exhausted (402); Atlas stopped rather than buying more") from exc
-            if "(401)" in str(exc) or "(403)" in str(exc): raise ProviderError("HF_TOKEN rejected; create a fine-grained token with 'Make calls to Inference Providers' permission") from exc
+            if "(402)" in str(exc): raise ProviderOutcomeUnknown("Hugging Face credits exhausted (402); Atlas stopped rather than buying more") from exc
+            if "(401)" in str(exc) or "(403)" in str(exc): raise ProviderOutcomeUnknown("HF_TOKEN rejected; create a fine-grained token with 'Make calls to Inference Providers' permission") from exc
             raise
         try:text=data["choices"][0]["message"]["content"]
-        except (KeyError,IndexError,TypeError) as exc:raise ProviderError("Hugging Face response schema rejected") from exc
+        except (KeyError,IndexError,TypeError) as exc:raise ProviderOutcomeUnknown("Hugging Face response schema rejected") from exc
     elif provider in {"fugu","sakana"}:
         # Sakana Fugu is a PAID hosted API (not open weights). Never used unless paid use is explicitly enabled.
         provider="fugu"
@@ -122,7 +132,7 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         chosen=_model(model or os.getenv("ATLAS_FUGU_MODEL","fugu"))
         data=await _post(provider,f"{base}/chat/completions",headers={"Authorization":f"Bearer {key}"},payload={"model":chosen,"messages":[{"role":"user","content":prompt}]})
         try:text=data["choices"][0]["message"]["content"]
-        except (KeyError,IndexError,TypeError) as exc:raise ProviderError("Fugu response schema rejected") from exc
+        except (KeyError,IndexError,TypeError) as exc:raise ProviderOutcomeUnknown("Fugu response schema rejected") from exc
     else:raise ProviderError(f"Unsupported provider: {provider}")
-    if not isinstance(text,str) or not text.strip():raise ProviderError(f"{provider.title()} returned no text")
+    if not isinstance(text,str) or not text.strip():raise ProviderOutcomeUnknown(f"{provider.title()} returned no text")
     _usage(data,provider,chosen);return chosen,text

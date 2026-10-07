@@ -16,6 +16,9 @@ heuristic scoring, not fitted expected information gain or success probability.
 from __future__ import annotations
 
 import time
+import copy
+from threading import Lock
+from functools import wraps
 import hashlib
 import os
 import tempfile
@@ -93,6 +96,28 @@ class StepReport:
     tokens_money_enforced: bool = False
 
 
+class PersistenceCheckpointError(RuntimeError):
+    persistence_checkpoint_failed = True
+
+
+class RuntimeBusy(RuntimeError):
+    pass
+
+
+def _exclusive_execution(method):
+    @wraps(method)
+    def guarded(self, *args, **kwargs):
+        if not self._execution_lock.acquire(blocking=False):
+            raise RuntimeBusy("runtime execution already active")
+        try:
+            if self._persistence_poisoned and method.__name__ != "close":
+                raise RuntimeBusy("runtime persistence failed; restart and reconcile durable hold")
+            return method(self, *args, **kwargs)
+        finally:
+            self._execution_lock.release()
+    return guarded
+
+
 class GCWRuntime:
     """Durable executive runtime for one tenant."""
 
@@ -109,6 +134,9 @@ class GCWRuntime:
         seed: int | None = None,
         _hydrate: bool = True,
     ) -> None:
+        self._execution_lock = Lock()
+        self._persistence_poisoned = False
+        self.reconciliation_verifier = None
         self.risk_registers = DurableRiskRegister(repo)
         self.repo = repo
         self.tenant_id = repo.tenant_id
@@ -154,6 +182,8 @@ class GCWRuntime:
         self.loop.action_history = lambda task_id: self.repo.list_actions(task_id=task_id)
         self.loop.before_run = self._register_expectations
         self.loop.before_plan = self._retrieve_review_lessons
+        self.loop.before_model = self._checkpoint_model
+        self.dispatcher.before_handler = self._checkpoint_dispatch
         self._persisted_traces = 0
         if _hydrate:
             for context in repo.list_tasks():
@@ -167,6 +197,7 @@ class GCWRuntime:
 
     # -- lifecycle -----------------------------------------------------------
 
+    @_exclusive_execution
     def submit_goal(
         self,
         goal: str,
@@ -193,10 +224,12 @@ class GCWRuntime:
 
             try:
                 self._retrieve_review_lessons(context)
+                self._checkpoint_model(context)
                 context.plan = self.planner.decompose(context.goal, context=self.working_memory.context(partition=context.id))
                 context.state = TaskState.PLANNING
-            except PlanError:
-                context.state = TaskState.PENDING
+            except PlanError as exc:
+                context.model_outcome_unknown = getattr(exc, "outcome", None) == "unknown"
+                context.state = TaskState.BLOCKED if context.model_outcome_unknown else TaskState.PENDING
             self.repo.save_task(context)
         return context
 
@@ -220,6 +253,7 @@ class GCWRuntime:
                 'external_outcomes_verified': False, 'status': 'durable_local_work_state_review',
                 'boundary': 'Persisted local work-state review only; no production health, liveness or externally verified outcome inference.'}
 
+    @_exclusive_execution
     def prepare_read_step_retry(self, task_id, node_id, *, arguments):
         from .htn_planner import HTNPlanner
         from .safety import requires_approval
@@ -229,6 +263,8 @@ class GCWRuntime:
             raise ValueError('retry conflict; task is closed')
         node = next((node for node in task.plan if node.id == node_id), None)
         if node is None: raise KeyError(node_id)
+        if self.loop.has_unknown(task):
+            raise ValueError('retry conflict; unresolved uncertainty requires verified reconciliation')
         if node.state != TaskState.FAILED or node.tool is None:
             raise ValueError('retry conflict; only failed registered read steps can be corrected')
         tool = self.tools.get(node.tool)
@@ -323,10 +359,13 @@ class GCWRuntime:
                 'context_is_supplied_not_verified': True,
                 'dispatch_rechecks_required': True}
 
+    @_exclusive_execution
     def prepare_supplied_plan(self, task_id, *, steps):
         from .htn_planner import HTNPlanner
         context = self.get_task(task_id)
         if context is None: raise KeyError(task_id)
+        if self.loop.has_unknown(context):
+            raise ValueError("plan conflict; unresolved uncertainty requires verified reconciliation")
         if (self.repo.list_retrospectives(task_id=task_id) or context.plan
                 or self.repo.list_actions(task_id=task_id)
                 or context.state not in (TaskState.PENDING, TaskState.PLANNING, TaskState.BLOCKED)):
@@ -347,6 +386,7 @@ class GCWRuntime:
         self._persist_context(updated)
         return updated
 
+    @_exclusive_execution
     def update_task_schedule(self, task_id, *, changes):
         if not isinstance(changes, dict) or not changes or not set(changes) <= {'importance', 'deadline'}:
             raise ValueError('nonempty importance/deadline changes required')
@@ -371,6 +411,7 @@ class GCWRuntime:
             self.scheduler.add(updated)
         return updated
 
+    @_exclusive_execution
     def add_task_context(self, task_id, *, text, source, reference):
         context = self.get_task(task_id)
         if context is None: raise KeyError(task_id)
@@ -400,6 +441,7 @@ class GCWRuntime:
     def list_tasks(self) -> list[TaskContext]:
         return self.repo.list_tasks()
 
+    @_exclusive_execution
     def step(self, *, quantum_seconds: float = 5.0, max_ticks: int = 10) -> StepReport:
         """One fair-scheduled quantum across contexts (rows M20-15, M20-24)."""
         started = time.monotonic()
@@ -419,6 +461,7 @@ class GCWRuntime:
             elapsed_seconds=round(elapsed, 4), surprises=surprises,
         )
 
+    @_exclusive_execution
     def run_task(self, task_id: str, *, max_ticks: int = 25, budget: Budget | None = None, yield_on_boundary: bool = False) -> TaskContext | None:
         context = self.get_task(task_id)
         if context is None:
@@ -430,6 +473,7 @@ class GCWRuntime:
         self._run_and_persist(context, budget=budget, yield_on_boundary=yield_on_boundary)
         return context
 
+    @_exclusive_execution
     def resume(self, task_id: str, node_id: str, *, approved: bool) -> TaskContext | None:
         context = self.get_task(task_id)
         if context is None:
@@ -453,25 +497,98 @@ class GCWRuntime:
         self._persist_context(context)
         return self._evaluate_expectations(context)
 
+    def _checkpoint_model(self, context):
+        checkpoint = context.model_copy(deep=True)
+        checkpoint.model_outcome_unknown = True
+        checkpoint.state = TaskState.BLOCKED
+        try:
+            self.repo.save_task(checkpoint)
+        except Exception as exc:
+            self._persistence_poisoned = True
+            raise PersistenceCheckpointError("durable dispatch checkpoint failed; handler not invoked") from exc
+
+    def _checkpoint_dispatch(self, record):
+        context = getattr(self.loop, "execution_context", None)
+        if context is None or context.id != record.task_id:
+            # Standalone READ calls do not mutate the executive task. Effectful
+            # direct calls require a runtime execution scope and durable intent.
+            from .safety import requires_approval
+            spec = self.tools.get(record.tool).spec
+            if not requires_approval(record.tool, spec.risk, record.arguments): return
+            raise PersistenceCheckpointError("effectful dispatch requires runtime execution scope")
+        checkpoint = context.model_copy(deep=True)
+        running = [node for node in checkpoint.plan if node.state == TaskState.RUNNING]
+        if len(running) != 1:
+            raise RuntimeError("dispatch requires one running node")
+        running[0].outcome_unknown = True
+        running[0].state = TaskState.BLOCKED
+        checkpoint.state = TaskState.BLOCKED
+        try:
+            self.repo.save_task(checkpoint)
+        except Exception as exc:
+            self._persistence_poisoned = True
+            raise PersistenceCheckpointError("durable dispatch checkpoint failed; handler not invoked") from exc
+
     def _persist_context(self, context: TaskContext) -> None:
         context.updated_at = datetime.now(timezone.utc)
-        self.repo.save_task(context)
+        actions = list(self.dispatcher.records)
+        traces = list(self.loop.traces)
         try:
-            for action in self.dispatcher.records[self._persisted_actions:]:
-                self.repo.save_action(action)
-                self._persisted_actions += 1
-        finally:
-            if self._persisted_actions:
-                del self.dispatcher.records[:self._persisted_actions]
-                self._persisted_actions = 0
-        try:
-            for trace in self.loop.traces[self._persisted_traces:]:
-                self.repo.save_trace(trace)
-                self._persisted_traces += 1
-        finally:
-            if self._persisted_traces:
-                del self.loop.traces[:self._persisted_traces]
-                self._persisted_traces = 0
+            self.repo.save_execution(context, actions, traces)
+        except Exception:
+            self._persistence_poisoned = True
+            raise
+        self._persistence_poisoned = False
+        del self.dispatcher.records[:len(actions)]
+        del self.loop.traces[:len(traces)]
+        self._persisted_actions = self._persisted_traces = 0
+
+    @_exclusive_execution
+    def reconcile_unknown(self, task_id, *, node_id=None, evidence, outcome, expected_action_id=None):
+        """Private integration hook. Caller text alone never clears a durable hold.
+
+        A bound trusted verifier must authenticate independent evidence. This
+        does not dispatch, renew approval, or declare external outcome verified
+        in a retrospective. Reconciliation is journaled as a reviewed transition.
+        """
+        if self.reconciliation_verifier is None:
+            raise ValueError("reconciliation verifier is not configured")
+        if outcome not in ("succeeded", "failed", "not_executed"):
+            raise ValueError("unsupported reconciliation outcome")
+        if not isinstance(evidence, dict) or not evidence:
+            raise ValueError("nonempty structured reconciliation evidence required")
+        context = self.get_task(task_id)
+        if context is None: raise KeyError(task_id)
+        if self.repo.list_retrospectives(task_id=task_id):
+            raise ValueError("reconciliation conflict; task is closed")
+        updated = context.model_copy(deep=True)
+        target = next((n for n in updated.plan if n.id == node_id), None) if node_id else None
+        if node_id and (target is None or not target.outcome_unknown):
+            raise ValueError("node has no unresolved uncertainty")
+        if node_id is None and not updated.model_outcome_unknown:
+            raise ValueError("task has no unresolved model uncertainty")
+        actions = self.repo.list_actions(task_id=task_id)
+        if expected_action_id is not None and not any(a.id == expected_action_id and a.outcome_unknown for a in actions):
+            raise ValueError("reconciliation action mismatch")
+        payload = {"tenant_id": self.tenant_id, "task_id": task_id, "node_id": node_id,
+                   "expected_action_id": expected_action_id, "outcome": outcome,
+                   "evidence": copy.deepcopy(evidence)}
+        if self.reconciliation_verifier(copy.deepcopy(payload)) is not True:
+            raise ValueError("independent reconciliation verification rejected")
+        if target:
+            target.outcome_unknown = False
+            target.approval_id = None
+            target.output = None
+            # Successful effects without validated output cannot satisfy dependent bindings.
+            target.state = TaskState.FAILED if outcome == "failed" else TaskState.BLOCKED
+            target.result_summary = "reviewed reconciliation: " + outcome + "; no retry or structured output authorized"
+        else:
+            updated.model_outcome_unknown = False
+        updated.state = TaskState.BLOCKED
+        updated.reconciliation_evidence.append({**payload, "reviewed_at": datetime.now(timezone.utc).isoformat()})
+        self.repo.save_task(updated)
+        self.scheduler.add(updated)
+        return updated
 
     def _retrieve_review_lessons(self, context: TaskContext) -> None:
         """Bounded review suggestions, never facts or authorization for effects."""
@@ -555,6 +672,7 @@ class GCWRuntime:
 
     # -- search, selection, sandbox --------------------------------------------
 
+    @_exclusive_execution
     def run_mcts(self, task_id: str, **kwargs) -> MCTSResult | None:
         context = self.get_task(task_id)
         if context is None:
@@ -572,6 +690,7 @@ class GCWRuntime:
 
     # -- retrospective and close (row M20-28) -----------------------------------
 
+    @_exclusive_execution
     def close(self, task_id: str) -> dict[str, Any] | None:
         """Auto-retrospective from the trace record, calibration resolution,
         partition cleanup. Idempotent: closing twice returns the stored retro."""
@@ -617,6 +736,11 @@ class GCWRuntime:
                 "success_count": 0, "failure_count": 0,
                 "succeeded_action_ids": [], "failed_action_ids": [], "last_failure": None,
             })
+            if action.outcome_unknown:
+                entry.setdefault("unknown_count", 0)
+                entry["unknown_count"] += 1
+                entry.setdefault("unknown_action_ids", []).append(action.id)
+                continue
             if action.succeeded:
                 entry["success_count"] += 1
                 entry["succeeded_action_ids"].append(action.id)
@@ -627,15 +751,17 @@ class GCWRuntime:
                 diagnostic = f"local tool {action.tool} failed ({action.id}): {action.result_summary}"
                 if diagnostic not in went_poorly:
                     went_poorly.append(diagnostic)
-        if any(not action.succeeded for action in actions) and not failures:
+        if any(not action.succeeded and not action.outcome_unknown for action in actions) and not failures:
             lessons.append("investigate failing tools before re-planning the same step shape")
         report = {
             "status": "persisted_reported_local_execution_summary",
             "external_outcomes_verified": False,
             "final_task_state": context.state.value,
             "local_action_count": len(actions),
-            "local_success_count": sum(action.succeeded for action in actions),
-            "local_failure_count": sum(not action.succeeded for action in actions),
+            "local_success_count": sum(action.succeeded and not action.outcome_unknown for action in actions),
+            "local_failure_count": sum(not action.succeeded and not action.outcome_unknown for action in actions),
+            "local_unknown_count": sum(action.outcome_unknown for action in actions),
+            "unresolved_uncertainty": self.loop.has_unknown(context),
             "tools": tools,
             "step_states": {state.value: sum(node.state == state for node in context.plan)
                             for state in TaskState if any(node.state == state for node in context.plan)},

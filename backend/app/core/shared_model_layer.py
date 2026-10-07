@@ -63,12 +63,29 @@ def run(messages: list[dict], *, tools: list[dict] | None = None, private: bool 
     return (router or atlas_router()).run(Task(messages=messages, tools=tools, private=private, max_tokens=max_tokens))
 
 
+class _GenerationGuard:
+    def __init__(self, provider): self.provider = provider
+    def __getattr__(self, name): return getattr(self.provider, name)
+    def chat(self, *args, **kwargs):
+        from instinct_models.providers import ProviderError
+        try: return self.provider.chat(*args, **kwargs)
+        except (ProviderError, TimeoutError, OSError, ValueError, KeyError, TypeError) as exc:
+            raise SharedAttemptUnknown("shared generation outcome unknown; no fallback") from exc
+
+
 class SharedModelError(RuntimeError):
     """No route in the shared chain answered; ``attempts`` says why for each one."""
 
     def __init__(self, message: str, attempts: list):
         super().__init__(message)
         self.attempts = attempts
+
+
+class SharedAttemptUnknown(SharedModelError):
+    """Unknown invoked outcome preserves the public generation error contract."""
+    outcome = "unknown"
+    def __init__(self, message):
+        super().__init__(message, [])
 
 
 def _describe(res: RoutedResult) -> str:
@@ -82,7 +99,9 @@ async def generate(prompt: str, *, private: bool = True, max_tokens: int = 2048,
     import asyncio
 
     r = router or atlas_router()
-    res = await asyncio.to_thread(r.run, Task(messages=[{"role": "user", "content": prompt}], private=private,
+    from instinct_models.providers import NeedleLocal
+    guarded = Router([_GenerationGuard(p) for p in r.providers if not isinstance(p, NeedleLocal)])
+    res = await asyncio.to_thread(guarded.run, Task(messages=[{"role": "user", "content": prompt}], private=private,
                                               max_tokens=max_tokens))
     if not res.ok:
         raise SharedModelError("no shared-model route answered: " + _describe(res), res.attempts)

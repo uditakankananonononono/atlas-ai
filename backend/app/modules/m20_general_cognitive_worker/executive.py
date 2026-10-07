@@ -174,12 +174,27 @@ class DeliberativeLoop:
         self.before_run: Any = None
         self.before_plan: Any = None
         self.action_history: Any = None
+        self.before_model: Any = None
 
     def _trace(self, phase: str, detail: str, *, task_id: str | None = None, policy_basis: str = "") -> None:
         self.traces.append(TraceEntry(task_id=task_id, phase=phase, detail=detail, policy_basis=policy_basis))
 
+    @staticmethod
+    def has_unknown(context):
+        return context.model_outcome_unknown or any(n.outcome_unknown for n in context.plan)
+
+    def _hold_unknown(self, context):
+        if not self.has_unknown(context): return False
+        context.state = TaskState.BLOCKED
+        for node in context.plan:
+            if node.outcome_unknown: node.state = TaskState.BLOCKED
+        self._trace("act", "unresolved outcome unknown; execution held pending verified reconciliation", task_id=context.id)
+        return True
+
     def start(self, context: TaskContext, *, budget: Budget | None = None, yield_on_boundary: bool = False) -> TaskContext:
         """Plan the goal, seed working memory, and run the loop."""
+        self.execution_context = context
+        if self._hold_unknown(context): return context
         # start is a fresh execution, not a resume. Incoming states are not
         # execution evidence. Continuations must use run/resume.
         for node in context.plan:
@@ -207,11 +222,13 @@ class DeliberativeLoop:
             if self.before_plan is not None:
                 self.before_plan(context)
             try:
+                if self.before_model is not None: self.before_model(context)
                 context.plan = self.planner.decompose(
                     context.goal, context=self.wm.context(partition=context.id),
                 )
                 self._trace("plan", f"plan with {len(context.plan)} steps", task_id=context.id)
             except PlanError as exc:
+                context.model_outcome_unknown = getattr(exc, "outcome", None) == "unknown"
                 context.state = TaskState.BLOCKED
                 self._trace("plan", f"planning failed: {exc}", task_id=context.id)
                 return context
@@ -247,6 +264,8 @@ class DeliberativeLoop:
         return resolve(node.arguments)
 
     def run(self, context: TaskContext, *, budget: Budget | None = None, yield_on_boundary: bool = False) -> TaskContext:
+        self.execution_context = context
+        if self._hold_unknown(context): return context
         budget = budget or Budget()
         if self.before_run is not None:
             self.before_run(context)
@@ -295,13 +314,25 @@ class DeliberativeLoop:
                 result = None
                 if self.model is not None:
                     try:
+                        if self.before_model is not None: self.before_model(context)
                         response = self.model.complete("reason", {"goal": context.goal,
                             "step": node.title, "arguments": node.arguments, "context": wm_context})
+                        if isinstance(response, dict) and response.get("outcome") == "unknown":
+                            context.model_outcome_unknown = True
+                            node.state = TaskState.BLOCKED
+                            node.result_summary = "reasoning generation outcome unknown; no automatic retry"
+                            self._hold_unknown(context)
+                            return context
                         if isinstance(response, dict) and response.get("available") is not False:
                             candidate = response.get("result")
                             if isinstance(candidate, str) and candidate.strip():
                                 result = candidate
                     except Exception as exc:
+                        if getattr(exc, "persistence_checkpoint_failed", False): raise
+                        if getattr(exc, "outcome", None) == "unknown":
+                            context.model_outcome_unknown = True
+                            self._hold_unknown(context)
+                            return context
                         self._trace("act", f"reasoning model error: {type(exc).__name__}", task_id=context.id)
                 if result is None:
                     node.state = TaskState.BLOCKED
@@ -319,6 +350,12 @@ class DeliberativeLoop:
                     node.tool, self._resolved_arguments(context, node), task_id=context.id,
                     granted_approval_id=node.approval_id, risk_floor=node.risk,
                 ))
+                if record.outcome_unknown:
+                    node.outcome_unknown = True
+                    node.output = None
+                    node.result_summary = record.result_summary
+                    self._hold_unknown(context)
+                    return context
                 if record.succeeded:
                     node.state = TaskState.SUCCEEDED
                     node.approval_id = None
@@ -333,6 +370,7 @@ class DeliberativeLoop:
                     self._trace("evaluate", f"{node.tool} failed: {record.result_summary}",
                                 task_id=context.id)
                     self._reflect_on_failure(context, node, record.result_summary)
+                    if self._hold_unknown(context): return context
             except ApprovalPending as pending:
                 node.state = TaskState.WAITING_APPROVAL
                 node.approval_id = pending.approval_id
@@ -350,11 +388,14 @@ class DeliberativeLoop:
                 self._close_episode(context, EpisodeOutcome.ABANDONED)
                 return context
             except Exception as exc:
+                if getattr(exc, "persistence_checkpoint_failed", False): raise
                 node.result_summary = str(exc)[:2000]
                 node.output = None
                 node.state = TaskState.FAILED if node.attempts >= node.max_attempts else TaskState.PENDING
                 self._trace("evaluate", f"{node.tool} error: {exc}", task_id=context.id)
                 self._reflect_on_failure(context, node, str(exc))
+                if self._hold_unknown(context): return context
+        if self._hold_unknown(context): return context
         if yield_on_boundary:
             if context.plan and HTNPlanner.is_complete(context.plan) and any(n.state == TaskState.SUCCEEDED for n in context.plan):
                 context.state = TaskState.SUCCEEDED
@@ -376,6 +417,7 @@ class DeliberativeLoop:
     def resume_after_approval(self, context: TaskContext, node_id: str, approved: bool) -> TaskContext:
         if type(approved) is not bool:
             raise ValueError("approved must be exact bool")
+        if self._hold_unknown(context): return context
         node = next((node for node in context.plan if node.id == node_id), None)
         if node is None:
             raise KeyError(node_id)
@@ -425,11 +467,21 @@ class DeliberativeLoop:
         ), active_goal=context.goal, partition=context.id)
         if self.model is not None and node.attempts >= node.max_attempts:
             try:
+                if self.before_model is not None: self.before_model(context)
                 analysis = self.model.complete("reflect", {
                     "goal": context.goal, "failed_step": node.title, "error": error,
                 })
             except Exception as exc:
+                if getattr(exc, "persistence_checkpoint_failed", False): raise
+                if getattr(exc, "outcome", None) == "unknown":
+                    context.model_outcome_unknown = True
+                    self._hold_unknown(context)
+                    return
                 self._trace("reflect", f"reflection model error: {type(exc).__name__}; original tool failure retained", task_id=context.id)
+                return
+            if isinstance(analysis, dict) and analysis.get("outcome") == "unknown":
+                context.model_outcome_unknown = True
+                self._hold_unknown(context)
                 return
             valid = (isinstance(analysis, dict) and analysis.get("available") is not False
                      and all(isinstance(analysis.get(key), str) and analysis[key].strip() for key in ("cause", "fix"))

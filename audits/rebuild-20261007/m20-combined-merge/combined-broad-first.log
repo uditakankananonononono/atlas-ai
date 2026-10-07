@@ -1,0 +1,319 @@
+..........................s............................................. [ 28%]
+..............F.........................................FF........F..... [ 57%]
+.FFF...FFFFFF..............F.........F............F..................... [ 86%]
+.............F..............F.....                                       [100%]
+=================================== FAILURES ===================================
+______ test_trace_flush_retry_does_not_duplicate_already_committed_trace _______
+tests/modules/test_m20_runtime_depth.py:713: in test_trace_flush_retry_does_not_duplicate_already_committed_trace
+    assert len(repo.list_traces(task_id=context.id))==1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = len([])
+E    +    where [] = list_traces(task_id='4824724c-7185-4df7-a35d-c6d0ac39f185')
+E    +      where list_traces = <app.modules.m20_general_cognitive_worker.sql_repository.GCWRepository object at 0x7fad74464d40>.list_traces
+E    +      and   '4824724c-7185-4df7-a35d-c6d0ac39f185' = TaskContext(id='4824724c-7185-4df7-a35d-c6d0ac39f185', goal='fixture', model_outcome_unknown=False, reconciliation_evi...tition='4824724c-7185-4df7-a35d-c6d0ac39f185', standup_notes=[], last_run_at=None, ticks_served=0, tenant_id='default').id
+____ test_tool_history_actual_local_handlers_persisted_across_engine_reopen ____
+tests/modules/test_m20_runtime_depth.py:1181: in test_tool_history_actual_local_handlers_persisted_across_engine_reopen
+    action = asyncio.run(runtime.dispatcher.dispatch(
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+_____ test_retrospective_reports_actual_action_evidence_not_trace_keywords _____
+tests/modules/test_m20_runtime_depth.py:1211: in test_retrospective_reports_actual_action_evidence_not_trace_keywords
+    asyncio.run(runtime.dispatcher.dispatch('fixture_report', {'fail': failed}, task_id=task.id))
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+_ test_task_execution_evidence_readback_exposes_retained_records_after_restart _
+tests/modules/test_m20_runtime_depth.py:1380: in test_task_execution_evidence_readback_exposes_retained_records_after_restart
+    action = asyncio.run(runtime.dispatcher.dispatch('fixture', {}, task_id=task.id))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+___ test_dispatch_invalid_structured_result_not_promoted_to_success[value0] ____
+tests/modules/test_m20_runtime_depth.py:1523: in test_dispatch_invalid_structured_result_not_promoted_to_success
+    record=asyncio.run(runtime.dispatcher.dispatch('fixture',{}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+___ test_dispatch_invalid_structured_result_not_promoted_to_success[value1] ____
+tests/modules/test_m20_runtime_depth.py:1523: in test_dispatch_invalid_structured_result_not_promoted_to_success
+    record=asyncio.run(runtime.dispatcher.dispatch('fixture',{}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+___ test_dispatch_invalid_structured_result_not_promoted_to_success[value2] ____
+tests/modules/test_m20_runtime_depth.py:1523: in test_dispatch_invalid_structured_result_not_promoted_to_success
+    record=asyncio.run(runtime.dispatcher.dispatch('fixture',{}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+___ test_csv_summary_rejects_bad_data_without_success[amount,amount\n1,2\n] ____
+tests/modules/test_m20_runtime_depth.py:1588: in test_csv_summary_rejects_bad_data_without_success
+    result=asyncio.run(runtime.dispatcher.dispatch('csv_summary',{'csv_text':csv_text,'value_column':'amount'}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+_______ test_csv_summary_rejects_bad_data_without_success[amount\nnan\n] _______
+tests/modules/test_m20_runtime_depth.py:1588: in test_csv_summary_rejects_bad_data_without_success
+    result=asyncio.run(runtime.dispatcher.dispatch('csv_summary',{'csv_text':csv_text,'value_column':'amount'}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+___ test_csv_summary_rejects_bad_data_without_success[amount\nnot numeric\n] ___
+tests/modules/test_m20_runtime_depth.py:1588: in test_csv_summary_rejects_bad_data_without_success
+    result=asyncio.run(runtime.dispatcher.dispatch('csv_summary',{'csv_text':csv_text,'value_column':'amount'}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+_______ test_csv_summary_rejects_bad_data_without_success[amount,x\n1\n] _______
+tests/modules/test_m20_runtime_depth.py:1588: in test_csv_summary_rejects_bad_data_without_success
+    result=asyncio.run(runtime.dispatcher.dispatch('csv_summary',{'csv_text':csv_text,'value_column':'amount'}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+_________ test_csv_summary_rejects_bad_data_without_success[amount\n] __________
+tests/modules/test_m20_runtime_depth.py:1588: in test_csv_summary_rejects_bad_data_without_success
+    result=asyncio.run(runtime.dispatcher.dispatch('csv_summary',{'csv_text':csv_text,'value_column':'amount'}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+__ test_csv_summary_rejects_bad_data_without_success[amount\n1e308\n1e308\n] ___
+tests/modules/test_m20_runtime_depth.py:1588: in test_csv_summary_rejects_bad_data_without_success
+    result=asyncio.run(runtime.dispatcher.dispatch('csv_summary',{'csv_text':csv_text,'value_column':'amount'}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+___ test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates ____
+tests/modules/test_m20_runtime_depth.py:1753: in test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates
+    assert len(repo.list_actions(task_id=task.id))==1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = len([])
+E    +    where [] = list_actions(task_id='527f356a-f894-4383-ba8d-773b5d8e7718')
+E    +      where list_actions = <app.modules.m20_general_cognitive_worker.sql_repository.GCWRepository object at 0x7fad872b3410>.list_actions
+E    +      and   '527f356a-f894-4383-ba8d-773b5d8e7718' = TaskContext(id='527f356a-f894-4383-ba8d-773b5d8e7718', goal='fixture', model_outcome_unknown=False, reconciliation_evi...tition='527f356a-f894-4383-ba8d-773b5d8e7718', standup_notes=[], last_run_at=None, ticks_served=0, tenant_id='default').id
+_ test_handler_gate_shaped_exception_cannot_create_fabricated_pending_approval _
+tests/modules/test_m20_runtime_depth.py:1912: in test_handler_gate_shaped_exception_cannot_create_fabricated_pending_approval
+    record=asyncio.run(runtime.dispatcher.dispatch('fixture_gate_error',{}))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/tools.py:210: in dispatch
+    self.before_handler(record)
+backend/app/modules/m20_general_cognitive_worker/runtime.py:513: in _checkpoint_dispatch
+    raise RuntimeError("cannot persist dispatch intent without task")
+E   RuntimeError: cannot persist dispatch intent without task
+___________ test_partial_trace_flush_keeps_only_uncommitted_entries ____________
+tests/modules/test_m20_runtime_depth.py:2098: in test_partial_trace_flush_keeps_only_uncommitted_entries
+    assert [t.id for t in runtime.loop.traces]==pending_ids[1:]
+E   AssertionError: assert ['0268441c-38...9df8834c358a'] == ['0cf252ab-25...9df8834c358a']
+E     
+E     At index 0 diff: '0268441c-3807-4676-ab43-f4e23241f75a' != '0cf252ab-2544-4ed1-91eb-d628545558d2'
+E     Left contains one more item: 'b8a37eec-98eb-42be-b6ff-9df8834c358a'
+E     Use -v to get more diff
+____ test_close_retry_finishes_after_retrospective_commit[final_task_write] ____
+tests/modules/test_m20_runtime_depth.py:2477: in test_close_retry_finishes_after_retrospective_commit
+    result=runtime.close(context.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/runtime.py:114: in guarded
+    raise RuntimeBusy("runtime persistence failed; restart and reconcile durable hold")
+E   app.modules.m20_general_cognitive_worker.runtime.RuntimeBusy: runtime persistence failed; restart and reconcile durable hold
+________ test_inkling_falls_back_to_self_hosted_when_hf_credits_run_out ________
+tests/test_model_catalog.py:23: in fake_post
+    raise reply
+E   app.core.providers.ProviderError: Huggingface request failed (402)
+
+The above exception was the direct cause of the following exception:
+tests/test_model_catalog.py:120: in test_inkling_falls_back_to_self_hosted_when_hf_credits_run_out
+    provider, model, _ = asyncio.run(mc.generate_free_first("hi", "inkling"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/core/model_catalog.py:122: in generate_free_first
+    chosen, text = await providers.generate(prompt, route.provider, route.model)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/core/providers.py:120: in generate
+    if "(402)" in str(exc): raise ProviderOutcomeUnknown("Hugging Face credits exhausted (402); Atlas stopped rather than buying more") from exc
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   app.core.providers.ProviderOutcomeUnknown: Hugging Face credits exhausted (402); Atlas stopped rather than buying more
+=============================== warnings summary ===============================
+../../atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_trace_flush_retry_does_not_duplicate_already_committed_trace
+FAILED tests/modules/test_m20_runtime_depth.py::test_tool_history_actual_local_handlers_persisted_across_engine_reopen
+FAILED tests/modules/test_m20_runtime_depth.py::test_retrospective_reports_actual_action_evidence_not_trace_keywords
+FAILED tests/modules/test_m20_runtime_depth.py::test_task_execution_evidence_readback_exposes_retained_records_after_restart
+FAILED tests/modules/test_m20_runtime_depth.py::test_dispatch_invalid_structured_result_not_promoted_to_success[value0]
+FAILED tests/modules/test_m20_runtime_depth.py::test_dispatch_invalid_structured_result_not_promoted_to_success[value1]
+FAILED tests/modules/test_m20_runtime_depth.py::test_dispatch_invalid_structured_result_not_promoted_to_success[value2]
+FAILED tests/modules/test_m20_runtime_depth.py::test_csv_summary_rejects_bad_data_without_success[amount,amount\n1,2\n]
+FAILED tests/modules/test_m20_runtime_depth.py::test_csv_summary_rejects_bad_data_without_success[amount\nnan\n]
+FAILED tests/modules/test_m20_runtime_depth.py::test_csv_summary_rejects_bad_data_without_success[amount\nnot numeric\n]
+FAILED tests/modules/test_m20_runtime_depth.py::test_csv_summary_rejects_bad_data_without_success[amount,x\n1\n]
+FAILED tests/modules/test_m20_runtime_depth.py::test_csv_summary_rejects_bad_data_without_success[amount\n]
+FAILED tests/modules/test_m20_runtime_depth.py::test_csv_summary_rejects_bad_data_without_success[amount\n1e308\n1e308\n]
+FAILED tests/modules/test_m20_runtime_depth.py::test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates
+FAILED tests/modules/test_m20_runtime_depth.py::test_handler_gate_shaped_exception_cannot_create_fabricated_pending_approval
+FAILED tests/modules/test_m20_runtime_depth.py::test_partial_trace_flush_keeps_only_uncommitted_entries
+FAILED tests/modules/test_m20_runtime_depth.py::test_close_retry_finishes_after_retrospective_commit[final_task_write]
+FAILED tests/test_model_catalog.py::test_inkling_falls_back_to_self_hosted_when_hf_credits_run_out
+18 failed, 231 passed, 1 skipped, 1 warning in 36.10s

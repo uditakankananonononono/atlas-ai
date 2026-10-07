@@ -8,15 +8,24 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any
+from functools import wraps
 
 from fastapi import APIRouter, HTTPException, Depends
 from app.auth.context import TenantContext,require_tenant
 from app.auth.environment import insecure_development_auth_enabled
 from pydantic import BaseModel, Field
 
-from .runtime import GCWRuntime
+from .runtime import GCWRuntime, RuntimeBusy
 from .schemas import Budget
 from .sandbox import SandboxViolation
+
+def _busy_conflict(method):
+    @wraps(method)
+    def guarded(*args, **kwargs):
+        try: return method(*args, **kwargs)
+        except RuntimeBusy as exc: raise HTTPException(409, str(exc)) from exc
+    return guarded
+
 
 router = APIRouter(prefix="/api/modules/20/runtime", tags=["m20_runtime"])
 
@@ -79,6 +88,7 @@ class SandboxRunRequest(BaseModel):
 
 
 @router.post("/tasks", status_code=201)
+@_busy_conflict
 def submit_task(request: GoalRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     context = runtime.submit_goal(
         request.goal, importance=request.importance,
@@ -101,6 +111,7 @@ def get_task(task_id: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any
 
 
 @router.post("/tasks/{task_id}/step")
+@_busy_conflict
 def step_task(task_id: str, request: StepRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     if runtime.get_task(task_id) is None:
         raise HTTPException(status_code=404, detail="unknown task")
@@ -110,6 +121,7 @@ def step_task(task_id: str, request: StepRequest, runtime: Any = Depends(get_run
 
 
 @router.post("/step")
+@_busy_conflict
 def step_once(request: StepRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     report = runtime.step(
         quantum_seconds=request.quantum_seconds, max_ticks=request.max_ticks,
@@ -136,6 +148,7 @@ def mcts(task_id: str, simulations: int = 32, runtime: Any = Depends(get_runtime
 
 
 @router.post("/tasks/{task_id}/close")
+@_busy_conflict
 def close_task(task_id: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     result = runtime.close(task_id)
     if result is None:
@@ -144,11 +157,13 @@ def close_task(task_id: str, runtime: Any = Depends(get_runtime)) -> dict[str, A
 
 
 @router.post("/tools/select")
+@_busy_conflict
 def select_tool(request: SelectToolRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     return runtime.select_tool(request.description, context=request.context).as_dict()
 
 
 @router.post("/sandbox/run")
+@_busy_conflict
 def sandbox_run(request: SandboxRunRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     try:
         result = runtime.sandbox.run_python(
@@ -202,6 +217,7 @@ class MethodReviewIn(BaseModel):
 
 
 @router.post("/methods/{name}/activate")
+@_busy_conflict
 def activate_method(name: str, body: MethodReviewIn, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
     try:
         if not runtime.planner.activate_method(name, expected_hash=body.expected_hash):
@@ -222,6 +238,7 @@ class RiskRegisterRevisionRequest(BaseModel):
 
 
 @router.post("/risk-registers", status_code=201)
+@_busy_conflict
 def create_risk_register(request: RiskRegisterCreateRequest, runtime: GCWRuntime = Depends(get_runtime)):
     try:
         return runtime.risk_registers.create(goal=request.goal, risks=request.risks)
@@ -251,6 +268,7 @@ def risk_register_history(identifier: str, runtime: GCWRuntime = Depends(get_run
 
 
 @router.post("/risk-registers/{identifier}/revise")
+@_busy_conflict
 def revise_risk_register(identifier: str, request: RiskRegisterRevisionRequest, runtime: GCWRuntime = Depends(get_runtime)):
     try:
         return runtime.risk_registers.revise(identifier, expected_revision=request.expected_revision, risks=request.risks)
@@ -276,6 +294,7 @@ class RiskControlPatchRequest(BaseModel):
 
 
 @router.patch('/risk-registers/{identifier}/risks/{risk_id}')
+@_busy_conflict
 def patch_risk_control(identifier: str, risk_id: str, request: RiskControlPatchRequest,
                        runtime: GCWRuntime = Depends(get_runtime)):
     try:
@@ -294,6 +313,7 @@ class TaskContextInputRequest(BaseModel):
 
 
 @router.post('/tasks/{task_id}/context', status_code=201)
+@_busy_conflict
 def add_task_context(task_id: str, request: TaskContextInputRequest,
                      runtime: GCWRuntime = Depends(get_runtime)):
     try:
@@ -311,6 +331,7 @@ class TaskSchedulePatchRequest(BaseModel):
 
 
 @router.patch('/tasks/{task_id}/schedule')
+@_busy_conflict
 def update_task_schedule(task_id: str, request: TaskSchedulePatchRequest,
                          runtime: GCWRuntime = Depends(get_runtime)):
     try:
@@ -338,6 +359,7 @@ class SuppliedTaskPlanRequest(BaseModel):
 
 
 @router.put('/tasks/{task_id}/plan')
+@_busy_conflict
 def prepare_supplied_task_plan(task_id: str, request: SuppliedTaskPlanRequest,
                                runtime: GCWRuntime = Depends(get_runtime)):
     from .htn_planner import PlanError
@@ -356,6 +378,7 @@ class TaskPreflightRequest(BaseModel):
 
 
 @router.post('/tasks/{task_id}/preflight')
+@_busy_conflict
 def task_preflight(task_id: str, request: TaskPreflightRequest,
                    runtime: GCWRuntime = Depends(get_runtime)):
     try:
@@ -383,6 +406,7 @@ class ReadStepRetryRequest(BaseModel):
 
 
 @router.post('/tasks/{task_id}/steps/{node_id}/retry')
+@_busy_conflict
 def prepare_read_step_retry(task_id: str, node_id: str, request: ReadStepRetryRequest,
                             runtime: GCWRuntime = Depends(get_runtime)):
     from .htn_planner import PlanError

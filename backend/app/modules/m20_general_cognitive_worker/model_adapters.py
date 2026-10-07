@@ -18,10 +18,15 @@ import re
 from typing import Any
 
 from app.core import model_catalog
-from app.core.providers import ProviderError
+from app.core.providers import ProviderError, ProviderOutcomeUnknown
 
 from .htn_planner import PlanError
 from .schemas import Risk
+
+class PlannerOutcomeUnknown(PlanError):
+    outcome = "unknown"
+    retry_allowed = False
+
 
 _ORDER = [Risk.READ, Risk.REVERSIBLE, Risk.EXTERNAL, Risk.IRREVERSIBLE]
 
@@ -106,6 +111,8 @@ class FreeFirstPlannerModel:
     def decompose(self, goal: str, *, context: str = "") -> list[dict[str, Any]]:
         try:
             provider, model, text = _run(model_catalog.generate_free_first(self._prompt(goal, context), self.model_name, private=True))
+        except ProviderOutcomeUnknown as exc:
+            raise PlannerOutcomeUnknown("planner generation outcome unknown; no automatic retry") from exc
         except ProviderError as exc:
             raise PlanError(f"planner model unavailable: {exc}") from exc
         self.last_route = (provider, model)
@@ -152,6 +159,8 @@ class FreeFirstExecutiveModel:
             )
         try:
             provider, model, text = _run(model_catalog.generate_free_first(prompt, self.model_name, private=True))
+        except ProviderOutcomeUnknown as exc:
+            return {"available": False, "failure_kind": "outcome_unknown", "outcome": "unknown", "retry_allowed": False, "error": str(exc)}
         except ProviderError as exc:
             return {"available": False, "failure_kind": "provider_unavailable", "error": str(exc)}
         try:

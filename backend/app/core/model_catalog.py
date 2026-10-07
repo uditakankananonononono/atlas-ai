@@ -13,7 +13,7 @@ import os
 from dataclasses import dataclass, field
 
 from app.core import providers
-from app.core.providers import ProviderError
+from app.core.providers import ProviderError, ProviderOutcomeUnknown
 
 # Kinds match the Meemee model-layer taxonomy.
 LOCAL = "local"              # runs on her own PC, no account needed
@@ -121,6 +121,8 @@ async def generate_free_first(prompt: str, model_name: str | None = None, *, pri
         try:
             chosen, text = await providers.generate(prompt, route.provider, route.model)
             return route.provider, chosen, text
+        except ProviderOutcomeUnknown:
+            raise
         except ProviderError as exc:
             errors.append(f"{route.provider}: {exc}")
     raise ProviderError("no free model route succeeded; Atlas stopped instead of using a paid provider. " + " | ".join(errors))

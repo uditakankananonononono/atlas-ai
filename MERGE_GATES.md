@@ -1,0 +1,52 @@
+# Combined prototype merge gates
+
+This prototype is not production clearance. A green local regression does not close the gates below. These gates must remain in the eventual merge commit until the corresponding evidence is recorded and reviewed.
+
+## Production prerequisite: PostgreSQL unknown-hold migration
+
+The PostgreSQL unknown-hold migration path is untested. The PostgreSQL-specific canary was skipped because `pgserver` is absent in both available interpreters. SQLite upgrade and hold-preserving downgrade refusal passed. PostgreSQL upgrade, restart retention of unresolved holds, and downgrade refusal while holds remain must be tested before production clearance.
+
+## Nested-object mutation coverage
+
+Runtime public mutation methods have a nonblocking instance lock. This does not establish mutation-wide route coverage. Routes that mutate nested objects directly can bypass that lock:
+
+- `htn_planner`: method activation calls the nested planner directly.
+- `risk_register`: mutation routes call the nested risk-register object directly.
+
+The `RuntimeBusy` HTTP 409 mapping does not itself acquire a lock. These paths remain open for concurrency review and behavioral tests.
+
+## Peer M13 failure and collection discrepancy
+
+The original peer M13 combined-run failure remains unexplained. The peer reported 159 passed and 1 failed; the independent reproduction reported 159 passed, 1 skipped and 0 failed. Collection parity remains unresolved: the peer reported 160 tests, while independent collection found 161. Do not treat the absence of a reproduced failure as clearance.
+
+## Open comparison surfaces
+
+The following surfaces remain unassessed for combined semantic clearance, even where existing local tests pass:
+
+- `risk_register`
+- `local_tools`
+- `htn_planner`, including method review hash binding
+- `function_schemas`
+- `retrospectives`
+- `model_ideation`
+- `premortem`
+- `ActionRow` migration
+- `safety.py`
+- Peer-derived provider/core surface `dd3ca6b2db`: generation POST retry and free-first fallback handling
+- Peer-derived provider/core surface `78f0be856b`: shared-router generation uncertainty handling
+
+The two provider/core surfaces are semantic adaptations, not cherry-picks. Free-first model selection remains. Pre-dispatch unavailable or unconfigured routes may fall through. Once generation is invoked and its outcome is unknown, repeated POSTs and hidden route fallback stop. The previous post-402 fallback behavior intentionally changes. Passing tests do not remove these surfaces from the comparison gates.
+
+## Lock guarantee
+
+The execution lock protects one bound runtime instance in one process. It does not protect separate runtime instances or workers sharing a database. Multi-instance and multi-worker database locking is unsupported by this prototype. No broader concurrency guarantee is implied.
+
+## Fail-closed reconciliation
+
+Reconciliation is a private integration hook, with no user-facing evidence-as-authority endpoint. By default no independent verifier is configured, so reconciliation is rejected. A bound independent verifier must approve evidence before a durable hold can be cleared.
+
+Reconciliation does not dispatch, renew approval, supply successful structured output, or authorize automatic retry. It retains reviewed evidence and leaves the task blocked. Production evidence and authority integration remains a design gate.
+
+## Scope and publication
+
+The prototype does not include the non-M20 divergent peer commit range. Main merge requires the integration owner's explicit go after review. Publication is separate from local merge approval. No push is authorized by this file; the current GitHub incident remains a publication blocker.

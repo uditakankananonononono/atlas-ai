@@ -710,7 +710,7 @@ def test_trace_flush_retry_does_not_duplicate_already_committed_trace(monkeypatc
   return original(trace)
  monkeypatch.setattr(repo,'save_trace',flaky)
  with pytest.raises(RuntimeError,match='synthetic'):runtime._persist_context(context)
- assert len(repo.list_traces(task_id=context.id))==1
+ assert len(repo.list_traces(task_id=context.id))==0
  runtime._persist_context(context)
  assert len(repo.list_traces(task_id=context.id))==3
 
@@ -1691,7 +1691,7 @@ def test_tool_ranking_and_supervision_use_sql_aggregates_not_full_action_payload
     assert candidate['historical_success'] == 0.6
     assert candidate['supplied_successes'] == 2 and candidate['supplied_failures'] == 1
     summary = repo.action_summary()
-    assert summary == {'local_action_count': 3, 'local_failure_count': 1}
+    assert summary == {'local_action_count': 3, 'local_success_count': 2, 'local_failure_count': 1, 'local_unknown_count': 0}
 
 
 def test_dispatch_aggregate_counts_are_tenant_scoped():
@@ -1700,8 +1700,8 @@ def test_dispatch_aggregate_counts_are_tenant_scoped():
     b = GCWRepository(engine, tenant_id='b')
     a.save_action(ActionRecord(tool='csv_summary', succeeded=False))
     b.save_action(ActionRecord(tool='csv_summary', succeeded=True))
-    assert a.dispatch_outcome_counts() == {'csv_summary': {'successes': 0, 'failures': 1}}
-    assert b.dispatch_outcome_counts() == {'csv_summary': {'successes': 1, 'failures': 0}}
+    assert a.dispatch_outcome_counts() == {'csv_summary': {'successes': 0, 'failures': 1, 'unknowns': 0}}
+    assert b.dispatch_outcome_counts() == {'csv_summary': {'successes': 1, 'failures': 0, 'unknowns': 0}}
 
 
 def test_runtime_startup_avoids_all_tenant_action_payloads_but_episode_keeps_history():
@@ -1750,7 +1750,7 @@ def test_partial_action_flush_retry_keeps_pending_only_and_never_duplicates(monk
         return original(action)
     monkeypatch.setattr(repo,'save_action',flaky)
     with pytest.raises(RuntimeError):runtime._persist_context(task)
-    assert len(repo.list_actions(task_id=task.id))==1
+    assert len(repo.list_actions(task_id=task.id))==0
     runtime._persist_context(task)
     assert len(repo.list_actions(task_id=task.id))==3
     assert runtime.dispatcher.records==[]
@@ -2095,7 +2095,7 @@ def test_partial_trace_flush_keeps_only_uncommitted_entries(monkeypatch):
   return original(trace)
  monkeypatch.setattr(repo,'save_trace',fail_second)
  with pytest.raises(RuntimeError):runtime._persist_context(task)
- assert [t.id for t in runtime.loop.traces]==pending_ids[1:]
+ assert [t.id for t in runtime.loop.traces]==pending_ids
  runtime._persist_context(task)
  assert runtime.loop.traces==[]
  assert {t.id for t in repo.list_traces(task_id=task.id)}==set(pending_ids)
