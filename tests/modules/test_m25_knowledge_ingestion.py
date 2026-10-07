@@ -187,3 +187,47 @@ def test_m25_hz11_register_time_failure_leaves_no_files_or_state(tmp_path, monke
     with _pt.raises(OSError):ingest(p)
     assert 's1' not in p.records and not p.chunks
     assert not (tmp_path/'tenant-a'/'s1').exists()
+
+
+def test_m25_hz13_restart_refusal_preserves_prior_manifest(tmp_path):
+    # KILL: a fresh pipeline rewrote the on-disk manifest to versions=[]
+    # DURING registration, before the target-exists refusal - prior version
+    # records silently erased while old bytes remained.
+    import json as J
+    p=pipe(tmp_path);v=ingest(p)
+    before=J.loads((tmp_path/'tenant-a'/'s1'/'manifest.json').read_text())
+    p2=pipe(tmp_path)
+    with pytest.raises(KnowledgeError,match='refusing to overwrite'):
+        ingest(p2,text='changed content')
+    after=J.loads((tmp_path/'tenant-a'/'s1'/'manifest.json').read_text())
+    assert after==before and after['versions'][0]['hash']==v.content_hash
+    assert (tmp_path/'tenant-a'/'s1'/'v1'/'source.bin').exists()
+
+def test_m25_hz13_direct_register_refuses_to_erase_prior_disk_state(tmp_path):
+    # KILL: plain register() on a fresh pipeline erased the prior manifest
+    # even with no ingest attempted.
+    p=pipe(tmp_path);ingest(p)
+    p2=pipe(tmp_path)
+    with pytest.raises(KnowledgeError,match='refusing to overwrite'):p2.register(src())
+    import json as J
+    assert len(J.loads((tmp_path/'tenant-a'/'s1'/'manifest.json').read_text())['versions'])==1
+
+def test_m25_hz13_corrupt_manifest_fails_closed(tmp_path):
+    # KILL: an unreadable manifest was silently overwritten.
+    p=pipe(tmp_path);ingest(p)
+    (tmp_path/'tenant-a'/'s1'/'manifest.json').write_text('{not json')
+    p2=pipe(tmp_path)
+    with pytest.raises(KnowledgeError,match='unreadable on-disk manifest'):p2.register(src())
+
+def test_m25_hz13_manifest_tmp_name_unique_no_symlink_follow(tmp_path):
+    # KILL: the fixed manifest.json.tmp name could collide and write_text
+    # would follow a preexisting symlink at that path. Scratch-only check.
+    p=pipe(tmp_path)
+    outside=tmp_path/'outside.txt'; outside.write_text('untouched')
+    (tmp_path/'tenant-a'/'s1').mkdir(parents=True)
+    (tmp_path/'tenant-a'/'s1'/'manifest.json.tmp').symlink_to(outside)
+    ingest(p)
+    assert outside.read_text()=='untouched'
+    assert (tmp_path/'tenant-a'/'s1'/'manifest.json.tmp').is_symlink()  # fixed name never used or replaced
+    import json as J
+    assert len(J.loads((tmp_path/'tenant-a'/'s1'/'manifest.json').read_text())['versions'])==1
