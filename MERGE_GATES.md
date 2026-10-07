@@ -62,7 +62,7 @@ The following surfaces remain unassessed for combined semantic clearance, even w
 - `htn_planner`: reviewed-payload TOCTOU found and locally fixed with durable hash checking plus exact JSON-snapshot compare-and-set in the activation UPDATE. Two SQLite cross-instance/check-to-write race canaries pass; PostgreSQL multi-writer CAS behavior remains untested. Broader planner comparison remains open.
 - `model_ideation`: additive response path assessed; typed unknown flattening to unavailable/503 corrected to ProviderOutcomeUnknown and 409 with retry_allowed=false. No durable cross-request hold/reconciliation is provided by this service API; that broader boundary remains open. Proposed ideas remain unverified.
 - `ActionRow` migration: scoped SQLite additive schema/journal roundtrip assessed (10 selected tests plus 1 migration-only unknown-payload canary). PostgreSQL deployment remains untested. Downgrade drops the journal and is data-destructive, not an automatic uncertainty-preserving recovery path.
-- `safety.py`
+- `safety.py`: scoped source/effect-binding assessment compatible; peer differs only by lacking our two deep-copy protections. Preserve ours. Approval provenance, durable cross-worker token state and complete semantic effect classification remain unverified boundaries.
 - Peer-derived provider/core surface `dd3ca6b2db`: generation POST retry and free-first fallback handling
 - Peer-derived provider/core surface `78f0be856b`: shared-router generation uncertainty handling
 
