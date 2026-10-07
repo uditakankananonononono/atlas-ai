@@ -100,8 +100,11 @@ def make_service(tmp_path, tenant="tenant-a", google=None, caldav=None):
     sessions = sessionmaker(bind=engine)
     repo = SqlCalendarRepository(tenant, sessions)
     gate = FakeApprovalGate()
+    async def fixture_exchange(refresh_token):
+        return "fixture-access"
     service = Service(
-        repo, gate, cipher=TokenCipher(tenant, master_secret=MASTER),
+        repo, gate,
+        google_access_token_provider=fixture_exchange, cipher=TokenCipher(tenant, master_secret=MASTER),
         google=google or FakeGoogleCalendarClient(), caldav=caldav,
     )
     return service, repo, gate
@@ -465,7 +468,6 @@ def test_meeting_load_clips_cross_midnight_and_week_edges():
  assert [d.meeting_minutes for d in report.days]==[60,30,0,0,0,0,30]
  assert report.days[0].longest_meeting_minutes==30
 
-@pytest.mark.xfail(strict=True, reason="M11 refresh token passed directly as bearer; pending runtime token exchange wiring")
 def test_google_watch_and_sync_must_exchange_refresh_token_before_bearer_use(tmp_path):
  class StrictGoogle(FakeGoogleCalendarClient):
   async def watch(self, access_token, *args, **kwargs):
@@ -521,3 +523,38 @@ def test_meeting_load_dst_elapsed_minutes_and_http_timezone_contract():
   assert response.status_code==200
   assert response.json()['total_meeting_minutes']==1500
   assert response.json()['timezone_name']=='America/New_York'
+
+def test_google_refresh_failure_never_reaches_calendar_client(tmp_path):
+ google=FakeGoogleCalendarClient();service,repo,_=make_service(tmp_path,google=google)
+ source=service.register_google_source(GoogleSourceCreate(account_email='a@example.com',refresh_token='persistent-refresh',calendar_id='primary'))
+ async def fail(refresh):raise RuntimeError('exchange failed')
+ service._google_access_token_provider=fail
+ with pytest.raises(RuntimeError,match='exchange failed'):asyncio.run(service.ensure_watch(source.id))
+ assert google.watch_calls==[]
+ service._google_access_token_provider=None
+ with pytest.raises(RuntimeError,match='not configured'):asyncio.run(service.sync_source(source.id))
+ assert google.sync_tokens_seen==[]
+
+def test_runtime_service_wires_exchange_with_mock_http(monkeypatch):
+ from types import SimpleNamespace
+ from app.modules.m11_calendar_intelligence import routes
+ original_client=httpx.AsyncClient
+ requests=[]
+ def handler(request):
+  requests.append(request)
+  assert request.url==httpx.URL('https://oauth2.googleapis.com/token')
+  assert b'refresh_token=persistent-refresh' in request.content
+  assert b'client_id=fixture-client' in request.content
+  return httpx.Response(200,json={'access_token':'short-lived-access'})
+ monkeypatch.setenv('ATLAS_GOOGLE_CLIENT_ID','fixture-client')
+ monkeypatch.setenv('ATLAS_GOOGLE_CLIENT_SECRET','fixture-secret')
+ monkeypatch.setattr(routes.httpx,'AsyncClient',lambda **kwargs:original_client(transport=httpx.MockTransport(handler),**kwargs))
+ monkeypatch.setattr(routes,'TokenCipher',lambda tenant:SimpleNamespace())
+ monkeypatch.setattr(routes,'SqlCalendarRepository',lambda tenant:SimpleNamespace(tenant_id=tenant))
+ async def run():
+  iterator=routes.get_service(SimpleNamespace(tenant_id='fixture-tenant'))
+  svc=await anext(iterator)
+  assert await svc._google_access_token_provider('persistent-refresh')=='short-lived-access'
+  await iterator.aclose()
+ asyncio.run(run())
+ assert len(requests)==1

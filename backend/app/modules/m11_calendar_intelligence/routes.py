@@ -17,7 +17,7 @@ from app.modules.m00_approval_center.service import (
 )
 
 from .caldav import HttpxCalDAVClient, UpstreamServiceError as CalDAVError
-from .google_calendar import HttpxGoogleCalendarClient, UpstreamServiceError as GoogleError
+from .google_calendar import exchange_refresh_token, HttpxGoogleCalendarClient, UpstreamServiceError as GoogleError
 from .schemas import (
     CalDAVSourceCreate,
     CalendarEventView,
@@ -80,11 +80,14 @@ async def get_service(tenant: TenantContext = Depends(require_tenant)) -> AsyncI
     except TokenCryptoError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     async with httpx.AsyncClient(timeout=30) as client:
+        async def access_token_provider(refresh_token):
+            return await exchange_refresh_token(client, refresh_token, client_id=os.getenv("ATLAS_GOOGLE_CLIENT_ID", ""), client_secret=os.getenv("ATLAS_GOOGLE_CLIENT_SECRET", ""))
         yield Service(
             SqlCalendarRepository(tenant.tenant_id),
             Module0ApprovalGate(tenant.tenant_id),
             cipher=cipher,
             google=HttpxGoogleCalendarClient(client),
+            google_access_token_provider=access_token_provider,
             caldav=HttpxCalDAVClient(client, username="", password=""),
             webhook_base_url=os.getenv(
                 "ATLAS_CALENDAR_WEBHOOK_URL",

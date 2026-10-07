@@ -141,3 +141,18 @@ class HttpxGoogleCalendarClient:
         )
         if response.is_error:
             raise UpstreamServiceError(f"Calendar channel stop failed ({response.status_code})")
+
+
+async def exchange_refresh_token(client: httpx.AsyncClient, refresh_token: str, *, client_id: str, client_secret: str) -> str:
+    if not client_id or not client_secret:
+        raise UpstreamServiceError("Google OAuth client configuration is missing")
+    response = await client.post("https://oauth2.googleapis.com/token", data={
+        "grant_type": "refresh_token", "refresh_token": refresh_token,
+        "client_id": client_id, "client_secret": client_secret,
+    })
+    if response.is_error:
+        raise UpstreamServiceError(f"Google OAuth refresh failed ({response.status_code})")
+    token = response.json().get("access_token")
+    if not isinstance(token, str) or not token.strip() or token == refresh_token:
+        raise UpstreamServiceError("Google OAuth refresh returned invalid access token")
+    return token
