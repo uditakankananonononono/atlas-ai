@@ -63,10 +63,10 @@ The following surfaces remain unassessed for combined semantic clearance, even w
 - `model_ideation`: additive response path assessed; typed unknown flattening to unavailable/503 corrected to ProviderOutcomeUnknown and 409 with retry_allowed=false. No durable cross-request hold/reconciliation is provided by this service API; that broader boundary remains open. Proposed ideas remain unverified.
 - `ActionRow` migration: scoped SQLite additive schema/journal roundtrip assessed (10 selected tests plus 1 migration-only unknown-payload canary). PostgreSQL deployment remains untested. Downgrade drops the journal and is data-destructive, not an automatic uncertainty-preserving recovery path.
 - `safety.py`: scoped source/effect-binding assessment compatible; peer differs only by lacking our two deep-copy protections. Preserve ours. Approval provenance, durable cross-worker token state and complete semantic effect classification remain unverified boundaries.
-- Peer-derived provider/core surface `dd3ca6b2db`: generation POST retry and free-first fallback handling
-- Peer-derived provider/core surface `78f0be856b`: shared-router generation uncertainty handling
+- Peer-derived provider/core surface `dd3ca6b2db`: scoped uncertainty adaptation assessed; single invoked POST, no fallback after unknown, pre-dispatch eligibility policy retained. Combined core suite 52 passed. Conservative rejection-status/connection classification and live usage/effect verification remain boundaries.
+- Peer-derived provider/core surface `78f0be856b`: scoped shared-generation uncertainty adaptation assessed; private-route policy and general-router callers preserved, SharedModelError compatibility retained. Arbitrary custom adapter errors and production integration remain unverified.
 
-The two provider/core surfaces are semantic adaptations, not cherry-picks. Free-first model selection remains. Pre-dispatch unavailable or unconfigured routes may fall through. Once generation is invoked and its outcome is unknown, repeated POSTs and hidden route fallback stop. The previous post-402 fallback behavior intentionally changes. Passing tests do not remove these surfaces from the comparison gates.
+The two provider/core surfaces are semantic adaptations, not cherry-picks. Free-first model selection remains. Pre-dispatch unavailable or unconfigured routes may fall through. Once generation is invoked and its outcome is unknown, repeated POSTs and hidden route fallback stop. The previous post-402 fallback behavior intentionally changes. The scoped assessments above do not remove their stated production and custom-adapter boundaries.
 
 ## Lock guarantee
 
