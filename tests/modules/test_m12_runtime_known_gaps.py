@@ -181,3 +181,15 @@ def test_duplicate_catalog_identity_stops_before_repeated_model_invocation(diffe
 def test_invalid_catalog_identity_rejected_before_ranking(identity):
  invalid=ModelCapability(identity,frozenset({TaskType.RESEARCH}),1000,0,100,.8)
  with pytest.raises(NoEligibleModel,match='nonempty text'):ModelRouter([invalid,*models()]).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'))
+
+@pytest.mark.parametrize('enabled',['false','true',1,0,None,[],{}])
+def test_catalog_enabled_flag_not_inferred_from_truthiness(enabled):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','invalid',.9)
+ model=ModelCapability('invalid',frozenset({TaskType.RESEARCH}),1000,0,100,.8,enabled=enabled)
+ req=RouteRequest(TaskType.RESEARCH,100,0,100,'fixture');router=ModelRouter([model])
+ assert router.score(model,req)==(float('-inf'),['invalid enabled flag'])
+ with pytest.raises(NoEligibleModel):asyncio.run(ResearchExecutor(router,Provider()).execute(req,'fixture'))
+ assert not calls
+ assert ModelRouter([model,*models()]).route(req).primary.model_id=='first'
