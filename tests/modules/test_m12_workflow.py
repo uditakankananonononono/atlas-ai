@@ -235,3 +235,16 @@ def test_unknown_yaml_options_not_silently_ignored(raw):
  response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw})
  assert response.status_code==422,response.text
  assert 'unsupported workflow' in response.json()['detail'] and not calls
+
+@pytest.mark.asyncio
+async def test_node_input_tenant_mutation_cannot_change_siblings_or_descendants():
+ seen=[]
+ async def runner(task,config,context):
+  inputs=context['workflow_inputs'];seen.append((task,inputs['tenant_id']))
+  if task=='a':inputs['tenant_id']='forged';inputs['prompt']='changed'
+  return {'text':task}
+ inputs={'tenant_id':'original','prompt':'fixture'}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: a}, {id: b, task: b}, {id: c, task: c, depends_on: [a]}]')
+ out=await DagEngine(runner).run(wf,inputs)
+ assert seen==[('a','original'),('b','original'),('c','original')]
+ assert inputs=={'tenant_id':'original','prompt':'fixture'} and len(out)==3
