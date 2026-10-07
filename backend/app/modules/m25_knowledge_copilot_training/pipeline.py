@@ -240,14 +240,21 @@ class LocalKnowledgePipeline:
                 self._cleanup_attempt(tmp,dfd)
                 raise
             # The memory claim and the manifest persist are guarded as ONE
-            # region: the base indexes captured below let rollback delete
-            # exactly the slices THIS attempt appended - an unexpected
-            # failure partway through the mutation cannot leave a partial
-            # claim behind and can never touch prior state. Scoped local
-            # boundary, not a multi-statement transaction guarantee.
+            # region. Rollback removes exactly the OBJECTS this attempt
+            # appended: each is deleted only while identity still matches at
+            # its captured base, so an unrelated append interleaved in the
+            # failure window is preserved and a base that no longer holds
+            # our object is left untouched (no foreign deletes). These
+            # bounds assume append-only interleaving within this process;
+            # this is NOT a concurrency or multi-statement transaction
+            # guarantee. A deletion that itself raises (exotic list
+            # behavior) can still mask the original exception, and a failed
+            # identity check can leave this attempt's claim in place - both
+            # carried, not hidden.
             vbase=len(rec.versions); cbase=len(self.chunks); ebase=len(self.edges)
+            edge={'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number}
             try:
-                rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
+                rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append(edge)
                 self._persist_manifest(rec)
             except (OSError, ManifestOversizeError) as persist_exc:
                 # Persist failed AFTER memory mutation: roll the version state
@@ -261,7 +268,7 @@ class LocalKnowledgePipeline:
                 # memory version claim. An oversize refusal
                 # happens before any manifest mutation, so the recorded
                 # manifest bytes survive.
-                del rec.versions[vbase:]; del self.chunks[cbase:]; del self.edges[ebase:]
+                self._rollback_claim(rec,version,new_chunks,edge,vbase,cbase,ebase)
                 self._cleanup_attempt(target,dfd)
                 try: self._persist_manifest(rec)
                 except BaseException: pass  # best-effort restore rewrite never masks the original failure
@@ -273,13 +280,18 @@ class LocalKnowledgePipeline:
                 # does not record), attempt the ownership-checked removal of
                 # the renamed dir (a replaced object is preserved), and
                 # propagate. Best-effort, not a completed rollback.
-                del rec.versions[vbase:]; del self.chunks[cbase:]; del self.edges[ebase:]
+                self._rollback_claim(rec,version,new_chunks,edge,vbase,cbase,ebase)
                 self._cleanup_attempt(target,dfd)
                 raise
         finally:
+            # Close errors of ANY type are swallowed: a close that fails
+            # while another exception is in flight must never replace it,
+            # and on success a close failure does not convert a recorded
+            # version into a raised error. The close outcome itself stays
+            # ambiguous (carried).
             if dfd is not None:
                 try: _os.close(dfd)
-                except OSError: pass
+                except BaseException: pass
         return version
     def _extract(self,raw:bytes,mime:str,kind:str)->list[Segment]:
         if mime=='audio/wav':
@@ -422,6 +434,22 @@ class LocalKnowledgePipeline:
                     if written<=0: raise OSError(f'short write persisting {name}')
                     view=view[written:]
             finally:_os.close(fd)
+    def _rollback_claim(self,rec,version,new_chunks,edge,vbase,cbase,ebase)->None:
+        # Undo exactly THIS attempt's memory claim: each object is deleted
+        # only while identity still matches at its captured base index, so
+        # an unrelated append interleaved during the persist window is
+        # preserved (no foreign deletes) and a base that no longer holds
+        # our object is left untouched. Correct for append-only
+        # interleaving within this process; NOT a concurrency guarantee.
+        # A deletion that itself raises propagates and can mask the
+        # original failure (carried); a failed identity match can leave
+        # this attempt's claim in place (carried).
+        if len(rec.versions)>vbase and rec.versions[vbase] is version:
+            del rec.versions[vbase]
+        if all(len(self.chunks)>cbase+i and self.chunks[cbase+i] is new_chunks[i] for i in range(len(new_chunks))):
+            del self.chunks[cbase:cbase+len(new_chunks)]
+        if len(self.edges)>ebase and self.edges[ebase] is edge:
+            del self.edges[ebase]
     def _cleanup_attempt(self,path,dfd)->None:
         # Best-effort wrapper around the ownership-checked cleanup: cleanup
         # runs during failure handling, so it must NEVER replace the failure
