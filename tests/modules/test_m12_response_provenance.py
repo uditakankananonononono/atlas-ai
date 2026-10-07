@@ -519,3 +519,31 @@ def test_validation_unencodable_extra_key_location_does_not_break_422():
  detail=response.json()['detail'];assert detail[0]['type']=='string_unicode'
  assert detail[0]['loc']==['body']
  assert 'private-invalid-input' not in response.text and not calls
+
+@pytest.mark.parametrize('workflow',[True,False])
+def test_returned_subclass_copy_failure_holds_without_repeat(workflow):
+ from dataclasses import dataclass
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service,get_dag_engine
+ from app.modules.m12_ai_research_lab.service import Service
+ from app.modules.m12_ai_research_lab.wiring import build_dag_engine
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ copies=[];calls=[]
+ @dataclass
+ class SpecialResult(ModelResult):
+  def __post_init__(self):
+   copies.append(1)
+   if len(copies)>1:raise ValueError('fixture cannot reconstruct')
+ returned=SpecialResult('fixture','reported',.9)
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs['model_id']);return returned
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['first','backup']]
+ service=Service(ModelRouter(cat),Provider(),RetryPolicy(base_delay_seconds=0))
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:service;app.dependency_overrides[get_dag_engine]=lambda:build_dag_engine(service)
+ if workflow:response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: research}, {id: b, task: research, depends_on: [a]}]'})
+ else:response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==409,response.text
+ detail=response.json()['detail'];assert detail['state']=='unknown' and detail['retry_allowed'] is False
+ assert calls==['first'] and len(copies)==2 and returned.metadata=={}
