@@ -11,7 +11,9 @@ class Service:
     def update_node(self,node_id,data:NodeUpdate):
         n=self._node(node_id)
         if n.version!=data.expected_version:raise ConflictError("node changed; refresh before editing")
-        changes=data.model_dump(exclude_none=True,exclude={"expected_version"});updated=n.model_copy(update={**changes,"version":n.version+1,"updated_at":datetime.now(timezone.utc)});updated.embedding=self.embed(f"{updated.title}\n{updated.body or ''}");self.repository.save_node(updated,"node.updated");self._suggest(updated);return updated
+        changes=data.model_dump(exclude_none=True,exclude={"expected_version"});updated=n.model_copy(update={**changes,"version":n.version+1,"updated_at":datetime.now(timezone.utc)});updated.embedding=self.embed(f"{updated.title}\n{updated.body or ''}");saved=self.repository.save_node(updated,"node.updated",expected_version=data.expected_version)
+        if saved is None:raise ConflictError("node changed; refresh before editing")
+        self._suggest(updated);return updated
     def create_edge(self,data:EdgeCreate,confidence=1):
         self._node(data.source_id);self._node(data.target_id)
         if data.source_id==data.target_id:raise ConflictError("self edge")

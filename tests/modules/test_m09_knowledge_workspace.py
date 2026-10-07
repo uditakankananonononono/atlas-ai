@@ -3,7 +3,9 @@ from app.modules.m09_knowledge_workspace.schemas import *
 from app.modules.m09_knowledge_workspace.service import ConflictError,Service
 class Repo:
  def __init__(self):self.nodes={};self.edges=[];self.suggestions={}
- def save_node(self,n,action="node.created"):self.nodes[n.id]=n;return n
+ def save_node(self,n,action="node.created",expected_version=None):
+  if expected_version is not None and (n.id not in self.nodes or self.nodes[n.id].version!=expected_version):return None
+  self.nodes[n.id]=n;return n
  def get_node(self,i):return self.nodes.get(i)
  def list_nodes(self,limit=500):return list(self.nodes.values())
  def save_edge(self,e):self.edges.append(e);return e
@@ -25,3 +27,14 @@ def test_graph_suggest_review_cycle_and_version():
  else:raise AssertionError("stale write accepted")
 def test_graph_is_tenant_repository_boundary_and_planner_export():
  r=Repo();svc=Service(r);n=svc.create_node(NodeCreate(node_type="note",title="Evidence",body="Grounded note"));ctx=svc.planner_context([n.id]);assert ctx["nodes"][0]["summary"]=="Grounded note"
+
+def test_service_maps_repository_lost_race_to_conflict_without_suggestions():
+ import pytest
+ class RacedRepo(Repo):
+  def save_node(self,n,action="node.created",expected_version=None):
+   if expected_version is not None:return None
+   return super().save_node(n,action)
+ r=RacedRepo();svc=Service(r);n=svc.create_node(NodeCreate(node_type="note",title="Original"))
+ with pytest.raises(ConflictError,match="node changed"):
+  svc.update_node(n.id,NodeUpdate(title="Lost race",expected_version=1))
+ assert r.get_node(n.id).title=="Original"

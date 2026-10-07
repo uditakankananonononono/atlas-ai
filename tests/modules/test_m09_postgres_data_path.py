@@ -1,5 +1,5 @@
 """M09 graph service layer on a real PostgreSQL (pgserver): alembic migrations, node/edge writes, neighborhood read,
-versioned update conflict, and tenant isolation both ways. Service layer only: the HTTP route, auth and the production
+versioned update conflict, repository atomic update (including two concurrent writers), and tenant isolation both ways. Service layer only: the HTTP route, auth and the production
 embedding path are NOT exercised (the route builds Service without an embedder). Skips when pgserver is unavailable."""
 import json
 import os
@@ -24,6 +24,11 @@ SCRIPT = textwrap.dedent('''
     a_svc.create_edge(EdgeCreate(source_id=node_b.id, target_id=node_a.id, relationship="references"))
     hood = a_svc.neighborhood(node_a.id, depth=2)
     updated = a_svc.update_node(node_a.id, NodeUpdate(expected_version=1, title="PG paris plan v2"))
+    # Detached competing candidate: the service already read version 1 before
+    # another writer won. Repository must refuse even after that stale read.
+    lost = node_a.model_copy(update={"title": "detached stale writer", "version": 2})
+    assert a_svc.repository.save_node(lost, "node.updated", expected_version=1) is None
+    assert a_svc.repository.get_node(node_a.id).title == "PG paris plan v2"
     try:
         a_svc.update_node(node_a.id, NodeUpdate(expected_version=1, title="stale write"))
         stale = "accepted"
@@ -53,6 +58,20 @@ SCRIPT = textwrap.dedent('''
     assert foreign_edge.id not in {e.id for e in a_svc.repository.edges_for({node_a.id})}
     assert b_svc.repository.edges_for({b_node.id}) == []
     assert {e.id for e in a_svc.neighborhood(node_a.id).edges} == {e.id for e in hood.edges}
+    # Real simultaneous writers, separate repository instances and DB sessions.
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    barrier = Barrier(2)
+    def race(title):
+        repo = SqlGraphRepository("tenant-a", title)
+        candidate = repo.get_node(node_a.id).model_copy(update={"title": title, "version": 3})
+        barrier.wait(timeout=10)
+        return repo.save_node(candidate, "node.updated", expected_version=2) is not None
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        outcomes = list(pool.map(race, ["race-one", "race-two"]))
+    assert sorted(outcomes) == [False, True], outcomes
+    final = a_svc.repository.get_node(node_a.id)
+    assert final.version == 3 and final.title in {"race-one", "race-two"}
     print(json.dumps({"nodes": len(hood.nodes), "edges": len(hood.edges), "version_after_update": updated.version,
                       "stale_update": stale, "a_nodes": len(a_svc.repository.list_nodes(limit=50)),
                       "b_nodes": len(b_svc.repository.list_nodes(limit=50)), "a_sees_b": a_sees_b, "b_sees_a": b_sees_a}))
@@ -75,4 +94,6 @@ def test_m09_graph_data_path_on_real_postgres(tmp_path):
     import psycopg
     with psycopg.connect(url.replace("postgresql+psycopg://", "postgresql://")) as conn:
         counts = dict(conn.execute("select tenant_id, count(*) from m09_nodes group by 1").fetchall())
+        updates = conn.execute("select count(*) from m09_audit where action = 'node.updated'").fetchone()[0]
     assert counts == {"tenant-a": 2, "tenant-b": 1}, counts
+    assert updates == 2  # one sequential update and one race winner; no failed-claim audit
