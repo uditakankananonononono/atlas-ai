@@ -1009,3 +1009,42 @@ def test_fair_scheduler_aging_overflow_is_reported_before_selection_mutation():
     with pytest.raises(ValueError):
         scheduler.next_context(now=now)
     assert context.last_run_at is None and context.ticks_served == 0
+
+
+def test_durable_risk_register_restart_revision_and_tenant_isolation():
+    from app.modules.m20_general_cognitive_worker.risk_register import DurableRiskRegister
+    engine = make_engine()
+    a = GCWRepository(engine, tenant_id='a'); a.create_schema()
+    b = GCWRepository(engine, tenant_id='b')
+    risk = {'id': 'cutoff', 'cause': 'Miss payroll cutoff', 'severity': 8, 'occurrence': 3, 'detection': 4,
+            'owner': '', 'mitigation': 'Queue alert', 'test': '', 'evidence': []}
+    first = DurableRiskRegister(a).create(goal='Payroll export', risks=[risk])
+    assert DurableRiskRegister(b).get(first['id']) is None
+    loaded = DurableRiskRegister(a).get(first['id'])
+    assert loaded['revision'] == 1 and loaded['report']['risks'][0]['risk_priority_number'] == 96
+    risk.update(owner='ops', test='Replay cutoff', evidence=['supplied-test'])
+    updated = DurableRiskRegister(a).revise(first['id'], expected_revision=1, risks=[risk])
+    assert updated['revision'] == 2 and updated['report']['ready_for_owner_review']
+    with pytest.raises(ValueError, match='revision conflict'):
+        DurableRiskRegister(a).revise(first['id'], expected_revision=1, risks=[risk])
+    history = DurableRiskRegister(a).history(first['id'])
+    assert [row['revision'] for row in history] == [1, 2]
+    assert history[0]['report']['risks'][0]['owner'] == ''
+    with pytest.raises(KeyError):
+        DurableRiskRegister(b).revise(first['id'], expected_revision=2, risks=[risk])
+
+
+def test_durable_risk_http_revision_conflict_and_history(mounted):
+    client, runtime, repo, _ = mounted
+    risk = {'id': 'fixture', 'cause': 'Miss cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+            'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+    created = client.post('/api/modules/20/runtime/risk-registers', json={'goal': 'fixture', 'risks': [risk]})
+    assert created.status_code == 201
+    identifier = created.json()['id']
+    risk['owner'] = 'ops lead'
+    updated = client.post(f'/api/modules/20/runtime/risk-registers/{identifier}/revise', json={'expected_revision': 1, 'risks': [risk]})
+    assert updated.status_code == 200 and updated.json()['revision'] == 2
+    stale = client.post(f'/api/modules/20/runtime/risk-registers/{identifier}/revise', json={'expected_revision': 1, 'risks': [risk]})
+    assert stale.status_code == 409
+    assert len(client.get(f'/api/modules/20/runtime/risk-registers/{identifier}/history').json()) == 2
+    assert client.get('/api/modules/20/runtime/risk-registers/missing').status_code == 404

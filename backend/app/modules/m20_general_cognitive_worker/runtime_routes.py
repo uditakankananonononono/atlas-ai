@@ -209,3 +209,44 @@ def activate_method(name: str, body: MethodReviewIn, runtime: Any = Depends(get_
     except PermissionError as exc:
         raise HTTPException(409,str(exc)) from exc
     return {"name": name, "review_status": "active"}
+
+
+class RiskRegisterCreateRequest(BaseModel):
+    goal: str = Field(min_length=1, max_length=2000)
+    risks: list[dict[str, Any]] = Field(min_length=1, max_length=100)
+
+
+class RiskRegisterRevisionRequest(BaseModel):
+    expected_revision: int = Field(ge=1, strict=True)
+    risks: list[dict[str, Any]] = Field(min_length=1, max_length=100)
+
+
+@router.post("/risk-registers", status_code=201)
+def create_risk_register(request: RiskRegisterCreateRequest, runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        return runtime.risk_registers.create(goal=request.goal, risks=request.risks)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc))
+
+
+@router.get("/risk-registers/{identifier}")
+def get_risk_register(identifier: str, runtime: GCWRuntime = Depends(get_runtime)):
+    result = runtime.risk_registers.get(identifier)
+    if result is None: raise HTTPException(404, "register not found")
+    return result
+
+
+@router.get("/risk-registers/{identifier}/history")
+def risk_register_history(identifier: str, runtime: GCWRuntime = Depends(get_runtime)):
+    if runtime.risk_registers.get(identifier) is None: raise HTTPException(404, "register not found")
+    return runtime.risk_registers.history(identifier)
+
+
+@router.post("/risk-registers/{identifier}/revise")
+def revise_risk_register(identifier: str, request: RiskRegisterRevisionRequest, runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        return runtime.risk_registers.revise(identifier, expected_revision=request.expected_revision, risks=request.risks)
+    except KeyError:
+        raise HTTPException(404, "register not found")
+    except ValueError as exc:
+        raise HTTPException(409 if str(exc).startswith('revision conflict') else 422, str(exc))
