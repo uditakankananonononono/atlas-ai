@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import copy
+import json
 
 from jsonschema import Draft202012Validator, SchemaError, ValidationError
 from jsonschema.validators import validator_for
@@ -205,6 +206,12 @@ class ToolDispatcher:
                 result = await asyncio.wait_for(
                     tool.handler(copy.deepcopy(arguments)), timeout=tool.spec.timeout_seconds,
                 )
+                if not isinstance(result, dict):
+                    raise ValueError('tool result must be a JSON object')
+                encoded = json.dumps(result, allow_nan=False)
+                if len(encoded.encode('utf-8')) > 64000:
+                    raise ValueError('tool result exceeds 64000 JSON bytes')
+                record.result = json.loads(encoded)
                 record.succeeded = True
                 record.result_summary = str(result)[:500]
                 record.finished_at = datetime.now(timezone.utc)
