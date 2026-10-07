@@ -82,3 +82,25 @@ class DurableRiskRegister:
                      'highest_priority': max(risk['risk_priority_number'] for risk in revision.report_json['risks']),
                      'ready_for_owner_review': revision.report_json['ready_for_owner_review'],
                      'evidence_verified': False} for row, revision in rows]
+
+    def compare(self, identifier, *, from_revision, to_revision):
+        if any(type(revision) is not int or revision < 1 for revision in (from_revision, to_revision)):
+            raise ValueError('revisions must be positive exact integers')
+        with self.repo._session() as session:
+            before = session.get(RiskRevisionRow, (self.repo.tenant_id, identifier, from_revision))
+            after = session.get(RiskRevisionRow, (self.repo.tenant_id, identifier, to_revision))
+            if before is None or after is None: raise KeyError(identifier)
+            old = {risk['id']: risk for risk in before.report_json['risks']}
+            new = {risk['id']: risk for risk in after.report_json['risks']}
+            changed = []
+            fields = ('cause', 'severity', 'occurrence', 'detection', 'owner', 'mitigation', 'test', 'evidence')
+            for identifier_key in sorted(old.keys() & new.keys()):
+                changes = {field: {'before': copy.deepcopy(old[identifier_key][field]), 'after': copy.deepcopy(new[identifier_key][field])}
+                           for field in fields if old[identifier_key][field] != new[identifier_key][field]}
+                if changes:
+                    changed.append({'id': identifier_key, 'fields': changes,
+                                    'priority': {'before': old[identifier_key]['risk_priority_number'],
+                                                 'after': new[identifier_key]['risk_priority_number']}})
+            return {'id': identifier, 'from_revision': from_revision, 'to_revision': to_revision,
+                    'added': sorted(new.keys() - old.keys()), 'removed': sorted(old.keys() - new.keys()),
+                    'changed': changed, 'evidence_verified': False, 'approval_granted': False}

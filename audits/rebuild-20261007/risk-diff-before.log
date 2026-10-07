@@ -1,0 +1,27 @@
+........................................................................ [ 92%]
+.....F                                                                   [100%]
+=================================== FAILURES ===================================
+_____ test_risk_register_revision_diff_exposes_control_and_rating_changes ______
+
+    def test_risk_register_revision_diff_exposes_control_and_rating_changes():
+        from app.modules.m20_general_cognitive_worker.risk_register import DurableRiskRegister
+        repo = fresh_repo(); register = DurableRiskRegister(repo)
+        risk = {'id': 'cutoff', 'cause': 'Miss payroll cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+                'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+        first = register.create(goal='fixture', risks=[risk])
+        register.revise(first['id'], expected_revision=1, risks=[{**risk, 'owner': 'ops', 'severity': 8},
+            {**risk, 'id': 'vendor', 'cause': 'Vendor offline'}])
+>       diff = register.compare(first['id'], from_revision=1, to_revision=2)
+               ^^^^^^^^^^^^^^^^
+E       AttributeError: 'DurableRiskRegister' object has no attribute 'compare'
+
+tests/modules/test_m20_runtime_depth.py:1133: AttributeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_risk_register_revision_diff_exposes_control_and_rating_changes
+1 failed, 77 passed, 1 warning in 4.48s

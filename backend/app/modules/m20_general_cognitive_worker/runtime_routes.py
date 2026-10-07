@@ -258,3 +258,13 @@ def revise_risk_register(identifier: str, request: RiskRegisterRevisionRequest, 
         raise HTTPException(404, "register not found")
     except ValueError as exc:
         raise HTTPException(409 if str(exc).startswith('revision conflict') else 422, str(exc))
+
+
+@router.get('/risk-registers/{identifier}/compare')
+def compare_risk_register(identifier: str, from_revision: int, to_revision: int, runtime: GCWRuntime = Depends(get_runtime)):
+    try:
+        return runtime.risk_registers.compare(identifier, from_revision=from_revision, to_revision=to_revision)
+    except KeyError:
+        raise HTTPException(404, 'register revision not found')
+    except ValueError as exc:
+        raise HTTPException(422, str(exc))

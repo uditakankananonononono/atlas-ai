@@ -1120,3 +1120,21 @@ def test_risk_revision_file_sqlite_simultaneous_writers_only_one_commits(tmp_pat
     winner = next(owner for status, owner in results if status == 'committed')
     assert register.get(first['id'])['report']['risks'][0]['owner'] == winner
     engine.dispose()
+
+
+def test_risk_register_revision_diff_exposes_control_and_rating_changes():
+    from app.modules.m20_general_cognitive_worker.risk_register import DurableRiskRegister
+    repo = fresh_repo(); register = DurableRiskRegister(repo)
+    risk = {'id': 'cutoff', 'cause': 'Miss payroll cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+            'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+    first = register.create(goal='fixture', risks=[risk])
+    register.revise(first['id'], expected_revision=1, risks=[{**risk, 'owner': 'ops', 'severity': 8},
+        {**risk, 'id': 'vendor', 'cause': 'Vendor offline'}])
+    diff = register.compare(first['id'], from_revision=1, to_revision=2)
+    assert diff['added'] == ['vendor'] and diff['removed'] == []
+    assert diff['changed'][0]['id'] == 'cutoff'
+    assert diff['changed'][0]['fields']['owner'] == {'before': '', 'after': 'ops'}
+    assert diff['changed'][0]['priority'] == {'before': 30, 'after': 48}
+    assert diff['evidence_verified'] is False
+    with pytest.raises(KeyError):
+        register.compare(first['id'], from_revision=1, to_revision=99)
