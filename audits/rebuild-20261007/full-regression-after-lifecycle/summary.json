@@ -1,0 +1,15 @@
+{
+  "base_revision": "082d8ae641b6dffa00510f85a74fad832d448570",
+  "migration_correction_revision": "975cb80e74f944f42ad7b6525c7eb8c2d1894f3e",
+  "files": 496,
+  "batches": 20,
+  "counts": {
+    "passed": 9705,
+    "failed": 0,
+    "skipped": 14,
+    "warnings": 26
+  },
+  "batch_wall_seconds": 398.26032468500125,
+  "warnings_scope": "summed occurrences across isolated batches, not unique categories",
+  "scope": "local tests at current source, not original-depth or deployment certification"
+}
