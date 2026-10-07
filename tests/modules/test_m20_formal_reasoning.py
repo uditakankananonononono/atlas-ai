@@ -52,3 +52,50 @@ def test_biconditional_rejects_or_truth_assignment_and_accepts_equal_values():
  assert r['validity'] and r['premise_model_count']==1
  r=argument_validity({'formulas':[{'iff':['P','Q']}],'conclusion':'P'})
  assert not r['validity'] and r['countermodel']=={'P':False,'Q':False}
+
+
+def test_deduction_returns_source_indexed_entailing_support_and_drops_irrelevant_premise():
+ r=argument_validity({'formulas':['P',{'implies':['P','Q']},'R'],'conclusion':'Q'})
+ support=r['premise_support']
+ assert support['premise_indices']==[0,1]
+ assert support['kind']=='entailing_premise_subset' and support['irreducible']
+ assert support['verified_entailment'] and not support['minimum_cardinality']
+ for i in support['premise_indices']:
+  keep=[j for j in support['premise_indices'] if j!=i]
+  reduced=argument_validity({'formulas':[['P',{'implies':['P','Q']},'R'][j] for j in keep],'conclusion':'Q'})
+  assert not reduced['validity']
+
+
+def test_vacuous_entailment_support_is_named_inconsistent_not_sound_proof():
+ r=argument_validity({'formulas':['P',{'not':'P'},'R'],'conclusion':'Q'})
+ assert r['premise_support']['premise_indices']==[0,1]
+ assert r['premise_support']['kind']=='inconsistent_premise_subset'
+ assert not r['premise_support']['premises_satisfiable']
+ assert r['soundness'] is None
+
+
+def test_tautology_can_have_empty_support_and_invalid_argument_has_no_support():
+ r=argument_validity({'formulas':['P'],'conclusion':{'or':['Q',{'not':'Q'}]}})
+ assert r['premise_support']['premise_indices']==[] and r['premise_support']['irreducible']
+ r=argument_validity({'formulas':['Q'],'conclusion':'P'})
+ assert r['premise_support'] is None and r['countermodel']=={'P':False,'Q':True}
+
+
+def test_propositional_support_budget_exhaustion_is_not_claimed_irreducible():
+ r=argument_validity({'formulas':['P',{'implies':['P','Q']},'R'],'conclusion':'Q','support_max_checks':1})
+ assert r['premise_support']['premise_indices']==[0,1,2]
+ assert not r['premise_support']['irreducible'] and r['premise_support']['stopped_by']=='check_budget'
+
+
+def test_returned_propositional_support_matches_independent_assignment_oracle():
+ import itertools
+ premises=['P',{'implies':['P','Q']},{'implies':['Q','R']},'S']
+ r=argument_validity({'formulas':premises,'conclusion':'R'})
+ indices=r['premise_support']['premise_indices']
+ def valid(selected):
+  for P,Q,R,S in itertools.product((False,True),repeat=4):
+   values=[P,not P or Q,not Q or R,S]
+   if all(values[i] for i in selected) and not R:return False
+  return True
+ assert indices==[0,1,2] and valid(indices)
+ assert all(not valid(indices[:i]+indices[i+1:]) for i in range(len(indices)))

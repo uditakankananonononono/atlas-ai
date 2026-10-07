@@ -1,0 +1,100 @@
+{
+  "modus_ponens": {
+    "premise_support": {
+      "premise_indices": [
+        0,
+        1
+      ],
+      "verified_entailment": true,
+      "premises_satisfiable": true,
+      "premise_model_count": 2,
+      "kind": "entailing_premise_subset",
+      "irreducible": true,
+      "minimum_cardinality": false,
+      "subset_checks": 4,
+      "stopped_by": "irreducible"
+    },
+    "validity": true,
+    "premises_satisfiable": true,
+    "premise_model_count": 1,
+    "countermodel": null,
+    "sample_premise_models": [
+      {
+        "P": true,
+        "Q": true,
+        "R": true
+      }
+    ],
+    "atoms": [
+      "P",
+      "Q",
+      "R"
+    ],
+    "soundness": null,
+    "validity_does_not_establish_premise_truth": true,
+    "boundary": "Exhaustive propositional entailment only. Real-world premise truth is unverified; inconsistent premises entail vacuously and are flagged."
+  },
+  "vacuous": {
+    "premise_support": {
+      "premise_indices": [
+        0,
+        1
+      ],
+      "verified_entailment": true,
+      "premises_satisfiable": false,
+      "premise_model_count": 0,
+      "kind": "inconsistent_premise_subset",
+      "irreducible": true,
+      "minimum_cardinality": false,
+      "subset_checks": 4,
+      "stopped_by": "irreducible"
+    },
+    "validity": true,
+    "premises_satisfiable": false,
+    "premise_model_count": 0,
+    "countermodel": null,
+    "sample_premise_models": [],
+    "atoms": [
+      "P",
+      "Q",
+      "R"
+    ],
+    "soundness": null,
+    "validity_does_not_establish_premise_truth": true,
+    "boundary": "Exhaustive propositional entailment only. Real-world premise truth is unverified; inconsistent premises entail vacuously and are flagged."
+  },
+  "tautology": {
+    "premise_support": {
+      "premise_indices": [],
+      "verified_entailment": true,
+      "premises_satisfiable": true,
+      "premise_model_count": 4,
+      "kind": "entailing_premise_subset",
+      "irreducible": true,
+      "minimum_cardinality": false,
+      "subset_checks": 2,
+      "stopped_by": "irreducible"
+    },
+    "validity": true,
+    "premises_satisfiable": true,
+    "premise_model_count": 2,
+    "countermodel": null,
+    "sample_premise_models": [
+      {
+        "P": true,
+        "Q": false
+      },
+      {
+        "P": true,
+        "Q": true
+      }
+    ],
+    "atoms": [
+      "P",
+      "Q"
+    ],
+    "soundness": null,
+    "validity_does_not_establish_premise_truth": true,
+    "boundary": "Exhaustive propositional entailment only. Real-world premise truth is unverified; inconsistent premises entail vacuously and are flagged."
+  }
+}

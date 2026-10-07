@@ -32,14 +32,41 @@ def argument_validity(p):
         if op=='not':return not evaluate(args,values)
         a,b=(evaluate(child,values) for child in args)
         return {'and':a and b,'or':a or b,'implies':not a or b,'iff':a==b}[op]
+    max_checks=p.get('support_max_checks',64)
+    if type(max_checks) is not int or not 1<=max_checks<=256:raise ValueError('support_max_checks must be integer1..256')
     satisfying=0;counter=None;premise_models=[]
+    premise_masks=[0]*len(premises);conclusion_mask=0;model_count=0
     for bits in itertools.product([False,True],repeat=len(atoms)):
         model=dict(zip(sorted(atoms),bits))
-        if all(evaluate(expr,model) for expr in premises):
+        bit=1<<model_count;model_count+=1
+        premise_values=[evaluate(expr,model) for expr in premises]
+        for i,value in enumerate(premise_values):
+            if value:premise_masks[i]|=bit
+        conclusion_value=evaluate(conclusion,model)
+        if conclusion_value:conclusion_mask|=bit
+        if all(premise_values):
             satisfying+=1
             if len(premise_models)<3:premise_models.append(model)
-            if not evaluate(conclusion,model) and counter is None:counter=model
-    return {'validity':counter is None,'premises_satisfiable':satisfying>0,'premise_model_count':satisfying,
+            if not conclusion_value and counter is None:counter=model
+    support=None
+    if counter is None:
+        full_mask=(1<<model_count)-1
+        def models(indices):
+            mask=full_mask
+            for i in indices:mask&=premise_masks[i]
+            return mask
+        retained=list(range(len(premises)));cursor=0;checks=1
+        while cursor<len(retained) and checks<max_checks:
+            candidate=retained[:cursor]+retained[cursor+1:];checks+=1
+            if not (models(candidate)&(full_mask^conclusion_mask)):retained=candidate
+            else:cursor+=1
+        mask=models(retained);irreducible=cursor==len(retained)
+        support={'premise_indices':retained,'verified_entailment':True,
+                 'premises_satisfiable':bool(mask),'premise_model_count':mask.bit_count(),
+                 'kind':'entailing_premise_subset' if mask else 'inconsistent_premise_subset',
+                 'irreducible':irreducible,'minimum_cardinality':False,'subset_checks':checks,
+                 'stopped_by':'irreducible' if irreducible else 'check_budget'}
+    return {'premise_support':support,'validity':counter is None,'premises_satisfiable':satisfying>0,'premise_model_count':satisfying,
             'countermodel':counter,'sample_premise_models':premise_models,'atoms':sorted(atoms),
             'soundness':None,'validity_does_not_establish_premise_truth':True,
             'boundary':'Exhaustive propositional entailment only. Real-world premise truth is unverified; inconsistent premises entail vacuously and are flagged.'}
