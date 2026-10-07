@@ -179,9 +179,16 @@ class DurableRetrospectiveEngine(RetrospectiveEngine):
         self.repo = repo
 
     def write(self, task_id: str, *, went_well, went_poorly, lessons, execution_report=None) -> Retrospective:
-        retro = super().write(task_id, went_well=went_well, went_poorly=went_poorly, lessons=lessons, execution_report=execution_report)
+        retro = Retrospective(
+            task_id=task_id, went_well=went_well, went_poorly=went_poorly,
+            lessons=lessons, execution_report=execution_report or {},
+        ).model_copy(deep=True)
+        text = " ".join(retro.went_well + retro.went_poorly + retro.lessons)
+        vector = embed_snapshot(self.embedder, text)
         self.repo.save_retrospective(retro)
-        return retro
+        self._retros[retro.id] = retro
+        self._vectors[retro.id] = vector
+        return retro.model_copy(deep=True)
 
     @classmethod
     def load(cls, repo: GCWRepository, embedder: EmbeddingProvider | None = None) -> "DurableRetrospectiveEngine":

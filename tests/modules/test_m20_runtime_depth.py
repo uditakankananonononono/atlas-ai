@@ -2320,3 +2320,56 @@ def test_failed_calibration_resolution_keeps_prediction_unresolved(monkeypatch):
  assert runtime.calibration.claims[claim.id].resolved is False
  assert repo.list_claims()[0].resolved is False
  assert runtime.calibration.calibration_error() is None
+
+
+def test_failed_retrospective_write_never_publishes_uncommitted_lesson(monkeypatch):
+ runtime,repo=make_runtime()
+ def fail(retro):raise RuntimeError('fixture retrospective write unavailable')
+ monkeypatch.setattr(repo,'save_retrospective',fail)
+ with pytest.raises(RuntimeError):
+  runtime.retrospectives.write('fixture',went_well=[],went_poorly=[],lessons=['uncommitted fixture lesson'])
+ assert len(runtime.retrospectives)==0
+ assert runtime.retrospectives.lessons_for('fixture lesson')==[]
+ assert repo.list_retrospectives()==[]
+
+
+def test_failed_retrospective_commit_preserves_only_prior_lessons(monkeypatch):
+ runtime,repo=make_runtime()
+ prior=runtime.retrospectives.write('prior',went_well=[],went_poorly=[],lessons=['committed fixture lesson'])
+ original=repo._session
+ def session():
+  result=original()
+  def fail():raise RuntimeError('fixture retrospective commit unavailable')
+  result.commit=fail
+  return result
+ monkeypatch.setattr(repo,'_session',session)
+ with pytest.raises(RuntimeError):
+  runtime.retrospectives.write('later',went_well=[],went_poorly=[],lessons=['uncommitted later lesson'])
+ assert len(runtime.retrospectives)==1
+ assert [retro.id for retro,score in runtime.retrospectives.lessons_for('lesson')]==[prior.id]
+ assert [retro.id for retro in repo.list_retrospectives()]==[prior.id]
+
+
+def test_retrospective_embedding_failure_precedes_durable_write(monkeypatch):
+ runtime,repo=make_runtime()
+ prior=runtime.retrospectives.write('prior',went_well=[],went_poorly=[],lessons=['committed lesson'])
+ def fail(text):raise RuntimeError('fixture embedding unavailable')
+ monkeypatch.setattr(runtime.retrospectives.embedder,'embed',fail)
+ with pytest.raises(RuntimeError):
+  runtime.retrospectives.write('later',went_well=[],went_poorly=[],lessons=['later lesson'])
+ assert len(runtime.retrospectives)==1
+ assert [retro.id for retro in repo.list_retrospectives()]==[prior.id]
+
+
+def test_retrospective_success_reloads_and_detaches_nested_report():
+ from app.modules.m20_general_cognitive_worker.persistence import DurableRetrospectiveEngine
+ runtime,repo=make_runtime();report={'actions':[{'status':'succeeded'}]}
+ saved=runtime.retrospectives.write('fixture',went_well=['read'],went_poorly=[],lessons=['check original source'],execution_report=report)
+ report['actions'][0]['status']='changed'
+ saved.lessons.append('caller changed')
+ saved.execution_report['actions'][0]['status']='changed again'
+ reloaded=DurableRetrospectiveEngine.load(repo)
+ for engine in (runtime.retrospectives,reloaded):
+  recalled=engine.lessons_for('original source')[0][0]
+  assert recalled.lessons==['check original source']
+  assert recalled.execution_report['actions'][0]['status']=='succeeded'
