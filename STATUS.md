@@ -1042,3 +1042,7 @@ Oneactualmissinglistfailure retained: registeredriskIDmustbecarriedafterrestart.
 ## Additional risk revision parallel-writer evidence
 
 FileSQLite twoindependentengines/threads/barrier submitexpectedrevision1together: onecommit/oneconflict/history1,2/winnerownerretained.77runtimepass1warning. Testpassedfirstattempt, evidenceaddition notnewreproduceddefect orsourcefix. PostgreSQL/deployedparallelacceptanceremainsopen. Logrisk-parallel-writer retained.
+
+## Risk review revision comparison
+
+Oneactualmissingcomparefailure retained: owner/control/ratingchangesrequiredmanualJSONcomparison. Tenant-scoped revisioncompare computesadded/removedrisks andchangedfields/beforeafterpriorities, HTTP404unknownrevision/422badinputs.78runtimepass1warning; recorded87adjacent2457pass2warnings (exacttimeinlog). Reviewdiffnotapproval/evidenceverification. No visualUIorproductionacceptanceclaimed. Latestfull10022source69d6262 predateseightcodefixes.
