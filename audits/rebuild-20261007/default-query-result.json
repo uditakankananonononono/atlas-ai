@@ -1,0 +1,156 @@
+{
+  "model_witnesses": [
+    {
+      "model": [
+        "b"
+      ],
+      "supplied_facts": [],
+      "derived_trace": [
+        {
+          "rule": "b-if-not-a",
+          "fact": "b"
+        }
+      ],
+      "defeated_rules": [
+        {
+          "rule_id": "a-if-not-b",
+          "blocking_atoms": [
+            "b"
+          ]
+        }
+      ]
+    },
+    {
+      "model": [
+        "a"
+      ],
+      "supplied_facts": [],
+      "derived_trace": [
+        {
+          "rule": "a-if-not-b",
+          "fact": "a"
+        }
+      ],
+      "defeated_rules": [
+        {
+          "rule_id": "b-if-not-a",
+          "blocking_atoms": [
+            "a"
+          ]
+        }
+      ]
+    }
+  ],
+  "stable_models": [
+    [
+      "b"
+    ],
+    [
+      "a"
+    ]
+  ],
+  "model_count": 2,
+  "cautious_conclusions": [],
+  "possible_conclusions": [
+    "a",
+    "b"
+  ],
+  "ambiguous_conclusions": [
+    "a",
+    "b"
+  ],
+  "consistent": true,
+  "queries": [
+    {
+      "atom": "a",
+      "status": "ambiguous",
+      "possible": true,
+      "cautious": false,
+      "supporting_model": [
+        "a"
+      ],
+      "countermodel": [
+        "b"
+      ],
+      "not_entailed_does_not_mean_false": true
+    },
+    {
+      "atom": "unknown",
+      "status": "not_entailed",
+      "possible": false,
+      "cautious": false,
+      "supporting_model": null,
+      "countermodel": [
+        "b"
+      ],
+      "not_entailed_does_not_mean_false": true
+    }
+  ],
+  "before": {
+    "model_witnesses": [
+      {
+        "model": [
+          "b"
+        ],
+        "supplied_facts": [],
+        "derived_trace": [
+          {
+            "rule": "b-if-not-a",
+            "fact": "b"
+          }
+        ],
+        "defeated_rules": [
+          {
+            "rule_id": "a-if-not-b",
+            "blocking_atoms": [
+              "b"
+            ]
+          }
+        ]
+      },
+      {
+        "model": [
+          "a"
+        ],
+        "supplied_facts": [],
+        "derived_trace": [
+          {
+            "rule": "a-if-not-b",
+            "fact": "a"
+          }
+        ],
+        "defeated_rules": [
+          {
+            "rule_id": "b-if-not-a",
+            "blocking_atoms": [
+              "a"
+            ]
+          }
+        ]
+      }
+    ],
+    "stable_models": [
+      [
+        "b"
+      ],
+      [
+        "a"
+      ]
+    ],
+    "model_count": 2,
+    "cautious_conclusions": [],
+    "possible_conclusions": [
+      "a",
+      "b"
+    ],
+    "ambiguous_conclusions": [
+      "a",
+      "b"
+    ],
+    "consistent": true
+  },
+  "retracted_conclusions": [],
+  "new_conclusions": [],
+  "beliefs_revisable": true,
+  "boundary": "Exact finite normal logic-program stable models, symbolic Horn rules with unless literals. All alternative stable models preserved; no real-world truth or default-priority claim."
+}
