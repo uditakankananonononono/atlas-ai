@@ -640,7 +640,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located tenant-scoped brand/artifact/event repository, basic media-kit/sponsorship/invoice/report rendering, approval proposals, obligation tracker and contract-extraction draft review. Lane code has campaign/reminder/portfolio objects separately. Complete discovery/outreach/negotiation/renewal integration with M05 CRM not established in scoped M07 read. No financial/partner effects or renderer run. Status stays unverified."
     },
     {
       "row": 58,
@@ -651,7 +651,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Mounted Service.discover scores supplied mission-word overlap, not a live discovery agent. discovery.py offers explicit JSON API/RSS registry sources; worker refresh_brand_discovery returns ready_for_registry_dispatch, not an executed continuous monitor. Named AspireIQ/Upfluence/Grapevine connectors, competitor scrape and Browser Agent official-page dossier extraction not established in scoped read. Alignment score is heuristic supplied-text overlap, not strategic fit validation. No network/monitor enrollment or paid accounts. Status stays unverified."
     },
     {
       "row": 59,
@@ -662,7 +662,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "media_kit renders supplied creator/mission/metrics through simple escaped HTML and WeasyPrint, falling back to HTML if import unavailable; template metadata says jinja-compatible but no Jinja template invocation is in this method. It labels metrics Verified while also saying supplied data requires checking, so source validation is not established. propose_send creates tenant-scoped approval for exact artifact hash/recipient, not delivery. Pitch generation with case studies and editable dashboard bridge not established in scoped M07 read. No rendering/pixels/send executed. Status stays unverified."
     },
     {
       "row": 60,
@@ -673,7 +673,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located sponsorship tiers and invoice from caller line items, partnership event log, obligation evidence/approval/invoice/payment event derivation, and lane reminder objects. Payment amounts/status are recorded inputs, not verified bank/processor settlement. Contract extraction has confirm/reject review before obligations. Automatic social-post scheduling on deal confirmation, communication repository integration and dispatched reminders not established in scoped read. No payment, invoice send or calendar/social effect run. Status stays unverified."
     },
     {
       "row": 61,
@@ -684,7 +684,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.report creates artifact from supplied metrics/period and counts all brand events; it does not filter those events to the given report period in this read. Lane PortfolioService aggregates caller CampaignMetrics and contractual/payment totals with CTR/conversion rates. Automatic live-platform/UTM/sentiment ingestion, cost-of-time ROI and learned renewal recommendations not established here. propose_send queues review, not delivery/share. No report render/pixels/partner send or public share run. Status stays unverified."
     },
     {
       "row": 62,
