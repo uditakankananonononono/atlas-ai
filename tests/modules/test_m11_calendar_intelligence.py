@@ -464,3 +464,36 @@ def test_meeting_load_clips_cross_midnight_and_week_edges():
  assert report.total_meeting_minutes==120
  assert [d.meeting_minutes for d in report.days]==[60,30,0,0,0,0,30]
  assert report.days[0].longest_meeting_minutes==30
+
+@pytest.mark.xfail(strict=True, reason="M11 refresh token passed directly as bearer; pending runtime token exchange wiring")
+def test_google_watch_and_sync_must_exchange_refresh_token_before_bearer_use(tmp_path):
+ class StrictGoogle(FakeGoogleCalendarClient):
+  async def watch(self, access_token, *args, **kwargs):
+   assert access_token=='short-lived-access'
+   return await super().watch(access_token,*args,**kwargs)
+  async def list_events(self, token, *args, **kwargs):
+   assert token=='short-lived-access'
+   return EventPage(events=[],next_sync_token='next')
+ google=StrictGoogle();service,repo,gate=make_service(tmp_path,google=google)
+ source=service.register_google_source(GoogleSourceCreate(account_email='a@example.com',refresh_token='persistent-refresh',calendar_id='primary'))
+ calls=[]
+ async def exchange(refresh):
+  calls.append(refresh);return 'short-lived-access'
+ service._google_access_token_provider=exchange
+ asyncio.run(service.ensure_watch(source.id))
+ asyncio.run(service.sync_source(source.id))
+ assert calls==['persistent-refresh','persistent-refresh']
+
+
+@pytest.mark.xfail(strict=True, reason="M11 meeting load uses UTC buckets; pending local-timezone contract")
+def test_meeting_load_buckets_follow_user_timezone():
+ from types import SimpleNamespace
+ from zoneinfo import ZoneInfo
+ class Repo:
+  def list_events(self,**kwargs):
+   return [SimpleNamespace(start=datetime(2026,10,4,19,0,tzinfo=UTC),end=datetime(2026,10,4,20,0,tzinfo=UTC))]
+ service=Service(Repo(),FakeApprovalGate(),cipher=None)
+ # Monday 00:30-01:30 Asia/Calcutta, despite Sunday UTC timestamps.
+ report=service.meeting_load(date(2026,10,5),timezone_name='Asia/Calcutta')
+ assert report.days[0].meeting_minutes==60
+ assert report.total_meeting_minutes==60
