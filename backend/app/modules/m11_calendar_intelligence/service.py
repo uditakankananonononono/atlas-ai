@@ -68,6 +68,10 @@ class SourceNotFoundError(LookupError):
     pass
 
 
+class UnsupportedProviderError(ValueError):
+    """The source's provider does not support this operation."""
+
+
 class ChannelVerificationError(PermissionError):
     """A watch-channel notification carried the wrong token."""
 
@@ -207,7 +211,7 @@ class Service:
             raise RuntimeError("google calendar client not configured")
         row = self._source(source_id)
         if row.provider != "google":
-            raise ValueError("only google sources support watch channels")
+            raise UnsupportedProviderError("only google sources support watch channels")
         expiration = row.watch_expiration
         if expiration is not None and expiration.tzinfo is None:
             expiration = expiration.replace(tzinfo=timezone.utc)

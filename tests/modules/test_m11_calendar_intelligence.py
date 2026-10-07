@@ -658,3 +658,49 @@ def test_apply_reschedule_mid_apply_failure_leaves_no_partial_state(tmp_path):
     assert scheduled.count("New deadline") == 1
     pending = [t.title for t in repo.list_tasks(status="pending")]
     assert pending.count("New deadline") == 0
+
+
+# -- route error classification ---------------------------------------------
+
+def _http_app(service):
+ from fastapi import FastAPI
+ from app.modules.m11_calendar_intelligence.routes import router, get_service
+ app = FastAPI()
+ app.include_router(router)
+ # Isolated HTTP fixture, not production tenant/auth acceptance.
+ app.dependency_overrides[get_service] = lambda: service
+ return app
+
+def test_meeting_load_non_timezone_failure_is_not_relabelled_timezone_error():
+ from fastapi.testclient import TestClient
+ class Repo:
+  def list_events(self, **kwargs):
+   raise ValueError('database connection lost')
+ service = Service(Repo(), FakeApprovalGate(), cipher=None)
+ with TestClient(_http_app(service), raise_server_exceptions=False) as client:
+  response = client.get('/calendar-intelligence/analytics/meeting-load',
+                        params={'week_start': '2026-10-26', 'timezone_name': 'UTC'})
+  assert response.status_code == 500, response.text
+
+def test_watch_on_caldav_source_is_client_error_not_upstream_failure(tmp_path):
+ from fastapi.testclient import TestClient
+ service, repo, _ = make_service(tmp_path)
+ source = service.register_caldav_source(CalDAVSourceCreate(
+  account_email='a@example.com', calendar_url='https://cal.example.com/dav/',
+  username='u', password='p'))
+ with TestClient(_http_app(service)) as client:
+  response = client.post(f'/calendar-intelligence/sources/{source.id}/watch')
+  assert response.status_code == 422, response.text
+
+def test_watch_google_upstream_failure_remains_502(tmp_path):
+ from fastapi.testclient import TestClient
+ from app.modules.m11_calendar_intelligence.google_calendar import UpstreamServiceError
+ class FailingGoogle(FakeGoogleCalendarClient):
+  async def watch(self, access_token, calendar_id, *, channel_id, address, token):
+   raise UpstreamServiceError('Calendar watch failed (403)')
+ service, repo, _ = make_service(tmp_path, google=FailingGoogle())
+ source = service.register_google_source(GoogleSourceCreate(
+  account_email='a@example.com', refresh_token='persistent-refresh', calendar_id='primary'))
+ with TestClient(_http_app(service)) as client:
+  response = client.post(f'/calendar-intelligence/sources/{source.id}/watch')
+  assert response.status_code == 502, response.text
