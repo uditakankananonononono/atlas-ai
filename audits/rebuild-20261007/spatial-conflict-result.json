@@ -1,0 +1,36 @@
+{
+  "status": "inconsistent",
+  "layout": null,
+  "queries": [],
+  "conflict_witness": {
+    "constraints": [
+      {
+        "source": "relation",
+        "relation_index": 0,
+        "relation": {
+          "subject": "a",
+          "reference": "b",
+          "direction": "east",
+          "minimum_gap": 3
+        }
+      },
+      {
+        "source": "relation",
+        "relation_index": 1,
+        "relation": {
+          "subject": "b",
+          "reference": "a",
+          "direction": "east",
+          "minimum_gap": 2
+        }
+      }
+    ],
+    "verified_infeasible": true,
+    "irreducible": true,
+    "minimum_cardinality": false,
+    "solver_checks": 16,
+    "stopped_by": "irreducible"
+  },
+  "frame_of_reference": "supplied Cartesian",
+  "boundary": "Bounded deletion-derived infeasible subset of supplied axis-order and individual box bounds. LP status confirms infeasibility; irreducible only when every retained deletion was checked, never minimum cardinality or real-world source verification."
+}

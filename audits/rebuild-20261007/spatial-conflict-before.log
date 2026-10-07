@@ -1,0 +1,35 @@
+.....FFF                                                                 [100%]
+=================================== FAILURES ===================================
+__ test_spatial_conflict_identifies_input_cycle_and_drops_unrelated_relation ___
+
+    def test_spatial_conflict_identifies_input_cycle_and_drops_unrelated_relation():
+     r=run([rel('a','b'),rel('b','a'),rel('b','c',0)])
+>    witness=r['conflict_witness']
+             ^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'conflict_witness'
+
+tests/modules/test_m20_spatial_constraints.py:36: KeyError
+_ test_spatial_conflict_retains_box_origin_when_relation_exceeds_available_bounds _
+
+    def test_spatial_conflict_retains_box_origin_when_relation_exceeds_available_bounds():
+     objects=[{'id':'a','bounds':[[0,0],[0,0]]},{'id':'b','bounds':[[0,0],[0,0]]}]
+     r=solve_spatial({'frame_of_reference':'test','spatial_objects':objects,'spatial_relations':[rel('a','b')]})
+>    constraints=r['conflict_witness']['constraints']
+                 ^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'conflict_witness'
+
+tests/modules/test_m20_spatial_constraints.py:46: KeyError
+__ test_bounded_spatial_conflict_does_not_claim_minimal_when_checks_exhausted __
+
+    def test_bounded_spatial_conflict_does_not_claim_minimal_when_checks_exhausted():
+     r=solve_spatial({'frame_of_reference':'test','spatial_objects':O,'spatial_relations':[rel('a','b'),rel('b','a')],'conflict_max_checks':1})
+>    witness=r['conflict_witness']
+             ^^^^^^^^^^^^^^^^^^^^^
+E    KeyError: 'conflict_witness'
+
+tests/modules/test_m20_spatial_constraints.py:53: KeyError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_spatial_constraints.py::test_spatial_conflict_identifies_input_cycle_and_drops_unrelated_relation
+FAILED tests/modules/test_m20_spatial_constraints.py::test_spatial_conflict_retains_box_origin_when_relation_exceeds_available_bounds
+FAILED tests/modules/test_m20_spatial_constraints.py::test_bounded_spatial_conflict_does_not_claim_minimal_when_checks_exhausted
+3 failed, 5 passed in 1.37s
