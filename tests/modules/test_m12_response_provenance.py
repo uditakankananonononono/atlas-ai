@@ -564,7 +564,8 @@ def test_mounted_whitespace_prompt_rejected_before_actual_executor_provider(prom
  assert response.status_code==422,response.text
  assert response.json()['detail'][0]['loc']==['body','prompt'] and not calls
 
-def test_provider_usage_and_logprob_containers_not_rewriteable_through_retained_refs():
+@pytest.mark.parametrize('mutate',['usage','logprobs'])
+def test_provider_usage_and_logprob_containers_not_rewriteable_through_retained_refs(mutate):
  from app.modules.m12_ai_research_lab.models import ModelResult
  usage={'input_tokens':12};logprobs=[0,-.2]
  class Provider:
@@ -572,5 +573,6 @@ def test_provider_usage_and_logprob_containers_not_rewriteable_through_retained_
  cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
  result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
  original_confidence=result.confidence
- usage['input_tokens']=999;logprobs[0]=-100
+ if mutate=='usage':usage['input_tokens']=999
+ else:logprobs[0]=-100
  assert result.usage=={'input_tokens':12} and result.logprobs==[0,-.2] and result.confidence==original_confidence
