@@ -5,12 +5,27 @@ testable primitives for app generation, code workspaces, cited research,
 multimodal event normalization, and approval-gated capability installation.
 """
 from __future__ import annotations
-import ast, copy, hashlib, io, json, re, subprocess, sys, tempfile, time, uuid
+import ast, copy, hashlib, io, json, math, re, subprocess, sys, tempfile, time, uuid
+from .smoke import HARNESS_NAMES, SmokeError as _SmokeError, SmokeLimits, select_smoke_backend
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
+
+
+_WORKSPACE_HARNESS = r'''
+import runpy, sys, traceback
+sys.path.insert(0, "/input/ws")
+try:
+    runpy.run_path(%(entry)r, run_name="__main__")
+except SystemExit as exc:
+    code = exc.code
+    sys.exit(code if isinstance(code, int) else (0 if code is None else 1))
+except BaseException:
+    traceback.print_exc()
+    sys.exit(1)
+'''
 
 class CapabilityError(ValueError): pass
 class SandboxError(CapabilityError): pass
@@ -68,16 +83,37 @@ class CodeWorkspace:
         path=_path(path)
         if path not in self.files: raise SandboxError('entry file not found')
         if not path.endswith('.py'): raise SandboxError('only Python entries are executable')
+        # AST validation is input validation only - it cannot establish
+        # confinement. Execution is contained by the bubblewrap sandbox
+        # (smoke.py contract): no network, cleared env, read-only system and
+        # /input, rlimits, fail closed. When containment is unavailable we
+        # raise instead of falling back to host execution.
         _validate_python(self.files[path])
         timeout_seconds=min(max(float(timeout_seconds),.05),3.0)
+        try:
+            runner=select_smoke_backend('python')
+        except _SmokeError as exc:
+            raise SandboxError(f'sandbox containment unavailable; refusing to run workspace code on the host ({exc})') from exc
+        limits=SmokeLimits(timeout_seconds=max(1,math.ceil(timeout_seconds)),memory_mb=256,cpus=1.0,
+                           pids=64,max_file_mb=8,max_log_bytes=262144,max_output_files=0,max_output_bytes=0)
         with tempfile.TemporaryDirectory(prefix='atlas-workspace-') as root:
+            input_dir=Path(root)/'input'; output_dir=Path(root)/'output'
+            ws_dir=input_dir/'ws'; ws_dir.mkdir(parents=True); output_dir.mkdir()
             for name,content in self.files.items():
-                target=Path(root)/_path(name); target.parent.mkdir(parents=True,exist_ok=True); target.write_text(content)
-            try:
-                cp=subprocess.run([sys.executable,'-B',path],cwd=root,text=True,capture_output=True,timeout=timeout_seconds,env={'PYTHONIOENCODING':'utf-8'})
-                result={'command':['python','-B',path],'exit_code':cp.returncode,'stdout':cp.stdout[-10000:],'stderr':cp.stderr[-10000:],'timed_out':False}
-            except subprocess.TimeoutExpired as exc:
-                result={'command':['python','-B',path],'exit_code':124,'stdout':(exc.stdout or '')[-10000:] if isinstance(exc.stdout,str) else '','stderr':'execution timed out','timed_out':True}
+                target=ws_dir/_path(name); target.parent.mkdir(parents=True,exist_ok=True); target.write_text(content)
+            harness_src=_WORKSPACE_HARNESS % {'entry':'/input/ws/'+path}
+            # Backends disagree on the harness filename (bundled bwrap runs
+            # smoke_main.py, the M4 backend runs analysis.py) - write the same
+            # workspace harness under every declared python harness name.
+            for harness_name in HARNESS_NAMES['python']:
+                (input_dir/harness_name).write_text(harness_src)
+            run=runner.run(language='python',input_dir=input_dir,output_dir=output_dir,limits=limits)
+        stdout=run.stdout.decode('utf-8',errors='replace') if isinstance(run.stdout,bytes) else str(run.stdout or '')
+        stderr=run.stderr.decode('utf-8',errors='replace') if isinstance(run.stderr,bytes) else str(run.stderr or '')
+        result={'command':['python','-B',path],'exit_code':(124 if run.timed_out else run.exit_code),
+                'stdout':stdout[-10000:],'stderr':(stderr if not run.timed_out else (stderr+'execution timed out').strip())[-10000:],
+                'timed_out':bool(run.timed_out),'sandbox':run.backend,
+                'stdout_truncated':bool(run.stdout_truncated),'stderr_truncated':bool(run.stderr_truncated)}
         self.logs.append(result); return result
     def test(self,test_path:str)->dict[str,Any]:
         result=self.run(test_path); result['passed']=result['exit_code']==0; return result

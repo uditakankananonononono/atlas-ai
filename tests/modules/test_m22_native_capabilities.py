@@ -68,3 +68,39 @@ def test_native_routes_are_mounted_and_return_runnable_output_and_failures():
  built=c.post('/tools-hub/native-capabilities/apps/build',json={'data':spec()}); assert built.status_code==200 and built.json()['tests']['passed']
  run=c.post('/tools-hub/native-capabilities/workspaces/run',json={'files':{'x.py':"print('live')\n"},'manifest':{},'entrypoint':'x.py'}); assert run.json()['run']['stdout']=='live\n'
  bad=c.post('/tools-hub/native-capabilities/research',json={'question':'q','sources':[]}); assert bad.status_code==422
+
+
+def test_workspace_run_is_contained_validator_bypass_cannot_read_host():
+    # Regression for the demonstrated bypass: __builtins__['open'] passed the
+    # AST denylist. Inside the bubblewrap sandbox the host /etc is not
+    # mounted, so the same payload fails with a nonzero exit and no bytes.
+    ws = CodeWorkspace()
+    # getattr + __builtins__ name + string literal evades every AST check.
+    ws.write('h.py', "print(getattr(__builtins__,'open')('/etc/hostname').read().strip())\n")
+    out = ws.run('h.py')
+    assert out['exit_code'] != 0
+    assert out['stdout'] == ''
+
+def test_workspace_run_fails_closed_when_containment_unavailable(monkeypatch):
+    # No host fallback: if no sandbox backend is available, run() raises.
+    import app.modules.m22_tools_hub.native_capabilities as nc
+    from app.modules.m22_tools_hub.smoke import SmokeError
+    def _no_backend(language):
+        raise SmokeError('no sandbox available')
+    monkeypatch.setattr(nc, 'select_smoke_backend', _no_backend)
+    ws = CodeWorkspace(); ws.write('main.py', "print('x')\n")
+    with pytest.raises(SandboxError, match='refusing to run workspace code on the host'):
+        ws.run('main.py')
+
+def test_workspace_run_preserves_exit_code_and_stderr():
+    # SystemExit code propagates; an uncaught error exits 1 with a traceback.
+    ws = CodeWorkspace()
+    ws.write('e.py', "raise SystemExit(3)\n")
+    out = ws.run('e.py')
+    assert out['exit_code'] == 3
+    assert out['timed_out'] is False
+    ws2 = CodeWorkspace()
+    ws2.write('t.py', "1/0\n")
+    out2 = ws2.run('t.py')
+    assert out2['exit_code'] == 1
+    assert 'ZeroDivisionError' in out2['stderr']
