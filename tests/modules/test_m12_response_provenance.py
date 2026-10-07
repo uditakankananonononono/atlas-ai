@@ -119,3 +119,21 @@ def test_mounted_single_run_unsafe_candidate_retains_evidence_without_repeat(rev
  assert detail['result']['metadata']=={'unsafe':None} and detail['invalid_json_paths']
  assert len(calls)==1
  json.dumps(detail,allow_nan=False)
+
+def test_mounted_single_run_provider_unknown_is_hold_without_backup():
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.core.providers import ProviderOutcomeUnknown
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):
+   calls.append(kwargs['model_id'])
+   raise ProviderOutcomeUnknown('fixture dispatch unknown')
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['first','backup']]
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:ResearchExecutor(ModelRouter(cat),Provider())
+ response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==409,response.text
+ detail=response.json()['detail'];assert detail['state']=='unknown' and detail['retry_allowed'] is False
+ assert detail['reason']=='fixture dispatch unknown' and calls==['first']

@@ -33,6 +33,7 @@ async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=De
         safe,invalid=safe_workflow_json(detail)
         if invalid:safe["invalid_json_paths"]=invalid
         raise HTTPException(422,safe) from error
+    except ProviderOutcomeUnknown as error:raise HTTPException(409,{"state":"unknown","reason":str(error),"retry_allowed":False}) from error
     except RuntimeError as error: raise HTTPException(422,str(error)) from error
 @router.post("/workflows/run")
 async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tenant),engine=Depends(get_dag_engine)):
