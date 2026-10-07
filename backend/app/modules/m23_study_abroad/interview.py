@@ -51,10 +51,16 @@ class IdentityInterviewRepository:
         now = datetime.now(timezone.utc)
         ident = str(uuid4())
         with self.sessions.begin() as db:
-            db.add(IdentityInterviewRow(id=ident, tenant_id=self.tenant_id, track=track,
-                                        status="active", question_index=0,
-                                        created_at=now, updated_at=now))
-        return self.get(ident)
+            row = IdentityInterviewRow(id=ident, tenant_id=self.tenant_id, track=track,
+                                       status="active", question_index=0,
+                                       created_at=now, updated_at=now)
+            db.add(row)
+            db.flush()
+            # The returned view comes from THIS transaction's own flushed
+            # state, not a post-commit re-read that could observe another
+            # writer's interleaved commit.
+            view = self._view(row, [])
+        return view
 
     def answer(self, session_id: str, response: str, modality: str = "chat",
                evidence_tags: list[str] | None = None) -> dict:
@@ -94,7 +100,23 @@ class IdentityInterviewRepository:
             strengths = [tag.removeprefix("strength:") for tag in values if tag.startswith("strength:")]
             StoryRepository(self.tenant_id, self.sessions).evolve_brand(
                 values, patterns, strengths, evidence, _db=db)
-        return self.get(session_id)
+            # Returned view built inside the committing transaction: what the
+            # caller gets is exactly what this call committed, never a
+            # post-commit re-read that could observe interleaved writes.
+            view = self._view(row, turns)
+        return view
+
+    @staticmethod
+    def _view(row, turns) -> dict:
+        return {
+            "id": row.id, "track": row.track, "status": row.status,
+            "question_index": row.question_index,
+            "next_question": QUESTIONS[row.question_index] if row.status == "active" else None,
+            "turns": [{"ordinal": t.ordinal, "modality": t.modality,
+                       "question": t.question, "student_response": t.student_response,
+                       "evidence_tags": t.evidence_tags} for t in turns],
+            "student_owned": True, "final_essay_prose": None,
+        }
 
     def get(self, session_id: str) -> dict:
         with self.sessions() as db:
@@ -105,12 +127,4 @@ class IdentityInterviewRepository:
                 raise LookupError(session_id)
             turns = list(db.scalars(select(IdentityTurnRow).where(
                 IdentityTurnRow.session_id == session_id).order_by(IdentityTurnRow.ordinal)))
-            return {
-                "id": row.id, "track": row.track, "status": row.status,
-                "question_index": row.question_index,
-                "next_question": QUESTIONS[row.question_index] if row.status == "active" else None,
-                "turns": [{"ordinal": t.ordinal, "modality": t.modality,
-                           "question": t.question, "student_response": t.student_response,
-                           "evidence_tags": t.evidence_tags} for t in turns],
-                "student_owned": True, "final_essay_prose": None,
-            }
+            return self._view(row, turns)

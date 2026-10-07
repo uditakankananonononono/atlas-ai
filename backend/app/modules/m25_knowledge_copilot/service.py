@@ -3,7 +3,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from hashlib import sha256
-from re import IGNORECASE, sub
+import regex as _regex
 from threading import RLock
 from types import MappingProxyType
 from uuid import uuid4
@@ -52,7 +52,14 @@ class Service:
   if data.source==SourceKind.SCREEN_OCR and data.screen_id not in s.screens: raise PermissionError('screen is outside owner selection')
   if data.source in (SourceKind.MIC,SourceKind.SYSTEM_AUDIO) and not s.audio_indicator: raise PermissionError('audio consent indicator is not active')
   text=data.content
-  for r in s.redactions: text=sub(r.pattern,r.replacement,text,flags=IGNORECASE)
+  # Redactions execute on the `regex` engine with a hard per-pattern time
+  # budget. A pattern that exceeds the budget rejects the event BEFORE any
+  # timeline write - partially redacted or unredacted content is never
+  # stored. This is bounded execution per pattern per event, not a proof
+  # that every accepted pattern runs in linear time.
+  for r in s.redactions:
+   try: text=_regex.sub(r.pattern,r.replacement,text,flags=_regex.IGNORECASE,timeout=1.0)
+   except TimeoutError as exc: raise ValueError('redaction pattern exceeded its time budget; event rejected, nothing stored') from exc
   item=TimelineItem(id=str(uuid4()),source=data.source,content=text,source_ref=data.source_ref,observed_at=data.observed_at,speaker=data.speaker,speaker_confidence=data.speaker_confidence,language=data.language);s.timeline.append(item)
   if data.source in (SourceKind.MIC,SourceKind.SYSTEM_AUDIO):
    s.audio.append(item); cutoff=item.observed_at.timestamp()-s.max_buffer
