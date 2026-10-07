@@ -32,3 +32,27 @@ def test_mounted_shipped_invalid_node_stops_valid_sibling_before_call():
  app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:build_dag_engine(Service())
  response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: research}, {id: b, task: research, config: {output_tokens: -1}}]'})
  assert response.status_code==422 and calls==[]
+
+def test_catalog_ineligible_node_prevents_eligible_sibling_provider_call():
+ from app.modules.m12_ai_research_lab.service import Service
+ from app.modules.m12_ai_research_lab.router import ModelRouter
+ from app.modules.m12_ai_research_lab.models import ModelCapability,TaskType
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','fixture',.9)
+ service=Service(ModelRouter([ModelCapability('fixture',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]),Provider())
+ wf=Workflow.from_yaml('nodes: [{id: a, task: research, config: {latency_tolerance_ms: 100}}, {id: b, task: research, config: {latency_tolerance_ms: 99}}]')
+ with pytest.raises(WorkflowValidationError,match='node b: no eligible model'):asyncio.run(build_dag_engine(service).run(wf,{'tenant_id':'fixture'}))
+ assert calls==[]
+
+def test_valid_catalog_preflight_does_not_call_or_change_provider_choice():
+ from app.modules.m12_ai_research_lab.service import Service
+ from app.modules.m12_ai_research_lab.router import ModelRouter
+ from app.modules.m12_ai_research_lab.models import ModelCapability,TaskType
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture',kwargs['model_id'],.9)
+ service=Service(ModelRouter([ModelCapability('fixture',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]),Provider())
+ wf=Workflow.from_yaml('nodes: [{id: a, task: research, config: {latency_tolerance_ms: 100}}]')
+ out=asyncio.run(build_dag_engine(service).run(wf,{'tenant_id':'fixture'}))
+ assert len(calls)==1 and out['a']['model_id']=='fixture'
