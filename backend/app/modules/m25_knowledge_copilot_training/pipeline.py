@@ -203,8 +203,9 @@ class LocalKnowledgePipeline:
             # Build the version in a private temp dir, then rename it into
             # place. Cleanup only ever removes the temp dir this attempt
             # created; preexisting version contents are never touched.
-            tmp.mkdir(parents=True); (tmp/'source.bin').write_bytes(raw)
-            (tmp/'segments.json').write_text(json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True),encoding='utf-8')
+            tmp.mkdir(parents=True)
+            segments_blob=json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True).encode('utf-8')
+            self._write_version_files(tmp,raw,segments_blob)
             import os as _os; _os.rename(tmp,target)
         except OSError:
             shutil.rmtree(tmp,ignore_errors=True); raise
@@ -346,6 +347,29 @@ class LocalKnowledgePipeline:
                 except OSError: pass
         if len(data)>limit: raise KnowledgeError(f'{refusal}: {what} {over}')
         return data
+    @staticmethod
+    def _write_version_files(tmp:Path,raw:bytes,segments_blob:bytes)->None:
+        # Version files get the same exclusive-write contract as manifests:
+        # O_EXCL|O_NOFOLLOW never writes through a preexisting link or file,
+        # and the writes are anchored at the OPENED tmp dir (O_NOFOLLOW on
+        # the dir itself), so a tmp swapped to a symlink after mkdir cannot
+        # redirect source.bin or segments.json outside the workspace, and a
+        # link planted inside tmp between mkdir and write is refused.
+        # Carried, NOT closed: a swap of a component above tmp, the
+        # rename-into-place TOCTOU, and fsync/durability beyond rename.
+        import os as _os
+        dfd=_os.open(tmp,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
+        try:
+            for name,data in (('source.bin',raw),('segments.json',segments_blob)):
+                fd=_os.open(name,_os.O_WRONLY|_os.O_CREAT|_os.O_EXCL|_os.O_NOFOLLOW,0o600,dir_fd=dfd)
+                try:
+                    view=memoryview(data)
+                    while view:
+                        written=_os.write(fd,view)
+                        if written<=0: raise OSError(f'short write persisting {name}')
+                        view=view[written:]
+                finally:_os.close(fd)
+        finally:_os.close(dfd)
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
         import os as _os, uuid as _uuid
