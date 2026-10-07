@@ -49,3 +49,26 @@ async def test_per_response_usage_not_global_last_entry(monkeypatch):
  monkeypatch.setattr(providers,'_post',fake)
  results=await asyncio.gather(providers.generate_result('12','openai_compat','fixture'),providers.generate_result('21','openai_compat','fixture'))
  assert [(r.text,r.usage.input_tokens) for r in results]==[('12',12),('21',21)]
+
+@pytest.mark.parametrize('confidence,logprobs',[(float('inf'),[]),(float('nan'),[]),(-.1,[]),(1.1,[]),(True,[]),('0.9',[]),(None,[float('inf')]),(None,[float('nan')]),(None,[.1]),(None,[True]),(None,['0']),(None,[-10**1000]),(2,[-.01])])
+def test_invalid_confidence_evidence_holds_without_extra_executor_call(confidence,logprobs):
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('candidate','fixture',confidence,logprobs)
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['first','backup']]
+ with pytest.raises(ConfidenceUnavailable) as error:asyncio.run(ResearchExecutor(ModelRouter(cat),Provider(),RetryPolicy(base_delay_seconds=0)).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert len(calls)==1 and error.value.result.metadata['review_required'] is True
+ assert error.value.result.confidence is None and error.value.result.logprobs==[]
+ from dataclasses import asdict
+ import json
+ json.dumps(asdict(error.value.result),allow_nan=False)
+
+@pytest.mark.parametrize('confidence,logprobs',[(1,[]),(.9,[]),(None,[0])])
+def test_valid_confidence_range_or_logprobs_retains_existing_success(confidence,logprobs):
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ class Provider:
+  async def generate(self,**kwargs):return ModelResult('candidate','fixture',confidence,logprobs)
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert result.metadata['attempts']==1 and 'review_required' not in result.metadata
