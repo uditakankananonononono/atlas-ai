@@ -72,3 +72,23 @@ def test_valid_confidence_range_or_logprobs_retains_existing_success(confidence,
  cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
  result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
  assert result.metadata['attempts']==1 and 'review_required' not in result.metadata
+
+@pytest.mark.parametrize('confidence,status',[(None,422),(.9,200)])
+def test_mounted_http_mixed_catalog_diagnostics_are_strict_json_and_retain_result(confidence,status):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ import json
+ class Provider:
+  async def generate(self,**kwargs):return ModelResult('retained candidate','first',confidence,usage={'input_tokens':12,'output_tokens':3})
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8),ModelCapability('excluded',frozenset({TaskType.RESEARCH}),1000,0,101,1)]
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:ResearchExecutor(ModelRouter(cat),Provider())
+ response=TestClient(app).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==status,response.text
+ body=response.json();result=body if status==200 else body['detail']['result']
+ assert result['text']=='retained candidate' and result['usage']=={'input_tokens':12,'output_tokens':3}
+ assert result['metadata']['route_scores']['excluded'] is None
+ assert result['metadata']['route_reasons']['excluded']==['latency estimate exceeds tolerance']
+ json.dumps(body,allow_nan=False)
