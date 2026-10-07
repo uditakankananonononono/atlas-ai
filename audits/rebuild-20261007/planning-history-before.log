@@ -1,0 +1,22 @@
+........................................................................ [ 90%]
+.......F                                                                 [100%]
+=================================== FAILURES ===================================
+_________ test_planning_public_history_cannot_bypass_ratio_validation __________
+
+    def test_planning_public_history_cannot_bypass_ratio_validation():
+        corrector = PlanningFallacyCorrector(shrinkage=0)
+        corrector.record(kind='fixture', estimated=1, actual=2)
+        corrector.history['fixture'].append(float('nan'))
+        corrector.history['fixture'][0] = 50
+        multiplier, count = corrector.multiplier('fixture')
+>       assert multiplier == pytest.approx(2) and count == 1
+E       assert (nan == 2 ± 2.0e-06
+E         
+E         comparison failed
+E         Obtained: nan
+E         Expected: 2 ± 2.0e-06)
+
+tests/modules/test_m20_foresight.py:581: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_planning_public_history_cannot_bypass_ratio_validation
+1 failed, 79 passed in 1.47s

@@ -570,3 +570,14 @@ def test_planning_shrinkage_arithmetic_does_not_overflow_finite_mean():
     assert corrector.multiplier('fixture')[0] == pytest.approx(1e308)
     with pytest.raises(ValueError):
         corrector.correct(kind='fixture', estimate=10)
+
+
+def test_planning_public_history_cannot_bypass_ratio_validation():
+    corrector = PlanningFallacyCorrector(shrinkage=0)
+    corrector.record(kind='fixture', estimated=1, actual=2)
+    corrector.history['fixture'].append(float('nan'))
+    corrector.history['fixture'][0] = 50
+    multiplier, count = corrector.multiplier('fixture')
+    assert multiplier == pytest.approx(2) and count == 1
+    with pytest.raises(TypeError):
+        corrector.history['other'] = [3]

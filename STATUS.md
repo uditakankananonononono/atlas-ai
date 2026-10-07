@@ -930,3 +930,7 @@ Twelve actual initial failures retained: malformedstrength/count/probabilityinpu
 ## Supplied planning ratio arithmetic
 
 Ten actual failures retained: malformedshrinkage/nonfinite/boolnumericinput/overflowratio publication and avoidablemultiplieroverflow. Finite nonnegative shrinkage, validfiniteestimated/actual, ratiofinitebeforeappend; shrinkageweightcomputedbeforemultiply, corrected-resultoverflowrejects.112foresightHTTPpass1warning; recorded87adjacent2343pass2warnings38.71s. Three1e308ratios withzeroshrinkage nowfinite1e308multiplier; estimate10correctedresultrejects. Supplied ratio shrinkage heuristic only, not verified durations/validated forecasting; publichistory mutation remains separate. Latestfull9869passsource724c275 predateselevenlaterfixes.
+
+## Planning ratio history views
+
+One actual failure retained: publichistorylist permitsNaN/ratioedit bypassing validation. Privatehistory/detachedread-onlymappinglistviews.113foresightHTTPpass1warning; recorded87adjacent2344pass2warnings38.74s. Publicsnapshotmutationleavesmultiplier2/samplecount1. Localinputintegrityonly, not verified durations/validated forecasts or privatePythonsecurity. Latestfull9869passsource724c275 predatestwelvelaterfixes.
