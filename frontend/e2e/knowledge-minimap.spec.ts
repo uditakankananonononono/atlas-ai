@@ -18,6 +18,8 @@ test('knowledge graph minimap renders node rectangles and fits all nodes',async(
  await page.waitForTimeout(800);
  const rects=await page.locator('.react-flow__minimap-node').count();
  const widths=await page.locator('.react-flow__minimap-node').evaluateAll(els=>els.map(e=>Number(e.getAttribute('width'))));
+ await expect(page.locator('.react-flow__edge')).toHaveCount(1);
+ await expect(page.getByText('cites')).toBeVisible();
  console.log('MINIMAP_NODE_RECTS',rects,'WIDTHS',JSON.stringify(widths.slice(0,4)));
  await mm.screenshot({path:'test-results/knowledge-minimap.png'});
  await page.locator('.react-flow').screenshot({path:'test-results/knowledge-graph.png'});
@@ -58,10 +60,39 @@ test('dragged positions survive a type filter toggle and a stale seed response i
  const card=page.locator('.react-flow__node',{hasText:'F 0'});
  const before=await card.boundingBox();
  await page.mouse.move(before!.x+20,before!.y+20);await page.mouse.down();await page.mouse.move(before!.x+20,before!.y+90,{steps:5});await page.mouse.up();
- const dragged=await card.boundingBox();
- expect(Math.abs(dragged!.y-before!.y)).toBeGreaterThan(40);
+ // Compare in scale-invariant units (offset from an undragged sibling, in card heights): the viewport refits on filter changes.
+ const rel=async()=>{const a=(await page.locator('.react-flow__node',{hasText:'F 0'}).boundingBox())!;const c=(await page.locator('.react-flow__node',{hasText:'F 2'}).boundingBox())!;return (a.y-c.y)/a.height};
+ const d1=await rel();
+ expect(Math.abs(d1)).toBeGreaterThan(0.4);
  await page.getByRole('button',{name:'note'}).click();await page.getByRole('button',{name:'note'}).click();
  await expect(page.locator('.react-flow__node',{hasText:'F 0'})).toBeVisible();
- const after=await page.locator('.react-flow__node',{hasText:'F 0'}).boundingBox();
- expect(Math.abs(after!.y-dragged!.y)).toBeLessThan(5);
+ await page.waitForTimeout(500);
+ const d2=await rel();
+ expect(Math.abs(d2-d1)).toBeLessThan(0.1);
+});
+
+test('layout follows container width on resize, refits, and a new seed resets positions',async({page})=>{
+ await page.setViewportSize({width:1280,height:800});
+ await signedIn(page);
+ const nodes=Array.from({length:12},(_,i)=>({id:'n'+i,node_type:'source',title:'Node '+i,metadata:{}}));
+ await page.route('**/api/v1/knowledge-workspace/nodes/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({nodes,edges:[]})}));
+ const seed=page.getByLabel('Knowledge node ID');
+ await seed.fill('a');
+ const cardX=async()=>(await page.locator('.react-flow__node',{hasText:'Node 1'}).first().boundingBox())!.x;
+ const cardY=async()=>(await page.locator('.react-flow__node',{hasText:'Node 1'}).first().boundingBox())!.y;
+ await expect(page.locator('.react-flow__node')).toHaveCount(12);
+ await page.waitForTimeout(500);
+ const wideRow=await cardY();                       // Node 1 sits in row 0 with 4 columns
+ const n0=await page.locator('.react-flow__node',{hasText:'Node 0'}).first().boundingBox();
+ const n2=await page.locator('.react-flow__node',{hasText:'Node 2'}).first().boundingBox();
+ expect(Math.abs(n2!.y-n0!.y)).toBeLessThan(5);       // 4 columns: nodes 0 and 2 share a row
+ await page.setViewportSize({width:390,height:844});
+ await page.waitForTimeout(800);
+ const m0=await page.locator('.react-flow__node',{hasText:'Node 0'}).first().boundingBox();
+ const m2=await page.locator('.react-flow__node',{hasText:'Node 2'}).first().boundingBox();
+ expect(m2!.y).toBeGreaterThan(m0!.y+30);             // 2 columns: node 2 wrapped to the next row
+ const vp=page.viewportSize()!;
+ const allInside=await page.evaluate(()=>{const c=document.querySelector('.react-flow')!.getBoundingClientRect();return Array.from(document.querySelectorAll('.react-flow__node')).every(n=>{const r=n.getBoundingClientRect();return r.left>=c.left-1&&r.right<=c.right+1&&r.top>=c.top-1&&r.bottom<=c.bottom+1})});
+ expect(allInside).toBe(true);                        // refit: nothing cropped after the resize
+ expect(wideRow).toBeGreaterThan(0);expect(vp.width).toBe(390);
 });
