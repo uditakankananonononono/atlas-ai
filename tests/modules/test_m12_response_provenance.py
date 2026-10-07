@@ -402,3 +402,19 @@ def test_safe_error_detail_keeps_valid_error_shapes_unchanged():
  from app.modules.m12_ai_research_lab.response_json import safe_error_detail
  for detail in ['normal error',{'state':'unknown','reason':'normal','retry_allowed':False}]:
   assert safe_error_detail(detail)==detail
+
+@pytest.mark.parametrize('extra',[{'model_id':'not-supported'},{'model':'not-supported'},{'temperature':.2},{'budget_cent':999},{'tenant_id':'other'}])
+def test_single_run_unsupported_options_rejected_before_execution(extra):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Service:
+  async def execute(self,*args):calls.append(args);return ModelResult('fixture','fixture',.9)
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service()
+ body={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100,**extra}
+ response=TestClient(app).post('/ai-research-lab/run',json=body)
+ assert response.status_code==422,response.text
+ assert response.json()['detail'][0]['type']=='extra_forbidden' and not calls
