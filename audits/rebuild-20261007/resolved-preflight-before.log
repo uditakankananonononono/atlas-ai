@@ -1,0 +1,51 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_preflight_checks_actual_completed_dependency_output_without_dispatch ___
+
+    def test_preflight_checks_actual_completed_dependency_output_without_dispatch():
+     runtime,repo=make_runtime()
+     task=runtime.submit_goal('fixture preflight binding',run_immediately=False)
+     runtime.prepare_supplied_plan(task.id,steps=[
+      {'id':'filter','title':'filter','tool':'csv_filter','arguments':{'csv_text':'value\n2\n'}},
+      {'id':'summary','title':'summary','tool':'csv_summary','depends_on':['filter'],
+       'arguments':{'csv_text':{'$step':'filter','path':['csv_text']},'value_column':'value'}}])
+     runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+     before=len(repo.list_actions(task_id=task.id))
+     report=runtime.preflight_task(task.id)
+     step=next(s for s in report['steps'] if s['step_id']=='summary')
+>    assert step['argument_check']=='resolved_dependency_schema_valid' and step['issues']==[]
+E    AssertionError: assert ('deferred_unt...ndency_output' == 'resolved_dep..._schema_valid'
+E      
+E      - resolved_dependency_schema_valid
+E      + deferred_until_dependency_output)
+
+tests/modules/test_m20_runtime_depth.py:2053: AssertionError
+_ test_preflight_reveals_missing_actual_output_path_and_resolved_schema_error __
+
+    def test_preflight_reveals_missing_actual_output_path_and_resolved_schema_error():
+     for path in [['missing'],['matched_rows']]:
+      runtime,repo=make_runtime()
+      task=runtime.submit_goal('fixture bad binding',run_immediately=False)
+      runtime.prepare_supplied_plan(task.id,steps=[
+       {'id':'filter','title':'filter','tool':'csv_filter','arguments':{'csv_text':'value\n2\n'}},
+       {'id':'summary','title':'summary','tool':'csv_summary','depends_on':['filter'],
+        'arguments':{'csv_text':{'$step':'filter','path':path},'value_column':'value'}}])
+      runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+      step=runtime.preflight_task(task.id)['steps'][1]
+>     assert step['argument_check']==('dependency_output_path_invalid' if path==['missing'] else 'resolved_dependency_schema_invalid')
+E     AssertionError: assert 'deferred_unt...ndency_output' == 'dependency_o..._path_invalid'
+E       
+E       - dependency_output_path_invalid
+E       + deferred_until_dependency_output
+
+tests/modules/test_m20_runtime_depth.py:2069: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_preflight_checks_actual_completed_dependency_output_without_dispatch
+FAILED tests/modules/test_m20_runtime_depth.py::test_preflight_reveals_missing_actual_output_path_and_resolved_schema_error
+2 failed, 142 deselected, 1 warning in 1.79s

@@ -2037,3 +2037,34 @@ def test_schema_blocked_step_persists_named_diagnostic_without_fake_action():
  assert result.plan[0].result_summary.startswith('blocked: ')
  assert result.plan[0].output is None and repo.list_actions(task_id=task.id)==[]
  assert GCWRuntime(repo).get_task(task.id).plan[0].result_summary==result.plan[0].result_summary
+
+
+def test_preflight_checks_actual_completed_dependency_output_without_dispatch():
+ runtime,repo=make_runtime()
+ task=runtime.submit_goal('fixture preflight binding',run_immediately=False)
+ runtime.prepare_supplied_plan(task.id,steps=[
+  {'id':'filter','title':'filter','tool':'csv_filter','arguments':{'csv_text':'value\n2\n'}},
+  {'id':'summary','title':'summary','tool':'csv_summary','depends_on':['filter'],
+   'arguments':{'csv_text':{'$step':'filter','path':['csv_text']},'value_column':'value'}}])
+ runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+ before=len(repo.list_actions(task_id=task.id))
+ report=runtime.preflight_task(task.id)
+ step=next(s for s in report['steps'] if s['step_id']=='summary')
+ assert step['argument_check']=='resolved_dependency_schema_valid' and step['issues']==[]
+ assert not report['ready_for_dispatch'] and not report['approval_granted']
+ assert len(repo.list_actions(task_id=task.id))==before==1
+ assert runtime.get_task(task.id).plan[1].attempts==0
+
+
+def test_preflight_reveals_missing_actual_output_path_and_resolved_schema_error():
+ for path in [['missing'],['matched_rows']]:
+  runtime,repo=make_runtime()
+  task=runtime.submit_goal('fixture bad binding',run_immediately=False)
+  runtime.prepare_supplied_plan(task.id,steps=[
+   {'id':'filter','title':'filter','tool':'csv_filter','arguments':{'csv_text':'value\n2\n'}},
+   {'id':'summary','title':'summary','tool':'csv_summary','depends_on':['filter'],
+    'arguments':{'csv_text':{'$step':'filter','path':path},'value_column':'value'}}])
+  runtime.run_task(task.id,max_ticks=1,yield_on_boundary=True)
+  step=runtime.preflight_task(task.id)['steps'][1]
+  assert step['argument_check']==('dependency_output_path_invalid' if path==['missing'] else 'resolved_dependency_schema_invalid')
+  assert len(repo.list_actions(task_id=task.id))==1
