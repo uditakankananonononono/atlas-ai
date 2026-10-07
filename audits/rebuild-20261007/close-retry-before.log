@@ -1,0 +1,82 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_close_retry_finishes_after_retrospective_commit[cleanup] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc9a81577d0>
+failure = 'cleanup'
+
+    @pytest.mark.parametrize('failure',['cleanup','final_task_write'])
+    def test_close_retry_finishes_after_retrospective_commit(monkeypatch,failure):
+     runtime,repo=make_runtime();context=runtime.submit_goal('fixture close',run_immediately=False)
+     runtime.working_memory.put(MemoryChunk(type=ChunkType.FACT,content='fixture residue'),partition=context.id)
+     if failure=='cleanup':
+      original=runtime.working_memory.clear_partition
+      def fail(*args,**kwargs):raise RuntimeError('fixture close cleanup unavailable')
+      monkeypatch.setattr(runtime.working_memory,'clear_partition',fail)
+     else:
+      original=repo.save_task;calls=[]
+      def fail(value):
+       calls.append(value.id)
+       if len(calls)>1:raise RuntimeError('fixture final task write unavailable')
+       return original(value)
+      monkeypatch.setattr(repo,'save_task',fail)
+     with pytest.raises(RuntimeError):runtime.close(context.id)
+     committed=repo.list_retrospectives(task_id=context.id)
+     assert len(committed)==1
+     if failure=='cleanup':monkeypatch.setattr(runtime.working_memory,'clear_partition',original)
+     else:monkeypatch.setattr(repo,'save_task',original)
+     result=runtime.close(context.id)
+     assert result['idempotent'] is True
+     assert result['retrospective']['id']==committed[0].id
+>    assert repo.load_task(context.id).state==TaskState.CANCELLED
+E    AssertionError: assert <TaskState.PENDING: 'pending'> == <TaskState.CA...: 'cancelled'>
+E      
+E      - cancelled
+E      + pending
+
+tests/modules/test_m20_runtime_depth.py:2480: AssertionError
+____ test_close_retry_finishes_after_retrospective_commit[final_task_write] ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc9a8036240>
+failure = 'final_task_write'
+
+    @pytest.mark.parametrize('failure',['cleanup','final_task_write'])
+    def test_close_retry_finishes_after_retrospective_commit(monkeypatch,failure):
+     runtime,repo=make_runtime();context=runtime.submit_goal('fixture close',run_immediately=False)
+     runtime.working_memory.put(MemoryChunk(type=ChunkType.FACT,content='fixture residue'),partition=context.id)
+     if failure=='cleanup':
+      original=runtime.working_memory.clear_partition
+      def fail(*args,**kwargs):raise RuntimeError('fixture close cleanup unavailable')
+      monkeypatch.setattr(runtime.working_memory,'clear_partition',fail)
+     else:
+      original=repo.save_task;calls=[]
+      def fail(value):
+       calls.append(value.id)
+       if len(calls)>1:raise RuntimeError('fixture final task write unavailable')
+       return original(value)
+      monkeypatch.setattr(repo,'save_task',fail)
+     with pytest.raises(RuntimeError):runtime.close(context.id)
+     committed=repo.list_retrospectives(task_id=context.id)
+     assert len(committed)==1
+     if failure=='cleanup':monkeypatch.setattr(runtime.working_memory,'clear_partition',original)
+     else:monkeypatch.setattr(repo,'save_task',original)
+     result=runtime.close(context.id)
+     assert result['idempotent'] is True
+     assert result['retrospective']['id']==committed[0].id
+>    assert repo.load_task(context.id).state==TaskState.CANCELLED
+E    AssertionError: assert <TaskState.PENDING: 'pending'> == <TaskState.CA...: 'cancelled'>
+E      
+E      - cancelled
+E      + pending
+
+tests/modules/test_m20_runtime_depth.py:2480: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_close_retry_finishes_after_retrospective_commit[cleanup]
+FAILED tests/modules/test_m20_runtime_depth.py::test_close_retry_finishes_after_retrospective_commit[final_task_write]
+2 failed, 179 deselected, 1 warning in 2.08s
