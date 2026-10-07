@@ -40,16 +40,14 @@ def test_hz18_multibyte_content_dedups_and_registers(tmp_path):
 
 def test_hz18_valid_range_bytes_are_read_not_rejected(tmp_path, monkeypatch):
     # KILL (contract boundary): a 25000-byte on-disk file is inside the
-    # encoded-byte bound, so hz18 attempts the read (surfacing the injected
-    # failure); hz17 rejected it unread. Proves the read contract admits
-    # valid-range bytes - an ordering/contract pin, not a timing claim.
+    # encoded-byte bound, so it IS read and content-compared - surfacing as
+    # a hash-divergence rejection. hz17 rejected it unread ('exceed the
+    # ingest bound'), so matching the divergence message kills hz17. Proves
+    # the read contract admits valid-range bytes, not a timing claim.
     p = pipe(tmp_path)
     p.ingest(IngestRequest(source=src(), content='Alpha fact.', mime_type='text/plain', actor_id='actor-a'))
     (tmp_path / 'tenant-a' / 's1' / 'v1' / 'source.bin').write_bytes(b'x' * 25000)
-    from pathlib import Path
-    monkeypatch.setattr(Path, 'read_bytes',
-                        lambda self, *a, **k: (_ for _ in ()).throw(AssertionError('read attempted')))
-    with pytest.raises(AssertionError, match='read attempted'):
+    with pytest.raises(KnowledgeError, match='diverge from the recorded hash'):
         p.ingest(IngestRequest(source=src(), content='Alpha fact.', mime_type='text/plain', actor_id='actor-a'))
 
 

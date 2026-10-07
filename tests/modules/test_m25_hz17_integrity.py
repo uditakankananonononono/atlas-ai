@@ -85,10 +85,10 @@ def test_hz17_dedup_rejects_symlinked_source_bin(tmp_path):
 
 
 def test_hz17_oversize_bytes_rejected_before_any_read(tmp_path, monkeypatch):
-    # KILL (ordering): hz16 read the whole oversized file before rejecting;
-    # hz17 stat-guards first. Making read_bytes unusable kills hz16 and
-    # proves guard-before-read ordering - this is an ordering pin, not a
-    # timing claim.
+    # KILL (ordering): hz16 read the whole oversized file before rejecting
+    # (making read_bytes unusable kills hz16). hz17 stat-guarded first; hz19
+    # reads at most bound+1 bytes via a bounded O_NOFOLLOW read - either way
+    # the file is rejected without an unbounded allocation.
     p = pipe(tmp_path)
     ingest(p)
     (tmp_path / 'tenant-a' / 's1' / 'v1' / 'source.bin').write_bytes(b'x' * 80001)
