@@ -473,3 +473,15 @@ def test_provider_context_cannot_rewrite_executor_attempt_history():
  result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider(),RetryPolicy(base_delay_seconds=0)).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
  assert calls==['first','backup']
  assert result.metadata['history']==[{'model':'first','confidence':.1},{'model':'backup','confidence':.9}]
+
+def test_retained_provider_metadata_reference_cannot_rewrite_local_result_annotations():
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ metadata={'source':'fixture'}
+ class Provider:
+  async def generate(self,**kwargs):return ModelResult('fixture','reported',.9,metadata=metadata)
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ result=asyncio.run(ResearchExecutor(ModelRouter(cat),Provider()).execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert metadata=={'source':'fixture'}
+ metadata['requested_model_id']='forged';metadata['attempts']=999
+ assert result.metadata['requested_model_id']=='first' and result.metadata['attempts']==1
+ assert result.metadata['source']=='fixture'
