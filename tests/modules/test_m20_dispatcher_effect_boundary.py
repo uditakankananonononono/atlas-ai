@@ -96,3 +96,28 @@ def test_camelcase_and_common_money_aliases_gate(name):
 def test_final_name_defense_pass_acronym_digits_and_compounds(name):
  from app.modules.m20_general_cognitive_worker.safety import requires_approval
  assert requires_approval(name,Risk.READ,{})
+
+
+@pytest.mark.asyncio
+async def test_dispatch_risk_floor_cannot_lower_registered_external_risk():
+ from app.modules.m20_general_cognitive_worker.tools import ApprovalPending
+ calls=[]
+ async def handler(args):calls.append(args);return {}
+ registry=ToolRegistry();registry.register(ToolSpec(name='fixture',description='fixture',risk=Risk.EXTERNAL),handler)
+ with pytest.raises(ApprovalPending):await ToolDispatcher(registry,SafetyGate()).dispatch('fixture',{},risk_floor=Risk.READ)
+ assert not calls
+
+
+@pytest.mark.asyncio
+async def test_escalated_risk_failure_is_not_retried_and_token_binds_effective_tier():
+ from app.modules.m20_general_cognitive_worker.tools import ApprovalPending
+ calls=[]
+ async def handler(args):calls.append(args);raise RuntimeError('synthetic uncertainty')
+ registry=ToolRegistry();registry.register(ToolSpec(name='fixture',description='fixture',max_retries=5),handler)
+ gate=InMemoryApprovalGate();safety=SafetyGate(approvals=gate);dispatcher=ToolDispatcher(registry,safety)
+ with pytest.raises(ApprovalPending) as pending:await dispatcher.dispatch('fixture',{},risk_floor=Risk.EXTERNAL)
+ token=pending.value.approval_id;gate.decide(token,ApprovalGateDecision.APPROVED)
+ with pytest.raises(ApprovalPending):await dispatcher.dispatch('fixture',{},risk_floor=Risk.IRREVERSIBLE,granted_approval_id=token)
+ assert not calls
+ out=await dispatcher.dispatch('fixture',{},risk_floor=Risk.EXTERNAL,granted_approval_id=token)
+ assert len(calls)==1 and not out.succeeded and 'outcome unknown' in out.result_summary

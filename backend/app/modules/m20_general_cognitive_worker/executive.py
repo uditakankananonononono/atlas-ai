@@ -283,7 +283,7 @@ class DeliberativeLoop:
                 import asyncio
                 record = _run_async(self.dispatcher.dispatch(
                     node.tool, node.arguments, task_id=context.id,
-                    granted_approval_id=node.approval_id,
+                    granted_approval_id=node.approval_id, risk_floor=node.risk,
                 ))
                 if record.succeeded:
                     node.state = TaskState.SUCCEEDED

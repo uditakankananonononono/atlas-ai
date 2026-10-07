@@ -166,8 +166,14 @@ class ToolDispatcher:
         context: dict[str, Any] | None = None,
         task_id: str | None = None,
         granted_approval_id: str | None = None,
+        risk_floor: Risk | None = None,
     ) -> ActionRecord:
         tool = self.registry.get(name)
+        tiers = [Risk.READ, Risk.REVERSIBLE, Risk.EXTERNAL, Risk.IRREVERSIBLE]
+        effective_risk = tool.spec.risk
+        if risk_floor is not None:
+            risk_floor = Risk(risk_floor)
+            effective_risk = tiers[max(tiers.index(effective_risk), tiers.index(risk_floor))]
         # Detach nested caller data before review and execution can yield.
         arguments = copy.deepcopy(arguments)
         tool.validate_arguments(arguments)
@@ -176,7 +182,7 @@ class ToolDispatcher:
         if missing:
             raise ToolBlockedError(name, [f"missing precondition: {m}" for m in missing])
         may_proceed, approval_id, violations = self.safety.preflight(
-            name, tool.spec.risk, arguments, task_id=task_id,
+            name, effective_risk, arguments, task_id=task_id,
             summary=tool.spec.description,
             granted_approval_id=granted_approval_id,
         )
@@ -189,7 +195,7 @@ class ToolDispatcher:
                 raise ApprovalPending(name, approval_id)
             raise ToolBlockedError(name, ["safety gate denied execution"])
         record = ActionRecord(tool=name, task_id=task_id, arguments=copy.deepcopy(arguments), started_at=datetime.now(timezone.utc))
-        effectful = requires_approval(name, tool.spec.risk, arguments)
+        effectful = requires_approval(name, effective_risk, arguments)
         # A timeout/error may follow a completed effect. Retrying under one
         # reviewed token can duplicate that effect; require reconciliation.
         attempts = 1 if effectful else max(1, tool.spec.max_retries)
