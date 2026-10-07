@@ -4,8 +4,12 @@ from collections import Counter
 
 class EssayToolService:
     @staticmethod
+    def _token_list(text: str) -> list[str]:
+        return [w.strip(".,:;!?()[]\"'").lower() for w in text.split() if len(w) > 3]
+
+    @staticmethod
     def _tokens(text: str) -> set[str]:
-        return {w.strip(".,:;!?()[]\"'").lower() for w in text.split() if len(w) > 3}
+        return set(EssayToolService._token_list(text))
 
     def topic_finder(self, prompt: str, evidence: list[dict]) -> dict:
         prompt_terms = self._tokens(prompt)
@@ -33,9 +37,13 @@ class EssayToolService:
                 "generated_essay_prose": None}
 
     def hook_coach(self, student_hook: str, evidence: list[str]) -> dict:
-        supported = any(self._tokens(student_hook) & self._tokens(e) for e in evidence)
+        overlap = any(self._tokens(student_hook) & self._tokens(e) for e in evidence)
         abstract = sum(1 for x in ("passion", "dream", "always", "journey") if x in student_hook.lower())
-        return {"supported_by_evidence": supported,
+        # Term overlap is NOT factual support: it only shows the hook shares
+        # vocabulary with the supplied evidence. Each detail still needs to
+        # trace to a real student record.
+        return {"overlaps_student_evidence": overlap,
+                "support_note": "Term overlap only - not factual verification; confirm each detail traces to student records.",
                 "checks": {"starts_in_student_voice": bool(student_hook.strip()),
                            "uses_specific_detail": len(self._tokens(student_hook)) >= 5,
                            "abstract_language_count": abstract},
@@ -45,17 +53,24 @@ class EssayToolService:
 
     def conclusion_coach(self, student_conclusion: str, thesis: str) -> dict:
         overlap = sorted(self._tokens(student_conclusion) & self._tokens(thesis))
+        # Heuristic, listed transparently for the student/coach to judge:
+        # content terms appearing in the conclusion but not the thesis. A
+        # wholly new claim (e.g. a new award or employer) flags here.
+        new_terms = sorted(self._tokens(student_conclusion) - self._tokens(thesis))
         return {"thesis_connection_terms": overlap,
                 "checks": {"connects_to_thesis": bool(overlap),
-                           "introduces_new_claim": False,
+                           "introduces_new_claim": bool(new_terms),
                            "student_authored": True},
+                "new_terms_beyond_thesis": new_terms,
                 "questions": ["What new understanding has the story earned?",
                               "Can the last sentence point forward without making an unsupported promise?"],
                 "replacement_conclusion": None}
 
     def clarity_review(self, draft: str) -> dict:
         sentences = [x.strip() for x in draft.replace("!", ".").replace("?", ".").split(".") if x.strip()]
-        repeated = [w for w, n in Counter(self._tokens(draft)).items() if n >= 4]
+        # Counts come from the token SEQUENCE: Counter over a set is always 1,
+        # which made repeated_terms permanently empty.
+        repeated = [w for w, n in Counter(self._token_list(draft)).items() if n >= 4]
         long = [i + 1 for i, s in enumerate(sentences) if len(s.split()) > 35]
         return {"sentence_count": len(sentences), "long_sentence_numbers": long,
                 "repeated_terms": sorted(repeated),

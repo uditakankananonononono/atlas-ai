@@ -11,8 +11,40 @@ def test_topic_and_outline_use_only_student_evidence_and_return_no_prose():
 
 def test_hook_conclusion_and_clarity_are_coaching_only():
  hook=client.post('/api/v1/study-abroad/essay-tools/hook',json={"student_hook":"The locked laboratory door changed our science club.","evidence":["Our school laboratory closed and I restarted the club."]}).json()
- assert hook['supported_by_evidence'] is True and hook['replacement_hook'] is None
+ assert hook['overlaps_student_evidence'] is True and hook['replacement_hook'] is None and 'support_note' in hook
  conclusion=client.post('/api/v1/study-abroad/essay-tools/conclusion',json={"student_conclusion":"I now build access with my community.","thesis":"Community action can rebuild access."}).json()
  assert conclusion['checks']['student_authored'] is True and conclusion['replacement_conclusion'] is None
  clarity=client.post('/api/v1/study-abroad/essay-tools/clarity',json={"draft":"I organized the science club after our laboratory closed. I asked students what experiments they wanted and found donated supplies."}).json()
  assert clarity['revised_draft'] is None and clarity['guardrail']=='student-authored-final'
+
+
+def test_clarity_review_detects_actual_repeated_terms():
+    # KILL: Counter over a set made repeated_terms permanently empty.
+    from app.modules.m23_study_abroad.essay_tools import EssayToolService
+    out = EssayToolService().clarity_review("leadership leadership leadership leadership and more words")
+    assert out['repeated_terms'] == ['leadership']
+
+def test_conclusion_coach_flags_wholly_new_claim_and_lists_terms():
+    # KILL: introduces_new_claim was hardcoded False.
+    from app.modules.m23_study_abroad.essay_tools import EssayToolService
+    out = EssayToolService().conclusion_coach(
+        "I founded a Nobel winning company last year",
+        "My robotics club taught me persistence")
+    assert out['checks']['introduces_new_claim'] is True
+    assert {'nobel', 'company', 'founded'} <= set(out['new_terms_beyond_thesis'])
+
+def test_conclusion_coach_restated_conclusion_does_not_flag():
+    # Characterization: thesis-restating conclusions report no new claim.
+    from app.modules.m23_study_abroad.essay_tools import EssayToolService
+    out = EssayToolService().conclusion_coach(
+        "Community action rebuilds access", "Community action rebuilds access")
+    assert out['checks']['introduces_new_claim'] is False
+
+def test_hook_overlap_is_not_labeled_factual_support():
+    # KILL: the old key implied factual support from term overlap.
+    from app.modules.m23_study_abroad.essay_tools import EssayToolService
+    out = EssayToolService().hook_coach("The locked laboratory door changed our club",
+                                        ["Our laboratory closed"])
+    assert 'supported_by_evidence' not in out
+    assert out['overlaps_student_evidence'] is True
+    assert 'not factual verification' in out['support_note']

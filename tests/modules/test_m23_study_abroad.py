@@ -8,3 +8,16 @@ def test_identity_uses_student_supplied_evidence_and_fit_is_explainable():
 def test_essay_system_is_coaching_only_and_never_returns_final_prose():
  x=EssayCoachingIn(prompt='Describe growth',student_draft='Since I was young, I have cared about systems. Building a community lab changed my thinking.',system='common_app',identity_evidence=['community lab'])
  out=Service().coach_essay(x);assert out.final_prose is None and out.guardrail=='student-authored-final' and out.questions and 'since i was young' in out.critique['cliches']
+
+
+def test_fit_rows_carry_not_an_admission_prediction_disclaimer():
+    # KILL: legacy /fit reach/target bands lacked the disclaimer.
+    from app.modules.m23_study_abroad.service import Service
+    from app.modules.m23_study_abroad.schemas import StudentProfileIn, UniversityIn
+    profile = StudentProfileIn(values=['curiosity'], turning_points=[], strengths=['math'],
+                               academics={}, finances={'annual_budget_usd': 50000}, goals=['computer science'])
+    uni = UniversityIn(id='u1', name='Example U', country='US', programs=['computer science'],
+                       annual_tuition_usd=40000, official_url='https://example.edu')
+    row = Service().fit(profile, [uni])[0]
+    assert row['not_an_admission_prediction'] is True
+    assert row['band_is_planning_label'] is True
