@@ -1,0 +1,49 @@
+....FFF....                                                              [100%]
+=================================== FAILURES ===================================
+_ test_transfer_case_snapshot_and_run_hash_do_not_change_from_mutating_strategy _
+
+    def test_transfer_case_snapshot_and_run_hash_do_not_change_from_mutating_strategy():
+     cases=[TransferCase('a','a',{'value':[1]},[1]),TransferCase('b','b',{'value':[2]},[2],source_domain='a')]
+     bench=CrossDomainTransferBenchmark(cases)
+     baseline=bench.run(lambda problem:problem['value'])['benchmark_hash']
+     cases[0].problem['value'].append(9);cases[0].expected.append(9)
+     view=bench.cases;view[1].problem['value'].append(8)
+     def strategy(problem):problem['value'].append(7);return problem['value']
+     def scorer(actual,expected):expected.append(7);return .25
+     report=bench.run(strategy,scorer)
+>    assert report['benchmark_hash']==baseline
+E    AssertionError: assert 'b295e8724a29...2f7cae53d173e' == '84a638a83acc...171927d39fc54'
+E      
+E      - 84a638a83accc7b08c422c6b797226b19c13fa57f8ca57e3a9b171927d39fc54
+E      + b295e8724a293d61050834bae54d87115e2452bdddf4650f6752f7cae53d173e
+
+tests/modules/test_m20_agi_evaluation.py:52: AssertionError
+_______ test_transfer_scorer_invalid_numeric_score_records_failure[True] _______
+
+score = True
+
+    @pytest.mark.parametrize('score',[True,'1',float('nan'),float('inf'),-1,2])
+    def test_transfer_scorer_invalid_numeric_score_records_failure(score):
+     bench=CrossDomainTransferBenchmark([TransferCase('a','a',{},1),TransferCase('b','b',{},1,source_domain='a')])
+     report=bench.run(lambda problem:1,lambda actual,expected:score)
+>    assert report['accuracy']==0 and all(r['error'] for r in report['results'])
+E    assert (1.0 == 0)
+
+tests/modules/test_m20_agi_evaluation.py:61: AssertionError
+________ test_transfer_scorer_invalid_numeric_score_records_failure[1] _________
+
+score = '1'
+
+    @pytest.mark.parametrize('score',[True,'1',float('nan'),float('inf'),-1,2])
+    def test_transfer_scorer_invalid_numeric_score_records_failure(score):
+     bench=CrossDomainTransferBenchmark([TransferCase('a','a',{},1),TransferCase('b','b',{},1,source_domain='a')])
+     report=bench.run(lambda problem:1,lambda actual,expected:score)
+>    assert report['accuracy']==0 and all(r['error'] for r in report['results'])
+E    assert (1.0 == 0)
+
+tests/modules/test_m20_agi_evaluation.py:61: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_agi_evaluation.py::test_transfer_case_snapshot_and_run_hash_do_not_change_from_mutating_strategy
+FAILED tests/modules/test_m20_agi_evaluation.py::test_transfer_scorer_invalid_numeric_score_records_failure[True]
+FAILED tests/modules/test_m20_agi_evaluation.py::test_transfer_scorer_invalid_numeric_score_records_failure[1]
+3 failed, 8 passed in 1.29s
