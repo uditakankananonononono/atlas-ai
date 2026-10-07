@@ -36,6 +36,7 @@ class Workflow:
         try:doc=yaml.load(raw,Loader=_WorkflowLoader)
         except (yaml.YAMLError,RecursionError) as exc:raise WorkflowValidationError("invalid or excessively nested workflow YAML") from exc
         if not isinstance(doc,dict):raise WorkflowValidationError("workflow must be a mapping")
+        if set(doc)-{"name","nodes"}:raise WorkflowValidationError("unsupported workflow YAML options")
         items=doc.get("nodes")
         if not isinstance(items,list) or not items:raise WorkflowValidationError("workflow nodes must be a nonempty list")
         if len(items)>1000:raise WorkflowValidationError("workflow has too many nodes")
@@ -44,6 +45,7 @@ class Workflow:
         nodes=[];ids=set()
         for item in items:
             if not isinstance(item,dict):raise WorkflowValidationError("workflow node must be a mapping")
+            if set(item)-{"id","task","depends_on","config"}:raise WorkflowValidationError("unsupported workflow node options")
             nid=item.get("id");task=item.get("task")
             if not isinstance(nid,str) or not nid.strip():raise WorkflowValidationError("node id must be nonempty text")
             if not isinstance(task,str) or not task.strip():raise WorkflowValidationError("node task must be nonempty text")
