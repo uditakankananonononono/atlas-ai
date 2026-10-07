@@ -138,8 +138,19 @@ class AdapterFactory(Protocol):
 
 
 def _aware(moment: datetime) -> datetime:
+    # Legacy-read shim only: rows stored before the aware-input policy may hold
+    # a naive publish_at whose provenance is unknowable; the documented
+    # convention treats it as UTC. New naive writes are rejected at the
+    # schema boundary (ScheduleIn/RescheduleIn) and at the direct-caller
+    # boundary (_require_aware) below.
     if moment.tzinfo is None:
         return moment.replace(tzinfo=timezone.utc)
+    return moment
+
+
+def _require_aware(moment: datetime) -> datetime:
+    if moment.tzinfo is None:
+        raise ValueError("publish_at must be timezone-aware")
     return moment
 
 
@@ -176,6 +187,7 @@ class Scheduler:
         ``approval_ids`` maps each draft's platform to the approval request
         already filed for it by the caller.
         """
+        _require_aware(publish_at)
         findings: list[ComplianceIssue] = []
         for draft in plan.drafts:
             issues = validate_draft(
@@ -372,6 +384,7 @@ class Scheduler:
         return self._repository.save_schedule(entry)
 
     def reschedule(self, schedule_id: str, publish_at: datetime) -> ScheduleEntry:
+        _require_aware(publish_at)
         entry = self._entry(schedule_id)
         if entry.status in TERMINAL_STATUSES:
             raise ScheduleStateError(f"cannot reschedule an entry in state {entry.status}")
