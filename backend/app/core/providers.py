@@ -10,7 +10,7 @@ from app.platform.reliability import CircuitBreaker, CircuitOpen
 class ProviderError(RuntimeError): pass
 @dataclass(frozen=True)
 class ProviderUsage:
-    provider:str; model:str; input_tokens:int; output_tokens:int
+    provider:str; model:str; input_tokens:int | None; output_tokens:int | None
 
 _BREAKERS={name:CircuitBreaker(3,30) for name in ("openai","anthropic","gemini","deepseek","ollama","openai_compat","huggingface","fugu")}
 _USAGE:list[ProviderUsage]=[]
@@ -29,11 +29,18 @@ def _hf_model(name:str)->str:
         raise ProviderError("invalid model identifier")
     return value
 
-def _usage(data:dict[str,Any],provider:str,model:str)->None:
+@dataclass(frozen=True)
+class ProviderResult:
+    model:str; text:str; provider:str; usage:ProviderUsage | None = None
+
+def _usage(data:dict[str,Any],provider:str,model:str)->ProviderUsage:
     raw=data.get("usage") or data.get("usageMetadata") or {}
-    incoming=raw.get("prompt_tokens",raw.get("input_tokens",raw.get("promptTokenCount",0)))
-    outgoing=raw.get("completion_tokens",raw.get("output_tokens",raw.get("candidatesTokenCount",0)))
-    _USAGE.append(ProviderUsage(provider,model,int(incoming or 0),int(outgoing or 0)))
+    if not isinstance(raw,dict):raw={}
+    incoming=raw.get("prompt_tokens",raw.get("input_tokens",raw.get("promptTokenCount",data.get("prompt_eval_count"))))
+    outgoing=raw.get("completion_tokens",raw.get("output_tokens",raw.get("candidatesTokenCount",data.get("eval_count"))))
+    valid=lambda v:v if type(v) is int and v>=0 else None
+    usage=ProviderUsage(provider,model,valid(incoming),valid(outgoing))
+    _USAGE.append(usage);return usage
 
 async def _post(provider:str,url:str,*,headers:dict[str,str]|None=None,params:dict[str,str]|None=None,payload:dict[str,Any])->dict[str,Any]:
     async def operation():
@@ -47,7 +54,7 @@ async def _post(provider:str,url:str,*,headers:dict[str,str]|None=None,params:di
     except CircuitOpen as exc:raise ProviderError(f"{provider.title()} circuit is open") from exc
     except httpx.HTTPError as exc:raise ProviderError(f"{provider.title()} request failed after retries") from exc
 
-async def generate(prompt: str, provider: str, model: str | None = None) -> tuple[str, str]:
+async def generate_result(prompt: str, provider: str, model: str | None = None) -> ProviderResult:
     provider=provider.lower().strip()
     if not prompt.strip(): raise ProviderError("prompt is empty")
     if provider in {"shared","shared-public"}:
@@ -58,7 +65,7 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
             used,chosen,text=await shared_model_layer.generate(prompt,private=provider=="shared")
         except shared_model_layer.SharedModelError as exc:
             raise ProviderError(str(exc)) from exc
-        return f"{used}:{chosen}",text
+        return ProviderResult(f"{used}:{chosen}",text,used)
     if provider=="openai":
         key=os.getenv("OPENAI_API_KEY")
         if not key: raise ProviderError("OPENAI_API_KEY is not configured")
@@ -125,4 +132,9 @@ async def generate(prompt: str, provider: str, model: str | None = None) -> tupl
         except (KeyError,IndexError,TypeError) as exc:raise ProviderError("Fugu response schema rejected") from exc
     else:raise ProviderError(f"Unsupported provider: {provider}")
     if not isinstance(text,str) or not text.strip():raise ProviderError(f"{provider.title()} returned no text")
-    _usage(data,provider,chosen);return chosen,text
+    return ProviderResult(chosen,text,provider,_usage(data,provider,chosen))
+
+async def generate(prompt:str,provider:str,model:str|None=None)->tuple[str,str]:
+    """Legacy text/model interface; structured usage is owned by its response."""
+    result=await generate_result(prompt,provider,model)
+    return result.model,result.text

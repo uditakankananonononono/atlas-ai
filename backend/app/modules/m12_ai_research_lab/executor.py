@@ -5,6 +5,11 @@ from typing import Any
 from .models import ModelProvider, ModelResult, RouteRequest
 from .router import ModelRouter, confidence_from_logprobs
 
+class ConfidenceUnavailable(RuntimeError):
+    def __init__(self,result:ModelResult):
+        super().__init__("Model confidence unavailable; result requires review, no automatic retry")
+        self.result=result
+
 @dataclass(frozen=True)
 class RetryPolicy:
     min_confidence: float=.70
@@ -20,7 +25,9 @@ class ResearchExecutor:
             model=choices[attempt]
             result=await self.provider.generate(model_id=model.model_id,prompt=prompt,context={**context,"attempt_history":history})
             confidence=result.confidence if result.confidence is not None else confidence_from_logprobs(result.logprobs)
-            confidence=.5 if confidence is None else confidence
+            if confidence is None:
+                result.metadata.update({"review_required":True,"confidence_source":"unavailable","attempts":attempt+1,"history":history,"route_scores":decision.scores})
+                raise ConfidenceUnavailable(result)
             history.append({"model":model.model_id,"confidence":confidence})
             if confidence >= self.policy.min_confidence:
                 result.metadata.update({"attempts":attempt+1,"route_scores":decision.scores,"history":history}); return result

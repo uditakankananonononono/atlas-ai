@@ -1,7 +1,7 @@
 """Shipped Module 12 runtime using Atlas's configured model providers."""
 from __future__ import annotations
 from app.core.model_catalog import paid_allowed
-from app.core.providers import ProviderError, generate
+from app.core.providers import ProviderError, generate_result
 from .models import ModelCapability,ModelResult,TaskType
 from .router import ModelRouter
 from .service import Service
@@ -27,8 +27,14 @@ class AtlasProvider:
   if model_id in PAID_MODEL_IDS and not paid_allowed():
    raise ProviderError(f"{model_id} is a paid model; set ATLAS_ALLOW_PAID=true to enable it")
   provider,model=model_id.split(':',1)
-  chosen,text=await generate(prompt,provider,model)
-  return ModelResult(text=text,model_id=chosen,confidence=.75,metadata={'provider':provider})
+  response=await generate_result(prompt,provider,model)
+  usage={}
+  if response.usage is not None:
+   for key,value in (("input_tokens",response.usage.input_tokens),("output_tokens",response.usage.output_tokens)):
+    if value is not None:usage[key]=value
+  return ModelResult(text=response.text,model_id=response.model,confidence=None,usage=usage,metadata={
+   'provider':response.provider,'confidence_source':'unavailable','usage_source':'provider_response' if usage else 'unavailable',
+   'usage_complete':len(usage)==2,'actual_cost_cents':None,'cost_source':'unavailable'})
 
 def build_service():return Service(ModelRouter(active_catalog()),AtlasProvider())
 def build_dag_engine(service):
