@@ -166,3 +166,18 @@ def test_low_confidence_does_not_sleep_after_final_attempt(monkeypatch,model_cou
  with pytest.raises(ConfidenceThresholdNotReached):asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
  assert len(calls)==min(model_count,max_attempts)
  assert sleeps==([.2] if len(calls)==2 else [])
+
+@pytest.mark.parametrize('different',[False,True])
+def test_duplicate_catalog_identity_stops_before_repeated_model_invocation(different):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture',kwargs['model_id'],.1)
+ duplicate=ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.7 if different else .9)
+ router=ModelRouter([models()[0],duplicate]);executor=ResearchExecutor(router,Provider(),RetryPolicy(base_delay_seconds=0))
+ with pytest.raises(NoEligibleModel,match='unique'):asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert not calls
+
+@pytest.mark.parametrize('identity',['',' ',None,1,True,[]])
+def test_invalid_catalog_identity_rejected_before_ranking(identity):
+ invalid=ModelCapability(identity,frozenset({TaskType.RESEARCH}),1000,0,100,.8)
+ with pytest.raises(NoEligibleModel,match='nonempty text'):ModelRouter([invalid,*models()]).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'))
