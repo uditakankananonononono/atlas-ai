@@ -485,3 +485,21 @@ def test_retained_provider_metadata_reference_cannot_rewrite_local_result_annota
  metadata['requested_model_id']='forged';metadata['attempts']=999
  assert result.metadata['requested_model_id']=='first' and result.metadata['attempts']==1
  assert result.metadata['source']=='fixture'
+
+@pytest.mark.parametrize('review',[True,False])
+def test_provider_result_object_not_mutated_by_local_confidence_or_routing(review):
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ original=ModelResult('fixture','reported',None,[float('nan')] if review else [0],metadata={'source':'fixture'})
+ class Provider:
+  async def generate(self,**kwargs):return original
+ cat=[ModelCapability('first',frozenset({TaskType.RESEARCH}),1000,0,100,.8)]
+ executor=ResearchExecutor(ModelRouter(cat),Provider())
+ if review:
+  with pytest.raises(ConfidenceUnavailable) as error:asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+  result=error.value.result
+ else:result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert result is not original and original.metadata=={'source':'fixture'} and original.confidence is None
+ assert len(original.logprobs)==1
+ original.text='changed by provider';original.model_id='changed identity';original.metadata={'forged':True}
+ assert result.text=='fixture' and result.model_id=='reported' and result.metadata['requested_model_id']=='first'
+ assert result.confidence==(None if review else 1)
