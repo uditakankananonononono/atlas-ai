@@ -278,3 +278,28 @@ def test_requested_route_identity_separate_from_reported_response_model(confiden
  assert calls==['ollama:requested-model']
  assert result.model_id=='reported-model-alias'
  assert result.metadata['requested_model_id']=='ollama:requested-model'
+
+@pytest.mark.parametrize('bad',['envelope','none','list','text'])
+@pytest.mark.parametrize('workflow',[True,False])
+def test_mounted_invalid_returned_model_envelope_holds_after_one_call(bad,workflow):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service,get_dag_engine
+ from app.modules.m12_ai_research_lab.service import Service
+ from app.modules.m12_ai_research_lab.wiring import build_dag_engine
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):
+   calls.append(kwargs['model_id'])
+   if bad=='envelope':return {'text':'fixture'}
+   return ModelResult('fixture','fixture',.9,metadata={'none':None,'list':[],'text':'bad'}[bad])
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['first','backup']]
+ service=Service(ModelRouter(cat),Provider(),RetryPolicy(base_delay_seconds=0))
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:service;app.dependency_overrides[get_dag_engine]=lambda:build_dag_engine(service)
+ if workflow:response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: research}, {id: b, task: research, depends_on: [a]}]'})
+ else:response=TestClient(app,raise_server_exceptions=False).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==409,response.text
+ detail=response.json()['detail'];assert detail['state']=='unknown' and detail['retry_allowed'] is False
+ assert calls==['first']

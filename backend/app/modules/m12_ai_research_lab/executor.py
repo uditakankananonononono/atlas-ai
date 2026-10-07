@@ -4,6 +4,7 @@ from math import isfinite
 from dataclasses import dataclass
 from typing import Any
 from .models import ModelProvider, ModelResult, RouteRequest
+from app.core.providers import ProviderOutcomeUnknown
 from .router import ModelRouter, confidence_from_logprobs, valid_confidence
 
 class ConfidenceUnavailable(RuntimeError):
@@ -38,6 +39,8 @@ class ResearchExecutor:
         for attempt in range(min(self.policy.max_attempts,len(choices))):
             model=choices[attempt]
             result=await self.provider.generate(model_id=model.model_id,prompt=prompt,context={**context,"attempt_history":history})
+            if not isinstance(result,ModelResult) or type(result.metadata) is not dict:
+                raise ProviderOutcomeUnknown("Returned model result envelope or metadata is unusable; no automatic retry")
             result.metadata["requested_model_id"]=model.model_id
             confidence=(result.confidence if valid_confidence(result.confidence) else None) if result.confidence is not None else confidence_from_logprobs(result.logprobs)
             if confidence is None:
