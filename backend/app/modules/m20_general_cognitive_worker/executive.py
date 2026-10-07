@@ -327,6 +327,8 @@ class DeliberativeLoop:
                     self._trace("act", f"{node.tool} succeeded", task_id=context.id)
                     self._evaluate_expectation(context, node, record)
                 else:
+                    node.result_summary = record.result_summary
+                    node.output = None
                     node.state = TaskState.FAILED if node.attempts >= node.max_attempts else TaskState.PENDING
                     self._trace("evaluate", f"{node.tool} failed: {record.result_summary}",
                                 task_id=context.id)
@@ -339,6 +341,8 @@ class DeliberativeLoop:
                             task_id=context.id, policy_basis="spec 4.4 approval gating")
                 return context
             except ToolBlockedError as blocked:
+                node.result_summary = "blocked: " + "; ".join(blocked.reasons)
+                node.output = None
                 node.state = TaskState.BLOCKED
                 context.state = TaskState.BLOCKED
                 self._trace("act", f"{node.tool} blocked: {'; '.join(blocked.reasons)}",
@@ -346,6 +350,8 @@ class DeliberativeLoop:
                 self._close_episode(context, EpisodeOutcome.ABANDONED)
                 return context
             except Exception as exc:
+                node.result_summary = str(exc)[:2000]
+                node.output = None
                 node.state = TaskState.FAILED if node.attempts >= node.max_attempts else TaskState.PENDING
                 self._trace("evaluate", f"{node.tool} error: {exc}", task_id=context.id)
                 self._reflect_on_failure(context, node, str(exc))
