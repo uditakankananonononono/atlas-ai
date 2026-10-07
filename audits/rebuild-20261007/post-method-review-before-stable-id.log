@@ -1,0 +1,73 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+..............................................................F......... [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 93%]
+........................................................................ [ 97%]
+.................................................................        [100%]
+=================================== FAILURES ===================================
+_______ test_method_http_review_hash_rejects_missing_and_stale_revision ________
+
+mounted = (<starlette.testclient.TestClient object at 0x7f19306cb050>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7f193131bec0>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7f193131b500>)
+
+    def test_method_http_review_hash_rejects_missing_and_stale_revision(mounted):
+     client,runtime,repo,_=mounted
+     model=StubPlannerModel([{'title':'old'}]);runtime.planner.model=model
+     runtime.planner.decompose('novel review fixture',context='same')
+     item=next(row for row in client.get('/api/modules/20/runtime/methods').json() if row['name'].startswith('learned:'))
+     path='/api/modules/20/runtime/methods/'+item['name']+'/activate'
+     assert client.post(path).status_code==422
+     model.steps=[{'title':'new'}];runtime.planner.decompose('novel review fixture',context='same')
+     assert client.post(path,json={'expected_hash':item['review_hash']}).status_code==409
+     current=next(row for row in client.get('/api/modules/20/runtime/methods').json() if row['name']==item['name'])
+     assert current['review_status']=='proposed'
+>    assert client.post(path,json={'expected_hash':current['review_hash']}).status_code==200
+E    AssertionError: assert 409 == 200
+E     +  where 409 = <Response [409 Conflict]>.status_code
+E     +    where <Response [409 Conflict]> = post('/api/modules/20/runtime/methods/learned:novel review fixture:e8cae1f03f6fbd64/activate', json={'expected_hash': 'cee648529015960c1295fc02c57fa37d1f57eb9c0ab1ae42b4d72d050d63ddd2'})
+E     +      where post = <starlette.testclient.TestClient object at 0x7f19306cb050>.post
+
+tests/modules/test_m20_runtime_depth.py:653: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/modules/test_m20_conic_solvers.py::test_conic_iteration_limit_does_not_promote_inaccurate_result
+  /home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/conic_solvers.py:40: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+    try:problem.solve(solver='SCS',eps=tol,max_iters=limit,verbose=False)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_method_http_review_hash_rejects_missing_and_stale_revision
+1 failed, 2224 passed, 2 warnings in 39.39s

@@ -637,3 +637,35 @@ def test_method_activation_requires_exact_reviewed_revision_hash():
  assert runtime.planner.method_status(method.name)=='proposed'
  current=runtime.planner.methods[method.name]
  assert runtime.planner.activate_method(method.name,expected_hash=runtime.planner.method_review_hash(current))
+
+
+def test_method_http_review_hash_rejects_missing_and_stale_revision(mounted):
+ client,runtime,repo,_=mounted
+ model=StubPlannerModel([{'title':'old'}]);runtime.planner.model=model
+ runtime.planner.decompose('novel review fixture',context='same')
+ item=next(row for row in client.get('/api/modules/20/runtime/methods').json() if row['name'].startswith('learned:'))
+ path='/api/modules/20/runtime/methods/'+item['name']+'/activate'
+ assert client.post(path).status_code==422
+ model.steps=[{'title':'new'}];runtime.planner.decompose('novel review fixture',context='same')
+ assert client.post(path,json={'expected_hash':item['review_hash']}).status_code==409
+ current=next(row for row in client.get('/api/modules/20/runtime/methods').json() if row['name']==item['name'])
+ assert current['review_status']=='proposed'
+ assert client.post(path,json={'expected_hash':current['review_hash']}).status_code==200
+ assert dict((m.name,status) for m,status in repo.list_methods())[item['name']]=='active'
+
+
+def test_method_same_name_replacements_update_one_durable_revision_and_restart():
+ model=StubPlannerModel([{'title':'old'}]);runtime,repo=make_runtime(model=model)
+ runtime.planner.decompose('restart review fixture',context='same')
+ original=next(iter(runtime.planner.methods.values()))
+ old_hash=runtime.planner.method_review_hash(original)
+ model.steps=[{'title':'new'}];runtime.planner.decompose('restart review fixture',context='same')
+ rows=repo.list_methods()
+ assert len(rows)==1 and rows[0][0].id==original.id
+ restarted=make_runtime(hydrate_repo=repo)
+ current=restarted.planner.methods[original.name]
+ assert current.subtasks[0].title=='new' and restarted.planner.method_status(current.name)=='proposed'
+ with pytest.raises(PermissionError,match='revision'):
+  restarted.planner.activate_method(current.name,expected_hash=old_hash)
+ assert restarted.planner.activate_method(current.name,expected_hash=restarted.planner.method_review_hash(current))
+ assert make_runtime(hydrate_repo=repo).planner.method_status(current.name)=='active'

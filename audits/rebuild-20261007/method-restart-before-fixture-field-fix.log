@@ -1,0 +1,63 @@
+..................................F                                      [100%]
+=================================== FAILURES ===================================
+__ test_method_same_name_replacements_update_one_durable_revision_and_restart __
+
+    def test_method_same_name_replacements_update_one_durable_revision_and_restart():
+     model=StubPlannerModel([{'title':'old'}]);runtime,repo=make_runtime(model=model)
+     runtime.planner.decompose('restart review fixture',context='same')
+     original=next(iter(runtime.planner.methods.values()))
+     old_hash=runtime.planner.method_review_hash(original)
+     model.steps=[{'title':'new'}];runtime.planner.decompose('restart review fixture',context='same')
+     rows=repo.list_methods()
+     assert len(rows)==1 and rows[0][0].id==original.id
+     restarted=make_runtime(hydrate_repo=repo)
+     current=restarted.planner.methods[original.name]
+>    assert current.steps[0].title=='new' and restarted.planner.method_status(current.name)=='proposed'
+            ^^^^^^^^^^^^^
+
+tests/modules/test_m20_runtime_depth.py:667: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = HTNMethod(id='9419b70c-fcdb-4104-881c-2f203f7deacc', name='learned:restart review fixture:bbd39bfe7810f223', goal_patt...ated_context_sha256='0967115f2813a3541eaef77de9d9d5773f1c0c04314b0bbfe4ff3b3b1c55b5d5', times_used=0, success_rate=0.0)
+item = 'steps'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+    
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+    
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'HTNMethod' object has no attribute 'steps'
+
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: AttributeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_method_same_name_replacements_update_one_durable_revision_and_restart
+1 failed, 34 passed, 1 warning in 3.25s
