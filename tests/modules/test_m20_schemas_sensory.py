@@ -113,3 +113,14 @@ def test_email_normalization():
     event = layer.ingest_email(subject="Hi", body="Body text", sender="a@b.c")
     assert event.modality == Modality.EMAIL
     assert "a@b.c" in event.text and "Hi" in event.text
+
+
+def test_dedupe_identity_scoped_by_source_modality_and_raw_bytes():
+ layer=SensoryLayer(transcriber=FakeTranscriber(),vision=FakeVision(),document_parser=FakeParser())
+ assert layer.ingest_text('same',source='one',external_id='id') is not None
+ assert layer.ingest_text('same',source='two',external_id='id') is not None
+ for method,first,second in [(layer.ingest_audio,b'one',b'two'),(layer.ingest_image,b'one',b'two'),(layer.ingest_pdf,b'one',b'two')]:
+  a=method(first,source='one',external_id='id');b=method(second,source='one',external_id='id2')
+  assert a is not None and b is not None and a.text==b.text
+  assert a.content_hash!=b.content_hash
+  assert method(first,source='one') is None
