@@ -38,9 +38,28 @@ class AtlasProvider:
 
 def build_service():return Service(ModelRouter(active_catalog()),AtlasProvider())
 def build_dag_engine(service):
+ from math import isfinite
+ from .models import RouteRequest
+ from .schemas import RunIn
+ from .workflow import WorkflowValidationError
+ from pydantic import ValidationError
+ def request(task,config,inputs):
+  values={"task_type":config.get('task_type',task if task in {x.value for x in TaskType} else 'research'),
+   "output_tokens":config.get('output_tokens',1000),"budget_cents":config.get('budget_cents',1),
+   "latency_tolerance_ms":config.get('latency_tolerance_ms',10000),
+   "prompt":config.get('prompt',inputs.get('prompt',task))}
+  if type(values['output_tokens']) is not int or type(values['latency_tolerance_ms']) is not int:raise WorkflowValidationError("model token and latency limits must be integers")
+  try:valid_budget=type(values['budget_cents']) in (int,float) and values['budget_cents']>0 and isfinite(values['budget_cents'])
+  except OverflowError:valid_budget=False
+  if not valid_budget:raise WorkflowValidationError("model budget must be finite positive number")
+  if not isinstance(values['prompt'],str) or not values['prompt'].strip():raise WorkflowValidationError("model prompt must be nonempty text")
+  if not isinstance(inputs.get('tenant_id'),str) or not inputs['tenant_id'].strip():raise WorkflowValidationError("workflow tenant is required")
+  try:return RunIn(**values)
+  except ValidationError as error:raise WorkflowValidationError("invalid model node limits or task type") from error
+ def validate(node,inputs):request(node.task,node.config,inputs)
  async def run(task,config,context):
-  from .models import RouteRequest
-  req=RouteRequest(TaskType(config.get('task_type',task if task in {x.value for x in TaskType} else 'research')),int(config.get('output_tokens',1000)),float(config.get('budget_cents',1)),int(config.get('latency_tolerance_ms',10000)),str(context['workflow_inputs']['tenant_id']))
-  result=await service.execute(req,str(config.get('prompt') or context['workflow_inputs'].get('prompt') or task),context)
+  data=request(task,config,context['workflow_inputs'])
+  req=RouteRequest(data.task_type,data.output_tokens,data.budget_cents,data.latency_tolerance_ms,context['workflow_inputs']['tenant_id'])
+  result=await service.execute(req,data.prompt,context)
   return {'text':result.text,'model_id':result.model_id,'usage':result.usage,'metadata':result.metadata}
- return DagEngine(run)
+ return DagEngine(run,validator=validate)
