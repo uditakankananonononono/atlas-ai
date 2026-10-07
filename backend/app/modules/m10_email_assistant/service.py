@@ -167,10 +167,11 @@ class Service:
             history_id=str(profile.get("historyId")) if profile.get("historyId") else None,
             watch_expiration=None,
         )
+        stored=self.repository.get_account_by_email(email_address)
+        if stored is None:raise RuntimeError('stored Gmail account unavailable')
         return GmailAccountView(
-            id=account_id, email_address=email_address,
-            history_id=str(profile.get("historyId")) if profile.get("historyId") else None,
-            watch_expiration=None, created_at=now,
+            id=stored.id,email_address=stored.email_address,history_id=stored.history_id,
+            watch_expiration=stored.watch_expiration,created_at=stored.created_at,
         )
 
     async def _access_token(self, account) -> str:

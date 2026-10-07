@@ -121,3 +121,15 @@ def test_orphan_account_work_mutations_fail_closed(repo):
  assert not repo.finalize_draft_work('orphan','missing',data)
  assert repo.draft_work('orphan','missing')['phase']=='approval_done' and repo.list_drafts()==[]
 
+
+
+def test_watch_and_reconnect_do_not_skip_or_rewind_ingestion_checkpoint(repo):
+ from datetime import datetime,timezone
+ repo.update_watch_expiration('account',datetime.now(timezone.utc),'200')
+ assert repo.get_account('account').history_id=='100'
+ repo.save_account(account_id='new-provisional',email_address='fixture@example.invalid',encrypted_refresh_token='new-fixture',history_id='250',watch_expiration=None)
+ assert repo.get_account('account').history_id=='100'
+ assert repo.get_account('account').encrypted_refresh_token=='new-fixture'
+ assert repo.get_account('new-provisional') is None
+ repo.update_history_id('account','99')
+ assert repo.get_account('account').history_id=='100'

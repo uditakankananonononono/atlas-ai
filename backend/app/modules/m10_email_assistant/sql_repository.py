@@ -142,7 +142,7 @@ class SqlEmailRepository:
                     watch_expiration=watch_expiration, created_at=now, updated_at=now))
             else:
                 row.encrypted_refresh_token = encrypted_refresh_token
-                row.history_id = history_id or row.history_id
+                # Reconnecting credentials is not evidence history was processed.
                 row.updated_at = now
             self._log(db, "gmail_account", account_id, "account_saved", {"email_address": email_address})
 
@@ -181,20 +181,19 @@ class SqlEmailRepository:
             return True
 
     def update_history_id(self, account_id: str, history_id: str) -> None:
-        with self.sessions.begin() as db:
-            row = db.scalar(select(GmailAccountRow).where(
-                GmailAccountRow.tenant_id == self.tenant_id, GmailAccountRow.id == account_id))
-            if row is not None:
-                row.history_id = history_id
-                row.updated_at = _utcnow()
+        # Compatibility method, never unconditional overwrite.
+        current=self.get_account(account_id)
+        if current is not None:self.checkpoint_history(account_id,current.history_id,history_id)
 
     def update_watch_expiration(self, account_id: str, expires_at: datetime, history_id: str) -> None:
         with self.sessions.begin() as db:
+            self._lock_account(db,account_id)
             row = db.scalar(select(GmailAccountRow).where(
                 GmailAccountRow.tenant_id == self.tenant_id, GmailAccountRow.id == account_id))
             if row is not None:
                 row.watch_expiration = expires_at
-                row.history_id = history_id
+                # Watch response is subscription state, not processed history.
+                if row.history_id is None:row.history_id = history_id
                 row.updated_at = _utcnow()
                 self._log(db, "gmail_account", account_id, "watch_renewed",
                           {"watch_expiration": expires_at.isoformat()})

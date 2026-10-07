@@ -703,3 +703,13 @@ def test_approval_inflight_reconcile_requires_unique_exact_source_and_never_refi
  assert asyncio.run(svc.recover_draft_pipeline('a'))==1
  assert len(approvals.items)==1 and len(repo.list_drafts())==1
  asyncio.run(client.aclose())
+
+
+def test_reconnect_returns_stable_account_id_and_retained_history(tmp_path):
+ from app.modules.m10_email_assistant.gmail import OAuthTokens
+ svc,repo,sink,client=make_service(tmp_path)
+ repo.save_account(account_id='existing',email_address='me@example.com',encrypted_refresh_token=svc.cipher.encrypt('old'),history_id='100',watch_expiration=None)
+ result=asyncio.run(svc._store_tokens(OAuthTokens(access_token='fixture-access',refresh_token='new-refresh',expires_in=3600)))
+ assert result.id=='existing' and result.history_id=='100'
+ assert svc.cipher.decrypt(repo.get_account('existing').encrypted_refresh_token)=='new-refresh'
+ asyncio.run(client.aclose())
