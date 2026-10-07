@@ -286,20 +286,16 @@ def test_full_mounted_workflow_with_owner_login_pause(rig):
     )
     assert submitted.status_code == 200, submitted.text
     outcome = submitted.json()
-    assert outcome["submitted"] is True
+    assert outcome["submitted"] is False
     assert outcome["confirmation"]["final_url"] == DONE_URL
     assert "application was received" in outcome["confirmation"]["page_excerpt"]
     assert rig.page.clicked == ["#submit-btn"]
 
     # M2 status evidence lands only after the site's own readback.
     competition = rig.competitions.get_competition("comp-1")
-    assert competition.status == SubmissionStatus.SUBMITTED
-    evidence = competition.status_evidence[-1]
-    assert evidence.source == "browser_readback"
-    assert sid in evidence.reference
-
+    assert competition.status != SubmissionStatus.SUBMITTED
     status = rig.client.get(f"/api/v1/competition-manager/applications/sessions/{sid}")
-    assert status.json()["status"] == "submitted"
+    assert status.json()["status"] == "outcome_unknown"
 
     actions = [e.action.value for e in rig.audit.events]
     for expected in ("navigate", "login", "extract", "fill", "readback", "screenshot", "submit"):
@@ -642,7 +638,7 @@ def test_simultaneous_real_store_submit_claim_has_one_effect(rig,monkeypatch,tmp
  owner=rig.flow.store.get('local',sid)
  monkeypatch.setattr(rig.flow,'_save',save)
  def execute(_):
-  try:return asyncio.run(rig.flow.execute_submit(owner.tenant_id,owner.actor_id,sid,approval['approval_id']))['submitted']
+  try:asyncio.run(rig.flow.execute_submit(owner.tenant_id,owner.actor_id,sid,approval['approval_id']));return True
   except SessionRevisionConflict:return False
  with ThreadPoolExecutor(max_workers=2) as pool:assert sorted(pool.map(execute,[1,2]))==[False,True]
  assert rig.page.clicked==['#submit-btn']
@@ -695,3 +691,15 @@ def test_samehost_different_application_receipt_never_settles_original_unknown(r
  assert observed.json()['status']=='outcome_unknown' and observed.json()['observation']['transaction_bound'] is False
  assert rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
  assert rig.page.clicked==['#submit-btn']
+
+
+def test_initial_click_unrelated_generic_receipt_does_not_promote_original_application(rig):
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ rig.page.after_submit_url='https://example.com/unrelated/thanks'
+ rig.page.after_submit_html='<html>Application was received. Reference: WRONG-999. Applicant: Other.</html>'
+ result=rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ assert result.status_code==200 and result.json()['status']=='outcome_unknown'
+ assert not result.json()['submitted'] and result.json()['confirmation']['transaction_bound'] is False
+ assert rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
+ assert rig.page.clicked==['#submit-btn'] and rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']}).status_code==409
