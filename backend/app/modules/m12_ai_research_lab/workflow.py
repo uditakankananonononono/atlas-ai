@@ -93,7 +93,7 @@ class DagEngine:
             failures=[]
             for n,value in zip(ready,output):
                 if isinstance(value,BaseException):failures.append((n.id,value))
-                else:results[n.id]=value;pending.remove(n.id)
+                else:results[n.id]=dict(value) if type(value) is dict else value;pending.remove(n.id)
             if failures:
                 node_id,error=failures[0]
                 raise WorkflowNodeFailure(node_id,error,results,failures) from error

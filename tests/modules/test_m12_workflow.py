@@ -287,3 +287,15 @@ async def test_descendant_cannot_rewrite_top_level_parent_for_parallel_consumer(
  result=await DagEngine(runner).run(wf,{})
  assert seen==[('mutator','original'),('consumer','original')]
  assert result['a']=={'text':'original','model_id':'fixture'}
+
+@pytest.mark.asyncio
+async def test_retained_runner_dict_reference_cannot_rewrite_completed_parent_scalars():
+ parent={'text':'original','model_id':'fixture'};entered=asyncio.Event();release=asyncio.Event()
+ async def runner(task,config,context):
+  if task=='parent':return parent
+  entered.set();await release.wait();return {'text':'child'}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: parent}, {id: b, task: child, depends_on: [a]}]')
+ running=asyncio.create_task(DagEngine(runner).run(wf,{}))
+ await entered.wait();parent['text']='changed';parent['model_id']='changed';release.set()
+ result=await running
+ assert result['a']=={'text':'original','model_id':'fixture'} and parent['text']=='changed'
