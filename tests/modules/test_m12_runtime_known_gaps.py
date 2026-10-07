@@ -328,3 +328,30 @@ def test_per_request_budget_only_no_aggregate_spend_tracking():
  req=RouteRequest(TaskType.RESEARCH,1000,6,500,'fixture')  # estimated 5 cents per call, budget 6
  for _ in range(3):asyncio.run(executor.execute(req,'fixture'))
  assert calls==['paidish']*3
+
+def test_low_confidence_provider_text_interpolated_verbatim_into_critique_prompt():
+ # Characterization, not injection-safety advice: with self-critique enabled, the
+ # provider's low-confidence text is interpolated verbatim into the next attempt's
+ # prompt. Provider-influenced text shaping later prompts is not sanitized or
+ # delimited beyond the fixed template; prompt-injection resistance is not established.
+ prompts=[]
+ class Provider:
+  async def generate(self,*,model_id,prompt,context):
+   prompts.append(prompt)
+   if model_id=='first':return ModelResult('UNTRUSTED-PROVIDER-MARKER',model_id,.1)
+   return ModelResult('fixture',model_id,.95)
+ executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0,enable_self_critique=True))
+ result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'original-task'))
+ assert result.model_id=='backup'
+ assert 'UNTRUSTED-PROVIDER-MARKER' in prompts[1] and 'original-task' in prompts[1]
+
+def test_arbitrary_provider_metadata_flows_through_unfiltered():
+ # Characterization, not metadata-schema advice: provider metadata of any shape is
+ # shallow-copied into the returned result unfiltered. Only the envelope type and text/
+ # model_id typing are validated; all remaining fields are unvetted passthrough.
+ class Provider:
+  async def generate(self,*,model_id,prompt,context):
+   return ModelResult('fixture',model_id,.95,metadata={'unvetted_provider_field':{'nested':[1,2,3]}})
+ executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
+ result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
+ assert result.metadata['unvetted_provider_field']=={'nested':[1,2,3]}
