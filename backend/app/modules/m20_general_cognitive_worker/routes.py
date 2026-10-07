@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import os
-from typing import Any
+from typing import Any, Annotated
 
 from fastapi import APIRouter, HTTPException, Depends
 from app.auth.context import TenantContext, require_tenant
@@ -776,7 +776,7 @@ class OptimismAdjustRequest(BaseModel):
 class ScenarioRequest(BaseModel):
     objective: str = Field(min_length=1)
     drivers: list[str] = Field(min_length=1)
-    probabilities: dict[str, float] | None = None
+    probabilities: dict[str, Annotated[float, Field(strict=True, allow_inf_nan=False, ge=0)]] | None = None
 
 
 class PremortemRequest(BaseModel):
@@ -1010,8 +1010,11 @@ def row45_adjust_confidence(request: OptimismAdjustRequest, service: Any = Depen
 
 @router.post("/meta/scenarios")
 def row46_scenarios(request: ScenarioRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
-    return service.scenarios.plan(objective=request.objective, drivers=request.drivers,
-                                        probabilities=request.probabilities)
+    try:
+        return service.scenarios.plan(objective=request.objective, drivers=request.drivers,
+                                      probabilities=request.probabilities)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/premortem")
@@ -1544,7 +1547,7 @@ router.include_router(technical_spec_round8_router)
 from .atomic_concepts_routes_0093_0115 import router as atomic_concepts_router_0093_0115
 router.include_router(atomic_concepts_router_0093_0115)
 
-from typing import Any
+from typing import Any, Annotated
 from pydantic import BaseModel,Field
 from .atomic_concepts_70_92 import AtomicError,run as run_atomic_70_92
 class AtomicConcept70To92In(BaseModel):

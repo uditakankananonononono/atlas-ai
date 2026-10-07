@@ -974,3 +974,7 @@ Five actual failures retained: nonfinite/bool insideestimate/weight and supplied
 ## Reference and outside-view HTTP numeric boundary
 
 Six actual failures retained: bool/stringoutcome/estimate/weight coerce past rawguards. Strictfinite numericfields now422beforecasepublication/blendarithmetic.167foresightHTTPpass1warning; recorded87adjacent2398pass2warnings45.06s. Transport consistency only, not reference relevance/predictive validity. Latestfull9944passsourcec5b11ab predatessevenlaterfixes.
+
+## Scenario HTTP supplied weight boundary
+
+Four actual failures retained: bool/stringweightcoercion and unhandlednegative/unknownweight errors. Strictfinite nonnegative mappingvalues; planvalidationValueError becomes422.171foresightHTTPpass1warning; recorded87adjacent2402pass2warnings45.30s. Fixed-template narrative/suppliedweightnormalization only, not forecasting or inferred scenario likelihood. Latestfull9944passsourcec5b11ab predateseightlaterfixes.
