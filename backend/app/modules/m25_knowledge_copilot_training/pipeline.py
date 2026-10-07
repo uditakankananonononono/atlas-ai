@@ -74,6 +74,15 @@ class LocalKnowledgePipeline:
         self._check_consent(source)
         old=self.records.get(source.source_id)
         if old and old.tenant_id!=self.tenant_id: raise KnowledgeError('cross-tenant source access denied')
+        manifest=self._contained(source.source_id)/'manifest.json'
+        if manifest.exists():
+            # The disk may record versions from a prior process that this
+            # pipeline never loaded. Persisting now would silently erase
+            # them, so refuse instead; restart state recovery is a carried
+            # gap, not accepted.
+            try: disk_versions=len(json.loads(manifest.read_text(encoding='utf-8')).get('versions',[]))
+            except (OSError,json.JSONDecodeError) as exc: raise KnowledgeError('unreadable on-disk manifest; refusing to overwrite prior state') from exc
+            if disk_versions>len(old.versions if old else ()): raise KnowledgeError('on-disk manifest records versions not loaded in this pipeline; refusing to overwrite prior state')
         rec=old or Record(source,self.tenant_id); self.records[source.source_id]=rec
         try: self._persist_manifest(rec)
         except OSError:
@@ -211,7 +220,7 @@ class LocalKnowledgePipeline:
         return {'source_id':source_id,'deleted':verified,'tracking_retained':not verified,'verified_at':self.clock().isoformat()}
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
-        import os as _os
-        tmp=p/'manifest.json.tmp'
+        import os as _os, uuid as _uuid
+        tmp=p/f'manifest.json.tmp-{_uuid.uuid4().hex}'
         tmp.write_text(json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True),encoding='utf-8')
         _os.replace(tmp,p/'manifest.json')
