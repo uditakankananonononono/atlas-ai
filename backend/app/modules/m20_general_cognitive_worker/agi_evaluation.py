@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import copy
 import json
 import math
 from dataclasses import dataclass
@@ -46,16 +47,24 @@ class CrossDomainTransferBenchmark:
             raise ValueError("benchmark needs two domains and a cross-domain transfer case")
         if len({c.id for c in cases}) != len(cases):
             raise ValueError("case ids must be unique")
-        self.cases = tuple(cases)
+        self._cases = tuple(copy.deepcopy(cases))
+        self._benchmark_hash = self._hash([c.__dict__ for c in self._cases])
+
+    @property
+    def cases(self):
+        return copy.deepcopy(self._cases)
 
     def run(self, strategy: Callable[[dict[str, Any]], Any],
             scorer: Callable[[Any, Any], float] | None = None) -> dict[str, Any]:
         scorer = scorer or (lambda actual, expected: 1.0 if actual == expected else 0.0)
         results = []
-        for case in self.cases:
+        for case in self._cases:
             try:
-                output = strategy(case.problem)
-                score = float(scorer(output, case.expected))
+                output = strategy(copy.deepcopy(case.problem))
+                raw_score = scorer(copy.deepcopy(output), copy.deepcopy(case.expected))
+                if type(raw_score) not in (int, float):
+                    raise ValueError("scorer must return numeric score, not bool/string")
+                score = float(raw_score)
                 if not math.isfinite(score) or not 0 <= score <= 1:
                     raise ValueError("scorer must return a finite value in [0,1]")
                 result = TransferResult(case.id, case.domain, case.source_domain, score == 1.0,
@@ -65,7 +74,7 @@ class CrossDomainTransferBenchmark:
                                         self._hash(None), f"{type(exc).__name__}: {exc}")
             results.append(result)
         by_domain = {}
-        for domain in sorted({c.domain for c in self.cases}):
+        for domain in sorted({c.domain for c in self._cases}):
             selected = [r.score for r in results if r.domain == domain]
             by_domain[domain] = sum(selected) / len(selected)
         transfers = [r.score for r in results if r.source_domain and r.source_domain != r.domain]
@@ -74,7 +83,7 @@ class CrossDomainTransferBenchmark:
                 "transfer_accuracy": sum(transfers) / len(transfers),
                 "worst_domain_accuracy": min(by_domain.values()), "by_domain": by_domain,
                 "results": [r.__dict__ for r in results],
-                "benchmark_hash": self._hash([c.__dict__ for c in self.cases])}
+                "benchmark_hash": self._benchmark_hash}
 
     @staticmethod
     def _hash(value: Any) -> str:

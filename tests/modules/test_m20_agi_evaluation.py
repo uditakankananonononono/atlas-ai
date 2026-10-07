@@ -38,3 +38,24 @@ def test_agi_artifacts_use_shared_provenance_contract_and_tenant_store(tmp_path)
     with pytest.raises(ValueError,match='requires receipt_ids'):
         recorder.record(artifact_kind='evaluation',artifact={},source_refs=[],
                         execution_state='independently_verified')
+
+
+def test_transfer_case_snapshot_and_run_hash_do_not_change_from_mutating_strategy():
+ cases=[TransferCase('a','a',{'value':[1]},[1]),TransferCase('b','b',{'value':[2]},[2],source_domain='a')]
+ bench=CrossDomainTransferBenchmark(cases)
+ baseline=bench.run(lambda problem:problem['value'])['benchmark_hash']
+ cases[0].problem['value'].append(9);cases[0].expected.append(9)
+ view=bench.cases;view[1].problem['value'].append(8)
+ def strategy(problem):problem['value'].append(7);return problem['value']
+ def scorer(actual,expected):expected.append(7);return .25
+ report=bench.run(strategy,scorer)
+ assert report['benchmark_hash']==baseline
+ clean=bench.run(lambda problem:problem['value'])
+ assert clean['accuracy']==1 and clean['benchmark_hash']==baseline
+
+
+@pytest.mark.parametrize('score',[True,'1',float('nan'),float('inf'),-1,2])
+def test_transfer_scorer_invalid_numeric_score_records_failure(score):
+ bench=CrossDomainTransferBenchmark([TransferCase('a','a',{},1),TransferCase('b','b',{},1,source_domain='a')])
+ report=bench.run(lambda problem:1,lambda actual,expected:score)
+ assert report['accuracy']==0 and all(r['error'] for r in report['results'])
