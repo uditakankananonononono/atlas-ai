@@ -47,7 +47,7 @@ from .adapters import (
 )
 from .analytics import ABTest
 from .compliance import ComplianceIssue, is_blocking, validate_draft
-from .scheduler import Scheduler, ScheduleEntry, validate_publish_receipt
+from .scheduler import Scheduler, ScheduleEntry, _require_aware, validate_publish_receipt
 
 # Signature of the shared BYOK generator (app.core.providers.generate).
 GenerateFn = Callable[..., Awaitable[tuple[str, str]]]
@@ -74,7 +74,7 @@ __all__ = [
 class ApprovalStoreProtocol(Protocol):
     """The slice of the shared approval store this module needs."""
 
-    def put(self, item: ApprovalRequest) -> ApprovalRequest: ...
+    def put(self, item: ApprovalRequest, *, user_id: str | None = None) -> ApprovalRequest: ...
 
 
 class MetricsClient(Protocol):
@@ -465,6 +465,12 @@ class Service:
         approval-verified execution gate in scheduler.py performs the actual
         platform API call after a human approves.
         """
+        # Validate BEFORE any compliance work or approval filing: a naive
+        # publish_at is rejected by the scheduler too, but only after
+        # _file_approval would have persisted requests - early rejection here
+        # avoids those partial side effects. Grants are unchanged.
+        if publish_at is not None:
+            _require_aware(publish_at)
         plan = self.get_plan(plan_id)
         findings = self.check_compliance(plan_id, sponsored=sponsored)
         blocking = [issue for issue in findings if issue.severity == "error"]

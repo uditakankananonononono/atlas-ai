@@ -86,3 +86,20 @@ def test_legacy_naive_row_loads_and_compares_as_utc():
     scheduler, _ = _scheduler()
     scheduler._repository = repo
     assert [e.id for e in scheduler.due_entries(NOW)] == ["s2"]  # 11:00 naive treated as 11:00Z
+
+def test_request_schedule_rejects_naive_before_filing_approvals():
+    # Direct (non-route) Service callers must not leave filed approval
+    # requests behind when naive publish_at is rejected: the higher-level
+    # validation runs before _file_approval. Establishes ordering only.
+    from app.modules.m06_social_media_manager.service import Service
+    scheduler, repo = _scheduler()
+    filed = []
+    class _Sink:
+        def put(self, item, *, user_id=None): filed.append(item); return item
+    async def _gen(*a, **k): return ("test-model", "text")
+    plan = _plan()
+    repo.save_plan(plan)
+    service = Service(approval_store=_Sink(), generate=_gen, repository=repo, scheduler=scheduler)
+    with pytest.raises(ValueError, match="timezone-aware"):
+        service.request_schedule("p1", datetime(2026, 10, 8, 15, 0))
+    assert filed == []  # no partial approval side effects
