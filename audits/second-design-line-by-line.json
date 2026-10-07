@@ -1762,7 +1762,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Dispatcher deep-copies arguments, checks named context preconditions/SafetyGate and bounded timeout; schema is exported but JSON-schema argument validation not established in dispatch. Handler bindings own auth/rate limits/circuit breakers. Effectful calls one attempt with unknown outcome on error; read calls bounded retry. Long-running task-ID polling/tool integration needs actual binding proof. No external call. Status unverified."
     },
     {
       "row": 160,
@@ -1773,7 +1773,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "ActionRecord logs args/times/result summary; dispatcher keeps records in process, runtime durable repository/episode machinery exists. Every action including preflight/raised tool errors and complete M09 activity graph not established by scoped read. No universal audit completeness acceptance. Status unverified."
     },
     {
       "row": 161,
@@ -1784,7 +1784,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only, no self-awareness proof. Status unverified."
     },
     {
       "row": 162,
@@ -1795,7 +1795,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Facade/runtime compose budget/scheduler/metacognition/skill/evaluation mechanisms. Actual CPU/memory/API-credit monitoring, cheaper-model intervention, user-satisfaction fitted feedback and safe failure recovery require specific integration tests; heuristic signals not learned quality. Effect unknown cannot authorize retry. No runtime/provider effect. Status unverified."
     },
     {
       "row": 163,
@@ -1806,7 +1806,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Persona/profile/reflection mechanisms do not establish consistent communications across all modules. User-specific persona tuning/disclosure remains held; no Claire changes. Status unverified."
     },
     {
       "row": 164,
@@ -1817,7 +1817,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only, not workflow acceptance. Status unverified."
     },
     {
       "row": 165,
@@ -1828,7 +1828,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Task/runtime/executive modes and human-review mechanisms may support bounded workflows; three-mode end-to-end behavioral acceptance not established from scoped source. Any action still needs owner scope and positive receipt. No general autonomy accepted. Status unverified."
     },
     {
       "row": 166,
@@ -1839,7 +1839,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Directed request is not automatic authority to send recipient/attachment/body unreviewed; tool safety/approval mechanisms exist, but exact email grounding/dispatch acceptance absent. No email sent. Status unverified."
     },
     {
       "row": 167,
@@ -1850,7 +1850,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "HTN task contexts/scheduler/replanning and durable runtime are mechanisms for bounded goal work. Default full ownership/weeks-long successful execution not established by code presence or supplied outcomes. No autonomous provider/project effect. Status unverified."
     },
     {
       "row": 168,
@@ -1861,7 +1861,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Feedback/reflection/planning scaffolds support collaboration mechanisms; actual grant narrative choice/conversation loop/output quality not established in scoped M20 read. No grant/private user model effect. Status unverified."
     },
     {
       "row": 169,
@@ -1872,7 +1872,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Silence is not permission to expand autonomy; seamless adaptive mode transitions based on behavior not established by scoped read. No standing authority inferred from absent user response. Status unverified."
     },
     {
       "row": 170,
@@ -1883,7 +1883,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Source section heading only; cross-module acceptance remains separate. Status unverified."
     },
     {
       "row": 171,
