@@ -1911,3 +1911,41 @@ def test_handler_gate_shaped_exception_cannot_create_fabricated_pending_approval
     assert not record.succeeded
     assert 'fabricated-approval' in record.result_summary
     assert not runtime.safety.approvals.requests
+
+
+def test_mcts_scores_selected_prefix_risk_and_failure_at_depth_limit():
+    low = PlanNode(title='read', risk=Risk.READ)
+    high = PlanNode(title='effect', risk=Risk.IRREVERSIBLE)
+    def value(node):
+        return BoundedMCTS(max_simulations=5000, max_depth=1, seed=19).search([node]).heuristic_root_value
+    # One attempted action: expected progress .9, minus declared attempt cost.
+    assert value(low) == pytest.approx(.9 - .1 * .05, abs=.025)
+    assert value(high) == pytest.approx(.9 - .1 * .6, abs=.025)
+    assert value(high) < value(low)
+
+
+def test_mcts_never_recommends_started_or_exhausted_step():
+    for node in [PlanNode(title='already running', state=TaskState.RUNNING),
+                 PlanNode(title='attempts exhausted', attempts=1, max_attempts=1)]:
+        result = BoundedMCTS(max_simulations=20, seed=1).search([node])
+        assert result.best_action_id is None
+        assert result.stopped_by == 'no_ready_action'
+
+
+def test_mcts_selected_prefix_failure_blocks_dependent_but_runs_sibling():
+    parent = PlanNode(id='p',title='parent')
+    child = PlanNode(id='c',title='child',depends_on=['p'])
+    sibling = PlanNode(id='s',title='sibling')
+    search = BoundedMCTS(max_depth=3)
+    class FailParent:
+        chosen = []
+        def choice(self, nodes):
+            assert all(n.id != 'c' for n in nodes)
+            self.chosen.append(nodes[0].id)
+            return nodes[0]
+        def random(self):
+            return 1.0
+    search.random = FailParent()
+    reward = search._rollout([parent,child,sibling], set(), 2, prefix=['p','c'])
+    assert reward == 0
+    assert search.random.chosen == ['s']

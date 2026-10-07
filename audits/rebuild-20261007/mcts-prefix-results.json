@@ -1,0 +1,56 @@
+{
+  "read": {
+    "status": "uct_search_over_heuristic_rollout",
+    "assumptions": {
+      "success_probability": "max(0.05,0.9-0.1*attempts), unfitted",
+      "risk_costs": "hand-written",
+      "standard_error": "Monte Carlo internal reward only, not correctness uncertainty"
+    },
+    "predictive_model_available": false,
+    "best_action_id": "read",
+    "best_action_title": "read",
+    "simulations_run": 5000,
+    "stopped_by": "simulation_budget",
+    "principal_variation": [
+      "read"
+    ],
+    "action_stats": [
+      {
+        "node_id": "read",
+        "title": "read",
+        "visits": 5000,
+        "mean_value": 0.8959,
+        "standard_error": 0.0042
+      }
+    ],
+    "heuristic_root_value": 0.8959,
+    "heuristic_root_standard_error": 0.0042
+  },
+  "irreversible": {
+    "status": "uct_search_over_heuristic_rollout",
+    "assumptions": {
+      "success_probability": "max(0.05,0.9-0.1*attempts), unfitted",
+      "risk_costs": "hand-written",
+      "standard_error": "Monte Carlo internal reward only, not correctness uncertainty"
+    },
+    "predictive_model_available": false,
+    "best_action_id": "irreversible",
+    "best_action_title": "irreversible",
+    "simulations_run": 5000,
+    "stopped_by": "simulation_budget",
+    "principal_variation": [
+      "irreversible"
+    ],
+    "action_stats": [
+      {
+        "node_id": "irreversible",
+        "title": "irreversible",
+        "visits": 5000,
+        "mean_value": 0.8464,
+        "standard_error": 0.004
+      }
+    ],
+    "heuristic_root_value": 0.8464,
+    "heuristic_root_standard_error": 0.004
+  }
+}
