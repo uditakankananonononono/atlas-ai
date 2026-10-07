@@ -671,13 +671,19 @@ class ApplicationFlow:
             and urlsplit(final_url).netloc==urlsplit(payload.get('page_url','')).netloc)
         if not positive:
             return {'session_id':session_id,'status':record.status,'submitted':False,'reconciled':False,'boundary':'no original-site positive receipt; outcome held, never retry'}
-        record.confirmation={'final_url':final_url,'page_excerpt':re.sub(r'\s+',' ',html)[:500],
-            'observed_at':time.time(),'approval_id':record.approval_id,'positive_receipt':True,
-            'receipt_contract':'same original host, changedURL, application receipt text, no form/error/CAPTCHA'}
-        record.status=WorkflowStatus.SUBMITTED.value;record.error=''
+        # Generic success text proves only what is displayed, not which
+        # application was accepted. Do not promote without a transaction-bound
+        # vendor receipt contract; owner/session identity alone is insufficient.
+        observation={'final_url':final_url,'page_excerpt':re.sub(r'\s+',' ',html)[:500],
+            'observed_at':time.time(),'approval_id':record.approval_id,'positive_text_observed':True,
+            'transaction_bound':False,'receipt_contract':'generic same-host application text only'}
+        record.confirmation=observation
+        record.status=WorkflowStatus.OUTCOME_UNKNOWN.value
+        record.error='positive receipt text observed but not bound to original application; outcome held, never retry'
         self._save(record)
-        await self._audit(record,ActionType.SUBMIT,{'phase':'source_reconciled','approval_id':record.approval_id,'final_url':final_url})
-        return {'session_id':session_id,'status':record.status,'submitted':True,'reconciled':True,'confirmation':dict(record.confirmation)}
+        await self._audit(record,ActionType.SUBMIT,{'phase':'source_observed_unbound','approval_id':record.approval_id,'final_url':final_url})
+        return {'session_id':session_id,'status':record.status,'submitted':False,'reconciled':False,
+            'observation':observation,'boundary':record.error}
 
     def status(self, tenant_id: str, actor_id: str, session_id: str) -> dict[str, Any]:
         record = self._record(tenant_id, session_id)

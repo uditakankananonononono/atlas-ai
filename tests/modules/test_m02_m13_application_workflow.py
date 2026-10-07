@@ -658,8 +658,9 @@ def test_unknown_submit_reconciliation_reads_original_source_without_second_clic
  rig.page.url=DONE_URL;rig.page.html=THANKS_HTML
  result=rig.client.post(f'{base}/reconcile-submit')
  assert result.status_code==200,result.text
- assert result.json()['reconciled'] and result.json()['submitted']
- assert rig.page.clicked==['#submit-btn'] and rig.competitions.get_competition('comp-1').status==SubmissionStatus.SUBMITTED
+ assert not result.json()['reconciled'] and not result.json()['submitted']
+ assert result.json()['observation']['positive_text_observed'] and not result.json()['observation']['transaction_bound']
+ assert rig.page.clicked==['#submit-btn'] and rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
  assert rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']}).status_code==409
 
 
@@ -680,3 +681,17 @@ def test_unknown_reconciliation_refuses_unbound_or_negative_source(rig,case):
  assert response.status_code in [200,403]
  if response.status_code==200:assert not response.json()['reconciled']
  assert rig.page.clicked==['#submit-btn'] and rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
+
+
+def test_samehost_different_application_receipt_never_settles_original_unknown(rig):
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ rig.page.after_submit_url=FORM_URL;rig.page.after_submit_html=FORM_HTML
+ rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ rig.page.url='https://example.com/other-application/thanks'
+ rig.page.html='<html><body>Application was received. Applicant: Other person. Reference: OTHER-999.</body></html>'
+ observed=rig.client.post(f'{base}/reconcile-submit')
+ assert observed.status_code==200 and observed.json()['submitted'] is False and observed.json()['reconciled'] is False
+ assert observed.json()['status']=='outcome_unknown' and observed.json()['observation']['transaction_bound'] is False
+ assert rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
+ assert rig.page.clicked==['#submit-btn']

@@ -36,7 +36,8 @@ async def test_actual_browser_source_reconciliation_uses_same_session_and_no_sec
   await page.goto('https://example.com/apply/thanks') # simulated site outcome, not agent reconciliation
   before=len(requests)
   result=await flow.reconcile_submit('a','u','s')
-  assert result['submitted'] and result['confirmation']['final_url']=='https://example.com/apply/thanks'
+  assert not result['submitted'] and not result['reconciled']
+  assert result['observation']['final_url']=='https://example.com/apply/thanks' and not result['observation']['transaction_bound']
   assert len(requests)==before
   await page.screenshot(path='/downloads/m13-local-source-receipt.png',full_page=True)
  finally:await sessions.close()
