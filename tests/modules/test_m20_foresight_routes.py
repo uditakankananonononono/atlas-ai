@@ -401,3 +401,19 @@ def test_planning_http_corrected_overflow_is_422(client):
     service.planning_fallacy.record(kind='fixture', estimated=1, actual=1e308)
     response = c.post('/api/modules/20/meta/planning-fallacy/correct', json={'kind': 'fixture', 'estimate': 1e308})
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize('field,value', [('inside_estimate', True), ('inside_estimate', '10'), ('outside_weight', True), ('outside_weight', '0.5')])
+def test_outside_view_http_does_not_coerce_numbers(client, field, value):
+    c, _ = client
+    body = {'inside_estimate': 10, 'outside_weight': 0.5, 'subject': 'fixture'}
+    body[field] = value
+    assert c.post('/api/modules/20/meta/outside-view', json=body).status_code == 422
+
+
+@pytest.mark.parametrize('outcome', [True, '10'])
+def test_reference_http_does_not_coerce_outcome(client, outcome):
+    c, service = client
+    response = c.post('/api/modules/20/meta/reference-class/cases', json={'features': 'fixture', 'outcome': outcome})
+    assert response.status_code == 422
+    assert service.reference_class.cases == []

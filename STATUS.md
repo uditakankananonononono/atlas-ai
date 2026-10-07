@@ -970,3 +970,7 @@ Five reproduced failures retained: bool/stringdurationcoercion and unhandledrati
 ## Supplied outside-view blend inputs
 
 Five actual failures retained: nonfinite/bool insideestimate/weight and suppliedNaNreference median accepted. Strictfinite numeric/notboolinsideestimate/weight/median, weight0..1.161foresightHTTPpass1warning; recorded87adjacent2392pass2warnings38.83s. Convex arithmetic/framingtemplates only, not outside-view inference/reference relevanceverification. Transportcoercion separate. Latestfull9944passsourcec5b11ab predatessixlaterfixes.
+
+## Reference and outside-view HTTP numeric boundary
+
+Six actual failures retained: bool/stringoutcome/estimate/weight coerce past rawguards. Strictfinite numericfields now422beforecasepublication/blendarithmetic.167foresightHTTPpass1warning; recorded87adjacent2398pass2warnings45.06s. Transport consistency only, not reference relevance/predictive validity. Latestfull9944passsourcec5b11ab predatessevenlaterfixes.
