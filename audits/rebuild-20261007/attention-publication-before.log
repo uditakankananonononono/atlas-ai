@@ -1,0 +1,147 @@
+........FFFFFFFF                                                         [100%]
+=================================== FAILURES ===================================
+________ test_attention_invalid_scores_reject_without_publication[nan] _________
+
+score = nan
+
+    @pytest.mark.parametrize('score', [float('nan'), float('inf'), -0.1, 1.1, True, '0.5'])
+    def test_attention_invalid_scores_reject_without_publication(score):
+        class SuppliedAttention:
+            def score(self, chunk, active_goal):
+                return score
+        wm = WorkingMemory(attention=SuppliedAttention())
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_working_memory.py:105: Failed
+________ test_attention_invalid_scores_reject_without_publication[inf] _________
+
+score = inf
+
+    @pytest.mark.parametrize('score', [float('nan'), float('inf'), -0.1, 1.1, True, '0.5'])
+    def test_attention_invalid_scores_reject_without_publication(score):
+        class SuppliedAttention:
+            def score(self, chunk, active_goal):
+                return score
+        wm = WorkingMemory(attention=SuppliedAttention())
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_working_memory.py:105: Failed
+________ test_attention_invalid_scores_reject_without_publication[-0.1] ________
+
+score = -0.1
+
+    @pytest.mark.parametrize('score', [float('nan'), float('inf'), -0.1, 1.1, True, '0.5'])
+    def test_attention_invalid_scores_reject_without_publication(score):
+        class SuppliedAttention:
+            def score(self, chunk, active_goal):
+                return score
+        wm = WorkingMemory(attention=SuppliedAttention())
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_working_memory.py:105: Failed
+________ test_attention_invalid_scores_reject_without_publication[1.1] _________
+
+score = 1.1
+
+    @pytest.mark.parametrize('score', [float('nan'), float('inf'), -0.1, 1.1, True, '0.5'])
+    def test_attention_invalid_scores_reject_without_publication(score):
+        class SuppliedAttention:
+            def score(self, chunk, active_goal):
+                return score
+        wm = WorkingMemory(attention=SuppliedAttention())
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_working_memory.py:105: Failed
+________ test_attention_invalid_scores_reject_without_publication[True] ________
+
+score = True
+
+    @pytest.mark.parametrize('score', [float('nan'), float('inf'), -0.1, 1.1, True, '0.5'])
+    def test_attention_invalid_scores_reject_without_publication(score):
+        class SuppliedAttention:
+            def score(self, chunk, active_goal):
+                return score
+        wm = WorkingMemory(attention=SuppliedAttention())
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_working_memory.py:105: Failed
+________ test_attention_invalid_scores_reject_without_publication[0.5] _________
+
+score = '0.5'
+
+    @pytest.mark.parametrize('score', [float('nan'), float('inf'), -0.1, 1.1, True, '0.5'])
+    def test_attention_invalid_scores_reject_without_publication(score):
+        class SuppliedAttention:
+            def score(self, chunk, active_goal):
+                return score
+        wm = WorkingMemory(attention=SuppliedAttention())
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_working_memory.py:105: Failed
+______ test_capacity_scoring_failure_leaves_original_partition_unchanged _______
+
+    def test_capacity_scoring_failure_leaves_original_partition_unchanged():
+        class FailingAttention:
+            fail = False
+            def score(self, chunk, active_goal):
+                if self.fail and chunk.content == 'original':
+                    raise RuntimeError('fixture scoring failure')
+                return 0.5
+        attention = FailingAttention()
+        wm = WorkingMemory(capacity=1, attention=attention)
+        original = wm.put(make_chunk('original'), partition='p')
+        attention.fail = True
+        with pytest.raises(RuntimeError, match='fixture scoring failure'):
+            wm.put(make_chunk('new'), partition='p')
+>       assert wm.focused(partition='p') == [original]
+E       AssertionError: assert [MemoryChunk(...ntext_id='p')] == [MemoryChunk(...ntext_id='p')]
+E         
+E         Left contains one more item: MemoryChunk(id='42f92d5e-c9a8-40d8-be82-bf5db48d46c3', type=<ChunkType.FACT: 'fact'>, content='new', confidence=1.0, s..._score=0.5, created_at=datetime.datetime(2026, 10, 7, 5, 12, 32, 884322, tzinfo=datetime.timezone.utc), context_id='p')
+E         Use -v to get more diff
+
+tests/modules/test_m20_working_memory.py:123: AssertionError
+_________ test_refresh_scoring_failure_does_not_publish_partial_scores _________
+
+    def test_refresh_scoring_failure_does_not_publish_partial_scores():
+        class FailingAttention:
+            fail = False
+            def score(self, chunk, active_goal):
+                if self.fail and chunk.content == 'second':
+                    raise RuntimeError('fixture refresh failure')
+                return 0.9 if self.fail else 0.5
+        attention = FailingAttention()
+        wm = WorkingMemory(attention=attention)
+        wm.put(make_chunk('first')); wm.put(make_chunk('second'))
+        before = wm.focused()
+        attention.fail = True
+        with pytest.raises(RuntimeError):
+            wm.refresh_attention('fixture')
+>       assert wm.focused() == before
+E       AssertionError: assert [MemoryChunk(...text_id=None)] == [MemoryChunk(...text_id=None)]
+E         
+E         At index 0 diff: MemoryChunk(id='b4619362-2621-439b-bb94-c40a09d4e8d7', type=<ChunkType.FACT: 'fact'>, content='first', confidence=1.0, source='', salience=0.5, attention_score=0.9, created_at=datetime.datetime(2026, 10, 7, 5, 12, 32, 888194, tzinfo=datetime.timezone.utc), context_id=None) != MemoryChunk(id='b4619362-2621-439b-bb94-c40a09d4e8d7', type=<ChunkType.FACT: 'fact'>, content='first', confidence=1.0, source='', salience=0.5, attention_score=0.5, created_at=datetime.datetime(2026, 10, 7, 5, 12, 32, 888194, tzinfo=datetime.timezone.utc), context_id=None)
+E         Use -v to get more diff
+
+tests/modules/test_m20_working_memory.py:140: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_working_memory.py::test_attention_invalid_scores_reject_without_publication[nan]
+FAILED tests/modules/test_m20_working_memory.py::test_attention_invalid_scores_reject_without_publication[inf]
+FAILED tests/modules/test_m20_working_memory.py::test_attention_invalid_scores_reject_without_publication[-0.1]
+FAILED tests/modules/test_m20_working_memory.py::test_attention_invalid_scores_reject_without_publication[1.1]
+FAILED tests/modules/test_m20_working_memory.py::test_attention_invalid_scores_reject_without_publication[True]
+FAILED tests/modules/test_m20_working_memory.py::test_attention_invalid_scores_reject_without_publication[0.5]
+FAILED tests/modules/test_m20_working_memory.py::test_capacity_scoring_failure_leaves_original_partition_unchanged
+FAILED tests/modules/test_m20_working_memory.py::test_refresh_scoring_failure_does_not_publish_partial_scores
+8 failed, 8 passed in 1.31s

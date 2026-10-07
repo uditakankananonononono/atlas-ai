@@ -94,3 +94,59 @@ def test_default_partition_capacity_does_not_evict_other_tasks():
  assert len(wm.focused(partition='a'))==len(wm.focused(partition='b'))==1
  assert len(wm.focused(partition=''))==1
  assert len(wm)==3
+
+
+@pytest.mark.parametrize('score', [float('nan'), float('inf'), -0.1, 1.1, True, '0.5'])
+def test_attention_invalid_scores_reject_without_publication(score):
+    class SuppliedAttention:
+        def score(self, chunk, active_goal):
+            return score
+    wm = WorkingMemory(attention=SuppliedAttention())
+    with pytest.raises(ValueError):
+        wm.put(make_chunk('fixture'))
+    assert len(wm) == 0
+
+
+def test_capacity_scoring_failure_leaves_original_partition_unchanged():
+    class FailingAttention:
+        fail = False
+        def score(self, chunk, active_goal):
+            if self.fail and chunk.content == 'original':
+                raise RuntimeError('fixture scoring failure')
+            return 0.5
+    attention = FailingAttention()
+    wm = WorkingMemory(capacity=1, attention=attention)
+    original = wm.put(make_chunk('original'), partition='p')
+    attention.fail = True
+    with pytest.raises(RuntimeError, match='fixture scoring failure'):
+        wm.put(make_chunk('new'), partition='p')
+    assert wm.focused(partition='p') == [original]
+
+
+def test_refresh_scoring_failure_does_not_publish_partial_scores():
+    class FailingAttention:
+        fail = False
+        def score(self, chunk, active_goal):
+            if self.fail and chunk.content == 'second':
+                raise RuntimeError('fixture refresh failure')
+            return 0.9 if self.fail else 0.5
+    attention = FailingAttention()
+    wm = WorkingMemory(attention=attention)
+    wm.put(make_chunk('first')); wm.put(make_chunk('second'))
+    before = wm.focused()
+    attention.fail = True
+    with pytest.raises(RuntimeError):
+        wm.refresh_attention('fixture')
+    assert wm.focused() == before
+
+
+def test_attention_callback_cannot_edit_published_chunk_content():
+    class MutatingAttention:
+        def score(self, chunk, active_goal):
+            chunk.content = 'callback edit'
+            return 0.5
+    wm = WorkingMemory(attention=MutatingAttention())
+    stored = wm.put(make_chunk('original'))
+    assert stored.content == 'original'
+    wm.refresh_attention('fixture')
+    assert wm.get(stored.id).content == 'original'
