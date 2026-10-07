@@ -56,7 +56,13 @@ def build_dag_engine(service):
   if not isinstance(inputs.get('tenant_id'),str) or not inputs['tenant_id'].strip():raise WorkflowValidationError("workflow tenant is required")
   try:return RunIn(**values)
   except ValidationError as error:raise WorkflowValidationError("invalid model node limits or task type") from error
- def validate(node,inputs):request(node.task,node.config,inputs)
+ def validate(node,inputs):
+  data=request(node.task,node.config,inputs)
+  # Inspect the injected executor catalog, never probe providers during validation.
+  if isinstance(service,Service):
+   from .router import NoEligibleModel
+   try:service.router.route(RouteRequest(data.task_type,data.output_tokens,data.budget_cents,data.latency_tolerance_ms,inputs['tenant_id']))
+   except NoEligibleModel as error:raise WorkflowValidationError(f"node {node.id}: no eligible model") from error
  async def run(task,config,context):
   data=request(task,config,context['workflow_inputs'])
   req=RouteRequest(data.task_type,data.output_tokens,data.budget_cents,data.latency_tolerance_ms,context['workflow_inputs']['tenant_id'])
