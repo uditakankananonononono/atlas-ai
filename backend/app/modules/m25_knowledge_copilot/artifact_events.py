@@ -44,7 +44,13 @@ class ArtifactEventStore:
    if prior:
     if prior[0]!=canonical['event_sha256']:raise ValueError('event_id already exists with different content')
     return {'created':False,'bytes_verified':bytes_verified,'event':json.loads(prior[1]),'stored_at':prior[2]}
-   db.execute('INSERT INTO artifact_events VALUES(?,?,?,?,?)',(canonical['tenant_id'],canonical['event_id'],canonical['event_sha256'],payload,created))
+   try:db.execute('INSERT INTO artifact_events VALUES(?,?,?,?,?)',(canonical['tenant_id'],canonical['event_id'],canonical['event_sha256'],payload,created))
+   except sqlite3.IntegrityError:
+    # Concurrent duplicate insert lost the SELECT-then-INSERT race; re-read
+    # and apply the same idempotency policy instead of leaking a raw 500.
+    prior=db.execute('SELECT event_sha256,payload,created_at FROM artifact_events WHERE tenant_id=? AND event_id=?',(canonical['tenant_id'],canonical['event_id'])).fetchone()
+    if prior and prior[0]==canonical['event_sha256']:return {'created':False,'bytes_verified':bytes_verified,'event':json.loads(prior[1]),'stored_at':prior[2]}
+    raise ValueError('event_id already exists with different content') from None
   return {'created':True,'bytes_verified':bytes_verified,'event':canonical,'stored_at':created}
  def get(self,tenant_id:str,event_id:str)->dict[str,Any]:
   with self._db() as db:row=db.execute('SELECT payload,created_at FROM artifact_events WHERE tenant_id=? AND event_id=?',(tenant_id,event_id)).fetchone()
