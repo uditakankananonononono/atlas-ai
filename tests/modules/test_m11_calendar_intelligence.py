@@ -588,3 +588,31 @@ def test_http_exchange_missing_config_makes_no_request(client_id,client_secret):
    with pytest.raises(UpstreamServiceError,match='configuration'):await exchange_refresh_token(client,'refresh',client_id=client_id,client_secret=client_secret)
  asyncio.run(run())
  assert calls==[]
+
+
+def test_apply_reschedule_replay_is_refused_without_duplicating(tmp_path):
+    # One approved reschedule must apply exactly once: a replay of the same
+    # approval id raises instead of creating a duplicate task and plan blocks.
+    service, repo, gate = make_service(tmp_path)
+    tiny = SchedulingPrefsSchema(
+        working_hours={0: [WindowSchema(start="09:00", end="10:00")]},
+        energy_curve={h: 3 for h in range(24)},
+    )
+    service.save_prefs(tiny)
+    today = datetime.now(UTC).date()
+    days_ahead = (0 - today.weekday()) % 7 or 7
+    monday = today + timedelta(days=days_ahead)
+    service.create_task(SchedulingTaskCreate(
+        title="Existing high priority", duration_minutes=60,
+        deadline=dt(monday, 17), priority=5))
+    report, proposal = service.request_reschedule(SchedulingTaskCreate(
+        title="New deadline", duration_minutes=60,
+        deadline=dt(monday, 12), priority=3))
+    assert proposal is not None
+    gate.approve(proposal.approval_id)
+    first = service.apply_reschedule(proposal.approval_id)
+    assert first.status == "scheduled"
+    with pytest.raises(ApprovalNotGrantedError, match="consumed"):
+        service.apply_reschedule(proposal.approval_id)
+    scheduled = [t.title for t in repo.list_tasks(status="scheduled")]
+    assert scheduled.count("New deadline") == 1

@@ -269,6 +269,11 @@ class SqlCalendarRepository:
             return db.scalar(select(PlanRow).where(
                 PlanRow.tenant_id == self.tenant_id, PlanRow.id == plan_id))
 
+    def get_plan_by_approval(self, approval_id: str) -> PlanRow | None:
+        with self.sessions() as db:
+            return db.scalar(select(PlanRow).where(
+                PlanRow.tenant_id == self.tenant_id, PlanRow.approval_id == approval_id))
+
     def set_plan_status(self, plan_id: str, status: str, approval_id: str | None = None) -> None:
         with self.sessions.begin() as db:
             row = db.scalar(select(PlanRow).where(
