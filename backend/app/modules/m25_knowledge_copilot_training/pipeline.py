@@ -199,16 +199,31 @@ class LocalKnowledgePipeline:
             raise KnowledgeError('version target already exists on disk; refusing to overwrite')
         import uuid as _uuid
         tmp=target.with_name(target.name+f'.tmp-{_uuid.uuid4().hex}')
+        import os as _os
+        dfd=None
         try:
             # Build the version in a private temp dir, then rename it into
-            # place. Cleanup only ever removes the temp dir this attempt
-            # created; preexisting version contents are never touched.
+            # place. After open, the attempt HOLDS that dir: the descriptor
+            # pins its inode (a deleted-then-recreated replacement cannot
+            # reuse it) and anchors both the exclusive writes and the
+            # ownership check every destructive cleanup must pass - the
+            # pathname must still denote the SAME (dev,ino), a real
+            # directory, not a link; anything else is LEFT in place rather
+            # than deleted by mistake. The mkdir-to-open acquisition gap
+            # remains: a different real directory swapped in BEFORE open
+            # can be adopted. After-open replacement checks narrow the
+            # race, but do not atomically close check-to-rmtree (carried).
             tmp.mkdir(parents=True)
+            dfd=_os.open(tmp,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
             segments_blob=json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True).encode('utf-8')
-            self._write_version_files(tmp,raw,segments_blob)
-            import os as _os; _os.rename(tmp,target)
+            self._write_version_files(dfd,raw,segments_blob)
+            _os.rename(tmp,target)
         except OSError:
-            shutil.rmtree(tmp,ignore_errors=True); raise
+            self._rmtree_if_owned(tmp,dfd)
+            if dfd is not None:
+                try: _os.close(dfd)
+                except OSError: pass
+            raise
         rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
         try:
             self._persist_manifest(rec)
@@ -216,18 +231,24 @@ class LocalKnowledgePipeline:
             # Persist failed AFTER memory mutation: roll the version state
             # back so memory never claims a version the manifest does not
             # record. The durable registration (its own manifest was written
-            # before any version file) is PRESERVED. The version dir was
-            # created by this attempt (rename from tmp), so removing it
-            # cannot touch preexisting data; if that removal itself fails,
-            # an untracked but complete version dir remains on disk with no
-            # false memory claim. An oversize refusal happens before any
-            # manifest mutation, so the recorded manifest bytes survive.
+            # before any version file) is PRESERVED. The version dir is
+            # removed only while the pathname still denotes the object this
+            # attempt created (ownership check; the replace race is
+            # narrowed, not atomically closed); a replaced object or a
+            # failed removal leaves unresolved on-disk state with no new
+            # memory version claim. An oversize refusal
+            # happens before any manifest mutation, so the recorded
+            # manifest bytes survive.
             rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
-            shutil.rmtree(target,ignore_errors=True)
+            self._rmtree_if_owned(target,dfd)
             try: self._persist_manifest(rec)
             except (OSError, ManifestOversizeError): pass
             if isinstance(persist_exc, ManifestOversizeError): raise persist_exc
             raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
+        finally:
+            if dfd is not None:
+                try: _os.close(dfd)
+                except OSError: pass
         return version
     def _extract(self,raw:bytes,mime:str,kind:str)->list[Segment]:
         if mime=='audio/wav':
@@ -348,28 +369,48 @@ class LocalKnowledgePipeline:
         if len(data)>limit: raise KnowledgeError(f'{refusal}: {what} {over}')
         return data
     @staticmethod
-    def _write_version_files(tmp:Path,raw:bytes,segments_blob:bytes)->None:
+    def _write_version_files(dfd:int,raw:bytes,segments_blob:bytes)->None:
         # Version files get the same exclusive-write contract as manifests:
         # O_EXCL|O_NOFOLLOW never writes through a preexisting link or file,
-        # and the writes are anchored at the OPENED tmp dir (O_NOFOLLOW on
-        # the dir itself), so a tmp swapped to a symlink after mkdir cannot
+        # and the writes are anchored at the caller-held OPENED tmp dirfd
+        # (opened O_RDONLY|O_NOFOLLOW|O_DIRECTORY by the caller, which
+        # refuses a tmp swapped to a symlink after mkdir), so a swap cannot
         # redirect source.bin or segments.json outside the workspace, and a
-        # link planted inside tmp between mkdir and write is refused.
-        # Carried, NOT closed: a swap of a component above tmp, the
-        # rename-into-place TOCTOU, and fsync/durability beyond rename.
+        # link planted inside tmp between mkdir and write is refused. The
+        # caller owns the descriptor's lifecycle; the held fd also pins the
+        # created dir's inode for the ownership-checked cleanups. Carried,
+        # NOT closed: a swap of a component above tmp, the rename-into-place
+        # TOCTOU, and fsync/durability beyond rename.
         import os as _os
-        dfd=_os.open(tmp,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
-        try:
-            for name,data in (('source.bin',raw),('segments.json',segments_blob)):
-                fd=_os.open(name,_os.O_WRONLY|_os.O_CREAT|_os.O_EXCL|_os.O_NOFOLLOW,0o600,dir_fd=dfd)
-                try:
-                    view=memoryview(data)
-                    while view:
-                        written=_os.write(fd,view)
-                        if written<=0: raise OSError(f'short write persisting {name}')
-                        view=view[written:]
-                finally:_os.close(fd)
-        finally:_os.close(dfd)
+        for name,data in (('source.bin',raw),('segments.json',segments_blob)):
+            fd=_os.open(name,_os.O_WRONLY|_os.O_CREAT|_os.O_EXCL|_os.O_NOFOLLOW,0o600,dir_fd=dfd)
+            try:
+                view=memoryview(data)
+                while view:
+                    written=_os.write(fd,view)
+                    if written<=0: raise OSError(f'short write persisting {name}')
+                    view=view[written:]
+            finally:_os.close(fd)
+    @staticmethod
+    def _rmtree_if_owned(path:Path,dfd)->None:
+        # Destructive cleanup only while the pathname still denotes the
+        # attempt's OWN object: fstat on the HELD dirfd (which pins the
+        # created dir's inode against delete-then-recreate reuse) must
+        # match lstat of the path on (dev,ino), and the path must be a
+        # real directory - a symlink or a replaced object is LEFT in place.
+        # This matches the held descriptor, not proof of mkdir authorship:
+        # the mkdir-to-open acquisition gap remains. Errors from stat
+        # checks leave the path untouched; the check
+        # narrows but does not atomically close the replace race (carried).
+        import os as _os, stat as _stat
+        if dfd is None: return
+        try: want=_os.fstat(dfd)
+        except OSError: return
+        try: st=_os.lstat(path)
+        except OSError: return
+        if not _stat.S_ISDIR(st.st_mode): return
+        if (st.st_dev,st.st_ino)!=(want.st_dev,want.st_ino): return
+        shutil.rmtree(path,ignore_errors=True)
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
         import os as _os, uuid as _uuid
