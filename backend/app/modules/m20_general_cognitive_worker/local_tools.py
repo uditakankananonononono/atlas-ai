@@ -2,6 +2,7 @@
 import csv
 import io
 import math
+import json
 from .schemas import ToolSpec, Risk
 
 
@@ -42,6 +43,11 @@ def summarize_csv(arguments):
 
 
 def register_local_tools(registry):
+    async def require_handler(arguments): return require_value(arguments)
+    registry.register(ToolSpec(name='require_value',description='Require an exact JSON value match before dependent work',
+        capabilities=['require','condition','check','prerequisite'],risk=Risk.READ,max_retries=1,
+        parameters={'type':'object','properties':{'actual':{},'expected':{}},
+            'required':['actual','expected'],'additionalProperties':False}),require_handler)
     from .temporal_network import temporal
     async def temporal_handler(arguments): return temporal(arguments)
     registry.register(ToolSpec(name='temporal_check',description='Check relative-time difference constraints and report contradictions or implied bounds',
@@ -137,3 +143,14 @@ def filter_csv(arguments):
     return {'csv_text':output.getvalue(),'input_rows':count,'matched_rows':matched,'columns':columns,
             'source_verified':False,'status':'supplied_csv_exact_filter_projection',
             'boundary':'Exact raw string AND predicates and selected columns only; no inferred status, normalization or external effects.'}
+
+
+def require_value(arguments):
+    actual = json.dumps(arguments['actual'], sort_keys=True, allow_nan=False, separators=(',', ':'))
+    expected = json.dumps(arguments['expected'], sort_keys=True, allow_nan=False, separators=(',', ':'))
+    if max(len(actual.encode()), len(expected.encode())) > 16000:
+        raise ValueError('condition values exceed16000bytes')
+    if actual != expected:
+        raise ValueError('required exact value mismatch; dependent work must not proceed')
+    return {'matched':True,'source_verified':False,'status':'exact_supplied_output_condition',
+            'boundary':'Exact JSON comparison only, not source authentication, external verification or approval. Plan max_attempts controls condition retries.'}

@@ -1,0 +1,38 @@
+........................................................................ [ 57%]
+.....................................................F                   [100%]
+=================================== FAILURES ===================================
+__ test_actual_dependency_output_check_stops_downstream_when_condition_fails ___
+
+    def test_actual_dependency_output_check_stops_downstream_when_condition_fails():
+        runtime,repo=make_runtime()
+        task=runtime.submit_goal('check supplied timing before next work',run_immediately=False)
+        runtime.prepare_supplied_plan(task.id,steps=[
+            {'id':'check','title':'check timing','tool':'temporal_check','arguments':{
+                'temporal_events':['a','b'],'time_unit':'hours','time_constraints':[
+                    {'from':'a','to':'b','minimum_gap':3,'maximum_gap':4},
+                    {'from':'b','to':'a','minimum_gap':1}]}},
+            {'id':'require','title':'require consistent timing','tool':'require_value','depends_on':['check'],
+             'arguments':{'actual':{'$step':'check','path':['status']},'expected':'consistent'}},
+            {'id':'later','title':'later work','tool':'csv_summary','depends_on':['require'],
+             'arguments':{'csv_text':'amount\n42\n','value_column':'amount'}}])
+        result=runtime.run_task(task.id)
+        assert result.state==TaskState.FAILED
+        assert result.plan[0].state==TaskState.SUCCEEDED
+        assert result.plan[1].state==TaskState.FAILED
+        assert result.plan[2].state==TaskState.PENDING
+>       assert [a.tool for a in repo.list_actions(task_id=task.id)]==['temporal_check','require_value']
+E       AssertionError: assert ['temporal_check'] == ['temporal_ch...equire_value']
+E         
+E         Right contains one more item: 'require_value'
+E         Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:1806: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_actual_dependency_output_check_stops_downstream_when_condition_fails
+1 failed, 125 passed, 1 warning in 7.52s
