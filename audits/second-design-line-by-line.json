@@ -398,7 +398,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Mounted Service clusters terms by Jaccard connected components; durable SurveillancePipeline uses thresholded cosine union-find. Lane evidence uses term similarity and keyword labels. These are existing algorithms, not scipy hierarchical linkage/silhouette selection, daily six-month batch or TF-IDF+LLM trend summaries. Three-versus-six-month growth comparison and Research Radar visualization not established in scoped M04 read. No cluster behavior or pixels exercised here. Status stays unverified."
+      "notes": "Mounted Service clusters terms by Jaccard connected components; durable SurveillancePipeline uses thresholded cosine union-find. Lane evidence.py implements TF-IDF cosine connected components with five frequency-ranked keyword labels. These are existing algorithms, not scipy hierarchical linkage/silhouette selection, daily six-month batch or top-ten TF-IDF keywords plus LLM trend summaries. Three-versus-six-month growth comparison and Research Radar visualization not established in scoped M04 read. No cluster behavior or pixels exercised here. Status stays unverified."
     },
     {
       "row": 36,
@@ -464,7 +464,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located contact CRUD, official Semantic Scholar discovery, optional enrichment adapters, campaign state machine, approval proposals, SMTP delivery and follow-up draft worker. Existence does not prove personalized relationship outcomes or user-voice learning. All external/BYOK/send effects remain unexecuted. Scope: M05 and worker code read, not whole-repo acceptance. Status stays unverified."
     },
     {
       "row": 42,
@@ -475,7 +475,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "SqlContactRepository scopes by tenant and writes versioned ContactChange rows. ContactRow stores one project_id and one email with name/institution/topics/profile_url/metadata JSON; no secondary emails, phone/job/location typed fields, project/opportunity junction tables or derived strength/last_contacted model established in this schema read. Metadata is JSON, not source-specified JSONB. Change rows store supplied changed values, not full old/new snapshots with actor. GDPR compliance and high-velocity performance are not established by this model. Scope: M05 schema/repository read, no PG load/privacy acceptance. Status stays unverified."
     },
     {
       "row": 43,
@@ -486,7 +486,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Located curated LabRegistry/public-page collector with robots handling, SemanticScholarClient author search and keyed Hunter/Clearbit adapters. Finder and verifier are separate; enrichment keeps existing user fields and records suggestions/provenance. Contact schema validates email syntax only; base Service.propose_send calls a nonempty syntax-checked email verified, so that path is not deliverability proof. Institution crawl schedules, Google Scholar/industry LLM enrichment and end-to-end discovered-contact verification not established in scoped read. Unofficial LinkedIn scraping is a source divergence, not an instruction to evade controls. No network/paid/key calls run. Status stays unverified."
     },
     {
       "row": 44,
@@ -497,7 +497,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Existing APIs accept explicit contacts and campaign targets. Event-bus-triggered competition judge/organizer/winner and paper corresponding-author additions are not established in scoped M05/M02/M04 worker read; these would need provenance and duplicate controls before acceptance. No automatic CRM mutation or contact disclosure performed. Scoped targeted grep is not whole-repo absence evidence. Status stays unverified."
     },
     {
       "row": 45,
@@ -508,7 +508,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "CampaignService persists explicit contact sets, objectives, follow-up windows and max follow-ups; planning/cadence enforce scope/domain/time caps. Semantic Scholar author score is hIndex*3 plus log citation/paper counts, not responsiveness/interest-alignment ranking. Natural-language contact-query interpretation and time-zone/Calendar review-time optimization not established in scoped planning/campaign/service read. No campaign enrollment, model call or scheduling effect run. Status stays unverified."
     },
     {
       "row": 46,
@@ -519,7 +519,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Service.draft_campaign builds one provider prompt from supplied sender context, recent-work titles and contact topics, then parses subject/body. Planning has audience templates and fact constraints; campaign drafts queue exact payload review. Automated Knowledge Workspace interaction/project retrieval, recent-publication/news retrieval, past-success few-shot voice checker and approval-learned style model not established in scoped read. Prompt instructions alone are not factuality/style proof. No BYOK/send effects run. Status stays unverified."
     },
     {
       "row": 47,
@@ -530,7 +530,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "SmtpMailSender and DeliveryService.send_approved exist; payload matching precedes send and receipt message ID/thread data precedes mark_sent. Campaign record_reply cancels later drafts; no-reply due-window logic and hourly worker draft follow-ups exist. Automatic inbox/thread scan, sentiment/intent classification and Calendar next-action handoff not established here. Delivery method awaits send before mark_sent without a visible atomic sending claim/one-shot permit, creating an untested duplicate-send risk for overlapping callers. No SMTP/Gmail/send run or authority granted. Scope: M05/worker code read, not full-path acceptance. Status stays unverified."
     },
     {
       "row": 48,
@@ -541,7 +541,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Requires atomic decomposition and behavior evidence before status can change."
+      "notes": "Delivery report aggregates message state counts and per-message delivery audit. Scoped M05 read did not establish open/reply/positive-reply/conversion rates or causal recommendation learning; campaign comments explicitly use provider thread metadata, never tracking pixels. Knowledge Workspace communication storage and user retention/deletion control integration not established here. Privacy/compliance is not inferred from comments. No tracking, user communication or external effects run. Status stays unverified."
     },
     {
       "row": 49,
