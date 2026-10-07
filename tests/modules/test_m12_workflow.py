@@ -31,3 +31,19 @@ def test_mounted_workflow_invalid_input_422_before_runner(raw):
 @pytest.mark.parametrize('raw',['nodes: [{id: a, id: b, task: x}]','nodes: [{id: a, task: x, config: {budget: 1, budget: 999}}]','nodes: [{id: a, task: x}]\nnodes: [{id: b, task: x}]'])
 def test_duplicate_yaml_keys_not_silently_overwritten(raw):
  with pytest.raises(WorkflowValidationError,match='duplicate YAML'):Workflow.from_yaml(raw)
+
+def test_excessive_nested_yaml_depth_is_contract_error_not_recursion():
+ raw='nodes: [{id: a, task: x, config: {nested: '+ '['*600+'0'+']'*600+'}}]'
+ with pytest.raises(WorkflowValidationError):Workflow.from_yaml(raw)
+
+def test_mounted_excessive_depth_is_422_without_runner_call():
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ calls=[]
+ async def runner(*args):calls.append(args);return {}
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ raw='nodes: [{id: a, task: x, config: {nested: '+ '['*600+'0'+']'*600+'}}]'
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw})
+ assert response.status_code==422 and not calls
