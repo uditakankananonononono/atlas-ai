@@ -75,15 +75,22 @@ def abductive_search(p):
         atom=row.get('atom');cost=row.get('cost')
         if not isinstance(atom,str) or not atom or atom in names or isinstance(cost,bool) or not isinstance(cost,(int,float)) or not math.isfinite(cost) or cost<0:raise ValueError('unique named hypotheses with finite nonnegative cost required')
         names.add(atom);choices.append((atom,float(cost)))
-    valid=[]
-    for bits in itertools.product([False,True],repeat=len(choices)):
-        selected=[atom for (atom,cost),bit in zip(choices,bits) if bit]
-        known,trace=closure(facts|set(selected),program)
-        if observations<=known and not forbidden&known:
-            valid.append({'hypotheses':selected,'cost':sum(cost for (_,cost),bit in zip(choices,bits) if bit),'derived_facts':sorted(known),'proof_trace':trace})
-    # Inclusion-minimal explanations; retain tied alternatives, not arbitrary prose.
-    minimal=[r for r in valid if not any(set(s['hypotheses'])<set(r['hypotheses']) for s in valid)]
+    minimal=[]; evaluated=0; skipped=0
+    # Cardinality order makes every proper subset available before its supersets.
+    # A superset of any valid explanation cannot be inclusion-minimal, even
+    # when additional hypotheses would derive a forbidden atom.
+    for size in range(len(choices)+1):
+        for indices in itertools.combinations(range(len(choices)),size):
+            selected=[choices[i][0] for i in indices]; selected_set=set(selected)
+            if any(set(row['hypotheses']) <= selected_set for row in minimal):
+                skipped+=1;continue
+            known,trace=closure(facts|selected_set,program);evaluated+=1
+            if observations<=known and not forbidden&known:
+                try:cost=math.fsum(choices[i][1] for i in indices)
+                except OverflowError as exc:raise ValueError('hypothesis cost overflow') from exc
+                if not math.isfinite(cost):raise ValueError('hypothesis cost overflow')
+                minimal.append({'hypotheses':selected,'cost':cost,'derived_facts':sorted(known),'proof_trace':trace})
     minimal.sort(key=lambda r:(r['cost'],len(r['hypotheses']),r['hypotheses']))
     best=min((r['cost'] for r in minimal),default=None)
-    return {'explanations':minimal,'best_explanations':[r for r in minimal if r['cost']==best],'explanation_count':len(minimal),
+    return {'subsets_evaluated':evaluated,'nonminimal_supersets_skipped':skipped,'explanations':minimal,'best_explanations':[r for r in minimal if r['cost']==best],'explanation_count':len(minimal),
             'best_explanation_is_not_proof':True,'boundary':'Exact finite minimum-cost symbolic Horn abduction from explicit hypotheses and observations. Costs are supplied, not inferred prior probabilities. Logical explanation does not establish truth.'}
