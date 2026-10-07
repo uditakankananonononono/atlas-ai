@@ -33,14 +33,13 @@ class DurableWorkingMemory(WorkingMemory):
 
     def put(self, chunk: MemoryChunk, *, active_goal: str = "", partition: str = "") -> MemoryChunk:
         result = super().put(chunk, active_goal=active_goal, partition=partition)
-        self.repo.save_chunk(result, partition=partition or (chunk.context_id or ""))
+        if self.get(result.id) is not None:
+            self.repo.save_chunk(result, partition=partition)
         return result
 
-    def remove(self, chunk_id: str) -> bool:
-        existed = super().remove(chunk_id)
-        if existed:
-            self.repo.delete_chunk(chunk_id)
-        return existed
+    def _remove(self, chunk_id: str) -> None:
+        super()._remove(chunk_id)
+        self.repo.delete_chunk(chunk_id)
 
     def clear_partition(self, partition: str) -> int:
         cleared = super().clear_partition(partition)
