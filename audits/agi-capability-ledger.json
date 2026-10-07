@@ -1,7 +1,68 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "claim_policy": "Report measured mechanisms, never infer general intelligence from component completion.",
   "capabilities": [
+    {
+      "id": "AGI-01",
+      "capability": "Persistent evidence-backed world model",
+      "status": "PARTIAL",
+      "mechanism": "Tenant-scoped supplied-weight rollup only, no predictive confidence/evidence truth. SQLite transaction snapshots and unambiguous JSONpair keys; unanchored local hash consistency only.",
+      "test": "test_world_model_preserves_conflicts_tenant_scope_and_hash_chain",
+      "gap": "Source provenance/truth, fitted predictive model, independent integrity anchors and production tenant provisioning unverified."
+    },
+    {
+      "id": "AGI-02",
+      "capability": "Self-directed goal generation",
+      "status": "PARTIAL",
+      "mechanism": "Heuristic mission gap goal templates, exact immutable reviewed binding and process-local single-use activation.",
+      "test": "test_autonomous_goal_is_proposed_but_cannot_self_authorize",
+      "gap": "No learned goal generation/goal correctness, durable distributed approval lifecycle or production owner execution."
+    },
+    {
+      "id": "AGI-03",
+      "capability": "Tool creation",
+      "status": "PARTIAL",
+      "mechanism": "Frozen supplied pure-function AST/source/case snapshots tested through bounded OS isolation with JSONin/out; no service-process generated execution.",
+      "test": "test_tool_synthesis_requires_safe_ast_passing_tests_and_admission",
+      "gap": "Model source generation unverified; request_admission/admit deliberately disabled, no registry integration or deployed synthesized tools."
+    },
+    {
+      "id": "AGI-04",
+      "capability": "Recursive self-improvement",
+      "status": "PARTIAL",
+      "mechanism": "Caller-evaluator string versioning, exact evaluated/reviewed report binding, baseline version checks, process-local one-use approval and rollback.",
+      "test": "test_self_improvement_has_immutable_baseline_stale_guard_and_rollback",
+      "gap": "No trained/self-improved model, held-out quality improvement, deployed code change or durable distributed lifecycle."
+    },
+    {
+      "id": "AGI-05",
+      "capability": "Cross-domain transfer",
+      "status": "PARTIAL",
+      "mechanism": "Supplied callable/case expected-output evaluation, domain labels supplied by caller, failure/worst-domain reporting and M25 artifact storage.",
+      "test": "test_transfer_benchmark_measures_held_out_domains_and_worst_domain; test_transfer_benchmark_cannot_hide_domain_failure_in_global_score; test_agi_artifacts_use_shared_provenance_contract_and_tenant_store",
+      "gap": "No verified held-out domains, learned strategy or real-world transfer; provenance storage is not truth verification."
+    },
+    {
+      "id": "AGI-06",
+      "capability": "Planning and replanning",
+      "status": "PARTIAL",
+      "mechanism": "Validated DAG planner, exact goal/context generated cache; candidate rankings and library match are heuristics; cooperative monotonic time boundary and measured ticks.",
+      "gap": "No general plan correctness, actual-model end-to-end acceptance or hard time/token/money budget enforcement."
+    },
+    {
+      "id": "AGI-07",
+      "capability": "Unbounded autonomous authority",
+      "status": "not-implemented-intentionally",
+      "gap": "Goal activation, external effects, tool admission and self-modification remain authority-gated"
+    },
+    {
+      "id": "AGI-08",
+      "capability": "Human-level general intelligence",
+      "status": "unproven-open-research",
+      "gap": "No valid benchmark or evidence establishes human-level generality, consciousness or open-ended competence"
+    }
+  ],
+  "historical_capabilities": [
     {
       "id": "AGI-01",
       "capability": "Persistent evidence-backed world model",
@@ -55,5 +116,6 @@
       "status": "unproven-open-research",
       "gap": "No valid benchmark or evidence establishes human-level generality, consciousness or open-ended competence"
     }
-  ]
+  ],
+  "evidence_note": "Historical entries retained verbatim, not capability certificates. Narrow reproduced outputs and failures are in audits/rebuild-20261007; tests named here identify fixtures, not proof of original breadth. Last adjacent ba9dd1a2219pass2warnings predates these documentation-only corrections."
 }
