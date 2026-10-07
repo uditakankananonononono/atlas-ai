@@ -1138,3 +1138,21 @@ def test_risk_register_revision_diff_exposes_control_and_rating_changes():
     assert diff['evidence_verified'] is False
     with pytest.raises(KeyError):
         register.compare(first['id'], from_revision=1, to_revision=99)
+
+
+def test_runtime_tool_history_uses_dispatch_journal_and_survives_restart():
+    runtime, repo = make_runtime()
+    async def noop(args): return {}
+    spec = ToolSpec(name='fixture', description='fixture read', capabilities=['fixture'], risk=Risk.READ)
+    runtime.tools.register(spec, noop)
+    context = TaskContext(goal='fixture')
+    runtime.dispatcher.records.append(ActionRecord(tool='fixture', task_id=context.id, succeeded=False))
+    runtime._persist_context(context)
+    choice = runtime.select_tool('fixture read').as_dict()
+    assert choice['candidates'][0]['historical_success'] == pytest.approx(1 / 3, abs=1e-4)
+    assert choice['runtime_dispatch_history_connected'] is True
+    assert choice['history_status'] == 'reported_local_dispatch_journal_with_beta_1_1_prior'
+    restarted = make_runtime(hydrate_repo=repo)
+    restarted.tools.register(spec, noop)
+    for _ in range(2):
+        assert restarted.select_tool('fixture read').as_dict()['candidates'][0]['historical_success'] == pytest.approx(1 / 3, abs=1e-4)
