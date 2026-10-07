@@ -87,7 +87,8 @@ def test_row40_causal_route(client):
     r = c.post("/api/modules/20/meta/causal/assess",
                json={"cause": "ice cream", "effect": "drowning"})
     assert r.status_code == 200
-    assert r.json()["verdict"] == "correlational_only"
+    assert r.json()["verdict"] == "unverified"
+    assert r.json()["causality_verified"] is False
     assert r.json()["required_tests"]
 
 
@@ -329,3 +330,14 @@ def test_hypothesis_invalid_batch_http_has_no_partial_update(client):
     response = c.post("/api/modules/20/meta/hypotheses/evidence", json={"likelihood_ratios": {h.hypothesis_id: 2}})
     assert response.status_code == 200
     assert "heuristic" in response.json()["scope"]
+
+
+def test_causal_randomized_flag_http_is_not_verified(client):
+    c, _ = client
+    response = c.post("/api/modules/20/meta/causal/assess", json={"cause": "a", "effect": "b", "evidence": {"randomized": True}})
+    assert response.status_code == 200
+    assert response.json()["verdict"] == "unverified"
+    assert response.json()["causality_verified"] is False
+    for flags in [{"randomized": "false"}, {"unknown": True}]:
+        response = c.post("/api/modules/20/meta/causal/assess", json={"cause": "a", "effect": "b", "evidence": flags})
+        assert response.status_code == 422

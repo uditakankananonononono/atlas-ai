@@ -1,0 +1,55 @@
+...................................FFFF                                  [100%]
+=================================== FAILURES ===================================
+_______________ test_causal_caller_flags_never_certify_causality _______________
+
+    def test_causal_caller_flags_never_certify_causality():
+        from itertools import product
+        assessor = CausalAssessor()
+        for flags in product([False, True], repeat=5):
+            report = assessor.assess(cause="invented cause", effect="invented effect", evidence=dict(zip(assessor.EVIDENCE_KEYS, flags)))
+>           assert report.verdict == "unverified"
+E           AssertionError: assert 'correlational_only' == 'unverified'
+E             
+E             - unverified
+E             + correlational_only
+
+tests/modules/test_m20_foresight.py:409: AssertionError
+_______________ test_causal_raw_flags_require_actual_bool[false] _______________
+
+flag = 'false'
+
+    @pytest.mark.parametrize("flag", ["false", 1, None])
+    def test_causal_raw_flags_require_actual_bool(flag):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:416: Failed
+_________________ test_causal_raw_flags_require_actual_bool[1] _________________
+
+flag = 1
+
+    @pytest.mark.parametrize("flag", ["false", 1, None])
+    def test_causal_raw_flags_require_actual_bool(flag):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:416: Failed
+_______________ test_causal_raw_flags_require_actual_bool[None] ________________
+
+flag = None
+
+    @pytest.mark.parametrize("flag", ["false", 1, None])
+    def test_causal_raw_flags_require_actual_bool(flag):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:416: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_causal_caller_flags_never_certify_causality
+FAILED tests/modules/test_m20_foresight.py::test_causal_raw_flags_require_actual_bool[false]
+FAILED tests/modules/test_m20_foresight.py::test_causal_raw_flags_require_actual_bool[1]
+FAILED tests/modules/test_m20_foresight.py::test_causal_raw_flags_require_actual_bool[None]
+4 failed, 35 passed in 1.46s

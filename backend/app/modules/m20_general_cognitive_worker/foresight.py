@@ -307,23 +307,27 @@ class BayesianUpdater:
 class CausalReport:
     cause: str
     effect: str
-    verdict: str  # causal_supported | plausible_unproven | correlational_only
+    verdict: str  # always unverified: checklist flags are not causal evidence
     evidence_present: dict[str, bool]
     alternative_explanations: list[str]
     required_tests: list[str]
     assumptions: list[str]
+    causality_verified: bool
+    checklist_status: str
+    scope: str
 
 
 class CausalAssessor:
-    """Checklist-based assessment: causation is only 'supported' when the
-    evidence supplied includes randomization, or the Bradford-Hill-style
-    combination of temporal order + mechanism + dose response. Missing
-    evidence generates the alternative explanations that remain open."""
+    """Checklist over caller-declared flags, not causal/correlation analysis.
+    No dataset, effect estimate or experiment artifact is inspected.
+    """
 
     EVIDENCE_KEYS = ("randomized", "temporal_order", "mechanism", "dose_response", "controlled")
 
     def assess(self, *, cause: str, effect: str, evidence: dict[str, bool] | None = None) -> CausalReport:
-        ev = {k: bool((evidence or {}).get(k, False)) for k in self.EVIDENCE_KEYS}
+        if evidence is not None and (not isinstance(evidence, dict) or any(k not in self.EVIDENCE_KEYS or type(v) is not bool for k, v in evidence.items())):
+            raise ValueError("evidence must contain known checklist keys with bool values")
+        ev = {k: (evidence or {}).get(k, False) for k in self.EVIDENCE_KEYS}
         alternatives: list[str] = []
         tests: list[str] = []
         if not ev["randomized"]:
@@ -339,16 +343,15 @@ class CausalAssessor:
             tests.append("Check whether more of the cause produces more of the effect")
         if not ev["controlled"]:
             tests.append("Replicate under controlled conditions with a comparison group")
-        if ev["randomized"] or (ev["temporal_order"] and ev["mechanism"] and ev["dose_response"]):
-            verdict = "causal_supported"
-        elif any(ev.values()):
-            verdict = "plausible_unproven"
-        else:
-            verdict = "correlational_only"
+        tests.append("Inspect actual study data and design; estimate the effect and uncertainty before any causal conclusion")
+        checklist_status = "declared_checks_complete" if all(ev.values()) else "declared_checks_partial" if any(ev.values()) else "no_checks_declared"
         return CausalReport(
-            cause=cause, effect=effect, verdict=verdict, evidence_present=ev,
+            cause=cause, effect=effect, verdict="unverified", evidence_present=ev,
+            causality_verified=False, checklist_status=checklist_status,
+            scope="caller-declared checklist only; no causal effect or correlation computed",
             alternative_explanations=alternatives, required_tests=tests,
-            assumptions=["Only the evidence flags supplied were considered",
+            assumptions=["Caller flags are unverified declarations, not evidence of causality",
+                          "Even declared randomization does not establish a causal effect",
                           "This is a structured checklist, not a substitute for experimentation"],
         )
 

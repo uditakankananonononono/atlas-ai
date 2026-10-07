@@ -14,7 +14,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Depends
 from app.auth.context import TenantContext, require_tenant
 from app.auth.environment import insecure_development_auth_enabled
-from pydantic import BaseModel, Field
+from pydantic import StrictBool, BaseModel, Field
 
 from .foresight import SystemsModel
 from .safety import ApprovalGateDecision
@@ -720,7 +720,7 @@ class BayesianRequest(BaseModel):
 class CausalRequest(BaseModel):
     cause: str = Field(min_length=1)
     effect: str = Field(min_length=1)
-    evidence: dict[str, bool] = Field(default_factory=dict)
+    evidence: dict[str, StrictBool] = Field(default_factory=dict)
 
 
 class BaseRateRequest(BaseModel):
@@ -930,8 +930,11 @@ def row39_bayesian_update(request: BayesianRequest, service: Any = Depends(get_s
 
 @router.post("/meta/causal/assess")
 def row40_causal_assess(request: CausalRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
-    report = service.causal.assess(cause=request.cause, effect=request.effect,
-                                         evidence=request.evidence)
+    try:
+        report = service.causal.assess(cause=request.cause, effect=request.effect,
+                                      evidence=request.evidence)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return report.__dict__
 
 

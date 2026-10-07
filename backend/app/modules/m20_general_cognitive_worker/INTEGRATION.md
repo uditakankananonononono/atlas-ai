@@ -162,3 +162,12 @@ candidate from supplied2x2 matrices. It does not enumerate degenerate mixed
 families or establish stability, general-game equilibria or actual opponent
 behavior. Both matrices now require finite numeric payoffs; player scaling
 avoids direct overflow, but rounding may still omit ill-conditioned candidates.
+
+### Retraction: row40 causal assessment
+
+Historical labels "causal_supported", "plausible_unproven" and
+"correlational_only" came from caller flags, not data or effect analysis.
+The route now always says unverified/causality_verifiedfalse and reports only
+checklist coverage. Even all flags true require actual study/data/design and
+effect/uncertainty inspection. This is not implemented causal assessment or
+correlation analysis; the original feature remains incomplete.
