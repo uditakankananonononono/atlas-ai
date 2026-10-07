@@ -608,3 +608,38 @@ def test_new_unresolved_claim_during_ingest_prevents_end_checkpoint(tmp_path,mon
   asyncio.run(svc.ingest_from_history('a@example.com','101'))
  assert len(checks)==2 and repo.get_account_by_email('a@example.com').history_id=='100'
  asyncio.run(client.aclose())
+
+
+def test_saved_model_result_recovers_without_second_model_call(tmp_path,monkeypatch):
+ svc,repo,approvals,client=make_service(tmp_path);calls=[];original_transition=repo.transition_draft_work
+ async def generate(prompt,provider,model):
+  if not prompt.startswith('Extract action items'):calls.append('draft')
+  return await fake_generate(prompt,provider,model)
+ def stop_before_approval(mid,aid,expected,target,data):
+  if target=='approval_inflight':raise RuntimeError('fixture before approval claim')
+  return original_transition(mid,aid,expected,target,data)
+ svc.llm_generate=generate;monkeypatch.setattr(repo,'transition_draft_work',stop_before_approval)
+ with pytest.raises(RuntimeError,match='before approval claim'):
+  asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply')))
+ message=repo.list_messages()[0]
+ assert repo.draft_work(message.id,'a')['phase']=='model_done' and calls==['draft'] and approvals.items==[]
+ monkeypatch.setattr(repo,'transition_draft_work',original_transition)
+ assert asyncio.run(svc.recover_draft_pipeline('a'))==1
+ assert calls==['draft'] and len(approvals.items)==1 and len(repo.list_drafts())==1
+ asyncio.run(client.aclose())
+
+
+def test_draft_finalize_rejects_payload_substitution(tmp_path,monkeypatch):
+ svc,repo,approvals,client=make_service(tmp_path);original=repo.finalize_draft_work
+ monkeypatch.setattr(repo,'finalize_draft_work',lambda *args:False)
+ assert asyncio.run(svc._ingest_message('a',raw_message('g','Please reply',snippet='please reply'))) is False
+ message=repo.list_messages()[0];work=repo.draft_work(message.id,'a')
+ assert work['phase']=='approval_done'
+ data={**work['data'],'body':'unreviewed substituted body'}
+ assert original(message.id,'a',data) is False
+ assert repo.list_drafts()==[] and repo.draft_work(message.id,'a')['phase']=='approval_done'
+ assert original(message.id,'a',work['data']) is True
+ assert len(repo.list_drafts())==1
+ with pytest.raises(ValueError,match='illegal'):
+  repo.transition_draft_work(message.id,'a','complete','ready',{})
+ asyncio.run(client.aclose())
