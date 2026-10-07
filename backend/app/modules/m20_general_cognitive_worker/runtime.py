@@ -500,12 +500,13 @@ class GCWRuntime:
             claim_id = node.arguments.get("_expectation_claim_id")
             if claim_id is None or node.state not in (TaskState.SUCCEEDED, TaskState.FAILED):
                 continue
-            node.arguments.pop("_expectation_claim_id", None)
             claim = self.calibration.claims.get(claim_id)
             if claim is None or claim.resolved:
+                node.arguments.pop("_expectation_claim_id", None)
                 continue
             observed = node.state == TaskState.SUCCEEDED
             self.calibration.resolve(claim_id, observed)
+            node.arguments.pop("_expectation_claim_id", None)
             miss = abs(claim.confidence - (1.0 if observed else 0.0))
             if miss >= 0.5:
                 surprises.append(node.title)
@@ -595,9 +596,11 @@ class GCWRuntime:
         if context.state == TaskState.SUCCEEDED:
             lessons.append(f"plan of {len(context.plan)} steps completed; method reusable")
         for node in context.plan:
-            claim_id = node.arguments.pop("_expectation_claim_id", None)
+            claim_id = node.arguments.get("_expectation_claim_id")
             if claim_id and claim_id in self.calibration.claims:
-                self.calibration.resolve(claim_id, node.state == TaskState.SUCCEEDED)
+                if not self.calibration.claims[claim_id].resolved:
+                    self.calibration.resolve(claim_id, node.state == TaskState.SUCCEEDED)
+            node.arguments.pop("_expectation_claim_id", None)
         if context.state in (TaskState.PENDING, TaskState.PLANNING, TaskState.RUNNING,
                               TaskState.RUMINATING, TaskState.WAITING_APPROVAL, TaskState.WAITING_USER):
             context.state = TaskState.CANCELLED

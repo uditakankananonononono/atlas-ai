@@ -2422,3 +2422,23 @@ def test_working_memory_small_capacity_hydration_does_not_delete_durable_rows():
  for i in range(3):memory.put(MemoryChunk(type=ChunkType.FACT,content=str(i)),partition='p')
  assert len(DurableWorkingMemory.load(repo,capacity=1))==1
  assert len(repo.list_chunks(partition='p'))==3
+
+
+@pytest.mark.parametrize('operation',['evaluate','close'])
+def test_failed_expectation_resolution_keeps_binding_for_retry(monkeypatch,operation):
+ runtime,repo=make_runtime();claim=runtime.calibration.assess_claim('fixture observed step',.9)
+ context=TaskContext(goal='fixture',state=TaskState.SUCCEEDED,plan=[PlanNode(title='observed',state=TaskState.SUCCEEDED,arguments={'_expectation_claim_id':claim.id})])
+ repo.save_task(context);runtime.scheduler.add(context)
+ original=repo.save_claim
+ def fail(value):raise RuntimeError('fixture resolution write unavailable')
+ monkeypatch.setattr(repo,'save_claim',fail)
+ with pytest.raises(RuntimeError):
+  if operation=='evaluate':runtime._evaluate_expectations(context)
+  else:runtime.close(context.id)
+ assert context.plan[0].arguments.get('_expectation_claim_id')==claim.id
+ assert runtime.calibration.claims[claim.id].resolved is False
+ monkeypatch.setattr(repo,'save_claim',original)
+ if operation=='evaluate':runtime._evaluate_expectations(context)
+ else:runtime.close(context.id)
+ assert runtime.calibration.claims[claim.id].resolved is True
+ assert repo.list_claims()[0].correct is True
