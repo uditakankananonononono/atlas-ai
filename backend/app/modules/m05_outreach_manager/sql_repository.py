@@ -158,6 +158,15 @@ class SqlCampaignRepository:
             else:
                 row.sequence=message.sequence; row.kind=message.kind; row.subject=message.subject; row.body=message.body; row.status=message.status; row.approval_id=message.approval_id; row.provider=message.provider; row.model=message.model; row.thread_id=message.thread_id; row.sent_at=message.sent_at; row.updated_at=message.updated_at; row.version=message.version
             db.add(MessageEventRow(tenant_id=self.tenant_id,message_id=message.id,event=event.event,actor=event.actor,at=event.at,details=event.details)); db.flush(); return _message(row)
+    def reconcile_delivery(self,message:OutreachMessage,event:MessageEvent)->OutreachMessage|None:
+        with self.sessions.begin() as db:
+            claim=db.scalar(select(DeliveryClaimRow).where(DeliveryClaimRow.tenant_id==self.tenant_id,DeliveryClaimRow.message_id==message.id,DeliveryClaimRow.approval_id==message.approval_id))
+            if claim is None:return None
+            result=db.execute(update(MessageRow).where(MessageRow.tenant_id==self.tenant_id,MessageRow.id==message.id,MessageRow.status.in_(['sending','delivery_unknown']),MessageRow.version==message.version,MessageRow.approval_id==message.approval_id,MessageRow.subject==message.subject,MessageRow.body==message.body,MessageRow.contact_id==message.contact_id).values(status='sent',sent_at=event.at,updated_at=event.at,version=message.version+1).returning(MessageRow.id)).first()
+            if result is None:return None
+            db.add(MessageEventRow(tenant_id=self.tenant_id,message_id=message.id,event=event.event,actor=event.actor,at=event.at,details=event.details))
+            row=db.scalar(select(MessageRow).where(MessageRow.tenant_id==self.tenant_id,MessageRow.id==message.id));return _message(row)
+
     def claim_delivery(self,message:OutreachMessage,event:MessageEvent)->bool:
         try:
             with self.sessions.begin() as db:

@@ -185,6 +185,12 @@ class InMemoryCampaignRepository:
         self._events.setdefault(stored.id, []).append(event.model_copy(deep=True))
         return stored.model_copy(deep=True)
 
+    def reconcile_delivery(self,message:OutreachMessage,event:MessageEvent)->OutreachMessage|None:
+        with self._delivery_lock:
+            current=self._messages.get(message.id)
+            if message.id not in self._delivery_claims or current is None or current.status not in {'sending','delivery_unknown'} or current.version!=message.version or current.approval_id!=message.approval_id or current.subject!=message.subject or current.body!=message.body or current.contact_id!=message.contact_id:return None
+            return self.save_message(current.model_copy(update={'status':'sent','sent_at':event.at,'updated_at':event.at,'version':current.version+1}),event)
+
     def claim_delivery(self, message: OutreachMessage, event: MessageEvent) -> bool:
         with self._delivery_lock:
             current = self._messages.get(message.id)
