@@ -96,3 +96,27 @@ test('layout follows container width on resize and refits (no seed-change or pan
  expect(allInside).toBe(true);                        // refit: nothing cropped after the resize
  expect(wideRow).toBeGreaterThan(0);expect(vp.width).toBe(390);
 });
+
+test('node edit conflict keeps draft, explicit reload enables versioned retry and server readback',async({page})=>{
+ await signedIn(page);
+ let node={id:'edit-1',node_type:'note',title:'Original node',body:'Initial notes',metadata:{},version:1,source_uri:'https://example.test/source'};
+ let conflict=true;const writes:any[]=[];
+ await page.route('**/api/v1/knowledge-workspace/nodes/**',route=>{
+  if(route.request().method()==='PATCH'){
+   const body=route.request().postDataJSON();writes.push(body);
+   if(conflict){conflict=false;node={...node,title:'Newer remote',version:2};return route.fulfill({status:409,body:'{"detail":"node changed"}'});}
+   node={...node,...body,version:3};return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(node)});
+  }
+  return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({nodes:[node],edges:[]})});
+ });
+ await page.getByLabel('Knowledge node ID').fill('edit-1');
+ await page.locator('.react-flow__node',{hasText:'Original node'}).dblclick();
+ await page.getByLabel('Node title',{exact:true}).fill('My draft');await page.getByRole('button',{name:'Save changes'}).click();
+ await expect(page.getByLabel('Node details').getByRole('alert')).toContainText('This node changed');await expect(page.getByLabel('Node title',{exact:true})).toHaveValue('My draft');
+ await page.getByRole('button',{name:'Reload latest (discard draft)'}).click();await expect(page.getByLabel('Node title',{exact:true})).toHaveValue('Newer remote');
+ await page.getByLabel('Node title',{exact:true}).fill('Saved edit');await page.getByLabel('Node notes').fill('Saved notes');await page.getByRole('button',{name:'Save changes'}).click();
+ await expect(page.getByText('Version 3.',{exact:false})).toBeVisible();expect(writes.map(w=>w.expected_version)).toEqual([1,2]);
+ await expect(page.locator('.react-flow__node',{hasText:'Saved edit'})).toBeVisible();
+ await page.getByLabel('Node details').scrollIntoViewIfNeeded();await page.getByLabel('Node details').screenshot({path:'test-results/knowledge-edit-desktop.png'});
+ await page.setViewportSize({width:390,height:844});await page.getByLabel('Node details').scrollIntoViewIfNeeded();await page.getByLabel('Node details').screenshot({path:'test-results/knowledge-edit-mobile.png'});
+});

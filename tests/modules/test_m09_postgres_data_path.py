@@ -58,6 +58,11 @@ SCRIPT = textwrap.dedent('''
     assert foreign_edge.id not in {e.id for e in a_svc.repository.edges_for({node_a.id})}
     assert b_svc.repository.edges_for({b_node.id}) == []
     assert {e.id for e in a_svc.neighborhood(node_a.id).edges} == {e.id for e in hood.edges}
+    # A direct conditional write must not touch another tenant's matching ID/version.
+    foreign_candidate = a_svc.repository.get_node(node_a.id).model_copy(update={"title": "foreign write", "version": 3})
+    assert b_svc.repository.save_node(foreign_candidate, "node.updated", expected_version=2) is None
+    assert a_svc.repository.get_node(node_a.id).title == "PG paris plan v2"
+    assert b_svc.repository.get_node(node_a.id) is None
     # Real simultaneous writers, separate repository instances and DB sessions.
     from concurrent.futures import ThreadPoolExecutor
     from threading import Barrier
@@ -94,6 +99,8 @@ def test_m09_graph_data_path_on_real_postgres(tmp_path):
     import psycopg
     with psycopg.connect(url.replace("postgresql+psycopg://", "postgresql://")) as conn:
         counts = dict(conn.execute("select tenant_id, count(*) from m09_nodes group by 1").fetchall())
+        foreign_updates = conn.execute("select count(*) from m09_audit where tenant_id = 'tenant-b' and action = 'node.updated'").fetchone()[0]
         updates = conn.execute("select count(*) from m09_audit where action = 'node.updated'").fetchone()[0]
     assert counts == {"tenant-a": 2, "tenant-b": 1}, counts
+    assert foreign_updates == 0
     assert updates == 2  # one sequential update and one race winner; no failed-claim audit
