@@ -228,7 +228,7 @@ async def execute_submit(
         raise _flow_errors(error) from error
 
     record = flow.status(tenant.tenant_id, tenant.actor_id, session_id)
-    if record.get("opportunity_kind") == "competition" and record.get("opportunity_id"):
+    if result.get("submitted") is True and record.get("opportunity_kind") == "competition" and record.get("opportunity_id"):
         confirmation = result["confirmation"]
         evidence = StatusEvidence(
             source="browser_readback",

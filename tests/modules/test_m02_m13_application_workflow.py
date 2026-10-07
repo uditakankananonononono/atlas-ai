@@ -464,27 +464,18 @@ def test_failed_click_consumes_approval_and_stays_unsubmitted(rig):
     failed = rig.client.post(f"{base}/submit", json={"approval_id": approval["approval_id"]})
     assert failed.status_code == 502
     status = rig.client.get(base).json()
-    assert status["status"] == "failed" and "click failed" in status["error"]
+    assert status["status"] == "outcome_unknown" and "click failed" in status["error"]
     # No fake success anywhere: competition and page both show no submission.
     assert rig.competitions.get_competition("comp-1").status != SubmissionStatus.SUBMITTED
     assert rig.page.clicked == []
-    # The consumed approval cannot be retried; a fresh stage + approval is required.
+    # A click exception is ambiguous. No replay or automatic restage until reconciliation.
     replay = rig.client.post(f"{base}/submit", json={"approval_id": approval["approval_id"]})
     assert replay.status_code == 409
 
     rig.page.fail_click = False
-    assert rig.client.post(f"{base}/submit-approval").status_code == 409  # must re-stage first
-    restaged = rig.client.post(
-        f"{base}/stage",
-        json={"fields": {"full name": "Ada Lovelace", "email": "ada@example.org", "essay": "I build things."},
-              "submit_selector": "#submit-btn"},
-    )
-    assert restaged.status_code == 200
-    second = rig.client.post(f"{base}/submit-approval").json()
-    approve(rig, second["approval_id"])
-    ok = rig.client.post(f"{base}/submit", json={"approval_id": second["approval_id"]})
-    assert ok.status_code == 200, ok.text
-    assert rig.page.clicked == ["#submit-btn"]
+    assert rig.client.post(f"{base}/submit-approval").status_code == 409
+    restaged = rig.client.post(f"{base}/stage",json={"fields":{"full name":"Ada"},"submit_selector":"#submit-btn"})
+    assert restaged.status_code == 409
 
 
 def test_resume_requires_explicit_owner_confirmation(rig):
@@ -535,3 +526,62 @@ def test_descriptors_are_grounded_in_page_html():
     assert by_selector["#f-name"].required is True
     assert by_selector["#f-essay"].placeholder == "Your essay"
     assert by_selector["#f-pass"].input_type == "password"
+
+
+def test_unchanged_form_after_click_is_not_positive_receipt(rig):
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ rig.page.after_submit_url=FORM_URL;rig.page.after_submit_html=FORM_HTML
+ outcome=rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ assert outcome.status_code==200,outcome.text
+ assert outcome.json()['submitted'] is False
+ assert outcome.json()['status']=='outcome_unknown'
+ assert rig.page.clicked==['#submit-btn']
+ assert rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
+ assert rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']}).status_code==409
+
+
+def test_pre_effect_session_save_failure_prevents_click_and_consumption(rig,monkeypatch):
+ from app.modules.m13_browser_agent.application_flow import SessionRevisionConflict
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ def conflict(record):raise SessionRevisionConflict('fixture pre-effect save lost')
+ monkeypatch.setattr(rig.flow.store,'save',conflict)
+ response=rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ assert response.status_code==409
+ assert rig.page.clicked==[]
+ assert approval['approval_id'] not in rig.audit.consumed
+
+
+@pytest.mark.parametrize('html',[
+ '<html><body>Application was received. Error processing request.</body></html>',
+ '<html><body>Application was received.<form><button>Submit</button></form></body></html>',
+ '<html><body>Welcome back</body></html>',
+])
+def test_ambiguous_or_error_readback_does_not_mark_competition_submitted(rig,html):
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ rig.page.after_submit_html=html
+ response=rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ assert response.status_code==200,response.text
+ assert response.json()['submitted'] is False and response.json()['status']=='outcome_unknown'
+ assert rig.competitions.get_competition('comp-1').status!=SubmissionStatus.SUBMITTED
+
+
+def test_post_click_save_conflict_retains_durable_claim_and_blocks_replay(rig,monkeypatch):
+ from app.modules.m13_browser_agent.application_flow import SessionRevisionConflict
+ sid,_=reach_staged(rig);base=f'/api/v1/competition-manager/applications/sessions/{sid}'
+ approval=rig.client.post(f'{base}/submit-approval').json();approve(rig,approval['approval_id'])
+ original=rig.flow.store.save;calls=[]
+ def save(record):
+  calls.append(record.status)
+  if len(calls)>1:raise SessionRevisionConflict('fixture post-click save lost')
+  return original(record)
+ monkeypatch.setattr(rig.flow.store,'save',save)
+ response=rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']})
+ assert response.status_code==409 and rig.page.clicked==['#submit-btn']
+ assert rig.client.get(base).json()['status']=='submitting'
+ assert approval['approval_id'] in rig.audit.consumed
+ assert rig.client.post(f'{base}/submit',json={'approval_id':approval['approval_id']}).status_code==409
+ assert rig.page.clicked==['#submit-btn']
+ assert rig.client.post(f'{base}/stage',json={'fields':{'full name':'Ada'},'submit_selector':'#submit-btn'}).status_code==409

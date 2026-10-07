@@ -40,6 +40,8 @@ class WorkflowStatus(str, Enum):
     STAGED = "staged"
     AWAITING_SUBMIT_APPROVAL = "awaiting_submit_approval"
     SUBMITTED = "submitted"
+    SUBMITTING = "submitting"
+    OUTCOME_UNKNOWN = "outcome_unknown"
     BLOCKED = "blocked"
     FAILED = "failed"
 
@@ -527,6 +529,8 @@ class ApplicationFlow:
         """Click the submit selector exactly once, only against an exact approval."""
         record = self._record(tenant_id, session_id)
         self._require_actor(record, actor_id)
+        if record.status != WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value or record.approval_id != approval_id:
+            raise PermissionError('session is not awaiting this approval; unresolved effects cannot replay')
         try:
             view = self.approvals.get(approval_id)
         except Exception as error:
@@ -578,26 +582,38 @@ class ApplicationFlow:
             await self._audit(record, ActionType.SUBMIT, {"phase": "refused", "reason": "approval replay", "approval_id": approval_id})
             raise PermissionError("approval was already consumed")
 
-        # Consume before the external effect: a failed click cannot replay.
+        # CAS the durable session before consumption/click. A losing save cannot fire.
+        record.status = WorkflowStatus.SUBMITTING.value
+        record.error = 'submission claimed; outcome not yet known'
+        self._save(record)
+        # Consume before the external effect: ambiguous effects cannot replay.
         await self.browser.store.consume(approval_id, tenant_id)
         try:
             await page.locator(payload["selector"]).click()
         except Exception as error:
-            record.status = WorkflowStatus.FAILED.value
-            record.error = f"submit click failed: {error}"
+            record.status = WorkflowStatus.OUTCOME_UNKNOWN.value
+            record.error = f"submit click failed; outcome unknown: {error}"
             self._save(record)
             await self._audit(record, ActionType.SUBMIT, {
                 "phase": "failed", "approval_id": approval_id, "selector": payload["selector"], "error": str(error),
             })
-            raise BlockedError(f"submit click failed; the approval is consumed and the application was not submitted: {error}") from error
+            raise BlockedError(f"submit click failed; the approval is consumed and the outcome is unknown: {error}") from error
 
         # Source readback: only what the site itself shows afterwards counts.
-        final_url = validate_public_url(page.url, self.browser.allowed_hosts)
-        html = await self.browser.extract(tenant_id, session_id)
+        try:
+            final_url = validate_public_url(page.url, self.browser.allowed_hosts)
+            html = await self.browser.extract(tenant_id, session_id)
+        except Exception as error:
+            record.status = WorkflowStatus.OUTCOME_UNKNOWN.value
+            record.error = f'post-click readback failed; outcome unknown: {error}'
+            self._save(record)
+            raise BlockedError(record.error) from error
         captcha = probe_captcha(html)
         if captcha:
             await self._audit(record, ActionType.SUBMIT, {"phase": "blocked_after_click", "evidence": captcha, "approval_id": approval_id})
-            self._blocked(record, "site presented a CAPTCHA after the submit click; confirm the outcome manually", captcha)
+            record.status = WorkflowStatus.OUTCOME_UNKNOWN.value
+            record.error = 'site presented a CAPTCHA after click; outcome unknown, confirm manually'
+            self._save(record)
             raise BlockedError(record.error)
         record.confirmation = {
             "final_url": final_url,
@@ -605,17 +621,25 @@ class ApplicationFlow:
             "observed_at": time.time(),
             "approval_id": approval_id,
         }
-        record.status = WorkflowStatus.SUBMITTED.value
-        record.error = ""
+        # Conservative HTML receipt contract, not a universal success detector.
+        text = BeautifulSoup(html, 'html.parser').get_text(' ', strip=True).lower()
+        receipt = bool(re.search(r'\b(?:your )?application (?:was|has been) (?:received|submitted|accepted)\b', text))
+        negative = bool(re.search(r'\b(?:error|failed|not received|not submitted|could not|unable to)\b', text))
+        form_remains = bool(BeautifulSoup(html, 'html.parser').find('form'))
+        positive = receipt and not negative and not form_remains and final_url != payload['page_url']
+        record.confirmation['positive_receipt'] = positive
+        record.confirmation['receipt_contract'] = 'application receipt text, changed URL, no form or error; unsupported sites remain unknown'
+        record.status = WorkflowStatus.SUBMITTED.value if positive else WorkflowStatus.OUTCOME_UNKNOWN.value
+        record.error = '' if positive else 'click observed but no positive application receipt; confirm outcome manually, do not retry'
         self._save(record)
         await self._audit(record, ActionType.SUBMIT, {
-            "phase": "executed",
+            "phase": "executed" if positive else "outcome_unknown",
             "approval_id": approval_id,
             "selector": payload["selector"],
             "values_digest": current["values_digest"],
             "final_url": final_url,
         })
-        return {"session_id": session_id, "status": record.status, "submitted": True, "confirmation": dict(record.confirmation)}
+        return {"session_id": session_id, "status": record.status, "submitted": positive, "confirmation": dict(record.confirmation)}
 
     def status(self, tenant_id: str, actor_id: str, session_id: str) -> dict[str, Any]:
         record = self._record(tenant_id, session_id)

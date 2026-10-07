@@ -1058,7 +1058,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "FieldDescriptor supplies selector/label/name/placeholder/input_type; match_fields uses token overlap/type hints and conservative tie rejection, not aria field or broad synonym ontology. Service.fill calls locator.fill for mapped values. Discovery/select/radio/check/upload/conditional DOM behavior requires application-flow grounding, not generalized text fill. No all-field/cloud-storage acceptance. Status unverified."
+      "notes": "FieldDescriptor supplies selector/label/name/placeholder/input_type; match_fields uses token overlap/type hints and conservative tie rejection, not aria field or broad synonym ontology. Service.fill calls locator.fill for mapped values. Discovery/select/radio/check/upload/conditional DOM behavior requires application-flow grounding, not generalized text fill. No all-field/cloud-storage acceptance. Status unverified. Local mounted ApplicationFlow now CAS-saves submitting before consumption/click and blocks replay/restage from ambiguous claim; exceptions retain unknown, unchanged/error/form readback cannot mark M02 submitted. Conservative English application-receipt contract (changedURL/noform/noerror), not general verified submission. Post-effect save conflict leaves durable submitting for manual reconciliation. Fake page only/no pixel/provider/device acceptance."
     },
     {
       "row": 96,
