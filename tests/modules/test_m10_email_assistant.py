@@ -463,6 +463,12 @@ def test_concurrent_ingest_requires_single_draft_and_approval(tmp_path):
    return 'fixture','[]'
   return 'fixture','Subject: Re: reply\nDraft only'
  svc.llm_generate=generate
+ # Both workers see missing work before claim. This forces the losing claim
+ # path rather than relying on a timing-dependent initial work read.
+ original_work=repo.ingest_work;work_barrier=threading.Barrier(2)
+ def work_read(aid,gid):
+  value=original_work(aid,gid);work_barrier.wait(timeout=5);return value
+ repo.ingest_work=work_read
  # Access-token exchange is replaced with a hermetic value to avoid sharing an async HTTP client across loops.
  async def token(account):return 'fixture-access'
  svc._access_token=token

@@ -274,11 +274,16 @@ class SqlEmailRepository:
                 raise RuntimeError("atomic message insert requires PostgreSQL or SQLite")
             claimed=db.execute(insert(EmailMessageRow).values(**values).on_conflict_do_nothing(index_elements=["tenant_id","account_id","gmail_id"]).returning(EmailMessageRow.pk))
             if claimed.scalar_one_or_none() is None:
+                # Ingest-work completion cannot survive a conflicting existing
+                # message whose exact transaction/provenance is unverified.
+                db.rollback()
                 return False
             if draft_work is not None:
                 db.add(DraftWorkRow(tenant_id=self.tenant_id,message_id=message_id,account_id=account_id,phase='ready',data=draft_work))
+            action_data=ingest_work_data if ingest_work_data is not None else draft_work
+            if action_data is not None:
                 from uuid import uuid4
-                for action in draft_work.get('actions',[]):
+                for action in action_data.get('actions',[]):
                     deadline=datetime.fromisoformat(action['deadline'].replace('Z','+00:00')) if action.get('deadline') else None
                     db.add(ActionItemRow(tenant_id=self.tenant_id,id=str(uuid4()),message_id=message_id,action=action['action'],deadline=deadline,related_entity=action.get('related_entity'),confidence=category_confidence,status='open'))
             self._log(db, "email_message", message_id, "ingested",
