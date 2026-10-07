@@ -2184,3 +2184,33 @@ def test_failed_episode_revision_keeps_previous_committed_recall_snapshot(monkey
  with pytest.raises(RuntimeError):runtime.episodic.record(changed)
  assert runtime.episodic.get(episode.id).goal=='old committed goal'
  assert repo.list_episodes()[0].goal=='old committed goal'
+
+
+def test_failed_semantic_write_does_not_publish_new_or_revised_fact(monkeypatch):
+ runtime,repo=make_runtime();old=runtime.semantic.remember('committed fact')
+ def fail(fact):raise RuntimeError('fixture fact write unavailable')
+ monkeypatch.setattr(repo,'save_fact',fail)
+ with pytest.raises(RuntimeError):runtime.semantic.store(old.model_copy(update={'content':'uncommitted revision'}))
+ assert runtime.semantic.get(old.id).content=='committed fact'
+ other=SemanticFact(content='uncommitted new fact')
+ with pytest.raises(RuntimeError):runtime.semantic.store(other)
+ assert runtime.semantic.get(other.id) is None
+ assert repo.list_facts()[0].content=='committed fact'
+
+
+def test_failed_semantic_confirmation_keeps_old_timestamp(monkeypatch):
+ from datetime import timedelta
+ runtime,repo=make_runtime();fact=runtime.semantic.remember('committed fact')
+ def fail(fact):raise RuntimeError('fixture confirmation write unavailable')
+ monkeypatch.setattr(repo,'save_fact',fail)
+ with pytest.raises(RuntimeError):runtime.semantic.confirm(fact.id,now=fact.last_confirmed_at+timedelta(days=1))
+ assert runtime.semantic.get(fact.id).last_confirmed_at==fact.last_confirmed_at
+ assert repo.list_facts()[0].last_confirmed_at==fact.last_confirmed_at
+
+
+def test_failed_semantic_edge_write_does_not_publish_graph_neighbor(monkeypatch):
+ runtime,repo=make_runtime();a=runtime.semantic.remember('a');b=runtime.semantic.remember('b')
+ def fail(edge):raise RuntimeError('fixture edge write unavailable')
+ monkeypatch.setattr(repo,'save_edge',fail)
+ with pytest.raises(RuntimeError):runtime.semantic.link(a.id,'related',b.id)
+ assert runtime.semantic.neighbors(a.id)==[] and repo.list_edges()==[]

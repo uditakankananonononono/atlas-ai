@@ -98,19 +98,30 @@ class DurableSemanticMemory(SemanticMemory):
         self.repo = repo
 
     def store(self, fact: SemanticFact) -> SemanticFact:
-        result = super().store(fact)
+        result = fact.model_copy(deep=True)
+        vector = embed_snapshot(self.embedder, result.content)
         self.repo.save_fact(result)
-        return result
+        self._facts[result.id] = result
+        self._vectors[result.id] = vector
+        return result.model_copy(deep=True)
 
     def link(self, from_id: str, relation: str, to_id: str, *, metadata: dict | None = None) -> KnowledgeEdge:
-        edge = super().link(from_id, relation, to_id, metadata=metadata)
+        if from_id not in self._facts and from_id not in {e.from_id for e in self._edges}:
+            raise KeyError(f"unknown node: {from_id}")
+        if to_id not in self._facts and to_id not in {e.to_id for e in self._edges}:
+            raise KeyError(f"unknown node: {to_id}")
+        edge = KnowledgeEdge(from_id=from_id,relation=relation,to_id=to_id,metadata=metadata or {}).model_copy(deep=True)
         self.repo.save_edge(edge)
-        return edge
+        self._edges.append(edge)
+        return edge.model_copy(deep=True)
 
     def confirm(self, fact_id: str, **kwargs) -> SemanticFact:
-        fact = super().confirm(fact_id, **kwargs)
+        from datetime import datetime, timezone
+        fact = self._facts[fact_id].model_copy(deep=True)
+        fact.last_confirmed_at = kwargs.get('now') or datetime.now(timezone.utc)
         self.repo.save_fact(fact)
-        return fact
+        self._facts[fact_id] = fact
+        return fact.model_copy(deep=True)
 
     @classmethod
     def load(cls, repo: GCWRepository, embedder: EmbeddingProvider | None = None) -> "DurableSemanticMemory":
