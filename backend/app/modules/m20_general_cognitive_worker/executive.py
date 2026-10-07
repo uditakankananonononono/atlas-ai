@@ -349,11 +349,14 @@ class DeliberativeLoop:
 
     def ruminate(self, context: TaskContext) -> dict[str, Any]:
         """Idle-cycle background thinking (spec 4.2.4 rumination)."""
+        previous_state = context.state
         context.state = TaskState.RUMINATING
-        result = self.ruminator.ruminate(context.plan)
-        self._trace("ruminate", f"mcts ordering: {result['best_ordering']}", task_id=context.id)
-        context.state = TaskState.RUNNING
-        return result
+        try:
+            result = self.ruminator.ruminate(context.plan)
+            self._trace("ruminate", f"heuristic ordering: {result['best_ordering']}", task_id=context.id)
+            return result
+        finally:
+            context.state = previous_state
 
     def _evaluate_expectation(self, context: TaskContext, node: PlanNode, record: ActionRecord) -> None:
         """Similarity is a retrieval lead, not verification or contradiction proof."""

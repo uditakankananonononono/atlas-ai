@@ -258,3 +258,22 @@ def test_plan_risk_escalation_requires_review_even_for_registered_read_tool():
  waiting=out.plan[0];gate.decide(waiting.approval_id,ApprovalGateDecision.APPROVED)
  assert loop.resume_after_approval(out,waiting.id,True).state==TaskState.SUCCEEDED
  assert calls['research']==1
+
+
+@pytest.mark.parametrize("state", [TaskState.SUCCEEDED, TaskState.BLOCKED, TaskState.WAITING_APPROVAL])
+def test_rumination_does_not_reactivate_terminal_or_waiting_context(state):
+    loop, _, _ = build_loop()
+    context = TaskContext(goal="inspect", state=state)
+    loop.ruminate(context)
+    assert context.state == state
+
+
+def test_rumination_exception_restores_context_state():
+    loop, _, _ = build_loop()
+    context = TaskContext(goal="inspect", state=TaskState.RUNNING)
+    def fail(plan):
+        raise RuntimeError("rumination failed")
+    loop.ruminator.ruminate = fail
+    with pytest.raises(RuntimeError):
+        loop.ruminate(context)
+    assert context.state == TaskState.RUNNING

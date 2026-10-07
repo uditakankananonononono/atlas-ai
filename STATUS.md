@@ -846,3 +846,7 @@ Text100kbound didn't bound parsed nesting;100/1500deep JSON accepted, two failur
 ## Legacy random-order heuristic candidate/count correction
 
 best_score-1 discarded valid sufficiently costly/long ordering; blocked search reported configured16not actual1attempt. Two failing fixtures retained. bestscore-infinity, actualattemptcount and nullscore/noorder when blocked; simulationsinteger1..10000 validated.65planner/executive/service/HTTPpass1warning; recorded87adjacent2254pass2warnings37.18s.5IRREVERSIBLEsteps retained. Interim claim ordinary3step lost was wrong (READ/REVERSIBLE/EXTERNALexistingcanary passed) and corrected to parent. Reward is unfitted and order-invariant for same node set, so sampling doesn't optimize those orderings. No measured success, general tree search, predictive planning or cognition claim. Latestfull9813pass predates sevenlaterfixes.
+
+## Legacy rumination lifecycle preservation
+
+Legacy analyze-only rumination resetSUCCEEDED/BLOCKED/WAITING_APPROVALtoRUNNING, and raised callback leftRUMINATING. Four actual failing fixtures retained; earlier wronghelperNameErrorlog also retained before corrected fixture. prior state now restored in finally; trace says heuristicordering notmcts.97executive/service/HTTP/runtimepass1warning; recorded87adjacent2258pass2warnings35.94s. No handler/plan changes or reactivation; heuristic analysis remains nonpredictive/order-invariant and does not prove cognition. No concurrent state-change protection/production lifecycle guarantee. Latestfull9813pass predates eightlaterfixes.
