@@ -18,7 +18,7 @@ import random
 from dataclasses import dataclass, field
 from typing import Any
 
-from .embeddings import DeterministicEmbedding, EmbeddingProvider, cosine_similarity
+from .embeddings import DeterministicEmbedding, EmbeddingProvider, cosine_similarity, embed_snapshot
 from .schemas import EmotionalState, Retrospective, Scratchpad, Uncertainty
 
 
@@ -146,13 +146,13 @@ class RetrospectiveEngine:
     def _store_snapshot(self, retro: Retrospective) -> Retrospective:
         retro = retro.model_copy(deep=True)
         text = " ".join(retro.went_well + retro.went_poorly + retro.lessons)
-        vector = self.embedder.embed(text)
+        vector = embed_snapshot(self.embedder, text)
         self._retros[retro.id] = retro
         self._vectors[retro.id] = vector
         return retro.model_copy(deep=True)
 
     def lessons_for(self, situation: str, *, limit: int = 3) -> list[tuple[Retrospective, float]]:
-        vector = self.embedder.embed(situation)
+        vector = embed_snapshot(self.embedder, situation)
         scored = [
             (self._retros[rid].model_copy(deep=True), cosine_similarity(vector, vec))
             for rid, vec in self._vectors.items()

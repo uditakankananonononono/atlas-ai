@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from .embeddings import DeterministicEmbedding, EmbeddingProvider, cosine_similarity
+from .embeddings import DeterministicEmbedding, EmbeddingProvider, cosine_similarity, embed_snapshot
 from .schemas import KnowledgeEdge, SemanticFact
 
 
@@ -24,7 +24,7 @@ class SemanticMemory:
 
     def store(self, fact: SemanticFact) -> SemanticFact:
         fact = fact.model_copy(deep=True)
-        vector = self.embedder.embed(fact.content)
+        vector = embed_snapshot(self.embedder, fact.content)
         self._facts[fact.id] = fact
         self._vectors[fact.id] = vector
         return fact.model_copy(deep=True)
@@ -47,7 +47,7 @@ class SemanticMemory:
         """Proactive lookup when the executive meets an unknown term."""
         if not text.strip():
             return []
-        vector = self.embedder.embed(text)
+        vector = embed_snapshot(self.embedder, text)
         scored = [
             (self._facts[fid], cosine_similarity(vector, vec))
             for fid, vec in self._vectors.items()
