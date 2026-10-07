@@ -424,3 +424,18 @@ def test_scenario_http_rejects_invalid_or_coerced_weights(client, probabilities)
     c, _ = client
     response = c.post('/api/modules/20/meta/scenarios', json={'objective': 'fixture', 'drivers': ['fixture'], 'probabilities': probabilities})
     assert response.status_code == 422
+
+
+def test_risk_register_http_control_gaps_and_complete_review_not_approval(client):
+    c, _ = client
+    risk = {'id': 'deadline', 'cause': 'Miss payroll cutoff', 'severity': 8, 'occurrence': 3, 'detection': 4,
+            'owner': '', 'mitigation': 'Alert before cutoff', 'test': '', 'evidence': []}
+    response = c.post('/api/modules/20/meta/premortem/register', json={'goal': 'Export payroll', 'risks': [risk]})
+    assert response.status_code == 200
+    assert response.json()['risks'][0]['missing_controls'] == ['owner', 'test', 'evidence']
+    risk.update(owner='ops lead', test='Replay cutoff backlog', evidence=['supplied-test-reference'])
+    complete = c.post('/api/modules/20/meta/premortem/register', json={'goal': 'Export payroll', 'risks': [risk]}).json()
+    assert complete['ready_for_owner_review'] is True
+    assert complete['evidence_verified'] is False and complete['external_actions_executed'] is False
+    risk['severity'] = True
+    assert c.post('/api/modules/20/meta/premortem/register', json={'goal': 'fixture', 'risks': [risk]}).status_code == 422

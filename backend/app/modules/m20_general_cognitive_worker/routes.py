@@ -1626,3 +1626,16 @@ def generate_model_ideas(request: ModelIdeationRequest, service: Any = Depends(g
         raise HTTPException(status_code=503, detail=str(exc))
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+
+
+class RiskRegisterRequest(BaseModel):
+    goal: str = Field(min_length=1, max_length=2000)
+    risks: list[dict[str, Any]] = Field(min_length=1, max_length=100)
+
+
+@router.post("/meta/premortem/register")
+def assess_risk_register(request: RiskRegisterRequest, service: Any = Depends(get_service)):
+    try:
+        return service.premortem.assess_register(goal=request.goal, risks=request.risks)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))

@@ -1026,3 +1026,7 @@ Parent authorized pinnedlocaltrial afteruserbuildmandate. SameverifiedGGUF/runne
 ## Ideation output failure diagnostics
 
 Actuallocaltrial exposed malformedoutput misreported as providerunavailable. One reproducedcanary retained. Executiveadapterfailurekind distinguishesinvalid_output/provider_unavailable; ideationinvalidoutput nowValueError/HTTP422, unavailableRuntimeError/503.96reflection/routes/runtimepass1warning; recorded87adjacent2448pass2warnings45.13s. Diagnosticcorrection only; failedliveideation0/2unchanged, no rerun or qualityupgradeclaim. Latestfull10022passsource69d6262 predatesfourlatercodefixes.
+
+## Structured premortem risk-control register build-out
+
+Legacypremortem sameplaceholder0.5x0.7suppliedrisks/keywordgenericprevention is thin, explicitlynamedinREADME; notrealcausalfailureanalysis. Twoinitialmissingworkflowfailuresretained. Newassess_register/HTTP supports1..100riskobjects, exactordinal1..10severity/occurrence/detection, productpriority/tieordering, owner/mitigation/test/evidencegaps, completeness-onlyreviewstate. No inferredprobability/evidenceverification/actionapproval.175foresightHTTPpass1warning; recorded87adjacent2451pass2warnings (exacttimeinlog). Payrollriskfixture180 outranks30; HTTPincompletepacketgaps clearafter suppliedfields but evidence remainsunverified. Request-scopedfunctionalreviewregister, notdurableriskownership/liveevidence/scheduledfollowup. Those operationalparts remainunfinished, not a fullyreal-worldriskworkflow. Latestfull10022source69d6262 predatesfivelatercodefixes.

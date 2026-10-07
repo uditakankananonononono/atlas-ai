@@ -174,3 +174,7 @@ Software practice685-709 PARTIAL supplied diagnostics/templates, no repository/t
 15 engineering diagnostic/template branches now PARTIAL (no CAD/FEA/CFD/physical execution). Latest labels1746historical/54SCOPED/206PARTIAL/4removed.
 
 Legal1260-1309 PARTIAL supplied review templates/unverified reference structure. Latest labels1696historical/54SCOPED/256PARTIAL/4removed.
+
+## M20 structured risk register
+
+`POST /api/modules/20/meta/premortem/register` adds a structured risk/control review beyond the legacy keyword premortem. It sorts caller-rated severity/occurrence/detection (integer1..10, higher worse) by their product, tracks owner/mitigation/test/evidence gaps and distinguishes a complete review packet from verified controls. It never invents a failure probability, verifies an evidence reference or approves a launch. The legacy premortem still uses fixed placeholder scores and keyword templates and is thin, not real backward causal analysis. The new register is request-scoped, not durable risk ownership, scheduled follow-up or live evidence verification. These remain unfinished.
