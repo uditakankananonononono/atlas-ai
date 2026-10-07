@@ -69,19 +69,23 @@ class SqlDashboardRepository:
         # per-attempt dedup re-check returns the winner's row when a same-id
         # intake committed between attempts; event id has no DB unique
         # constraint, so id uniqueness rests on that re-check, not the schema.
-        # Storage-boundary instant policy: an aware occurred_at is normalized to
-        # UTC before the naive sqlite write so any caller's instant survives the
-        # read-side _aware attach. A naive occurred_at has unknown provenance and
-        # is rejected rather than silently relabeled UTC.
-        if e.occurred_at.tzinfo is None:raise ValueError("occurred_at must be timezone-aware")
-        e.occurred_at=e.occurred_at.astimezone(timezone.utc)
         attempts=0
         while True:
             try:
                 with self.sessions.begin() as db:
                     existing=db.scalar(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.id==e.id))
                     if existing:return _event(existing)
-                    max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1;db.add(EventRow(tenant_id=self.tenant_id,**e.model_dump()));return e
+                    # Storage-boundary instant policy, applied only when actually
+                    # writing (dedup stays idempotent for any input form): an
+                    # aware occurred_at is normalized to UTC for the naive sqlite
+                    # write so the instant survives the read-side _aware attach;
+                    # a naive occurred_at has unknown provenance and is rejected
+                    # rather than silently relabeled UTC. The caller's Event is
+                    # not mutated; the returned value keeps its offset form,
+                    # which is the same instant.
+                    if e.occurred_at.tzinfo is None:raise ValueError("occurred_at must be timezone-aware")
+                    max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1
+                    data=e.model_dump();data["occurred_at"]=e.occurred_at.astimezone(timezone.utc);db.add(EventRow(tenant_id=self.tenant_id,**data));return e
             except IntegrityError:
                 attempts+=1
                 if attempts>=3:raise

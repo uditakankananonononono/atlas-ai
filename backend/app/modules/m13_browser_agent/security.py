@@ -79,6 +79,21 @@ def safe_artifact_segment(value: str) -> str:
     return value
 
 
+def artifact_directory(root: "str | Path", tenant_id: str, session_id: str) -> "Path":
+    """Build the per-tenant artifact directory and prove containment.
+
+    Segment validation alone trusts the existing directory entries: a
+    pre-existing symlink inside the root would still let writes escape.
+    Resolve the final path and require it to stay under the resolved root.
+    """
+    from pathlib import Path
+    base = Path(root).resolve()
+    target = (base / safe_artifact_segment(tenant_id) / safe_artifact_segment(session_id)).resolve()
+    if not target.is_relative_to(base):
+        raise ValueError("artifact path escapes the artifact root")
+    return target
+
+
 def values_digest(values: dict[str, str]) -> str:
     canonical = json.dumps(values, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

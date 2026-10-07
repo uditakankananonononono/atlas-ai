@@ -39,9 +39,38 @@ async def test_screenshot_rejects_dotdot_before_touching_disk(tmp_path):
     with pytest.raises(ValueError):await service.screenshot("tenant-1","..")
     assert list(tmp_path.iterdir())==[]  # nothing created outside or inside
 class _MissingApprovals:
-    def get(self,approval_id):raise KeyError(approval_id)  # m00 ApprovalNotFoundError is a KeyError
+    def get(self,approval_id):
+        from app.modules.m00_approval_center.service import ApprovalNotFoundError
+        raise ApprovalNotFoundError(approval_id)
 @pytest.mark.asyncio
 async def test_submit_unknown_approval_maps_to_permission_error():
     service=Service(_NoSessions(),_MissingApprovals(),_NoStore())
     with pytest.raises(PermissionError,match="approval not found"):
         await service.submit("tenant-1","session-1","#go",{"a":"b"},"no-such-approval")
+class _BuggyApprovals:
+    def get(self,approval_id):raise KeyError("internal-payload-bug")  # not a lookup miss
+@pytest.mark.asyncio
+async def test_submit_internal_keyerror_propagates_unmasked():
+    # Establishes only ApprovalNotFoundError is remapped; an internal KeyError
+    # from inside the approval store is not masked as "approval not found".
+    service=Service(_NoSessions(),_BuggyApprovals(),_NoStore())
+    with pytest.raises(KeyError,match="internal-payload-bug"):
+        await service.submit("tenant-1","session-1","#go",{"a":"b"},"a1")
+def test_artifact_directory_rejects_path_bearing_tenant(tmp_path):
+    # The BridgedSessions/HybridSessions screenshot sites interpolate tenant_id
+    # into the artifact path; the shared helper is their only guard.
+    for bad in ("..","../evil","a/b","a\\b",""):
+        with pytest.raises(ValueError):security.artifact_directory(tmp_path,bad,"session-1")
+    ok=security.artifact_directory(tmp_path,"tenant-1","session-1")
+    assert ok.is_relative_to(tmp_path.resolve())
+@pytest.mark.asyncio
+async def test_screenshot_refuses_preexisting_symlinked_tenant_dir(tmp_path):
+    # Segment charset alone trusts directory entries: a pre-existing symlink at
+    # root/<tenant> would let mkdir/write escape the root. Resolution-verified
+    # containment must reject before any directory or file is created outside.
+    outside=tmp_path.parent/"outside-m13";outside.mkdir(exist_ok=True)
+    root=tmp_path/"art";root.mkdir()
+    (root/"tenant-1").symlink_to(outside,target_is_directory=True)
+    service=Service(_NoSessions(),None,_NoStore(),artifact_root=str(root))
+    with pytest.raises(ValueError):await service.screenshot("tenant-1","session-1")
+    assert list(outside.iterdir())==[]

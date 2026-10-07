@@ -7,7 +7,9 @@ from typing import Any
 
 from .domain import ActionType, AuditEvent, RunStatus
 from .forms import FieldDescriptor, match_fields
-from .security import file_digest, safe_artifact_segment, validate_public_url, values_digest
+from app.modules.m00_approval_center.service import ApprovalNotFoundError
+
+from .security import artifact_directory, file_digest, validate_public_url, values_digest
 
 
 class Service:
@@ -42,7 +44,7 @@ class Service:
 
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
         """Full-page screenshot; masked selectors are covered so field values never land in the image."""
-        directory = self.root / safe_artifact_segment(tenant_id) / safe_artifact_segment(session_id)
+        directory = artifact_directory(self.root, tenant_id, session_id)
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / f"{secrets.token_hex(12)}.png"
         page = await self.sessions.page(tenant_id, session_id, False)
@@ -89,7 +91,7 @@ class Service:
     async def submit(self, tenant_id: str, session_id: str, selector: str, values: dict[str, str], approval_id: str) -> dict[str, str]:
         try:
             view = self.approvals.get(approval_id)
-        except KeyError as error:
+        except ApprovalNotFoundError as error:
             raise PermissionError("approval not found") from error
         payload = view.get("payload", {})
         status = view.get("status")

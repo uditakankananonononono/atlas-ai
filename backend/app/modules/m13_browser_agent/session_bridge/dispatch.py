@@ -237,7 +237,8 @@ class BridgedSessions:
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
         page = await self.page(tenant_id, session_id, True)
         import secrets as _secrets
-        path = f"/tmp/atlas-browser/{tenant_id}/{session_id}/{_secrets.token_hex(12)}.png"
+        from ..security import artifact_directory
+        path = str(artifact_directory("/tmp/atlas-browser", tenant_id, session_id) / f"{_secrets.token_hex(12)}.png")
         mask = [BridgedLocator(page, selector) for selector in (mask_selectors or [])]
         await page.screenshot(path=path, full_page=True, mask=mask)
         return path
@@ -339,7 +340,8 @@ class HybridSessions:
         if is_pc_session(session_id):
             return await self.bridged.screenshot(tenant_id, session_id, mask_selectors)
         import secrets as _secrets
-        path = f"/tmp/atlas-browser/{tenant_id}/{session_id}/{_secrets.token_hex(12)}.png"
+        from ..security import artifact_directory
+        path = str(artifact_directory("/tmp/atlas-browser", tenant_id, session_id) / f"{_secrets.token_hex(12)}.png")
         page = await self.server.page(tenant_id, session_id, False)
         mask = [page.locator(selector) for selector in (mask_selectors or [])]
         Path(path).parent.mkdir(parents=True, exist_ok=True)
