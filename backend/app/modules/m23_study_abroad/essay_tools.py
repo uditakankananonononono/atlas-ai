@@ -53,15 +53,18 @@ class EssayToolService:
 
     def conclusion_coach(self, student_conclusion: str, thesis: str) -> dict:
         overlap = sorted(self._tokens(student_conclusion) & self._tokens(thesis))
-        # Heuristic, listed transparently for the student/coach to judge:
-        # content terms appearing in the conclusion but not the thesis. A
-        # wholly new claim (e.g. a new award or employer) flags here.
+        # Vocabulary difference only, listed transparently: content terms in
+        # the conclusion that do not appear in the thesis. This is NOT
+        # factual new-claim detection - negation or changed numbers keep the
+        # same vocabulary (no flag), and a paraphrase flags despite no new
+        # claim.
         new_terms = sorted(self._tokens(student_conclusion) - self._tokens(thesis))
         return {"thesis_connection_terms": overlap,
                 "checks": {"connects_to_thesis": bool(overlap),
-                           "introduces_new_claim": bool(new_terms),
+                           "introduces_new_vocabulary": bool(new_terms),
                            "student_authored": True},
                 "new_terms_beyond_thesis": new_terms,
+                "vocabulary_difference_note": "Vocabulary difference only - not factual new-claim detection: negation or numeric changes may not flag; paraphrase may flag without any new claim.",
                 "questions": ["What new understanding has the story earned?",
                               "Can the last sentence point forward without making an unsupported promise?"],
                 "replacement_conclusion": None}

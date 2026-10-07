@@ -415,3 +415,33 @@ def test_redirect_raw_location_with_literal_space_rejected():
     with _pt.raises(SourceError):
         _HttpsOnlyRedirect().http_error_302(Request("https://a.example/"), None, 302, "",
                                             {"location": "https://h.example/some path"})
+
+
+def test_redirect_validation_applies_to_all_status_handlers():
+    # KILL: only http_error_302 was overridden; 301/303/307/308 stayed bound
+    # to the base implementation.
+    from urllib.request import Request
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect, SourceError
+    handler = _HttpsOnlyRedirect()
+    for method_name in ("http_error_301", "http_error_303", "http_error_307", "http_error_308"):
+        method = getattr(handler, method_name)
+        with _pt.raises(SourceError):
+            method(Request("https://a.example/"), None, 302, "", {"location": "https://ho\nst.example/x"})
+
+def test_redirect_network_path_newline_host_rejected():
+    # KILL: scheme-relative Location with a raw newline host.
+    from urllib.request import Request
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect, SourceError
+    with _pt.raises(SourceError):
+        _HttpsOnlyRedirect().http_error_302(Request("https://a.example/"), None, 302, "",
+                                            {"location": "//ho\nst.example/feed"})
+
+def test_redirect_leading_space_absolute_location_rejected():
+    from urllib.request import Request
+    import pytest as _pt
+    from app.modules.m22_tools_hub.sources import _HttpsOnlyRedirect, SourceError
+    with _pt.raises(SourceError):
+        _HttpsOnlyRedirect().http_error_302(Request("https://a.example/"), None, 302, "",
+                                            {"location": " https://h.example/x"})

@@ -20,11 +20,17 @@ class StoryRepository:
    p=db.get(StoryProjectRow,project_id)
    if not p or p.tenant_id!=self.tenant_id:raise LookupError(project_id)
    versions=list(db.scalars(select(StoryVersionRow).where(StoryVersionRow.project_id==project_id)));v=len(versions)+1;db.add(StoryVersionRow(project_id=project_id,version=v,student_text=text,coach_feedback=feedback));return v
- def evolve_brand(self,values,patterns,strengths,evidence):
+ def evolve_brand(self,values,patterns,strengths,evidence,_db=None):
   if not evidence:raise ValueError('BrandID requires student-supplied evidence')
   now=datetime.now(timezone.utc)
-  with self.sessions.begin() as db:
+  def apply(db):
    r=db.get(BrandIdRow,self.tenant_id)
    if r is None:db.add(BrandIdRow(tenant_id=self.tenant_id,values=values,patterns=patterns,strengths=strengths,evidence=evidence,updated_at=now))
    else:r.values=values;r.patterns=patterns;r.strengths=strengths;r.evidence=evidence;r.updated_at=now
+  if _db is not None:
+   # Caller owns the transaction (e.g. interview answer): the brand update
+   # commits or rolls back with the caller's writes.
+   apply(_db)
+  else:
+   with self.sessions.begin() as db:apply(db)
   return {'values':values,'patterns':patterns,'strengths':strengths,'evidence':evidence,'living_profile':True}

@@ -28,3 +28,20 @@ def test_identity_interview_is_tenant_scoped():
   IdentityInterviewRepository('different-tenant').get(a['id'])
   assert False,'cross-tenant read should fail'
  except LookupError:pass
+
+
+def test_answer_rolls_back_when_brand_refresh_fails(monkeypatch):
+    # KILL: pre-hz3 the turn committed, then the refresh failed, leaving the
+    # answer persisted with an advanced index (retry would skip ahead).
+    from app.modules.m23_study_abroad.story import StoryRepository
+    def _boom(self, *a, **k):
+        raise RuntimeError("simulated brand failure")
+    monkeypatch.setattr(StoryRepository, "evolve_brand", _boom)
+    repo = IdentityInterviewRepository("hz3-atomicity")
+    started = repo.start("college")
+    import pytest as _pt
+    with _pt.raises(RuntimeError):
+        repo.answer(started["id"], "I organized a neighborhood science club after our lab closed.")
+    after = repo.get(started["id"])
+    assert after["question_index"] == 0
+    assert after["turns"] == []
