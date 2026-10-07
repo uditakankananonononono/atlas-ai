@@ -190,12 +190,20 @@ def methods(status: str | None = None, runtime: Any = Depends(get_runtime)) -> l
     for method, status_value in runtime.repo.list_methods(status=status):
         data = method.model_dump(mode="json")
         data["review_status"] = runtime.planner.method_status(method.name)
+        data["review_hash"] = runtime.planner.method_review_hash(method)
         out.append(data)
     return out
 
 
+class MethodReviewIn(BaseModel):
+    expected_hash: str = Field(min_length=64, max_length=64)
+
+
 @router.post("/methods/{name}/activate")
-def activate_method(name: str, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
-    if not runtime.planner.activate_method(name):
-        raise HTTPException(status_code=404, detail="unknown method")
+def activate_method(name: str, body: MethodReviewIn, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
+    try:
+        if not runtime.planner.activate_method(name, expected_hash=body.expected_hash):
+            raise HTTPException(status_code=404, detail="unknown method")
+    except PermissionError as exc:
+        raise HTTPException(409,str(exc)) from exc
     return {"name": name, "review_status": "active"}
