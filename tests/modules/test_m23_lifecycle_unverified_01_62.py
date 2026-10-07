@@ -29,3 +29,17 @@ def test_negative_paths_and_mounted_boundary():
  r=c.get('/api/v1/study-abroad/lifecycle-workbench/methods',headers=h);assert r.status_code==200 and len(r.json())==57
  r=c.post('/api/v1/study-abroad/lifecycle-workbench/analyze',headers=h,json={'method':'destinations_55','data':{}});assert r.status_code==200 and r.json()['output']['count']==55
  assert c.post('/api/v1/study-abroad/lifecycle-workbench/analyze',headers=h,json={'method':'bad'}).status_code==422
+
+
+def test_row32_truthy_nonboolean_flag_is_not_approval():
+    # KILL: bool('yes') was True - junk input echoed as approval.
+    out = run('submission_approval', {'artifact': 'x', 'module0_approval': 'yes'})['output']
+    assert out['module0_approval'] is False
+    assert out['submission_allowed'] is False
+    assert out['ignored_truthy_nonboolean_flag'] is True
+
+def test_row32_true_flag_still_planning_only():
+    out = run('submission_approval', {'artifact': 'x', 'module0_approval': True})
+    assert out['output']['module0_approval'] is True
+    assert out['output']['module0_approval_flag_is_caller_supplied'] is True
+    assert any('caller-supplied planning flag' in l for l in out['output']['method_limits'])
