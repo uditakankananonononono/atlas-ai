@@ -753,13 +753,13 @@ class OutsideViewRequest(BaseModel):
 
 class OverrunRecordRequest(BaseModel):
     kind: str = Field(min_length=1)
-    estimated: float = Field(gt=0.0)
-    actual: float = Field(ge=0.0)
+    estimated: float = Field(gt=0.0, strict=True, allow_inf_nan=False)
+    actual: float = Field(ge=0.0, strict=True, allow_inf_nan=False)
 
 
 class OverrunCorrectRequest(BaseModel):
     kind: str = Field(min_length=1)
-    estimate: float = Field(gt=0.0)
+    estimate: float = Field(gt=0.0, strict=True, allow_inf_nan=False)
 
 
 class OptimismRecordRequest(BaseModel):
@@ -977,15 +977,21 @@ def row43_outside_view(request: OutsideViewRequest, service: Any = Depends(get_s
 
 @router.post("/meta/planning-fallacy/records", status_code=201)
 def row44_record_overrun(request: OverrunRecordRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
-    service.planning_fallacy.record(kind=request.kind, estimated=request.estimated,
-                                    actual=request.actual)
-    mult, n = service.planning_fallacy.multiplier(request.kind)
+    try:
+        service.planning_fallacy.record(kind=request.kind, estimated=request.estimated,
+                                        actual=request.actual)
+        mult, n = service.planning_fallacy.multiplier(request.kind)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return {"kind": request.kind, "multiplier": mult, "samples": n}
 
 
 @router.post("/meta/planning-fallacy/correct")
 def row44_correct_estimate(request: OverrunCorrectRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
-    return service.planning_fallacy.correct(kind=request.kind, estimate=request.estimate)
+    try:
+        return service.planning_fallacy.correct(kind=request.kind, estimate=request.estimate)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/optimism/records", status_code=201)

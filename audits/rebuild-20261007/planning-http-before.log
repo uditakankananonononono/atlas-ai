@@ -1,0 +1,287 @@
+............................................FFFFF                        [100%]
+=================================== FAILURES ===================================
+_ test_planning_http_invalid_or_overflow_ratio_rejects_without_record[True-1] __
+
+client = (<starlette.testclient.TestClient object at 0x7f081caaf5f0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f081df44500>)
+estimated = True, actual = 1
+
+    @pytest.mark.parametrize('estimated,actual', [(True, 1), ('1', 2), (1, True), (1e-308, 1e308)])
+    def test_planning_http_invalid_or_overflow_ratio_rejects_without_record(client, estimated, actual):
+        c, service = client
+        response = c.post('/api/modules/20/meta/planning-fallacy/records', json={'kind': 'fixture', 'estimated': estimated, 'actual': actual})
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:395: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+___ test_planning_http_invalid_or_overflow_ratio_rejects_without_record[1-2] ___
+
+client = (<starlette.testclient.TestClient object at 0x7f081de29280>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f081c9af0b0>)
+estimated = '1', actual = 2
+
+    @pytest.mark.parametrize('estimated,actual', [(True, 1), ('1', 2), (1, True), (1e-308, 1e308)])
+    def test_planning_http_invalid_or_overflow_ratio_rejects_without_record(client, estimated, actual):
+        c, service = client
+        response = c.post('/api/modules/20/meta/planning-fallacy/records', json={'kind': 'fixture', 'estimated': estimated, 'actual': actual})
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:395: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_ test_planning_http_invalid_or_overflow_ratio_rejects_without_record[1-True] __
+
+client = (<starlette.testclient.TestClient object at 0x7f081cb85e20>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f081de29220>)
+estimated = 1, actual = True
+
+    @pytest.mark.parametrize('estimated,actual', [(True, 1), ('1', 2), (1, True), (1e-308, 1e308)])
+    def test_planning_http_invalid_or_overflow_ratio_rejects_without_record(client, estimated, actual):
+        c, service = client
+        response = c.post('/api/modules/20/meta/planning-fallacy/records', json={'kind': 'fixture', 'estimated': estimated, 'actual': actual})
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:395: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_ test_planning_http_invalid_or_overflow_ratio_rejects_without_record[1e-308-1e+308] _
+
+client = (<starlette.testclient.TestClient object at 0x7f081c69ff50>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f081dcfd1f0>)
+estimated = 1e-308, actual = 1e+308
+
+    @pytest.mark.parametrize('estimated,actual', [(True, 1), ('1', 2), (1, True), (1e-308, 1e308)])
+    def test_planning_http_invalid_or_overflow_ratio_rejects_without_record(client, estimated, actual):
+        c, service = client
+>       response = c.post('/api/modules/20/meta/planning-fallacy/records', json={'kind': 'fixture', 'estimated': estimated, 'actual': actual})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_foresight_routes.py:394: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:552: in post
+    return super().post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/routes.py:980: in row44_record_overrun
+    service.planning_fallacy.record(kind=request.kind, estimated=request.estimated,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.foresight.PlanningFallacyCorrector object at 0x7f081dcfecf0>
+kind = 'fixture', estimated = 1e-308, actual = 1e+308
+
+    def record(self, *, kind: str, estimated: float, actual: float) -> None:
+        SimulationFidelityTracker._finite(estimated)
+        SimulationFidelityTracker._finite(actual)
+        if estimated <= 0 or actual < 0:
+            raise ValueError("estimated must be > 0 and actual >= 0")
+        ratio = actual / estimated
+        if not math.isfinite(ratio):
+>           raise ValueError("planning ratio overflow")
+E           ValueError: planning ratio overflow
+
+backend/app/modules/m20_general_cognitive_worker/foresight.py:580: ValueError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_________________ test_planning_http_corrected_overflow_is_422 _________________
+
+client = (<starlette.testclient.TestClient object at 0x7f082fc464e0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7f082fc7d5b0>)
+
+    def test_planning_http_corrected_overflow_is_422(client):
+        c, service = client
+        service.planning_fallacy.record(kind='fixture', estimated=1, actual=1e308)
+>       response = c.post('/api/modules/20/meta/planning-fallacy/correct', json={'kind': 'fixture', 'estimate': 1e308})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_foresight_routes.py:402: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/starlette/testclient.py:552: in post
+    return super().post(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/routes.py:988: in row44_correct_estimate
+    return service.planning_fallacy.correct(kind=request.kind, estimate=request.estimate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.foresight.PlanningFallacyCorrector object at 0x7f081c65a060>
+kind = 'fixture', estimate = 1e+308
+
+    def correct(self, *, kind: str, estimate: float) -> dict[str, Any]:
+        SimulationFidelityTracker._finite(estimate)
+        if estimate <= 0:
+            raise ValueError("estimate must be > 0")
+        mult, n = self.multiplier(kind)
+        corrected = estimate * mult
+        if not math.isfinite(corrected):
+>           raise ValueError("corrected estimate overflow")
+E           ValueError: corrected estimate overflow
+
+backend/app/modules/m20_general_cognitive_worker/foresight.py:599: ValueError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight_routes.py::test_planning_http_invalid_or_overflow_ratio_rejects_without_record[True-1]
+FAILED tests/modules/test_m20_foresight_routes.py::test_planning_http_invalid_or_overflow_ratio_rejects_without_record[1-2]
+FAILED tests/modules/test_m20_foresight_routes.py::test_planning_http_invalid_or_overflow_ratio_rejects_without_record[1-True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_planning_http_invalid_or_overflow_ratio_rejects_without_record[1e-308-1e+308]
+FAILED tests/modules/test_m20_foresight_routes.py::test_planning_http_corrected_overflow_is_422
+5 failed, 44 passed, 1 warning in 9.88s
