@@ -178,3 +178,47 @@ def test_mounted_exhausted_low_confidence_retains_last_candidate_and_usage(workf
  assert result['metadata']['review_reason']=='confidence_threshold_not_reached'
  assert result['metadata']['attempts']==2 and len(result['metadata']['history'])==2
  assert calls==['first','backup']
+
+@pytest.mark.parametrize('token',['NaN','Infinity','-Infinity'])
+@pytest.mark.parametrize('prefixed',[False,True])
+def test_raw_nonfinite_budget_validation_is_safe_without_execution(token,prefixed):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ import json
+ calls=[]
+ class Service:
+  async def execute(self,*args):calls.append(args);raise AssertionError('must not execute')
+ app=FastAPI();app.include_router(router,prefix='/api/v1' if prefixed else '');app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:Service()
+ payload='{"prompt":"private fixture","task_type":"research","output_tokens":100,"budget_cents":'+token+',"latency_tolerance_ms":100}'
+ response=TestClient(app,raise_server_exceptions=False).post(('/api/v1' if prefixed else '')+'/ai-research-lab/run',content=payload,headers={'content-type':'application/json'})
+ assert response.status_code==422,response.text
+ assert not calls
+ errors=response.json()['detail'];assert errors[0]['loc']==['body','budget_cents']
+ assert set(errors[0])=={'type','loc','msg'} and 'private fixture' not in response.text
+ json.dumps(response.json(),allow_nan=False)
+
+@pytest.mark.parametrize('endpoint,payload',[('run','{broken'),('workflows/run','{"yaml":NaN}')])
+def test_model_validation_boundary_handles_other_invalid_body_shapes(endpoint,payload):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service,get_dag_engine
+ app=FastAPI();app.include_router(router,prefix='/api/v1');app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_service]=lambda:object();app.dependency_overrides[get_dag_engine]=lambda:object()
+ response=TestClient(app,raise_server_exceptions=False).post('/api/v1/ai-research-lab/'+endpoint,content=payload,headers={'content-type':'application/json'})
+ assert response.status_code==422,response.text
+ assert response.json()['detail'] and all(set(x)=={'type','loc','msg'} for x in response.json()['detail'])
+
+def test_model_validation_boundary_does_not_catch_auth_http_failure():
+ from fastapi import FastAPI,HTTPException
+ from fastapi.testclient import TestClient
+ from app.auth.context import require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_service
+ calls=[]
+ def denied():raise HTTPException(401,'fixture denied')
+ class Service:
+  async def execute(self,*args):calls.append(args)
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=denied;app.dependency_overrides[get_service]=lambda:Service()
+ response=TestClient(app).post('/ai-research-lab/run',json={'prompt':'fixture','task_type':'research','output_tokens':100,'budget_cents':1,'latency_tolerance_ms':100})
+ assert response.status_code==401 and response.json()=={'detail':'fixture denied'} and not calls

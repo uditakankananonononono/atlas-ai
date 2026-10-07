@@ -6,7 +6,8 @@ from .response_json import safe_workflow_json,model_result_fields
 from .schemas import RunIn,WorkflowIn
 from .workflow import Workflow,WorkflowValidationError,WorkflowNodeFailure
 from app.core.providers import ProviderOutcomeUnknown
-router=APIRouter(prefix="/ai-research-lab",tags=["ai-research-lab"])
+from .validation_route import ModelExecutionRoute
+router=APIRouter(prefix="/ai-research-lab",tags=["ai-research-lab"],route_class=ModelExecutionRoute)
 _service=None
 _dag=None
 def get_service():
