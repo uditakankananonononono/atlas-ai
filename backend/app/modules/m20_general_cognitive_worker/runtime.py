@@ -233,6 +233,23 @@ class GCWRuntime:
             self.repo.save_task(context)
         return context
 
+    @_exclusive_execution
+    def activate_method(self, name, *, expected_hash):
+        return self.planner.activate_method(name, expected_hash=expected_hash)
+
+    @_exclusive_execution
+    def create_risk_register(self, *, goal, risks):
+        return self.risk_registers.create(goal=goal, risks=risks)
+
+    @_exclusive_execution
+    def revise_risk_register(self, identifier, *, expected_revision, risks):
+        return self.risk_registers.revise(identifier, expected_revision=expected_revision, risks=risks)
+
+    @_exclusive_execution
+    def patch_risk_control(self, identifier, risk_id, *, expected_revision, changes):
+        return self.risk_registers.patch_risk(identifier, risk_id,
+            expected_revision=expected_revision, changes=changes)
+
     def get_task(self, task_id: str) -> TaskContext | None:
         context = self.scheduler.get(task_id)
         return context or self.repo.load_task(task_id)
