@@ -45,6 +45,7 @@ class ModelRouter:
         reasons += [f"quality={m.quality:.2f}", f"estimated_cost={estimated:.3f}c", f"latency_fit={latency_fit:.2f}"]
         return score,reasons
     def route(self, req: RouteRequest) -> RouteDecision:
+        if type(req.task_type) is not TaskType:raise NoEligibleModel("Request task type must be TaskType")
         allow=req.required_model_ids
         if type(allow) not in (set,frozenset) or any(type(key) is not str or not key.strip() for key in allow):
             raise NoEligibleModel("Required model IDs must be a set of nonempty text IDs")

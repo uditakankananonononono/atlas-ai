@@ -219,3 +219,12 @@ def test_catalog_task_capabilities_require_exact_task_type_set(supported):
  with pytest.raises(NoEligibleModel):asyncio.run(ResearchExecutor(router,Provider()).execute(req,'fixture'))
  assert not calls
  assert ModelRouter([model,*models()]).route(req).primary.model_id=='first'
+
+@pytest.mark.parametrize('task',['research','research-code',None,1,True])
+def test_direct_route_task_type_must_be_declared_enum(task):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','first',.9)
+ req=RouteRequest(task,100,0,100,'fixture')
+ with pytest.raises(NoEligibleModel,match='TaskType'):asyncio.run(ResearchExecutor(ModelRouter(models()),Provider()).execute(req,'fixture'))
+ assert not calls
