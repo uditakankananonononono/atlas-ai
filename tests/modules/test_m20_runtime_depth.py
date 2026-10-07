@@ -1227,3 +1227,25 @@ def test_retrospective_empty_cancelled_task_does_not_claim_goal_went_well():
     retro = runtime.close(task.id)['retrospective']
     assert retro['went_well'] == []
     assert retro['execution_report']['local_action_count'] == 0
+
+
+def test_risk_control_patch_preserves_other_risks_and_rejects_stale_review(mounted):
+    client, runtime, _, _ = mounted
+    risk = {'id': 'one', 'cause': 'cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+            'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+    other = dict(risk, id='two', cause='supplier')
+    created = runtime.risk_registers.create(goal='fixture', risks=[risk, other])
+    path = f"/api/modules/20/runtime/risk-registers/{created['id']}/risks/one"
+    response = client.patch(path, json={'expected_revision': 1, 'changes': {'owner': 'supplied ops label', 'test': 'Replay'}})
+    assert response.status_code == 200
+    result = response.json()
+    assert result['revision'] == 2
+    rows = {r['id']: r for r in result['report']['risks']}
+    assert rows['one']['owner'] == 'supplied ops label'
+    assert rows['two']['owner'] == ''
+    assert client.patch(path, json={'expected_revision': 1, 'changes': {'mitigation': 'stale'}}).status_code == 409
+    assert client.patch(path, json={'expected_revision': 2, 'changes': {'id': 'renamed'}}).status_code == 422
+    assert client.patch(path, json={'expected_revision': 2, 'changes': {}}).status_code == 422
+    assert client.patch(path + 'missing', json={'expected_revision': 2, 'changes': {'owner': 'x'}}).status_code == 404
+    assert runtime.risk_registers.get(created['id'])['revision'] == 2
+    assert len(runtime.risk_registers.history(created['id'])) == 2

@@ -1064,3 +1064,9 @@ Evidence: 82 runtime tests passed with one warning; 2,461 adjacent tests passed 
 ## Full regression after workflow build-outs
 
 Current source 857b51f was checked across all 496 test files in 20 isolated batches: 10,048 passed, zero failed, 14 skipped, 26 summed warning occurrences, 436.13 seconds summed batch-process time. Every batch exited zero. Manifest and outputs are retained in audits/rebuild-20261007/full-regression-after-workflow-buildouts. This replaces the older 10,022 count as current local test evidence, not evidence of general cognition, production readiness, independently verified external effects, or model ideation quality. The actual pinned local ideation trial remains zero accepted out of two.
+
+## Individual risk control revision workflow
+
+A failing HTTP canary exposed the missing single-risk update workflow. A tenant-scoped PATCH can now update selected control/rating fields on one risk without resubmitting other risks. The risk ID cannot change, validation remains the same as full revision, and the expected revision uses the existing atomic compare-and-swap commit. Stale review returns 409; unknown risk/register returns 404; unsupported or empty changes return 422. Every accepted patch creates the same retained history revision as a full edit.
+
+Evidence: 83 runtime tests passed with one warning; 2,462 adjacent tests passed with two warnings. No owner identity verification, notifications, scheduling, evidence inspection, or approval is added. The full 10,048 run at source 857b51f predates this one code change. This is a backend editing workflow, not a deployed visual UI.

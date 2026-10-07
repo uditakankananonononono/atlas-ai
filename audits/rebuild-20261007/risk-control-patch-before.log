@@ -1,0 +1,29 @@
+........................................................................ [ 86%]
+..........F                                                              [100%]
+=================================== FAILURES ===================================
+____ test_risk_control_patch_preserves_other_risks_and_rejects_stale_review ____
+
+mounted = (<starlette.testclient.TestClient object at 0x7efd41003f20>, <app.modules.m20_general_cognitive_worker.runtime.GCWRunt...ct at 0x7efd4219c260>, <app.modules.m20_general_cognitive_worker.safety.InMemoryApprovalGate object at 0x7efd4219dac0>)
+
+    def test_risk_control_patch_preserves_other_risks_and_rejects_stale_review(mounted):
+        client, runtime, _, _ = mounted
+        risk = {'id': 'one', 'cause': 'cutoff', 'severity': 5, 'occurrence': 3, 'detection': 2,
+                'owner': '', 'mitigation': '', 'test': '', 'evidence': []}
+        other = dict(risk, id='two', cause='supplier')
+        created = runtime.risk_registers.create(goal='fixture', risks=[risk, other])
+        path = f"/api/modules/20/runtime/risk-registers/{created['id']}/risks/one"
+        response = client.patch(path, json={'expected_revision': 1, 'changes': {'owner': 'supplied ops label', 'test': 'Replay'}})
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_m20_runtime_depth.py:1240: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_risk_control_patch_preserves_other_risks_and_rejects_stale_review
+1 failed, 82 passed, 1 warning in 4.79s
