@@ -341,6 +341,9 @@ class DeliberativeLoop:
 
     def resume_after_approval(self, context: TaskContext, node_id: str, approved: bool) -> TaskContext:
         if self._hold_unknown(context):return context
+        target=next((node for node in context.plan if node.id==node_id),None)
+        if target is None:raise ValueError("approval resume node not found")
+        if target.state!=TaskState.WAITING_APPROVAL or not target.approval_id:raise ValueError("node is not waiting on approval")
         for node in context.plan:
             if node.id == node_id:
                 if approved:

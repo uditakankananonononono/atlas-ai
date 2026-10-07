@@ -128,7 +128,8 @@ def get_task(task_id: str, service: Any = Depends(get_service)) -> dict[str, Any
 
 @router.post("/tasks/{task_id}/resume")
 def resume_task(task_id: str, request: ResumeRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
-    context = service.resume(task_id, request.node_id, approved=request.approved)
+    try:context = service.resume(task_id, request.node_id, approved=request.approved)
+    except ValueError as error:raise HTTPException(422,str(error)) from error
     if context is None:
         raise HTTPException(status_code=404, detail="task not found")
     return {"task_id": context.id, "state": context.state.value}
