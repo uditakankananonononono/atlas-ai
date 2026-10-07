@@ -4,6 +4,8 @@ import os
 from collections.abc import AsyncIterator
 from datetime import date, datetime
 
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
 import httpx
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 
@@ -40,6 +42,7 @@ from .service import (
     ChannelVerificationError,
     Service,
     SourceNotFoundError,
+    UnsupportedProviderError,
 )
 from .sql_repository import SqlCalendarRepository
 
@@ -117,6 +120,8 @@ async def ensure_watch(source_id: str, service: Service = Depends(get_service)) 
         return await service.ensure_watch(source_id)
     except SourceNotFoundError as exc:
         raise HTTPException(status_code=404, detail="source not found") from exc
+    except UnsupportedProviderError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     except (GoogleError, ValueError) as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
@@ -256,8 +261,11 @@ def apply_reschedule(approval_id: str, service: Service = Depends(get_service)) 
 def meeting_load(
     week_start: date = Query(), timezone_name: str = Query(min_length=1), service: Service = Depends(get_service)
 ) -> MeetingLoadReport:
-    try:return service.meeting_load(week_start, timezone_name=timezone_name)
-    except (ValueError, KeyError) as exc:raise HTTPException(422,"invalid timezone") from exc
+    try:
+        ZoneInfo(timezone_name)
+    except (ZoneInfoNotFoundError, ValueError) as exc:
+        raise HTTPException(422, "invalid timezone") from exc
+    return service.meeting_load(week_start, timezone_name=timezone_name)
 
 from .schedule_risk import ScheduleRiskRequest, analyze_schedule_risk
 
