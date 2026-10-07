@@ -34,7 +34,7 @@ class PlaywrightSessions:
 
     @staticmethod
     def _check_id(value: str) -> str:
-        if not _SAFE_ID.fullmatch(value):
+        if not _SAFE_ID.fullmatch(value) or value in {".", ".."}:
             raise ValueError("invalid tenant or session id")
         return value
 
