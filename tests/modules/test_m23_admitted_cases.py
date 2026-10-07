@@ -98,7 +98,7 @@ def test_aggregate_deadline_status(monkeypatch):
     def handler(request):
         return httpx.Response(200, content=b'x' * 100)
     row = ac.fetch_case_metadata('hamilton', transport=httpx.MockTransport(handler))
-    assert row['live_status'] in {'robots_unverified', 'too_large'}
+    assert row['live_status'] in {'robots_unverified', 'too_large', 'deadline_exceeded'}
 
 def test_catalog_returns_fresh_copies_mutation_cannot_retarget():
     # KILL: the cached catalog list was shared and mutable in-process.
@@ -110,3 +110,43 @@ def test_catalog_returns_fresh_copies_mutation_cannot_retarget():
     fresh = ac.cases()
     assert len(fresh) == original_len
     assert all(row['url'] != 'https://evil.example/retarget' for row in fresh)
+
+
+def test_empty_page_past_deadline_is_not_reachable(monkeypatch):
+    # KILL: an EOF-time deadline breach used to return page_reachable.
+    import httpx, app.modules.m23_study_abroad.admitted_cases as ac
+    calls = iter([0.0] * 4 + [100.0] * 1000)
+    monkeypatch.setattr(ac.time, 'monotonic', lambda: next(calls))
+    def handler(request):
+        return httpx.Response(200, text='<html><title>t</title></html>',
+                              headers={'content-type': 'text/html'})
+    row = ac.fetch_case_metadata('hamilton', transport=httpx.MockTransport(handler))
+    assert row['live_status'] == 'deadline_exceeded'
+
+def test_late_chunk_is_deadline_not_too_large(monkeypatch):
+    # KILL: a chunk arriving past the deadline was mislabeled too_large.
+    import httpx, app.modules.m23_study_abroad.admitted_cases as ac
+    calls = iter([0.0] * 6 + [100.0] * 1000)
+    monkeypatch.setattr(ac.time, 'monotonic', lambda: next(calls))
+    def handler(request):
+        if request.url.path == '/robots.txt':
+            return httpx.Response(200, text='User-agent: *\nAllow: /\n')
+        return httpx.Response(200, content=b'x' * 10,
+                              headers={'content-type': 'text/html'})
+    row = ac.fetch_case_metadata('hamilton', transport=httpx.MockTransport(handler))
+    assert row['live_status'] == 'deadline_exceeded'
+
+def test_spent_deadline_blocks_page_request(monkeypatch):
+    # KILL: no pre-request deadline guard existed; the page fetch always ran.
+    import httpx, app.modules.m23_study_abroad.admitted_cases as ac
+    requested = []
+    calls = iter([0.0, 0.0, 0.0, 0.0] + [100.0] * 1000)
+    monkeypatch.setattr(ac.time, 'monotonic', lambda: next(calls))
+    def handler(request):
+        requested.append(request.url.path)
+        if request.url.path == '/robots.txt':
+            return httpx.Response(200, text='User-agent: *\nAllow: /\n')
+        return httpx.Response(200, text='<html/>', headers={'content-type': 'text/html'})
+    row = ac.fetch_case_metadata('hamilton', transport=httpx.MockTransport(handler))
+    assert row['live_status'] == 'deadline_exceeded'
+    assert requested == ['/robots.txt']
