@@ -45,7 +45,7 @@ class ContactRepository(Protocol):
 class ApprovalSink(Protocol):
     """Shared approval boundary used for all externally visible actions."""
 
-    def put(self, item: ApprovalRequest) -> ApprovalRequest: ...
+    def put(self, item: ApprovalRequest, *, user_id: str | None = None) -> ApprovalRequest: ...
 
 
 GenerateFn = Callable[[str, str, str | None], Awaitable[tuple[str, str]]]
