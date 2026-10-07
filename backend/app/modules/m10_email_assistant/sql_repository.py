@@ -183,21 +183,28 @@ class SqlEmailRepository:
                      sender: str, recipients: list[str], snippet: str, body_text: str,
                      received_at: datetime | None, labels: list[str], headers: dict,
                      category: str | None, category_confidence: float,
-                     embedding: list[float] | None, unsubscribe_url: str | None) -> None:
+                     embedding: list[float] | None, unsubscribe_url: str | None) -> bool:
         with self.sessions.begin() as db:
-            if db.scalar(select(EmailMessageRow.pk).where(
-                    EmailMessageRow.tenant_id == self.tenant_id,
-                    EmailMessageRow.gmail_id == gmail_id, EmailMessageRow.account_id == account_id)) is not None:
-                return  # idempotent on (tenant, gmail_id)
-            db.add(EmailMessageRow(
+            values=dict(
                 tenant_id=self.tenant_id, id=message_id, account_id=account_id,
                 gmail_id=gmail_id, thread_id=thread_id, history_id=history_id,
                 subject=subject, sender=sender, recipients=recipients, snippet=snippet,
                 body_text=body_text, received_at=received_at, labels=labels, headers=headers,
                 category=category, category_confidence=category_confidence,
-                embedding=embedding, unsubscribe_url=unsubscribe_url, created_at=_utcnow()))
+                embedding=embedding, unsubscribe_url=unsubscribe_url, created_at=_utcnow())
+            dialect=db.get_bind().dialect.name
+            if dialect == "postgresql":
+                from sqlalchemy.dialects.postgresql import insert
+            elif dialect == "sqlite":
+                from sqlalchemy.dialects.sqlite import insert
+            else:
+                raise RuntimeError("atomic message insert requires PostgreSQL or SQLite")
+            claimed=db.execute(insert(EmailMessageRow).values(**values).on_conflict_do_nothing(index_elements=["tenant_id","account_id","gmail_id"]).returning(EmailMessageRow.pk))
+            if claimed.scalar_one_or_none() is None:
+                return False
             self._log(db, "email_message", message_id, "ingested",
                       {"gmail_id": gmail_id, "category": category})
+        return True
 
     def list_messages(self, category: str | None = None, limit: int = 100) -> list[EmailMessageRow]:
         with self.sessions() as db:
