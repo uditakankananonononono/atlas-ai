@@ -1,0 +1,120 @@
+.................................FFFFFF                                  [100%]
+=================================== FAILURES ===================================
+_ test_optimism_http_rejects_coerced_record_inputs[predicted_confidence-True] __
+
+client = (<starlette.testclient.TestClient object at 0x7effdb351340>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7effdb56dc10>)
+field = 'predicted_confidence', value = True
+
+    @pytest.mark.parametrize('field,value', [('predicted_confidence', True), ('predicted_confidence', '0.8'), ('succeeded', 'false'), ('succeeded', 1)])
+    def test_optimism_http_rejects_coerced_record_inputs(client, field, value):
+        c, service = client
+        body = {'domain': 'fixture', 'predicted_confidence': 0.8, 'succeeded': False}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/optimism/records', json=body)
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:371: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+__ test_optimism_http_rejects_coerced_record_inputs[predicted_confidence-0.8] __
+
+client = (<starlette.testclient.TestClient object at 0x7effe0e635f0>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7effdb388530>)
+field = 'predicted_confidence', value = '0.8'
+
+    @pytest.mark.parametrize('field,value', [('predicted_confidence', True), ('predicted_confidence', '0.8'), ('succeeded', 'false'), ('succeeded', 1)])
+    def test_optimism_http_rejects_coerced_record_inputs(client, field, value):
+        c, service = client
+        body = {'domain': 'fixture', 'predicted_confidence': 0.8, 'succeeded': False}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/optimism/records', json=body)
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:371: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+______ test_optimism_http_rejects_coerced_record_inputs[succeeded-false] _______
+
+client = (<starlette.testclient.TestClient object at 0x7effdb350800>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7effe0e62ae0>)
+field = 'succeeded', value = 'false'
+
+    @pytest.mark.parametrize('field,value', [('predicted_confidence', True), ('predicted_confidence', '0.8'), ('succeeded', 'false'), ('succeeded', 1)])
+    def test_optimism_http_rejects_coerced_record_inputs(client, field, value):
+        c, service = client
+        body = {'domain': 'fixture', 'predicted_confidence': 0.8, 'succeeded': False}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/optimism/records', json=body)
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:371: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+________ test_optimism_http_rejects_coerced_record_inputs[succeeded-1] _________
+
+client = (<starlette.testclient.TestClient object at 0x7effe0beb320>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7effdb351400>)
+field = 'succeeded', value = 1
+
+    @pytest.mark.parametrize('field,value', [('predicted_confidence', True), ('predicted_confidence', '0.8'), ('succeeded', 'false'), ('succeeded', 1)])
+    def test_optimism_http_rejects_coerced_record_inputs(client, field, value):
+        c, service = client
+        body = {'domain': 'fixture', 'predicted_confidence': 0.8, 'succeeded': False}
+        body[field] = value
+        response = c.post('/api/modules/20/meta/optimism/records', json=body)
+>       assert response.status_code == 422
+E       assert 201 == 422
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:371: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+____________ test_optimism_http_rejects_coerced_adjust_inputs[True] ____________
+
+client = (<starlette.testclient.TestClient object at 0x7effdb476270>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7effe0be9d60>)
+confidence = True
+
+    @pytest.mark.parametrize('confidence', [True, '0.8'])
+    def test_optimism_http_rejects_coerced_adjust_inputs(client, confidence):
+        c, _ = client
+        response = c.post('/api/modules/20/meta/optimism/adjust', json={'domain': 'fixture', 'confidence': confidence})
+>       assert response.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:379: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+____________ test_optimism_http_rejects_coerced_adjust_inputs[0.8] _____________
+
+client = (<starlette.testclient.TestClient object at 0x7effdb67e270>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7effdb2dade0>)
+confidence = '0.8'
+
+    @pytest.mark.parametrize('confidence', [True, '0.8'])
+    def test_optimism_http_rejects_coerced_adjust_inputs(client, confidence):
+        c, _ = client
+        response = c.post('/api/modules/20/meta/optimism/adjust', json={'domain': 'fixture', 'confidence': confidence})
+>       assert response.status_code == 422
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_m20_foresight_routes.py:379: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight_routes.py::test_optimism_http_rejects_coerced_record_inputs[predicted_confidence-True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_optimism_http_rejects_coerced_record_inputs[predicted_confidence-0.8]
+FAILED tests/modules/test_m20_foresight_routes.py::test_optimism_http_rejects_coerced_record_inputs[succeeded-false]
+FAILED tests/modules/test_m20_foresight_routes.py::test_optimism_http_rejects_coerced_record_inputs[succeeded-1]
+FAILED tests/modules/test_m20_foresight_routes.py::test_optimism_http_rejects_coerced_adjust_inputs[True]
+FAILED tests/modules/test_m20_foresight_routes.py::test_optimism_http_rejects_coerced_adjust_inputs[0.8]
+6 failed, 33 passed, 1 warning in 8.07s
