@@ -727,3 +727,25 @@ def test_retrospective_after_restart_uses_durable_failure_trace_history():
  assert any('synthetic retained failure evidence' in text for text in retro['went_poorly'])
  assert any('investigate failing tools' in text for text in retro['lessons'])
  assert restarted.close(context.id)['idempotent'] is True
+
+
+def test_scheduler_quantum_yields_unfinished_work_and_completes_across_restart():
+ runtime,repo=make_runtime();calls=[]
+ async def compute(arguments):
+  result=arguments['n']*arguments['n'];calls.append(result);return {'square':result}
+ spec=ToolSpec(name='fixture_square',description='fixture')
+ runtime.tools.register(spec,compute)
+ nodes=[PlanNode(title=f'square {n}',tool=spec.name,arguments={'n':n}) for n in (2,3,4)]
+ for i in range(1,len(nodes)):nodes[i].depends_on=[nodes[i-1].id]
+ runtime.planner.register_method(HTNMethod(name='square fixture',goal_pattern='square fixture',subtasks=nodes))
+ context=runtime.submit_goal('square fixture',run_immediately=False)
+ first=runtime.step(max_ticks=1)
+ assert first.state=='running' and first.ticks_run==1 and calls==[4]
+ assert not runtime.episodic.for_task(context.id)
+ restarted=make_runtime(hydrate_repo=repo);restarted.tools.register(spec,compute)
+ second=restarted.step(max_ticks=1)
+ assert second.state=='running' and calls==[4,9]
+ third=restarted.step(max_ticks=1)
+ assert third.state=='succeeded' and calls==[4,9,16]
+ assert restarted.step().state=='idle'
+ assert repo.load_task(context.id).state==TaskState.SUCCEEDED

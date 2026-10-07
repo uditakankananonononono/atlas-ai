@@ -207,9 +207,9 @@ class GCWRuntime:
         self.loop.last_ticks_run = 0
         budget = Budget(seconds=quantum_seconds)
         if context.state in (TaskState.PENDING, TaskState.PLANNING):
-            self._run_and_persist(context, budget=budget)
+            self._run_and_persist(context, budget=budget, yield_on_boundary=True)
         elif context.state in (TaskState.RUNNING, TaskState.RUMINATING):
-            self._run_and_persist(context, budget=budget)
+            self._run_and_persist(context, budget=budget, yield_on_boundary=True)
         elapsed = time.monotonic() - started
         surprises = self._evaluate_expectations(context)
         return StepReport(
@@ -238,13 +238,13 @@ class GCWRuntime:
 
     # -- evaluation depth ------------------------------------------------------
 
-    def _run_and_persist(self, context: TaskContext, *, budget: Budget | None = None) -> None:
+    def _run_and_persist(self, context: TaskContext, *, budget: Budget | None = None, yield_on_boundary: bool = False) -> None:
         if context.state in (TaskState.PENDING, TaskState.PLANNING) and not context.plan:
-            self.loop.start(context, budget=budget)
+            self.loop.start(context, budget=budget, yield_on_boundary=yield_on_boundary)
         else:
             if context.state == TaskState.PLANNING:
                 context.state = TaskState.RUNNING
-            self.loop.run(context, budget=budget)
+            self.loop.run(context, budget=budget, yield_on_boundary=yield_on_boundary)
         self._persist_context(context)
         self._evaluate_expectations(context)
 
