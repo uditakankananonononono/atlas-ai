@@ -962,3 +962,7 @@ Six reproduced failures retained: negative/nonfinite/bool/unknownweights and sum
 ## Base-rate HTTP input types
 
 Five actual failures retained: bool/stringprobability/count coerce past rawguards. Strictfinite0..1numericprobabilities/exactintegercount0..10**308 now422beforearithmetic.151foresightHTTPpass1warning; recorded87adjacent2382pass2warnings41.25s. Transport type consistency only, not calibratedprobability or base-rateprovenance. Latestfull9944passsourcec5b11ab predatesfourlaterfixes.
+
+## Planning HTTP numeric and overflow boundary
+
+Five reproduced failures retained: bool/stringdurationcoercion and unhandledratio/correctedestimateoverflow. Strictfinite requestnumbers; arithmeticValueError translates422with ratio rejectionbeforepublication.156foresightHTTPpass1warning; recorded87adjacent2387pass2warnings41.11s. Supplieddurationarithmetic/transportconsistency only, not forecast validity or verifieddurations. Latestfull9944passsourcec5b11ab predatesfivelaterfixes.

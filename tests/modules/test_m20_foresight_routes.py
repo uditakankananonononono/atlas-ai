@@ -386,3 +386,18 @@ def test_base_rate_http_rejects_coerced_inputs(client, field, value):
     body[field] = value
     response = c.post('/api/modules/20/meta/base-rate/integrate', json=body)
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize('estimated,actual', [(True, 1), ('1', 2), (1, True), (1e-308, 1e308)])
+def test_planning_http_invalid_or_overflow_ratio_rejects_without_record(client, estimated, actual):
+    c, service = client
+    response = c.post('/api/modules/20/meta/planning-fallacy/records', json={'kind': 'fixture', 'estimated': estimated, 'actual': actual})
+    assert response.status_code == 422
+    assert service.planning_fallacy.history == {}
+
+
+def test_planning_http_corrected_overflow_is_422(client):
+    c, service = client
+    service.planning_fallacy.record(kind='fixture', estimated=1, actual=1e308)
+    response = c.post('/api/modules/20/meta/planning-fallacy/correct', json={'kind': 'fixture', 'estimate': 1e308})
+    assert response.status_code == 422
