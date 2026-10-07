@@ -601,6 +601,10 @@ class Service:
         """Apply an approved reschedule: persist the task and its new blocks."""
         self._require_approved(approval_id)
         payload = self.approval_gate_payload(approval_id)
+        if self.repository.get_plan_by_approval(approval_id) is not None:
+            # An approved reschedule applies exactly once: the applied plan row is
+            # the consumption marker, so a replay cannot duplicate the task/blocks.
+            raise ApprovalNotGrantedError(f"approval {approval_id} was already consumed")
         task_data = payload["task"]
         view = self.create_task(SchedulingTaskCreate(**{
             k: v for k, v in task_data.items() if k != "id"}))
