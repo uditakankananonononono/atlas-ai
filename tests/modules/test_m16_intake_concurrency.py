@@ -92,22 +92,13 @@ def test_mark_command_scoped_to_own_tenant_and_actor():
         other.mark_command("c1",datetime.now(timezone.utc))
     row,_=mine.get_command("c1")
     assert row.executed_at is None
-def _aware(preview):
-    # sqlite returns naive datetimes; the service compares against tz-aware now.
-    if preview.expires_at.tzinfo is None:preview=preview.model_copy(update={"expires_at":preview.expires_at.replace(tzinfo=timezone.utc)})
-    return preview
-class TzFixRepo:
-    """Coerces sqlite's naive preview timestamps back to tz-aware, as postgres returns them."""
+class StaleReadRepo:
+    """Adds the read a concurrent execute took before the winner claimed: get_command reports executed_at=None while the stored row is already claimed."""
     def __init__(self,repo):self._repo=repo
     def get_command(self,cid):
-        row,preview=self._repo.get_command(cid)
-        return row,_aware(preview)
-    def __getattr__(self,name):return getattr(self._repo,name)
-class StaleReadRepo(TzFixRepo):
-    """Adds the read a concurrent execute took before the winner claimed: get_command reports executed_at=None while the stored row is already claimed."""
-    def get_command(self,cid):
         _,preview=self._repo.get_command(cid)
-        return type("StaleRow",(),{"executed_at":None})(),_aware(preview)
+        return type("StaleRow",(),{"executed_at":None})(),preview
+    def __getattr__(self,name):return getattr(self._repo,name)
 def test_losing_concurrent_execute_never_runs_the_executor():
     repo=SqlDashboardRepository("t","u",session_factory=factory())
     repo.save_command(command("c1"))
@@ -121,15 +112,20 @@ def test_failed_executor_leaves_command_claimed():
     repo=SqlDashboardRepository("t","u",session_factory=factory())
     repo.save_command(command("c1"))
     def boom(intent,params):raise ValueError("read failed")
-    service=Service(TzFixRepo(repo),executor=boom)
+    service=Service(repo,executor=boom)
     with pytest.raises(ValueError,match="read failed"):service.execute("c1")
     row,_=repo.get_command("c1")
     assert row.executed_at is not None  # claim-before-execute: retry means a fresh preview
+def test_default_sqlite_execute_compares_expiry_without_typeerror():
+    repo=SqlDashboardRepository("t","u",session_factory=factory())
+    repo.save_command(command("c1"))
+    service=Service(repo,executor=lambda intent,params:{"ok":True})
+    assert service.execute("c1")["status"]=="completed"  # naive sqlite expiry read is coerced, no TypeError
 def test_successful_execute_claims_then_runs_executor_once():
     repo=SqlDashboardRepository("t","u",session_factory=factory())
     repo.save_command(command("c1"))
     calls=[]
-    service=Service(TzFixRepo(repo),executor=lambda intent,params:calls.append(intent) or {"ok":True})
+    service=Service(repo,executor=lambda intent,params:calls.append(intent) or {"ok":True})
     assert service.execute("c1")=={"status":"completed","result":{"ok":True}}
     assert calls==["show_kpis"]
     with pytest.raises(RuntimeError,match="command already executed"):service.execute("c1")
