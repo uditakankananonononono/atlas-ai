@@ -207,3 +207,15 @@ def test_required_model_allowlist_does_not_use_substring_or_wrong_container(allo
 def test_valid_exact_allowlist_excludes_primary_and_other_fallbacks(allow):
  decision=ModelRouter(models()).route(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture',required_model_ids=allow))
  assert decision.primary.model_id=='backup' and decision.fallbacks==()
+
+@pytest.mark.parametrize('supported',['research-code',{'research':True},None,frozenset({'research'}),frozenset({None})])
+def test_catalog_task_capabilities_require_exact_task_type_set(supported):
+ calls=[]
+ class Provider:
+  async def generate(self,**kwargs):calls.append(kwargs);return ModelResult('fixture','invalid',.9)
+ model=ModelCapability('invalid',supported,1000,0,100,.8)
+ req=RouteRequest(TaskType.RESEARCH,100,0,100,'fixture');router=ModelRouter([model])
+ assert router.score(model,req)==(float('-inf'),['invalid task capabilities'])
+ with pytest.raises(NoEligibleModel):asyncio.run(ResearchExecutor(router,Provider()).execute(req,'fixture'))
+ assert not calls
+ assert ModelRouter([model,*models()]).route(req).primary.model_id=='first'
