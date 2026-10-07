@@ -2442,3 +2442,13 @@ def test_failed_expectation_resolution_keeps_binding_for_retry(monkeypatch,opera
  else:runtime.close(context.id)
  assert runtime.calibration.claims[claim.id].resolved is True
  assert repo.list_claims()[0].correct is True
+
+
+def test_failed_initial_task_write_never_publishes_runnable_goal(monkeypatch):
+ runtime,repo=make_runtime()
+ def fail(context):raise RuntimeError('fixture task creation unavailable')
+ monkeypatch.setattr(repo,'save_task',fail)
+ with pytest.raises(RuntimeError):runtime.submit_goal('uncommitted runnable goal',run_immediately=False)
+ assert repo.list_tasks()==[]
+ assert runtime.scheduler.active()==[]
+ assert runtime.step().state=='idle'

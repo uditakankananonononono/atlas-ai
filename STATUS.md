@@ -1420,3 +1420,9 @@ Evidence: 178 runtime tests passed with one warning; 2,519 M20 adjacent tests pa
 All 499 test files at source 7c805da passed on their first run across 20 isolated batches: 10,186 passed, zero failed, 14 skipped, 26 summed warning occurrences, 484.64 seconds summed batch time. Every receipt exit is zero; no failed-batch rerun substitution. Covers retrospective publication, related working-memory transactions and expectation-binding retry bookkeeping. Manifest, raw outputs, receipts and summary retained in audits/rebuild-20261007/full-regression-after-recall-retry.
 
 This is local regression, not production, model-quality or broad cognition acceptance. Actual ideation remains zero of two accepted trials; production provisioning and external-effect reconciliation remain unfinished. No model trial, spending, account mutation, external action or production migration.
+
+## Save new task before scheduler publication
+
+One retained original canary showed a failed initial task write left an uncommitted pending goal in the runnable scheduler. Initial task persistence now precedes scheduler publication, so rejected creation cannot run on a later tick.
+
+Evidence: 179 runtime tests passed with one warning; 2,520 M20 adjacent tests passed with two warnings in 59.81 seconds. Test verifies SQL absence, empty active scheduler and idle next tick. Before obtaining the retained real failure, a fixture referenced a nonexistent supervision key and was corrected to scheduler.active. This is initial-task write visibility, not atomic planning/memory creation, later execution rollback or ambiguous-commit recovery. Full 10,186 source 7c805da predates this change. No model trial, external action, account change or migration.
