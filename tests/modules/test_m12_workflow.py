@@ -47,3 +47,27 @@ def test_mounted_excessive_depth_is_422_without_runner_call():
  raw='nodes: [{id: a, task: x, config: {nested: '+ '['*600+'0'+']'*600+'}}]'
  response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw})
  assert response.status_code==422 and not calls
+
+@pytest.mark.parametrize('kind,status,state',[('review',422,'review_required'),('unknown',409,'unknown')])
+def test_mounted_node_uncertainty_retains_sibling_output_no_dependent_or_retry(kind,status,state):
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.core.providers import ProviderOutcomeUnknown
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ from app.modules.m12_ai_research_lab.executor import ConfidenceUnavailable
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ calls=[]
+ async def runner(task,config,ctx):
+  calls.append(task)
+  if task=='uncertain':
+   if kind=='unknown':raise ProviderOutcomeUnknown('fixture dispatched')
+   raise ConfidenceUnavailable(ModelResult('review candidate','fixture',usage={'input_tokens':12}))
+  return {'text':'sibling complete'}
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ raw='nodes: [{id: a, task: uncertain}, {id: b, task: sibling}, {id: c, task: dependent, depends_on: [a,b]}]'
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':raw})
+ assert response.status_code==status,response.text
+ detail=response.json()['detail'];assert detail['state']==state and detail['node_id']=='a' and detail['retry_allowed'] is False
+ assert detail['completed']=={'b':{'text':'sibling complete'}} and calls==['uncertain','sibling']
+ if kind=='review':assert detail['result']['text']=='review candidate' and detail['result']['usage']=={'input_tokens':12}

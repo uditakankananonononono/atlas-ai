@@ -17,6 +17,11 @@ def _unique_mapping(loader,node,deep=False):
         except TypeError as exc:raise WorkflowValidationError("invalid YAML mapping key") from exc
     return result
 _WorkflowLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,_unique_mapping)
+class WorkflowNodeFailure(RuntimeError):
+    def __init__(self,node_id:str,error:Exception,completed:dict[str,Any],failures:list[tuple[str,Exception]]):
+        super().__init__(f"node {node_id} failed")
+        self.node_id=node_id;self.error=error;self.completed=dict(completed);self.failures=failures
+
 NodeRunner=Callable[[str, dict[str, Any], dict[str, Any]], Awaitable[dict[str, Any]]]
 
 @dataclass(frozen=True)
@@ -73,10 +78,16 @@ class DagEngine:
             context={"workflow_inputs":inputs,"parents":{d:results[d] for d in n.depends_on}}
             async with self.limit: return await self.runner(n.task,n.config,context)
         while pending:
-            ready=[nodes[i] for i in pending if set(nodes[i].depends_on)<=results.keys()]
+            ready=[nodes[i] for i in sorted(pending) if set(nodes[i].depends_on)<=results.keys()]
             if not ready: raise RuntimeError("DAG made no progress")
             output=await asyncio.gather(*(execute(n) for n in ready),return_exceptions=True)
+            # A gather wave can complete siblings before another node fails.
+            # Retain their outputs, never label them cancelled or replay them.
+            failures=[]
             for n,value in zip(ready,output):
-                if isinstance(value,Exception): raise RuntimeError(f"node {n.id} failed") from value
-                results[n.id]=value; pending.remove(n.id)
+                if isinstance(value,Exception):failures.append((n.id,value))
+                else:results[n.id]=value;pending.remove(n.id)
+            if failures:
+                node_id,error=failures[0]
+                raise WorkflowNodeFailure(node_id,error,results,failures) from error
         return results
