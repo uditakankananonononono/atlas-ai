@@ -838,7 +838,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Gmail REST client handles profile/history/full messages/watch; authenticated tenant route processes push inline via shared verification token, not established Celery message-ID ingestion. Parser picks plain text; SQL model stores body_text/headers/JSON recipients, not full specified HTML/sent/ref/status schema or attachment-GCS lifecycle. History/tenant idempotency seams exist, but multi-account message/thread keys lack account scoping in this read. No live provider/push/attachment acceptance. Status unverified."
+      "notes": "Gmail REST client handles profile/history/full messages/watch; authenticated tenant route processes push inline via shared verification token, not established Celery message-ID ingestion. Parser picks plain text; SQL model stores body_text/headers/JSON recipients, not full specified HTML/sent/ref/status schema or attachment-GCS lifecycle. History/tenant idempotency seams exist, but multi-account message/thread keys lack account scoping in this read. No live provider/push/attachment acceptance. Status unverified. Recon account-scopes Gmail IDs and context, explicit migration tested on SQLite historical schema; no PG migration/provider ingestion acceptance yet."
     },
     {
       "row": 76,
@@ -871,7 +871,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Draft pipeline uses bounded five thread snippets (6000 characters), supplied graph hook default absent, current body capped 4000 and configurable generator default OpenAI. Stores pending SQL draft and approval, attempts review-state capture. Entire thread, historical style checker/provider draft/rich editor and successful dispatched reply not established here. Approval payload has tenant/draft/message/thread/recipient/body, but no explicit account_id; account ownership before multi-account send remains open. No email sent. Status unverified."
+      "notes": "Draft pipeline uses bounded five thread snippets (6000 characters), supplied graph hook default absent, current body capped 4000 and configurable generator default OpenAI. Stores pending SQL draft and approval, attempts review-state capture. Entire thread, historical style checker/provider draft/rich editor and successful dispatched reply not established here. Approval payload has tenant/draft/message/thread/recipient/body, but no explicit account_id; account ownership before multi-account send remains open. No email sent. Status unverified. Recon adds account_id to approval and scopes snippet context by account, prior collision/context regressions pass without xfails. No real two-account send/provider acceptance."
     },
     {
       "row": 79,
@@ -915,7 +915,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "Google HTTP watch-channel webhook and incremental syncToken/recovery client plus CalDAV fetch path exist, not Pub/Sub or demonstrated Microsoft Graph subscription/Apple long-poll. Event SQL model has UID/summary/time/location/status/source, not full attendees/response/description fields. Google source stores refresh token yet watch/sync decrypt directly as access token; runtime refresh wiring unaccepted. No real calendar sync acceptance. Status unverified."
+      "notes": "Google HTTP watch-channel webhook and incremental syncToken/recovery client plus CalDAV fetch path exist, not Pub/Sub or demonstrated Microsoft Graph subscription/Apple long-poll. Event SQL model has UID/summary/time/location/status/source, not full attendees/response/description fields. Google source stores refresh token yet watch/sync decrypt directly as access token; runtime refresh wiring unaccepted. No real calendar sync acceptance. Status unverified. Recon now exchanges stored refresh token before watch/sync with configured runtime OAuth closure; hermetic happy/negative cases pass. No real OAuth, token lifetime cache or provider acceptance."
     },
     {
       "row": 83,
