@@ -1,0 +1,106 @@
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+...........................F............................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+..............................                                           [100%]
+=================================== FAILURES ===================================
+____ test_bound_arguments_review_uses_actual_output_and_invalid_path_blocks ____
+
+    def test_bound_arguments_review_uses_actual_output_and_invalid_path_blocks():
+        runtime, repo = make_runtime()
+        task = runtime.submit_goal('fixture bindings', run_immediately=False)
+        runtime.prepare_supplied_plan(task.id, steps=[
+            {'id':'a','title':'fetch','tool':'fetch'},
+            {'id':'b','title':'send','tool':'fixture_external','depends_on':['a'],
+             'arguments':{'recipient':{'$step':'a','path':['address']}}}])
+        async def fetch(args): return {'address':'fixture@example.invalid'}
+        calls=[]
+        async def send(args): calls.append(args); return {}
+        runtime.tools.register(ToolSpec(name='fetch',description='fixture',risk=Risk.READ),fetch)
+        runtime.tools.register(ToolSpec(name='fixture_external',description='fixture',risk=Risk.EXTERNAL),send)
+        context=runtime.run_task(task.id)
+        assert context.state == TaskState.WAITING_APPROVAL and calls == []
+        approval = runtime.safety.approvals.requests[context.plan[1].approval_id]
+>       assert approval.arguments == {'recipient':'fixture@example.invalid'}
+               ^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_runtime_depth.py:1496: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ApprovalGateRequest(id='fb6be85b-3b22-46f3-b346-6a1021a7163f', module_id=20, task_id='fe0301df-5bfe-41ce-b0c2-c6cd7645...xternal'>, expires_at=None, created_at=datetime.datetime(2026, 10, 7, 9, 15, 36, 452606, tzinfo=datetime.timezone.utc))
+item = 'arguments'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+    
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+    
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'ApprovalGateRequest' object has no attribute 'arguments'
+
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: AttributeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/modules/test_m20_conic_solvers.py::test_conic_iteration_limit_does_not_promote_inaccurate_result
+  /home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/conic_solvers.py:40: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+    try:problem.solve(solver='SCS',eps=tol,max_iters=limit,verbose=False)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_bound_arguments_review_uses_actual_output_and_invalid_path_blocks
+1 failed, 2477 passed, 2 warnings in 48.89s

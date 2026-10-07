@@ -1493,7 +1493,7 @@ def test_bound_arguments_review_uses_actual_output_and_invalid_path_blocks():
     context=runtime.run_task(task.id)
     assert context.state == TaskState.WAITING_APPROVAL and calls == []
     approval = runtime.safety.approvals.requests[context.plan[1].approval_id]
-    assert approval.arguments == {'recipient':'fixture@example.invalid'}
+    assert approval.payload == {'recipient':'fixture@example.invalid'}
     context.plan[1].state=TaskState.PENDING
     context.plan[1].approval_id=None
     context.plan[1].arguments['recipient']['path']=['absent']
