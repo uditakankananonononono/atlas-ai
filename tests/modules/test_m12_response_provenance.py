@@ -1,0 +1,51 @@
+import asyncio
+import pytest
+from app.core import providers
+from app.modules.m12_ai_research_lab import wiring
+from app.modules.m12_ai_research_lab.executor import ConfidenceUnavailable,ResearchExecutor,RetryPolicy
+from app.modules.m12_ai_research_lab.models import ModelCapability,RouteRequest,TaskType
+from app.modules.m12_ai_research_lab.router import ModelRouter
+
+@pytest.mark.parametrize('raw,expected',[({'usage':{'prompt_tokens':12,'completion_tokens':3}},(12,3)),({},(None,None)),({'usage':{'prompt_tokens':True,'completion_tokens':-1}},(None,None)),({'usage':{'prompt_tokens':'12','completion_tokens':0}},(None,0)),({'prompt_eval_count':8,'eval_count':2},(8,2)),({'usageMetadata':{'promptTokenCount':7,'candidatesTokenCount':4}},(7,4))])
+def test_response_usage_never_invents_missing_zero(raw,expected):
+ u=providers._usage(raw,'fixture','model');assert (u.input_tokens,u.output_tokens)==expected
+
+def test_adapter_preserves_response_usage_without_fabricating_confidence_cost(monkeypatch):
+ async def fake(*args):return providers.ProviderResult('model','fixture','ollama',providers.ProviderUsage('ollama','model',12,3))
+ monkeypatch.setattr(wiring,'generate_result',fake)
+ r=asyncio.run(wiring.AtlasProvider().generate(model_id='ollama:model',prompt='fixture',context={}))
+ assert r.confidence is None and r.usage=={'input_tokens':12,'output_tokens':3}
+ assert r.metadata['usage_source']=='provider_response' and r.metadata['usage_complete'] is True
+ assert r.metadata['actual_cost_cents'] is None and r.metadata['cost_source']=='unavailable'
+
+def test_unknown_confidence_stops_once_and_retains_review_candidate(monkeypatch):
+ calls=[]
+ async def fake(*args):calls.append(args);return providers.ProviderResult('model','candidate','ollama')
+ monkeypatch.setattr(wiring,'generate_result',fake)
+ cat=[ModelCapability(x,frozenset({TaskType.RESEARCH}),1000,0,100,.8) for x in ['ollama:model','ollama:backup']]
+ executor=ResearchExecutor(ModelRouter(cat),wiring.AtlasProvider(),RetryPolicy(base_delay_seconds=0))
+ with pytest.raises(ConfidenceUnavailable) as error:asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,100,'fixture'),'fixture'))
+ assert len(calls)==1 and error.value.result.text=='candidate'
+ assert error.value.result.confidence is None and error.value.result.usage=={}
+ assert error.value.result.metadata['review_required'] is True
+
+def test_http_review_boundary_retains_candidate_without_success(monkeypatch):
+ from types import SimpleNamespace
+ from fastapi import HTTPException
+ from app.modules.m12_ai_research_lab.routes import run
+ from app.modules.m12_ai_research_lab.schemas import RunIn
+ from app.modules.m12_ai_research_lab.models import ModelResult
+ class Service:
+  async def execute(self,*args):raise ConfidenceUnavailable(ModelResult('candidate','fixture',None,metadata={'review_required':True}))
+ with pytest.raises(HTTPException) as error:asyncio.run(run(RunIn(prompt='fixture',task_type=TaskType.RESEARCH,output_tokens=100,budget_cents=1,latency_tolerance_ms=100),SimpleNamespace(tenant_id='fixture'),Service()))
+ assert error.value.status_code==422 and error.value.detail['state']=='review_required'
+ assert error.value.detail['result']['text']=='candidate' and error.value.detail['result']['confidence'] is None
+
+@pytest.mark.asyncio
+async def test_per_response_usage_not_global_last_entry(monkeypatch):
+ async def fake(provider,url,**kwargs):
+  tokens=kwargs['payload']['messages'][0]['content'];await asyncio.sleep(0)
+  return {'choices':[{'message':{'content':tokens}}],'usage':{'prompt_tokens':int(tokens),'completion_tokens':1}}
+ monkeypatch.setattr(providers,'_post',fake)
+ results=await asyncio.gather(providers.generate_result('12','openai_compat','fixture'),providers.generate_result('21','openai_compat','fixture'))
+ assert [(r.text,r.usage.input_tokens) for r in results]==[('12',12),('21',21)]
