@@ -1,0 +1,48 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____________ test_closed_active_task_cannot_rehydrate_or_run_again _____________
+
+    def test_closed_active_task_cannot_rehydrate_or_run_again():
+     runtime,repo=make_runtime();calls=[]
+     async def handler(args):calls.append(args);return {'n':len(calls)}
+     spec=ToolSpec(name='fixture_closed',description='fixture')
+     runtime.tools.register(spec,handler)
+     context=runtime.submit_goal('fixture',run_immediately=False)
+     context.plan=[PlanNode(title='must not run',tool=spec.name)];repo.save_task(context)
+     runtime.close(context.id)
+>    assert repo.load_task(context.id).state==TaskState.CANCELLED
+E    AssertionError: assert <TaskState.PENDING: 'pending'> == <TaskState.CA...: 'cancelled'>
+E      
+E      - cancelled
+E      + pending
+
+tests/modules/test_m20_runtime_depth.py:835: AssertionError
+___ test_closed_success_task_run_does_not_create_duplicate_execution_episode ___
+
+    def test_closed_success_task_run_does_not_create_duplicate_execution_episode():
+     runtime,repo=make_runtime()
+     async def handler(args):return {'n':2+2}
+     runtime.tools.register(ToolSpec(name='fixture_once',description='fixture'),handler)
+     context=runtime.submit_goal('fixture',run_immediately=False);context.plan=[PlanNode(title='compute',tool='fixture_once')]
+     runtime.run_task(context.id);runtime.close(context.id)
+     count=len(repo.list_episodes(task_id=context.id))
+     restarted=make_runtime(hydrate_repo=repo)
+     assert restarted.run_task(context.id).state==TaskState.SUCCEEDED
+>    assert len(repo.list_episodes(task_id=context.id))==count==1
+E    AssertionError: assert 2 == 1
+E     +  where 2 = len([Episode(id='789d4b45-a2cf-4bff-b9c4-42929085be7f', task_id='8725a3d6-4b50-4a40-887e-2bee8c1f8571', goal='fixture', st..., 10, 7, 1, 42, 12, 859937, tzinfo=TzInfo(0)), embedding_text='fixture succeeded after plan of 1 steps  fixture_once')])
+E     +    where [Episode(id='789d4b45-a2cf-4bff-b9c4-42929085be7f', task_id='8725a3d6-4b50-4a40-887e-2bee8c1f8571', goal='fixture', st..., 10, 7, 1, 42, 12, 859937, tzinfo=TzInfo(0)), embedding_text='fixture succeeded after plan of 1 steps  fixture_once')] = list_episodes(task_id='8725a3d6-4b50-4a40-887e-2bee8c1f8571')
+E     +      where list_episodes = <app.modules.m20_general_cognitive_worker.sql_repository.GCWRepository object at 0x7f46a7b06e40>.list_episodes
+E     +      and   '8725a3d6-4b50-4a40-887e-2bee8c1f8571' = TaskContext(id='8725a3d6-4b50-4a40-887e-2bee8c1f8571', goal='fixture', state=<TaskState.SUCCEEDED: 'succeeded'>, impor...tition='8725a3d6-4b50-4a40-887e-2bee8c1f8571', standup_notes=[], last_run_at=None, ticks_served=0, tenant_id='default').id
+
+tests/modules/test_m20_runtime_depth.py:852: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_closed_active_task_cannot_rehydrate_or_run_again
+FAILED tests/modules/test_m20_runtime_depth.py::test_closed_success_task_run_does_not_create_duplicate_execution_episode
+2 failed, 45 deselected, 1 warning in 1.47s
