@@ -27,6 +27,8 @@ function DrilldownPanel({data,onClose}:{data:DrilldownResult|null;onClose:()=>vo
 }
 export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}){
   const api=useMemo<Api>(()=>dashboardApi(apiBase),[apiBase]);
+  const scope=useMemo(()=>({active:true}),[apiBase]);
+  useEffect(()=>{scope.active=true;return()=>{scope.active=false}},[scope]);
   const [view,setView]=useState<DashboardView|null>(null);
   const [kpis,setKpis]=useState<KPI[]>([]);const [modules,setModules]=useState<ModuleStatus[]>([]);const [blockers,setBlockers]=useState<Blocker[]>([]);
   const [approvals,setApprovals]=useState<Approval[]>([]);const [digest,setDigest]=useState<Digest|null>(null);const [snapshot,setSnapshot]=useState<Snapshot|null>(null);
@@ -35,31 +37,31 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
   const [rerunApproval,setRerunApproval]=useState<RerunApprovalState|null>(null);const [rerunBusy,setRerunBusy]=useState(false);
   async function openRerunApproval(row:RerunProposalRow){
     const path=row.approval_path;setRerunApproval({path,request:null,audit:[],error:null});
-    try{const [request,audit]=await Promise.all([api.approvalRequest(path),api.approvalAudit(path)]);setRerunApproval({path,request,audit,error:null})}
-    catch(e){setRerunApproval({path,request:null,audit:[],error:e instanceof Error?e.message:"could not load approval"})}
+    try{const [request,audit]=await Promise.all([api.approvalRequest(path),api.approvalAudit(path)]);if(scope.active)setRerunApproval(prev=>prev?.path===path?{path,request,audit,error:null}:prev)}
+    catch(e){if(scope.active)setRerunApproval(prev=>prev?.path===path?{path,request:null,audit:[],error:e instanceof Error?e.message:"could not load approval"}:prev)}
   }
   async function decideRerun(decision:"approved"|"denied"){
     if(!rerunApproval)return;setRerunBusy(true);
-    try{await api.decideApprovalRequest(rerunApproval.path,decision);await openRerunApproval({approval_path:rerunApproval.path} as RerunProposalRow);api.rerunSchedules().then(setRerunCard,()=>setRerunCard(null))}
-    catch(e){setRerunApproval(prev=>prev&&{...prev,error:e instanceof Error?e.message:"decision failed"})}
-    finally{setRerunBusy(false)}
+    try{await api.decideApprovalRequest(rerunApproval.path,decision);if(!scope.active)return;await openRerunApproval({approval_path:rerunApproval.path} as RerunProposalRow);refresh(true)}
+    catch(e){if(scope.active)setRerunApproval(prev=>prev&&{...prev,error:e instanceof Error?e.message:"decision failed"})}
+    finally{if(scope.active)setRerunBusy(false)}
   }
+  const [optionalErrors,setOptionalErrors]=useState<Record<string,string>>({});
   const [outreachRequests,setOutreachRequests]=useState<ApprovalCenterRequest[]>([]);
   const [outreach,setOutreach]=useState<OutreachApprovalState|null>(null);const [outreachBusy,setOutreachBusy]=useState(false);
-  const loadOutreachRequests=useCallback(()=>api.approvalRequests({status:"pending",module_id:OUTREACH_MODULE_ID}).then(setOutreachRequests,()=>setOutreachRequests([])),[api]);
   async function openOutreach(request:ApprovalCenterRequest){
     setOutreach({request,timeline:null,timelineError:null,liveCadence:null,error:null});
     const p=request.payload as Record<string,unknown>;const contactId=typeof p.contact_id==="string"?p.contact_id:"";const messageId=typeof p.message_id==="string"?p.message_id:"";
     const [timeline,cadence]=await Promise.allSettled([contactId?api.contactTimeline(contactId):Promise.reject(new Error("request has no contact_id")),messageId?api.messageCadence(messageId):Promise.reject(new Error("no message_id"))]);
-    setOutreach(prev=>prev&&prev.request.id===request.id?{...prev,timeline:timeline.status==="fulfilled"?timeline.value:null,
+    if(scope.active)setOutreach(prev=>prev&&prev.request.id===request.id?{...prev,timeline:timeline.status==="fulfilled"?timeline.value:null,
       timelineError:timeline.status==="rejected"?(timeline.reason instanceof Error?timeline.reason.message:"history unavailable"):null,
       liveCadence:cadence.status==="fulfilled"?cadence.value:null}:prev);
   }
   async function decideOutreach(decision:"approved"|"denied"){
     if(!outreach)return;setOutreachBusy(true);
-    try{const updated=await api.decideApprovalRequest(`/approval-center/requests/${encodeURIComponent(outreach.request.id)}`,decision);setOutreach(prev=>prev&&{...prev,request:updated,error:null});loadOutreachRequests()}
-    catch(e){setOutreach(prev=>prev&&{...prev,error:e instanceof Error?e.message:"decision failed"})}
-    finally{setOutreachBusy(false)}
+    try{const updated=await api.decideApprovalRequest(`/approval-center/requests/${encodeURIComponent(outreach.request.id)}`,decision);if(!scope.active)return;setOutreach(prev=>prev&&{...prev,request:updated,error:null});refresh(true)}
+    catch(e){if(scope.active)setOutreach(prev=>prev&&{...prev,error:e instanceof Error?e.message:"decision failed"})}
+    finally{if(scope.active)setOutreachBusy(false)}
   }
   const [selected,setSelected]=useState<Set<string>>(new Set());const [skippedNote,setSkippedNote]=useState<string|null>(null);
   const [command,setCommand]=useState("");const [preview,setPreview]=useState<{id:string;intent:string;read_only:boolean;confidence:number}|null>(null);
@@ -72,7 +74,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     let controller:AbortController|null=null;let readId=0;
     setView(null);setKpis([]);setModules([]);setBlockers([]);setApprovals([]);setDigest(null);setSnapshot(null);
     setRerunCard(null);setOutreachRequests([]);setDrilldown(null);setRerunApproval(null);setOutreach(null);
-    setSelected(new Set());setPreview(null);setFreshness("loading");setLastUpdated(null);setError(null);
+    setOptionalErrors({});setRerunBusy(false);setOutreachBusy(false);setSkippedNote(null);setCommand("");setSelected(new Set());setPreview(null);setFreshness("loading");setLastUpdated(null);setError(null);
     const run=async(afterAction=false):Promise<void>=>{
       if(!active)return;
       if(running){if(afterAction)queued=true;return;}
@@ -88,8 +90,22 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
           if(!valid())break;
           setView(v);setKpis(k);setModules(m);setBlockers(b);setApprovals(a);setDigest(d);setSnapshot(s);
           completedAt=Date.now();setError(null);setFreshness("current");setLastUpdated(new Date(completedAt));
-          api.rerunSchedules(abort.signal).then(value=>{if(valid())setRerunCard(value)},()=>{if(valid())setRerunCard(null)});
-          api.approvalRequests({status:"pending",module_id:OUTREACH_MODULE_ID},abort.signal).then(value=>{if(valid())setOutreachRequests(value)},()=>{if(valid())setOutreachRequests([])});
+          // Optional cards have independent deadlines and visible failures. They
+          // never extend the primary fetch deadline or become primary proof.
+          const optional=async<T,>(name:string,read:(signal:AbortSignal)=>Promise<T>,publish:(value:T)=>void,clear:()=>void)=>{
+            const child=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
+            let stop!:()=>void;
+            const cancelled=new Promise<never>((_,reject)=>{stop=()=>{child.abort();reject(new Error("Obsolete dashboard read"))}});
+            abort.signal.addEventListener("abort",stop,{once:true});
+            try{
+              const deadline=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{child.abort();reject(new Error(`${name} fetch timed out after 10 seconds`))},10000)});
+              const value=await Promise.race([read(child.signal),deadline,cancelled]);
+              if(valid()){publish(value);setOptionalErrors(previous=>{const next={...previous};delete next[name];return next})}
+            }catch(e){if(valid()){clear();setOptionalErrors(previous=>({...previous,[name]:e instanceof Error?e.message:`${name} unavailable`}))}}
+            finally{if(timer!==undefined)clearTimeout(timer);abort.signal.removeEventListener("abort",stop)}
+          };
+          void optional("Scheduled re-runs",signal=>api.rerunSchedules(signal),setRerunCard,()=>setRerunCard(null));
+          void optional("Outreach requests",signal=>api.approvalRequests({status:"pending",module_id:OUTREACH_MODULE_ID},signal),setOutreachRequests,()=>setOutreachRequests([]));
         }catch(e){
           abort.abort();if(active&&id===readId){setFreshness(completedAt===null?"unavailable":"stale");setError(e instanceof Error?e.message:"dashboard refresh failed")}
         }finally{if(timeout!==undefined)clearTimeout(timeout)}
@@ -101,11 +117,11 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     const age=window.setInterval(()=>{if(completedAt!==null&&Date.now()-completedAt>=60000)setFreshness("stale")},1000);
     return()=>{active=false;readId++;controller?.abort();window.clearInterval(poll);window.clearInterval(age)};
   },[api,apiBase]);
-  async function submitCommand(e:FormEvent){e.preventDefault();if(!command.trim())return;setPreview(await api.preview(command))}
-  async function runCommand(){if(!preview)return;await api.execute(preview.id);setPreview(null);setCommand("");refresh(true)}
-  async function decideOne(id:string,approve:boolean){await api.decide(id,approve);refresh(true)}
+  async function submitCommand(e:FormEvent){e.preventDefault();if(!command.trim())return;const value=await api.preview(command);if(scope.active)setPreview(value)}
+  async function runCommand(){if(!preview)return;await api.execute(preview.id);if(!scope.active)return;setPreview(null);setCommand("");refresh(true)}
+  async function decideOne(id:string,approve:boolean){await api.decide(id,approve);if(scope.active)refresh(true)}
   async function decideBulk(approve:boolean){
-    const result=await api.bulkDecide([...selected],approve);
+    const result=await api.bulkDecide([...selected],approve);if(!scope.active)return;
     setSkippedNote(result.skipped.length?`${result.decided.length} decided; skipped: ${result.skipped.map(s=>`${s.id} (${s.reason})`).join(", ")}`:null);
     setSelected(new Set());refresh(true);
   }
@@ -113,14 +129,14 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
   async function moveWidget(id:string,direction:-1|1){
     if(!view)return;const widgets=[...view.widgets];const i=widgets.findIndex(w=>w.id===id);const j=i+direction;
     if(i<0||j<0||j>=widgets.length)return;[widgets[i],widgets[j]]=[widgets[j],widgets[i]];
-    widgets.forEach((w,idx)=>w.position=idx);setView(await api.saveView(widgets));
+    const value=await api.saveView(widgets.map((w,idx)=>({...w,position:idx})));if(scope.active)setView(value);
   }
-  async function toggleWidget(id:string){if(!view)return;setView(await api.saveView(view.widgets.map(w=>w.id===id?{...w,visible:!w.visible}:w)))}
+  async function toggleWidget(id:string){if(!view)return;const value=await api.saveView(view.widgets.map(w=>w.id===id?{...w,visible:!w.visible}:w));if(scope.active)setView(value)}
   const alerts=(snapshot?.data?.alerts??[]).slice(-8).reverse();
   const sections:Record<string,()=>React.JSX.Element|null>={
     rerun_schedules:()=><RerunScheduleCard card={rerunCard} onOpenApproval={openRerunApproval}/>,
-    kpi_card:()=><section key="kpis"><h2 className="text-lg font-semibold">KPIs</h2><div className="mt-2 grid gap-3 md:grid-cols-3 xl:grid-cols-4">{kpis.map(k=><button key={k.id} onClick={()=>api.kpiEvidence(k.id).then(setDrilldown)} className="rounded-xl bg-slate-900 p-4 text-left hover:bg-slate-800" title={k.definition}><p className="text-xs text-slate-400">{k.label}</p><strong className="text-2xl">{k.value}<span className="ml-1 text-xs font-normal text-slate-500">{k.unit!=="count"?k.unit:""}</span></strong><br/><Trend kpi={k}/>{k.evidence_total>0&&<span className="ml-2 text-xs text-cyan-400">{k.evidence_total} rows</span>}</button>)}</div></section>,
-    module_status:()=><section key="modules"><h2 className="text-lg font-semibold">Modules</h2><div className="mt-2 grid gap-2 md:grid-cols-2 xl:grid-cols-3">{modules.map(m=><button key={m.module_id} onClick={()=>api.drilldown("module",String(m.module_id)).then(setDrilldown)} className="rounded-xl bg-slate-900 p-3 text-left hover:bg-slate-800"><div className="flex justify-between"><strong className="text-sm">{m.module_id}. {m.name}</strong><span className={m.implemented?"text-xs text-emerald-400":"text-xs text-slate-500"}>{m.implemented?"implemented":"planned"}</span></div><p className="mt-1 text-xs text-slate-400">agent <span className={m.agent?agentStyle[m.agent.state]:"text-slate-500"}>{m.agent?m.agent.state:"none"}</span> · {m.pending_approvals} approvals · {m.events_24h} events/24h · {m.open_blockers} blockers</p></button>)}</div></section>,
+    kpi_card:()=><section key="kpis"><h2 className="text-lg font-semibold">KPIs</h2><div className="mt-2 grid gap-3 md:grid-cols-3 xl:grid-cols-4">{kpis.map(k=><button key={k.id} onClick={()=>api.kpiEvidence(k.id).then(value=>{if(scope.active)setDrilldown(value)})} className="rounded-xl bg-slate-900 p-4 text-left hover:bg-slate-800" title={k.definition}><p className="text-xs text-slate-400">{k.label}</p><strong className="text-2xl">{k.value}<span className="ml-1 text-xs font-normal text-slate-500">{k.unit!=="count"?k.unit:""}</span></strong><br/><Trend kpi={k}/>{k.evidence_total>0&&<span className="ml-2 text-xs text-cyan-400">{k.evidence_total} rows</span>}</button>)}</div></section>,
+    module_status:()=><section key="modules"><h2 className="text-lg font-semibold">Modules</h2><div className="mt-2 grid gap-2 md:grid-cols-2 xl:grid-cols-3">{modules.map(m=><button key={m.module_id} onClick={()=>api.drilldown("module",String(m.module_id)).then(value=>{if(scope.active)setDrilldown(value)})} className="rounded-xl bg-slate-900 p-3 text-left hover:bg-slate-800"><div className="flex justify-between"><strong className="text-sm">{m.module_id}. {m.name}</strong><span className={m.implemented?"text-xs text-emerald-400":"text-xs text-slate-500"}>{m.implemented?"implemented":"planned"}</span></div><p className="mt-1 text-xs text-slate-400">agent <span className={m.agent?agentStyle[m.agent.state]:"text-slate-500"}>{m.agent?m.agent.state:"none"}</span> · {m.pending_approvals} approvals · {m.events_24h} events/24h · {m.open_blockers} blockers</p></button>)}</div></section>,
     blockers:()=>blockers.length?<section key="blockers"><h2 className="text-lg font-semibold">Blockers ({blockers.length})</h2><ul className="mt-2 space-y-2">{blockers.map(b=><li key={b.id} className={`rounded-xl border-l-4 bg-slate-900 p-3 ${severityStyle[b.severity]}`}><p className="text-sm">{b.summary}</p><p className="mt-1 text-xs text-slate-400">{b.recommended_action}</p></li>)}</ul></section>:null,
     alerts:()=>alerts.length?<section key="alerts"><h2 className="text-lg font-semibold">Alerts</h2><ul className="mt-2 space-y-1">{alerts.map(a=><li key={a.event_id} className="rounded bg-slate-900 p-2 text-sm"><span className={`mr-2 text-xs uppercase ${a.severity==="critical"?"text-red-400":"text-amber-300"}`}>{a.severity}</span>{a.message}<span className="ml-2 text-xs text-slate-500">{new Date(a.occurred_at).toLocaleString()}</span></li>)}</ul></section>:null,
     digest:()=>digest?<section key="digest" className="rounded-xl bg-slate-900 p-4"><h2 className="text-lg font-semibold">Digest</h2>{digest.sections.map(sec=><div key={sec.title} className="mt-3"><h3 className="text-sm font-semibold text-cyan-300">{sec.title}</h3><ul className="mt-1 list-inside list-disc text-sm text-slate-300">{sec.lines.slice(0,8).map((l,i)=><li key={i}>{l}</li>)}</ul></div>)}</section>:null,
@@ -134,6 +150,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
   return <main className="space-y-5 bg-slate-950 p-6 text-white">
     <header className="flex items-center justify-between"><div><p className="text-xs text-cyan-400">MODULE 16</p><h1 className="text-2xl font-semibold">Executive Dashboard</h1></div><div className="flex items-center gap-3 text-sm"><button onClick={()=>setEditView(v=>!v)} className="rounded bg-slate-800 px-3 py-1">{editView?"Done":"Layout"}</button><span role="status" className={freshness==="current"?"text-emerald-400":"text-amber-400"}>{freshness==="current"?"Updated":freshness==="stale"?"Stale data":freshness==="loading"?"Loading":"Unavailable"}{lastUpdated&&<span className="ml-2 text-xs text-slate-400">Fetched {lastUpdated.toLocaleTimeString()}</span>}</span></div></header>
     <p className="text-xs text-slate-400">Fetch status only. Source data freshness is not verified.</p>
+    {Object.entries(optionalErrors).map(([name,message])=><p key={name} className="rounded bg-amber-950 p-2 text-sm text-amber-300">{name} unavailable: {message}</p>)}
     {error&&<p className="rounded bg-red-950 p-2 text-sm text-red-300">{error}</p>}
     {kpis.length>0&&<Card><CardHeader>KPI trend</CardHeader><CardContent><OperationsChart data={kpis.slice(0,12).map(k=>({time:k.label,value:k.value}))}/></CardContent></Card>}
     {editView&&view&&<section className="rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm"><h2 className="font-semibold">Layout</h2><ul className="mt-2 space-y-1">{[...view.widgets].sort((a,b)=>a.position-b.position).map(w=><li key={w.id} className="flex items-center gap-2"><button onClick={()=>moveWidget(w.id,-1)} className="rounded bg-slate-800 px-2">Up</button><button onClick={()=>moveWidget(w.id,1)} className="rounded bg-slate-800 px-2">Down</button><label className="flex items-center gap-1"><input type="checkbox" checked={w.visible} onChange={()=>toggleWidget(w.id)}/>{w.kind}{w.kpi_id?`: ${w.kpi_id}`:""}</label></li>)}</ul></section>}
