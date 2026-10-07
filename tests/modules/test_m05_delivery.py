@@ -299,3 +299,28 @@ def test_approval_owner_and_relationship_bindings_reject_before_sender(field,val
     with pytest.raises(DeliveryApprovalError,match="re-approval"):
         asyncio.run(delivery.send_approved(draft.id))
     assert sender.calls==[] and service.get_message(draft.id).status=="approved"
+
+
+def test_unknown_reconciliation_requires_positive_matching_source_receipt_and_never_retries():
+ now=datetime(2026,9,20,tzinfo=timezone.utc)
+ service,approvals,contact,campaign,draft,approval=make_world(now)
+ sender=FakeSender(fail=True);delivery=DeliveryService(service,gate_for(approval),sender)
+ with pytest.raises(DeliverySendError):asyncio.run(delivery.send_approved(draft.id))
+ class Inspector:
+  response=None
+  async def lookup(self,**scope):
+   assert scope['message_id']==draft.id and scope['recipient']=='rao@example.edu'
+   return {**scope,**self.response} if self.response else None
+ inspector=Inspector()
+ assert asyncio.run(delivery.reconcile_unknown(draft.id,inspector))['status']=='delivery_unknown'
+ inspector.response={'status':'sent','provider_message_id':'source-id','recipient':'wrong@example.edu','subject':'Hello','body':'Body text'}
+ assert asyncio.run(delivery.reconcile_unknown(draft.id,inspector))['status']=='delivery_unknown'
+ inspector.response={'status':'not_sent'}
+ assert asyncio.run(delivery.reconcile_unknown(draft.id,inspector))['status']=='delivery_unknown'
+ with pytest.raises(DeliveryApprovalError):asyncio.run(delivery.send_approved(draft.id))
+ inspector.response={'status':'sent','provider_message_id':'source-id','recipient':'rao@example.edu','subject':'Hello','body':'Body text'}
+ result=asyncio.run(delivery.reconcile_unknown(draft.id,inspector))
+ assert result['status']=='sent' and result['provider_message_id']=='source-id'
+ assert len(sender.calls)==1 and service.get_message(draft.id).status=='sent'
+ assert delivery.delivery_audit(draft.id)[-1].event=='delivery_reconciled'
+ with pytest.raises(DeliveryApprovalError):asyncio.run(delivery.send_approved(draft.id))

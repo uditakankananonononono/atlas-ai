@@ -211,9 +211,37 @@ class DeliveryService:
         except Exception as exc:
             raise DeliverySendError("sender returned a receipt but persistence failed; reconcile before any retry") from exc
 
+    async def reconcile_unknown(self,message_id:str,inspector)->dict[str,Any]:
+        """Internal source-inspector seam. Never resends/reopens a claim.
+
+        Inspector must be trusted application wiring to the original sending
+        account, not an arbitrary incoming message or caller-provided receipt.
+        No live inspector or public mutation route is supplied here.
+        """
+        message=self.campaigns.get_message(message_id)
+        if message.status not in {'sending','delivery_unknown'}:
+            raise DeliveryApprovalError('only unresolved claimed delivery may be reconciled')
+        contact=self.campaigns._contact(message.contact_id)
+        scope={'tenant_id':self.campaigns.tenant_id,'message_id':message.id,
+            'approval_id':message.approval_id,'recipient':str(contact.email),
+            'subject':message.subject,'body':message.body}
+        receipt=await inspector.lookup(**scope)
+        matched=(isinstance(receipt,dict) and receipt.get('status')=='sent'
+            and bool(receipt.get('provider_message_id'))
+            and all(receipt.get(k)==scope[k] for k in ('tenant_id','message_id','approval_id','recipient','subject','body')))
+        if not matched:
+            return {'message_id':message.id,'status':message.status,'reconciled':False,
+                'boundary':'missing/mismatched/negative lookup cannot prove retry safe; immutable claim retained'}
+        event=MessageEvent(message_id=message.id,event='delivery_reconciled',at=self.campaigns._clock(),
+            details={'provider_message_id':receipt['provider_message_id'],'source':'injected sending-account inspector'})
+        saved=self.campaigns.campaigns.reconcile_delivery(message,event)
+        if saved is None:raise DeliveryApprovalError('delivery changed during source lookup; reload')
+        return {'message_id':saved.id,'status':saved.status,'reconciled':True,
+            'provider_message_id':receipt['provider_message_id']}
+
     def delivery_audit(self, message_id: str) -> list[MessageEvent]:
         """Every delivery-relevant audit event for one message."""
-        relevant = {"sent", "failed", "bounced", "blocked_payload_mismatch", "delivery_claimed", "delivery_unknown"}
+        relevant = {"sent", "failed", "bounced", "blocked_payload_mismatch", "delivery_claimed", "delivery_unknown", "delivery_reconciled"}
         return [
             event
             for event in self.campaigns.message_events(message_id)
