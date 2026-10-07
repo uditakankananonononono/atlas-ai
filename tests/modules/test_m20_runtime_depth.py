@@ -2452,3 +2452,48 @@ def test_failed_initial_task_write_never_publishes_runnable_goal(monkeypatch):
  assert repo.list_tasks()==[]
  assert runtime.scheduler.active()==[]
  assert runtime.step().state=='idle'
+
+
+@pytest.mark.parametrize('failure',['cleanup','final_task_write'])
+def test_close_retry_finishes_after_retrospective_commit(monkeypatch,failure):
+ runtime,repo=make_runtime();context=runtime.submit_goal('fixture close',run_immediately=False)
+ runtime.working_memory.put(MemoryChunk(type=ChunkType.FACT,content='fixture residue'),partition=context.id)
+ if failure=='cleanup':
+  original=runtime.working_memory.clear_partition
+  def fail(*args,**kwargs):raise RuntimeError('fixture close cleanup unavailable')
+  monkeypatch.setattr(runtime.working_memory,'clear_partition',fail)
+ else:
+  original=repo.save_task;calls=[]
+  def fail(value):
+   calls.append(value.id)
+   if len(calls)>1:raise RuntimeError('fixture final task write unavailable')
+   return original(value)
+  monkeypatch.setattr(repo,'save_task',fail)
+ with pytest.raises(RuntimeError):runtime.close(context.id)
+ committed=repo.list_retrospectives(task_id=context.id)
+ assert len(committed)==1
+ if failure=='cleanup':monkeypatch.setattr(runtime.working_memory,'clear_partition',original)
+ else:monkeypatch.setattr(repo,'save_task',original)
+ result=runtime.close(context.id)
+ assert result['idempotent'] is True
+ assert result['retrospective']['id']==committed[0].id
+ assert repo.load_task(context.id).state==TaskState.CANCELLED
+ assert repo.list_chunks(partition=context.id)==[]
+ assert runtime.scheduler.get(context.id) is None
+
+
+def test_close_retry_after_restart_cleans_residue_without_second_report(monkeypatch):
+ runtime,repo=make_runtime();context=runtime.submit_goal('fixture restart close',run_immediately=False)
+ runtime.working_memory.put(MemoryChunk(type=ChunkType.FACT,content='residue'),partition=context.id)
+ original=runtime.working_memory.clear_partition
+ def fail(*args,**kwargs):raise RuntimeError('fixture cleanup unavailable')
+ monkeypatch.setattr(runtime.working_memory,'clear_partition',fail)
+ with pytest.raises(RuntimeError):runtime.close(context.id)
+ monkeypatch.setattr(runtime.working_memory,'clear_partition',original)
+ restarted=make_runtime(hydrate_repo=repo)
+ assert restarted.scheduler.get(context.id) is None
+ assert restarted.close(context.id)['idempotent'] is True
+ assert repo.load_task(context.id).state==TaskState.CANCELLED
+ assert len(repo.list_retrospectives(task_id=context.id))==1
+ assert restarted.working_memory.focused(partition=context.id)==[]
+ assert repo.list_chunks(partition=context.id)==[]

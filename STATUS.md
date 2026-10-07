@@ -1426,3 +1426,9 @@ This is local regression, not production, model-quality or broad cognition accep
 One retained original canary showed a failed initial task write left an uncommitted pending goal in the runnable scheduler. Initial task persistence now precedes scheduler publication, so rejected creation cannot run on a later tick.
 
 Evidence: 179 runtime tests passed with one warning; 2,520 M20 adjacent tests passed with two warnings in 59.81 seconds. Test verifies SQL absence, empty active scheduler and idle next tick. Before obtaining the retained real failure, a fixture referenced a nonexistent supervision key and was corrected to scheduler.active. This is initial-task write visibility, not atomic planning/memory creation, later execution rollback or ambiguous-commit recovery. Full 10,186 source 7c805da predates this change. No model trial, external action, account change or migration.
+
+## Retry local close cleanup after retrospective commit
+
+Two failing canaries showed a cleanup or final-task-write failure after retrospective commit caused every later close to return idempotent without finishing cleanup or durable cancellation. Both initial close and repeated close now run local completion cleanup, save terminal task state, then remove the scheduler entry. Existing reports are reused, not regenerated.
+
+Evidence: 182 runtime tests passed with one warning, including restart recovery with one stored report and no residual chunks; 2,522 M20 adjacent tests passed with two warnings in 57.45 seconds before the supplemental restart check. Two original failures retained in audits/rebuild-20261007/close-retry-before.log. This is explicit local close retry, not a cross-store atomic close, automatic background recovery, concurrent close serialization or external-effect reconciliation. Full 10,186 source 7c805da predates this and initial-task visibility. No model trial, external action, account change or migration.

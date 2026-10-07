@@ -580,6 +580,7 @@ class GCWRuntime:
             return None
         existing = self.repo.list_retrospectives(task_id=task_id)
         if existing:
+            self._finish_close(context)
             return {"retrospective": existing[0].model_dump(mode="json"), "idempotent": True}
         self._persist_context(context)
         traces = self.repo.list_traces(task_id=task_id)
@@ -642,7 +643,18 @@ class GCWRuntime:
             task_id, went_well=went_well, went_poorly=went_poorly, lessons=lessons,
             execution_report=report,
         )
-        self.working_memory.clear_partition(task_id)
-        self.scheduler.remove(task_id)
-        self._persist_context(context)
+        self._finish_close(context)
         return {"retrospective": retro.model_dump(mode="json"), "idempotent": False}
+
+    def _finish_close(self, context: TaskContext) -> None:
+        """Retry local close cleanup even when its retrospective already committed."""
+        if context.state in (TaskState.PENDING, TaskState.PLANNING, TaskState.RUNNING,
+                              TaskState.RUMINATING, TaskState.WAITING_APPROVAL, TaskState.WAITING_USER):
+            context.state = TaskState.CANCELLED
+            for node in context.plan:
+                if node.state not in (TaskState.SUCCEEDED, TaskState.FAILED, TaskState.CANCELLED):
+                    node.state = TaskState.CANCELLED
+                    node.approval_id = None
+        self.working_memory.clear_partition(context.id)
+        self._persist_context(context)
+        self.scheduler.remove(context.id)
