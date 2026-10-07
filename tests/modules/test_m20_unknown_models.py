@@ -52,3 +52,19 @@ def test_runtime_api_persists_model_unknown_and_restart_manualrun_holds(tmp_path
  engine.dispose();fresh_engine=create_engine(url);fresh=GCWRuntime(GCWRepository(fresh_engine),planner_model=ma.FreeFirstPlannerModel(),executive_model=ma.FreeFirstExecutiveModel())
  result=fresh.run_task(ctx.id);assert result.state==TaskState.BLOCKED and result.model_outcome_unknown and len(calls)==1
  fresh_engine.dispose()
+
+def test_runtime_reflection_unknown_persists_and_holds_after_restart(tmp_path,monkeypatch):
+ from sqlalchemy import create_engine
+ from app.modules.m20_general_cognitive_worker.sql_repository import GCWRepository
+ from app.modules.m20_general_cognitive_worker.runtime import GCWRuntime
+ from app.modules.m20_general_cognitive_worker.schemas import ToolSpec,Risk
+ calls=bind(monkeypatch);effects=[];url=f'sqlite:///{tmp_path / "reflection.db"}'
+ engine=create_engine(url);repo=GCWRepository(engine);repo.create_schema();runtime=GCWRuntime(repo,executive_model=ma.FreeFirstExecutiveModel())
+ async def failed_read(args):effects.append(args);raise RuntimeError('fixture read failure')
+ runtime.tools.register(ToolSpec(name='fixture_read',description='fake read',risk=Risk.READ,max_retries=1),failed_read)
+ ctx=TaskContext(goal='fixture',plan=[PlanNode(title='fixture',tool='fixture_read',max_attempts=1)]);repo.save_task(ctx)
+ result=runtime.run_task(ctx.id)
+ assert result.state==TaskState.BLOCKED and repo.load_task(ctx.id).model_outcome_unknown and len(calls)==1 and len(effects)==1
+ engine.dispose();fresh_engine=create_engine(url);fresh=GCWRuntime(GCWRepository(fresh_engine),executive_model=ma.FreeFirstExecutiveModel())
+ result=fresh.run_task(ctx.id);assert result.state==TaskState.BLOCKED and result.model_outcome_unknown and len(calls)==1
+ fresh_engine.dispose()
