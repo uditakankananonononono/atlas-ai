@@ -408,3 +408,21 @@ def test_declared_logprobs_shape_violation_held_unknown_on_success_path(bad_logp
  executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
  with pytest.raises(ProviderOutcomeUnknown):asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
  assert calls==['first']
+
+@pytest.mark.parametrize('bad_elements',[[0.5],[float('nan')],[float('inf')],[float('-inf')],[True],['x'],[10**1000],[-10**1000]])
+def test_invalid_carried_logprob_values_held_unknown_on_success_path(bad_elements):
+ # Repair pin, supplied-confidence path only: a valid supplied confidence previously
+ # carried logprob evidence with invalid values (positive, nonfinite, boolean, wrong
+ # types, unrepresentable magnitudes) into the success result. Carried evidence on this
+ # path now follows the same validity rule the evaluation path already applies;
+ # violations are held as ProviderOutcomeUnknown after the first call, with no fallback
+ # invocation. The absent-confidence path is unchanged: invalid evidence there remains
+ # ConfidenceUnavailable review, pinned by the response-provenance suite.
+ from app.core.providers import ProviderOutcomeUnknown
+ calls=[]
+ class Provider:
+  async def generate(self,*,model_id,prompt,context):
+   calls.append(model_id);return ModelResult('fixture',model_id,.95,logprobs=bad_elements)
+ executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
+ with pytest.raises(ProviderOutcomeUnknown):asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
+ assert calls==['first']

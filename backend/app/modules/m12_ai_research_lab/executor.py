@@ -54,6 +54,8 @@ class ResearchExecutor:
                 raise ProviderOutcomeUnknown("Returned model usage is not the declared nonnegative string-to-integer mapping; no automatic retry")
             if type(result.logprobs) is not list:
                 raise ProviderOutcomeUnknown("Returned model logprob evidence is not the declared list shape; no automatic retry")
+            if result.confidence is not None and any(type(x) not in (int,float) or x>0 or x < -1e308 or not isfinite(x) for x in result.logprobs):
+                raise ProviderOutcomeUnknown("Returned model logprob evidence contains invalid values; no automatic retry")
             try:result=replace(result,metadata=dict(result.metadata),usage=dict(result.usage),logprobs=list(result.logprobs))
             except Exception as error:raise ProviderOutcomeUnknown("Returned model result could not be copied safely; no automatic retry") from error
             result.metadata["requested_model_id"]=model.model_id
