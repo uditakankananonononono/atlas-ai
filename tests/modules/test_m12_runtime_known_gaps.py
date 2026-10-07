@@ -301,3 +301,30 @@ def test_reported_model_identity_mismatch_currently_accepted():
  assert calls==['first']
  assert result.model_id=='substituted-unrequested-model'
  assert result.metadata['requested_model_id']=='first'
+
+def test_non_dict_usage_currently_accepted_without_shape_validation():
+ # Characterization, not usage-schema advice: the executor copies usage only when it is
+ # already a dict and lets any other shape through unvalidated, so a provider returning
+ # a list (or any custom shape) is accepted as success. Usage field completeness is not
+ # established here.
+ class Provider:
+  async def generate(self,*,model_id,prompt,context):
+   return ModelResult('fixture',model_id,.95,usage=['not','a','dict'])
+ executor=ResearchExecutor(ModelRouter(models()),Provider(),RetryPolicy(base_delay_seconds=0))
+ result=asyncio.run(executor.execute(RouteRequest(TaskType.RESEARCH,100,0,500,'fixture'),'fixture'))
+ assert result.model_id=='first' and result.usage==['not','a','dict']
+
+def test_per_request_budget_only_no_aggregate_spend_tracking():
+ # Characterization, not billing advice: budget is enforced per request inside router
+ # scoring; ResearchExecutor keeps no cumulative spend state, so repeated executions each
+ # within the per-request budget all invoke the provider. Aggregate spending limits are
+ # not established here.
+ calls=[]
+ class Provider:
+  async def generate(self,*,model_id,prompt,context):
+   calls.append(model_id);return ModelResult('fixture',model_id,.95,usage={'input_tokens':900,'output_tokens':100})
+ priced=[ModelCapability('paidish',frozenset({TaskType.RESEARCH}),1000,5,100,.9)]
+ executor=ResearchExecutor(ModelRouter(priced),Provider(),RetryPolicy(base_delay_seconds=0))
+ req=RouteRequest(TaskType.RESEARCH,1000,6,500,'fixture')  # estimated 5 cents per call, budget 6
+ for _ in range(3):asyncio.run(executor.execute(req,'fixture'))
+ assert calls==['paidish']*3
