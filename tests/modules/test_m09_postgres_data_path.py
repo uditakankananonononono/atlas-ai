@@ -13,7 +13,8 @@ SCRIPT = textwrap.dedent('''
     import json
     from app.modules.m09_knowledge_workspace.repository import SqlGraphRepository
     from app.modules.m09_knowledge_workspace.service import ConflictError, Service
-    from app.modules.m09_knowledge_workspace.schemas import NodeCreate, NodeUpdate, EdgeCreate
+    from app.modules.m09_knowledge_workspace.schemas import NodeCreate, NodeUpdate, EdgeCreate, Edge, Relationship
+    from datetime import datetime, timezone
     a_svc = Service(SqlGraphRepository("tenant-a", "actor-a"))
     b_svc = Service(SqlGraphRepository("tenant-b", "actor-b"))
     a = a_svc.create_node(NodeCreate(node_type="note", title="PG paris plan", body="A note about visiting Paris."))
@@ -33,13 +34,25 @@ SCRIPT = textwrap.dedent('''
     try:
         a_svc.neighborhood(b_node.id, depth=1)
         a_sees_b = True
-    except Exception:
+    except LookupError as error:
+        assert error.args == (b_node.id,), error
         a_sees_b = False
     try:
         b_svc.neighborhood(node_a.id, depth=1)
         b_sees_a = True
-    except Exception:
+    except LookupError as error:
+        assert error.args == (node_a.id,), error
         b_sees_a = False
+    # Repository-level overlapping IDs make the tenant predicate essential; UUID
+    # generation in Service otherwise hides this leak when tenants have disjoint IDs.
+    foreign_edge = Edge(id="tenant-b-edge", source_id=node_a.id, target_id=node_b.id,
+                        relationship=Relationship.REFERENCES, confidence=1,
+                        created_at=datetime.now(timezone.utc))
+    b_svc.repository.save_edge(foreign_edge)
+    assert {e.id for e in b_svc.repository.edges_for({node_a.id})} == {foreign_edge.id}
+    assert foreign_edge.id not in {e.id for e in a_svc.repository.edges_for({node_a.id})}
+    assert b_svc.repository.edges_for({b_node.id}) == []
+    assert {e.id for e in a_svc.neighborhood(node_a.id).edges} == {e.id for e in hood.edges}
     print(json.dumps({"nodes": len(hood.nodes), "edges": len(hood.edges), "version_after_update": updated.version,
                       "stale_update": stale, "a_nodes": len(a_svc.repository.list_nodes(limit=50)),
                       "b_nodes": len(b_svc.repository.list_nodes(limit=50)), "a_sees_b": a_sees_b, "b_sees_a": b_sees_a}))
