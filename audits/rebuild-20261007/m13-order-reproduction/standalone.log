@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /home/sandbox/atlas-peer-review/peer/../venv/bin/python
+rootdir: /home/sandbox/atlas-peer-review/peer
+configfile: pyproject.toml
+plugins: langsmith-0.14.4, anyio-4.15.1, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+tests/modules/test_m13_source_reconciliation_browser.py::test_actual_browser_source_reconciliation_uses_same_session_and_no_second_click PASSED [100%]
+
+============================== 1 passed in 0.93s ===============================
