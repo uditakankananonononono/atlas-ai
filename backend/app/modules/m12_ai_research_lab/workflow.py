@@ -83,7 +83,9 @@ class DagEngine:
         nodes={n.id:n for n in wf.nodes}; results={}; pending=set(nodes)
         async def execute(n: Node):
             context={"workflow_inputs":dict(inputs),"parents":{d:dict(results[d]) if type(results[d]) is dict else results[d] for d in n.depends_on}}
-            async with self.limit: return await self.runner(n.task,n.config,context)
+            async with self.limit:
+                value=await self.runner(n.task,n.config,context)
+                return dict(value) if type(value) is dict else value
         while pending:
             ready=[nodes[i] for i in sorted(pending) if set(nodes[i].depends_on)<=results.keys()]
             if not ready: raise RuntimeError("DAG made no progress")
