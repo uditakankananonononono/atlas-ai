@@ -90,7 +90,7 @@ def test_catalog_resolves_names_honestly():
 
 def test_free_first_falls_through_to_next_free_route(calls, monkeypatch):
     seen, replies = calls
-    replies["ollama"] = ProviderError("Ollama request failed after retries")
+    replies["ollama"] = ProviderError("Ollama preflight unavailable; no dispatch")
     provider, _, text = asyncio.run(mc.generate_free_first("hi"))
     assert provider == "openai_compat" and text == "ok from openai_compat"
     assert [c["provider"] for c in seen] == ["ollama", "openai_compat"]
@@ -113,13 +113,13 @@ def test_named_inkling_prefers_local_then_free_tier(calls, monkeypatch):
     assert seen[0]["payload"]["model"] == "thinkingmachines/Inkling-Small"
 
 
-def test_inkling_falls_back_to_self_hosted_when_hf_credits_run_out(calls, monkeypatch):
+def test_inkling_holds_dispatched_credit_failure_without_fallback(calls, monkeypatch):
     seen, replies = calls
     monkeypatch.setenv("HF_TOKEN", "hf_test")
     replies["huggingface"] = ProviderError("Huggingface request failed (402)")
-    provider, model, _ = asyncio.run(mc.generate_free_first("hi", "inkling"))
-    assert (provider, model) == ("openai_compat", "inkling")
-    assert [c["provider"] for c in seen] == ["huggingface", "huggingface", "openai_compat"]
+    with pytest.raises(providers.ProviderOutcomeUnknown, match="credits exhausted"):
+        asyncio.run(mc.generate_free_first("hi", "inkling"))
+    assert [c["provider"] for c in seen] == ["huggingface"]
 
 
 def test_hf_credit_exhaustion_message_is_plain(calls, monkeypatch):
