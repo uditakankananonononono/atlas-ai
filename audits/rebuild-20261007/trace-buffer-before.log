@@ -1,0 +1,51 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_committed_trace_buffer_drains_but_task_journal_remains_after_many_workflows _
+
+    def test_committed_trace_buffer_drains_but_task_journal_remains_after_many_workflows():
+     runtime,repo=make_runtime()
+     for i in range(10):
+      task=runtime.submit_goal(f'fixture trace {i}',run_immediately=False)
+      runtime.prepare_supplied_plan(task.id,steps=[{'title':'sum','tool':'csv_summary','arguments':{'csv_text':'amount\n42\n','value_column':'amount'}}])
+      runtime.run_task(task.id)
+>     assert runtime.loop.traces==[]
+E     AssertionError: assert [TraceEntry(i...imezone.utc))] == []
+E       
+E       Left contains 4 more items, first extra item: TraceEntry(id='62b7cb3c-db29-4b1a-806c-5b0505f99088', task_id='cbdf5ac2-2021-4178-8f56-18904618589c', phase='plan', de...pproved', policy_basis='', created_at=datetime.datetime(2026, 10, 7, 12, 23, 16, 658177, tzinfo=datetime.timezone.utc))
+E       Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2079: AssertionError
+___________ test_partial_trace_flush_keeps_only_uncommitted_entries ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7efec0cdf710>
+
+    def test_partial_trace_flush_keeps_only_uncommitted_entries(monkeypatch):
+     runtime,repo=make_runtime();task=runtime.submit_goal('fixture trace flush',run_immediately=False)
+     for i in range(3):runtime.loop._trace('fixture',str(i),task_id=task.id)
+     pending_ids=[t.id for t in runtime.loop.traces]
+     original=repo.save_trace;calls=0
+     def fail_second(trace):
+      nonlocal calls
+      calls+=1
+      if calls==2:raise RuntimeError('fixture write failure')
+      return original(trace)
+     monkeypatch.setattr(repo,'save_trace',fail_second)
+     with pytest.raises(RuntimeError):runtime._persist_context(task)
+>    assert [t.id for t in runtime.loop.traces]==pending_ids[1:]
+E    AssertionError: assert ['c306d960-b0...f418a3e879ce'] == ['fc1ee55a-f4...f418a3e879ce']
+E      
+E      At index 0 diff: 'c306d960-b0f2-49e8-9647-ba2c166cbb54' != 'fc1ee55a-f432-4add-810f-05a2a411bc7c'
+E      Left contains one more item: '2561d634-e2fc-4750-8ef6-f418a3e879ce'
+E      Use -v to get more diff
+
+tests/modules/test_m20_runtime_depth.py:2096: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_committed_trace_buffer_drains_but_task_journal_remains_after_many_workflows
+FAILED tests/modules/test_m20_runtime_depth.py::test_partial_trace_flush_keeps_only_uncommitted_entries
+2 failed, 144 deselected, 1 warning in 1.82s
