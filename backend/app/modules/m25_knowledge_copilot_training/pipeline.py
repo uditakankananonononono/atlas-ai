@@ -227,18 +227,27 @@ class LocalKnowledgePipeline:
                 self._write_version_files(dfd,raw,segments_blob)
                 _os.rename(tmp,target)
             except OSError:
-                self._rmtree_if_owned(tmp,dfd)
+                self._cleanup_attempt(tmp,dfd)
                 raise
             except BaseException:
                 # Unexpected failure while the attempt holds its tmp dir and
                 # BEFORE any memory version claim exists: attempt the same
                 # ownership-checked cleanup (a replaced object is preserved,
                 # never deleted) and propagate. Best-effort, not a completed
-                # rollback.
-                self._rmtree_if_owned(tmp,dfd)
+                # rollback; the cleanup wrapper can never mask the original
+                # failure, so the exception reaching the caller is always
+                # the one that actually failed.
+                self._cleanup_attempt(tmp,dfd)
                 raise
-            rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
+            # The memory claim and the manifest persist are guarded as ONE
+            # region: the base indexes captured below let rollback delete
+            # exactly the slices THIS attempt appended - an unexpected
+            # failure partway through the mutation cannot leave a partial
+            # claim behind and can never touch prior state. Scoped local
+            # boundary, not a multi-statement transaction guarantee.
+            vbase=len(rec.versions); cbase=len(self.chunks); ebase=len(self.edges)
             try:
+                rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append({'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number})
                 self._persist_manifest(rec)
             except (OSError, ManifestOversizeError) as persist_exc:
                 # Persist failed AFTER memory mutation: roll the version state
@@ -252,10 +261,10 @@ class LocalKnowledgePipeline:
                 # memory version claim. An oversize refusal
                 # happens before any manifest mutation, so the recorded
                 # manifest bytes survive.
-                rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
-                self._rmtree_if_owned(target,dfd)
+                del rec.versions[vbase:]; del self.chunks[cbase:]; del self.edges[ebase:]
+                self._cleanup_attempt(target,dfd)
                 try: self._persist_manifest(rec)
-                except (OSError, ManifestOversizeError): pass
+                except BaseException: pass  # best-effort restore rewrite never masks the original failure
                 if isinstance(persist_exc, ManifestOversizeError): raise persist_exc
                 raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
             except BaseException:
@@ -264,8 +273,8 @@ class LocalKnowledgePipeline:
                 # does not record), attempt the ownership-checked removal of
                 # the renamed dir (a replaced object is preserved), and
                 # propagate. Best-effort, not a completed rollback.
-                rec.versions.pop(); del self.chunks[len(self.chunks)-len(new_chunks):]; self.edges.pop()
-                self._rmtree_if_owned(target,dfd)
+                del rec.versions[vbase:]; del self.chunks[cbase:]; del self.edges[ebase:]
+                self._cleanup_attempt(target,dfd)
                 raise
         finally:
             if dfd is not None:
@@ -413,6 +422,15 @@ class LocalKnowledgePipeline:
                     if written<=0: raise OSError(f'short write persisting {name}')
                     view=view[written:]
             finally:_os.close(fd)
+    def _cleanup_attempt(self,path,dfd)->None:
+        # Best-effort wrapper around the ownership-checked cleanup: cleanup
+        # runs during failure handling, so it must NEVER replace the failure
+        # it serves. Any error from the cleanup itself - OSError or an
+        # unexpected exception - is swallowed, leaving the original
+        # exception to reach the caller unchanged. The cleanup stays
+        # ownership-checked and best-effort, never a completed rollback.
+        try: self._rmtree_if_owned(path,dfd)
+        except BaseException: pass
     @staticmethod
     def _rmtree_if_owned(path:Path,dfd)->None:
         # Destructive cleanup only while the pathname still denotes the
