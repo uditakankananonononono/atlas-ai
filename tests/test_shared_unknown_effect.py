@@ -49,3 +49,14 @@ def test_actual_local_shared_http_error_never_invokes_backup(monkeypatch,outcome
   with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','shared'))
   assert calls==['http']
  finally:server.shutdown();thread.join();server.server_close()
+
+@pytest.mark.parametrize('failure',['urlerror','oserror'])
+def test_dispatched_os_transport_failure_is_classified_unknown(monkeypatch,failure):
+ from urllib.error import URLError
+ calls=[]
+ def transport(*args):calls.append('first');raise URLError('fixture') if failure=='urlerror' else OSError('fixture')
+ def backup(*args):calls.append('backup');return {'choices':[{'message':{'content':'backup'}}]}
+ router=Router([InklingLocal('http://fixture.invalid/v1','first',transport=transport),InklingLocal('http://fixture.invalid/v1','backup',transport=backup)])
+ monkeypatch.setattr(shared_model_layer,'atlas_router',lambda:router)
+ with pytest.raises(providers.ProviderOutcomeUnknown) as error:asyncio.run(providers.generate_result('fixture','shared'))
+ assert error.value.outcome=='unknown' and calls==['first']
