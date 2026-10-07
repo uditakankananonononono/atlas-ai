@@ -5,6 +5,7 @@ from app.core.providers import ProviderError, generate_result
 from .models import ModelCapability,ModelResult,TaskType
 from .router import ModelRouter
 from .service import Service
+from .executor import ResearchExecutor
 from .workflow import DagEngine
 from .response_json import model_result_fields
 
@@ -60,7 +61,7 @@ def build_dag_engine(service):
  def validate(node,inputs):
   data=request(node.task,node.config,inputs)
   # Inspect the injected executor catalog, never probe providers during validation.
-  if isinstance(service,Service):
+  if isinstance(service,ResearchExecutor):
    from .router import NoEligibleModel
    try:service.router.route(RouteRequest(data.task_type,data.output_tokens,data.budget_cents,data.latency_tolerance_ms,inputs['tenant_id']))
    except NoEligibleModel as error:raise WorkflowValidationError(f"node {node.id}: no eligible model") from error
