@@ -1,5 +1,5 @@
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime,timezone
 from sqlalchemy import JSON,Boolean,DateTime,Float,Integer,String,Text,UniqueConstraint,func,select,update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
@@ -50,9 +50,13 @@ class RoadmapRow(Base):
 def _work_item(r):return WorkItemOut(id=r.id,title=r.title,item_type=r.item_type,status=r.status,estimate=r.estimate,reach=r.reach,impact=r.impact,confidence=r.confidence,effort=r.effort,value=r.value,rank=r.rank,sprint_id=r.sprint_id,roadmap_id=r.roadmap_id,planned_start=r.planned_start,planned_end=r.planned_end,created_at=r.created_at,updated_at=r.updated_at,completed_at=r.completed_at)
 def _sprint(r):return SprintOut(id=r.id,name=r.name,goal=r.goal,start=r.start,end=r.end,capacity_points=r.capacity_points,status=r.status,closed_at=r.closed_at)
 def _experiment(r):return ExperimentOut(id=r.id,name=r.name,hypothesis=r.hypothesis,metric=r.metric,kind=r.kind,variants=[VariantOut(**v) for v in r.variants],status=r.status,created_at=r.created_at,updated_at=r.updated_at)
-def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=r.occurred_at)
-def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=r.created_at,expires_at=r.expires_at,reviewed_at=r.reviewed_at)
-def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=r.expires_at,created_at=r.created_at)
+def _aware(value):
+    # sqlite drops the tzinfo that DateTime(timezone=True) columns carried at
+    # write time (UTC); reattach it on read so tz-aware comparisons work.
+    return value.replace(tzinfo=timezone.utc) if value is not None and value.tzinfo is None else value
+def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=_aware(r.occurred_at))
+def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=_aware(r.created_at),expires_at=_aware(r.expires_at),reviewed_at=_aware(r.reviewed_at))
+def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=_aware(r.expires_at),created_at=_aware(r.created_at))
 class SqlDashboardRepository:
     def __init__(self,tenant_id,actor_id,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def append_event(self,e:Event):
@@ -81,7 +85,7 @@ class SqlDashboardRepository:
         with self.sessions.begin() as db:
             r=db.get(SnapshotRow,self.tenant_id)
             if not r:r=SnapshotRow(tenant_id=self.tenant_id,version=0,last_sequence=0,data={"metrics":{},"timeline":[],"alerts":[],"freshness":{}},generated_at=datetime.utcnow());db.add(r);db.flush()
-            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=r.generated_at)
+            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=_aware(r.generated_at))
     def pending_approvals(self):
         with self.sessions() as db:return [_approval(r) for r in db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value).order_by(ApprovalRow.created_at))]
     def save_approval(self,a:Approval):
@@ -111,7 +115,7 @@ class SqlDashboardRepository:
             else:db.add(AgentStatusRow(tenant_id=self.tenant_id,module_id=data.module_id,agent_id=data.agent_id,state=data.state.value,current_task=data.current_task,detail=data.detail,last_heartbeat=at))
         return AgentStatus(**data.model_dump(),last_heartbeat=at)
     def list_agents(self):
-        with self.sessions() as db:return [AgentStatus(module_id=r.module_id,agent_id=r.agent_id,state=AgentState(r.state),current_task=r.current_task,detail=r.detail,last_heartbeat=r.last_heartbeat) for r in db.scalars(select(AgentStatusRow).where(AgentStatusRow.tenant_id==self.tenant_id).order_by(AgentStatusRow.module_id))]
+        with self.sessions() as db:return [AgentStatus(module_id=r.module_id,agent_id=r.agent_id,state=AgentState(r.state),current_task=r.current_task,detail=r.detail,last_heartbeat=_aware(r.last_heartbeat)) for r in db.scalars(select(AgentStatusRow).where(AgentStatusRow.tenant_id==self.tenant_id).order_by(AgentStatusRow.module_id))]
     def approvals_reviewed_since(self,since):
         with self.sessions() as db:return [_approval(r) for r in db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.reviewed_at.isnot(None),ApprovalRow.reviewed_at>=since).order_by(ApprovalRow.reviewed_at))]
     def events_between(self,start,end,limit=2000):
@@ -130,7 +134,7 @@ class SqlDashboardRepository:
             if not r:r=SnapshotRow(tenant_id=self.tenant_id,version=0,last_sequence=0,data={},generated_at=datetime.utcnow());db.add(r);db.flush()
             assert last_sequence>=r.last_sequence,"snapshot projection cannot move backwards"
             r.data=data;r.last_sequence=last_sequence;r.version=r.version+1;r.generated_at=datetime.utcnow();db.flush()
-            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=r.generated_at)
+            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=_aware(r.generated_at))
     def record_kpi_points(self,points,at):
         with self.sessions.begin() as db:
             for kpi_id,window_hours,value in points:db.add(KpiPointRow(tenant_id=self.tenant_id,kpi_id=kpi_id,window_hours=window_hours,value=float(value),recorded_at=at))
