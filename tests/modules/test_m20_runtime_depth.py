@@ -1862,3 +1862,22 @@ def test_read_retry_refuses_effectful_failed_step_and_preserves_evidence():
     runtime._persist_context(task)
     with pytest.raises(ValueError,match='effectful'):runtime.prepare_read_step_retry(task.id,'a',arguments={})
     assert repo.load_task(task.id).plan[0].state==TaskState.FAILED
+
+
+def test_default_rule_check_derives_review_prerequisites_with_full_proof():
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('check supplied release prerequisites',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[{'title':'check release rules','tool':'rule_check',
+        'arguments':{'facts':['tests_passed','owner_reviewed'], 'rules':[
+            {'id':'r1','if':['tests_passed'],'then':'technically_ready'},
+            {'id':'r2','if':['technically_ready','owner_reviewed'],'then':'release_ready'}],
+            'query_atoms':['release_ready','approved_payment']}}])
+    result=runtime.run_task(task.id)
+    assert result.state==TaskState.SUCCEEDED
+    output=result.plan[0].output
+    query=next(q for q in output['queries'] if q['atom']=='release_ready')
+    assert query['entailed'] is True
+    assert query['proof_tree']['rule_id']=='r2'
+    assert next(q for q in output['queries'] if q['atom']=='approved_payment')['entailed'] is False
+    assert output['source_verified'] is False and output['approval_granted'] is False
+    assert repo.list_actions(task_id=task.id)[0].result==output

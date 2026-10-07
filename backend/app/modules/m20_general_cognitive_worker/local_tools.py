@@ -43,6 +43,19 @@ def summarize_csv(arguments):
 
 
 def register_local_tools(registry):
+    from .horn_inference import forward
+    async def rule_handler(arguments):
+        result = forward(arguments)
+        result.update(source_verified=False, approval_granted=False)
+        return result
+    atom = {'type':'string','minLength':1,'maxLength':200}
+    atoms = {'type':'array','maxItems':1000,'uniqueItems':True,'items':atom}
+    registry.register(ToolSpec(name='rule_check',description='Derive formal prerequisites from supplied positive Horn rules with query proofs',
+        capabilities=['rules','logic','prerequisites','proof','check'],risk=Risk.READ,max_retries=1,
+        parameters={'type':'object','properties':{'facts':atoms,'query_atoms':dict(atoms,maxItems=20),
+            'rules':{'type':'array','minItems':1,'maxItems':1000,'items':{'type':'object','properties':{
+                'id':atom,'if':dict(atoms,maxItems=100),'then':atom},'required':['then'],'additionalProperties':False}}},
+            'required':['rules'],'additionalProperties':False}),rule_handler)
     async def require_handler(arguments): return require_value(arguments)
     registry.register(ToolSpec(name='require_value',description='Require an exact JSON value match before dependent work',
         capabilities=['require','condition','check','prerequisite'],risk=Risk.READ,max_retries=1,
