@@ -563,3 +563,23 @@ def test_decision_tree_cycle_fails_with_controlled_error():
 ])
 def test_sensitivity_arithmetic_rejects_unbounded_or_invalid_inputs(expression,params):
  with pytest.raises(ValueError):SensitivityExplorer().analyze(expression=expression,params=params)
+
+
+def test_erlang_c_large_server_count_is_finite_and_matches_mm1_at_one_server():
+ import json
+ q=QueueAnalyzer();out=q.mmc(arrival_rate=450,service_rate=1,servers=500)
+ assert out['stable'] and 0<out['p_wait']<1 and out['avg_wait_in_queue']>0
+ json.dumps(out,allow_nan=False)
+ single=q.mmc(arrival_rate=4,service_rate=5,servers=1)
+ reference=q.mm1(arrival_rate=4,service_rate=5)
+ assert single['p_wait']==pytest.approx(.8) and single['avg_wait_in_queue']==pytest.approx(reference['avg_wait_in_queue'])
+
+
+@pytest.mark.parametrize('kwargs',[
+ {'arrival_rate':float('nan'),'service_rate':1,'servers':2},
+ {'arrival_rate':1,'service_rate':float('inf'),'servers':2},
+ {'arrival_rate':1,'service_rate':2,'servers':True},
+ {'arrival_rate':1,'service_rate':2,'servers':10001},
+])
+def test_queueing_invalid_rate_or_count_rejects(kwargs):
+ with pytest.raises(ValueError):QueueAnalyzer.mmc(**kwargs)
