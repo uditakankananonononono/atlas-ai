@@ -32,6 +32,8 @@ def test_core_http_scopes_existing_run_get_preview_and_package_by_tenant():
  calls=[];items=[]
  async def generate(*args):
   calls.append(args)
+  if args[0].startswith('Return viability package'):
+   return 'fixture',json.dumps({'executive_summary':'fixture package','recommendation':'test only','recommendation_confidence':.2,'market_claims':[],'technical_feasibility':[],'prototype_artifacts':[],'unresolved_risks':['unverified'],'next_experiments':['review']})
   return 'fixture',json.dumps({'problem':['fixture'],'customer_segments':['fixture'],'unique_value_proposition':'fixture','solution':['fixture'],'channels':[],'revenue_streams':[],'cost_structure':[],'key_metrics':[],'riskiest_assumptions':['unverified']})
  class Approvals:
   def put(self,item,*,user_id):items.append((item,user_id));return item
@@ -49,6 +51,21 @@ def test_core_http_scopes_existing_run_get_preview_and_package_by_tenant():
   assert client.get(f'/idea-incubator/ideas/{run.id}',headers={'x-fixture-tenant':'tenant-a'}).status_code==200
   response=client.post(f'/idea-incubator/ideas/{run.id}/preview',headers={'x-fixture-tenant':'tenant-a'},json={'artifacts':['fixture'],'estimated_cost':0})
   assert response.status_code==201
+  response=client.post('/idea-incubator/packages',headers={'x-fixture-tenant':'tenant-a'},json={'run_id':run.id})
+  assert response.status_code==200 and response.json()['executive_summary']=='fixture package'
  assert items[0][0].payload['tenant_id']=='tenant-a'
  assert items[0][1]=='tenant-a'
  # No deployment occurs; fake approval sink only. Fixture identity isn't production auth proof.
+
+
+@pytest.mark.parametrize('method,path,body',[('get','/idea-incubator/ideas/missing',None),('post','/idea-incubator/ideas/missing/preview',{'artifacts':[],'estimated_cost':0}),('post','/idea-incubator/packages',{'run_id':'missing'})])
+def test_other_core_routes_reject_missing_credentials_before_service(monkeypatch,method,path,body):
+ monkeypatch.setenv('ATLAS_DEV_NO_AUTH','0')
+ class NoCalls:
+  def get(self,*args,**kwargs):raise AssertionError('service must not run')
+  def request_preview(self,*args,**kwargs):raise AssertionError('service must not run')
+  async def package(self,*args,**kwargs):raise AssertionError('service must not run')
+ app=FastAPI();app.include_router(router);app.dependency_overrides[get_service]=lambda:NoCalls()
+ with TestClient(app) as client:
+  response=client.request(method,path,json=body) if body is not None else client.request(method,path)
+ assert response.status_code==401
