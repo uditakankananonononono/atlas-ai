@@ -71,3 +71,26 @@ def test_mounted_node_uncertainty_retains_sibling_output_no_dependent_or_retry(k
  detail=response.json()['detail'];assert detail['state']==state and detail['node_id']=='a' and detail['retry_allowed'] is False
  assert detail['completed']=={'b':{'text':'sibling complete'}} and calls==['uncertain','sibling']
  if kind=='review':assert detail['result']['text']=='review candidate' and detail['result']['usage']=={'input_tokens':12}
+
+@pytest.mark.asyncio
+async def test_cancelled_parent_never_becomes_successful_dependency():
+ calls=[]
+ async def runner(task,config,context):
+  calls.append(task)
+  if task=='cancel':raise asyncio.CancelledError()
+  return {'text':'fixture'}
+ wf=Workflow.from_yaml('nodes: [{id: a, task: cancel}, {id: b, task: sibling}, {id: c, task: dependent, depends_on: [a,b]}]')
+ with pytest.raises(WorkflowNodeFailure) as error:await DagEngine(runner).run(wf,{})
+ assert calls==['cancel','sibling'] and isinstance(error.value.error,asyncio.CancelledError)
+ assert error.value.completed=={'b':{'text':'fixture'}} and 'a' not in error.value.completed
+
+def test_mounted_cancelled_node_is_controlled_failure_without_dependent():
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+ from app.auth.context import TenantContext,require_tenant
+ from app.modules.m12_ai_research_lab.routes import router,get_dag_engine
+ calls=[]
+ async def runner(task,config,context):calls.append(task);raise asyncio.CancelledError()
+ app=FastAPI();app.include_router(router);app.dependency_overrides[require_tenant]=lambda:TenantContext('fixture','fixture');app.dependency_overrides[get_dag_engine]=lambda:DagEngine(runner)
+ response=TestClient(app).post('/ai-research-lab/workflows/run',json={'yaml':'nodes: [{id: a, task: cancel}, {id: b, task: dependent, depends_on: [a]}]'})
+ assert response.status_code==422 and response.json()['detail']['state']=='cancelled' and calls==['cancel']
