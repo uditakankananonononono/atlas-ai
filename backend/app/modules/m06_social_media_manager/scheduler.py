@@ -244,6 +244,19 @@ class Scheduler:
             'media_urls':list(entry.media_urls),'alt_texts':list(entry.alt_texts),
             'thread_chunks':list(entry.thread_chunks),'link':entry.link,'account_id':account_id}
 
+    def request_final_review(self,schedule_id:str,tenant_id:str,approval_service,ttl_seconds:int=3600)->dict:
+        """Propose only. Exact rendered media/account snapshot, durable M00.
+
+        Binding uses compare-and-swap. A changed schedule leaves a harmless
+        unmatched pending card, never a publish grant for the changed payload.
+        """
+        entry=self._entry(schedule_id)
+        payload=self.final_review_payload(schedule_id,tenant_id)
+        view=approval_service.submit(module_id=6,action_type='schedule_post',payload=payload,user_id=tenant_id,ttl_seconds=ttl_seconds)
+        if not self._repository.bind_final_review(entry,view['id']):
+            raise ScheduleStateError('schedule changed during final review proposal; new review required')
+        return view
+
     # -- decision sync ---------------------------------------------------------
 
     def sync_decisions(self) -> list[ScheduleEntry]:

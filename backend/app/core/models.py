@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import Any
 from pydantic import BaseModel, Field
@@ -26,6 +27,7 @@ class ApprovalRequest(BaseModel):
     action_type: str
     payload: dict[str, Any]
     status: ApprovalStatus = ApprovalStatus.PENDING
+    expires_at: datetime | None = None
 
 class GoalPlan(BaseModel):
     goal: str

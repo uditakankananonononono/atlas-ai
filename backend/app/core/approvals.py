@@ -7,10 +7,10 @@ class ApprovalStore:
     def put(self, item: ApprovalRequest, *, user_id: str | None = None) -> ApprovalRequest:
         tenant_id = user_id or str(item.payload.get("tenant_id") or "default")
         view = default_service().submit(module_id=item.module_id, action_type=item.action_type, payload=item.payload, user_id=tenant_id)
-        return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"])
+        return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"], expires_at=view.get("expires_at"))
 
     def list(self, *, user_id: str | None = None) -> builtins.list[ApprovalRequest]:
-        return [ApprovalRequest(id=v["id"], module_id=v["module_id"], action_type=v["action_type"], payload=v["payload"], status=v["status"]) for v in default_service().list(user_id=user_id)]
+        return [ApprovalRequest(id=v["id"], module_id=v["module_id"], action_type=v["action_type"], payload=v["payload"], status=v["status"], expires_at=v.get("expires_at")) for v in default_service().list(user_id=user_id)]
 
     def get(self, item_id: str, *, user_id: str | None = None) -> ApprovalRequest | None:
         """Fetch one approval without scanning the tenant-wide queue."""
@@ -20,7 +20,7 @@ class ApprovalStore:
                 return None
         except ApprovalNotFoundError:
             return None
-        return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"])
+        return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"], expires_at=view.get("expires_at"))
 
     def finalize_recovered_m10_draft(self,repository,message_id,account_id,data)->bool:
         # Re-read M00 inside the same SQL transaction as local finalization.
@@ -43,7 +43,7 @@ class ApprovalStore:
             return None
         except ApprovalConflictError as error:
             raise ValueError(str(error)) from error
-        return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"])
+        return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"], expires_at=view.get("expires_at"))
 
     def audit(self, item_id: str, *, user_id: str | None = None) -> builtins.list[dict[str, str]]:
         try:

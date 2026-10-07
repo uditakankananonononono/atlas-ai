@@ -207,6 +207,14 @@ class MemorySocialRepository:
     def get_plan(self, plan_id: str) -> ContentPlan | None: return self.plans.get(plan_id)
     def save_report(self, report: AnalysisReport) -> AnalysisReport: self.reports[report.id]=report; return report
     def get_report(self, report_id: str) -> AnalysisReport | None: return self.reports.get(report_id)
+    def bind_final_review(self,expected,approval_id):
+        with self._schedule_lock:
+            current=self.schedules.get(expected.id)
+            if current is None or current!=expected or current.status in {'publishing','outcome_unknown','published','cancelled','failed'}:return False
+            bound=deepcopy(current);bound.approval_id=approval_id;bound.status='awaiting_approval';bound.decided_at=None;bound.failure=None
+            self.schedules[bound.id]=bound
+            return True
+
     def finalize_publish(self, entry, record):
         validate_publish_receipt(entry,record)
         with self._schedule_lock:

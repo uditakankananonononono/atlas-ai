@@ -171,6 +171,14 @@ class SqlSocialRepository:
     def get_report(self,item_id): return self._get(SocialReportRow,item_id,to_report)
 
     # schedules + publish receipts
+    def bind_final_review(self,expected,approval_id):
+        if expected.status in {'publishing','outcome_unknown','published','cancelled','failed'}:return False
+        old=schedule_data(expected);new={**old,'approval_id':approval_id,'status':'awaiting_approval','decided_at':None,'failure':None}
+        with self.sessions.begin() as db:
+            from sqlalchemy.dialects.postgresql import JSONB
+            matches=cast(SocialScheduleRow.data,JSONB)==old if db.get_bind().dialect.name=='postgresql' else SocialScheduleRow.data==old
+            return db.execute(update(SocialScheduleRow).where(SocialScheduleRow.tenant_id==self.tenant_id,SocialScheduleRow.item_id==expected.id,SocialScheduleRow.status==expected.status,matches).values(data=new,status='awaiting_approval').returning(SocialScheduleRow.item_id)).first() is not None
+
     def finalize_publish(self,x,receipt):
         validate_publish_receipt(x,receipt)
         data=schedule_data(x)
