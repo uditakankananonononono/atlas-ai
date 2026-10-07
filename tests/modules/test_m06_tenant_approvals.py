@@ -12,7 +12,7 @@ def test_empty_tenant_fails_closed():
 
 
 def test_runtime_lookup_requires_exact_reviewed_content_media_and_account(monkeypatch):
- from datetime import datetime,timezone
+ from datetime import datetime,timezone,timedelta
  from types import SimpleNamespace
  from app.modules.m06_social_media_manager.routes import _ApprovalCenterLookup
  from app.modules.m06_social_media_manager.scheduler import ScheduleEntry
@@ -20,16 +20,21 @@ def test_runtime_lookup_requires_exact_reviewed_content_media_and_account(monkey
  from app.core import approvals as module
  entry=ScheduleEntry(id='s',plan_id='p',platform=Platform.TWITTER,format='thread',text='reviewed',publish_at=datetime.now(timezone.utc),approval_id='a',status='approved')
  payload={'tenant_id':'t','schedule_id':'s','plan_id':'p','platform':'twitter','format':'thread','copy':'reviewed','publish_at':entry.publish_at.isoformat(),'sponsored':False,'media_urls':[],'alt_texts':[],'thread_chunks':[],'link':None,'account_id':'fixture-account'}
- request=SimpleNamespace(status='approved',action_type='schedule_post',payload=payload)
+ request=SimpleNamespace(status='approved',action_type='schedule_post',payload=payload,expires_at=datetime.now(timezone.utc)+timedelta(hours=1))
  class Store:
   def get(self,*args,**kwargs):return request
  monkeypatch.setattr(module,'approvals',Store())
  lookup=_ApprovalCenterLookup('t')
  assert lookup.authorizes(entry,account_id='fixture-account')
- for key,value in [('copy','changed'),('media_urls',['https://fixture.invalid/image']),('account_id','other'),('tenant_id','other'),('schedule_id','other')]:
+ for key,value in [('copy','changed'),('media_urls',['https://fixture.invalid/image']),('account_id','other'),('tenant_id','other'),('schedule_id','other'),('plan_id','other'),('platform','instagram'),('format','post'),('publish_at','wrong'),('sponsored',True),('alt_texts',['other']),('thread_chunks',['other']),('link','https://other.invalid')]:
   previous=payload[key];payload[key]=value
   assert not lookup.authorizes(entry,account_id='fixture-account')
   payload[key]=previous
  assert not lookup.authorizes(entry,account_id=None)
+ request.expires_at=datetime.now(timezone.utc)-timedelta(seconds=1)
+ assert not lookup.authorizes(entry,account_id='fixture-account')
+ request.expires_at=None
+ assert not lookup.authorizes(entry,account_id='fixture-account')
+ request.expires_at=datetime.now(timezone.utc)+timedelta(hours=1)
  del payload['media_urls']
  assert not lookup.authorizes(entry,account_id='fixture-account')

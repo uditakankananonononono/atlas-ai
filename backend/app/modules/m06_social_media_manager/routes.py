@@ -13,6 +13,7 @@ write. All other routes only draft, file approvals, or read state.
 from __future__ import annotations
 
 import os
+from datetime import datetime,timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -103,6 +104,10 @@ class _ApprovalCenterLookup:
         request=self._approvals.get(entry.approval_id,user_id=self._tenant_id)
         if request is None or not account_id:return False
         if getattr(request.status,'value',request.status)!='approved' or request.action_type!='schedule_post':return False
+        expiry=getattr(request,'expires_at',None)
+        if expiry is None:return False
+        if expiry.tzinfo is None:expiry=expiry.replace(tzinfo=timezone.utc)
+        if expiry<=datetime.now(timezone.utc):return False
         expected={'tenant_id':self._tenant_id,'schedule_id':entry.id,'plan_id':entry.plan_id,
             'platform':entry.platform.value,'format':entry.format,'copy':entry.text,
             'publish_at':entry.publish_at.isoformat(),'sponsored':entry.sponsored,
