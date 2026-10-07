@@ -1,0 +1,135 @@
+........................................................................ [ 12%]
+........................................................................ [ 24%]
+........................................................................ [ 37%]
+........................................................................ [ 49%]
+.................................................................F...... [ 62%]
+......FF................................................................ [ 74%]
+........................................................................ [ 86%]
+........................................................................ [ 99%]
+....                                                                     [100%]
+=================================== FAILURES ===================================
+_____ test_a17_selenium_is_installed_as_fallback_not_default_browser_path ______
+
+cls = <class 'importlib.metadata.Distribution'>, name = 'selenium'
+
+    @classmethod
+    def from_name(cls, name: str):
+        """Return the Distribution for the given package name.
+    
+        :param name: The name of the distribution package to search for.
+        :return: The Distribution instance (or subclass thereof) for the named
+            package, if found.
+        :raises PackageNotFoundError: When the named package's distribution
+            metadata cannot be found.
+        :raises ValueError: When an invalid value is supplied for name.
+        """
+        if not name:
+            raise ValueError("A distribution name is required.")
+        try:
+>           return next(cls.discover(name=name))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           StopIteration
+
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/importlib/metadata/__init__.py:397: StopIteration
+
+During handling of the above exception, another exception occurred:
+
+    def test_a17_selenium_is_installed_as_fallback_not_default_browser_path():
+>       assert int(__import__('importlib').metadata.version('selenium').split('.')[0])==4
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_technical_architecture_real_adapters.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/importlib/metadata/__init__.py:889: in version
+    return distribution(distribution_name).version
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/importlib/metadata/__init__.py:862: in distribution
+    return Distribution.from_name(distribution_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'importlib.metadata.Distribution'>, name = 'selenium'
+
+    @classmethod
+    def from_name(cls, name: str):
+        """Return the Distribution for the given package name.
+    
+        :param name: The name of the distribution package to search for.
+        :return: The Distribution instance (or subclass thereof) for the named
+            package, if found.
+        :raises PackageNotFoundError: When the named package's distribution
+            metadata cannot be found.
+        :raises ValueError: When an invalid value is supplied for name.
+        """
+        if not name:
+            raise ValueError("A distribution name is required.")
+        try:
+            return next(cls.discover(name=name))
+        except StopIteration:
+>           raise PackageNotFoundError(name)
+E           importlib.metadata.PackageNotFoundError: No package metadata was found for selenium
+
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/importlib/metadata/__init__.py:399: PackageNotFoundError
+_____ test_a19_blank_scanned_pdf_enters_tesseract_path_and_flags_empty_ocr _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f491b472f00>
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-37/test_a19_blank_scanned_pdf_ent0')
+
+    def test_a19_blank_scanned_pdf_enters_tesseract_path_and_flags_empty_ocr(monkeypatch,tmp_path):
+        path=tmp_path/'scan.pdf';document=fitz.open();document.new_page();document.save(path)
+        called=[]
+>       monkeypatch.setattr('pytesseract.image_to_string',lambda image: called.append(image.size) or '')
+
+tests/test_technical_architecture_real_documents_security.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/_pytest/monkeypatch.py:107: in derive_importpath
+    target = resolve(module)
+             ^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/_pytest/monkeypatch.py:70: in resolve
+    found: object = importlib.import_module(used)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'pytesseract', import_ = <function _gcd_import at 0x7f49381a00e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'pytesseract'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+___________ test_a20_unstructured_partitions_real_file_with_metadata ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-37/test_a20_unstructured_partitio0')
+
+    def test_a20_unstructured_partitions_real_file_with_metadata(tmp_path):
+        path=tmp_path/'layout.txt';path.write_text('Atlas heading\n\nBody paragraph')
+>       blocks=partition_layout(str(path))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_technical_architecture_real_documents_security.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-sandbox/pytest-37/test_a20_unstructured_partitio0/layout.txt'
+
+    def partition_layout(path:str):
+>    from unstructured.partition.auto import partition
+E    ModuleNotFoundError: No module named 'unstructured'
+
+backend/app/platform/document_processing.py:18: ModuleNotFoundError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_technical_architecture_real_adapters.py::test_a17_selenium_is_installed_as_fallback_not_default_browser_path
+FAILED tests/test_technical_architecture_real_documents_security.py::test_a19_blank_scanned_pdf_enters_tesseract_path_and_flags_empty_ocr
+FAILED tests/test_technical_architecture_real_documents_security.py::test_a20_unstructured_partitions_real_file_with_metadata
+3 failed, 577 passed, 1 warning in 12.57s

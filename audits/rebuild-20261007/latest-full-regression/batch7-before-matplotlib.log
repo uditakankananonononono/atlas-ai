@@ -1,0 +1,54 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 32%]
+........................................................................ [ 40%]
+........................................................................ [ 48%]
+........................................................................ [ 56%]
+........................................................................ [ 64%]
+........................................................................ [ 72%]
+........................................................................ [ 80%]
+....................................................s.F................. [ 88%]
+........................................................................ [ 96%]
+...................................                                      [100%]
+=================================== FAILURES ===================================
+______________ test_docx_and_pptx_are_real_packages_with_content _______________
+
+env = <test_m15_approved_delivery.env.<locals>.Env object at 0x7f2e3d6e4e30>
+
+    def test_docx_and_pptx_are_real_packages_with_content(env):
+        svc = env.svc()
+        a1, _ = approve(env, "docx", REPORT, figures=[FIG], citations=[CITE])
+>       docx_receipt = svc.deliver(a1)
+                       ^^^^^^^^^^^^^^^
+
+tests/modules/test_m15_approved_delivery.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m15_document_generator/delivery.py:448: in deliver
+    data = render_version(version)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m15_document_generator/delivery.py:264: in render_version
+    return {"pdf": render_pdf, "docx": render_docx, "pptx": render_pptx}[version.format](version)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m15_document_generator/delivery.py:214: in render_docx
+    doc.add_picture(io.BytesIO(render_figure_png(spec)), width=Inches(5.5))
+                               ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = FigureSpec(id='f1', engine='matplotlib', kind='line', data={'x': [1, 2, 3], 'y': [20, 21, 22]}, options={'title': 'Depth'}, alt_text='Secchi depth rising over three weeks')
+
+    def render_figure_png(spec: FigureSpec) -> bytes:
+        """Render any figure spec with matplotlib (plotly specs are drawn with the same data)."""
+>       import matplotlib
+E       ModuleNotFoundError: No module named 'matplotlib'
+
+backend/app/modules/m15_document_generator/delivery.py:125: ModuleNotFoundError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m15_approved_delivery.py::test_docx_and_pptx_are_real_packages_with_content
+1 failed, 897 passed, 1 skipped, 1 warning in 14.10s
