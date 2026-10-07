@@ -42,9 +42,50 @@ def summarize_csv(arguments):
 
 
 def register_local_tools(registry):
+    async def reconcile_handler(arguments): return reconcile_csv(arguments)
+    registry.register(ToolSpec(name='csv_reconcile',description='Compare two supplied CSV exports by exact unique keys and selected fields',
+        capabilities=['csv','reconcile','compare','exports'],risk=Risk.READ,max_retries=1,
+        parameters={'type':'object','properties':{
+            'left_csv':{'type':'string','minLength':1,'maxLength':32000},
+            'right_csv':{'type':'string','minLength':1,'maxLength':32000},
+            'key_column':{'type':'string','minLength':1},
+            'compare_columns':{'type':'array','minItems':1,'maxItems':20,'uniqueItems':True,'items':{'type':'string','minLength':1}}},
+            'required':['left_csv','right_csv','key_column','compare_columns'],'additionalProperties':False}),reconcile_handler)
     async def csv_handler(arguments): return summarize_csv(arguments)
     registry.register(ToolSpec(name='csv_summary',description='Compute grouped numeric summaries from supplied CSV text',
         capabilities=['csv','summary','numeric','group'],risk=Risk.READ,max_retries=1,
         parameters={'type':'object','properties':{'csv_text':{'type':'string','minLength':1,'maxLength':64000},
             'value_column':{'type':'string','minLength':1},'group_column':{'type':'string','minLength':1}},
             'required':['csv_text','value_column'],'additionalProperties':False}),csv_handler)
+
+
+def reconcile_csv(arguments):
+    key = arguments['key_column']; columns = arguments['compare_columns']
+    if not columns or len(columns) != len(set(columns)): raise ValueError('unique nonempty comparison columns required')
+    def parse(text):
+        if len(text.encode('utf-8')) > 32000: raise ValueError('CSV exceeds32000bytes per export')
+        reader = csv.reader(io.StringIO(text), strict=True)
+        try: header = next(reader)
+        except StopIteration: raise ValueError('CSV needs header')
+        if not header or len(header) != len(set(header)) or any(not name.strip() for name in header):
+            raise ValueError('unique nonempty headers required')
+        if any(name not in header for name in [key, *columns]): raise ValueError('requested column missing')
+        records = {}
+        for row in reader:
+            if len(row) != len(header): raise ValueError('CSV row column count mismatch')
+            record = dict(zip(header, row)); identity = record[key]
+            if not identity.strip() or identity in records: raise ValueError('unique nonempty record keys required')
+            records[identity] = record
+            if len(records) > 500: raise ValueError('CSV exceeds500records per export')
+        return records
+    left, right = parse(arguments['left_csv']), parse(arguments['right_csv'])
+    changed = []; unchanged = []
+    for identity in sorted(left.keys() & right.keys()):
+        fields = {name: {'left': left[identity][name], 'right': right[identity][name]}
+                  for name in columns if left[identity][name] != right[identity][name]}
+        if fields: changed.append({'key': identity, 'fields': fields})
+        else: unchanged.append(identity)
+    return {'left_count':len(left),'right_count':len(right),'left_only':sorted(left.keys()-right.keys()),
+            'right_only':sorted(right.keys()-left.keys()),'changed':changed,'unchanged':unchanged,
+            'source_verified':False,'status':'supplied_csv_exact_key_field_reconciliation',
+            'boundary':'Exact raw string comparison on supplied unique keys and columns; no fuzzy matching, numeric normalization, source verification or external changes.'}

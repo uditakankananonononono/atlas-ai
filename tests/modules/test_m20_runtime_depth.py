@@ -1594,3 +1594,34 @@ def test_csv_summary_bounds_rows_groups_and_preserves_zero_negative_values():
                                                'value_column':'amount','group_column':'team'})
     result=summarize_csv({'csv_text':'amount\n0\n-4\n6\n','value_column':'amount'})
     assert result['groups'][0]['sum']==2 and result['groups'][0]['min']==-4
+
+
+def test_default_csv_reconciliation_reports_missing_and_changed_records():
+    runtime,repo=make_runtime()
+    task=runtime.submit_goal('reconcile supplied invoice exports',run_immediately=False)
+    runtime.prepare_supplied_plan(task.id,steps=[{'title':'compare exports','tool':'csv_reconcile',
+        'arguments':{'left_csv':'id,amount,status\nA,10,open\nB,20,paid\nC,30,open\n',
+            'right_csv':'id,amount,status\nA,10,open\nB,21,paid\nD,40,open\n',
+            'key_column':'id','compare_columns':['amount','status']}}])
+    result=runtime.run_task(task.id)
+    assert result.state==TaskState.SUCCEEDED
+    output=result.plan[0].output
+    assert output['left_only']==['C'] and output['right_only']==['D']
+    assert output['unchanged']==['A']
+    assert output['changed']==[{'key':'B','fields':{'amount':{'left':'20','right':'21'}}}]
+    assert output['source_verified'] is False
+    assert repo.list_actions(task_id=task.id)[0].result==output
+
+
+@pytest.mark.parametrize('left',['id,x\nA,1\nA,2\n','id,x\n,1\n','id,id\nA,1\n','id,x\nA\n'])
+def test_reconcile_csv_rejects_ambiguous_keys_and_malformed_exports(left):
+    from app.modules.m20_general_cognitive_worker.local_tools import reconcile_csv
+    with pytest.raises(ValueError):reconcile_csv({'left_csv':left,'right_csv':'id,x\nA,1\n','key_column':'id','compare_columns':['x']})
+
+
+def test_reconcile_csv_uses_exact_strings_and_allows_empty_export():
+    from app.modules.m20_general_cognitive_worker.local_tools import reconcile_csv
+    result=reconcile_csv({'left_csv':'id,x\nA,1.0\n','right_csv':'id,x\nA,1\n','key_column':'id','compare_columns':['x']})
+    assert result['changed'][0]['fields']['x']=={'left':'1.0','right':'1'}
+    result=reconcile_csv({'left_csv':'id,x\n','right_csv':'id,x\nA,1\n','key_column':'id','compare_columns':['x']})
+    assert result['right_only']==['A'] and result['left_count']==0
