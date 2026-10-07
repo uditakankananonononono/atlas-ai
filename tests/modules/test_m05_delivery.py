@@ -205,3 +205,34 @@ def test_smtp_sender_builds_and_transmits_real_message():
     assert ("send", "udita@example.com", "rao@example.edu", "Hi", "Body") in sent
     assert receipt.provider_message_id
     assert "secret" not in str(receipt)
+
+
+def test_current_concurrent_delivery_calls_invoke_fake_sender_twice():
+    """Characterizes an open race, not safe-delivery acceptance. No SMTP used.
+
+    Both calls pass approval checks before awaiting the sender. Persistence
+    rejects one later, but that is too late to prevent a duplicate send call.
+    Replace this expectation with one invocation when an atomic claim lands.
+    """
+    from app.modules.m05_outreach_manager.campaigns import CampaignStateError
+    service, _, _, _, draft, approval = make_world(datetime(2026, 9, 20, tzinfo=timezone.utc))
+    class BarrierSender:
+        name = "hermetic-barrier"
+        def __init__(self):
+            self.calls = []
+            self.both_entered = asyncio.Event()
+        async def send(self, **kwargs):
+            self.calls.append(kwargs)
+            if len(self.calls) == 2:
+                self.both_entered.set()
+            await asyncio.wait_for(self.both_entered.wait(), timeout=2)
+            return DeliveryReceipt(provider_message_id="fixture-message")
+    async def race():
+        sender = BarrierSender()
+        delivery = DeliveryService(service, gate_for(approval), sender)
+        outcomes = await asyncio.gather(delivery.send_approved(draft.id), delivery.send_approved(draft.id), return_exceptions=True)
+        assert len(sender.calls) == 2
+        assert sum(isinstance(x, CampaignStateError) for x in outcomes) == 1
+        assert sum(getattr(x, "status", None) == "sent" for x in outcomes) == 1
+        assert [x.event for x in service.message_events(draft.id)].count("sent") == 1
+    asyncio.run(race())

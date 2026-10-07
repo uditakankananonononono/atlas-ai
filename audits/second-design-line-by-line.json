@@ -530,7 +530,7 @@
       "status": "unverified",
       "implementation_path": null,
       "test_evidence": null,
-      "notes": "SmtpMailSender and DeliveryService.send_approved exist; payload matching precedes send and receipt message ID/thread data precedes mark_sent. Campaign record_reply cancels later drafts; no-reply due-window logic and hourly worker draft follow-ups exist. Automatic inbox/thread scan, sentiment/intent classification and Calendar next-action handoff not established here. Delivery method awaits send before mark_sent without a visible atomic sending claim/one-shot permit, creating an untested duplicate-send risk for overlapping callers. No SMTP/Gmail/send run or authority granted. Scope: M05/worker code read, not full-path acceptance. Status stays unverified."
+      "notes": "SmtpMailSender and DeliveryService.send_approved exist; payload matching precedes send and receipt message ID/thread data precedes mark_sent. Campaign record_reply cancels later drafts; no-reply due-window logic and hourly worker draft follow-ups exist. Automatic inbox/thread scan, sentiment/intent classification and Calendar next-action handoff not established here. Delivery method awaits send before mark_sent without a visible atomic sending claim/one-shot permit, and a hermetic barrier test now reproduces two fake sender invocations before one later state-transition error; this is a duplicate-invocation bug in the tested path, not evidence of external duplicate delivery. No SMTP/Gmail/send run or authority granted. Scope: M05/worker code read, not full-path acceptance. Status stays unverified."
     },
     {
       "row": 48,

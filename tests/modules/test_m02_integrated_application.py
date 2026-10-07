@@ -1,3 +1,22 @@
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.core.database import Base
+from app.modules.m00_approval_center.service import Service as ApprovalService
+
+
+@pytest.fixture(autouse=True)
+def isolated_approval_database(tmp_path, monkeypatch):
+ # This integration uses the real facade and real SQL service, but owns its
+ # schema fixture. Never rely on the process-global atlas.db or auto-create.
+ engine = create_engine(f"sqlite:///{tmp_path / 'approvals.db'}")
+ Base.metadata.create_all(engine)
+ service = ApprovalService(sessionmaker(bind=engine, expire_on_commit=False))
+ monkeypatch.setattr("app.core.approvals.default_service", lambda: service)
+ yield service
+ engine.dispose()
+
+
 import asyncio
 from app.core.approvals import ApprovalStore
 from app.modules.m02_competition_manager.grounded_drafting import GroundedApplicationDrafter
