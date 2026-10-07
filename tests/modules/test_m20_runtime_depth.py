@@ -895,3 +895,16 @@ def test_skill_retirement_persists_across_restart():
  assert library.retire('fixture')
  restarted=DurableSkillLibrary.load(repo)
  assert restarted.find_by_name('fixture') is None and restarted.list()[0].status==SkillStatus.RETIRED
+
+
+def test_htn_reviewed_method_views_cannot_mutate_active_snapshot():
+ runtime,repo=make_runtime()
+ original=HTNMethod(name='fixture',goal_pattern='fixture',subtasks=[PlanNode(title='original',arguments={'n':[2]})])
+ view=runtime.planner.register_method(original)
+ original.subtasks[0].title='input mutation';view.subtasks[0].title='return mutation'
+ current=runtime.planner.methods['fixture'];current.subtasks[0].title='read mutation'
+ current.subtasks[0].arguments['n'].append(9)
+ assert runtime.planner.decompose('fixture')[0].title=='original'
+ assert runtime.planner.methods['fixture'].subtasks[0].arguments=={'n':[2]}
+ assert repo.list_methods()[0][0].subtasks[0].title=='original'
+ with pytest.raises(TypeError):runtime.planner.methods['fixture']=current
