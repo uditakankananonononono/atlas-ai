@@ -1,0 +1,121 @@
+.........................FsFFFFFFF.......F...FFFF                        [100%]
+=================================== FAILURES ===================================
+_________ test_model_unknown_upgrade_and_lossy_downgrade_hold[sqlite] __________
+tests/modules/test_m20_model_unknown_migration.py:19: in test_model_unknown_upgrade_and_lossy_downgrade_hold
+    """]);assert result.returncode==0,result.stderr[-2000:]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: ite-packages/sqlalchemy/engine/default.py", line 1192, in do_execute
+E         cursor.execute(statement, parameters)
+E     sqlite3.OperationalError: no such column: "model_outcome_unknown"
+E     
+E     The above exception was the direct cause of the following exception:
+E     
+E     Traceback (most recent call last):
+E       File "<string>", line 6, in <module>
+E       File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1448, in execute
+E         return meth(
+E                ^^^^^
+E       File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 533, in _execute_on_connection
+E         return connection._execute_clauseelement(
+E                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1668, in _execute_clauseelement
+E         ret = self._execute_context(
+E               ^^^^^^^^^^^^^^^^^^^^^^
+E       File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1822, in _execute_context
+E         return self._exec_single_context(
+E                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1962, in _exec_single_context
+E         self._handle_dbapi_exception(
+E       File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2332, in _handle_dbapi_exception
+E         raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+E       File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1943, in _exec_single_context
+E         self.dialect.do_execute(
+E       File "/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 1192, in do_execute
+E         cursor.execute(statement, parameters)
+E     sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: "model_outcome_unknown"
+E     [SQL: ALTER TABLE m20_tasks DROP COLUMN model_outcome_unknown]
+E     (Background on this error at: https://sqlalche.me/e/21/e3q8)
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-c', '\nfrom sqlalchemy import create_engine,text\n...ER TABLE m20_tasks DROP COLUMN model_outcome_unknown]\n(Background on this error at: https://sqlalche.me/e/21/e3q8)\n').returncode
+____________ test_generation_post_unknown_does_not_repeat[timeout] _____________
+tests/test_provider_unknown_effect.py:18: in test_generation_post_unknown_does_not_repeat
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','openai_compat','fixture'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+___________ test_generation_post_unknown_does_not_repeat[disconnect] ___________
+tests/test_provider_unknown_effect.py:18: in test_generation_post_unknown_does_not_repeat
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','openai_compat','fixture'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+______________ test_generation_post_unknown_does_not_repeat[408] _______________
+tests/test_provider_unknown_effect.py:18: in test_generation_post_unknown_does_not_repeat
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','openai_compat','fixture'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+______________ test_generation_post_unknown_does_not_repeat[429] _______________
+tests/test_provider_unknown_effect.py:18: in test_generation_post_unknown_does_not_repeat
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','openai_compat','fixture'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+______________ test_generation_post_unknown_does_not_repeat[500] _______________
+tests/test_provider_unknown_effect.py:18: in test_generation_post_unknown_does_not_repeat
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','openai_compat','fixture'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+______________ test_generation_post_unknown_does_not_repeat[503] _______________
+tests/test_provider_unknown_effect.py:18: in test_generation_post_unknown_does_not_repeat
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','openai_compat','fixture'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+______________ test_generation_post_unknown_does_not_repeat[json] ______________
+tests/test_provider_unknown_effect.py:18: in test_generation_post_unknown_does_not_repeat
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','openai_compat','fixture'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+________________ test_atlas_shared_generation_stops_after_error ________________
+tests/test_shared_unknown_effect.py:14: in test_atlas_shared_generation_stops_after_error
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','shared'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+________ test_actual_local_shared_http_error_never_invokes_backup[503] _________
+tests/test_shared_unknown_effect.py:49: in test_actual_local_shared_http_error_never_invokes_backup
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','shared'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+_____ test_actual_local_shared_http_error_never_invokes_backup[malformed] ______
+tests/test_shared_unknown_effect.py:49: in test_actual_local_shared_http_error_never_invokes_backup
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate_result('fixture','shared'))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+_____ test_dispatched_os_transport_failure_is_classified_unknown[urlerror] _____
+tests/test_shared_unknown_effect.py:61: in test_dispatched_os_transport_failure_is_classified_unknown
+    with pytest.raises(providers.ProviderOutcomeUnknown) as error:asyncio.run(providers.generate_result('fixture','shared'))
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+_____ test_dispatched_os_transport_failure_is_classified_unknown[oserror] ______
+tests/test_shared_unknown_effect.py:61: in test_dispatched_os_transport_failure_is_classified_unknown
+    with pytest.raises(providers.ProviderOutcomeUnknown) as error:asyncio.run(providers.generate_result('fixture','shared'))
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'app.core.providers' has no attribute 'generate_result'
+=============================== warnings summary ===============================
+tests/modules/test_m20_runtime_reentry.py::test_mounted_busy_is_conflict_not_server_error
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_model_unknown_migration.py::test_model_unknown_upgrade_and_lossy_downgrade_hold[sqlite]
+FAILED tests/test_provider_unknown_effect.py::test_generation_post_unknown_does_not_repeat[timeout]
+FAILED tests/test_provider_unknown_effect.py::test_generation_post_unknown_does_not_repeat[disconnect]
+FAILED tests/test_provider_unknown_effect.py::test_generation_post_unknown_does_not_repeat[408]
+FAILED tests/test_provider_unknown_effect.py::test_generation_post_unknown_does_not_repeat[429]
+FAILED tests/test_provider_unknown_effect.py::test_generation_post_unknown_does_not_repeat[500]
+FAILED tests/test_provider_unknown_effect.py::test_generation_post_unknown_does_not_repeat[503]
+FAILED tests/test_provider_unknown_effect.py::test_generation_post_unknown_does_not_repeat[json]
+FAILED tests/test_shared_unknown_effect.py::test_atlas_shared_generation_stops_after_error
+FAILED tests/test_shared_unknown_effect.py::test_actual_local_shared_http_error_never_invokes_backup[503]
+FAILED tests/test_shared_unknown_effect.py::test_actual_local_shared_http_error_never_invokes_backup[malformed]
+FAILED tests/test_shared_unknown_effect.py::test_dispatched_os_transport_failure_is_classified_unknown[urlerror]
+FAILED tests/test_shared_unknown_effect.py::test_dispatched_os_transport_failure_is_classified_unknown[oserror]
+13 failed, 35 passed, 1 skipped, 1 warning in 11.66s

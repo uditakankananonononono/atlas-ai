@@ -1,0 +1,77 @@
+import pytest
+from sqlalchemy import create_engine
+from app.modules.m20_general_cognitive_worker.service import CognitiveWorkerService
+from app.modules.m20_general_cognitive_worker.schemas import TaskContext,PlanNode,TaskState,ToolSpec,Risk,ApprovalGateDecision
+from app.modules.m20_general_cognitive_worker.safety import InMemoryApprovalGate
+from app.modules.m20_general_cognitive_worker.runtime import GCWRuntime
+from app.modules.m20_general_cognitive_worker.sql_repository import GCWRepository
+
+def wire(svc,calls):
+ async def effect_then_timeout(args):calls.append(args);raise TimeoutError('fixture effect happened, response lost')
+ svc.tools.register(ToolSpec(name='fixture_effect',description='local fake effect',risk=Risk.EXTERNAL,max_retries=3),effect_then_timeout)
+
+def execute(svc):
+ ctx=TaskContext(goal='fixture',plan=[PlanNode(title='fixture effect',tool='fixture_effect',max_attempts=3)])
+ svc.loop.start(ctx);assert ctx.state==TaskState.WAITING_APPROVAL
+ token=ctx.plan[0].approval_id;svc.safety.approvals.decide(token,ApprovalGateDecision.APPROVED)
+ svc.loop.resume_after_approval(ctx,ctx.plan[0].id,True)
+ return ctx
+
+def test_effect_unknown_blocks_before_reflection_or_fresh_approval():
+ calls=[];gate=InMemoryApprovalGate();svc=CognitiveWorkerService(approval_gate=gate);wire(svc,calls)
+ ctx=execute(svc)
+ assert calls==[{}] and ctx.state==TaskState.BLOCKED and ctx.plan[0].outcome_unknown
+ assert svc.dispatcher.records[-1].outcome_unknown and not svc.dispatcher.records[-1].succeeded
+ attempts=ctx.plan[0].attempts
+ for action in [lambda:svc.loop.run(ctx),lambda:svc.loop.start(ctx),lambda:svc.loop.resume_after_approval(ctx,ctx.plan[0].id,True)]:
+  action();assert ctx.state==TaskState.BLOCKED and len(calls)==1 and ctx.plan[0].attempts==attempts
+ assert not any(t.phase=='reflect' for t in svc.loop.traces)
+
+def test_persisted_unknown_survives_actual_sqlite_restart_and_manual_run(tmp_path):
+ engine=create_engine(f'sqlite:///{tmp_path / "unknown.db"}');repo=GCWRepository(engine);repo.create_schema()
+ calls=[];runtime=GCWRuntime(repo,approval_gate=InMemoryApprovalGate());wire(runtime,calls);ctx=execute(runtime);repo.save_task(ctx)
+ engine.dispose();fresh_engine=create_engine(f'sqlite:///{tmp_path / "unknown.db"}');fresh=GCWRuntime(GCWRepository(fresh_engine),approval_gate=InMemoryApprovalGate());wire(fresh,calls)
+ loaded=fresh.run_task(ctx.id)
+ assert loaded.state==TaskState.BLOCKED and loaded.plan[0].outcome_unknown and len(calls)==1
+ fresh.resume(ctx.id,loaded.plan[0].id,approved=True)
+ assert len(calls)==1 and fresh.repo.load_task(ctx.id).plan[0].outcome_unknown
+ fresh_engine.dispose()
+
+@pytest.mark.parametrize('kind',['toolerror','approvalpending'])
+def test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval(kind):
+ from app.modules.m20_general_cognitive_worker.tools import ToolError,ApprovalPending
+ calls=[];svc=CognitiveWorkerService(approval_gate=InMemoryApprovalGate())
+ async def effect_then_error(args):
+  calls.append(args)
+  if kind=='toolerror':raise ToolError('fixture post-effect error')
+  raise ApprovalPending('fixture_effect','unrelated-handler-token')
+ svc.tools.register(ToolSpec(name='fixture_effect',description='local fake effect',risk=Risk.EXTERNAL),effect_then_error)
+ ctx=execute(svc)
+ assert len(calls)==1 and ctx.plan[0].outcome_unknown and ctx.state==TaskState.BLOCKED
+ assert ctx.plan[0].approval_id!='unrelated-handler-token'
+ svc.loop.resume_after_approval(ctx,ctx.plan[0].id,True)
+ assert len(calls)==1 and ctx.state==TaskState.BLOCKED
+
+def test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save(tmp_path):
+ engine=create_engine(f'sqlite:///{tmp_path / "runtime-unknown.db"}');repo=GCWRepository(engine);repo.create_schema()
+ calls=[];gate=InMemoryApprovalGate();runtime=GCWRuntime(repo,approval_gate=gate);wire(runtime,calls)
+ ctx=TaskContext(goal='fixture',plan=[PlanNode(title='fixture effect',tool='fixture_effect')]);repo.save_task(ctx)
+ pending=runtime.run_task(ctx.id);assert pending.state==TaskState.WAITING_APPROVAL
+ gate.decide(pending.plan[0].approval_id,ApprovalGateDecision.APPROVED)
+ result=runtime.resume(ctx.id,pending.plan[0].id,approved=True)
+ assert result.state==TaskState.BLOCKED and repo.load_task(ctx.id).plan[0].outcome_unknown and len(calls)==1
+ engine.dispose();fresh_engine=create_engine(f'sqlite:///{tmp_path / "runtime-unknown.db"}');fresh=GCWRuntime(GCWRepository(fresh_engine),approval_gate=InMemoryApprovalGate());wire(fresh,calls)
+ assert fresh.run_task(ctx.id).plan[0].outcome_unknown
+ assert fresh.resume(ctx.id,pending.plan[0].id,approved=True).state==TaskState.BLOCKED
+ assert len(calls)==1
+ fresh_engine.dispose()
+
+def test_read_labeled_provider_wrapper_unknown_is_not_retried_or_reflected():
+ from app.core.providers import ProviderOutcomeUnknown
+ calls=[];svc=CognitiveWorkerService()
+ async def provider_wrapper(args):calls.append(args);raise ProviderOutcomeUnknown('fixture dispatched provider')
+ svc.tools.register(ToolSpec(name='fixture_model_wrapper',description='fake model wrapper',risk=Risk.READ,max_retries=3),provider_wrapper)
+ ctx=TaskContext(goal='fixture',plan=[PlanNode(title='fixture',tool='fixture_model_wrapper')]);svc.loop.start(ctx)
+ assert len(calls)==1 and ctx.state==TaskState.BLOCKED and ctx.plan[0].outcome_unknown
+ assert svc.dispatcher.records[-1].outcome_unknown
+ svc.loop.run(ctx);assert len(calls)==1

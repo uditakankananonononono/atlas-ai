@@ -1,0 +1,38 @@
+.FF.F.............                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_unknown_adapter_never_becomes_ordinary_unavailable[reason] ________
+tests/modules/test_m20_unknown_models.py:22: in test_unknown_adapter_never_becomes_ordinary_unavailable
+    assert out=={'available':False,'outcome':'unknown','retry_allowed':False,'error':'fixture dispatched'}
+E   AssertionError: assert {'available':...': False, ...} == {'available':...e dispatched'}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'failure_kind': 'outcome_unknown'}
+E     Use -v to get more diff
+_______ test_unknown_adapter_never_becomes_ordinary_unavailable[reflect] _______
+tests/modules/test_m20_unknown_models.py:22: in test_unknown_adapter_never_becomes_ordinary_unavailable
+    assert out=={'available':False,'outcome':'unknown','retry_allowed':False,'error':'fixture dispatched'}
+E   AssertionError: assert {'available':...': False, ...} == {'available':...e dispatched'}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'failure_kind': 'outcome_unknown'}
+E     Use -v to get more diff
+__________ test_reflection_unknown_is_not_recorded_as_model_analysis ___________
+tests/modules/test_m20_unknown_models.py:38: in test_reflection_unknown_is_not_recorded_as_model_analysis
+    assert svc.loop.traces[-1].detail=='reflection generation outcome unknown; no automatic retry'
+E   AssertionError: assert 'unresolved o...econciliation' == 'reflection g...tomatic retry'
+E     
+E     - reflection generation outcome unknown; no automatic retry
+E     + unresolved outcome unknown; execution held pending verified reconciliation
+=============================== warnings summary ===============================
+tests/modules/test_m20_runtime_reentry.py::test_mounted_busy_is_conflict_not_server_error
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_unknown_models.py::test_unknown_adapter_never_becomes_ordinary_unavailable[reason]
+FAILED tests/modules/test_m20_unknown_models.py::test_unknown_adapter_never_becomes_ordinary_unavailable[reflect]
+FAILED tests/modules/test_m20_unknown_models.py::test_reflection_unknown_is_not_recorded_as_model_analysis
+3 failed, 15 passed, 1 warning in 3.00s

@@ -34,6 +34,7 @@ class ToolScore:
     risk_penalty: float
     preconditions_met: bool
     missing_preconditions: list[str] = field(default_factory=list)
+    supplied_unknowns: float = 0.0
 
 
 @dataclass
@@ -77,6 +78,7 @@ class ToolSelector:
         self.ambiguity_margin = ambiguity_margin
         # Beta(1,1) posterior per tool: (successes, failures)
         self._history: dict[str, tuple[float, float]] = {}
+        self._unknowns: dict[str, float] = {}
 
     def record_outcome(self, tool_name: str, succeeded: bool) -> None:
         if type(succeeded) is not bool:
@@ -91,24 +93,32 @@ class ToolSelector:
 
     def use_dispatch_records(self, records) -> None:
         """Rebuild counts from distinct reported local records, never cumulative replay."""
-        history = {}; seen = set()
+        history = {}; unknowns = {}; seen = set()
         for record in records:
             if record.id in seen: continue
             if type(record.succeeded) is not bool:
                 raise ValueError("dispatch outcome must be an exact bool")
             seen.add(record.id)
+            if getattr(record, 'outcome_unknown', False):
+                unknowns[record.tool] = unknowns.get(record.tool, 0.0) + 1.0
+                continue
             success, failure = history.get(record.tool, (0.0, 0.0))
             history[record.tool] = (success + float(record.succeeded), failure + float(not record.succeeded))
         self._history = history
+        self._unknowns = unknowns
 
     def use_dispatch_counts(self, counts) -> None:
         history = {}
+        unknowns = {}
         for tool, row in counts.items():
             success, failure = row['successes'], row['failures']
-            if any(type(value) is not int or value < 0 for value in (success, failure)):
+            unknown = row.get('unknowns', 0)
+            if any(type(value) is not int or value < 0 for value in (success, failure, unknown)):
                 raise ValueError('dispatch counts must be nonnegative exact integers')
             history[tool] = (success, failure)
+            unknowns[tool] = unknown
         self._history = history
+        self._unknowns = unknowns
 
     def historical_success(self, tool_name: str) -> float:
         successes, failures = self._history.get(tool_name, (0.0, 0.0))
@@ -146,6 +156,7 @@ class ToolSelector:
                 historical_success=round(historical, 4),
                 supplied_successes=self._history.get(spec.name,(0.0,0.0))[0],
                 supplied_failures=self._history.get(spec.name,(0.0,0.0))[1],
+                supplied_unknowns=self._unknowns.get(spec.name, 0.0),
                 risk_penalty=risk_penalty,
                 preconditions_met=not missing,
                 missing_preconditions=missing,

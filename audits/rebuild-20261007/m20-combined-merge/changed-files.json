@@ -1,0 +1,112 @@
+[
+  {
+    "path": "backend/app/core/model_catalog.py",
+    "sha256": "1447cbcde315f04668eb4970749ad28a990e36dff0ce05494293b96a4b68a615",
+    "new": false
+  },
+  {
+    "path": "backend/app/core/providers.py",
+    "sha256": "4e2c669a4057882de4b585e311d9e8a6ac1a26cf477e6ee6f8ff6b6c2340296e",
+    "new": false
+  },
+  {
+    "path": "backend/app/core/shared_model_layer.py",
+    "sha256": "7382e3d1e196ff74c2f5a3974e4e03082e11a5ef19d48a3d02ff2943a3b8e84f",
+    "new": false
+  },
+  {
+    "path": "backend/app/modules/m20_general_cognitive_worker/executive.py",
+    "sha256": "88810df4406386ef18771723a22d63744bf5dacbb4eb178106ff94f5448558f4",
+    "new": false
+  },
+  {
+    "path": "backend/app/modules/m20_general_cognitive_worker/model_adapters.py",
+    "sha256": "3987cfb17929c1dfdd7c99fc85b86540234fdedb3874287ef4f4f18f6091fa5c",
+    "new": false
+  },
+  {
+    "path": "backend/app/modules/m20_general_cognitive_worker/runtime.py",
+    "sha256": "3968d8b7263b3aab0637642652975300992e2aeefcda14a6948152fbcfef36d4",
+    "new": false
+  },
+  {
+    "path": "backend/app/modules/m20_general_cognitive_worker/runtime_routes.py",
+    "sha256": "915bbaf13d56cec8dabd1e39760a42b6aedd342b120edaddf6d0907ea04add8c",
+    "new": false
+  },
+  {
+    "path": "backend/app/modules/m20_general_cognitive_worker/schemas.py",
+    "sha256": "f25c3d870a7c7ba2d78d255159f5601eba624536fc16d03bde66aca6f4625d44",
+    "new": false
+  },
+  {
+    "path": "backend/app/modules/m20_general_cognitive_worker/sql_repository.py",
+    "sha256": "e774cfadd0078d13606e5536783739bdc0a8accd81ed6891232aed061ac13581",
+    "new": false
+  },
+  {
+    "path": "backend/app/modules/m20_general_cognitive_worker/tool_selection.py",
+    "sha256": "e41fe7a57ecc02df6333f6095abedfb147b3fd72391aa7cad134372a866a6634",
+    "new": false
+  },
+  {
+    "path": "backend/app/modules/m20_general_cognitive_worker/tools.py",
+    "sha256": "3cf8965698efb39869e5a51f9dd881fe1f31c0718664ef791f05236f773daa21",
+    "new": false
+  },
+  {
+    "path": "migrations/versions/20261007_m20_model_unknown.py",
+    "sha256": "19e3a7ceaab0732a2e5d2d6b39296bce129a35a4bf4fac1ffdee0e08925acfdb",
+    "new": true
+  },
+  {
+    "path": "tests/modules/test_m20_combined_merge_canaries.py",
+    "sha256": "505491d9c3fbfd643dcf78948b6271b1ac1ccf908af9a64b6538d4e9c6454cf6",
+    "new": true
+  },
+  {
+    "path": "tests/modules/test_m20_model_unknown_migration.py",
+    "sha256": "7e30d2f486a43018f2a4c7d2077fa0458ec63f72e9396e495373697e73903d04",
+    "new": true
+  },
+  {
+    "path": "tests/modules/test_m20_resume_state.py",
+    "sha256": "cf15c2c4c8f04190ff3994207609ab9600ce136b0ec22c37b289a58e65904e74",
+    "new": true
+  },
+  {
+    "path": "tests/modules/test_m20_runtime_depth.py",
+    "sha256": "7de38e4faf67cdb69091dc18070e2c8d1602d6481598d16a207755ccceb2347c",
+    "new": false
+  },
+  {
+    "path": "tests/modules/test_m20_runtime_reentry.py",
+    "sha256": "3bdc5dd1d6ab0e00b14bc830edcd65f4407a02775a78f0bd1a634d37a104c277",
+    "new": true
+  },
+  {
+    "path": "tests/modules/test_m20_unknown_models.py",
+    "sha256": "9c916c9ad0ee46d13bc9e2444dc5e59fa0e7ddf2aa845b5781ca08ba7a3b3f87",
+    "new": true
+  },
+  {
+    "path": "tests/modules/test_m20_unknown_tool_loop.py",
+    "sha256": "10068ea2aed6d74e07616eac8a206cce4cebed7740281f675818bbc9e3cab38d",
+    "new": true
+  },
+  {
+    "path": "tests/test_model_catalog.py",
+    "sha256": "b4b444cf2770db0b7c2c2eb9f982675fddff622976a191617141c6cccaf145a5",
+    "new": false
+  },
+  {
+    "path": "tests/test_provider_unknown_effect.py",
+    "sha256": "760f72b4a1cb44e939a454262a7f5303cad298f9dfd9cd4edfb6371da1661708",
+    "new": true
+  },
+  {
+    "path": "tests/test_shared_unknown_effect.py",
+    "sha256": "f55692877732b6d15a0252486e791f40d5705a91a10ad9d6ba2abdcf70c92bef",
+    "new": true
+  }
+]

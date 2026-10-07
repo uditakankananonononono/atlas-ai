@@ -1,0 +1,128 @@
+FFFFFFFFFFFFFFFF                                                         [100%]
+=================================== FAILURES ===================================
+________ test_effect_unknown_blocks_before_reflection_or_fresh_approval ________
+tests/modules/test_m20_unknown_tool_loop.py:23: in test_effect_unknown_blocks_before_reflection_or_fresh_approval
+    assert calls==[{}] and ctx.state==TaskState.BLOCKED and ctx.plan[0].outcome_unknown
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../atlas-ai/.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'PlanNode' object has no attribute 'outcome_unknown'
+_____ test_persisted_unknown_survives_actual_sqlite_restart_and_manual_run _____
+tests/modules/test_m20_unknown_tool_loop.py:35: in test_persisted_unknown_survives_actual_sqlite_restart_and_manual_run
+    assert loaded.state==TaskState.BLOCKED and loaded.plan[0].outcome_unknown and len(calls)==1
+E   AssertionError: assert (<TaskState.FAILED: 'failed'> == <TaskState.BLOCKED: 'blocked'>
+E     
+E     - blocked
+E     + failed)
+_ test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval[toolerror] _
+tests/modules/test_m20_unknown_tool_loop.py:50: in test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval
+    assert len(calls)==1 and ctx.plan[0].outcome_unknown and ctx.state==TaskState.BLOCKED
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../atlas-ai/.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'PlanNode' object has no attribute 'outcome_unknown'
+_ test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval[approvalpending] _
+tests/modules/test_m20_unknown_tool_loop.py:50: in test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval
+    assert len(calls)==1 and ctx.plan[0].outcome_unknown and ctx.state==TaskState.BLOCKED
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../atlas-ai/.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'PlanNode' object has no attribute 'outcome_unknown'
+__ test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save __
+tests/modules/test_m20_unknown_tool_loop.py:62: in test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save
+    assert result.state==TaskState.BLOCKED and repo.load_task(ctx.id).plan[0].outcome_unknown and len(calls)==1
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../atlas-ai/.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'PlanNode' object has no attribute 'outcome_unknown'
+____ test_read_labeled_provider_wrapper_unknown_is_not_retried_or_reflected ____
+tests/modules/test_m20_unknown_tool_loop.py:70: in test_read_labeled_provider_wrapper_unknown_is_not_retried_or_reflected
+    from app.core.providers import ProviderOutcomeUnknown
+E   ImportError: cannot import name 'ProviderOutcomeUnknown' from 'app.core.providers' (/home/sandbox/atlas-peer-review/combined/backend/app/core/providers.py)
+____ test_overlapping_runtime_run_rejected_before_loop_state_or_second_call ____
+tests/modules/test_m20_runtime_reentry.py:18: in test_overlapping_runtime_run_rejected_before_loop_state_or_second_call
+    with pytest.raises(RuntimeError,match='runtime execution already active'):runtime.run_task(ctx.id)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+________________ test_mounted_busy_is_conflict_not_server_error ________________
+tests/modules/test_m20_runtime_reentry.py:30: in test_mounted_busy_is_conflict_not_server_error
+    from app.modules.m20_general_cognitive_worker.runtime import RuntimeBusy
+E   ImportError: cannot import name 'RuntimeBusy' from 'app.modules.m20_general_cognitive_worker.runtime' (/home/sandbox/atlas-peer-review/combined/backend/app/modules/m20_general_cognitive_worker/runtime.py)
+_______ test_held_execution_lock_rejects_before_any_model_or_task_write ________
+tests/modules/test_m20_runtime_reentry.py:45: in test_held_execution_lock_rejects_before_any_model_or_task_write
+    runtime._execution_lock.acquire()
+    ^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'GCWRuntime' object has no attribute '_execution_lock'
+___________ test_resume_cannot_reexecute_nonwaiting_node[succeeded] ____________
+tests/modules/test_m20_resume_state.py:11: in test_resume_cannot_reexecute_nonwaiting_node
+    with pytest.raises(ValueError,match='not waiting on approval'):svc.loop.resume_after_approval(ctx,node.id,True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'not waiting on approval'
+E     Actual message: 'node is not waiting on an approval'
+_____________ test_resume_cannot_reexecute_nonwaiting_node[failed] _____________
+tests/modules/test_m20_resume_state.py:11: in test_resume_cannot_reexecute_nonwaiting_node
+    with pytest.raises(ValueError,match='not waiting on approval'):svc.loop.resume_after_approval(ctx,node.id,True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'not waiting on approval'
+E     Actual message: 'node is not waiting on an approval'
+____________ test_resume_cannot_reexecute_nonwaiting_node[blocked] _____________
+tests/modules/test_m20_resume_state.py:11: in test_resume_cannot_reexecute_nonwaiting_node
+    with pytest.raises(ValueError,match='not waiting on approval'):svc.loop.resume_after_approval(ctx,node.id,True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'not waiting on approval'
+E     Actual message: 'node is not waiting on an approval'
+____________ test_resume_cannot_reexecute_nonwaiting_node[pending] _____________
+tests/modules/test_m20_resume_state.py:11: in test_resume_cannot_reexecute_nonwaiting_node
+    with pytest.raises(ValueError,match='not waiting on approval'):svc.loop.resume_after_approval(ctx,node.id,True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'not waiting on approval'
+E     Actual message: 'node is not waiting on an approval'
+____________ test_resume_cannot_reexecute_nonwaiting_node[running] _____________
+tests/modules/test_m20_resume_state.py:11: in test_resume_cannot_reexecute_nonwaiting_node
+    with pytest.raises(ValueError,match='not waiting on approval'):svc.loop.resume_after_approval(ctx,node.id,True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'not waiting on approval'
+E     Actual message: 'node is not waiting on an approval'
+____________ test_unknown_node_id_does_not_run_other_pending_nodes _____________
+tests/modules/test_m20_resume_state.py:16: in test_unknown_node_id_does_not_run_other_pending_nodes
+    with pytest.raises(ValueError,match='node not found'):svc.loop.resume_after_approval(ctx,'missing',True)
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/executive.py:381: in resume_after_approval
+    raise KeyError(node_id)
+E   KeyError: 'missing'
+___________________ test_waiting_without_token_cannot_resume ___________________
+tests/modules/test_m20_resume_state.py:21: in test_waiting_without_token_cannot_resume
+    with pytest.raises(ValueError,match='not waiting on approval'):svc.loop.resume_after_approval(ctx,node.id,True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'not waiting on approval'
+E     Actual message: 'node is not waiting on an approval'
+=============================== warnings summary ===============================
+tests/modules/test_m20_runtime_reentry.py::test_mounted_busy_is_conflict_not_server_error
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_unknown_tool_loop.py::test_effect_unknown_blocks_before_reflection_or_fresh_approval
+FAILED tests/modules/test_m20_unknown_tool_loop.py::test_persisted_unknown_survives_actual_sqlite_restart_and_manual_run
+FAILED tests/modules/test_m20_unknown_tool_loop.py::test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval[toolerror]
+FAILED tests/modules/test_m20_unknown_tool_loop.py::test_effectful_handler_special_exception_is_not_preflight_or_fresh_approval[approvalpending]
+FAILED tests/modules/test_m20_unknown_tool_loop.py::test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save
+FAILED tests/modules/test_m20_unknown_tool_loop.py::test_read_labeled_provider_wrapper_unknown_is_not_retried_or_reflected
+FAILED tests/modules/test_m20_runtime_reentry.py::test_overlapping_runtime_run_rejected_before_loop_state_or_second_call
+FAILED tests/modules/test_m20_runtime_reentry.py::test_mounted_busy_is_conflict_not_server_error
+FAILED tests/modules/test_m20_runtime_reentry.py::test_held_execution_lock_rejects_before_any_model_or_task_write
+FAILED tests/modules/test_m20_resume_state.py::test_resume_cannot_reexecute_nonwaiting_node[succeeded]
+FAILED tests/modules/test_m20_resume_state.py::test_resume_cannot_reexecute_nonwaiting_node[failed]
+FAILED tests/modules/test_m20_resume_state.py::test_resume_cannot_reexecute_nonwaiting_node[blocked]
+FAILED tests/modules/test_m20_resume_state.py::test_resume_cannot_reexecute_nonwaiting_node[pending]
+FAILED tests/modules/test_m20_resume_state.py::test_resume_cannot_reexecute_nonwaiting_node[running]
+FAILED tests/modules/test_m20_resume_state.py::test_unknown_node_id_does_not_run_other_pending_nodes
+FAILED tests/modules/test_m20_resume_state.py::test_waiting_without_token_cannot_resume
+16 failed, 1 warning in 7.45s

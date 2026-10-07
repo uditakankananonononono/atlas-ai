@@ -20,6 +20,8 @@ from referencing.exceptions import Unresolvable
 from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable
 
+from app.core.providers import ProviderOutcomeUnknown
+
 from .safety import SafetyGate, requires_approval
 from .schemas import ActionRecord, ApprovalGateDecision, Risk, ToolSpec
 
@@ -158,6 +160,7 @@ class ToolDispatcher:
         self.registry = registry
         self.safety = safety
         self.records: list[ActionRecord] = []
+        self.before_handler = None
 
     async def dispatch(
         self,
@@ -200,7 +203,11 @@ class ToolDispatcher:
         # A timeout/error may follow a completed effect. Retrying under one
         # reviewed token can duplicate that effect; require reconciliation.
         attempts = 1 if effectful else max(1, tool.spec.max_retries)
+        explicit_unknown = False
         last_error: Exception | None = None
+        # Checkpoint intent outside handler error handling; failure must prevent invocation.
+        if self.before_handler is not None:
+            self.before_handler(record)
         for _ in range(attempts):
             try:
                 result = await asyncio.wait_for(
@@ -217,10 +224,15 @@ class ToolDispatcher:
                 record.finished_at = datetime.now(timezone.utc)
                 self.records.append(record)
                 return record
+            except ProviderOutcomeUnknown as exc:
+                explicit_unknown = True
+                last_error = exc
+                break
             except Exception as exc:  # handler failure: retry within bound
                 last_error = exc
         record.succeeded = False
-        record.result_summary = (f"effect outcome unknown; not retried: {last_error}" if effectful else
+        record.outcome_unknown = effectful or explicit_unknown
+        record.result_summary = (f"effect outcome unknown; not retried: {last_error}" if record.outcome_unknown else
                                  f"failed after {attempts} attempt(s): {last_error}")
         record.finished_at = datetime.now(timezone.utc)
         self.records.append(record)

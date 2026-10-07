@@ -1,0 +1,67 @@
+.FF.F...F.F..F....                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_unknown_adapter_never_becomes_ordinary_unavailable[reason] ________
+tests/modules/test_m20_unknown_models.py:22: in test_unknown_adapter_never_becomes_ordinary_unavailable
+    assert out=={'available':False,'outcome':'unknown','retry_allowed':False,'error':'fixture dispatched'}
+E   AssertionError: assert {'available':...': False, ...} == {'available':...e dispatched'}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'failure_kind': 'outcome_unknown'}
+E     Use -v to get more diff
+_______ test_unknown_adapter_never_becomes_ordinary_unavailable[reflect] _______
+tests/modules/test_m20_unknown_models.py:22: in test_unknown_adapter_never_becomes_ordinary_unavailable
+    assert out=={'available':False,'outcome':'unknown','retry_allowed':False,'error':'fixture dispatched'}
+E   AssertionError: assert {'available':...': False, ...} == {'available':...e dispatched'}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'failure_kind': 'outcome_unknown'}
+E     Use -v to get more diff
+__________ test_reflection_unknown_is_not_recorded_as_model_analysis ___________
+tests/modules/test_m20_unknown_models.py:38: in test_reflection_unknown_is_not_recorded_as_model_analysis
+    assert svc.loop.traces[-1].detail=='reflection generation outcome unknown; no automatic retry'
+E   AssertionError: assert 'unresolved o...econciliation' == 'reflection g...tomatic retry'
+E     
+E     - reflection generation outcome unknown; no automatic retry
+E     + unresolved outcome unknown; execution held pending verified reconciliation
+_______ test_runtime_reflection_unknown_persists_and_holds_after_restart _______
+tests/modules/test_m20_unknown_models.py:67: in test_runtime_reflection_unknown_persists_and_holds_after_restart
+    assert result.state==TaskState.BLOCKED and repo.load_task(ctx.id).model_outcome_unknown and len(calls)==1 and len(effects)==1
+E   assert (<TaskState.BLOCKED: 'blocked'> == <TaskState.BLOCKED: 'blocked'>
+E     
+E       blocked and True and 1 == 1 and 0 == 1)
+E    +  where True = TaskContext(id='df1b823f-d89c-45d3-b6bb-64278bec1486', goal='fixture', model_outcome_unknown=True, reconciliation_evid...zinfo=datetime.timezone.utc), wm_partition='', standup_notes=[], last_run_at=None, ticks_served=0, tenant_id='default').model_outcome_unknown
+E    +    where TaskContext(id='df1b823f-d89c-45d3-b6bb-64278bec1486', goal='fixture', model_outcome_unknown=True, reconciliation_evid...zinfo=datetime.timezone.utc), wm_partition='', standup_notes=[], last_run_at=None, ticks_served=0, tenant_id='default') = load_task('df1b823f-d89c-45d3-b6bb-64278bec1486')
+E    +      where load_task = <app.modules.m20_general_cognitive_worker.sql_repository.GCWRepository object at 0x7f3105e698b0>.load_task
+E    +      and   'df1b823f-d89c-45d3-b6bb-64278bec1486' = TaskContext(id='df1b823f-d89c-45d3-b6bb-64278bec1486', goal='fixture', model_outcome_unknown=False, reconciliation_evi...zinfo=datetime.timezone.utc), wm_partition='', standup_notes=[], last_run_at=None, ticks_served=0, tenant_id='default').id
+E    +  and   1 = len([('Task: reflect. Reply with ONLY a JSON object. For \'reason\' use a nonempty result string. For \'reflect\' use {"ca...e|false}.\nInput: {"goal": "fixture", "failed_step": "fixture", "error": "dispatch requires one running node"}', None)])
+E    +  and   0 = len([])
+_____ test_persisted_unknown_survives_actual_sqlite_restart_and_manual_run _____
+tests/modules/test_m20_unknown_tool_loop.py:35: in test_persisted_unknown_survives_actual_sqlite_restart_and_manual_run
+    assert loaded.state==TaskState.BLOCKED and loaded.plan[0].outcome_unknown and len(calls)==1
+E   AssertionError: assert (<TaskState.FAILED: 'failed'> == <TaskState.BLOCKED: 'blocked'>
+E     
+E     - blocked
+E     + failed)
+__ test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save __
+tests/modules/test_m20_unknown_tool_loop.py:62: in test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save
+    assert result.state==TaskState.BLOCKED and repo.load_task(ctx.id).plan[0].outcome_unknown and len(calls)==1
+E   AssertionError: assert (<TaskState.BLOCKED: 'blocked'> == <TaskState.BLOCKED: 'blocked'>
+E     
+E       blocked and False)
+E    +  where False = PlanNode(id='54637e24-16c4-4263-963f-5d100bcbd541', title='fixture effect', kind='task', tool='fixture_effect', argume...ary='blocked: approval already used; reconcile effect outcome before fresh review', output=None, outcome_unknown=False).outcome_unknown
+=============================== warnings summary ===============================
+tests/modules/test_m20_runtime_reentry.py::test_mounted_busy_is_conflict_not_server_error
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_unknown_models.py::test_unknown_adapter_never_becomes_ordinary_unavailable[reason]
+FAILED tests/modules/test_m20_unknown_models.py::test_unknown_adapter_never_becomes_ordinary_unavailable[reflect]
+FAILED tests/modules/test_m20_unknown_models.py::test_reflection_unknown_is_not_recorded_as_model_analysis
+FAILED tests/modules/test_m20_unknown_models.py::test_runtime_reflection_unknown_persists_and_holds_after_restart
+FAILED tests/modules/test_m20_unknown_tool_loop.py::test_persisted_unknown_survives_actual_sqlite_restart_and_manual_run
+FAILED tests/modules/test_m20_unknown_tool_loop.py::test_runtime_resume_persists_tool_unknown_without_explicit_posteffect_save
+6 failed, 12 passed, 1 warning in 2.93s
