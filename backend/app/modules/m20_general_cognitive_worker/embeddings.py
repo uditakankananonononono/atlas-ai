@@ -61,9 +61,15 @@ class DeterministicEmbedding:
 def cosine_similarity(a: list[float], b: list[float]) -> float:
     if not a or not b or len(a) != len(b):
         return 0.0
-    dot = sum(x * y for x, y in zip(a, b))
-    norm_a = math.sqrt(sum(x * x for x in a))
-    norm_b = math.sqrt(sum(x * x for x in b))
-    if norm_a == 0.0 or norm_b == 0.0:
+    if any(type(value) not in (int, float) or not math.isfinite(value) for vector in (a, b) for value in vector):
+        raise ValueError("finite numeric vector components required, not bool")
+    scale_a = max(abs(value) for value in a)
+    scale_b = max(abs(value) for value in b)
+    if scale_a == 0 or scale_b == 0:
         return 0.0
-    return dot / (norm_a * norm_b)
+    aa = [value / scale_a for value in a]
+    bb = [value / scale_b for value in b]
+    dot = math.fsum(x * y for x, y in zip(aa, bb))
+    norm_a = math.sqrt(math.fsum(x * x for x in aa))
+    norm_b = math.sqrt(math.fsum(y * y for y in bb))
+    return max(-1.0, min(1.0, dot / norm_a / norm_b))

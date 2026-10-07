@@ -1,0 +1,56 @@
+...........FFFF                                                          [100%]
+=================================== FAILURES ===================================
+____________ test_cosine_large_finite_vectors_keep_exact_direction _____________
+
+    def test_cosine_large_finite_vectors_keep_exact_direction():
+        from app.modules.m20_general_cognitive_worker.embeddings import cosine_similarity
+>       assert cosine_similarity([1e308, 1e308], [1e308, 1e308]) == pytest.approx(1)
+E       assert nan == 1 ± 1.0e-06
+E         
+E         comparison failed
+E         Obtained: nan
+E         Expected: 1 ± 1.0e-06
+
+tests/modules/test_m20_long_term_memory.py:184: AssertionError
+_________________ test_cosine_invalid_components_rejected[nan] _________________
+
+value = nan
+
+    @pytest.mark.parametrize("value", [float("nan"), float("inf"), True])
+    def test_cosine_invalid_components_rejected(value):
+        from app.modules.m20_general_cognitive_worker.embeddings import cosine_similarity
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_long_term_memory.py:191: Failed
+_________________ test_cosine_invalid_components_rejected[inf] _________________
+
+value = inf
+
+    @pytest.mark.parametrize("value", [float("nan"), float("inf"), True])
+    def test_cosine_invalid_components_rejected(value):
+        from app.modules.m20_general_cognitive_worker.embeddings import cosine_similarity
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_long_term_memory.py:191: Failed
+________________ test_cosine_invalid_components_rejected[True] _________________
+
+value = True
+
+    @pytest.mark.parametrize("value", [float("nan"), float("inf"), True])
+    def test_cosine_invalid_components_rejected(value):
+        from app.modules.m20_general_cognitive_worker.embeddings import cosine_similarity
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_long_term_memory.py:191: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_long_term_memory.py::test_cosine_large_finite_vectors_keep_exact_direction
+FAILED tests/modules/test_m20_long_term_memory.py::test_cosine_invalid_components_rejected[nan]
+FAILED tests/modules/test_m20_long_term_memory.py::test_cosine_invalid_components_rejected[inf]
+FAILED tests/modules/test_m20_long_term_memory.py::test_cosine_invalid_components_rejected[True]
+4 failed, 11 passed in 1.32s
