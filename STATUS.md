@@ -898,3 +898,7 @@ Seven reproduced failures: semantic/episodic/retrospective stores alias provider
 ## Supplied ideation flag ranking
 
 Three actual initial failures retained: malformed/NaN weights accepted, truthy string false earns weight, finite weight addition overflows. Finite numeric/notbool weights, exactTrue criterion flags, fsum with overflow rejection and batch validation before score mutation.76reflection/runtimepass1warning; recorded87adjacent2301pass2warnings40.28s. Explicit weighted ranking of supplied flags only, not independent feasibility/constraint evaluation, creative cognition or original divergent/convergent capability. Latest full9869pass source724c275 predates three later source corrections.
+
+## Supplied uncertainty threshold validation
+
+Three reproduced failures retained: NaN becomesconfidence1, invalid/reversed thresholds accepted, stringfalsehighstakes accepted. Exactfinite0..1confidence/thresholds, highstakes thresholdnotlowerthanordinary, exactboolflag.79reflection/runtimepass1warning; recorded87adjacent2304pass2warnings39.10s. Question generation from supplied confidence/flag only, not empirically measured epistemic uncertainty or high-stakes safety certification. Latestfull9869passsource724c275 predatesfourlaterfixes.
