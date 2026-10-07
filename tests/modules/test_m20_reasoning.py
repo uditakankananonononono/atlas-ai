@@ -270,3 +270,9 @@ def test_sensitivity_invalid_evaluator_outputs_reject(output):
 def test_littles_law_invalid_or_undefined_inputs_reject(kwargs):
     with pytest.raises(ValueError):
         R.littles_law(**kwargs)
+
+
+@pytest.mark.parametrize('predictions', [[(0.8, 'false')], [(True, False)], [(1.1, True)], [(float('nan'), False)], [(0.8, 1)], [(0.8,)]])
+def test_brier_rejects_invalid_probability_and_nonbool_labels(predictions):
+    with pytest.raises(ValueError):
+        R.brier_score(predictions)

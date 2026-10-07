@@ -1,0 +1,64 @@
+...........................................................FFFFF.        [100%]
+=================================== FAILURES ===================================
+___ test_brier_rejects_invalid_probability_and_nonbool_labels[predictions0] ____
+
+predictions = [(0.8, 'false')]
+
+    @pytest.mark.parametrize('predictions', [[(0.8, 'false')], [(True, False)], [(1.1, True)], [(float('nan'), False)], [(0.8, 1)], [(0.8,)]])
+    def test_brier_rejects_invalid_probability_and_nonbool_labels(predictions):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:277: Failed
+___ test_brier_rejects_invalid_probability_and_nonbool_labels[predictions1] ____
+
+predictions = [(True, False)]
+
+    @pytest.mark.parametrize('predictions', [[(0.8, 'false')], [(True, False)], [(1.1, True)], [(float('nan'), False)], [(0.8, 1)], [(0.8,)]])
+    def test_brier_rejects_invalid_probability_and_nonbool_labels(predictions):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:277: Failed
+___ test_brier_rejects_invalid_probability_and_nonbool_labels[predictions2] ____
+
+predictions = [(1.1, True)]
+
+    @pytest.mark.parametrize('predictions', [[(0.8, 'false')], [(True, False)], [(1.1, True)], [(float('nan'), False)], [(0.8, 1)], [(0.8,)]])
+    def test_brier_rejects_invalid_probability_and_nonbool_labels(predictions):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:277: Failed
+___ test_brier_rejects_invalid_probability_and_nonbool_labels[predictions3] ____
+
+predictions = [(nan, False)]
+
+    @pytest.mark.parametrize('predictions', [[(0.8, 'false')], [(True, False)], [(1.1, True)], [(float('nan'), False)], [(0.8, 1)], [(0.8,)]])
+    def test_brier_rejects_invalid_probability_and_nonbool_labels(predictions):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:277: Failed
+___ test_brier_rejects_invalid_probability_and_nonbool_labels[predictions4] ____
+
+predictions = [(0.8, 1)]
+
+    @pytest.mark.parametrize('predictions', [[(0.8, 'false')], [(True, False)], [(1.1, True)], [(float('nan'), False)], [(0.8, 1)], [(0.8,)]])
+    def test_brier_rejects_invalid_probability_and_nonbool_labels(predictions):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_reasoning.py:277: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reasoning.py::test_brier_rejects_invalid_probability_and_nonbool_labels[predictions0]
+FAILED tests/modules/test_m20_reasoning.py::test_brier_rejects_invalid_probability_and_nonbool_labels[predictions1]
+FAILED tests/modules/test_m20_reasoning.py::test_brier_rejects_invalid_probability_and_nonbool_labels[predictions2]
+FAILED tests/modules/test_m20_reasoning.py::test_brier_rejects_invalid_probability_and_nonbool_labels[predictions3]
+FAILED tests/modules/test_m20_reasoning.py::test_brier_rejects_invalid_probability_and_nonbool_labels[predictions4]
+5 failed, 60 passed in 1.28s
