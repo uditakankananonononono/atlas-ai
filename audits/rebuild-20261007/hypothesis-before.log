@@ -1,0 +1,82 @@
+.........................FFFFF                                           [100%]
+=================================== FAILURES ===================================
+____________ test_hypothesis_single_survivor_accepts_next_evidence _____________
+
+    def test_hypothesis_single_survivor_accepts_next_evidence():
+        tracker = HypothesisTracker()
+        a = tracker.add("only remaining candidate", prior=0.8)
+        tracker.update({a.hypothesis_id: 1.0})
+>       assert tracker.update({a.hypothesis_id: 2.0})[0].probability == 1.0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_foresight.py:371: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.foresight.HypothesisTracker object at 0x7f092870a810>
+likelihood_ratios = {'e6c7c0c8-ecab-445c-897c-ecefe6a0a778': 2.0}
+
+    def update(self, likelihood_ratios: dict[str, float]) -> list[Hypothesis]:
+        """Apply one evidence item: per-hypothesis likelihood ratio
+        P(evidence | hypothesis) / P(evidence | not hypothesis). Posteriors
+        are computed in odds form and renormalized across active hypotheses."""
+        for hid, lr in likelihood_ratios.items():
+            if lr <= 0:
+                raise ValueError("likelihood ratios must be positive")
+            h = self.hypotheses[hid]
+>           odds = h.probability / (1.0 - h.probability)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ZeroDivisionError: float division by zero
+
+backend/app/modules/m20_general_cognitive_worker/foresight.py:234: ZeroDivisionError
+_____________ test_hypothesis_invalid_batch_leaves_state_unchanged _____________
+
+    def test_hypothesis_invalid_batch_leaves_state_unchanged():
+        tracker = HypothesisTracker()
+        a = tracker.add("candidate", prior=0.4)
+        with pytest.raises(KeyError):
+            tracker.update({a.hypothesis_id: 3.0, "missing": 2.0})
+>       assert tracker.hypotheses[a.hypothesis_id].probability == 0.4
+E       AssertionError: assert 0.6666666666666666 == 0.4
+E        +  where 0.6666666666666666 = Hypothesis(hypothesis_id='0137f1ec-7e11-4321-839b-181b7113686c', statement='candidate', probability=0.6666666666666666, status='active', evidence_count=1).probability
+
+tests/modules/test_m20_foresight.py:379: AssertionError
+______________ test_bayesian_ratio_rejects_nonfinite_or_bool[nan] ______________
+
+ratio = nan
+
+    @pytest.mark.parametrize("ratio", [float("nan"), float("inf"), True])
+    def test_bayesian_ratio_rejects_nonfinite_or_bool(ratio):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:385: Failed
+______________ test_bayesian_ratio_rejects_nonfinite_or_bool[inf] ______________
+
+ratio = inf
+
+    @pytest.mark.parametrize("ratio", [float("nan"), float("inf"), True])
+    def test_bayesian_ratio_rejects_nonfinite_or_bool(ratio):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:385: Failed
+_____________ test_bayesian_ratio_rejects_nonfinite_or_bool[True] ______________
+
+ratio = True
+
+    @pytest.mark.parametrize("ratio", [float("nan"), float("inf"), True])
+    def test_bayesian_ratio_rejects_nonfinite_or_bool(ratio):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:385: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_hypothesis_single_survivor_accepts_next_evidence
+FAILED tests/modules/test_m20_foresight.py::test_hypothesis_invalid_batch_leaves_state_unchanged
+FAILED tests/modules/test_m20_foresight.py::test_bayesian_ratio_rejects_nonfinite_or_bool[nan]
+FAILED tests/modules/test_m20_foresight.py::test_bayesian_ratio_rejects_nonfinite_or_bool[inf]
+FAILED tests/modules/test_m20_foresight.py::test_bayesian_ratio_rejects_nonfinite_or_bool[True]
+5 failed, 25 passed in 1.31s

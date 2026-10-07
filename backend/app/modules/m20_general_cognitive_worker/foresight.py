@@ -211,14 +211,18 @@ class Hypothesis:
 
 
 class HypothesisTracker:
+    """Heuristic ranking of supplied hypotheses, not categorical Bayesian
+    inference. Binary odds updates are independently normalized; retirement
+    is a fixed policy, not evidence that a statement is false.
+    """
     RETIRE_BELOW = 0.01
 
     def __init__(self) -> None:
         self.hypotheses: dict[str, Hypothesis] = {}
 
     def add(self, statement: str, *, prior: float) -> Hypothesis:
-        if not 0.0 < prior < 1.0:
-            raise ValueError("prior must be in (0, 1)")
+        if isinstance(prior, bool) or not isinstance(prior, (int, float)) or not math.isfinite(prior) or not 0.0 < prior < 1.0:
+            raise ValueError("prior must be finite numeric in (0, 1)")
         h = Hypothesis(hypothesis_id=_uid(), statement=statement, probability=prior)
         self.hypotheses[h.hypothesis_id] = h
         return h
@@ -227,12 +231,16 @@ class HypothesisTracker:
         """Apply one evidence item: per-hypothesis likelihood ratio
         P(evidence | hypothesis) / P(evidence | not hypothesis). Posteriors
         are computed in odds form and renormalized across active hypotheses."""
+        # Compute the complete validated batch before changing any record.
+        updates = {}
         for hid, lr in likelihood_ratios.items():
-            if lr <= 0:
-                raise ValueError("likelihood ratios must be positive")
             h = self.hypotheses[hid]
-            odds = h.probability / (1.0 - h.probability)
-            h.probability = odds * lr / (1.0 + odds * lr)
+            if h.status != "active":
+                raise ValueError("cannot update retired hypothesis")
+            updates[hid] = BayesianUpdater.update(h.probability, lr)
+        for hid, posterior in updates.items():
+            h = self.hypotheses[hid]
+            h.probability = posterior
             h.evidence_count += 1
         active = [h for h in self.hypotheses.values() if h.status == "active"]
         for h in active:
@@ -259,13 +267,17 @@ class BayesianUpdater:
 
     @staticmethod
     def update(prior: float, likelihood_ratio: float) -> float:
-        if not 0.0 <= prior <= 1.0:
-            raise ValueError("prior must be in [0, 1]")
-        if likelihood_ratio <= 0:
-            raise ValueError("likelihood_ratio must be positive")
-        odds = prior / (1.0 - prior) if prior < 1.0 else math.inf
-        post_odds = odds * likelihood_ratio
-        return 1.0 if math.isinf(post_odds) else post_odds / (1.0 + post_odds)
+        if isinstance(prior, bool) or not isinstance(prior, (int, float)) or not math.isfinite(prior) or not 0.0 <= prior <= 1.0:
+            raise ValueError("prior must be finite numeric in [0, 1]")
+        if isinstance(likelihood_ratio, bool) or not isinstance(likelihood_ratio, (int, float)) or not math.isfinite(likelihood_ratio) or likelihood_ratio <= 0:
+            raise ValueError("likelihood_ratio must be finite positive numeric")
+        if prior == 0.0 or prior == 1.0:
+            return float(prior)
+        log_odds = math.log(prior) - math.log1p(-prior) + math.log(likelihood_ratio)
+        if log_odds >= 0:
+            return 1.0 / (1.0 + math.exp(-log_odds))
+        odds = math.exp(log_odds)
+        return odds / (1.0 + odds)
 
     @staticmethod
     def update_binary(prior: float, *, sensitivity: float, specificity: float,

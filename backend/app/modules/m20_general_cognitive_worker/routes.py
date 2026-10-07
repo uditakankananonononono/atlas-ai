@@ -911,14 +911,19 @@ def row38_update_hypotheses(request: HypothesisEvidenceRequest, service: Any = D
         ranking = service.hypotheses.update(request.likelihood_ratios)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=f"unknown hypothesis_id: {exc}")
-    return {"ranking": [{"hypothesis_id": h.hypothesis_id, "statement": h.statement,
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    return {"scope": "supplied independent-odds normalized ranking heuristic, not categorical Bayesian inference", "ranking": [{"hypothesis_id": h.hypothesis_id, "statement": h.statement,
                          "probability": h.probability, "evidence_count": h.evidence_count}
                         for h in ranking]}
 
 
 @router.post("/meta/bayes/update")
 def row39_bayesian_update(request: BayesianRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
-    posterior = service.bayes.update(request.prior, request.likelihood_ratio)
+    try:
+        posterior = service.bayes.update(request.prior, request.likelihood_ratio)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return {"prior": request.prior, "likelihood_ratio": request.likelihood_ratio,
             "posterior": posterior}
 

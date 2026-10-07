@@ -1,0 +1,117 @@
+.........................FFFFF....F.........................F            [100%]
+=================================== FAILURES ===================================
+____________ test_hypothesis_single_survivor_accepts_next_evidence _____________
+
+    def test_hypothesis_single_survivor_accepts_next_evidence():
+        tracker = HypothesisTracker()
+        a = tracker.add("only remaining candidate", prior=0.8)
+        tracker.update({a.hypothesis_id: 1.0})
+>       assert tracker.update({a.hypothesis_id: 2.0})[0].probability == 1.0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m20_foresight.py:371: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m20_general_cognitive_worker.foresight.HypothesisTracker object at 0x7fc45806aba0>
+likelihood_ratios = {'4a772082-4e72-4660-94b4-48a79bf8d55f': 2.0}
+
+    def update(self, likelihood_ratios: dict[str, float]) -> list[Hypothesis]:
+        """Apply one evidence item: per-hypothesis likelihood ratio
+        P(evidence | hypothesis) / P(evidence | not hypothesis). Posteriors
+        are computed in odds form and renormalized across active hypotheses."""
+        for hid, lr in likelihood_ratios.items():
+            if lr <= 0:
+                raise ValueError("likelihood ratios must be positive")
+            h = self.hypotheses[hid]
+>           odds = h.probability / (1.0 - h.probability)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ZeroDivisionError: float division by zero
+
+backend/app/modules/m20_general_cognitive_worker/foresight.py:234: ZeroDivisionError
+_____________ test_hypothesis_invalid_batch_leaves_state_unchanged _____________
+
+    def test_hypothesis_invalid_batch_leaves_state_unchanged():
+        tracker = HypothesisTracker()
+        a = tracker.add("candidate", prior=0.4)
+        with pytest.raises(KeyError):
+            tracker.update({a.hypothesis_id: 3.0, "missing": 2.0})
+>       assert tracker.hypotheses[a.hypothesis_id].probability == 0.4
+E       AssertionError: assert 0.6666666666666666 == 0.4
+E        +  where 0.6666666666666666 = Hypothesis(hypothesis_id='7743976a-e70e-486b-8d70-0a2d1789b590', statement='candidate', probability=0.6666666666666666, status='active', evidence_count=1).probability
+
+tests/modules/test_m20_foresight.py:379: AssertionError
+______________ test_bayesian_ratio_rejects_nonfinite_or_bool[nan] ______________
+
+ratio = nan
+
+    @pytest.mark.parametrize("ratio", [float("nan"), float("inf"), True])
+    def test_bayesian_ratio_rejects_nonfinite_or_bool(ratio):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:385: Failed
+______________ test_bayesian_ratio_rejects_nonfinite_or_bool[inf] ______________
+
+ratio = inf
+
+    @pytest.mark.parametrize("ratio", [float("nan"), float("inf"), True])
+    def test_bayesian_ratio_rejects_nonfinite_or_bool(ratio):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:385: Failed
+_____________ test_bayesian_ratio_rejects_nonfinite_or_bool[True] ______________
+
+ratio = True
+
+    @pytest.mark.parametrize("ratio", [float("nan"), float("inf"), True])
+    def test_bayesian_ratio_rejects_nonfinite_or_bool(ratio):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:385: Failed
+________________ test_hypothesis_invalid_ratio_batch_is_atomic _________________
+
+    def test_hypothesis_invalid_ratio_batch_is_atomic():
+        tracker = HypothesisTracker()
+        a = tracker.add("a", prior=0.4)
+        b = tracker.add("b", prior=0.6)
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_m20_foresight.py:398: Failed
+___________ test_hypothesis_invalid_batch_http_has_no_partial_update ___________
+
+client = (<starlette.testclient.TestClient object at 0x7fc4566acb00>, <app.modules.m20_general_cognitive_worker.service.CognitiveWorkerService object at 0x7fc4566ce420>)
+
+    def test_hypothesis_invalid_batch_http_has_no_partial_update(client):
+        c, service = client
+        h = service.hypotheses.add("candidate", prior=0.4)
+        response = c.post("/api/modules/20/meta/hypotheses/evidence", json={"likelihood_ratios": {h.hypothesis_id: 3, "missing": 2}})
+        assert response.status_code == 404
+>       assert service.hypotheses.hypotheses[h.hypothesis_id].probability == 0.4
+E       AssertionError: assert 0.6666666666666666 == 0.4
+E        +  where 0.6666666666666666 = Hypothesis(hypothesis_id='45c61158-14e8-493e-9176-aa922341d177', statement='candidate', probability=0.6666666666666666, status='active', evidence_count=1).probability
+
+tests/modules/test_m20_foresight_routes.py:326: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_foresight.py::test_hypothesis_single_survivor_accepts_next_evidence
+FAILED tests/modules/test_m20_foresight.py::test_hypothesis_invalid_batch_leaves_state_unchanged
+FAILED tests/modules/test_m20_foresight.py::test_bayesian_ratio_rejects_nonfinite_or_bool[nan]
+FAILED tests/modules/test_m20_foresight.py::test_bayesian_ratio_rejects_nonfinite_or_bool[inf]
+FAILED tests/modules/test_m20_foresight.py::test_bayesian_ratio_rejects_nonfinite_or_bool[True]
+FAILED tests/modules/test_m20_foresight.py::test_hypothesis_invalid_ratio_batch_is_atomic
+FAILED tests/modules/test_m20_foresight_routes.py::test_hypothesis_invalid_batch_http_has_no_partial_update
+7 failed, 54 passed, 1 warning in 5.47s
