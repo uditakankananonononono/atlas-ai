@@ -394,9 +394,14 @@ class GCWRuntime:
     def _persist_context(self, context: TaskContext) -> None:
         context.updated_at = datetime.now(timezone.utc)
         self.repo.save_task(context)
-        for action in self.dispatcher.records[self._persisted_actions:]:
-            self.repo.save_action(action)
-            self._persisted_actions += 1
+        try:
+            for action in self.dispatcher.records[self._persisted_actions:]:
+                self.repo.save_action(action)
+                self._persisted_actions += 1
+        finally:
+            if self._persisted_actions:
+                del self.dispatcher.records[:self._persisted_actions]
+                self._persisted_actions = 0
         new_traces = self.loop.traces[self._persisted_traces:]
         for trace in new_traces:
             self.repo.save_trace(trace)
