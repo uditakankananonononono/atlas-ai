@@ -1,0 +1,687 @@
+
+==================================== ERRORS ====================================
+_______ ERROR collecting tests/modules/test_m16_ai_systems_1910_1959.py ________
+tests/modules/test_m16_ai_systems_1910_1959.py:8: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1010_1034.py _________
+tests/modules/test_m16_analysis_1010_1034.py:3: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1035_1038.py _________
+tests/modules/test_m16_analysis_1035_1038.py:3: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1039_1043.py _________
+tests/modules/test_m16_analysis_1039_1043.py:3: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1044_1047.py _________
+tests/modules/test_m16_analysis_1044_1047.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1048_1052.py _________
+tests/modules/test_m16_analysis_1048_1052.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1053_1057.py _________
+tests/modules/test_m16_analysis_1053_1057.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1058_1062.py _________
+tests/modules/test_m16_analysis_1058_1062.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1063_1067.py _________
+tests/modules/test_m16_analysis_1063_1067.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1068_1072.py _________
+tests/modules/test_m16_analysis_1068_1072.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1073_1077.py _________
+tests/modules/test_m16_analysis_1073_1077.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1078_1082.py _________
+tests/modules/test_m16_analysis_1078_1082.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1083_1087.py _________
+tests/modules/test_m16_analysis_1083_1087.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1088_1092.py _________
+tests/modules/test_m16_analysis_1088_1092.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1093_1097.py _________
+tests/modules/test_m16_analysis_1093_1097.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1098_1102.py _________
+tests/modules/test_m16_analysis_1098_1102.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1103_1107.py _________
+tests/modules/test_m16_analysis_1103_1107.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_analysis_1108_1109.py _________
+tests/modules/test_m16_analysis_1108_1109.py:2: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+______ ERROR collecting tests/modules/test_m16_asymmetric_proof_events.py ______
+tests/modules/test_m16_asymmetric_proof_events.py:5: in <module>
+    from app.main import app
+backend/app/main.py:6: in <module>
+    from app.modules.registry import IMPLEMENTED_SPECS
+backend/app/modules/registry.py:15: in <module>
+    from app.modules.m20_general_cognitive_worker import spec as general_cognitive_worker
+backend/app/modules/m20_general_cognitive_worker/__init__.py:6: in <module>
+    from .routes import bind_service, router
+backend/app/modules/m20_general_cognitive_worker/routes.py:1584: in <module>
+    from .specialized_domain_routes import router as specialized_domain_router
+backend/app/modules/m20_general_cognitive_worker/specialized_domain_routes.py:9: in <module>
+    from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
+backend/app/modules/m20_general_cognitive_worker/specialized_domain.py:17: in <module>
+    from app.modules.m16_executive_dashboard import analysis as executive_analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+____ ERROR collecting tests/modules/test_m16_authenticated_proof_events.py _____
+tests/modules/test_m16_authenticated_proof_events.py:3: in <module>
+    from app.main import app
+backend/app/main.py:6: in <module>
+    from app.modules.registry import IMPLEMENTED_SPECS
+backend/app/modules/registry.py:15: in <module>
+    from app.modules.m20_general_cognitive_worker import spec as general_cognitive_worker
+backend/app/modules/m20_general_cognitive_worker/__init__.py:6: in <module>
+    from .routes import bind_service, router
+backend/app/modules/m20_general_cognitive_worker/routes.py:1584: in <module>
+    from .specialized_domain_routes import router as specialized_domain_router
+backend/app/modules/m20_general_cognitive_worker/specialized_domain_routes.py:9: in <module>
+    from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
+backend/app/modules/m20_general_cognitive_worker/specialized_domain.py:17: in <module>
+    from app.modules.m16_executive_dashboard import analysis as executive_analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+___ ERROR collecting tests/modules/test_m16_climate_environment_1610_1659.py ___
+tests/modules/test_m16_climate_environment_1610_1659.py:3: in <module>
+    from app.modules.m16_executive_dashboard import analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_dashboard_analytics.py ________
+tests/modules/test_m16_dashboard_analytics.py:3: in <module>
+    from app.modules.m16_executive_dashboard.kpis import EVIDENCE_SAMPLE_LIMIT
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_emerging_0910_0959.py _________
+tests/modules/test_m16_emerging_0910_0959.py:10: in <module>
+    from app.modules.m16_executive_dashboard import emerging_capabilities_0910_0959 as em
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_executive_dashboard.py ________
+tests/modules/test_m16_executive_dashboard.py:2: in <module>
+    from app.modules.m16_executive_dashboard.schemas import *
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+______ ERROR collecting tests/modules/test_m16_expiry_intake_residual.py _______
+tests/modules/test_m16_expiry_intake_residual.py:6: in <module>
+    from app.modules.m16_executive_dashboard.repository import SqlDashboardRepository,ApprovalRow,EventRow
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+_________ ERROR collecting tests/modules/test_m16_finance_1310_1359.py _________
+tests/modules/test_m16_finance_1310_1359.py:4: in <module>
+    from app.modules.m16_executive_dashboard import analysis, finance_core as finance
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+_________ ERROR collecting tests/modules/test_m16_finance_1360_1409.py _________
+tests/modules/test_m16_finance_1360_1409.py:3: in <module>
+    from app.main import app
+backend/app/main.py:6: in <module>
+    from app.modules.registry import IMPLEMENTED_SPECS
+backend/app/modules/registry.py:15: in <module>
+    from app.modules.m20_general_cognitive_worker import spec as general_cognitive_worker
+backend/app/modules/m20_general_cognitive_worker/__init__.py:6: in <module>
+    from .routes import bind_service, router
+backend/app/modules/m20_general_cognitive_worker/routes.py:1584: in <module>
+    from .specialized_domain_routes import router as specialized_domain_router
+backend/app/modules/m20_general_cognitive_worker/specialized_domain_routes.py:9: in <module>
+    from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
+backend/app/modules/m20_general_cognitive_worker/specialized_domain.py:17: in <module>
+    from app.modules.m16_executive_dashboard import analysis as executive_analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+______ ERROR collecting tests/modules/test_m16_freshness_instant_order.py ______
+tests/modules/test_m16_freshness_instant_order.py:3: in <module>
+    from app.modules.m16_executive_dashboard.schemas import Event
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+_________ ERROR collecting tests/modules/test_m16_hz30_decide_race.py __________
+tests/modules/test_m16_hz30_decide_race.py:24: in <module>
+    from app.modules.m16_executive_dashboard.repository import (
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+________ ERROR collecting tests/modules/test_m16_intake_concurrency.py _________
+tests/modules/test_m16_intake_concurrency.py:20: in <module>
+    from app.modules.m16_executive_dashboard.repository import EventRow,SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+___________ ERROR collecting tests/modules/test_m16_loaded_expiry.py ___________
+tests/modules/test_m16_loaded_expiry.py:6: in <module>
+    from app.modules.m16_executive_dashboard.repository import SqlDashboardRepository,ApprovalRow
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+_________ ERROR collecting tests/modules/test_m16_planning_388_399.py __________
+tests/modules/test_m16_planning_388_399.py:4: in <module>
+    from app.modules.m16_executive_dashboard import planning
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+_______ ERROR collecting tests/modules/test_m16_producer_key_registry.py _______
+tests/modules/test_m16_producer_key_registry.py:7: in <module>
+    from app.main import app
+backend/app/main.py:6: in <module>
+    from app.modules.registry import IMPLEMENTED_SPECS
+backend/app/modules/registry.py:15: in <module>
+    from app.modules.m20_general_cognitive_worker import spec as general_cognitive_worker
+backend/app/modules/m20_general_cognitive_worker/__init__.py:6: in <module>
+    from .routes import bind_service, router
+backend/app/modules/m20_general_cognitive_worker/routes.py:1584: in <module>
+    from .specialized_domain_routes import router as specialized_domain_router
+backend/app/modules/m20_general_cognitive_worker/specialized_domain_routes.py:9: in <module>
+    from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
+backend/app/modules/m20_general_cognitive_worker/specialized_domain.py:17: in <module>
+    from app.modules.m16_executive_dashboard import analysis as executive_analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+_______ ERROR collecting tests/modules/test_m16_producer_subscription.py _______
+tests/modules/test_m16_producer_subscription.py:3: in <module>
+    from app.main import app
+backend/app/main.py:6: in <module>
+    from app.modules.registry import IMPLEMENTED_SPECS
+backend/app/modules/registry.py:15: in <module>
+    from app.modules.m20_general_cognitive_worker import spec as general_cognitive_worker
+backend/app/modules/m20_general_cognitive_worker/__init__.py:6: in <module>
+    from .routes import bind_service, router
+backend/app/modules/m20_general_cognitive_worker/routes.py:1584: in <module>
+    from .specialized_domain_routes import router as specialized_domain_router
+backend/app/modules/m20_general_cognitive_worker/specialized_domain_routes.py:9: in <module>
+    from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
+backend/app/modules/m20_general_cognitive_worker/specialized_domain.py:17: in <module>
+    from app.modules.m16_executive_dashboard import analysis as executive_analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+______ ERROR collecting tests/modules/test_m16_proof_event_persistence.py ______
+tests/modules/test_m16_proof_event_persistence.py:7: in <module>
+    from app.main import app
+backend/app/main.py:6: in <module>
+    from app.modules.registry import IMPLEMENTED_SPECS
+backend/app/modules/registry.py:15: in <module>
+    from app.modules.m20_general_cognitive_worker import spec as general_cognitive_worker
+backend/app/modules/m20_general_cognitive_worker/__init__.py:6: in <module>
+    from .routes import bind_service, router
+backend/app/modules/m20_general_cognitive_worker/routes.py:1584: in <module>
+    from .specialized_domain_routes import router as specialized_domain_router
+backend/app/modules/m20_general_cognitive_worker/specialized_domain_routes.py:9: in <module>
+    from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
+backend/app/modules/m20_general_cognitive_worker/specialized_domain.py:17: in <module>
+    from app.modules.m16_executive_dashboard import analysis as executive_analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+____________ ERROR collecting tests/modules/test_m16_proof_gaps.py _____________
+tests/modules/test_m16_proof_gaps.py:2: in <module>
+    from app.main import app
+backend/app/main.py:6: in <module>
+    from app.modules.registry import IMPLEMENTED_SPECS
+backend/app/modules/registry.py:15: in <module>
+    from app.modules.m20_general_cognitive_worker import spec as general_cognitive_worker
+backend/app/modules/m20_general_cognitive_worker/__init__.py:6: in <module>
+    from .routes import bind_service, router
+backend/app/modules/m20_general_cognitive_worker/routes.py:1584: in <module>
+    from .specialized_domain_routes import router as specialized_domain_router
+backend/app/modules/m20_general_cognitive_worker/specialized_domain_routes.py:9: in <module>
+    from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
+backend/app/modules/m20_general_cognitive_worker/specialized_domain.py:17: in <module>
+    from app.modules.m16_executive_dashboard import analysis as executive_analysis
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+____________ ERROR collecting tests/modules/test_m16_rerun_card.py _____________
+tests/modules/test_m16_rerun_card.py:10: in <module>
+    from app.modules.m16_executive_dashboard import routes as m16_routes
+backend/app/modules/m16_executive_dashboard/__init__.py:2: in <module>
+    from .routes import router
+backend/app/modules/m16_executive_dashboard/routes.py:5: in <module>
+    from .repository import SqlDashboardRepository
+backend/app/modules/m16_executive_dashboard/repository.py:8: in <module>
+    from .schemas import *
+backend/app/modules/m16_executive_dashboard/schemas.py:25: in <module>
+    class EventIn(BaseModel):
+backend/app/modules/m16_executive_dashboard/schemas.py:27: in EventIn
+    @model_validator(mode="after")
+     ^^^^^^^^^^^^^^^
+E   NameError: name 'model_validator' is not defined
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/modules/test_m16_ai_systems_1910_1959.py - NameError: name 'model...
+ERROR tests/modules/test_m16_analysis_1010_1034.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1035_1038.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1039_1043.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1044_1047.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1048_1052.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1053_1057.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1058_1062.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1063_1067.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1068_1072.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1073_1077.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1078_1082.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1083_1087.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1088_1092.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1093_1097.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1098_1102.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1103_1107.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_analysis_1108_1109.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_asymmetric_proof_events.py - NameError: name 'mo...
+ERROR tests/modules/test_m16_authenticated_proof_events.py - NameError: name ...
+ERROR tests/modules/test_m16_climate_environment_1610_1659.py - NameError: na...
+ERROR tests/modules/test_m16_dashboard_analytics.py - NameError: name 'model_...
+ERROR tests/modules/test_m16_emerging_0910_0959.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_executive_dashboard.py - NameError: name 'model_...
+ERROR tests/modules/test_m16_expiry_intake_residual.py - NameError: name 'mod...
+ERROR tests/modules/test_m16_finance_1310_1359.py - NameError: name 'model_va...
+ERROR tests/modules/test_m16_finance_1360_1409.py - NameError: name 'model_va...
+ERROR tests/modules/test_m16_freshness_instant_order.py - NameError: name 'mo...
+ERROR tests/modules/test_m16_hz30_decide_race.py - NameError: name 'model_val...
+ERROR tests/modules/test_m16_intake_concurrency.py - NameError: name 'model_v...
+ERROR tests/modules/test_m16_loaded_expiry.py - NameError: name 'model_valida...
+ERROR tests/modules/test_m16_planning_388_399.py - NameError: name 'model_val...
+ERROR tests/modules/test_m16_producer_key_registry.py - NameError: name 'mode...
+ERROR tests/modules/test_m16_producer_subscription.py - NameError: name 'mode...
+ERROR tests/modules/test_m16_proof_event_persistence.py - NameError: name 'mo...
+ERROR tests/modules/test_m16_proof_gaps.py - NameError: name 'model_validator...
+ERROR tests/modules/test_m16_rerun_card.py - NameError: name 'model_validator...
+!!!!!!!!!!!!!!!!!!! Interrupted: 37 errors during collection !!!!!!!!!!!!!!!!!!!
+1 warning, 37 errors in 9.63s

@@ -1,0 +1,29 @@
+........................................................................ [  7%]
+........................................................................ [ 14%]
+........................................................................ [ 21%]
+........................................................................ [ 29%]
+........................................................................ [ 36%]
+........................................................................ [ 43%]
+........................................................................ [ 51%]
+........................................................................ [ 58%]
+..................................................................F..... [ 65%]
+........................................................................ [ 73%]
+........................................................................ [ 80%]
+..................................................s..................... [ 87%]
+........................................................................ [ 95%]
+................................................                         [100%]
+=================================== FAILURES ===================================
+________________ test_decide_pending_approval_records_decision _________________
+tests/modules/test_m16_hz30_decide_race.py:64: in test_decide_pending_approval_records_decision
+    assert decided.reviewed_at == NOW
+E   AssertionError: assert datetime.datetime(2026, 10, 8, 12, 0) == datetime.datetime(2026, 10, 8, 12, 0, tzinfo=datetime.timezone.utc)
+E    +  where datetime.datetime(2026, 10, 8, 12, 0) = Approval(id='a1', module_id=16, action_type='deploy', title='Deploy a1', summary='summary', risk='medium', evidence={}..., created_at=datetime.datetime(2026, 10, 8, 12, 0), expires_at=None, reviewed_at=datetime.datetime(2026, 10, 8, 12, 0)).reviewed_at
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m16_hz30_decide_race.py::test_decide_pending_approval_records_decision
+1 failed, 982 passed, 1 skipped, 1 warning in 64.79s (0:01:04)

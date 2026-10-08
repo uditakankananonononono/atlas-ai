@@ -1,11 +1,13 @@
 from __future__ import annotations
-from datetime import datetime
-from sqlalchemy import JSON,Boolean,DateTime,Float,Integer,String,Text,UniqueConstraint,func,select
+from datetime import datetime,timezone
+from sqlalchemy import JSON,Boolean,DateTime,Float,Integer,String,Text,UniqueConstraint,func,select,update
+from sqlalchemy.exc import IntegrityError
+import sqlite3
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 from .schemas import *
 class EventRow(Base):
-    __tablename__="m16_events";__table_args__=(UniqueConstraint("tenant_id","sequence",name="uq_m16_sequence"),)
+    __tablename__="m16_events";__table_args__=(UniqueConstraint("tenant_id","sequence",name="uq_m16_sequence"),UniqueConstraint("tenant_id","id",name="uq_m16_event_id"))
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));sequence:Mapped[int]=mapped_column(Integer);topic:Mapped[str]=mapped_column(String(120));aggregate_type:Mapped[str]=mapped_column(String(80));aggregate_id:Mapped[str]=mapped_column(String(200));payload:Mapped[dict]=mapped_column(JSON);occurred_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
 class SnapshotRow(Base):
     __tablename__="m16_snapshots";tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True);version:Mapped[int]=mapped_column(Integer);last_sequence:Mapped[int]=mapped_column(Integer);data:Mapped[dict]=mapped_column(JSON);generated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
@@ -49,39 +51,86 @@ class RoadmapRow(Base):
 def _work_item(r):return WorkItemOut(id=r.id,title=r.title,item_type=r.item_type,status=r.status,estimate=r.estimate,reach=r.reach,impact=r.impact,confidence=r.confidence,effort=r.effort,value=r.value,rank=r.rank,sprint_id=r.sprint_id,roadmap_id=r.roadmap_id,planned_start=r.planned_start,planned_end=r.planned_end,created_at=r.created_at,updated_at=r.updated_at,completed_at=r.completed_at)
 def _sprint(r):return SprintOut(id=r.id,name=r.name,goal=r.goal,start=r.start,end=r.end,capacity_points=r.capacity_points,status=r.status,closed_at=r.closed_at)
 def _experiment(r):return ExperimentOut(id=r.id,name=r.name,hypothesis=r.hypothesis,metric=r.metric,kind=r.kind,variants=[VariantOut(**v) for v in r.variants],status=r.status,created_at=r.created_at,updated_at=r.updated_at)
-def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=r.occurred_at)
-def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=r.created_at,expires_at=r.expires_at,reviewed_at=r.reviewed_at)
-def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=r.expires_at,created_at=r.created_at)
+def _aware(value):
+    # sqlite drops the tzinfo that DateTime(timezone=True) columns carried at
+    # write time (UTC); reattach it on read so tz-aware comparisons work.
+    return value.replace(tzinfo=timezone.utc) if value is not None and value.tzinfo is None else value
+def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=_aware(r.occurred_at))
+def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=_aware(r.created_at),expires_at=_aware(r.expires_at),reviewed_at=_aware(r.reviewed_at))
+def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=_aware(r.expires_at),created_at=_aware(r.created_at))
 class SqlDashboardRepository:
     def __init__(self,tenant_id,actor_id,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def append_event(self,e:Event):
-        with self.sessions.begin() as db:
-            existing=db.scalar(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.id==e.id))
-            if existing:return _event(existing)
-            max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1;db.add(EventRow(tenant_id=self.tenant_id,**e.model_dump()));return e
+        # Both sequence allocation and event identity are DB-constrained.
+        # Retry only identified collisions on those constraints, in a fresh
+        # transaction; the identity re-read returns the committed winner.
+        attempts=0
+        while True:
+            try:
+                with self.sessions.begin() as db:
+                    existing=db.scalar(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.id==e.id))
+                    if existing:return _event(existing)
+                    # Storage-boundary instant policy, applied only when actually
+                    # writing (dedup stays idempotent for any input form): an
+                    # aware occurred_at is normalized to UTC for the naive sqlite
+                    # write so the instant survives the read-side _aware attach;
+                    # a naive occurred_at has unknown provenance and is rejected
+                    # rather than silently relabeled UTC. The caller's Event is
+                    # not mutated; the returned value keeps its offset form,
+                    # which is the same instant.
+                    if e.occurred_at.tzinfo is None:raise ValueError("occurred_at must be timezone-aware")
+                    max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1
+                    data=e.model_dump();data["occurred_at"]=e.occurred_at.astimezone(timezone.utc);db.add(EventRow(tenant_id=self.tenant_id,**data));return e
+            except IntegrityError as exc:
+                orig=exc.orig
+                if isinstance(orig,sqlite3.IntegrityError):
+                    code=getattr(orig,"sqlite_errorcode",None)
+                    collision=(code is None or code==sqlite3.SQLITE_CONSTRAINT_UNIQUE) and str(orig) in (
+                        "UNIQUE constraint failed: m16_events.tenant_id, m16_events.sequence",
+                        "UNIQUE constraint failed: m16_events.tenant_id, m16_events.id")
+                else:
+                    state=getattr(orig,"sqlstate",None) or getattr(orig,"pgcode",None)
+                    collision=state=="23505" and getattr(getattr(orig,"diag",None),"constraint_name",None) in ("uq_m16_sequence","uq_m16_event_id")
+                if not collision:raise
+                attempts+=1
+                if attempts>=3:raise
     def events_after(self,cursor,limit=500):
         with self.sessions() as db:return [_event(r) for r in db.scalars(select(EventRow).where(EventRow.tenant_id==self.tenant_id,EventRow.sequence>cursor).order_by(EventRow.sequence).limit(limit))]
     def snapshot(self):
         with self.sessions.begin() as db:
             r=db.get(SnapshotRow,self.tenant_id)
             if not r:r=SnapshotRow(tenant_id=self.tenant_id,version=0,last_sequence=0,data={"metrics":{},"timeline":[],"alerts":[],"freshness":{}},generated_at=datetime.utcnow());db.add(r);db.flush()
-            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=r.generated_at)
+            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=_aware(r.generated_at))
     def pending_approvals(self):
         with self.sessions() as db:return [_approval(r) for r in db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value).order_by(ApprovalRow.created_at))]
     def save_approval(self,a:Approval):
         with self.sessions.begin() as db:db.add(ApprovalRow(tenant_id=self.tenant_id,reviewed_by=None,review_note=None,**a.model_dump(mode="python")))
         return a
     def decide(self,aid,state,note,at):
-        with self.sessions.begin() as db:r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value));
-        if not r:return None
-        with self.sessions.begin() as db:r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid));r.state=state.value;r.reviewed_at=at;r.reviewed_by=self.actor_id;r.review_note=note;db.flush();return _approval(r)
+        # Single conditional UPDATE: the pending check and the decision write
+        # are one atomic claim (the mark_command pattern). Two concurrent
+        # decides can both pass the service pre-check; only the first claim
+        # lands, and the loser gets None instead of overwriting the winning
+        # decision. Claim and read run in one transaction, so the returned
+        # approval is the row this call decided.
+        with self.sessions.begin() as db:
+            claimed=db.execute(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value).values(state=state.value,reviewed_at=at,reviewed_by=self.actor_id,review_note=note)).rowcount
+            if not claimed:return None
+            r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid))
+            return _approval(r)
     def save_command(self,c):
         with self.sessions.begin() as db:db.add(CommandRow(tenant_id=self.tenant_id,actor_id=self.actor_id,executed_at=None,**c.model_dump()))
         return c
     def get_command(self,cid):
         with self.sessions() as db:r=db.scalar(select(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid));return (r,_command(r)) if r else (None,None)
     def mark_command(self,cid,at):
-        with self.sessions.begin() as db:r=db.scalar(select(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid));r.executed_at=at
+        # Single conditional UPDATE: a concurrent execute whose earlier read saw
+        # executed_at=None loses the claim instead of silently overwriting the
+        # first execution marker. This protects the marker; the service claims
+        # before running the executor so single execution holds.
+        with self.sessions.begin() as db:
+            claimed=db.execute(update(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid,CommandRow.executed_at.is_(None)).values(executed_at=at)).rowcount
+            if not claimed:raise RuntimeError("command already executed")
     def heartbeat(self,data,at):
         with self.sessions.begin() as db:
             r=db.scalar(select(AgentStatusRow).where(AgentStatusRow.tenant_id==self.tenant_id,AgentStatusRow.agent_id==data.agent_id))
@@ -89,7 +138,7 @@ class SqlDashboardRepository:
             else:db.add(AgentStatusRow(tenant_id=self.tenant_id,module_id=data.module_id,agent_id=data.agent_id,state=data.state.value,current_task=data.current_task,detail=data.detail,last_heartbeat=at))
         return AgentStatus(**data.model_dump(),last_heartbeat=at)
     def list_agents(self):
-        with self.sessions() as db:return [AgentStatus(module_id=r.module_id,agent_id=r.agent_id,state=AgentState(r.state),current_task=r.current_task,detail=r.detail,last_heartbeat=r.last_heartbeat) for r in db.scalars(select(AgentStatusRow).where(AgentStatusRow.tenant_id==self.tenant_id).order_by(AgentStatusRow.module_id))]
+        with self.sessions() as db:return [AgentStatus(module_id=r.module_id,agent_id=r.agent_id,state=AgentState(r.state),current_task=r.current_task,detail=r.detail,last_heartbeat=_aware(r.last_heartbeat)) for r in db.scalars(select(AgentStatusRow).where(AgentStatusRow.tenant_id==self.tenant_id).order_by(AgentStatusRow.module_id))]
     def approvals_reviewed_since(self,since):
         with self.sessions() as db:return [_approval(r) for r in db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.reviewed_at.isnot(None),ApprovalRow.reviewed_at>=since).order_by(ApprovalRow.reviewed_at))]
     def events_between(self,start,end,limit=2000):
@@ -108,7 +157,7 @@ class SqlDashboardRepository:
             if not r:r=SnapshotRow(tenant_id=self.tenant_id,version=0,last_sequence=0,data={},generated_at=datetime.utcnow());db.add(r);db.flush()
             assert last_sequence>=r.last_sequence,"snapshot projection cannot move backwards"
             r.data=data;r.last_sequence=last_sequence;r.version=r.version+1;r.generated_at=datetime.utcnow();db.flush()
-            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=r.generated_at)
+            return Snapshot(version=r.version,last_sequence=r.last_sequence,data=r.data,generated_at=_aware(r.generated_at))
     def record_kpi_points(self,points,at):
         with self.sessions.begin() as db:
             for kpi_id,window_hours,value in points:db.add(KpiPointRow(tenant_id=self.tenant_id,kpi_id=kpi_id,window_hours=window_hours,value=float(value),recorded_at=at))
@@ -143,9 +192,8 @@ class SqlDashboardRepository:
             db.delete(r);return True
     def expire_approvals_before(self,moment):
         with self.sessions.begin() as db:
-            rows=db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value,ApprovalRow.expires_at.isnot(None),ApprovalRow.expires_at<moment)).all()
-            for r in rows:r.state=ApprovalState.EXPIRED.value
-            db.flush()
+            # Pending predicate belongs to the write, not a stale earlier read.
+            rows=db.scalars(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value,ApprovalRow.expires_at.isnot(None),ApprovalRow.expires_at<moment).values(state=ApprovalState.EXPIRED.value).returning(ApprovalRow)).all()
             return [_approval(r) for r in rows]
     def save_view(self,layout,at):
         with self.sessions.begin() as db:

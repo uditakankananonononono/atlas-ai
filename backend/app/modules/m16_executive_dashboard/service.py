@@ -45,7 +45,12 @@ class Service:
         pending=next((a for a in self._all_pending() if a.id==aid),None)
         if not pending:raise LookupError(aid)
         if pending.expires_at and pending.expires_at<_utcnow():raise RuntimeError("approval expired")
-        return self.repository.decide(aid,ApprovalState.APPROVED if data.approve else ApprovalState.REJECTED,data.note,_utcnow())
+        decided=self.repository.decide(aid,ApprovalState.APPROVED if data.approve else ApprovalState.REJECTED,data.note,_utcnow())
+        # A None here means a concurrent decision won the row between the
+        # pre-check and the repository's conditional claim; surface it with
+        # the same not-pending contract as a sequential second decide.
+        if decided is None:raise LookupError(aid)
+        return decided
     # --- command bar (existing contract, real read-only executor) ---
     def preview(self,utterance):
         parsed=self.parser(utterance);now=_utcnow();return self.repository.save_command(CommandPreview(id=str(uuid4()),utterance=utterance,expires_at=now+timedelta(minutes=10),created_at=now,**parsed))
@@ -57,7 +62,10 @@ class Service:
         if p.expires_at<now:raise RuntimeError("command preview expired")
         if not p.read_only:
             a=Approval(id=str(uuid4()),module_id=16,action_type=p.intent,title=f"Command: {p.intent}",summary=p.utterance,risk="medium",evidence={"command_preview_id":p.id,"plan":p.plan},proposed_payload=p.parameters,created_at=now,expires_at=now+timedelta(hours=24));self.repository.save_approval(a);return {"status":"approval_required","approval_id":a.id}
-        result=self.executor(p.intent,p.parameters);self.repository.mark_command(cid,now);return {"status":"completed","result":result}
+        # Claim before running the executor: exactly one concurrent execute passes
+        # this conditional mark, so the read executor runs at most once. A failed
+        # executor leaves the command claimed; retry means a fresh preview.
+        self.repository.mark_command(cid,now);result=self.executor(p.intent,p.parameters);return {"status":"completed","result":result}
     def _execute_read(self,intent,params):
         now=_utcnow()
         if intent=="show_kpis":return {"kpis":[k.model_dump(mode="json") for k in self.kpis(now)]}
@@ -181,7 +189,7 @@ class Service:
     # --- event intake ---
     def intake(self,data:EventIn):
         now=_utcnow()
-        e=Event(id=data.id or str(uuid4()),sequence=0,topic=data.topic,aggregate_type=data.aggregate_type,aggregate_id=data.aggregate_id,payload=data.payload,occurred_at=data.occurred_at or now)
+        e=Event(id=data.id or str(uuid4()),sequence=0,topic=data.topic,aggregate_type=data.aggregate_type,aggregate_id=data.aggregate_id,payload=data.payload,occurred_at=data.occurred_at.astimezone(timezone.utc) if data.occurred_at else now)
         return self.repository.append_event(e)
     def intake_batch(self,items):
         return [self.intake(i) for i in items]
