@@ -2,7 +2,7 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
-from sqlalchemy import JSON, DateTime, Integer, String, Text, UniqueConstraint, select, insert
+from sqlalchemy import JSON, DateTime, Integer, String, Text, UniqueConstraint, select, insert, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 from app.core.database import Base, SessionLocal, engine
@@ -135,6 +135,18 @@ class SqlCampaignRepository:
     def __init__(self,tenant_id:str,session_factory:sessionmaker=SessionLocal)->None:
         self.tenant_id=tenant_id; self.sessions=session_factory
         Base.metadata.create_all(engine)
+        with self.sessions.begin() as db:
+            if db.bind.dialect.name == 'sqlite':
+                db.execute(text("""CREATE TRIGGER IF NOT EXISTS m05_claim_no_replace
+                  BEFORE INSERT ON m05_delivery_claims WHEN EXISTS(
+                    SELECT 1 FROM m05_delivery_claims WHERE
+                      pk=NEW.pk OR (tenant_id=NEW.tenant_id AND message_id=NEW.message_id))
+                  BEGIN SELECT RAISE(ABORT,'immutable delivery claim'); END"""))
+                for operation in ('UPDATE', 'DELETE'):
+                    db.execute(text(f"""CREATE TRIGGER IF NOT EXISTS m05_claim_no_{operation.lower()}
+                      BEFORE {operation} ON m05_delivery_claims
+                      BEGIN SELECT RAISE(ABORT,'immutable delivery claim'); END"""))
+
     def claim_delivery(self, message: OutreachMessage) -> bool:
         """One atomic INSERT SELECT with full row match and unique claim key.
 
