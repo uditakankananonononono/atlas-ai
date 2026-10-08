@@ -6,14 +6,20 @@ export class ApprovalFrameParser{
  private decoder=new TextDecoder();
  constructor(private onSignal:()=>void,private cap=65536){}
  push(chunk:Uint8Array){
-  this.buffer+=this.decoder.decode(chunk,{stream:true});
-  // Count UTF8 bytes, not JS characters. Cap before retaining unbounded frames.
-  if(new TextEncoder().encode(this.buffer).length>this.cap)throw new Error('Approval stream frame exceeds limit');
+  // Slice input so one transport chunk containing many valid frames never
+  // becomes one giant retained buffer. Process frames between bounded slices.
+  for(let offset=0;offset<chunk.length;offset+=4096){
+   this.consume(this.decoder.decode(chunk.subarray(offset,offset+4096),{stream:true}));
+  }
+ }
+ private consume(text:string){
+  this.buffer+=text;
   this.buffer=this.buffer.replace(/\r\n/g,'\n');
   let end:number;
   while((end=this.buffer.indexOf('\n\n'))>=0){
    const frame=this.buffer.slice(0,end);this.buffer=this.buffer.slice(end+2);
    const data=frame.split('\n').filter(x=>x.startsWith('data:')).map(x=>x.slice(5).trimStart()).join('\n');
+   if(new TextEncoder().encode(frame).length>this.cap)throw new Error('Approval stream frame exceeds limit');
    if(!data)continue;
    let event:unknown;try{event=JSON.parse(data)}catch{continue}
    if(event&&typeof event==='object'){
@@ -21,6 +27,7 @@ export class ApprovalFrameParser{
     if(Object.keys(value).sort().join(',')==='approval_id,type'&&typeof value.type==='string'&&allowed.has(value.type)&&typeof value.approval_id==='string'&&value.approval_id.length>0&&value.approval_id.length<=120)this.onSignal();
    }
   }
+  if(new TextEncoder().encode(this.buffer).length>this.cap)throw new Error('Approval stream frame exceeds limit');
  }
 }
 export function startApprovalStream(url:string,onSignal:()=>void,onState:(state:StreamState)=>void,
