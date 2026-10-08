@@ -14,11 +14,19 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100,
  db=Path(db_path).resolve();export=Path(export_path).resolve();receipt=Path(receipt_path).resolve()
  if receipt in {db,export,export.with_suffix(export.suffix+'.manifest.json'),Path(str(db)+'.collection-lock'),Path(str(export)+'.collection-lock')}:raise ValueError('receipt cannot replace corpus artifacts')
  if receipt.exists():raise FileExistsError('receipt destination already exists')
- root=Path(__file__).resolve().parents[3]
- revision=subprocess.run(['git','-C',str(root),'rev-parse','HEAD'],capture_output=True,text=True,check=True).stdout.strip()
- dirty=subprocess.run(['git','-C',str(root),'status','--porcelain'],capture_output=True,text=True,check=True).stdout
+ package_root=Path(__file__).resolve().parents[2]
+ root=package_root.parent
+ git_head=subprocess.run(['git','-C',str(root),'rev-parse','HEAD'],capture_output=True,text=True)
+ revision=None;dirty=False;hashes={};provenance='module_sha256'
+ if git_head.returncode==0:
+  revision=git_head.stdout.strip()
+  dirty=bool(subprocess.run(['git','-C',str(root),'status','--porcelain'],capture_output=True,text=True,check=True).stdout)
+  provenance='git_head'
+ for path in sorted(Path(__file__).parent.glob('corpus*.py'))+[Path(__file__).parent/'public_corpus.py']:
+  hashes[path.name]=hashlib.sha256(path.read_bytes()).hexdigest()
+ if not hashes or 'public_corpus.py' not in hashes:raise ValueError('executing collection code unavailable')
  command=[sys.executable,'-m','app.core.corpus_cli','verify','--db',str(db),'--export',str(export)] if mode=='verify' else [sys.executable,'-m','app.core.corpus_locked_cli','--db',str(db),'--export',str(export),'--max-rows',str(max_rows),'--config',config,'--split',split]
- env={**os.environ,'PYTHONPATH':str(root/'backend')}
+ env={**os.environ,'PYTHONPATH':str(package_root)}
  started=datetime.now(timezone.utc).isoformat();start=time.monotonic()
  launch_error=None;timed_out=False
  try:result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True,timeout=DEFAULT_TIMEOUT_SECONDS)
@@ -33,7 +41,7 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100,
   except ValueError:pass
  success=result.returncode==0 and isinstance(output,dict) and output.get('status')=='verified'
  # Do not persist absolute paths, raw stderr, environment or credentials.
- report={'mode':mode,'selection':config+'/'+split,'source_head':revision,'source_tree_dirty':bool(dirty),'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'elapsed_seconds':elapsed,'exit_status':result.returncode,'status':'verified' if success else 'failed','stdout_sha256':hashlib.sha256(result.stdout.encode()).hexdigest(),'stderr_sha256':hashlib.sha256(result.stderr.encode()).hexdigest(),'command_template':'python -m app.core.corpus_cli verify --db <corpus> --export <export>' if mode=='verify' else 'python -m app.core.corpus_locked_cli --db <corpus> --export <export> --max-rows N --config <fixed-selection> --split <split>','max_rows':max_rows if mode=='collect' else None,'training_performed':False}
+ report={'mode':mode,'selection':config+'/'+split,'source_head':revision,'source_tree_dirty':bool(dirty) if revision else None,'provenance_method':provenance,'module_sha256':hashes,'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'elapsed_seconds':elapsed,'exit_status':result.returncode,'status':'verified' if success else 'failed','stdout_sha256':hashlib.sha256(result.stdout.encode()).hexdigest(),'stderr_sha256':hashlib.sha256(result.stderr.encode()).hexdigest(),'command_template':'python -m app.core.corpus_cli verify --db <corpus> --export <export>' if mode=='verify' else 'python -m app.core.corpus_locked_cli --db <corpus> --export <export> --max-rows N --config <fixed-selection> --split <split>','max_rows':max_rows if mode=='collect' else None,'training_performed':False}
  report['wall_clock_timeout_seconds']=DEFAULT_TIMEOUT_SECONDS
  if timed_out:report['timed_out']=True
  if launch_error:report['launch_error_type']=launch_error
