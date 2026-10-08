@@ -171,6 +171,8 @@ class ReviewApproval:
     artifact_sha256: str
     reviewer: str
     approved_at: datetime
+    recipient: str = ""
+    action: str = ""
 
 
 def utcnow() -> datetime:

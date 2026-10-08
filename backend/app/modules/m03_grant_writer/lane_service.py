@@ -209,10 +209,14 @@ class GrantWriterService:
             raise ValidationError("reviewed artifact differs from handoff; prepare a new review")
         if not reviewer.strip():
             raise ValidationError("reviewer is required")
-        return ReviewApproval(handoff.handoff_id, digest, reviewer.strip(), approved_at)
+        return ReviewApproval(handoff.handoff_id, digest, reviewer.strip(), approved_at,
+                              handoff.recipient, handoff.action)
 
     @staticmethod
     def assert_dispatchable(handoff: ReviewHandoff, approval: ReviewApproval, artifact_json: str) -> None:
         digest = hashlib.sha256(artifact_json.encode("utf-8")).hexdigest()
-        if approval.handoff_id != handoff.handoff_id or approval.artifact_sha256 != digest or digest != handoff.artifact_sha256:
+        if (approval.handoff_id != handoff.handoff_id or approval.artifact_sha256 != digest
+                or digest != handoff.artifact_sha256
+                or not approval.recipient or not approval.action
+                or approval.recipient != handoff.recipient or approval.action != handoff.action):
             raise ValidationError("artifact lacks exact-review approval")
