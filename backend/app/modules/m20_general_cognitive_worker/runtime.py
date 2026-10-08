@@ -133,7 +133,15 @@ class GCWRuntime:
         require_method_review: bool = True,
         seed: int | None = None,
         _hydrate: bool = True,
+        semantic_backend: str = "sql",
     ) -> None:
+        if semantic_backend not in {"sql", "pgvector"}:
+            raise ValueError("unknown semantic memory backend")
+        if semantic_backend == "pgvector":
+            if repo.engine.dialect.name != "postgresql":
+                raise ValueError("pgvector semantic memory requires PostgreSQL")
+            if embedder is None or embedder.dimensions != 1024:
+                raise ValueError("pgvector semantic memory requires an explicit 1024D embedder")
         self._execution_lock = Lock()
         self._persistence_poisoned = False
         self.reconciliation_verifier = None
@@ -144,7 +152,13 @@ class GCWRuntime:
             DurableWorkingMemory.load(repo) if _hydrate else DurableWorkingMemory(repo)
         )
         self.episodic = DurableEpisodicMemory.load(repo, embedder=embedder) if _hydrate else DurableEpisodicMemory(repo, embedder=embedder)
-        self.semantic = DurableSemanticMemory.load(repo, embedder=embedder) if _hydrate else DurableSemanticMemory(repo, embedder=embedder)
+        if semantic_backend == "pgvector":
+            from .pgvector_memory import PgVectorSemanticMemory
+            self.semantic = PgVectorSemanticMemory(repo, embedder)
+        elif semantic_backend == "sql":
+            self.semantic = DurableSemanticMemory.load(repo, embedder=embedder) if _hydrate else DurableSemanticMemory(repo, embedder=embedder)
+        else:
+            raise ValueError("unknown semantic memory backend")
         self.skills = DurableSkillLibrary.load(repo) if _hydrate else DurableSkillLibrary(repo)
         self.retrospectives = (
             DurableRetrospectiveEngine.load(repo, embedder=embedder)
@@ -233,6 +247,14 @@ class GCWRuntime:
                 context.state = TaskState.BLOCKED if context.model_outcome_unknown else TaskState.PENDING
             self.repo.save_task(context)
         return context
+
+    @_exclusive_execution
+    def remember_fact(self, fact):
+        return self.semantic.store(fact)
+
+    @_exclusive_execution
+    def recall_facts(self, query, *, limit=5):
+        return self.semantic.query(query, limit=limit)
 
     @_exclusive_execution
     def activate_method(self, name, *, expected_hash, actor_id=None, roles=frozenset()):
