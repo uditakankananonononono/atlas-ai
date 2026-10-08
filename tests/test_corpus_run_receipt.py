@@ -46,3 +46,12 @@ def test_real_child_killed_on_wall_clock_timeout(tmp_path,monkeypatch):
  assert r['exit_status'] is None and time.monotonic()-started<0.6
  assert pidfile.exists() and not finished.exists()
  with pytest.raises(ProcessLookupError):os.kill(int(pidfile.read_text()),0)
+def test_fixed_cc0_selection_receipted_offline(tmp_path):
+ db=Path('/tmp/cc0-review/live.sqlite');export=Path('/tmp/cc0-review/live.jsonl')
+ if not db.exists():pytest.skip('actual CC0 corpus receipt needed')
+ r=run_receipted(db,export,tmp_path/'receipt',config='cc0-prompts',split='train')
+ assert r['status']=='verified' and r['selection']=='cc0-prompts/train'
+@pytest.mark.parametrize('config,split',[('unknown','train'),('cc0-prompts','validation')])
+def test_unknown_or_absent_selection_refused_pre_execution(tmp_path,config,split):
+ with pytest.raises(ValueError):run_receipted(tmp_path/'db',tmp_path/'out',tmp_path/'receipt',mode='collect',config=config,split=split)
+ assert list(tmp_path.iterdir())==[]
