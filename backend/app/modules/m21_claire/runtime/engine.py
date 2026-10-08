@@ -27,7 +27,8 @@ class ActionPolicy(Protocol):
     def allows(self, tool: str, arguments: dict[str, Any]) -> bool: ...
 
 
-class AllowAllReads:
+class NoAdditionalPolicy:
+    """Extra per-call hook with no extra rules. NOT a security control: gating is the registry's GateEnforcer."""
     def allows(self, tool: str, arguments: dict[str, Any]) -> bool:
         return True
 
@@ -40,7 +41,7 @@ class Engine:
         if not 1 <= max_steps <= 50:
             raise ValueError("max_steps must be between 1 and 50")
         self.model, self.tools, self.max_steps = model, tools, max_steps
-        self.policy = policy or AllowAllReads()
+        self.policy = policy or NoAdditionalPolicy()
 
     async def run(self, goal: str, *, cancel: Event | None = None, principal: Principal | None = None,
                   context: Callable[[], list[dict[str, Any]]] | None = None) -> RunReport:
@@ -66,8 +67,10 @@ class Engine:
                                  receipts=receipts, refusals=refusals)
             if decision.replan is not None:
                 replans += 1
-                event = {"replan": replans <= 3}
-                messages.append({"role": "tool", "content": json.dumps(event)})
+                if replans > 3:
+                    return RunReport(stop_reason="replan_limit", steps_used=step, receipts=receipts, refusals=refusals)
+                revised = [scrub_text(x)[:500] for x in decision.replan.steps]
+                messages.append({"role": "tool", "content": json.dumps({"replan": True, "revision": replans, "steps": revised})})
                 continue
             call = decision.tool_call
             tool = self.tools.get(call.name)

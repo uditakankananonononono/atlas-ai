@@ -242,3 +242,22 @@ def test_lease_contract_is_replacement_fenced_not_expiry_fenced(tmp_path):
     t[0] += timedelta(seconds=60)  # expired, not yet re-claimed
     assert s.settle(c1, "blocked", blocker="x", report={}, verdict=None) is True
     s.close()
+
+
+def test_replans_are_used_then_capped_and_cap_is_not_a_completion():
+    seen = []
+    class M:
+        def __init__(s): s.n = 0
+        async def decide(s, messages):
+            seen.append(messages[-1]["content"]); s.n += 1
+            from app.modules.m21_claire.runtime.types import ReplanRequest
+            return AgentDecision(replan=ReplanRequest(reason="r", steps=[f"step-{s.n} password=hunter2hunter2"]))
+    rep = run(Engine(M(), registry(Lookup()), max_steps=20).run("g"))
+    assert rep.stop_reason == "replan_limit" and rep.steps_used == 4 and rep.final is None
+    assert "step-1" in seen[1] and "hunter2hunter2" not in " ".join(seen)  # replan steps fed back, scrubbed
+
+
+def test_redaction_traverses_tuples_sets_and_bytes():
+    from app.modules.m21_claire.runtime.redaction import redact
+    out = str(redact({"a": ("api_key: sk-AAAAAAAAAAAAAAAAAAAAAAAA",), "b": {"password=abcdefghijk"}, "c": b"secret-bytes"}))
+    assert "AAAAAAAAAA" not in out and "abcdefghijk" not in out and "secret-bytes" not in out

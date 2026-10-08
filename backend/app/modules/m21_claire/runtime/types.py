@@ -56,7 +56,7 @@ class Refusal(BaseModel):
 class RunReport(BaseModel):
     """Engine output. Evidence only: it never marks a goal complete by itself."""
     final: str | None = None
-    stop_reason: str  # final | step_limit | cancelled | model_unavailable | model_invalid_output
+    stop_reason: str  # final | step_limit | replan_limit | cancelled | model_unavailable | model_invalid_output
     steps_used: int
     receipts: list[ToolReceipt] = Field(default_factory=list)
     refusals: list[Refusal] = Field(default_factory=list)
