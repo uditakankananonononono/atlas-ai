@@ -304,15 +304,13 @@ class LocalKnowledgePipeline:
                 # rollback: an unconfirmed restore leaves the version dir
                 # behind (carried), and a crash mid-sequence can leave
                 # either artifact (carried).
-                restore_ok=True
-                try: self._persist_manifest(rec)
-                except BaseException: restore_ok=False
+                restore_ok=self._restore_manifest_confirmed(rec)
                 if restore_ok: self._cleanup_attempt(target,dfd)
-                if isinstance(persist_exc, ManifestOversizeError): raise persist_exc
+                if restore_ok and isinstance(persist_exc, ManifestOversizeError): raise persist_exc
                 if restore_ok:
                     raise KnowledgeError('manifest persistence failed; version rolled back, registration preserved')
                 raise KnowledgeError('manifest persistence failed and the pre-claim manifest could not be confirmed restored; the memory claim was removed but the on-disk manifest may still record the version, whose bytes were left in place')
-            except BaseException:
+            except BaseException as persist_exc:
                 # Unexpected failure AFTER the memory version claim: roll the
                 # claim back so memory stays truthful (no version the manifest
                 # does not record), then restore-before-delete exactly as in
@@ -322,10 +320,10 @@ class LocalKnowledgePipeline:
                 # object or an unconfirmed restore leaves the bytes in place.
                 # Best-effort, not a completed rollback.
                 self._rollback_claim(rec,version,new_chunks,edge,vbase,cbase,ebase)
-                restore_ok=True
-                try: self._persist_manifest(rec)
-                except BaseException: restore_ok=False
+                restore_ok=self._restore_manifest_confirmed(rec)
                 if restore_ok: self._cleanup_attempt(target,dfd)
+                else:
+                    raise KnowledgeError('manifest persistence failed and the pre-claim manifest could not be confirmed restored; the memory claim was removed but the on-disk manifest may still record the version, whose bytes were left in place') from persist_exc
                 raise
         finally:
             # Close errors of ANY type are swallowed: a close that fails
@@ -538,6 +536,23 @@ class LocalKnowledgePipeline:
         if not _stat.S_ISDIR(st.st_mode): return
         if (st.st_dev,st.st_ino)!=(want.st_dev,want.st_ino): return
         shutil.rmtree(path,ignore_errors=True)
+    def _restore_manifest_confirmed(self,rec:Record)->bool:
+        # A normal persist return is not confirmation. Read through the same
+        # bounded regular-file reader and require the exact expected claims.
+        # This is a point-in-time check, not a concurrent-writer transaction
+        # or crash recovery guarantee. Failure keeps potentially referenced bytes.
+        expected=[{'number':v.number,'hash':v.content_hash} for v in rec.versions]
+        try:
+            self._persist_manifest(rec)
+            raw=self._read_bounded_file(
+                self._contained(rec.source.source_id,'manifest.json'),
+                self.MANIFEST_MAX_BYTES,'restore confirmation failed',
+                'on-disk manifest','exceeds the manifest bound')
+            restored=json.loads(raw.decode('utf-8'))
+            return isinstance(restored,dict) and restored.get('versions')==expected
+        except BaseException:
+            return False
+
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
         import os as _os, uuid as _uuid
