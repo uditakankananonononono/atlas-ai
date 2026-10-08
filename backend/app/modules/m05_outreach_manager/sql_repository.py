@@ -2,7 +2,8 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
-from sqlalchemy import JSON, DateTime, Integer, String, Text, UniqueConstraint, select
+from sqlalchemy import JSON, DateTime, Integer, String, Text, UniqueConstraint, select, insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 from app.core.database import Base, SessionLocal, engine
 from .campaigns import Campaign, MessageEvent, OutreachMessage
@@ -113,6 +114,15 @@ class MessageEventRow(Base):
     at: Mapped[datetime]=mapped_column(DateTime(timezone=True))
     details: Mapped[dict[str,Any]]=mapped_column(JSON)
 
+class DeliveryClaimRow(Base):
+    """Permanent per-tenant/message claim; no automatic deletion/reopen API."""
+    __tablename__ = 'm05_delivery_claims'
+    __table_args__ = (UniqueConstraint('tenant_id', 'message_id'),)
+    pk: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    tenant_id: Mapped[str] = mapped_column(String(120))
+    message_id: Mapped[str] = mapped_column(String(36))
+    snapshot: Mapped[dict] = mapped_column(JSON)
+
 def _campaign(row: CampaignRow) -> Campaign:
     return Campaign(id=row.id,project_id=row.project_id,name=row.name,goal=row.goal,audience=row.audience,status=row.status,max_follow_ups=row.max_follow_ups,follow_up_window_days=row.follow_up_window_days,created_at=_aware(row.created_at),updated_at=_aware(row.updated_at))
 
@@ -125,6 +135,32 @@ class SqlCampaignRepository:
     def __init__(self,tenant_id:str,session_factory:sessionmaker=SessionLocal)->None:
         self.tenant_id=tenant_id; self.sessions=session_factory
         Base.metadata.create_all(engine)
+    def claim_delivery(self, message: OutreachMessage) -> bool:
+        """One atomic INSERT SELECT with full row match and unique claim key.
+
+        SQL current-row predicate closes message edits before claim. Contact,
+        approvals and external account stores are not locked by this operation.
+        """
+        data = message.model_dump()
+        columns = ['tenant_id','message_id','snapshot']
+        from sqlalchemy import literal
+        predicates = [MessageRow.tenant_id == self.tenant_id]
+        for name, value in data.items():
+            column = getattr(MessageRow, name)
+            if isinstance(value, datetime):
+                # SQLite stores UTC-naive timestamps; production requires UTC.
+                value = value.astimezone(timezone.utc)
+            predicates.append(column.is_(None) if value is None else column == value)
+        stmt = insert(DeliveryClaimRow).from_select(columns,
+            select(literal(self.tenant_id), MessageRow.id,
+                   literal(message.model_dump(mode='json'), type_=JSON)).where(*predicates,
+                   MessageRow.status == 'approved'))
+        try:
+            with self.sessions.begin() as db:
+                return db.execute(stmt).rowcount == 1
+        except IntegrityError:
+            return False
+
     def save_campaign(self,campaign:Campaign)->Campaign:
         with self.sessions.begin() as db:
             row=db.scalar(select(CampaignRow).where(CampaignRow.tenant_id==self.tenant_id,CampaignRow.id==campaign.id))
