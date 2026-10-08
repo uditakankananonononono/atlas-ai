@@ -1,16 +1,22 @@
 """Module 20: evidence-oriented cognitive worker with bounded autonomy."""
 from __future__ import annotations
 
-import asyncio, re, uuid
+import asyncio, copy, hashlib, json, math, re, uuid
 from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Awaitable, Callable, Protocol
 
-from app.core.models import ApprovalRequest, ApprovalStatus
+from sqlalchemy.exc import SQLAlchemyError
+
+from app.core.models import ApprovalRequest
+from app.modules.m00_approval_center.service import ApprovalConflictError, ApprovalNotFoundError
 
 MODULE_ID=20
+PENDING_REVIEW_TTL_SECONDS=24*3600   # review window for a PENDING step approval
+APPROVED_VALIDITY_SECONDS=15*60      # valid iff 0 <= now - decided_at <= 900s, inclusive, checked inside Module 0 consume_effect
+GATED_RISKS=("external","irreversible")
 def now(): return datetime.now(timezone.utc)
 
 class Risk(str,Enum): READ="read"; REVERSIBLE="reversible"; EXTERNAL="external"; IRREVERSIBLE="irreversible"
@@ -30,7 +36,7 @@ class Tool:
     name:str; description:str; risk:Risk; capabilities:set[str]; handler:Callable[[dict[str,Any],str],Awaitable[dict[str,Any]]]; timeout:int=60; max_retries:int=2
 @dataclass
 class Step:
-    title:str; tool:str|None; arguments:dict[str,Any]; depends_on:set[str]=field(default_factory=set); risk:Risk=Risk.READ; max_attempts:int=3; id:str=field(default_factory=lambda:str(uuid.uuid4())); state:State=State.PENDING; attempts:int=0; approval_id:str|None=None; result:dict[str,Any]|None=None; error:str|None=None
+    title:str; tool:str|None; arguments:dict[str,Any]; depends_on:set[str]=field(default_factory=set); risk:Risk=Risk.READ; max_attempts:int=3; id:str=field(default_factory=lambda:str(uuid.uuid4())); state:State=State.PENDING; attempts:int=0; approval_id:str|None=None; result:dict[str,Any]|None=None; error:str|None=None; outcome_unknown:bool=False
 @dataclass
 class Plan:
     goal:str; steps:list[Step]; constraints:dict[str,Any]; id:str=field(default_factory=lambda:str(uuid.uuid4()))
@@ -39,10 +45,10 @@ class Trace:
     phase:str; summary:str; evidence:list[dict[str,Any]]; alternatives:list[str]; decision:str; policy_basis:list[str]; at:datetime=field(default_factory=now)
 @dataclass
 class Run:
-    goal:str; budget:dict[str,float]; plan:Plan; id:str=field(default_factory=lambda:str(uuid.uuid4())); status:State=State.PENDING; traces:list[Trace]=field(default_factory=list); spent:dict[str,float]=field(default_factory=lambda:{"seconds":0,"tokens":0,"money":0})
+    goal:str; budget:dict[str,float]; plan:Plan; id:str=field(default_factory=lambda:str(uuid.uuid4())); status:State=State.PENDING; traces:list[Trace]=field(default_factory=list); spent:dict[str,float]=field(default_factory=lambda:{"seconds":0,"tokens":0,"money":0}); tenant_id:str|None=None; actor_id:str|None=None
 
 class ApprovalStore(Protocol):
-    def put(self,item:ApprovalRequest)->ApprovalRequest: ...
+    def put(self,item:ApprovalRequest,*,ttl_seconds:int|None=None)->ApprovalRequest: ...
     def list(self)->list[ApprovalRequest]: ...
 class Model(Protocol):
     async def __call__(self,purpose:str,payload:dict[str,Any])->dict[str,Any]: ...
@@ -114,6 +120,27 @@ class ConcurrencyScheduler:
             async with self.gate:return await fn(s)
         return await asyncio.gather(*(one(s) for s in steps),return_exceptions=True)
 
+def _plain_json(v:Any)->Any:
+    """Strict plain JSON (no tuples, bytes, NaN, non-str keys); returns an independent deep copy."""
+    def chk(x):
+        if x is None or isinstance(x,(bool,str,int)):return
+        if isinstance(x,float) and math.isfinite(x):return
+        if isinstance(x,list):
+            for y in x:chk(y)
+            return
+        if isinstance(x,dict):
+            for k,y in x.items():
+                if not isinstance(k,str):raise ValueError("not plain JSON")
+                chk(y)
+            return
+        raise ValueError("not plain JSON")
+    chk(v);return json.loads(json.dumps(v))
+def _nonblank(v)->bool:return isinstance(v,str) and bool(v.strip())
+def step_digest(run_id:str,step_id:str,tool:str|None,risk:str,arguments:dict[str,Any])->str:
+    return hashlib.sha256(json.dumps({"run_id":run_id,"step_id":step_id,"tool":tool,"risk":risk,"arguments":arguments},sort_keys=True,separators=(",",":")).encode()).hexdigest()
+def _block(step:Step,code:str):
+    step.state=State.BLOCKED;step.error=code
+
 class DeliberativeLoop:
     def __init__(self,approvals:ApprovalStore,tools:ToolRegistry,scheduler:ConcurrencyScheduler):self.approvals,self.tools,self.scheduler=approvals,tools,scheduler
     async def execute(self,run:Run)->Run:
@@ -127,20 +154,67 @@ class DeliberativeLoop:
             outcomes=await self.scheduler.run(ready,lambda s:self._step(run,s))
             for step,outcome in zip(ready,outcomes):
                 if isinstance(outcome,BaseException):
-                    step.error=f"{type(outcome).__name__}: {outcome}"
-                    step.state=State.BLOCKED
+                    if step.outcome_unknown:step.state=State.BLOCKED   # fixed unknown state is never overwritten and no raw text is kept
+                    elif step.approval_id is not None or step.risk.value in GATED_RISKS:
+                        step.error=type(outcome).__name__;step.state=State.BLOCKED   # gated steps: class name only, never external error text
+                    else:
+                        step.error=f"{type(outcome).__name__}: {outcome}"
+                        step.state=State.BLOCKED
                     run.traces.append(Trace("execution",f"Infrastructure blocked {step.title}",[],["fix infrastructure"],"escalate",["fail closed; no hidden scheduler exception"]))
             after=[(s.id,s.state,s.attempts) for s in ready]
             if before==after:break
         return run
+    async def _gated_step(self,run:Run,step:Step):
+        """EXTERNAL/IRREVERSIBLE (or once-filed) step: real Module 0 approval bound to tenant/run/step/digest, single use, fresh. Fixed error codes only."""
+        st=self.approvals
+        if not(_nonblank(run.tenant_id) and _nonblank(run.actor_id)) or not all(hasattr(st,n) for n in ("put","full_view","consume_effect")):return _block(step,"binding_unavailable")
+        tool_name=step.tool or "step"
+        if not step.approval_id:
+            try:args=_plain_json(step.arguments)
+            except ValueError:return _block(step,"arguments_invalid")
+            digest=step_digest(run.id,step.id,step.tool,step.risk.value,args)
+            req=st.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"cognitive:{tool_name}",payload={"tenant_id":run.tenant_id,"run_id":run.id,"step_id":step.id,"title":step.title,"tool":step.tool,"arguments":args,"risk":step.risk.value,"step_digest":digest}),ttl_seconds=PENDING_REVIEW_TTL_SECONDS)
+            step.approval_id=req.id;step.state=State.WAITING_APPROVAL;return
+        try:view=st.full_view(step.approval_id)
+        except (ApprovalNotFoundError,KeyError):return _block(step,"approval_unavailable")
+        except SQLAlchemyError:return _block(step,"approval_store_unavailable")
+        if not isinstance(view,dict):return _block(step,"approval_unavailable")
+        status=str(getattr(view.get("status"),"value",view.get("status")))
+        if status=="pending":step.state=State.WAITING_APPROVAL;return
+        if status=="denied":return _block(step,"approval_denied")
+        if status=="expired":return _block(step,"approval_expired")
+        if status!="approved":return _block(step,"approval_unavailable")
+        # one consistent snapshot of tool/risk/arguments, taken before consume and used for the dispatch itself (no relookup, no await in between)
+        tool=self.tools.tools.get(step.tool) if step.tool else None
+        risk=step.risk
+        try:args=_plain_json(step.arguments)
+        except ValueError:return _block(step,"arguments_invalid")
+        digest=step_digest(run.id,step.id,step.tool,risk.value,args)
+        payload=view.get("payload");by=view.get("approved_by")
+        if (isinstance(view.get("module_id"),bool) or view.get("module_id")!=MODULE_ID or view.get("action_type")!=f"cognitive:{tool_name}" or view.get("user_id")!=run.tenant_id
+                or not isinstance(payload,dict) or payload.get("run_id")!=run.id or payload.get("step_id")!=step.id or payload.get("step_digest")!=digest
+                or not isinstance(view.get("decided_at"),datetime) or not _nonblank(by) or by.strip()==run.actor_id.strip()):return _block(step,"approval_mismatch")
+        if step.tool is not None and (tool is None or tool.risk!=risk):   # cheap pre-dispatch refusals keep the approval unconsumed and are retried as before
+            step.attempts+=1;step.error="ValueError";step.state=State.PENDING if step.attempts<step.max_attempts else State.FAILED;return
+        snap_tool=step.tool;snap_handler=tool.handler if tool is not None else None;snap_timeout=tool.timeout if tool is not None else None   # handler/timeout/tool name frozen with the args, BEFORE consume
+        effect_id=str(uuid.uuid4());stored=copy.deepcopy(payload)
+        try:permit=st.consume_effect(step.approval_id,module_id=MODULE_ID,action_type=f"cognitive:{tool_name}",payload=stored,user_id=run.tenant_id,effect_id=effect_id,actor=run.actor_id,max_age_seconds=APPROVED_VALIDITY_SECONDS)
+        except ApprovalConflictError as e:
+            return _block(step,{"approval is stale":"approval_stale","approval has already been consumed":"approval_consumed","approval has expired":"approval_expired"}.get(str(e),"approval_refused"))
+        except (ApprovalNotFoundError,ValueError):return _block(step,"approval_refused")
+        except SQLAlchemyError:return _block(step,"approval_store_unavailable")   # nothing was consumed or dispatched
+        if not isinstance(permit,dict) or permit.get("allowed") is not True or permit.get("approval_id")!=step.approval_id or permit.get("effect_id")!=effect_id:return _block(step,"approval_refused")
+        step.attempts+=1;step.state=State.RUNNING;step.outcome_unknown=True;step.error="outcome_unknown"   # marked BEFORE the handler is entered; stays through timeout/cancel/scheduler errors
+        key=f"{run.id}:{step.id}:{step.attempts}"
+        try:
+            result={"ok":True,"note":"cognitive step"} if snap_tool is None else await asyncio.wait_for(snap_handler(args,key),snap_timeout)
+        except Exception:
+            step.state=State.BLOCKED;run.traces.append(Trace("execution",f"Outcome unknown: {step.title}",[],["reconcile before any retry"],"escalate",["approval consumed","no retry"]));return
+        step.result=result;step.state=State.SUCCEEDED;step.outcome_unknown=False;step.error=None
+        run.traces.append(Trace("execution",f"Completed {step.title}",[step.result],[],"continue",["bound approval consumed once"]))
     async def _step(self,run:Run,step:Step):
-        if step.risk in {Risk.EXTERNAL,Risk.IRREVERSIBLE}:
-            if not step.approval_id:
-                req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"cognitive:{step.tool or 'step'}",payload={"run_id":run.id,"step_id":step.id,"title":step.title,"arguments":step.arguments,"risk":step.risk.value}))
-                step.approval_id=req.id;step.state=State.WAITING_APPROVAL;return
-            req=next((x for x in self.approvals.list() if x.id==step.approval_id),None)
-            if not req or req.status==ApprovalStatus.PENDING:return
-            if req.status!=ApprovalStatus.APPROVED:step.state=State.BLOCKED;return
+        if step.approval_id is not None or step.risk.value in GATED_RISKS:   # a step once filed approval-required stays gated even if its risk is later mutated
+            return await self._gated_step(run,step)
         step.state=State.RUNNING;step.attempts+=1
         try:
             step.result=await self.tools.dispatch(step,f"{run.id}:{step.id}:{step.attempts}");step.state=State.SUCCEEDED
@@ -163,5 +237,5 @@ class Service:
     """Composes all 12 requested parts; traces expose evidence/decisions, not hidden scratchpad."""
     def __init__(self,approval_store:ApprovalStore,model:Model,max_parallel:int=6):
         self.sensory=SensoryIngestion({"api","webhook","file","email","calendar","browser","user"});self.working=WorkingMemory();self.ltm=LongTermMemory();self.skills=SkillLibrary();self.planner=HTNPlanner(self.skills,model);self.tools=ToolRegistry();self.scheduler=ConcurrencyScheduler(max_parallel);self.loop=DeliberativeLoop(approval_store,self.tools,self.scheduler);self.retrospective=Retrospective();self.supervisor=AtlasSupervisor();self.model=model;self.runs={}
-    async def start(self,goal:str,constraints:dict[str,Any],budget:dict[str,float]):
-        memories=self.ltm.recall(goal);plan=await self.planner.plan(goal,{**constraints,"memory":[m.content for m in memories]});run=Run(goal,budget,plan);run.traces.append(Trace("intake","Goal accepted",[{"memory_id":m.id} for m in memories],["clarify","plan"],"plan",["bounded budget","tenant context supplied by route"]));self.runs[run.id]=run;return await self.loop.execute(run)
+    async def start(self,goal:str,constraints:dict[str,Any],budget:dict[str,float],*,tenant_id:str|None=None,actor_id:str|None=None):
+        memories=self.ltm.recall(goal);plan=await self.planner.plan(goal,{**constraints,"memory":[m.content for m in memories]});run=Run(goal,budget,plan,tenant_id=tenant_id,actor_id=actor_id);run.traces.append(Trace("intake","Goal accepted",[{"memory_id":m.id} for m in memories],["clarify","plan"],"plan",["bounded budget","tenant context supplied by route"]));self.runs[run.id]=run;return await self.loop.execute(run)

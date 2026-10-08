@@ -278,14 +278,16 @@ def _run(s):
     return asyncio.run(s.start("goal", {}, {"seconds": 5, "tokens": 5, "money": 0}))
 
 
-def test_PROTECTION_cognitive_loop_does_not_dispatch_an_external_tool_until_its_approval_is_approved():
+def test_PROTECTION_cognitive_loop_does_not_dispatch_an_external_tool_without_a_run_identity_and_files_nothing():
+    # CONVERTED (slice 16): base filed a tenant-less approval under "default"; now a run without tenant+actor BLOCKS the gated step and files nothing.
+    # Full coverage with a real Module 0: tests/modules/test_m20_legacy_loop_approval_binding.py.
     calls = []
 
     async def h(args, key):
         calls.append(key); return {"ok": True}
     s, a = _cog([{"title": "t", "tool": "send_note", "risk": "external"}], "send_note", Risk.EXTERNAL, h)
-    _run(s)
-    assert calls == [] and a.items and a.items[0].action_type == "cognitive:send_note"
+    run = _run(s)
+    assert calls == [] and a.items == [] and run.plan.steps[0].error == "binding_unavailable"
 
 
 def test_PROTECTION_cognitive_loop_refuses_a_model_declared_risk_that_differs_from_the_registered_tool_risk():
@@ -311,20 +313,8 @@ def test_CHARACTERIZATION_cognitive_gate_trusts_the_registered_risk_annotation_a
         assert len(calls) == 1 and a.items == []
 
 
-def test_CHARACTERIZATION_cognitive_approval_is_not_single_use_a_failed_then_retried_external_step_dispatches_twice_under_one_approval():
-    calls = []
-
-    async def h(args, key):
-        calls.append(key)
-        if len(calls) == 1:
-            raise OSError("boom")                                          # may have happened: no journal, no unknown state in this path
-        return {"ok": True}
-    s, a = _cog([{"title": "t", "tool": "send_note", "risk": "external"}], "send_note", Risk.EXTERNAL, h)
-    run = _run(s)
-    a.items[0] = ApprovalRequest(id=a.items[0].id, module_id=a.items[0].module_id, action_type=a.items[0].action_type,
-                                 payload=a.items[0].payload, status=ApprovalStatus.APPROVED)
-    asyncio.run(s.loop.execute(run))
-    assert len(calls) == 2 and len(set(calls)) == 2                        # same approval, two dispatches, two different keys
+# (slice 16) the former CHARACTERIZATION "failed-then-retried external step dispatches twice under one approval" is CONVERTED to
+# tests/modules/test_m20_legacy_loop_approval_binding.py::test_CONVERTED_failed_external_step_is_blocked_unknown_and_never_dispatched_twice.
 
 
 # ---- durable orchestrator, exercised directly (previously source-traced only) --------------------------------------------------------------

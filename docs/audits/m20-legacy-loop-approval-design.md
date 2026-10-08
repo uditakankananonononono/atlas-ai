@@ -36,3 +36,27 @@ In-tree tests use the legacy loop with fake approval stores: every test that dri
 
 ## Tests (labels, each NEW must fail on base)
 CONVERTED: audit CHARACTERIZATION "approval is not single-use, retry dispatches twice", "trusts registered risk annotation" stays a CHARACTERIZATION. NEW (real Module 0 on file SQLite + injected clock, real thread concurrency): approval filed with tenant/run/step/digest and TTL; decision by the wrong tenant's user not accepted; list-cap case (approval older than 100 newer rows) still resolves by id; changed arguments/tool/risk after approval refused without consuming; self-approved and blank approver refused; stale, boundary, future decided_at; concurrent double-dispatch yields one effect; handler failure/timeout/cancellation => BLOCKED outcome unknown, no retry, approval stays consumed; READ/REVERSIBLE retry unchanged; missing identity => BLOCKED; store lacking methods fails closed; fixed messages. PROTECTION: pre-dispatch refusals (tool unavailable, risk differs) leave the approval unconsumed; risk annotation limit documented.
+
+## Implementation addendum (slice 16)
+Milestone label unchanged: partial read-only runtime seam with plan acceptance A NOT met.
+
+What landed (`m20_general_cognitive_worker/legacy_service.py`, `m21_claire/service.py`):
+- `start(..., tenant_id=None, actor_id=None)`; Claire's realize path passes the goal owner identity (`_run_identity`, `m21_claire/service.py:59`, used at the `cognitive.start` call at `:64`). Legacy goals with no owner pass nothing and every gated step is blocked `binding_unavailable`.
+- A step filed approval-required stays gated for life, even if its tool risk is later mutated to READ/REVERSIBLE (reviewer condition 1).
+- Filing: payload {tenant_id, run_id, step_id, title, tool, arguments, risk, step_digest}, action `cognitive:<tool>`, pending TTL 24h. Approved validity 900s (inclusive), checked in m00 `consume_effect(max_age_seconds=900)` with its own clock.
+- Dispatch gate: tool/risk/arguments are snapshotted once before consume and that snapshot's handler is called with no relookup. Pre-dispatch refusals (tool unavailable, risk differs) leave the approval unconsumed.
+- Tool name, handler and timeout are snapshotted with the arguments BEFORE consume; the dispatch uses only that snapshot (a post-consume handler swap or `step.tool=None` cannot change what runs or fake a synthetic success; regression tests added after review).
+- Unknown-outcome marker is set after committed consumption and BEFORE the handler. Timeout, cancellation, handler error and scheduler exceptions keep the fixed state; the outer execute never overwrites it. No retry.
+- Fixed error codes only (class name or code, never exception text): binding_unavailable, arguments_invalid, approval_denied, approval_expired, approval_mismatch, approval_stale, approval_consumed, approval_refused, approval_store_unavailable, outcome_unknown. Pending approvals WAIT; terminal invalid ones block with a distinct code.
+- Fail closed on blank identities, null/future timestamps, non-plain-JSON arguments, module/action/user/run/step/digest mismatch, wrong permit ids, missing facade methods. No list/default fallback.
+
+Cancellation note: a cancelled run propagates CancelledError out of execute, so the step state stays RUNNING (not BLOCKED) with outcome_unknown=True and error=outcome_unknown. A rerun never picks RUNNING steps up (only PENDING/WAITING are ready), so it blocks the run and dispatches nothing. Handler errors/timeouts/scheduler exceptions (non-cancel) end BLOCKED.
+
+Honest limits:
+- No role/designation authorization. `approved_by != actor` is a structural string check; it cannot prove the approver's tenant or role. m00 actor binding / decide-role stay open.
+- No m00 actor binding, daemon token validation, device attestation or production wiring.
+- The unknown-outcome marker is in-memory run state, not durable.
+- A new approval is not proof that an uncertain earlier effect is safe to repeat.
+- SQLite row-lock caveat: unique constraint plus commit ordering gives at-most-one; under contention a DB error may surface instead of the fixed refusal (such steps are blocked, nothing dispatched).
+- Covers only the legacy `DeliberativeLoop` that Claire realize uses, not `CognitiveWorkerService`. Effect class is whatever the integrator registered.
+- No whole-product claim.
