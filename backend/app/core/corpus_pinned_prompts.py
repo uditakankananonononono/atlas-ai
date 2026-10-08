@@ -1,5 +1,5 @@
 """Fixed CC0 publisher snapshot. No stamping commits onto mutable API rows."""
-import argparse,csv,hashlib,io,json,re,tempfile,os
+import argparse,csv,hashlib,io,json,re,tempfile,os,shutil
 from pathlib import Path
 from contextlib import ExitStack
 from time import monotonic,sleep
@@ -73,10 +73,15 @@ def _download(output,max_rows,source_dir,stack):
   for name,path in files.items():
    os.link(path,stage_archive/name)
   os.rename(stage_archive,archive)
-  stage_manifest=Path(directory)/'manifest.json';stage_manifest.write_text(json.dumps(record,indent=2)+'\n')
-  os.link(stage,out)
-  try:os.link(stage_manifest,manifest)
-  except Exception:out.unlink();raise
+  linked=False
+  try:
+   stage_manifest=Path(directory)/'manifest.json';stage_manifest.write_text(json.dumps(record,indent=2)+'\n')
+   os.link(stage,out);linked=True
+   os.link(stage_manifest,manifest)
+  except Exception:
+   if linked:out.unlink()
+   shutil.rmtree(archive)
+   raise
  csv_stream.close()
  return record
 def verify_snapshot(path):

@@ -70,3 +70,18 @@ def test_coordinated_export_rehash_cannot_claim_publisher_text(snapshot):
  snapshot.write_text('\n'.join(lines)+'\n')
  p=snapshot.with_suffix('.jsonl.manifest.json');m=json.loads(p.read_text());m['export_sha256']=hashlib.sha256(snapshot.read_bytes()).hexdigest();p.write_text(json.dumps(m))
  with pytest.raises(ValueError):module.verify_snapshot(snapshot)
+def test_export_link_failure_removes_owned_archive(tmp_path,monkeypatch):
+ import hashlib,os
+ real_client=httpx.Client;real_link=os.link
+ card=b'---\nlicense: cc0-1.0\n---\n';csv=b'act,prompt\nx,real test prompt\n'
+ monkeypatch.setattr(module,'sleep',lambda seconds:None)
+ monkeypatch.setattr(module,'EXPECTED_HASHES',{'README.md':hashlib.sha256(card).hexdigest(),'prompts.csv':hashlib.sha256(csv).hexdigest()})
+ def handle(request):return httpx.Response(200,content=card if 'README.md' in str(request.url) else csv,request=request)
+ monkeypatch.setattr(module.httpx,'Client',lambda **kwargs:real_client(transport=httpx.MockTransport(handle),**kwargs))
+ out=tmp_path/'out.jsonl'
+ def fail(source,destination):
+  if Path(destination)==out:raise OSError('publication failed')
+  return real_link(source,destination)
+ monkeypatch.setattr(module.os,'link',fail)
+ with pytest.raises(OSError):module.download(out)
+ assert not out.exists() and not Path(str(out)+'.source').exists()
