@@ -94,3 +94,17 @@ def test_service_path_bool_never_verifies():
     # model_construct bypasses schema validation: the verifier itself must still say INVALID
     raw = MediaKitIn.model_construct(brand_id=b.id, creator_name="A", creator_mission="science", metrics={"views": True}, period_start=S, period_end=E, audience={}, case_studies=[])
     assert svc.media_kit(raw).metadata["metric_labels"] == {"views": "INVALID"}
+
+def test_usedict_and_other_mappings_bool_rejected():
+    from collections import UserDict, OrderedDict
+    from types import MappingProxyType
+    from pydantic import ValidationError
+    from app.modules.m07_brand_collaboration.schemas import MediaKitIn, ReportIn
+    for mk in (UserDict, MappingProxyType, OrderedDict):
+        with pytest.raises(ValidationError):
+            MediaKitIn(brand_id="b", creator_name="A", creator_mission="science", metrics=mk({"v": True}))
+        with pytest.raises(ValidationError):
+            ReportIn(brand_id="b", period_start=S, period_end=E, metrics=mk({"v": True}))
+    ok = MediaKitIn(brand_id="b", creator_name="A", creator_mission="science", metrics=UserDict({"v": 2}))
+    assert ok.metrics == {"v": 2.0}
+    assert ReportIn(brand_id="b", period_start=S, period_end=E, metrics=UserDict({"v": 2})).metrics == {"v": 2.0}
