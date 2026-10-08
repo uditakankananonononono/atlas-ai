@@ -196,7 +196,7 @@ class SqlCalendarRepository:
             return outcome
 
     def list_events(self, start: datetime | None = None, end: datetime | None = None,
-                    include_cancelled: bool = False, limit: int = 500) -> list[CalendarEventRow]:
+                    include_cancelled: bool = False, limit: int | None = 500) -> list[CalendarEventRow]:
         with self.sessions() as db:
             statement = select(CalendarEventRow).where(
                 CalendarEventRow.tenant_id == self.tenant_id)

@@ -117,13 +117,23 @@ class DayLoad(BaseModel):
     meeting_minutes: int
     meeting_count: int
     longest_meeting_minutes: int
-    short_gaps: int  # free gaps < 30 min between meetings (fragmentation)
+    short_gaps: int  # free gaps < 30 min between occupied intervals
+    occupied_seconds: float = 0
+    event_seconds: float = 0
+    overlapping_seconds: float = 0
+    peak_concurrency: int = 0
+    day_seconds: float = 86400
+    free_seconds: float = 86400
 
 
 class MeetingLoadReport(BaseModel):
     week_start: str
     days: list[DayLoad]
     total_meeting_minutes: int
+    timezone: str = "UTC"
+    total_occupied_seconds: float = 0
+    total_event_seconds: float = 0
+    total_overlapping_seconds: float = 0
 
 
 class SyncResult(BaseModel):

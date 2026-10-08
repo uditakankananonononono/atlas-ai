@@ -69,3 +69,51 @@ boundary tests cover the named zones and dates, not every historical IANA
 transition or leap seconds (Python datetime does not represent leap seconds).
 
 All work is on a private branch. No main edits, pushes or live external effects.
+
+## Follow-up: integrated service and refresh repair
+
+The follow-up commit integrates the calculator into `Service.meeting_load` and
+adds the `timezone` query parameter to the mounted analytics route. Invalid
+IANA timezone names return 422 before service execution. `meeting_minutes`
+retains its individual-event sum meaning, but is now clipped to each local day
+and rounded once per day. Union seconds are separate additive fields, including
+weekly totals. Short gaps are measured between merged occupied regions so a
+nested event does not hide a gap after a longer enclosing event. Repository
+queries are tenant-scoped and explicitly unbounded for this seven-day report;
+ordinary event-list callers retain the 500-row default. Memory use scales with
+the number of retrieved events and report execution is not quota-limited here.
+
+SQLite stores UTC instants without tzinfo. The existing `_aware` convention
+reattaches UTC before occupancy computation. Null endpoint records cannot be
+included in duration accounting. Cancelled records are excluded by the query.
+Event transparency is not stored by the current repository, so integrated
+service accounting treats all remaining events as busy; standalone callers can
+still specify transparency. No schema migration or transparency-sync repair is
+claimed.
+
+Watch and sync now await the configured refresh provider rather than using the
+stored refresh token as Bearer. The route constructs `GoogleRefreshExchange`
+using its actual HTTP client. It reads `ATLAS_GOOGLE_CLIENT_ID` and
+`ATLAS_GOOGLE_CLIENT_SECRET` and POSTs the refresh grant to Google's token
+endpoint. Non-2xx (including valid-looking-token bodies), missing configuration,
+missing/invalid access tokens, a token equal to the refresh token and non-Bearer
+token type stop provider use. Errors do not echo token response bodies. Tokens
+are not cached or persisted; each required watch/sync operation exchanges again.
+No live OAuth was attempted, since owner client configuration and a connected
+calendar were not available in this isolated test environment.
+
+Verification: same 15 regression pins fail on the earlier standalone commit and
+pass after integration on Python 3.12.14. New regression file has 26 test cases
+including HTTP mock transport response tests. Full `test_m11*` selection has 112
+passes after integration and after restoring five integration mutants; the
+receipts distinguish these from the earlier standalone 17-case selection.
+Existing watch/sync tests have one fixture adaptation: an explicit offline
+refresh callback returns a test access token. No production fallback sends
+refresh credentials as Bearer. Full main-app route imports run under Python
+3.12, not a compatibility shim. Earlier failed setup attempts are retained.
+
+This supersedes the earlier 'Not integrated' paragraph only for the service,
+route and local repository paths named above. It does not establish deployment,
+connected-calendar behavior, live OAuth, all solver/plan paths, tenant auth
+review, or whole M11/constitution acceptance. Integration into authoritative
+main remains the owner's next step, not performed by this branch.

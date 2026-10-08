@@ -100,9 +100,14 @@ def make_service(tmp_path, tenant="tenant-a", google=None, caldav=None):
     sessions = sessionmaker(bind=engine)
     repo = SqlCalendarRepository(tenant, sessions)
     gate = FakeApprovalGate()
+    async def fixture_refresh_exchange(refresh_token):
+        # Offline provider fixture: never treat a stored refresh token as Bearer.
+        return "offline-access-token"
+
     service = Service(
         repo, gate, cipher=TokenCipher(tenant, master_secret=MASTER),
         google=google or FakeGoogleCalendarClient(), caldav=caldav,
+        google_access_token_provider=fixture_refresh_exchange,
     )
     return service, repo, gate
 

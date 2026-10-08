@@ -23,8 +23,10 @@ from uuid import uuid4
 from app.core.models import ApprovalRequest
 from app.core.token_crypto import TokenCipher
 
+from .calendar_occupancy import OccupancyEvent, calendar_occupancy, _day_boundary
+from zoneinfo import ZoneInfo
 from .caldav import CalDAVClient
-from .google_calendar import GoogleCalendarClient, SyncTokenExpiredError
+from .google_calendar import GoogleCalendarClient, SyncTokenExpiredError, UpstreamServiceError
 from .conflicts import Availability, CalendarInterval, detect_conflicts
 from .schemas import (
     CalDAVSourceCreate,
@@ -203,7 +205,7 @@ class Service:
             expiration = expiration.replace(tzinfo=timezone.utc)
         if expiration and expiration > datetime.now(timezone.utc) + timedelta(hours=24):
             return self._source_view(row)  # still healthy
-        access_token = self.cipher.decrypt(row.encrypted_credentials)
+        access_token = await self._google_access_token(row)
         channel_id = str(uuid4())
         channel_token = str(uuid4())
         info = await self.google.watch(
@@ -242,7 +244,7 @@ class Service:
     async def _sync_google(self, row) -> SyncResult:
         if self.google is None:
             raise RuntimeError("google calendar client not configured")
-        access_token = self.cipher.decrypt(row.encrypted_credentials)
+        access_token = await self._google_access_token(row)
         full_resync = False
         try:
             page = await self.google.list_events(
@@ -609,36 +611,54 @@ class Service:
         return view.model_copy(update={"status": "scheduled"})
 
     # -- analytics (advancement pass) -------------------------------------------------------
-    def meeting_load(self, week_start: date) -> MeetingLoadReport:
-        horizon_start = datetime.combine(week_start, time(0, 0), tzinfo=timezone.utc)
-        horizon_end = horizon_start + timedelta(days=7)
-        events = self.repository.list_events(start=horizon_start, end=horizon_end)
-        days: list[DayLoad] = []
-        total = 0
-        for offset in range(7):
+    def meeting_load(self, week_start: date, timezone_name: str = "UTC") -> MeetingLoadReport:
+        zone = ZoneInfo(timezone_name)
+        horizon_start = _day_boundary(week_start, zone)
+        horizon_end = _day_boundary(week_start + timedelta(days=7), zone)
+        rows = self.repository.list_events(start=horizon_start, end=horizon_end, limit=None)
+        events = [OccupancyEvent(e.id, _aware(e.start), _aware(e.end),
+                                 cancelled=e.status == "cancelled")
+                  for e in rows if e.start is not None and e.end is not None]
+        occupancy = calendar_occupancy(events, week_start, timezone_name)
+        days = []
+        for offset, occupied in enumerate(occupancy.days):
             day = week_start + timedelta(days=offset)
-            day_start = datetime.combine(day, time(0, 0), tzinfo=timezone.utc)
-            day_end = day_start + timedelta(days=1)
-            todays = [
-                e for e in events
-                if e.start is not None and e.end is not None
-                and _aware(e.start) < day_end and _aware(e.end) > day_start
-            ]
-            todays.sort(key=lambda e: _aware(e.start))
-            minutes = sum(int((_aware(e.end) - _aware(e.start)).total_seconds() // 60) for e in todays)
-            longest = max((int((_aware(e.end) - _aware(e.start)).total_seconds() // 60) for e in todays), default=0)
+            left, right = _day_boundary(day, zone), _day_boundary(day + timedelta(days=1), zone)
+            clips = sorted((max(e.start.astimezone(timezone.utc), left),
+                            min(e.end.astimezone(timezone.utc), right))
+                           for e in events if not e.cancelled
+                           and e.start.astimezone(timezone.utc) < right
+                           and e.end.astimezone(timezone.utc) > left)
+            durations = [(end - start).total_seconds() for start, end in clips]
             short_gaps = 0
-            for first, second in zip(todays, todays[1:]):
-                gap = (_aware(second.start) - _aware(first.end)).total_seconds() / 60.0
-                if 0 < gap < 30:
+            union_end = None
+            for start, end in clips:
+                if union_end is not None and 0 < (start - union_end).total_seconds() < 1800:
                     short_gaps += 1
-            total += minutes
-            days.append(DayLoad(
-                date=day.isoformat(), meeting_minutes=minutes, meeting_count=len(todays),
-                longest_meeting_minutes=longest, short_gaps=short_gaps,
-            ))
-        return MeetingLoadReport(week_start=week_start.isoformat(), days=days,
-                                 total_meeting_minutes=total)
+                union_end = end if union_end is None else max(union_end, end)
+            # Keep legacy meeting_minutes as individual-event sum, not union.
+            days.append(DayLoad(date=day.isoformat(),
+                meeting_minutes=int(sum(durations) // 60), meeting_count=len(clips),
+                longest_meeting_minutes=int(max(durations, default=0) // 60), short_gaps=short_gaps,
+                occupied_seconds=occupied.occupied_seconds,
+                event_seconds=occupied.event_seconds, overlapping_seconds=occupied.overlapping_seconds,
+                peak_concurrency=occupied.peak_concurrency, day_seconds=occupied.day_seconds,
+                free_seconds=occupied.free_seconds))
+        return MeetingLoadReport(week_start=week_start.isoformat(), timezone=timezone_name,
+            days=days, total_meeting_minutes=sum(d.meeting_minutes for d in days),
+            total_occupied_seconds=occupancy.occupied_seconds,
+            total_event_seconds=occupancy.event_seconds,
+            total_overlapping_seconds=occupancy.overlapping_seconds)
+
+    async def _google_access_token(self, row) -> str:
+        if self._google_access_token_provider is None:
+            raise UpstreamServiceError("Google OAuth refresh provider is not configured")
+        refresh_token = self.cipher.decrypt(row.encrypted_credentials)
+        token = await self._google_access_token_provider(refresh_token)
+        if (not isinstance(token, str) or not token or token == refresh_token
+                or any(c.isspace() or ord(c) < 33 or ord(c) > 126 for c in token)):
+            raise UpstreamServiceError("Google OAuth returned invalid access token")
+        return token
 
     # -- helpers --------------------------------------------------------------------------
     def _require_approved(self, approval_id: str) -> None:

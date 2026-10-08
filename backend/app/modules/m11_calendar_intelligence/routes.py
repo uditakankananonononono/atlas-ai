@@ -16,6 +16,8 @@ from app.modules.m00_approval_center.service import (
     default_service,
 )
 
+from .google_refresh_lane import GoogleRefreshExchange
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from .caldav import HttpxCalDAVClient, UpstreamServiceError as CalDAVError
 from .google_calendar import HttpxGoogleCalendarClient, UpstreamServiceError as GoogleError
 from .schemas import (
@@ -85,6 +87,7 @@ async def get_service(tenant: TenantContext = Depends(require_tenant)) -> AsyncI
             Module0ApprovalGate(tenant.tenant_id),
             cipher=cipher,
             google=HttpxGoogleCalendarClient(client),
+            google_access_token_provider=GoogleRefreshExchange(client).access_token,
             caldav=HttpxCalDAVClient(client, username="", password=""),
             webhook_base_url=os.getenv(
                 "ATLAS_CALENDAR_WEBHOOK_URL",
@@ -251,9 +254,14 @@ def apply_reschedule(approval_id: str, service: Service = Depends(get_service)) 
 
 @router.get("/analytics/meeting-load", response_model=MeetingLoadReport)
 def meeting_load(
-    week_start: date = Query(), service: Service = Depends(get_service)
+    week_start: date = Query(), service: Service = Depends(get_service),
+    timezone_name: str = Query(default="UTC", alias="timezone"),
 ) -> MeetingLoadReport:
-    return service.meeting_load(week_start)
+    try:
+        ZoneInfo(timezone_name)
+    except (ZoneInfoNotFoundError, ValueError):
+        raise HTTPException(status_code=422, detail="invalid IANA timezone")
+    return service.meeting_load(week_start, timezone_name=timezone_name)
 
 from .schedule_risk import ScheduleRiskRequest, analyze_schedule_risk
 
