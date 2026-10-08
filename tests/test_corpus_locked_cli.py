@@ -45,3 +45,15 @@ def test_corrupted_resume_refused_before_network_and_unchanged(tmp_path,monkeypa
  assert main(['--db',str(db),'--export',str(export),'--max-rows','1'])==1
  assert json.loads(capsys.readouterr().err)['error_type']=='ValueError'
  assert {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in tmp_path.iterdir()}==before
+def test_different_selection_cannot_replace_existing_export(tmp_path,monkeypatch,capsys):
+ import shutil,hashlib,httpx
+ from app.core.corpus_locked_cli import main
+ live=Path('/tmp/corpus-review')
+ if not (live/'corpus.sqlite').exists():pytest.skip('actual public corpus needed')
+ for name in ('corpus.sqlite','train.jsonl','train.jsonl.manifest.json'):shutil.copyfile(live/name,tmp_path/name)
+ before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in tmp_path.iterdir()}
+ def refuse(*args,**kwargs):raise AssertionError('request must refuse mismatch before network')
+ monkeypatch.setattr(httpx.Client,'get',refuse)
+ assert main(['--db',str(tmp_path/'corpus.sqlite'),'--export',str(tmp_path/'train.jsonl'),'--config','cc0-prompts','--max-rows','1'])==1
+ assert json.loads(capsys.readouterr().err)['error_type']=='ValueError'
+ assert {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in tmp_path.iterdir()}==before

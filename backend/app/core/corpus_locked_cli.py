@@ -37,7 +37,8 @@ def main(argv=None):
    artifacts=[Path(args.db),Path(args.export),Path(args.export).with_suffix(Path(args.export).suffix+'.manifest.json')]
    if any(p.exists() for p in artifacts):
     if not all(p.is_file() for p in artifacts):raise ValueError('incomplete corpus artifacts require reconciliation before resume')
-    verify(args.db,args.export) # Refuse corrupt resume before any network/write.
+    existing=verify(args.db,args.export) # Refuse corrupt resume before any network/write.
+    if existing['selection']!=args.config+'/'+args.split:raise ValueError('existing corpus selection differs; use separate corpus artifacts')
    report=collect(args.db,args.export,config=args.config,split=args.split,max_rows=args.max_rows)
    verified=verify(args.db,args.export);verified['collection']=report;verified['local_lock']=True
    print(json.dumps(verified,indent=2))
