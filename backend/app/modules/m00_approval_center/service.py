@@ -277,8 +277,8 @@ class Service:
                 ApprovalRequestRow.expires_at <= now,
             )
             for row in db.scalars(statement):
-                self._expire(db, row, now)
-                expired.append(row.id)
+                if self._expire(db, row, now):
+                    expired.append(row.id)
         for approval_id in expired:
             self._broadcaster.publish({"type": "approval_expired", "approval_id": approval_id})
             self._fire_callbacks(approval_id, self.get(approval_id))
@@ -338,19 +338,28 @@ class Service:
             raise ApprovalNotFoundError(approval_id)
         return row
 
-    def _expire(self, db: Session, row: ApprovalRequestRow, now: datetime) -> None:
-        row.status = ApprovalStatus.EXPIRED.value
-        row.decided_at = now
+    def _expire(self, db: Session, row: ApprovalRequestRow, now: datetime) -> bool:
+        from sqlalchemy import update
+        changed = db.execute(update(ApprovalRequestRow).where(
+            ApprovalRequestRow.id == row.id,
+            ApprovalRequestRow.status == ApprovalStatus.PENDING.value,
+            ApprovalRequestRow.expires_at.is_not(None),
+            ApprovalRequestRow.expires_at <= now,
+        ).values(status=ApprovalStatus.EXPIRED.value, decided_at=now),
+            execution_options={"synchronize_session": False})
+        db.refresh(row)
+        if changed.rowcount != 1:
+            return False
         db.add(ApprovalEventRow(approval_id=row.id, event="expired", actor=None, at=now))
+        return True
 
     def _expire_if_overdue(self, db: Session, row: ApprovalRequestRow, now: datetime) -> bool:
-        """Expire a pending row whose deadline passed. Returns True if expired."""
+        """Expire only a still-pending overdue row, refreshing competing state."""
         if row.status != ApprovalStatus.PENDING.value or row.expires_at is None:
             return False
         if _aware(row.expires_at) > now:
             return False
-        self._expire(db, row, now)
-        return True
+        return self._expire(db, row, now)
 
     def _fire_callbacks(self, approval_id: str, view: dict[str, Any]) -> None:
         with self._callback_lock:
