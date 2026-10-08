@@ -39,3 +39,22 @@ def test_existing_ordinal_conflict_refuses_page_and_keeps_cursor(tmp_path,monkey
   assert conn.execute('SELECT text FROM rows').fetchone()[0]=='old text'
   assert conn.execute('SELECT next_offset FROM cursors').fetchone()[0]==0
  assert not out.exists()
+def test_conflict_after_precheck_readback_refuses_and_rolls_page_back(tmp_path,monkeypatch):
+ import sqlite3,hashlib,httpx
+ import app.core.public_corpus as module
+ real_client=httpx.Client;real_connect=sqlite3.connect;fired=[]
+ class BarrierConnection(sqlite3.Connection):
+  def execute(self,sql,parameters=()):
+   if sql.startswith('INSERT OR IGNORE INTO rows') and not fired:
+    fired.append(True)
+    super().execute('INSERT INTO rows VALUES (?,?,?,?,?,?)',(parameters[0],parameters[1],'competing text',hashlib.sha256(b'competing text').hexdigest(),'competing source','barrier'))
+   return super().execute(sql,parameters)
+ monkeypatch.setattr(module.sqlite3,'connect',lambda *args,**kwargs:real_connect(*args,**kwargs,factory=BarrierConnection))
+ def handle(request):return httpx.Response(200,json={'rows':[{'row_idx':0,'row':{'prompt':'incoming text'},'truncated_cells':[]}],'num_rows_total':1,'partial':False},request=request)
+ monkeypatch.setattr(module.httpx,'Client',lambda **kwargs:real_client(transport=httpx.MockTransport(handle),**kwargs))
+ db=tmp_path/'corpus.sqlite';out=tmp_path/'out.jsonl'
+ with pytest.raises(ValueError,match='ordinal conflict'):module.collect(db,out,config='cc0-prompts',max_rows=1)
+ with real_connect(db) as conn:
+  assert conn.execute('SELECT count(*) FROM rows').fetchone()[0]==0
+  assert conn.execute('SELECT count(*) FROM cursors').fetchone()[0]==0
+ assert fired==[True] and not out.exists()

@@ -47,6 +47,8 @@ def collect(db_path,export_path,*,config='wikitext-2-raw-v1',split='train',max_r
      existing=db.execute('SELECT text,sha256,source FROM rows WHERE selection=? AND ordinal=?',(key,row['row_idx'])).fetchone()
      if existing is not None and existing!=(text,digest,str(response.url)):raise ValueError('stored ordinal conflict; reconcile before resume')
      db.execute('INSERT OR IGNORE INTO rows VALUES (?,?,?,?,?,?)',(key,row['row_idx'],text,digest,str(response.url),now))
+     winner=db.execute('SELECT text,sha256,source FROM rows WHERE selection=? AND ordinal=?',(key,row['row_idx'])).fetchone()
+     if winner!=(text,digest,str(response.url)):raise ValueError('stored ordinal conflict after insert; reconcile before resume')
     offset+=len(rows);fetched+=len(rows)
     db.execute('INSERT OR REPLACE INTO cursors VALUES (?,?)',(key,offset))
    if offset>=total:break
