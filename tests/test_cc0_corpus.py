@@ -22,3 +22,20 @@ def test_actual_cc0_corpus_and_license():
  assert manifest['dataset']=='fka/prompts.chat' and manifest['license_url']=='https://creativecommons.org/publicdomain/zero/1.0/'
  for line in p.read_text().splitlines():
   row=json.loads(line);assert row['license']=='CC0-1.0 https://creativecommons.org/publicdomain/zero/1.0/'
+def test_existing_ordinal_conflict_refuses_page_and_keeps_cursor(tmp_path,monkeypatch):
+ import sqlite3,hashlib,httpx
+ import app.core.public_corpus as module
+ real=httpx.Client;db=tmp_path/'corpus.sqlite';out=tmp_path/'out.jsonl'
+ # Conflicting existing ordinal with cursor at zero models interrupted or
+ # noncooperating-writer state. Real DB, injected page only for kill test.
+ with sqlite3.connect(db) as conn:
+  conn.executescript('CREATE TABLE rows(selection TEXT,ordinal INTEGER,text TEXT,sha256 TEXT,source TEXT,fetched_at TEXT,PRIMARY KEY(selection,ordinal));CREATE TABLE cursors(selection TEXT PRIMARY KEY,next_offset INTEGER)')
+  conn.execute('INSERT INTO rows VALUES (?,?,?,?,?,?)',('cc0-prompts/train',0,'old text',hashlib.sha256(b'old text').hexdigest(),'old source','old timestamp'))
+  conn.execute('INSERT INTO cursors VALUES (?,?)',('cc0-prompts/train',0))
+ def handle(request):return httpx.Response(200,json={'rows':[{'row_idx':0,'row':{'prompt':'new conflicting text'},'truncated_cells':[]}],'num_rows_total':1,'partial':False},request=request)
+ monkeypatch.setattr(module.httpx,'Client',lambda **kwargs:real(transport=httpx.MockTransport(handle),**kwargs))
+ with pytest.raises(ValueError,match='ordinal conflict'):module.collect(db,out,config='cc0-prompts',max_rows=1)
+ with sqlite3.connect(db) as conn:
+  assert conn.execute('SELECT text FROM rows').fetchone()[0]=='old text'
+  assert conn.execute('SELECT next_offset FROM cursors').fetchone()[0]==0
+ assert not out.exists()
