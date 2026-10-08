@@ -38,6 +38,7 @@ def make(name, risk=ToolRisk.EXECUTE, money=False, person=False):
         def run(self, a):
             RAN.append((self.name, a.target)); return {"done": a.target}
     T.name, T.risk, T.spends_money, T.sends_to_person = name, risk, money, person
+    T.idempotent = False
     return T()
 
 
@@ -70,7 +71,7 @@ def store(tmp_path, t0, monkeypatch):
 
 
 def registry(store, *tools):
-    r = ReadOnlyToolRegistry(enforcer=GateEnforcer(store))
+    r = ReadOnlyToolRegistry(enforcer=GateEnforcer(store), journal=store)
     for t in tools: r.register(t)
     return r
 
@@ -82,6 +83,15 @@ def work(store, model, tools, wid="w"):
 CRIT = [{"kind": "tool_receipt", "tool": "write_note", "min_count": 1}]
 
 
+def live(store, gid, tenant="t1", actor="a1"):
+    """Principal for a goal forced into a running state with a live lease (unit tests of the registry, no worker)."""
+    from sqlalchemy import update
+    from app.modules.m21_claire.runtime.goals import GoalRow
+    with store._sessions.begin() as s:
+        s.execute(update(GoalRow).where(GoalRow.id == gid).values(status="running", lease_token="tok-" + gid, lease_expires_at="9999-01-01T00:00:00+00:00"))
+    return Principal(tenant, actor, gid, "tok-" + gid)
+
+
 def goal(store, tenant="t1", actor="a1"):
     return store.create(tenant, actor, "do work", CRIT, 6)
 
@@ -89,7 +99,7 @@ def goal(store, tenant="t1", actor="a1"):
 def test_destructive_verbs_are_autonomous_but_money_and_people_are_not(store):
     r = registry(store, make("delete_file"), make("install_package"), make("execute_command"), make("deploy_site"),
                  make("change_permissions"), make("pay_invoice", money=True), make("notify_person", person=True))
-    p = Principal("t1", "a1", goal(store))
+    p = live(store, goal(store), "t1", "a1")
     for n in ("delete_file", "install_package", "execute_command", "deploy_site", "change_permissions"):
         assert classify(r.get(n), {}).gates == ()
         assert run(r.execute(1, n, {"target": "x"}, p)).ok
@@ -121,7 +131,7 @@ def test_undeclared_write_tool_and_name_tokens_fail_closed_to_the_stricter_gate(
 
 def test_blocked_standing_no_is_refused_even_with_an_approval(store):
     r = registry(store, make("impersonate_user", person=True))
-    gid = goal(store); p = Principal("t1", "a1", gid)
+    gid = goal(store); p = live(store, gid, "t1", "a1")
     d = payload_digest(gid, "impersonate_user", {"target": "x"})
     store.grant("t1", "a1", gid, "impersonate_user", "comms", d, "a1")
     with pytest.raises(GateRefused) as e:
@@ -131,7 +141,7 @@ def test_blocked_standing_no_is_refused_even_with_an_approval(store):
 
 def test_direct_dispatch_without_principal_or_approval_never_runs(store):
     r = registry(store, make("send_email", person=True))
-    for p in (None, Principal("t1", "a1", goal(store))):
+    for p in (None, live(store, goal(store), "t1", "a1")):
         with pytest.raises(GateRefused):
             run(r.execute(1, "send_email", {"target": "bob"}, p))
     assert RAN == []
@@ -160,9 +170,11 @@ def test_end_to_end_gate_awaiting_review_approve_requeue_single_use(store, t0):
         assert n == 1
         # replay: the approval is consumed
         assert c.post(f"{URL}/{gid}/requeue").status_code == 409  # not awaiting review any more or attempts used
-        with pytest.raises(GateRefused):
-            run(tools.execute(9, "send_email", {"target": "bob"}, Principal("t1", "a1", gid)))
+        again = run(tools.execute(9, "send_email", {"target": "bob"}, live(store, gid, "t1", "a1")))
+        assert again.replayed is True  # slice 3b: an identical committed call is a replay of the stored receipt, never a second send
         assert len([x for x in RAN if x[0] == "send_email"]) == 1
+        with pytest.raises(GateRefused):  # a DIFFERENT call (new recipient) still needs its own approval; the old one is spent
+            run(tools.execute(9, "send_email", {"target": "carol"}, live(store, gid, "t1", "a1")))
     finally:
         app.dependency_overrides.pop(require_tenant, None)
 
@@ -170,17 +182,17 @@ def test_end_to_end_gate_awaiting_review_approve_requeue_single_use(store, t0):
 def test_approval_binding_changed_payload_goal_actor_expiry_and_all_or_nothing(store, t0):
     r = registry(store, make("send_email", person=True), make("book_table"))
     gid = goal(store); other = goal(store)
-    p = Principal("t1", "a1", gid)
+    p = live(store, gid, "t1", "a1")
     d = payload_digest(gid, "send_email", {"target": "bob"})
     store.grant("t1", "a1", gid, "send_email", "comms", d, "a1", ttl_seconds=60)
     with pytest.raises(GateRefused):  # changed recipient
         run(r.execute(1, "send_email", {"target": "mallory"}, p))
     with pytest.raises(GateRefused):  # same call under another goal
-        run(r.execute(1, "send_email", {"target": "bob"}, Principal("t1", "a1", other)))
+        run(r.execute(1, "send_email", {"target": "bob"}, live(store, other, "t1", "a1")))
     with pytest.raises(GateRefused):  # another actor/tenant claiming the goal
-        run(r.execute(1, "send_email", {"target": "bob"}, Principal("t1", "a2", gid)))
+        run(r.execute(1, "send_email", {"target": "bob"}, live(store, gid, "t1", "a2")))
     with pytest.raises(GateRefused):
-        run(r.execute(1, "send_email", {"target": "bob"}, Principal("t2", "a1", gid)))
+        run(r.execute(1, "send_email", {"target": "bob"}, live(store, gid, "t2", "a1")))
     t0[0] += timedelta(seconds=61)  # expired
     with pytest.raises(GateRefused):
         run(r.execute(1, "send_email", {"target": "bob"}, p))
@@ -192,8 +204,9 @@ def test_approval_binding_changed_payload_goal_actor_expiry_and_all_or_nothing(s
         run(r.execute(1, "book_table", {"target": "x"}, p))
     store.grant("t1", "a1", gid, "book_table", "payment", bd, "a1")
     assert run(r.execute(1, "book_table", {"target": "x"}, p)).ok and RAN == [("book_table", "x")]
-    with pytest.raises(GateRefused):
-        run(r.execute(1, "book_table", {"target": "x"}, p))
+    assert run(r.execute(1, "book_table", {"target": "x"}, p)).replayed is True and RAN == [("book_table", "x")]  # replay, not a re-run
+    with pytest.raises(GateRefused):  # a different payload needs its own approvals
+        run(r.execute(1, "book_table", {"target": "y"}, p))
 
 
 def test_grant_is_scoped_to_the_owners_goal_and_known_gates(store):
@@ -260,7 +273,7 @@ def test_mutating_any_gated_attribute_after_registration_is_refused_at_dispatch(
     """Reviewer reproduction: gated tool correctly refused, then the SAME object is mutated to look ungated."""
     t = make("notify_person", risk=ToolRisk.WRITE, money=True, person=True)
     r = registry(store, t)
-    p = Principal("t1", "a1", goal(store))
+    p = live(store, goal(store), "t1", "a1")
     with pytest.raises(GateRefused):
         run(r.execute(1, "notify_person", {"target": "bob"}, p))
     setattr(t, attr, value)
@@ -291,7 +304,7 @@ def test_type_equal_but_not_bool_mutation_is_refused_and_tool_never_runs(store, 
     with pytest.raises(PermissionError):
         run(r.execute(1, "update_row", {"target": "bob"}))
     with pytest.raises(PermissionError):
-        run(r.execute(1, "update_row", {"target": "bob"}, Principal("t1", "a1", goal(store))))
+        run(r.execute(1, "update_row", {"target": "bob"}, live(store, goal(store), "t1", "a1")))
     assert RAN == []
 
 
@@ -320,7 +333,7 @@ def test_word_splitting_in_policy_tags_and_underscore_names_escalates_even_when_
 
 def test_gated_arguments_must_be_plain_json_so_digests_cannot_collide(store):
     r = registry(store, make("send_email", person=True))
-    gid = goal(store); p = Principal("t1", "a1", gid)
+    gid = goal(store); p = live(store, gid, "t1", "a1")
     d = payload_digest(gid, "send_email", {"target": ["a", "b"]})
     store.grant("t1", "a1", gid, "send_email", "comms", d, "a1")
     for args in ({"target": ("a", "b")}, {"target": {"a"}}, {"target": b"a"}, {1: "x"}, {"target": float("nan")}):

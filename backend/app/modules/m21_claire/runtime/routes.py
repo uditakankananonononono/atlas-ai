@@ -88,3 +88,33 @@ def requeue_goal(goal_id: str, tenant: TenantContext = Depends(require_tenant), 
     if outcome == "not_requeueable":
         raise HTTPException(409, "only goals awaiting review with attempts left can be requeued")
     return store.get(tenant.tenant_id, tenant.actor_id, goal_id)
+
+
+@router.get("/goals/{goal_id}/effects")
+def list_effects(goal_id: str, tenant: TenantContext = Depends(require_tenant), store: GoalStore = Depends(get_store)) -> dict[str, Any]:
+    """The owner's view of the effect journal for one goal (no arguments are stored, only the digest key and state)."""
+    effects = store.list_effects(tenant.tenant_id, tenant.actor_id, goal_id)
+    if effects is None:
+        raise HTTPException(404, "goal not found")
+    return {"goal_id": goal_id, "effects": effects}
+
+
+class ResolveIn(BaseModel):
+    outcome: str = Field(pattern="^(committed|absent)$")
+
+
+@router.post("/goals/{goal_id}/effects/{effect_id}/resolve")
+def resolve_effect(goal_id: str, effect_id: str, body: ResolveIn, tenant: TenantContext = Depends(require_tenant),
+                   store: GoalStore = Depends(get_store)) -> dict[str, Any]:
+    """The owner states what really happened to an effect whose outcome is unknown. committed: it happened, never re-run.
+    absent: it did not happen, so the same call may be retried with a fresh exact approval. No separation of duties:
+    the approver is the goal's own tenant and actor."""
+    outcome = store.resolve_effect(goal_id, effect_id, body.outcome, receipt={"content": {"resolved_by_owner": True}},
+                                   tenant_id=tenant.tenant_id, actor_id=tenant.actor_id, require_not_running=True)
+    if outcome == "not_found":
+        raise HTTPException(404, "effect not found")
+    if outcome == "goal_running":
+        raise HTTPException(409, "the goal is running; resolve the effect after it settles")
+    if outcome == "not_pending":
+        raise HTTPException(409, "only an effect with an unknown outcome can be resolved")
+    return {"goal_id": goal_id, "effect_id": effect_id, "state": body.outcome}

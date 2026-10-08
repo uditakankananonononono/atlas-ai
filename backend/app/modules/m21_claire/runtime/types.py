@@ -41,6 +41,7 @@ class ToolReceipt(BaseModel):
     ok: bool
     content: Any = None
     error: str | None = None
+    replayed: bool = False  # True when the stored result of an already-committed identical call was returned
 
 
 class Refusal(BaseModel):
