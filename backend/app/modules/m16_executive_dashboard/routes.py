@@ -1,9 +1,10 @@
 import asyncio,json
-from fastapi import Header, APIRouter,Depends,HTTPException,Request
+from fastapi import Header, APIRouter,Depends,HTTPException,Query,Request
 from fastapi.responses import StreamingResponse
 from app.auth.context import TenantContext,require_tenant
 from .repository import SqlDashboardRepository,ViewVersionConflict
 from .schemas import *
+from .anomaly import AnomalyVerdict
 from .service import Service
 router=APIRouter(prefix="/executive-dashboard",tags=["executive-dashboard"])
 def get_service(t:TenantContext=Depends(require_tenant)):return Service(SqlDashboardRepository(t.tenant_id,t.actor_id))
@@ -37,6 +38,10 @@ def rerun_schedules(source=Depends(get_rerun_stats_source)):
 def modules(service:Service=Depends(get_service)):return service.module_statuses()
 @router.get("/kpis",response_model=list[KPI])
 def kpis(service:Service=Depends(get_service)):return service.kpis()
+@router.get("/kpis/{kpi_id}/anomaly",response_model=AnomalyVerdict)
+def kpi_anomaly(kpi_id:str,limit:int=Query(60,ge=8,le=500),service:Service=Depends(get_service)):
+    try:return service.kpi_anomaly(kpi_id,limit=limit)
+    except LookupError:raise HTTPException(404,"unknown kpi")
 @router.get("/kpis/{kpi_id}/evidence",response_model=DrilldownResult)
 def kpi_evidence(kpi_id:str,service:Service=Depends(get_service)):
     try:return service.kpi_evidence(kpi_id)

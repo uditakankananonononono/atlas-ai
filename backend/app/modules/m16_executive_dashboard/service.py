@@ -131,6 +131,15 @@ class Service:
             hours=d.window_hours or self.window_hours;dstart=now-timedelta(hours=hours);dprev=dstart-timedelta(hours=hours)
             out.append(custom_event_kpi(d,self._events_between(dstart,now),self._events_between(dprev,dstart),self.window_hours))
         return out
+    def kpi_anomaly(self,kpi_id,now=None,limit=60):
+        """Check one KPI's live value against its own recorded history. LookupError for an unknown KPI.
+        Points recorded in the last 5 minutes are left out: they are the current value's own record."""
+        from .anomaly import detect
+        now=now or _utcnow();k=next((x for x in self.kpis(now) if x.id==kpi_id),None)
+        if k is None:raise LookupError(kpi_id)
+        hist=getattr(self.repository,"kpi_history",None)
+        points=hist(kpi_id,k.window_hours,now-timedelta(minutes=5),limit) if hist else []
+        return detect(kpi_id,k.window_hours,k.value,points)
     def blockers(self,now=None):
         now=now or _utcnow()
         return detect_blockers(self._all_pending(),self._agents(),self._timeline(),self._modules(),now)
