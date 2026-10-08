@@ -31,3 +31,17 @@ def test_stale_lease_not_stolen(tmp_path):
  with pytest.raises(CorpusBusy):
   with corpus_lock(tmp_path/'db',tmp_path/'out'):pass
  assert lock.read_text()=='operator review required'
+def test_corrupted_resume_refused_before_network_and_unchanged(tmp_path,monkeypatch,capsys):
+ import shutil,hashlib,sqlite3,httpx
+ from app.core.corpus_locked_cli import main
+ live=Path('/tmp/corpus-review')
+ if not (live/'corpus.sqlite').exists():pytest.skip('actual public receipt needed')
+ db=tmp_path/'corpus.sqlite';export=tmp_path/'train.jsonl'
+ for name in ('corpus.sqlite','train.jsonl','train.jsonl.manifest.json'):shutil.copyfile(live/name,tmp_path/name)
+ with sqlite3.connect(db) as conn:conn.execute("UPDATE rows SET text='corrupted' WHERE ordinal=1")
+ before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in tmp_path.iterdir()}
+ def refuse(*args,**kwargs):raise AssertionError('network must not run on corrupt resume')
+ monkeypatch.setattr(httpx.Client,'get',refuse)
+ assert main(['--db',str(db),'--export',str(export),'--max-rows','1'])==1
+ assert json.loads(capsys.readouterr().err)['error_type']=='ValueError'
+ assert {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in tmp_path.iterdir()}==before
