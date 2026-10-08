@@ -82,6 +82,7 @@ class EmailDraftView(BaseModel):
     subject: str
     body: str
     model: str
+    account_id: str | None = None
     status: str = "pending_approval"
     created_at: datetime
 
