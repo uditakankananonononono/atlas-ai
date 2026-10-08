@@ -158,6 +158,7 @@ class GoalStore:
                             GoalRow.actor_id == actor_id, GoalRow.status == "queued")
                             .values(status="cancelled", updated_at=now))
             if res.rowcount == 1:
+                self._expire_unused(s, goal_id, now)
                 return "cancelled"
             # Write first, in ONE statement: the status change takes the goal's write lock (grant() takes the same lock first),
             # and a pending effect keeps the goal from ever looking cleanly cancelled. Unused approvals die with it.
@@ -166,8 +167,7 @@ class GoalStore:
                             GoalRow.actor_id == actor_id, GoalRow.status == "awaiting_review")
                             .values(status="cancelled", blocker=case((pending, "effect_unknown"), else_=None), updated_at=now))
             if res.rowcount == 1:
-                s.execute(update(ApprovalRow).where(ApprovalRow.goal_id == goal_id, ApprovalRow.consumed_at.is_(None),
-                                                    ApprovalRow.expires_at > now).values(expires_at=now))
+                self._expire_unused(s, goal_id, now)
                 return "cancelled"
             res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
                             GoalRow.actor_id == actor_id, GoalRow.status == "running")
@@ -177,6 +177,12 @@ class GoalStore:
             found = s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
                                                         GoalRow.actor_id == actor_id)).first()
         return "not_cancellable" if found else "not_found"
+
+    @staticmethod
+    def _expire_unused(s: Any, goal_id: str, now: str) -> None:
+        """A cancelled goal holds no live authority: unused approvals die in the same transaction (consumed ones are untouched)."""
+        s.execute(update(ApprovalRow).where(ApprovalRow.goal_id == goal_id, ApprovalRow.consumed_at.is_(None),
+                                            ApprovalRow.expires_at > now).values(expires_at=now))
 
     def cancel_requested(self, claim: Claim) -> bool:
         """True if the owner asked to cancel this claim's goal. Read-only; a lost claim reads False (lease checks own that)."""
@@ -225,6 +231,8 @@ class GoalStore:
                             .values(status=status, blocker=blocker, report=json.dumps(report), verdict=json.dumps(verdict),
                                     lease_token=None, lease_expires_at=None, cancel_requested_at=None,
                                     updated_at=_iso(self.clock())))
+            if res.rowcount == 1 and status == "cancelled":
+                self._expire_unused(s, claim.goal_id, _iso(self.clock()))
             return res.rowcount == 1
 
     def requeue(self, tenant_id: str, actor_id: str, goal_id: str) -> str:

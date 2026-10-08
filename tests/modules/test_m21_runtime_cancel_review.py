@@ -5,6 +5,7 @@ Labels: PROTECTION_* (must stay closed), NEW_* (new capability). Limits: SQLite 
 no new migration; a cancelled goal that has an unresolved effect keeps blocker effect_unknown and stays resolvable.
 """
 import hashlib
+import time
 from datetime import timedelta
 
 import pytest
@@ -184,5 +185,80 @@ def test_NEW_route_cancel_awaiting_review_is_200_and_grant_on_cancelled_is_409(s
         res = c.post(f"{U}/{gid}/cancel")
         assert res.status_code == 200 and res.json()["status"] == "cancelled"
         assert c.post(f"{U}/{gid}/cancel").status_code == 409
+    finally:
+        app.dependency_overrides.pop(require_tenant, None)
+
+
+# ---- slice 7 follow-up: the QUEUED and worker-settled cancel paths also leave no live authority --------------
+
+def test_PROTECTION_queued_cancel_expires_unused_approvals_and_leaves_consumed(store, clk):
+    gid = goal(store)                                    # status queued
+    a1 = store.grant("t1", "a1", gid, "send_mail", "comms", DIG, approver="ap1")
+    a2 = store.grant("t1", "a1", gid, "wire", "payment", DIG, approver="ap1")
+    with store._sessions.begin() as s:
+        s.execute(update(ApprovalRow).where(ApprovalRow.id == a2).values(consumed_at="2026-10-08T00:00:00+00:00"))
+    assert store.cancel("t1", "a1", gid) == "cancelled"
+    assert _live_approvals(store, gid) == []
+    with store._sessions.begin() as s:
+        assert s.get(ApprovalRow, a2).consumed_at == "2026-10-08T00:00:00+00:00" and s.get(ApprovalRow, a1).consumed_at is None
+
+
+def test_PROTECTION_race_queued_cancel_waits_for_an_in_flight_grant_then_expires_it(tmp_path, clk):
+    import threading, time
+    from sqlalchemy import event
+    a, b = _two_handles(tmp_path, clk)
+    gid = goal(a)                                        # queued
+    started, out = [], {}
+
+    @event.listens_for(a.engine, "before_cursor_execute")
+    def hook(conn, cur, stmt, params, ctx, many):
+        if stmt.startswith("INSERT INTO claire_runtime_approvals") and not started:
+            started.append(1)
+            t = threading.Thread(target=lambda: out.__setitem__("r", b.cancel("t1", "a1", gid))); t.start(); out["t"] = t
+            time.sleep(0.4)
+            assert "r" not in out
+    a.grant("t1", "a1", gid, "x", "comms", DIG, approver="ap1")
+    out["t"].join(10)
+    assert out["r"] == "cancelled" and _live_approvals(a, gid) == []
+    a.close(); b.close()
+
+
+def test_PROTECTION_worker_settled_cancel_expires_approvals_granted_while_it_ran(store):
+    r = reg(store, make(delay=0.8)); gid = goal(store)
+    from tests.modules.test_m21_runtime_effects import Script, call
+    from tests.modules.test_m21_runtime_cancel import worker
+    w = worker(store, Script(call("write_row", target="a")), r)
+
+    async def go():
+        import asyncio
+        task = asyncio.ensure_future(w.run_once())
+        await asyncio.sleep(0.15)
+        store.grant("t1", "a1", gid, "x", "comms", DIG, approver="ap1")     # approver acts while the goal runs
+        store.cancel("t1", "a1", gid)
+        await asyncio.wait_for(task, 5)
+    run(go())
+    assert store.get("t1", "a1", gid)["status"] == "cancelled"
+    assert _live_approvals(store, gid) == []
+    time.sleep(0.8)
+
+
+def test_NEW_route_queued_grant_then_cancel_leaves_no_live_approval(store):
+    import json
+    from fastapi.testclient import TestClient
+    from app.auth.context import TenantContext, require_tenant
+    from app.main import app
+    gid = goal(store)
+    with store._sessions.begin() as s:
+        s.execute(update(GoalRow).where(GoalRow.id == gid).values(report=json.dumps(
+            {"refusals": [{"reason": "approval_required", "tool": "send_mail", "gates": ["comms"], "digest": DIG}]})))
+    who = {"ctx": TenantContext("t1", "ap1", frozenset({"claire-approver"}))}
+    app.dependency_overrides[require_tenant] = lambda: who["ctx"]
+    try:
+        c = TestClient(app); U = "/api/v1/claire/runtime/goals"
+        body = {"capability": "send_mail", "gate": "comms", "digest": DIG}
+        assert c.post(f"{U}/{gid}/approvals", json=body).status_code == 201 and len(_live_approvals(store, gid)) == 1
+        who["ctx"] = TenantContext("t1", "a1")
+        assert c.post(f"{U}/{gid}/cancel").status_code == 200
+        assert _live_approvals(store, gid) == []
     finally:
         app.dependency_overrides.pop(require_tenant, None)
