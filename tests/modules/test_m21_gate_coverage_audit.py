@@ -228,21 +228,27 @@ def test_PROTECTION_realize_is_unreachable_in_tree_until_an_integrator_binds_a_c
         app.dependency_overrides.pop(require_tenant, None)
 
 
-def test_CHARACTERIZATION_device_pairing_routes_are_authenticated_but_not_tenant_scoped_and_need_no_role():
-    # TENANCY/AUTH FINDING, not a gate bypass: no effect adapter is reachable from these routes (they only keep reference pairing state).
+def test_PROTECTION_device_pairing_routes_are_tenant_scoped_after_slice_14_but_still_need_no_role():
+    # CONVERTED in slice 14 from a CHARACTERIZATION of the cross-tenant list/revoke finding (audited tip 404e01a7). Full coverage:
+    # tests/modules/test_m21_device_tenancy.py. STILL TRUE: no role is required, so any authenticated member of a tenant can pair/revoke
+    # within that tenant; no effect adapter is reachable from these routes.
+    claire_routes._pairing.devices.clear(); claire_routes._pairing.pending.clear()
     who = {"ctx": TenantContext("t1", "u1")}
     app.dependency_overrides[require_tenant] = lambda: who["ctx"]
     try:
         c = TestClient(app)
         ch = c.post("/api/v1/claire/devices/pairing-challenge").json()
-        assert "code" in ch                                                # the secret pairing code is returned to the caller
+        assert "code" in ch                                                # the pairing code is still returned to the challenge caller by design
         dev = c.post("/api/v1/claire/devices/pair", json={"server_nonce": ch["server_nonce"], "code": ch["code"], "name": "pc",
                                                            "certificate_fingerprint": "fp", "capabilities": ["send_message"]}).json()
-        who["ctx"] = TenantContext("t2", "u2")                              # a different tenant, no role
-        assert any(d["id"] == dev["id"] for d in c.get("/api/v1/claire/devices").json())
+        who["ctx"] = TenantContext("t2", "u2")
+        assert not any(d["id"] == dev["id"] for d in c.get("/api/v1/claire/devices").json())
+        assert c.delete(f"/api/v1/claire/devices/{dev['id']}").status_code == 404
+        who["ctx"] = TenantContext("t1", "u-other-member", frozenset())    # same tenant, different actor, no roles: still allowed (retained policy)
         assert c.delete(f"/api/v1/claire/devices/{dev['id']}").status_code == 200
     finally:
         app.dependency_overrides.pop(require_tenant, None)
+        claire_routes._pairing.devices.clear(); claire_routes._pairing.pending.clear()
 
 
 # ---- m20 legacy cognitive loop (reached from /claire/goals/{id}/realize when bound) ---------------------------------------------------
