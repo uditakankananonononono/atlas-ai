@@ -6,6 +6,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import Any
 from pydantic import BaseModel, ValidationError
+from . import bounded
 from .gates import GateRefused, require_plain_json
 from .redaction import redact
 from .types import ToolReceipt, ToolRisk
@@ -118,7 +119,7 @@ class ReadOnlyToolRegistry:
         safe_args = redact(arguments)
         try:
             parsed = tool.arguments_model.model_validate(arguments)
-            value = await asyncio.wait_for(self._run(tool, parsed), self.call_timeout)
+            value = await bounded.run_bounded(self._run(tool, parsed), self.call_timeout)
         except asyncio.TimeoutError:
             # No retry here. The tool body may still be running or may already have had its effect (effect
             # reconciliation is slice 3b); the receipt says only that the call did not finish in time.
@@ -162,7 +163,7 @@ class ReadOnlyToolRegistry:
             self.journal.mark_effect(effect_id, "failed")  # never reached the tool body: no effect happened
             return ToolReceipt(step=step, tool=name, arguments=safe_args, ok=False, error=type(exc).__name__)
         try:
-            value = await asyncio.wait_for(self._run(tool, parsed, key if tool.accepts_idempotency_key else None), self.call_timeout)
+            value = await bounded.run_bounded(self._run(tool, parsed, key if tool.accepts_idempotency_key else None), self.call_timeout)
         except asyncio.TimeoutError:
             self.journal.mark_effect(effect_id, "unknown")  # may still be running or may have landed
             return ToolReceipt(step=step, tool=name, arguments=safe_args, ok=False, error="timed_out")
@@ -198,7 +199,7 @@ class ReadOnlyToolRegistry:
             if tool is None or tool.idempotent is True or not callable(rec):
                 continue
             try:
-                result = await asyncio.wait_for(self._call(rec, eff["idempotency_key"]), self.call_timeout)
+                result = await bounded.run_bounded(self._call(rec, eff["idempotency_key"]), self.call_timeout)
             except (asyncio.TimeoutError, KeyError, TypeError, ValueError, OSError):
                 continue
             if result == "committed":
