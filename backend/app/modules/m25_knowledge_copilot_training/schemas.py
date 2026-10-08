@@ -30,11 +30,19 @@ class SourceRegistration(BaseModel):
         if self.kind == 'forum' and 'thread_id' not in self.metadata:
             raise ValueError('forum thread structure is required')
         return self
+MAX_INGEST_CONTENT = 20_000
 class IngestRequest(BaseModel):
     source: SourceRegistration
     content: str | bytes
     mime_type: str
     actor_id: str = Field(min_length=1)
+    @model_validator(mode='after')
+    def bounded_content(self):
+        # Same 20k boundary as the copilot ingest event; empty is rejected by
+        # the pipeline, oversize is rejected here before any work.
+        if len(self.content) > MAX_INGEST_CONTENT:
+            raise ValueError('content exceeds 20000 bytes/characters')
+        return self
 class Anchor(BaseModel):
     anchor_id: str
     kind: Literal['page','paragraph','timestamp','post','section']

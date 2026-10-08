@@ -54,7 +54,7 @@ def test_m25_12_semantic_chunks_embeddings_tenant_partition_and_dimension_mismat
 def test_m25_13_hybrid_lexical_vector_retrieval(tmp_path):
     p=pipe(tmp_path);ingest(p);assert p.search('Alpha')[0]['source_id']=='s1'
 def test_m25_14_claim_level_citations_unsupported_claim_withheld(tmp_path):
-    p=pipe(tmp_path);v=ingest(p);c=Citation(source_id='s1',version=1,anchor_ids=['paragraph-1'],quote_hash='h');assert p.substantiate([Claim(text='Alpha',citations=[c])])
+    p=pipe(tmp_path);v=ingest(p);c=Citation(source_id='s1',version=1,anchor_ids=['paragraph-1'],quote_hash=__import__('hashlib').sha256('Alpha fact.'.encode()).hexdigest());assert p.substantiate([Claim(text='Alpha',citations=[c])])
     with pytest.raises(UnsupportedClaim):p.substantiate([Claim(text='invented')])
 def test_m25_15_contradiction_freshness_analysis_stale_conflict(tmp_path):
     p=pipe(tmp_path);ingest(p,src('old'),text='Policy allows alpha');ingest(p,src('new'),text='Policy does not allow alpha');assert p.contradictions('Policy alpha')[0]['status']=='conflict_requires_review'

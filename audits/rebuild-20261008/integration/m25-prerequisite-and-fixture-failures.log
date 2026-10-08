@@ -1,0 +1,63 @@
+...........F.......FFFF................................................. [ 69%]
+................F.............F                                          [100%]
+=================================== FAILURES ===================================
+____________ test_hz16_redaction_time_budget_rejects_event_unstored ____________
+tests/modules/test_m25_hz16_repairs.py:107: in test_hz16_redaction_time_budget_rejects_event_unstored
+    with pytest.raises(ValueError, match='time budget'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_________ test_hz17_invalid_replacement_reference_maps_to_domain_error _________
+tests/modules/test_m25_hz17_integrity.py:113: in test_hz17_invalid_replacement_reference_maps_to_domain_error
+    svc.ingest('t', 'a', started.id, IngestEvent(
+backend/app/modules/m25_knowledge_copilot/service.py:55: in ingest
+    for r in s.redactions: text=sub(r.pattern,r.replacement,text,flags=IGNORECASE)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/re/__init__.py:186: in sub
+    return _compile(pattern, flags).sub(repl, string, count)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/re/__init__.py:334: in _compile_template
+    return _sre.template(pattern, _parser.parse_template(repl, pattern))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/re/_parser.py:1069: in parse_template
+    addgroup(int(this[1:]), len(this) - 1)
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/re/_parser.py:1014: in addgroup
+    raise s.error("invalid group reference %d" % index, pos)
+E   re.error: invalid group reference 9 at position 1
+_______________ test_hz17_redaction_expansion_cap_rejects_event ________________
+tests/modules/test_m25_hz17_integrity.py:128: in test_hz17_redaction_expansion_cap_rejects_event
+    with pytest.raises(ValueError, match='expansion exceeds'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+________________ test_hz17_replacement_length_bounded_at_schema ________________
+tests/modules/test_m25_hz17_integrity.py:138: in test_hz17_replacement_length_bounded_at_schema
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+______________ test_hz17_timeout_contract_via_deterministic_mock _______________
+tests/modules/test_m25_hz17_integrity.py:151: in test_hz17_timeout_contract_via_deterministic_mock
+    monkeypatch.setattr(svc_mod._regex, 'sub', _boom)
+                        ^^^^^^^^^^^^^^
+E   AttributeError: module 'app.modules.m25_knowledge_copilot.service' has no attribute '_regex'
+_________ test_m25_14_claim_level_citations_unsupported_claim_withheld _________
+tests/modules/test_m25_knowledge_ingestion.py:57: in test_m25_14_claim_level_citations_unsupported_claim_withheld
+    p=pipe(tmp_path);v=ingest(p);c=Citation(source_id='s1',version=1,anchor_ids=['paragraph-1'],quote_hash='h');assert p.substantiate([Claim(text='Alpha',citations=[c])])
+                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m25_knowledge_copilot_training/pipeline.py:386: in substantiate
+    if not ok:raise UnsupportedClaim(f'unsupported claim withheld: {claim.text}')
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   app.modules.m25_knowledge_copilot_training.pipeline.UnsupportedClaim: unsupported claim withheld: Alpha
+____ test_independent_unconfirmed_oserror_preserves_explicit_original_cause ____
+tests/modules/test_m25_restore_readback_reimplementation.py:67: in test_independent_unconfirmed_oserror_preserves_explicit_original_cause
+    assert caught.value.__cause__ is fault
+E   AssertionError: assert None is OSError('original claim persistence fault')
+E    +  where None = KnowledgeError('manifest persistence failed and the pre-claim manifest could not be confirmed restored; the memory claim was removed but the on-disk manifest may still record the version, whose bytes were left in place').__cause__
+E    +    where KnowledgeError('manifest persistence failed and the pre-claim manifest could not be confirmed restored; the memory claim was removed but the on-disk manifest may still record the version, whose bytes were left in place') = <ExceptionInfo KnowledgeError('manifest persistence failed and the pre-claim manifest could not be confirmed restored;...mory claim was removed but the on-disk manifest may still record the version, whose bytes were left in place') tblen=2>.value
+=========================== short test summary info ============================
+FAILED tests/modules/test_m25_hz16_repairs.py::test_hz16_redaction_time_budget_rejects_event_unstored
+FAILED tests/modules/test_m25_hz17_integrity.py::test_hz17_invalid_replacement_reference_maps_to_domain_error
+FAILED tests/modules/test_m25_hz17_integrity.py::test_hz17_redaction_expansion_cap_rejects_event
+FAILED tests/modules/test_m25_hz17_integrity.py::test_hz17_replacement_length_bounded_at_schema
+FAILED tests/modules/test_m25_hz17_integrity.py::test_hz17_timeout_contract_via_deterministic_mock
+FAILED tests/modules/test_m25_knowledge_ingestion.py::test_m25_14_claim_level_citations_unsupported_claim_withheld
+FAILED tests/modules/test_m25_restore_readback_reimplementation.py::test_independent_unconfirmed_oserror_preserves_explicit_original_cause
+7 failed, 96 passed in 5.03s
