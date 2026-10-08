@@ -23,7 +23,7 @@ class Service:
   req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="create_subscription_checkout",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
  async def execute_checkout(self,approval_id,tenant_id):
   view=self.repo.approval(approval_id)
-  if view["status"]!="approved" or view["payload"]["tenant_id"]!=tenant_id:raise PermissionError("approved tenant-bound billing action required")
+  if not view or view["status"]!="approved" or view["payload"].get("tenant_id")!=tenant_id:raise PermissionError("approved tenant-bound billing action required")
   plan=PLANS[view["payload"]["plan"]["id"]]
   if view["payload"].get("commitment_preview"):
    from .precommit import verify_commitment_preview
@@ -65,7 +65,9 @@ class Service:
  def _apply_lifecycle_event(self,event):
   obj=event.data.get("object",{});kind=event.type
   tenant_id=obj.get("metadata",{}).get("tenant_id") or obj.get("client_reference_id")
-  if kind=="checkout.session.completed" and tenant_id:self.repo.upsert_tenant_billing(tenant_id,customer_id=obj.get("customer"),subscription_id=obj.get("subscription"),plan_id=obj.get("metadata",{}).get("plan_id","pro"),status="active")
+  if kind=="checkout.session.completed" and tenant_id:
+   plan_id=obj.get("metadata",{}).get("plan_id")
+   if plan_id in PLANS:self.repo.upsert_tenant_billing(tenant_id,customer_id=obj.get("customer"),subscription_id=obj.get("subscription"),plan_id=plan_id,status="active")
   elif kind.startswith("customer.subscription."):
    tenant_id=tenant_id or obj.get("metadata",{}).get("atlas_tenant_id")
    if tenant_id:self.repo.upsert_tenant_billing(tenant_id,customer_id=obj.get("customer"),subscription_id=obj.get("id"),status=obj.get("status","canceled" if kind.endswith("deleted") else "active"),cancel_at_period_end=bool(obj.get("cancel_at_period_end")),current_period_start=datetime.fromtimestamp(obj["current_period_start"],timezone.utc) if obj.get("current_period_start") else None,current_period_end=datetime.fromtimestamp(obj["current_period_end"],timezone.utc) if obj.get("current_period_end") else None)

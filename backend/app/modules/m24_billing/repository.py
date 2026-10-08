@@ -28,10 +28,19 @@ class Repository:
    for key,value in values.items():setattr(row,key,value)
    db.flush();return {c.name:getattr(row,c.name) for c in row.__table__.columns}
  def record_usage(self,tenant_id,event_id,metric,quantity,idempotency_key,occurred_at,metadata):
-  with SessionLocal.begin() as db:
-   prior=db.scalar(select(UsageRow).where(UsageRow.tenant_id==tenant_id,UsageRow.idempotency_key==idempotency_key))
-   if prior:return prior,False
-   row=UsageRow(id=event_id,tenant_id=tenant_id,metric=metric,quantity=quantity,idempotency_key=idempotency_key,occurred_at=occurred_at,event_metadata=metadata);db.add(row);db.flush();return row,True
+  from sqlalchemy.exc import IntegrityError
+  try:
+   with SessionLocal.begin() as db:
+    prior=db.scalar(select(UsageRow).where(UsageRow.tenant_id==tenant_id,UsageRow.idempotency_key==idempotency_key))
+    if prior:return prior,False
+    row=UsageRow(id=event_id,tenant_id=tenant_id,metric=metric,quantity=quantity,idempotency_key=idempotency_key,occurred_at=occurred_at,event_metadata=metadata);db.add(row);db.flush();return row,True
+  except IntegrityError:
+   # The competing transaction may have won after our initial read.
+   # Return only its exact tenant/key row, never invent a dedup success.
+   with SessionLocal() as db:
+    winner=db.scalar(select(UsageRow).where(UsageRow.tenant_id==tenant_id,UsageRow.idempotency_key==idempotency_key))
+    if winner is not None:return winner,False
+   raise
  def usage_totals(self,tenant_id,start,end):
   with SessionLocal() as db:
    rows=db.execute(select(UsageRow.metric,func.sum(UsageRow.quantity)).where(UsageRow.tenant_id==tenant_id,UsageRow.occurred_at>=start,UsageRow.occurred_at<end).group_by(UsageRow.metric)).all();return {metric:int(total) for metric,total in rows}
