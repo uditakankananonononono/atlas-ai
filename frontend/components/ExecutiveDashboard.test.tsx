@@ -181,7 +181,7 @@ describe("Layout saves are versioned",()=>{
     await layoutOpen();
     apiMock.getView.mockResolvedValue({...view,version:9});
     await userEvent.click(screen.getAllByRole("button",{name:"Down"})[0]);
-    expect((await screen.findByRole("status")).textContent).toMatch(/changed elsewhere/i);
+    expect((await screen.findByRole("status",{name:""})).textContent).toMatch(/changed elsewhere/i);
     expect(apiMock.getView.mock.calls.length).toBeGreaterThanOrEqual(2);
   });
 });

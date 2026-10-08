@@ -130,17 +130,21 @@ async def stream_events(response: Response, service: Service = Depends(get_servi
             while True:
                 try:
                     event = await asyncio.to_thread(subscriber.get, True, SSE_HEARTBEAT_SECONDS)
-                    approval = event.get("approval") if isinstance(event, dict) else None
-                    if isinstance(approval, dict) and approval.get("user_id") != tenant.tenant_id:
+                    if not isinstance(event, dict) or event.get("type") not in {"approval_request", "approval_decision", "approval_expired"}:
                         continue
-                    if isinstance(event, dict) and event.get("type") == "approval_expired":
-                        try:
-                            expired = service.get(str(event.get("approval_id", "")))
-                        except ApprovalNotFoundError:
-                            continue
-                        if expired.get("user_id") != tenant.tenant_id:
-                            continue
-                    yield f"data: {json.dumps(event)}\n\n"
+                    approval = event.get("approval")
+                    approval_id = approval.get("id") if isinstance(approval, dict) else event.get("approval_id")
+                    if not isinstance(approval_id, str) or not approval_id:
+                        continue
+                    try:
+                        authoritative = await asyncio.to_thread(service.get, approval_id)
+                    except ApprovalNotFoundError:
+                        continue
+                    if authoritative.get("user_id") != tenant.tenant_id:
+                        continue
+                    # Minimal refresh signal, never external event-body authority.
+                    signal = {"type": event["type"], "approval_id": approval_id}
+                    yield f"data: {json.dumps(signal)}\n\n"
                 except queue.Empty:
                     yield ": heartbeat\n\n"
         finally:

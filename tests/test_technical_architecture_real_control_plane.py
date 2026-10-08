@@ -61,7 +61,7 @@ def test_a32_real_approval_sse_route_has_streaming_media_and_proxy_headers():
     source=__import__('pathlib').Path('backend/app/modules/m00_approval_center/routes.py').read_text()
     assert 'StreamingResponse' in source and 'media_type="text/event-stream"' in source
     assert 'Cache-Control": "no-cache"' in source and 'X-Accel-Buffering": "no"' in source
-    assert ': heartbeat\\n\\n' in source and 'data: {json.dumps(event)}\\n\\n' in source
+    assert ': heartbeat\\n\\n' in source and 'data: {json.dumps(signal)}\\n\\n' in source
 
 
 def test_production_rate_limit_cannot_rotate_scope_headers(monkeypatch,oidc_auth_headers):
