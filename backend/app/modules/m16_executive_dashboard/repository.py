@@ -102,9 +102,17 @@ class SqlDashboardRepository:
         with self.sessions.begin() as db:db.add(ApprovalRow(tenant_id=self.tenant_id,reviewed_by=None,review_note=None,**a.model_dump(mode="python")))
         return a
     def decide(self,aid,state,note,at):
-        with self.sessions.begin() as db:r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value));
-        if not r:return None
-        with self.sessions.begin() as db:r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid));r.state=state.value;r.reviewed_at=at;r.reviewed_by=self.actor_id;r.review_note=note;db.flush();return _approval(r)
+        # Single conditional UPDATE: the pending check and the decision write
+        # are one atomic claim (the mark_command pattern). Two concurrent
+        # decides can both pass the service pre-check; only the first claim
+        # lands, and the loser gets None instead of overwriting the winning
+        # decision. Claim and read run in one transaction, so the returned
+        # approval is the row this call decided.
+        with self.sessions.begin() as db:
+            claimed=db.execute(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value).values(state=state.value,reviewed_at=at,reviewed_by=self.actor_id,review_note=note)).rowcount
+            if not claimed:return None
+            r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid))
+            return _approval(r)
     def save_command(self,c):
         with self.sessions.begin() as db:db.add(CommandRow(tenant_id=self.tenant_id,actor_id=self.actor_id,executed_at=None,**c.model_dump()))
         return c

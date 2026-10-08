@@ -45,7 +45,12 @@ class Service:
         pending=next((a for a in self._all_pending() if a.id==aid),None)
         if not pending:raise LookupError(aid)
         if pending.expires_at and pending.expires_at<_utcnow():raise RuntimeError("approval expired")
-        return self.repository.decide(aid,ApprovalState.APPROVED if data.approve else ApprovalState.REJECTED,data.note,_utcnow())
+        decided=self.repository.decide(aid,ApprovalState.APPROVED if data.approve else ApprovalState.REJECTED,data.note,_utcnow())
+        # A None here means a concurrent decision won the row between the
+        # pre-check and the repository's conditional claim; surface it with
+        # the same not-pending contract as a sequential second decide.
+        if decided is None:raise LookupError(aid)
+        return decided
     # --- command bar (existing contract, real read-only executor) ---
     def preview(self,utterance):
         parsed=self.parser(utterance);now=_utcnow();return self.repository.save_command(CommandPreview(id=str(uuid4()),utterance=utterance,expires_at=now+timedelta(minutes=10),created_at=now,**parsed))
