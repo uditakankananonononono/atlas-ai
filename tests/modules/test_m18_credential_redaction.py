@@ -1,10 +1,7 @@
-"""Pin for M18 credential redaction in recorded collection failures.
+"""M18 failure diagnostics are minimized. Transport inputs are unchanged.
 
-Collector fetches need the real URL (the YouTube Data API key travels as
-?key=), but CollectionError records are persisted and reported - "failures
-are data". Every CollectionError, whoever constructed it, must not carry
-credential query parameters. Establishes recording hygiene only; fetch
-behavior is unchanged (the live request still uses the real URL).
+Safe origin and fixed diagnostic codes survive, arbitrary URL components and
+reason prose do not. This deliberately replaces byte-identical URL behavior.
 """
 from urllib.parse import urlsplit
 from app.modules.m18_side_hustle_scraper.lane_models import CollectionError
@@ -17,17 +14,16 @@ def test_collection_error_never_records_credential_query_params():
         status=500,
     )
     assert "SECRET-KEY-123" not in err.url
-    assert "REDACTED" in err.url
-    assert "q=test" in err.url and "part=snippet" in err.url  # non-sensitive params survive
+    assert err.url == "https://www.googleapis.com/"
 
 def test_collection_error_redacts_all_sensitive_key_names():
     for param in ("key", "api_key", "apikey", "token", "access_token", "KEY"):
         err = CollectionError(source="x", url=f"https://h.test/p?{param}=SECRET-XYZ&a=1", reason="r")
         assert "SECRET-XYZ" not in err.url, param
 
-def test_urls_without_credentials_pass_through_unchanged():
+def test_urls_without_credentials_are_also_minimized():
     url = "https://hn.algolia.com/api/v1/search?query=side%20hustle&tags=story"
-    assert CollectionError(source="hn", url=url, reason="r").url == url
+    assert CollectionError(source="hn", url=url, reason="r").url == "https://hn.algolia.com/"
 
 def test_reason_text_is_scrubbed_for_embedded_credentials():
     # An arbitrary reason string (e.g. an upstream error embedding the failing
@@ -38,23 +34,22 @@ def test_reason_text_is_scrubbed_for_embedded_credentials():
         reason="HTTP 500 for https://www.googleapis.com/youtube/v3/search?part=snippet&key=SECRET-KEY-123&q=x: boom",
     )
     assert "SECRET-KEY-123" not in err.reason
-    assert "key=[REDACTED]" in err.reason
+    assert err.reason == "[REDACTED]"
 
 def test_userinfo_is_stripped_from_recorded_url():
     err = CollectionError(source="x", url="https://user:SECRET-PW@h.test/p?a=1", reason="r")
     assert "SECRET-PW" not in err.url
     assert "user" not in err.url.split("/")[2]  # no userinfo in netloc
-    assert err.url.startswith("https://h.test/p")
+    assert err.url == "https://h.test/"
 
 def test_userinfo_in_reason_text_is_scrubbed():
     err = CollectionError(source="x", url="https://h.test", reason="auth failed for https://u:SECRET-PW@h.test/p")
     assert "SECRET-PW" not in err.reason
-    assert "https://h.test/p" in err.reason  # URL scrub now strips userinfo entirely
+    assert err.reason == "[REDACTED]"
 
-def test_fragment_tokens_now_redacted():
-    # Enumerated token-bearing fragments are now redacted at recording time.
+def test_fragment_is_removed():
     url = "https://h.test/cb#token=FRAG-SECRET"
-    assert "FRAG-SECRET" not in CollectionError(source="x", url=url, reason="r").url
+    assert CollectionError(source="x", url=url, reason="r").url == "https://h.test/"
 
 def test_ipv6_brackets_and_port_preserved_when_redacting():
     # Regression: rebuilding the netloc from urlsplit().hostname drops IPv6
@@ -75,12 +70,10 @@ def test_keyed_ipv6_url_keeps_brackets_without_userinfo():
 def test_username_only_userinfo_stripped():
     # Characterization: userinfo without a password is also stripped.
     err = CollectionError(source="x", url="https://user@h.test/p?a=1", reason="r")
-    assert err.url == "https://h.test/p?a=1"
+    assert err.url == "https://h.test/"
 
 def test_single_percent_encoded_query_key_is_redacted():
-    # Characterization: parse_qsl percent-decodes key names before matching,
-    # so a single-encoded api%5fkey in the URL IS redacted. The encoding gap
-    # applies only to the reason-text regex, which does not decode.
+    # Entire query removed, regardless of encoding depth.
     url = "https://h.test/p?api%5fkey=SECRET-KEY&q=1"
     redacted = CollectionError(source="x", url=url, reason="r").url
     assert "SECRET-KEY" not in redacted

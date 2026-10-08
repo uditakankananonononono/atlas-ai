@@ -18,57 +18,64 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit, unquote
+from urllib.parse import urlsplit, urlunsplit
 
-_SENSITIVE_QUERY_KEYS = frozenset({"key", "api_key", "apikey", "token", "access_token"})
-
-
+# Failure records are deliberately minimized, not regex-classified as secret-free.
+# Unknown diagnostics are discarded. Transport still receives the original URL.
 FAILURE_RECORD_MAX_CHARS = 8192
-
-
-def _sensitive_key(key: str) -> bool:
-    # Decode at most twice; deeper encodings are outside this bounded contract.
-    return unquote(unquote(key)).lower() in _SENSITIVE_QUERY_KEYS
+_REDACTED = "[REDACTED]"
+_SAFE_SOURCES = frozenset({
+    "base", "reddit", "hacker_news", "dev_to", "youtube", "rss", "public_web",
+    "pinterest", "x", "instagram", "audit", "hn",
+})
+_SAFE_REASONS = frozenset({
+    "circuit_open", "retries_exhausted", "http error", "not found", "gone",
+    "blocked", "slow down", "boom", "broken", "r",
+    "domain_not_allowed", "robots_disallows", "robots_unreachable_denied_fail_closed",
+    "empty_query", "url_driven_only_use_fetch_page", "user_provided_instagram_link_required",
+})
 
 
 def _redact_url(url: str) -> str:
-    """Bounded URL record: remove userinfo and enumerated query/fragment keys.
-    Unknown credential shapes and deeper encodings remain out of scope.
-    Malformed URL parser input is refused as a record, not echoed raw.
+    """Keep a valid HTTP(S) origin only, never path/query/fragment/userinfo.
+
+    Query *names* can contain secrets too, and decoding an arbitrary number of
+    times is not a reliable safety boundary. Removing all such components
+    handles encoded/unlisted carriers without guessing credential syntax.
+    Malformed authorities are replaced, never raised while recording a failure.
+    Origin hostname/port remain visible for source diagnosis; this is NOT
+    anonymity or a guarantee against credentials placed in a hostname.
     """
-    url = str(url)[:FAILURE_RECORD_MAX_CHARS]
+    if not isinstance(url, str) or len(url) > FAILURE_RECORD_MAX_CHARS:
+        return _REDACTED
     try:
         parts = urlsplit(url)
-        query = parse_qsl(parts.query, keep_blank_values=True)
-        fragment = parse_qsl(parts.fragment, keep_blank_values=True)
-        sensitive_query = any(_sensitive_key(k) for k, _ in query)
-        sensitive_fragment = any(_sensitive_key(k) for k, _ in fragment)
-        userinfo = '@' in parts.netloc
-        if not sensitive_query and not sensitive_fragment and not userinfo:
-            return url
-        scrub = lambda pairs: urlencode([(k, '[REDACTED]' if _sensitive_key(k) else v) for k,v in pairs])
-        return urlunsplit((parts.scheme,parts.netloc.rsplit('@',1)[-1],parts.path,
-                          scrub(query) if sensitive_query else parts.query,
-                          scrub(fragment) if sensitive_fragment else parts.fragment))[:FAILURE_RECORD_MAX_CHARS]
-    except ValueError:
-        return '[REDACTED MALFORMED URL]'
-
-
-_SENSITIVE_ASSIGNMENT = re.compile(
-    r"(?i)\b(key|api_key|apikey|token|access_token)[\"']?\s*[:=]\s*(?:\"[^\"]*\"|'[^']*'|[^\s&;,}]+)")
-_BEARER = re.compile(r"(?i)\bBearer\s+[^\s,;]+")
-_URL_IN_TEXT = re.compile(r"https?://[^\s\"'<>]+", re.I)
+        if parts.scheme.lower() not in {"http", "https"} or not parts.hostname:
+            return _REDACTED
+        # Validate port and IPv6 through urllib before retaining authority.
+        parts.port
+        authority = parts.netloc.rsplit("@", 1)[-1]
+        if any(char.isspace() or ord(char) < 32 for char in authority):
+            return _REDACTED
+        return urlunsplit((parts.scheme, authority, "/", "", ""))
+    except (ValueError, TypeError, AttributeError):
+        return _REDACTED
 
 
 def _scrub_text(text: str) -> str:
-    """Bounded enumerated redaction: URL credentials, spaced/colon/quoted
-    key assignments and Bearer tokens. Not arbitrary secret detection.
-    Processing and stored output are capped at 8192 characters.
+    """Retain only exact known diagnostic codes, discard arbitrary free text.
+
+    This intentionally loses upstream prose rather than retaining secret tails,
+    JSON values, Bearer values, unknown encodings, or novel credential shapes.
+    The separate numeric HTTP status remains available for error handling.
     """
-    text = str(text)[:FAILURE_RECORD_MAX_CHARS]
-    text = _URL_IN_TEXT.sub(lambda m: _redact_url(m.group()), text)
-    text = _SENSITIVE_ASSIGNMENT.sub(lambda m: f"{m.group(1)}=[REDACTED]", text)
-    return _BEARER.sub('Bearer [REDACTED]', text)[:FAILURE_RECORD_MAX_CHARS]
+    return text if isinstance(text, str) and text in _SAFE_REASONS else _REDACTED
+
+
+def _scrub_source(source: str) -> str:
+    return source if isinstance(source, str) and source in _SAFE_SOURCES else _REDACTED
+
+
 from enum import Enum
 from typing import Any, Mapping, Optional
 from urllib.parse import urlsplit
@@ -219,11 +226,7 @@ class CollectionError:
     occurred_at: datetime = field(default_factory=utcnow)
 
     def __post_init__(self) -> None:
-        # Records are redacted at construction, whoever constructed the
-        # record: the URL loses sensitive query keys and userinfo, and the
-        # free-text reason is scrubbed for credential-shaped assignments and
-        # userinfo. This is bounded redaction, not a guarantee that no
-        # credential-shaped text survives (residuals: see _scrub_text).
+        object.__setattr__(self, "source", _scrub_source(self.source))
         object.__setattr__(self, "url", _redact_url(self.url))
         object.__setattr__(self, "reason", _scrub_text(self.reason))
 
