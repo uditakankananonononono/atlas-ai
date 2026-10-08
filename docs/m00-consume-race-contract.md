@@ -12,3 +12,14 @@ verifies no fabricated success. This is permit-record dedup/error mapping, not
 external exactly-once execution or safe retry after an effect. Actor identity,
 approval immutability, SQLite locks/PostgreSQL races and reconciliation unchanged.
 Base is c27699ab; peer's separate decision/expiry CAS stack is not included.
+
+## Integration on the combined CAS tree
+
+The consume delta from peer commit 10b76049dab5051ddcebc973bcb848a01e2719bf
+(recorded author Instinct Agent) is rebased onto 0e9cf793, which includes both
+conditional decision and peer-authored lazy-expiry transitions. The statement
+about excluded CAS above describes the original standalone candidate only.
+Both CAS race controls, all five mixed-interleaving cases and all three consume
+controls remain. No approved max-age variant or other product tree is changed.
+The imported lazy-expiry helper's peer provenance is recorded in the combined
+CAS document. Combined behavior still has only scoped local SQLite evidence.
