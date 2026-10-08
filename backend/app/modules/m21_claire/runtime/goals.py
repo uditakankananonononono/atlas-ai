@@ -40,6 +40,7 @@ class GoalRow(Base):
     created_at: Mapped[str] = mapped_column(String(40))
     updated_at: Mapped[str] = mapped_column(String(40))
     cancel_requested_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    designated_approvers: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON list of principal ids; null = any approver-role principal
 
 
 class ApprovalRow(Base):
@@ -97,6 +98,15 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _designated_or_none(raw: str) -> list[str]:
+    """Stored list, or [] (nobody matches: fail closed) when the stored value is not a JSON list of strings."""
+    try:
+        v = json.loads(raw)
+    except json.JSONDecodeError:
+        return []
+    return v if isinstance(v, list) and all(type(x) is str for x in v) else []
+
+
 def _iso(d: datetime) -> str:
     return d.astimezone(timezone.utc).isoformat()
 
@@ -106,6 +116,32 @@ class GoalNotGrantable(ValueError):
 
 
 NOT_GRANTABLE = {"completed", "blocked", "failed", "exhausted", "not_accepted", "cancelled"}
+
+
+class ApproverNotDesignated(PermissionError):
+    """The goal names its approvers and this principal is not one of them. Carries no principal ids."""
+
+
+MAX_DESIGNATED = 20
+MAX_APPROVER_ID = 200
+
+
+def normalize_designated(value: Any) -> list[str] | None:
+    """None or an empty list means unrestricted. Otherwise a list/tuple of at most 20 distinct, non-empty, bounded str ids
+    with no surrounding whitespace (ids are matched exactly, never trimmed). Anything else is refused."""
+    if value is None:
+        return None
+    if type(value) not in (list, tuple):
+        raise ValueError("designated_approvers must be a list")
+    if len(value) > MAX_DESIGNATED:
+        raise ValueError("too many designated approvers")
+    out: list[str] = []
+    for v in value:
+        if type(v) is not str or not v.strip() or v != v.strip() or len(v) > MAX_APPROVER_ID:
+            raise ValueError("invalid designated approver")
+        if v not in out:
+            out.append(v)
+    return out or None
 
 
 class SelfApprovalRefused(PermissionError):
@@ -132,16 +168,19 @@ class GoalStore:
     def close(self) -> None:
         self.engine.dispose()
 
-    def create(self, tenant_id: str, actor_id: str, purpose: str, criteria: list[dict[str, Any]], max_steps: int) -> str:
+    def create(self, tenant_id: str, actor_id: str, purpose: str, criteria: list[dict[str, Any]], max_steps: int,
+               designated_approvers: list[str] | tuple[str, ...] | None = None) -> str:
         if not tenant_id or not actor_id:
             raise ValueError("tenant and actor are required")
         if not criteria:
             raise ValueError("at least one acceptance criterion is required")
+        designated = normalize_designated(designated_approvers)
         now = _iso(self.clock())
         gid = str(uuid.uuid4())
         with self._sessions.begin() as s:
             s.add(GoalRow(id=gid, tenant_id=tenant_id, actor_id=actor_id, purpose=purpose, criteria=json.dumps(criteria),
-                          max_steps=max_steps, status="queued", attempts=0, created_at=now, updated_at=now))
+                          max_steps=max_steps, status="queued", attempts=0, created_at=now, updated_at=now,
+                          designated_approvers=None if designated is None else json.dumps(designated)))
         return gid
 
     def get(self, tenant_id: str, actor_id: str, goal_id: str) -> dict[str, Any] | None:
@@ -363,7 +402,7 @@ class GoalStore:
             pending = s.scalars(select(EffectRow).where(EffectRow.goal_id == goal_id, EffectRow.tenant_id == tenant_id,
                                                         EffectRow.state.in_(PENDING)).order_by(EffectRow.created_at)).all()
             return {"goal_id": row.id, "actor_id": row.actor_id, "status": row.status, "refusals": refusals,
-                    "untrusted_model_content": True,
+                    "untrusted_model_content": True, "approver_restricted": row.designated_approvers is not None,
                     "pending_effects": [self._effect_view(r) for r in pending]}
 
     def list_effects(self, tenant_id: str, actor_id: str, goal_id: str) -> list[dict[str, Any]] | None:
@@ -407,6 +446,10 @@ class GoalStore:
                 if status is None:
                     raise KeyError(goal_id)
                 raise GoalNotGrantable(status)
+            # Same transaction, after the write lock: the list is immutable, so this read cannot race an edit.
+            raw = s.scalars(select(GoalRow.designated_approvers).where(GoalRow.id == goal_id)).first()
+            if raw is not None and approver not in _designated_or_none(raw):
+                raise ApproverNotDesignated("approver is not designated for this goal")
             aid = str(uuid.uuid4())
             s.add(ApprovalRow(id=aid, tenant_id=tenant_id, actor_id=actor_id, goal_id=goal_id, capability=capability, gate=gate,
                               payload_digest=digest, approver=approver, expires_at=_iso(now + timedelta(seconds=ttl_seconds)),
@@ -442,4 +485,5 @@ class GoalStore:
                 "status": row.status, "attempts": row.attempts, "blocker": row.blocker,
                 "report": json.loads(row.report) if row.report else None,
                 "verdict": json.loads(row.verdict) if row.verdict else None,
-                "created_at": row.created_at, "updated_at": row.updated_at}
+                "created_at": row.created_at, "updated_at": row.updated_at,
+                "approver_restricted": row.designated_approvers is not None}

@@ -9,7 +9,7 @@ EXPECTED_COLUMNS={'id':(sa.String,False),'tenant_id':(sa.String,False),'actor_id
  'criteria':(sa.Text,False),'max_steps':(sa.Integer,False),'status':(sa.String,False),'attempts':(sa.Integer,False),
  'lease_owner':(sa.String,True),'lease_token':(sa.String,True),'lease_expires_at':(sa.String,True),'blocker':(sa.String,True),
  'report':(sa.Text,True),'verdict':(sa.Text,True),'created_at':(sa.String,False),'updated_at':(sa.String,False)}
-LATER={'cancel_requested_at'}  # added by 20261008_m21_runtime_cancel; a table created from the current model has it
+LATER={'cancel_requested_at','designated_approvers'}  # added by 20261008_m21_runtime_cancel; a table created from the current model has it
 EXPECTED_INDEXES={'ix_claire_runtime_goals_tenant_id':['tenant_id'],'ix_claire_runtime_goals_actor_id':['actor_id'],'ix_claire_runtime_goals_status':['status']}
 def _verify_existing(inspector):
  """A table that already exists is accepted only if its shape matches exactly; otherwise refuse loudly."""

@@ -4,10 +4,10 @@ import threading
 from typing import Any
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictStr, field_validator
 from app.auth.context import TenantContext, require_tenant
 from .acceptance import ToolReceiptCriterion
-from .goals import GoalNotGrantable, GoalStore, SelfApprovalRefused
+from .goals import ApproverNotDesignated, normalize_designated, GoalNotGrantable, GoalStore, SelfApprovalRefused
 from .redaction import scrub_text
 
 router = APIRouter(prefix="/runtime", tags=["claire-runtime"])
@@ -32,12 +32,20 @@ class RuntimeGoalIn(BaseModel):
     purpose: str = Field(min_length=3, max_length=8000)
     acceptance_criteria: list[ToolReceiptCriterion] = Field(min_length=1, max_length=20)
     max_steps: int = Field(default=12, ge=1, le=50)
+    designated_approvers: list[StrictStr] | None = Field(default=None, max_length=20)
+
+    @field_validator("designated_approvers")
+    @classmethod
+    def _valid_designated(cls, v: list[str] | None) -> list[str] | None:
+        normalize_designated(v)  # raises ValueError -> a 422 without echoing the offending value
+        return v
 
 
 @router.post("/goals", status_code=201)
 def create_goal(body: RuntimeGoalIn, tenant: TenantContext = Depends(require_tenant), store: GoalStore = Depends(get_store)) -> dict[str, Any]:
     gid = store.create(tenant.tenant_id, tenant.actor_id, scrub_text(body.purpose),
-                       [c.model_dump() for c in body.acceptance_criteria], body.max_steps)
+                       [c.model_dump() for c in body.acceptance_criteria], body.max_steps,
+                       designated_approvers=body.designated_approvers)
     return store.get(tenant.tenant_id, tenant.actor_id, gid)
 
 
@@ -106,6 +114,8 @@ def approve(goal_id: str, body: ApprovalIn, tenant: TenantContext = Depends(requ
                           approver=tenant.actor_id, ttl_seconds=body.ttl_seconds)
     except SelfApprovalRefused:
         raise HTTPException(403, "self_approval_refused") from None
+    except ApproverNotDesignated:
+        raise HTTPException(403, "approver_not_designated") from None
     except GoalNotGrantable:
         raise HTTPException(409, "goal_not_grantable") from None
     return {"approval_id": aid, "goal_id": goal_id, "capability": body.capability, "gate": body.gate, "single_use": True,
