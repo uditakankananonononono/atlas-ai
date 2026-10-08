@@ -1,10 +1,12 @@
-"""M13 artifact confinement: trusted root, swap-proof writes, id validation.
+"""M13 artifact confinement: trusted root, confined writes, id validation.
 
-These tests reproduce the reported gap - a session directory swapped for a
-symlink after creation, sending screenshot bytes outside the root - and pin
-the fix: ids are validated before any filesystem use, and every artifact
-byte is written through a pinned root descriptor walk that refuses symlinked
-components instead of following them.
+These tests pin the deterministic pre-write attacks: a session directory
+swapped for a symlink before the write runs, a held-fd rename that already
+happened when the write is attempted, preexisting symlink components,
+planted symlink filenames, and traversal ids - all refused, with no bytes
+following the moved inode. The checks themselves are non-atomic
+(check-then-act); a rename after the final check is a documented residual
+and is NOT pinned here.
 """
 import base64
 import os

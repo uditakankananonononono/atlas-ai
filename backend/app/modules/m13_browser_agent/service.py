@@ -46,9 +46,10 @@ class Service:
         """Full-page screenshot; masked selectors are covered so field values never land in the image.
 
         Ids are validated before any filesystem use, and the PNG bytes are
-        written through the pinned artifact root, so a session directory
-        swapped for a symlink before or during the write is refused instead
-        of followed outside the root.
+        written through the pinned artifact root: a session directory
+        already swapped for a symlink when the checks run is refused
+        instead of followed outside the root (non-atomic, best-effort;
+        see artifact_directory's docstring for the residual window).
         """
         validate_segment(tenant_id, "tenant id")
         validate_segment(session_id, "session id")

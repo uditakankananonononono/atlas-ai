@@ -72,12 +72,14 @@ class PlaywrightSessions:
         """Post-close HAR containment check.
 
         The Playwright *driver* writes ``audit.har`` from a path string at
-        context close, outside our descriptor walk. We cannot atomically
-        contain that write; what we can and do do is detect a violation as
-        soon as the context closes: the session directory must still be a
-        real, in-root directory and the HAR's resolved location must still
-        be inside the trusted root. A same-UID rename or swap during the
-        context's life surfaces here as a loud refusal, never a silent pass.
+        context close, outside our descriptor walk. We cannot contain that
+        write at all; what we can and do do is detect a violation as soon
+        as the context closes: the session directory must still be a real,
+        in-root directory and the HAR's resolved location must still be
+        inside the trusted root. A same-UID rename or swap during the
+        context's life surfaces here as a loud refusal, never a silent
+        pass - but detection happens after the driver write, so escaped
+        HAR bytes are found, not prevented.
         """
         if har_path is None:
             return
@@ -113,8 +115,9 @@ class PlaywrightSessions:
                 if len(self._sessions) >= self.max_sessions:
                     raise RuntimeError("browser session capacity reached")
                 assert self._browser is not None
-                # Pinned, swap-refusing directory creation; the HAR path
-                # handed to the driver is re-verified inside the root.
+                # Pinned directory creation that refuses preexisting swaps;
+                # the HAR path handed to the driver is re-verified inside
+                # the root at creation and again at context close.
                 path = self._artifacts.prepare_dir(tenant_id, session_id)
                 har_path = path / "audit.har"
                 context = await self._browser.new_context(record_har_path=str(har_path))
