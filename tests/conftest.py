@@ -38,13 +38,14 @@ def oidc_auth_headers(monkeypatch: pytest.MonkeyPatch):
     verifier._expires = time.monotonic() + 300
     monkeypatch.setattr(auth, "_production_verifier", lambda: verifier)
 
-    def headers(tenant: str = "tenant-a", subject: str = "tester") -> dict[str, str]:
+    def headers(tenant: str = "tenant-a", subject: str = "tester", roles: list[str] | None = None) -> dict[str, str]:
         now = int(time.time())
         header = _b64(json.dumps({"alg": "RS256", "kid": "test-key"}).encode())
         payload = _b64(json.dumps({
             "iss": "https://issuer.test",
             "aud": "atlas",
             "sub": subject,
+            "roles": roles or [],
             "atlas_tenant": tenant,
             "iat": now,
             "exp": now + 300,

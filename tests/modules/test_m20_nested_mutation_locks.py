@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Event
 import pytest
 from fastapi import FastAPI
+from app.auth.context import require_tenant,TenantContext
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from app.modules.m20_general_cognitive_worker.runtime import GCWRuntime
@@ -21,6 +22,7 @@ def wired(tmp_path):
     engine=create_engine(f'sqlite:///{tmp_path / "nested.db"}')
     repo=GCWRepository(engine);repo.create_schema();runtime=GCWRuntime(repo)
     app=FastAPI();app.include_router(router);app.dependency_overrides[get_runtime]=lambda:runtime
+    app.dependency_overrides[require_tenant]=lambda:TenantContext("default","fixture-reviewer",frozenset({"atlas-reviewer"}))
     yield runtime,repo,TestClient(app)
     engine.dispose()
 

@@ -1,0 +1,40 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_______ test_unqualified_or_self_reviewer_cannot_activate[member-roles0] _______
+tests/modules/test_m20_reviewer_provenance.py:32: in test_unqualified_or_self_reviewer_cannot_activate
+    assert response.status_code==403
+E   assert 200 == 403
+E    +  where 200 = <Response [200 OK]>.status_code
+_______ test_unqualified_or_self_reviewer_cannot_activate[author-roles1] _______
+tests/modules/test_m20_reviewer_provenance.py:32: in test_unqualified_or_self_reviewer_cannot_activate
+    assert response.status_code==403
+E   assert 200 == 403
+E    +  where 200 = <Response [200 OK]>.status_code
+_______ test_unqualified_or_self_reviewer_cannot_activate[author-roles2] _______
+tests/modules/test_m20_reviewer_provenance.py:32: in test_unqualified_or_self_reviewer_cannot_activate
+    assert response.status_code==403
+E   assert 200 == 403
+E    +  where 200 = <Response [200 OK]>.status_code
+______________ test_independent_reviewer_receipt_survives_restart ______________
+tests/modules/test_m20_reviewer_provenance.py:43: in test_independent_reviewer_receipt_survives_restart
+    receipt=restored.methods['fixture'].model_dump()['activation_review']
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'activation_review'
+__________ test_unknown_legacy_proposer_cannot_be_assumed_independent __________
+tests/modules/test_m20_reviewer_provenance.py:52: in test_unknown_legacy_proposer_cannot_be_assumed_independent
+    assert response.status_code==403 and repo.list_methods()[0][1]=='proposed'
+E   assert (200 == 403)
+E    +  where 200 = <Response [200 OK]>.status_code
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_reviewer_provenance.py::test_unqualified_or_self_reviewer_cannot_activate[member-roles0]
+FAILED tests/modules/test_m20_reviewer_provenance.py::test_unqualified_or_self_reviewer_cannot_activate[author-roles1]
+FAILED tests/modules/test_m20_reviewer_provenance.py::test_unqualified_or_self_reviewer_cannot_activate[author-roles2]
+FAILED tests/modules/test_m20_reviewer_provenance.py::test_independent_reviewer_receipt_survives_restart
+FAILED tests/modules/test_m20_reviewer_provenance.py::test_unknown_legacy_proposer_cannot_be_assumed_independent
+5 failed, 1 warning in 2.27s

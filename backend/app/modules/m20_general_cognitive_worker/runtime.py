@@ -205,12 +205,13 @@ class GCWRuntime:
         importance: int = 3,
         deadline: datetime | None = None,
         run_immediately: bool = True,
+        creator_actor_id: str | None = None,
     ) -> TaskContext:
         if not goal.strip():
             raise ValueError("goal must be non-empty")
         context = TaskContext(
             goal=goal, importance=max(1, min(5, importance)), deadline=deadline,
-            tenant_id=self.tenant_id,
+            tenant_id=self.tenant_id, creator_actor_id=creator_actor_id,
         )
         context.wm_partition = context.id
         self.repo.save_task(context)
@@ -225,7 +226,7 @@ class GCWRuntime:
             try:
                 self._retrieve_review_lessons(context)
                 self._checkpoint_model(context)
-                context.plan = self.planner.decompose(context.goal, context=self.working_memory.context(partition=context.id))
+                context.plan = self.planner.decompose(context.goal, context=self.working_memory.context(partition=context.id), proposer_actor_id=context.creator_actor_id)
                 context.state = TaskState.PLANNING
             except PlanError as exc:
                 context.model_outcome_unknown = getattr(exc, "outcome", None) == "unknown"
@@ -234,8 +235,8 @@ class GCWRuntime:
         return context
 
     @_exclusive_execution
-    def activate_method(self, name, *, expected_hash):
-        return self.planner.activate_method(name, expected_hash=expected_hash)
+    def activate_method(self, name, *, expected_hash, actor_id=None, roles=frozenset()):
+        return self.planner.activate_method(name, expected_hash=expected_hash, actor_id=actor_id, roles=roles)
 
     @_exclusive_execution
     def create_risk_register(self, *, goal, risks):

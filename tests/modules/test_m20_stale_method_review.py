@@ -9,12 +9,12 @@ def test_reviewed_cached_method_cannot_activate_replacement_in_shared_store(tmp_
     engine=create_engine(f'sqlite:///{tmp_path / "methods.db"}')
     repo=GCWRepository(engine);repo.create_schema()
     first=DurableHTNPlanner(repo,require_review=True)
-    first.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,subtasks=[PlanNode(title='reviewed old')]))
+    first.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,proposer_actor_id='fixture-proposer',subtasks=[PlanNode(title='reviewed old')]))
     reviewed=first.method_review_hash(first.methods['fixture'])
     other=DurableHTNPlanner.load(GCWRepository(engine),require_review=True)
-    other.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,subtasks=[PlanNode(title='unreviewed replacement')]))
+    other.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,proposer_actor_id='fixture-proposer',subtasks=[PlanNode(title='unreviewed replacement')]))
     with pytest.raises(PermissionError,match='revision'):
-        first.activate_method('fixture',expected_hash=reviewed)
+        first.activate_method('fixture',expected_hash=reviewed,actor_id='fixture-reviewer',roles={'atlas-reviewer'})
     method,status=repo.list_methods()[0]
     assert method.subtasks[0].title=='unreviewed replacement' and status=='proposed'
     engine.dispose()
@@ -25,7 +25,7 @@ def test_durable_replacement_between_hash_check_and_update_is_rejected(tmp_path,
     from app.modules.m20_general_cognitive_worker.sql_repository import MethodRow
     engine=create_engine(f'sqlite:///{tmp_path / "race.db"}')
     repo=GCWRepository(engine);repo.create_schema();first=DurableHTNPlanner(repo,require_review=True)
-    first.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,subtasks=[PlanNode(title='reviewed old')]))
+    first.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,proposer_actor_id='fixture-proposer',subtasks=[PlanNode(title='reviewed old')]))
     reviewed=first.method_review_hash(first.methods['fixture'])
     replacement=first.methods['fixture'].model_copy(deep=True)
     replacement.subtasks[0].title='racing replacement'
@@ -40,7 +40,7 @@ def test_durable_replacement_between_hash_check_and_update_is_rejected(tmp_path,
     sa.event.listen(engine,'before_cursor_execute',race)
     try:
         with pytest.raises(PermissionError,match='changed during'):
-            first.activate_method('fixture',expected_hash=reviewed)
+            first.activate_method('fixture',expected_hash=reviewed,actor_id='fixture-reviewer',roles={'atlas-reviewer'})
         assert changed and first.method_status('fixture')=='proposed'
     finally:sa.event.remove(engine,'before_cursor_execute',race)
     assert repo.list_methods()[0][1]=='proposed'

@@ -193,6 +193,8 @@ class HTNMethod(BaseModel):
     subtasks: list[PlanNode] = Field(default_factory=list)
     constraints: list[str] = Field(default_factory=list)
     source: MethodSource = MethodSource.LIBRARY
+    proposer_actor_id: str | None = None
+    activation_review: dict[str, Any] | None = None
     generated_goal: str | None = None
     generated_context_sha256: str | None = None
     times_used: int = 0
@@ -232,6 +234,7 @@ class TaskContext(BaseModel):
 
     id: str = Field(default_factory=new_id)
     goal: str
+    creator_actor_id: str | None = None
     model_outcome_unknown: bool = False
     reconciliation_evidence: list[dict[str, Any]] = Field(default_factory=list)
     state: TaskState = TaskState.PENDING

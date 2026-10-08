@@ -225,6 +225,7 @@ class DeliberativeLoop:
                 if self.before_model is not None: self.before_model(context)
                 context.plan = self.planner.decompose(
                     context.goal, context=self.wm.context(partition=context.id),
+                    proposer_actor_id=context.creator_actor_id,
                 )
                 self._trace("plan", f"plan with {len(context.plan)} steps", task_id=context.id)
             except PlanError as exc:

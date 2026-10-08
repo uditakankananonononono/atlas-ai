@@ -1,0 +1,7 @@
+# Preserve published Alembic history
+
+Decision: retain our published 20261007_m20_model_unknown revision and parent 20261007_m20_risk_register unchanged. Do not import the peer's colliding revision into this migration namespace, do not rename either published historical file in its own source history, and do not rewrite Git history. Both files add the same uncertainty column and refuse downgrade with unresolved holds; local SQLite uses batch drop while peer uses direct drop. Source copies are retained beside this decision.
+
+This is the smaller migration surface for the current reviewed M20 semantic adaptation: zero new production schema operations and no historical revision rewrite. The peer's parent 20261007_m10_ingest_work and non-M20 history have not been integrated. A future broader merge must exclude the peer colliding migration from the assembled namespace and separately integrate its prerequisite schema changes with new uniquely identified forward revisions after schema review. Do not assume this note makes an arbitrary two-history merge valid. Database revision ids alone cannot distinguish the divergent histories; deployments originating on the peer chain need a schema/history inspection and explicit forward migration plan before using our chain. No peer production database was inspected and no revision was stamped.
+
+Current SQLite/PostgreSQL scratch migration receipts establish only our chain's local behavior. The future cross-history deployment path remains blocked until it has its own reviewed migration plan and tests.

@@ -182,14 +182,14 @@ def test_m20_10_11_learned_methods_require_review_before_reuse():
     model = StubPlannerModel([{"title": "step one"}, {"title": "step two"}])
     runtime, repo = make_runtime(model=model)
     planner = runtime.planner
-    planner.decompose("draft a launch announcement")
+    planner.decompose("draft a launch announcement",proposer_actor_id="fixture-proposer")
     learned = [m for m in planner.methods.values() if m.name.startswith("learned:")]
     assert len(learned) == 1
     assert planner.method_status(learned[0].name) == "proposed"
-    planner.decompose("draft a launch announcement")
+    planner.decompose("draft a launch announcement",proposer_actor_id="fixture-proposer")
     assert model.calls == 2  # proposed method cannot match yet
-    planner.activate_method(learned[0].name,expected_hash=planner.method_review_hash(planner.methods[learned[0].name]))
-    planner.decompose("draft a launch announcement")
+    planner.activate_method(learned[0].name,expected_hash=planner.method_review_hash(planner.methods[learned[0].name]),actor_id="fixture-reviewer",roles={"atlas-reviewer"})
+    planner.decompose("draft a launch announcement",proposer_actor_id="fixture-proposer")
     assert model.calls == 2  # reviewed method now matches
     restored = GCWRuntime(repo, planner_model=model, require_method_review=True)
     assert restored.planner.method_status(learned[0].name) == "active"
@@ -630,23 +630,25 @@ def test_replanning_same_generated_cache_key_never_self_activates_review_require
 
 def test_method_activation_requires_exact_reviewed_revision_hash():
  model=StubPlannerModel([{'title':'old fixture'}]);runtime,repo=make_runtime(model=model)
- runtime.planner.decompose('fixture exact',context='same')
+ runtime.planner.decompose('fixture exact',context='same',proposer_actor_id="fixture-proposer")
  method=next(iter(runtime.planner.methods.values()));reviewed=runtime.planner.method_review_hash(method)
- model.steps=[{'title':'replacement fixture'}];runtime.planner.decompose('fixture exact',context='same')
- with pytest.raises(PermissionError,match='revision'):runtime.planner.activate_method(method.name,expected_hash=reviewed)
+ model.steps=[{'title':'replacement fixture'}];runtime.planner.decompose('fixture exact',context='same',proposer_actor_id="fixture-proposer")
+ with pytest.raises(PermissionError,match='revision'):runtime.planner.activate_method(method.name,expected_hash=reviewed,actor_id="fixture-reviewer",roles={"atlas-reviewer"})
  assert runtime.planner.method_status(method.name)=='proposed'
  current=runtime.planner.methods[method.name]
- assert runtime.planner.activate_method(method.name,expected_hash=runtime.planner.method_review_hash(current))
+ assert runtime.planner.activate_method(method.name,expected_hash=runtime.planner.method_review_hash(current),actor_id="fixture-reviewer",roles={"atlas-reviewer"})
 
 
 def test_method_http_review_hash_rejects_missing_and_stale_revision(mounted):
  client,runtime,repo,_=mounted
+ from app.auth.context import require_tenant,TenantContext
+ client.app.dependency_overrides[require_tenant]=lambda:TenantContext("default","fixture-reviewer",frozenset({"atlas-reviewer"}))
  model=StubPlannerModel([{'title':'old'}]);runtime.planner.model=model
- runtime.planner.decompose('novel review fixture',context='same')
+ runtime.planner.decompose('novel review fixture',context='same',proposer_actor_id="fixture-proposer")
  item=next(row for row in client.get('/api/modules/20/runtime/methods').json() if row['name'].startswith('learned:'))
  path='/api/modules/20/runtime/methods/'+item['name']+'/activate'
  assert client.post(path).status_code==422
- model.steps=[{'title':'new'}];runtime.planner.decompose('novel review fixture',context='same')
+ model.steps=[{'title':'new'}];runtime.planner.decompose('novel review fixture',context='same',proposer_actor_id="fixture-proposer")
  assert client.post(path,json={'expected_hash':item['review_hash']}).status_code==409
  current=next(row for row in client.get('/api/modules/20/runtime/methods').json() if row['name']==item['name'])
  assert current['review_status']=='proposed'
@@ -656,18 +658,18 @@ def test_method_http_review_hash_rejects_missing_and_stale_revision(mounted):
 
 def test_method_same_name_replacements_update_one_durable_revision_and_restart():
  model=StubPlannerModel([{'title':'old'}]);runtime,repo=make_runtime(model=model)
- runtime.planner.decompose('restart review fixture',context='same')
+ runtime.planner.decompose('restart review fixture',context='same',proposer_actor_id="fixture-proposer")
  original=next(iter(runtime.planner.methods.values()))
  old_hash=runtime.planner.method_review_hash(original)
- model.steps=[{'title':'new'}];runtime.planner.decompose('restart review fixture',context='same')
+ model.steps=[{'title':'new'}];runtime.planner.decompose('restart review fixture',context='same',proposer_actor_id="fixture-proposer")
  rows=repo.list_methods()
  assert len(rows)==1 and rows[0][0].id==original.id
  restarted=make_runtime(hydrate_repo=repo)
  current=restarted.planner.methods[original.name]
  assert current.subtasks[0].title=='new' and restarted.planner.method_status(current.name)=='proposed'
  with pytest.raises(PermissionError,match='revision'):
-  restarted.planner.activate_method(current.name,expected_hash=old_hash)
- assert restarted.planner.activate_method(current.name,expected_hash=restarted.planner.method_review_hash(current))
+  restarted.planner.activate_method(current.name,expected_hash=old_hash,actor_id="fixture-reviewer",roles={"atlas-reviewer"})
+ assert restarted.planner.activate_method(current.name,expected_hash=restarted.planner.method_review_hash(current),actor_id="fixture-reviewer",roles={"atlas-reviewer"})
  assert make_runtime(hydrate_repo=repo).planner.method_status(current.name)=='active'
 
 

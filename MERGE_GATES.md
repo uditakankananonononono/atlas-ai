@@ -19,8 +19,7 @@ Our published `20261007_m20_model_unknown` revision has parent
 `20261007_m20_risk_register`. The peer revision with the same id has parent
 `20261007_m10_ingest_work` and a different migration body. Any future combination
 of those histories requires an explicit Alembic-chain integration decision.
-This is a known integration blocker; the decision is deferred. Do not rename
-our published revision id unilaterally.
+History-preserving current adaptation decision: keep our published revision/parent untouched and exclude the peer colliding migration from this namespace. No rename, rewrite, stamp or new schema operation. Source receipts and rationale: `audits/rebuild-20261008/alembic-history-decision/`. Future deployment from the peer parent chain remains blocked until a schema-inspected, uniquely identified forward migration plan is reviewed and tested.
 
 ## Nested-object mutation coverage
 
@@ -82,4 +81,4 @@ The prototype does not include the non-M20 divergent peer commit range. Main mer
 
 ## Reviewer provenance design gate
 
-Mounted method activation authenticates tenant membership but has no reviewer-role requirement or durable actor receipt. A matching payload hash authenticates content equality, not independent reviewer identity. Reviewer role, proposer/reviewer independence and audit receipt requirements need an integration-owner decision before implementation. No role policy is inferred from these tests.
+Mounted method activation now requires authenticated atlas-reviewer/atlas-admin and an actor distinct from the persisted proposer. Actor/hash/timestamp receipt is durably written in the guarded activation update. Authenticated task creator is propagated to learned proposals; unknown legacy proposer fails closed. Direct trusted adapters must authenticate the identity/roles they pass. Distinct subjects do not prove different humans or non-collusion. Live identity-provider policy and production deployment remain unverified. Original five failures and new canaries retained in `audits/rebuild-20261008/reviewer-provenance/`. Fresh full regression: 519 files across 52 isolated batches, 10,302 passed / 0 failed / 14 skipped / 0 errors. Product publication remains gated on restored Atlas key access.

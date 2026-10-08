@@ -1,0 +1,109 @@
+.....F..........................FFF..................................... [ 30%]
+........................................................................ [ 60%]
+........................................................................ [ 90%]
+FFF.F...F...F.........                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_m20_10_11_learned_methods_require_review_before_reuse __________
+tests/modules/test_m20_runtime_depth.py:191: in test_m20_10_11_learned_methods_require_review_before_reuse
+    planner.activate_method(learned[0].name,expected_hash=planner.method_review_hash(planner.methods[learned[0].name]))
+backend/app/modules/m20_general_cognitive_worker/persistence.py:284: in activate_method
+    if not self.repo.set_method_status(self.methods[name].id, "active", expected_hash=expected_hash, actor_id=actor_id, roles=roles):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/sql_repository.py:591: in set_method_status
+    raise PermissionError("independent reviewer role and actor identity required")
+E   PermissionError: independent reviewer role and actor identity required
+_________ test_method_activation_requires_exact_reviewed_revision_hash _________
+tests/modules/test_m20_runtime_depth.py:639: in test_method_activation_requires_exact_reviewed_revision_hash
+    assert runtime.planner.activate_method(method.name,expected_hash=runtime.planner.method_review_hash(current))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/persistence.py:284: in activate_method
+    if not self.repo.set_method_status(self.methods[name].id, "active", expected_hash=expected_hash, actor_id=actor_id, roles=roles):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/sql_repository.py:591: in set_method_status
+    raise PermissionError("independent reviewer role and actor identity required")
+E   PermissionError: independent reviewer role and actor identity required
+_______ test_method_http_review_hash_rejects_missing_and_stale_revision ________
+tests/modules/test_m20_runtime_depth.py:650: in test_method_http_review_hash_rejects_missing_and_stale_revision
+    assert client.post(path,json={'expected_hash':item['review_hash']}).status_code==409
+E   AssertionError: assert 403 == 409
+E    +  where 403 = <Response [403 Forbidden]>.status_code
+E    +    where <Response [403 Forbidden]> = post('/api/modules/20/runtime/methods/learned:novel review fixture:e8cae1f03f6fbd64/activate', json={'expected_hash': '186260722fafa8569d8165e56e55aa09cc611f3a79fe749f927acccbfd74fe1c'})
+E    +      where post = <starlette.testclient.TestClient object at 0x7f98ea947500>.post
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+__ test_method_same_name_replacements_update_one_durable_revision_and_restart __
+tests/modules/test_m20_runtime_depth.py:670: in test_method_same_name_replacements_update_one_durable_revision_and_restart
+    assert restarted.planner.activate_method(current.name,expected_hash=restarted.planner.method_review_hash(current))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/persistence.py:284: in activate_method
+    if not self.repo.set_method_status(self.methods[name].id, "active", expected_hash=expected_hash, actor_id=actor_id, roles=roles):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/sql_repository.py:591: in set_method_status
+    raise PermissionError("independent reviewer role and actor identity required")
+E   PermissionError: independent reviewer role and actor identity required
+______ test_durable_replacement_between_hash_check_and_update_is_rejected ______
+tests/modules/test_m20_stale_method_review.py:42: in test_durable_replacement_between_hash_check_and_update_is_rejected
+    with pytest.raises(PermissionError,match='changed during'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'changed during'
+E     Actual message: 'independent reviewer role and actor identity required'
+_ test_postgres_review_activation_matches_snapshot_and_rejects_stale_replacement _
+tests/modules/test_m20_postgres_review_cas.py:31: in test_postgres_review_activation_matches_snapshot_and_rejects_stale_replacement
+    assert first.activate_method('fixture',expected_hash=reviewed)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/persistence.py:284: in activate_method
+    if not self.repo.set_method_status(self.methods[name].id, "active", expected_hash=expected_hash, actor_id=actor_id, roles=roles):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/sql_repository.py:591: in set_method_status
+    raise PermissionError("independent reviewer role and actor identity required")
+E   PermissionError: independent reviewer role and actor identity required
+_______ test_postgres_separate_writer_between_check_and_update_rejected ________
+tests/modules/test_m20_postgres_review_cas.py:55: in test_postgres_separate_writer_between_check_and_update_rejected
+    with pytest.raises(PermissionError,match='changed during'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'changed during'
+E     Actual message: 'independent reviewer role and actor identity required'
+_ test_held_runtime_lock_blocks_nested_route_before_mutation[post-/methods/fixture/activate-payload0-planner-activate_method] _
+tests/modules/test_m20_nested_mutation_locks.py:35: in test_held_runtime_lock_blocks_nested_route_before_mutation
+    assert response.status_code==409
+E   assert 403 == 409
+E    +  where 403 = <Response [403 Forbidden]>.status_code
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_ test_actual_execution_blocks_nested_route_then_allows_after_release[post-/methods/fixture/activate-payload0-planner-activate_method] _
+tests/modules/test_m20_nested_mutation_locks.py:53: in test_actual_execution_blocks_nested_route_then_allows_after_release
+    assert response.status_code==409 and calls==[]
+E   assert (403 == 409)
+E    +  where 403 = <Response [403 Forbidden]>.status_code
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+_ test_nested_mutation_holds_execution_lock_and_releases_on_error[post-/methods/fixture/activate-payload0-planner-activate_method] _
+tests/modules/test_m20_nested_mutation_locks.py:70: in test_nested_mutation_holds_execution_lock_and_releases_on_error
+    assert entered.wait(5)
+E   assert False
+E    +  where False = wait(5)
+E    +    where wait = <threading.Event at 0x7f98e8c9e720: unset>.wait
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_runtime_depth.py::test_m20_10_11_learned_methods_require_review_before_reuse
+FAILED tests/modules/test_m20_runtime_depth.py::test_method_activation_requires_exact_reviewed_revision_hash
+FAILED tests/modules/test_m20_runtime_depth.py::test_method_http_review_hash_rejects_missing_and_stale_revision
+FAILED tests/modules/test_m20_runtime_depth.py::test_method_same_name_replacements_update_one_durable_revision_and_restart
+FAILED tests/modules/test_m20_stale_method_review.py::test_durable_replacement_between_hash_check_and_update_is_rejected
+FAILED tests/modules/test_m20_postgres_review_cas.py::test_postgres_review_activation_matches_snapshot_and_rejects_stale_replacement
+FAILED tests/modules/test_m20_postgres_review_cas.py::test_postgres_separate_writer_between_check_and_update_rejected
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_held_runtime_lock_blocks_nested_route_before_mutation[post-/methods/fixture/activate-payload0-planner-activate_method]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_actual_execution_blocks_nested_route_then_allows_after_release[post-/methods/fixture/activate-payload0-planner-activate_method]
+FAILED tests/modules/test_m20_nested_mutation_locks.py::test_nested_mutation_holds_execution_lock_and_releases_on_error[post-/methods/fixture/activate-payload0-planner-activate_method]
+10 failed, 228 passed, 1 warning in 26.69s
