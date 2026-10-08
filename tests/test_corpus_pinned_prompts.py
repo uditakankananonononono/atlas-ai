@@ -46,3 +46,19 @@ def test_file_cap_never_writes_above_bound(tmp_path):
  assert total==path.stat().st_size==100000
  with pytest.raises(ValueError):module.stream_capped(response,path,1000)
  assert path.stat().st_size<=1000
+def test_csv_closed_on_parse_failure(tmp_path,monkeypatch):
+ import hashlib
+ real_client=httpx.Client;real_open=Path.open;opened=[]
+ card=b'---\nlicense: cc0-1.0\n---\n';csv=b'act,prompt\nx,\n'
+ monkeypatch.setattr(module,'sleep',lambda seconds:None)
+ monkeypatch.setattr(module,'EXPECTED_HASHES',{'README.md':hashlib.sha256(card).hexdigest(),'prompts.csv':hashlib.sha256(csv).hexdigest()})
+ def handle(request):return httpx.Response(200,content=card if 'README.md' in str(request.url) else csv,request=request)
+ monkeypatch.setattr(module.httpx,'Client',lambda **kwargs:real_client(transport=httpx.MockTransport(handle),**kwargs))
+ def track(path,*args,**kwargs):
+  stream=real_open(path,*args,**kwargs)
+  if path.name=='prompts.csv' and kwargs.get('encoding')=='utf-8-sig':opened.append(stream)
+  return stream
+ monkeypatch.setattr(Path,'open',track)
+ with pytest.raises(ValueError,match='empty publisher prompt'):module.download(tmp_path/'out')
+ assert opened and all(stream.closed for stream in opened)
+ assert not (tmp_path/'out').exists()
