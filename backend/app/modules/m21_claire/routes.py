@@ -75,3 +75,6 @@ def verify_device_receipt(device_id:str,body:DeviceReceiptIn):
  try:return _pairing.verify_receipt(device_id,body.events)
  except KeyError:raise HTTPException(404,'device not found')
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+from .runtime.routes import router as claire_runtime_router
+router.include_router(claire_runtime_router)
