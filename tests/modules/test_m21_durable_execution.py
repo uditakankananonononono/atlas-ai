@@ -10,7 +10,7 @@ from sqlalchemy.pool import StaticPool
 from app.modules.m21_claire.durable_execution import (
     ClaireExecutionRepository, DurableExecutionOrchestrator,
 )
-from app.modules.m21_claire.execution import AttemptsExhausted, BoundedExecutor, IdempotencyStore
+from app.modules.m21_claire.execution import AttemptsExhausted, BoundedExecutor, IdempotencyStore, NotExecuted
 from app.modules.m21_claire.models import (
     ActionRequest, Approval, ExecutionPlan, PlanState, RiskLevel, StepState, utcnow,
 )
@@ -78,7 +78,7 @@ def test_resume_after_crash_never_reruns_succeeded_steps():
 
     def flaky_send(params):
         calls.append("send")
-        raise ConnectionError("smtp down")
+        raise NotExecuted("smtp down before any write")  # explicit never-ran proof: the only durable-retryable failure
 
     orch = DurableExecutionOrchestrator(repo, max_attempts=1)
     orch.register("docs.draft", lambda p: calls.append("draft") or {"doc": "v1"})
@@ -92,7 +92,7 @@ def test_resume_after_crash_never_reruns_succeeded_steps():
 
     # "restart": a new orchestrator over the same repository resumes the plan
     orch2 = DurableExecutionOrchestrator(repo, max_attempts=2,
-                                         retryable=lambda e: isinstance(e, ConnectionError))
+                                         retryable=lambda e: isinstance(e, NotExecuted))
     orch2.register("docs.draft", lambda p: calls.append("draft") or {"doc": "v1"})
     orch2.register("mail.send", lambda p: calls.append("send") or {"sent": True})
     resumed = orch2.resume(plan.plan_id)
