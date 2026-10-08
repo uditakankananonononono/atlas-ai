@@ -9,6 +9,7 @@ T='claire_runtime_approvals'
 EXPECTED={'id':(sa.String,False),'tenant_id':(sa.String,False),'actor_id':(sa.String,False),'goal_id':(sa.String,False),
  'capability':(sa.String,False),'gate':(sa.String,False),'payload_digest':(sa.String,False),'approver':(sa.String,False),
  'expires_at':(sa.String,False),'created_at':(sa.String,False),'consumed_at':(sa.String,True)}
+LATER={'revoked_at','revoked_by'}  # added by 20261008_m21_runtime_revoke; a table created from the current model has them
 IDX={'ix_claire_runtime_approvals_tenant_id':['tenant_id'],'ix_claire_runtime_approvals_actor_id':['actor_id'],'ix_claire_runtime_approvals_goal_id':['goal_id']}
 def _verify(inspector):
  problems=[];cols={c['name']:c for c in inspector.get_columns(T)}
@@ -17,7 +18,7 @@ def _verify(inspector):
   if c is None:problems.append(f'missing column {n}');continue
   if not isinstance(c['type'],kind):problems.append(f'column {n} has type {type(c["type"]).__name__}')
   if bool(c['nullable'])!=nullable:problems.append(f'column {n} nullability differs')
- for n in sorted(set(cols)-set(EXPECTED)):problems.append(f'unexpected column {n}')
+ for n in sorted(set(cols)-set(EXPECTED)-LATER):problems.append(f'unexpected column {n}')
  if inspector.get_pk_constraint(T).get('constrained_columns')!=['id']:problems.append('primary key is not (id)')
  have={i['name']:i['column_names'] for i in inspector.get_indexes(T)}
  for n,c in IDX.items():

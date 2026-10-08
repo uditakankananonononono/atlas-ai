@@ -60,7 +60,7 @@ def test_runtime_goals_downgrade_drops_only_an_empty_table(tmp_path):
     assert _alembic(db, "upgrade", "20261008_m21_runtime_goals").returncode == 0
     assert _alembic(db, "downgrade", "20261008_m16_view_version").returncode == 0
     assert "claire_runtime_goals" not in inspect(create_engine(f"sqlite:///{db}")).get_table_names()
-    assert _alembic(db, "upgrade", "20261008_m21_runtime_designated").returncode == 0  # CONVERTED slice 10 (was slice 6, cancel revision): the model now has designated_approvers too, so the store needs the head revision to write a row; still covers 'a non-empty goals table is never dropped'
+    assert _alembic(db, "upgrade", "20261008_m21_runtime_revoke").returncode == 0  # CONVERTED slice 12 (was slice 10 designated, slice 6 cancel): the model now has designated_approvers too, so the store needs the head revision to write a row; still covers 'a non-empty goals table is never dropped'
     store = GoalStore(f"sqlite:///{db}")
     store.create("t", "a", "p", [{"kind": "tool_receipt", "tool": "x", "min_count": 1}], 1)
     store.close()

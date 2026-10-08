@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, StrictStr, field_validator
 from app.auth.context import TenantContext, require_tenant
 from .acceptance import ToolReceiptCriterion
-from .goals import ApproverNotDesignated, normalize_designated, GoalNotGrantable, GoalStore, SelfApprovalRefused
+from .goals import ApproverNotDesignated, RevokeNotAuthorized, normalize_designated, GoalNotGrantable, GoalStore, SelfApprovalRefused
 from .redaction import scrub_text
 
 router = APIRouter(prefix="/runtime", tags=["claire-runtime"])
@@ -120,6 +120,42 @@ def approve(goal_id: str, body: ApprovalIn, tenant: TenantContext = Depends(requ
         raise HTTPException(409, "goal_not_grantable") from None
     return {"approval_id": aid, "goal_id": goal_id, "capability": body.capability, "gate": body.gate, "single_use": True,
             "approver": tenant.actor_id, "self_approved": tenant.actor_id == goal["actor_id"]}
+
+
+def _revoke_audience(tenant: TenantContext) -> bool:
+    return bool(tenant.has_role(*APPROVER_ROLES))
+
+
+@router.get("/goals/{goal_id}/approvals")
+def list_approvals(goal_id: str, tenant: TenantContext = Depends(require_tenant), store: GoalStore = Depends(get_store)) -> dict[str, Any]:
+    """The goal's owner, or an approver-role principal (bound by the goal's designated list), sees the approvals' state. No digest."""
+    try:
+        items = store.list_approvals(tenant.tenant_id, goal_id, tenant.actor_id, approver_role=_revoke_audience(tenant))
+    except RevokeNotAuthorized:
+        raise HTTPException(403, "approver role required") from None
+    except ApproverNotDesignated:
+        raise HTTPException(403, "approver_not_designated") from None
+    if items is None:
+        raise HTTPException(404, "goal not found")
+    return {"goal_id": goal_id, "approvals": items}
+
+
+@router.post("/goals/{goal_id}/approvals/{approval_id}/revoke")
+def revoke_approval(goal_id: str, approval_id: str, tenant: TenantContext = Depends(require_tenant),
+                    store: GoalStore = Depends(get_store)) -> dict[str, Any]:
+    """Withdraw one unused approval. The revoker is the authenticated principal (never a body field): the goal's owner, or an
+    approver-role principal bound by the goal's designated list. A consumed approval is never refunded."""
+    try:
+        outcome = store.revoke_approval(tenant.tenant_id, goal_id, approval_id, tenant.actor_id, approver_role=_revoke_audience(tenant))
+    except RevokeNotAuthorized:
+        raise HTTPException(403, "approver role required") from None
+    except ApproverNotDesignated:
+        raise HTTPException(403, "approver_not_designated") from None
+    if outcome == "not_found":
+        raise HTTPException(404, "approval not found")
+    if outcome != "revoked":
+        raise HTTPException(409, outcome)
+    return {"goal_id": goal_id, "approval_id": approval_id, "state": "revoked"}
 
 
 @router.post("/goals/{goal_id}/requeue")

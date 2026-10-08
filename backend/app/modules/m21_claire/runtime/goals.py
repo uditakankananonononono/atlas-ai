@@ -57,6 +57,8 @@ class ApprovalRow(Base):
     expires_at: Mapped[str] = mapped_column(String(40))
     created_at: Mapped[str] = mapped_column(String(40))
     consumed_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    revoked_at: Mapped[str | None] = mapped_column(String(40), nullable=True)  # revoked_at and revoked_by are always set together
+    revoked_by: Mapped[str | None] = mapped_column(String(200), nullable=True)
 
 
 class EffectRow(Base):
@@ -158,6 +160,10 @@ def normalize_designated(value: Any) -> list[str] | None:
     return out or None
 
 
+class RevokeNotAuthorized(PermissionError):
+    """A principal other than the goal's actor lacks the approver role. Carries no ids."""
+
+
 class SelfApprovalRefused(PermissionError):
     """The approver or resolver is the goal's own actor. The agent proposes; a different principal decides."""
 
@@ -236,7 +242,7 @@ class GoalStore:
     def _expire_unused(s: Any, goal_id: str, now: str) -> None:
         """A cancelled goal holds no live authority: unused approvals die in the same transaction (consumed ones are untouched)."""
         s.execute(update(ApprovalRow).where(ApprovalRow.goal_id == goal_id, ApprovalRow.consumed_at.is_(None),
-                                            ApprovalRow.expires_at > now).values(expires_at=now))
+                                            ApprovalRow.revoked_at.is_(None), ApprovalRow.expires_at > now).values(expires_at=now))
 
     def cancel_requested(self, claim: Claim) -> bool:
         """True if the owner asked to cancel this claim's goal. Read-only; a lost claim reads False (lease checks own that)."""
@@ -489,6 +495,61 @@ class GoalStore:
                               created_at=_iso(now)))
         return aid
 
+    def _audience(self, s: Any, tenant_id: str, goal_id: str, principal_id: str, approver_role: bool) -> GoalRow | None:
+        """Who may revoke or list approvals. None when the goal is not in this tenant (not_found, no disclosure). The owner is
+        decided from the STORED goal actor, never from a caller claim. A non-owner needs the approver role (a trusted bool the
+        authenticated route derives from the request context) AND, when the goal names its approvers, designation. Checked
+        before any approval row is read."""
+        goal = s.scalars(select(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id)).first()
+        if goal is None:
+            return None
+        if not (isinstance(principal_id, str) and principal_id.strip()):
+            raise ValueError("principal is required")
+        if principal_id != goal.actor_id:
+            if approver_role is not True:
+                raise RevokeNotAuthorized("approver role required")
+            if goal.designated_approvers is not None and principal_id not in _designated_or_none(goal.designated_approvers):
+                raise ApproverNotDesignated("principal is not designated for this goal")
+        return goal
+
+    def revoke_approval(self, tenant_id: str, goal_id: str, approval_id: str, revoker_id: str, *, approver_role: bool = False) -> str:
+        """Withdraw one unused approval. Returns revoked | not_found | already_consumed | already_revoked | expired.
+        Raises RevokeNotAuthorized / ApproverNotDesignated BEFORE any approval is read. Authority only shrinks, but an
+        unauthorized revocation would still deny someone's work, so the audience gate is the write gate. One conditional UPDATE
+        decides a race with consumption (exactly one wins); a consumed approval is never un-consumed or refunded and the effect
+        journal is untouched. Works on a goal in any status. Classification when nothing was updated:
+        not_found -> already_consumed -> already_revoked -> expired. The loser of a race writes nothing."""
+        now = _iso(self.clock())
+        with self._sessions.begin() as s:
+            goal = self._audience(s, tenant_id, goal_id, revoker_id, approver_role)
+            if goal is None:
+                return "not_found"
+            res = s.execute(update(ApprovalRow).where(
+                ApprovalRow.id == approval_id, ApprovalRow.goal_id == goal_id, ApprovalRow.tenant_id == tenant_id,
+                ApprovalRow.actor_id == goal.actor_id, ApprovalRow.consumed_at.is_(None), ApprovalRow.revoked_at.is_(None),
+                ApprovalRow.expires_at > now).values(revoked_at=now, revoked_by=revoker_id, expires_at=now))
+            if res.rowcount == 1:
+                return "revoked"
+            row = s.scalars(select(ApprovalRow).where(ApprovalRow.id == approval_id, ApprovalRow.goal_id == goal_id,
+                                                      ApprovalRow.tenant_id == tenant_id, ApprovalRow.actor_id == goal.actor_id)).first()
+            if row is None:
+                return "not_found"
+            return "already_consumed" if row.consumed_at else "already_revoked" if row.revoked_at else "expired"
+
+    def list_approvals(self, tenant_id: str, goal_id: str, principal_id: str, *, approver_role: bool = False) -> list[dict[str, Any]] | None:
+        """Same audience gate as revoke, applied before any approval is read. No digest, no arguments. State precedence:
+        consumed -> revoked -> expired -> live."""
+        now = _iso(self.clock())
+        with self._sessions() as s:
+            goal = self._audience(s, tenant_id, goal_id, principal_id, approver_role)
+            if goal is None:
+                return None
+            rows = s.scalars(select(ApprovalRow).where(ApprovalRow.goal_id == goal_id, ApprovalRow.tenant_id == tenant_id,
+                                                        ApprovalRow.actor_id == goal.actor_id).order_by(ApprovalRow.created_at, ApprovalRow.id)).all()
+            return [{"id": r.id, "capability": r.capability, "gate": r.gate, "approver": r.approver, "expires_at": r.expires_at,
+                     "state": "consumed" if r.consumed_at else "revoked" if r.revoked_at else "expired" if r.expires_at <= now else "live"}
+                    for r in rows]
+
     def _consume(self, s: Any, principal: Any, capability: str, digest: str, gates: tuple[str, ...]) -> None:
         """Inside the caller's transaction. Raises _NoApproval (the caller rolls back) unless every gate had its own approval."""
         now = _iso(self.clock())
@@ -498,8 +559,8 @@ class GoalStore:
                     ApprovalRow.tenant_id == principal.tenant_id, ApprovalRow.actor_id == principal.actor_id,
                     ApprovalRow.goal_id == principal.goal_id, ApprovalRow.capability == capability,
                     ApprovalRow.gate == gate, ApprovalRow.payload_digest == digest,
-                    ApprovalRow.consumed_at.is_(None), ApprovalRow.expires_at > now).limit(1).scalar_subquery(),
-                ApprovalRow.consumed_at.is_(None)).values(consumed_at=now))
+                    ApprovalRow.consumed_at.is_(None), ApprovalRow.revoked_at.is_(None), ApprovalRow.expires_at > now).limit(1).scalar_subquery(),
+                ApprovalRow.consumed_at.is_(None), ApprovalRow.revoked_at.is_(None), ApprovalRow.expires_at > now).values(consumed_at=now))
             if res.rowcount != 1:
                 raise _NoApproval
 
