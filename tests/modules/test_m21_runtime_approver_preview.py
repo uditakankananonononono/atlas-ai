@@ -117,3 +117,53 @@ def test_PROTECTION_token_shaped_KEYS_are_scrubbed_and_non_string_keys_survive()
     p = render_preview({"sk-ABCDEFGHIJKLMNOPQRSTUVWXYZ0123": "v", 7: "seven"})
     t = json.dumps(p)
     assert "sk-ABCDEF" not in t and p["value"]["7"] == "seven"
+
+
+def test_PROTECTION_distinct_keys_that_collide_when_truncated_never_merge():
+    """Reviewer's exact case: 'x'*100+'a' and 'x'*100+'b' both cut to the same 100-char key. Both values must be shown."""
+    p = render_preview({"x" * 100 + "a": "first", "x" * 100 + "b": "second"})
+    assert sorted(p["value"].values()) == ["first", "second"] and len(p["value"]) == 2
+    assert p["truncated"] is True and p["key_altered"] is True
+
+
+def test_PROTECTION_keys_that_collide_after_scrubbing_never_merge():
+    k1 = "sk-ABCDEFGHIJKLMNOPQRSTUVWXYZ0123"; k2 = "sk-ZYXWVUTSRQPONMLKJIHGFEDCBA9876"
+    p = render_preview({k1: "one", k2: "two"})
+    assert sorted(p["value"].values()) == ["one", "two"] and p["key_altered"] is True
+    assert "sk-ABCDEF" not in json.dumps(p) and "sk-ZYXWVU" not in json.dumps(p)
+
+
+def test_PROTECTION_str_twin_keys_and_marker_named_keys_never_merge_or_overwrite():
+    p = render_preview({1: "int", "1": "str"})
+    assert sorted(p["value"].values()) == ["int", "str"]
+    many = {f"k{i:02d}": i for i in range(25)}; many["...(more keys)"] = "real"
+    q = render_preview(many)
+    assert "real" in q["value"].values() and q["truncated"] is True
+
+
+def test_PROTECTION_unaltered_keys_leave_key_altered_false_and_are_deterministic():
+    p = render_preview({"to": "a", "amount": 1})
+    assert p["key_altered"] is False
+    coll = {"x" * 100 + "a": 1, "x" * 100 + "b": 2}
+    assert render_preview(coll) == render_preview(dict(reversed(list(coll.items()))))
+
+
+def test_PROTECTION_reviewer_case_single_101_char_key_is_flagged():
+    p = render_preview({"k" * 101: "v"})
+    assert p["truncated"] is True and p["key_altered"] is True and len(next(iter(p["value"]))) == 100
+
+
+def test_PROTECTION_literal_dots_key_is_not_overwritten_by_the_more_keys_marker():
+    many = {f"k{i:02d}": i for i in range(25)}; many["..."] = "user-value"
+    p = render_preview(many)
+    assert p["value"]["..."] == "user-value" and p["truncated"] is True
+    assert any(str(v).endswith("more keys") for v in p["value"].values())
+
+
+def test_PROTECTION_string_only_redaction_marker_sets_contains_redactions():
+    from app.modules.m21_claire.runtime.redaction import redact
+    stored = redact({"note": "sk-" + "A" * 30})
+    assert "[REDACTED:" in stored["note"]
+    p = render_preview(stored)
+    assert p["contains_redactions"] is True and "AAAAAAAAAA" not in json.dumps(p)
+    assert render_preview({"note": "plain"})["contains_redactions"] is False
