@@ -1,12 +1,16 @@
 """Contracts for Module 7, Brand Collaboration Manager."""
+from collections.abc import Mapping
 from datetime import date, datetime
 from typing import Any, Literal
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 
 def _reject_bool_metrics(v):
-    """bool is an int subclass and pydantic lax float coerces True -> 1.0; refuse before coercion."""
-    if isinstance(v, dict):
+    """Refuse bool values in a metrics mapping before pydantic's lax float coercion turns True into 1.0.
+    Any collections.abc.Mapping is checked (dict, UserDict, ...) and returned as a plain dict.
+    Scope: only these mapping-valued metrics fields; non-Mapping input is left to pydantic's own type check."""
+    if isinstance(v, Mapping):
+        v = dict(v.items())
         for k, x in v.items():
             if isinstance(x, bool):
                 raise ValueError(f"metric {k!r} must be a number, not a boolean")
