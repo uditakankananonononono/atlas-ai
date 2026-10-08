@@ -170,3 +170,17 @@ def test_sql_claim_refuses_live_content_drift(tmp_path):
     assert not repo.claim_delivery(m)
     assert repo.claim_delivery(edited)
     e.dispose()
+
+
+def test_sql_replace_update_delete_cannot_reset_claim(tmp_path):
+    import sqlite3
+    repo,e=sql_repo(tmp_path);m=approved_message();persist(repo,m);assert repo.claim_delivery(m)
+    with sqlite3.connect(tmp_path/'claims.sqlite') as db:
+        assert db.execute('PRAGMA recursive_triggers').fetchone()[0]==0
+        row=list(db.execute('SELECT * FROM m05_delivery_claims').fetchone())
+        with pytest.raises(sqlite3.IntegrityError):
+            db.execute('INSERT OR REPLACE INTO m05_delivery_claims VALUES (?,?,?,?)',row)
+        with pytest.raises(sqlite3.IntegrityError):db.execute('DELETE FROM m05_delivery_claims')
+        with pytest.raises(sqlite3.IntegrityError):db.execute("UPDATE m05_delivery_claims SET message_id='reset'")
+    assert not repo.claim_delivery(m)
+    e.dispose()

@@ -78,6 +78,11 @@ class SnapshotStore:
               reviewed_at TEXT NOT NULL, expires_at TEXT NOT NULL,
               claimed_at TEXT,
               PRIMARY KEY(tenant,message_id), UNIQUE(tenant,token))''')
+            db.execute('''CREATE TRIGGER IF NOT EXISTS send_review_no_replace
+              BEFORE INSERT ON send_reviews WHEN EXISTS(
+                SELECT 1 FROM send_reviews WHERE tenant=NEW.tenant
+                  AND (message_id=NEW.message_id OR token=NEW.token))
+              BEGIN SELECT RAISE(ABORT,'immutable review conflict'); END''')
             db.execute('''CREATE TRIGGER IF NOT EXISTS send_review_immutable
               BEFORE UPDATE OF tenant,message_id,token,reviewer,snapshot,reviewed_at,expires_at
               ON send_reviews BEGIN SELECT RAISE(ABORT,'immutable review'); END''')

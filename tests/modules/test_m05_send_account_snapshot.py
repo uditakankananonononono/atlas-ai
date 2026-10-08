@@ -153,3 +153,14 @@ def test_external_source_not_locked_and_claim_does_not_send(store):
     # Document the boundary: a later external edit does not mutate the claim.
     assert claimed.account_revision=='ar1' and live[0].account_revision=='revoked'
     assert store.read_review('a',token)['claimed_at'] is not None
+
+
+def test_sql_replace_cannot_reset_consumed_snapshot(store):
+    token=store.record_review('a','owner',state());store.claim('a',token,lambda t,m:state())
+    with sqlite3.connect(store.path) as db:
+        assert db.execute('PRAGMA recursive_triggers').fetchone()[0]==0
+        row=list(db.execute('SELECT * FROM send_reviews').fetchone());row[-1]=None
+        with pytest.raises(sqlite3.IntegrityError):
+            db.execute('INSERT OR REPLACE INTO send_reviews VALUES (?,?,?,?,?,?,?,?)',row)
+    with pytest.raises(PreflightRefused,match='consumed'):
+        store.claim('a',token,lambda t,m:state())
