@@ -9,7 +9,7 @@ class ProductionBoundaryMiddleware(BaseHTTPMiddleware):
  def __init__(self,app,limit_per_minute:int=120):super().__init__(app);self.limiter=TenantRateLimiter(limit_per_minute)
  async def dispatch(self,request,call_next):
   trace=bind_trace(request.headers.get('traceparent'))
-  if request.url.path not in {'/health','/ready'}:
+  if request.url.path not in {'/health','/ready','/metrics'}:
    try:
     principal=await require_tenant(authorization=request.headers.get('authorization'),x_atlas_tenant=request.headers.get('x-atlas-tenant'),x_atlas_actor=request.headers.get('x-atlas-actor'))
     tenant,actor=principal.tenant_id,principal.actor_id

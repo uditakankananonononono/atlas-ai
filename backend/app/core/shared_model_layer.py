@@ -60,7 +60,29 @@ def run(messages: list[dict], *, tools: list[dict] | None = None, private: bool 
         max_tokens: int = 1024, router: Router | None = None) -> RoutedResult:
     """Route one task. Defaults to private=True: Atlas handles her contracts and
     mail, so callers must opt out explicitly for public-only content."""
-    return (router or atlas_router()).run(Task(messages=messages, tools=tools, private=private, max_tokens=max_tokens))
+    r = router or atlas_router()
+    return Router([_MeasuredProvider(p) for p in r.providers]).run(
+        Task(messages=messages, tools=tools, private=private, max_tokens=max_tokens))
+
+
+class _MeasuredProvider:
+    """Atlas-owned wrapper; vendor routing/privacy semantics remain unchanged."""
+    def __init__(self, provider): self.provider = provider
+    @property
+    def __class__(self): return self.provider.__class__
+    def __getattr__(self, name): return getattr(self.provider, name)
+    def available(self): return self.provider.available()
+    def chat(self, *args, **kwargs):
+        import time
+        from app.platform.metrics import observe_provider
+        started = time.monotonic()
+        try:
+            result = self.provider.chat(*args, **kwargs)
+        except BaseException:
+            observe_provider(self.provider.name, time.monotonic() - started, 'error')
+            raise
+        observe_provider(self.provider.name, time.monotonic() - started, 'success', result.raw)
+        return result
 
 
 class _GenerationGuard:
@@ -103,7 +125,7 @@ async def generate(prompt: str, *, private: bool = True, max_tokens: int = 2048,
     r = router or atlas_router()
     from instinct_models.providers import NeedleLocal
     state = [None]
-    guarded = Router([_GenerationGuard(p, state) for p in r.providers if not isinstance(p, NeedleLocal)])
+    guarded = Router([_GenerationGuard(_MeasuredProvider(p), state) for p in r.providers if not isinstance(p, NeedleLocal)])
     res = await asyncio.to_thread(guarded.run, Task(messages=[{"role": "user", "content": prompt}], private=private,
                                               max_tokens=max_tokens))
     if state[0] is not None:

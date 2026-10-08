@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 import os
+from app.platform.metrics import MetricsMiddleware, scrape
 from app.platform.middleware import ProductionBoundaryMiddleware
 from app.platform.telemetry import configure as configure_telemetry
 from app.api.routes import router
@@ -24,6 +25,8 @@ from app.self_improve.routes import router as self_improve_router
 configure_telemetry()
 app = FastAPI(title="Atlas AI", version="0.1.0")
 app.add_middleware(ProductionBoundaryMiddleware,limit_per_minute=int(os.getenv("ATLAS_RATE_LIMIT_PER_MINUTE","120")))
+app.add_middleware(MetricsMiddleware)
+app.add_api_route("/metrics", scrape, methods=["GET"], include_in_schema=False)
 app.include_router(router, prefix="/api/v1")
 app.include_router(google_grounding_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(acceptance_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
