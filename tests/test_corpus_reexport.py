@@ -20,3 +20,14 @@ def test_corrupt_source_publishes_nothing(db,tmp_path):
  with pytest.raises(ValueError):reexport(db,out,'cc0-prompts/train')
  assert not out.exists() and not out.with_suffix('.jsonl.manifest.json').exists()
  assert not list(tmp_path.glob('*.collection-lock'))
+def test_interrupted_export_recovered_into_new_artifacts(db,tmp_path):
+ import json
+ original=Path('/tmp/cc0-review/live.jsonl').read_bytes()
+ interrupted=tmp_path/'interrupted.jsonl';interrupted.write_bytes(original[:len(original)//2])
+ # Simulate interruption after DB commit while export is half-written and
+ # manifest absent. Keep broken artifact for inspection; never overwrite it.
+ before=interrupted.read_bytes();out=tmp_path/'recovered.jsonl'
+ report=reexport(db,out,'cc0-prompts/train')
+ assert report['stored_rows_verified']==200 and out.read_bytes()==original
+ assert interrupted.read_bytes()==before
+ assert json.loads(out.with_suffix('.jsonl.manifest.json').read_text())['offline_reexport'] is True
