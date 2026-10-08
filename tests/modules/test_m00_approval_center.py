@@ -348,3 +348,60 @@ def test_lazy_expiry_cannot_overwrite_competing_approved_decision(service, clock
     assert result['status'] == ApprovalStatus.APPROVED
     assert service.get(view['id'])['status'] == ApprovalStatus.APPROVED
     assert [event['event'] for event in service.audit(view['id'])] == ['created', 'approved']
+
+
+@pytest.mark.parametrize('path', ['get', 'list', 'sweep', 'overdue_decision'])
+def test_combined_expiry_paths_refresh_competing_decision(service, clock, path):
+    view = submit(service, ttl_seconds=10)
+    clock.now = T0 + timedelta(seconds=20)
+    expire = service._expire
+    raced = []
+    callbacks = []
+    service.register_callback(view['id'], callbacks.append)
+
+    def expire_after_winner(db, row, now):
+        if not raced:
+            raced.append(True)
+            clock.now = T0
+            service.decide(view['id'], ApprovalStatus.DENIED, decided_by='winner')
+            clock.now = now
+        return expire(db, row, now)
+
+    service._expire = expire_after_winner
+    if path == 'get':
+        assert service.get(view['id'])['status'] == ApprovalStatus.DENIED
+    elif path == 'list':
+        assert service.list()[0]['status'] == ApprovalStatus.DENIED
+    elif path == 'sweep':
+        assert service.expire_overdue() == []
+    else:
+        with pytest.raises(ApprovalConflictError):
+            service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='loser')
+    service._expire = expire
+    assert service.get(view['id'])['status'] == ApprovalStatus.DENIED
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', 'denied']
+    assert len(callbacks) == 1 and callbacks[0]['status'] == ApprovalStatus.DENIED
+
+
+def test_combined_stale_decision_loses_to_committed_expiry(service, clock):
+    view = submit(service, ttl_seconds=10)
+    fetch = service._fetch
+    raced = []
+    callbacks = []
+    service.register_callback(view['id'], callbacks.append)
+
+    def fetch_then_expire(db, aid):
+        row = fetch(db, aid)
+        if not raced:
+            raced.append(True)
+            clock.now = T0 + timedelta(seconds=20)
+            assert service.expire_overdue() == [aid]
+        return row
+
+    service._fetch = fetch_then_expire
+    with pytest.raises(ApprovalConflictError):
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='loser')
+    service._fetch = fetch
+    assert service.get(view['id'])['status'] == ApprovalStatus.EXPIRED
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', 'expired']
+    assert len(callbacks) == 1 and callbacks[0]['status'] == ApprovalStatus.EXPIRED
