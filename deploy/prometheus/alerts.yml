@@ -1,0 +1,18 @@
+groups:
+  - name: atlas-operational
+    rules:
+      - alert: AtlasApiErrorRateHigh
+        expr: (sum(rate(http_server_request_duration_seconds_count{status=~"5.."}[5m])) or vector(0)) / clamp_min(sum(rate(http_server_request_duration_seconds_count[5m])), 0.001) > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: 'Atlas API server error rate is above 5%'}
+      - alert: AtlasQueueBacklog
+        expr: atlas_celery_queue_depth > 1000
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: 'Atlas broker queue has more than 1000 waiting messages'}
+      - alert: AtlasQueueMetricsUnavailable
+        expr: atlas_celery_queue_scrape_success == 0
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: 'Atlas broker queue metrics unavailable'}
