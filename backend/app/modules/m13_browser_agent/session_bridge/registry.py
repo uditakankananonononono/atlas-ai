@@ -177,8 +177,8 @@ class BridgeRegistry:
             raise PairingError("device signature did not verify") from error
         return device
 
-    def verify_receipt(self, device_id: str, events: list[dict]) -> dict:
-        """Hash-chain verification against the stored device identity (M21 format)."""
+    def verify_receipt(self, device_id: str, events: list[dict], signature: str | None = None) -> dict:
+        """Hash-chain integrity plus paired Ed25519 authorship over UTF-8 chain head."""
         device = self.get_device(device_id)
         if device is None:
             raise PairingError("unknown device")
@@ -197,6 +197,15 @@ class BridgeRegistry:
             if not hmac.compare_digest(computed, str(raw.get("event_hash", ""))):
                 raise PairingError(f"event hash mismatch at event {position}")
             previous = computed
+        from cryptography.hazmat.primitives.serialization import load_pem_public_key
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+        try:
+            key = load_pem_public_key(device.public_key.encode("utf-8"))
+            if not isinstance(key, Ed25519PublicKey):
+                raise ValueError("receipt requires Ed25519 public key")
+            key.verify(bytes.fromhex(signature or ""), previous.encode("utf-8"))
+        except Exception as error:
+            raise PairingError("device receipt signature did not verify") from error
         phases = [str(item.get("phase")) for item in events]
         return {"device_id": device_id, "fingerprint": device.fingerprint,
                 "events_verified": len(events), "chain_head": previous,
