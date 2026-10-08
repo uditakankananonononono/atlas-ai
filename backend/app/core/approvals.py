@@ -4,9 +4,9 @@ from app.core.models import ApprovalRequest, ApprovalStatus
 from app.modules.m00_approval_center.service import ApprovalConflictError, ApprovalNotFoundError, default_service
 
 class ApprovalStore:
-    def put(self, item: ApprovalRequest, *, user_id: str | None = None) -> ApprovalRequest:
+    def put(self, item: ApprovalRequest, *, user_id: str | None = None, ttl_seconds: int | None = None) -> ApprovalRequest:
         tenant_id = user_id or str(item.payload.get("tenant_id") or "default")
-        view = default_service().submit(module_id=item.module_id, action_type=item.action_type, payload=item.payload, user_id=tenant_id)
+        view = default_service().submit(module_id=item.module_id, action_type=item.action_type, payload=item.payload, user_id=tenant_id, ttl_seconds=ttl_seconds)
         return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"])
 
     def list(self, *, user_id: str | None = None) -> builtins.list[ApprovalRequest]:
@@ -21,6 +21,14 @@ class ApprovalStore:
         except ApprovalNotFoundError:
             return None
         return ApprovalRequest(id=view["id"], module_id=view["module_id"], action_type=view["action_type"], payload=view["payload"], status=view["status"])
+
+    def full_view(self, item_id: str) -> dict:
+        """The full Module 0 view (user_id, approved_by, decided_at, expires_at included). Raises ApprovalNotFoundError."""
+        return default_service().get(item_id)
+
+    def consume_effect(self, item_id: str, **kwargs) -> dict:
+        """One-shot permit for the exact reviewed request; see Module 0 consume_effect."""
+        return default_service().consume_effect(item_id, **kwargs)
 
     def register_callback(self, item_id: str, callback) -> None:
         """Run callback after Module 0 records a terminal decision."""

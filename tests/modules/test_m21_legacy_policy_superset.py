@@ -101,7 +101,9 @@ def test_local_action_gates_comms_verb_and_blocks_standing_no():
     with pytest.raises(ValueError):
         asyncio.run(svc.local_action("g", {"kind": "self_bot_post"}))
     assert client.executed == []
-    # with an approval token the gated verb may proceed; a plain read is never gated
-    asyncio.run(svc.local_action("g", {"kind": "dm"}, "tok"))
+    # CONVERTED (slice 15): an arbitrary token no longer lets the gated verb proceed (dm is blocked by the legacy policy before any approval check);
+    # a plain read on a legacy goal is still never gated
+    with pytest.raises(ValueError):
+        asyncio.run(svc.local_action("g", {"kind": "dm"}, "tok"))
     asyncio.run(svc.local_action("g", {"kind": "read_file"}))
-    assert [a["kind"] for a in client.executed] == ["dm", "read_file"]
+    assert [a["kind"] for a in client.executed] == ["read_file"]
