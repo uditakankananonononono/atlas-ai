@@ -49,14 +49,12 @@ def test_userinfo_is_stripped_from_recorded_url():
 def test_userinfo_in_reason_text_is_scrubbed():
     err = CollectionError(source="x", url="https://h.test", reason="auth failed for https://u:SECRET-PW@h.test/p")
     assert "SECRET-PW" not in err.reason
-    assert "[REDACTED]@" in err.reason
+    assert "https://h.test/p" in err.reason  # URL scrub now strips userinfo entirely
 
-def test_fragment_left_unchanged_characterization():
-    # Characterization of a documented residual (not owner-accepted):
-    # fragments are not redacted.
-    # Recorded request URLs do not carry OAuth-style fragment tokens today.
+def test_fragment_tokens_now_redacted():
+    # Enumerated token-bearing fragments are now redacted at recording time.
     url = "https://h.test/cb#token=FRAG-SECRET"
-    assert CollectionError(source="x", url=url, reason="r").url == url
+    assert "FRAG-SECRET" not in CollectionError(source="x", url=url, reason="r").url
 
 def test_ipv6_brackets_and_port_preserved_when_redacting():
     # Regression: rebuilding the netloc from urlsplit().hostname drops IPv6
