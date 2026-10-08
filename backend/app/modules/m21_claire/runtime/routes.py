@@ -151,13 +151,15 @@ def resolve_effect(goal_id: str, effect_id: str, body: ResolveIn, tenant: Tenant
     """An approver (not the goal's actor, unless self-approval is enabled) states what really happened to an effect
     whose outcome is unknown. committed: it happened, never re-run. absent: it did not happen, so the same call may be
     retried with a fresh exact approval. The resolver is recorded on the journal row.
-    NOTE: a goal's designated_approvers list does NOT apply here (it binds new gate grants only, by design in this slice)."""
+    A goal's designated_approvers list applies here exactly as it does to approvals (403 approver_not_designated)."""
     require_approver(tenant)
     try:
         outcome = store.resolve_effect(goal_id, effect_id, body.outcome, receipt={"content": {"resolved_by_owner": True}},
                                        tenant_id=tenant.tenant_id, resolver_id=tenant.actor_id, require_not_running=True)
     except SelfApprovalRefused:
         raise HTTPException(403, "self_approval_refused") from None
+    except ApproverNotDesignated:
+        raise HTTPException(403, "approver_not_designated") from None
     if outcome == "not_found":
         raise HTTPException(404, "effect not found")
     if outcome == "goal_running":

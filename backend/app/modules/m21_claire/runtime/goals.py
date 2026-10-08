@@ -131,9 +131,9 @@ NOT_GRANTABLE = {"completed", "blocked", "failed", "exhausted", "not_accepted", 
 class ApproverNotDesignated(PermissionError):
     """The goal names its approvers and this principal is not one of them. Carries no principal ids.
 
-    SCOPE: designated approvers govern NEW GATE GRANTS (grant()) ONLY. resolve_effect attestations (committed/absent for an
-    unknown effect) are deliberately NOT bound to the list in this slice: an approver-role principal outside the list can still
-    declare an unknown effect committed or absent. That is a known, pinned limit (see the slice 10 tests), not an oversight."""
+    SCOPE: designated approvers govern new gate grants (grant()) AND owner attestations of an unknown effect (resolve_effect with
+    a tenant). The runtime's own reconcile path (tenant_id=None, tool-proven outcomes) is not an owner attestation and is not
+    bound. The self-approve flag never waives the list."""
 
 
 MAX_DESIGNATED = 20
@@ -380,7 +380,10 @@ class GoalStore:
         """intent|unknown -> committed | absent. Returns resolved | not_found | not_pending | goal_running.
         With tenant_id (an owner-authority call) a resolver_id is REQUIRED and must differ from the goal's own actor
         unless owner_may_self_approve; the resolver is recorded. Without tenant_id (the worker's own reconcile) the
-        resolver is recorded as system:reconcile. Raises SelfApprovalRefused."""
+        resolver is recorded as system:reconcile. Raises SelfApprovalRefused, or ApproverNotDesignated when the goal names its
+        approvers and the resolver is not one (owner path only; only the internal tenant_id=None reconcile path is exempt,
+        never a resolver string). Precedence for the owner path: not_found, self-approval, goal_running, not_pending, then
+        designation, so an outsider gets the same answers as before except where the attestation would have taken effect."""
         if outcome not in ("committed", "absent"):
             raise ValueError("bad outcome")
         if tenant_id is not None and not (isinstance(resolver_id, str) and resolver_id.strip()):
@@ -394,8 +397,24 @@ class GoalStore:
                 return "not_found"
             if tenant_id is not None and resolver_id == row.actor_id and not self.owner_may_self_approve:
                 raise SelfApprovalRefused("the goal's own actor cannot resolve its effect")
+            raw = None
+            if tenant_id is not None:
+                # Owner path: take the goal's write lock (a real no-op UPDATE, bound to the effect's own goal/tenant/actor and with
+                # NO status predicate: a terminal goal can keep an unknown effect that still needs resolving), then read the
+                # designation in this same transaction. Inconsistent goal/effect ownership answers not_found and changes nothing.
+                locked = s.execute(update(GoalRow).where(GoalRow.id == row.goal_id, GoalRow.tenant_id == row.tenant_id,
+                                   GoalRow.actor_id == row.actor_id).values(updated_at=GoalRow.updated_at))
+                if locked.rowcount != 1:
+                    return "not_found"
+                raw = s.scalars(select(GoalRow.designated_approvers).where(GoalRow.id == row.goal_id)).first()
             if require_not_running and s.scalars(select(GoalRow.status).where(GoalRow.id == goal_id)).first() == "running":
                 return "goal_running"
+            if tenant_id is not None:
+                state = s.scalars(select(EffectRow.state).where(EffectRow.id == effect_id)).first()
+                # Order is deliberate: existing answers (not_found, self-approval, goal_running, not_pending) are unchanged for an
+                # outsider; designation is checked only where the attestation would otherwise take effect.
+                if state in PENDING and raw is not None and resolver_id not in _designated_or_none(raw):
+                    raise ApproverNotDesignated("resolver is not designated for this goal")
             res = s.execute(update(EffectRow).where(EffectRow.id == effect_id, EffectRow.state.in_(PENDING))
                             .values(state=outcome, receipt_json=json.dumps(receipt) if outcome == "committed" and receipt is not None else None,
                                     resolved_by=resolver_id if tenant_id is not None else "system:reconcile",
