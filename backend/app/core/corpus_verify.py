@@ -2,13 +2,14 @@
 import argparse,hashlib,json,sqlite3
 from pathlib import Path
 from urllib.parse import urlsplit,parse_qs
-from .public_corpus import CARD,DATASET,CONFIGS
+from .public_corpus import CARD,DATASET,CONFIGS,source_spec
 
 def verify(db_path,export_path):
  export=Path(export_path);manifest=json.loads(export.with_suffix(export.suffix+'.manifest.json').read_text())
  key=manifest['selection'];config,split=key.split('/')
  if config not in CONFIGS or split not in {'train','validation','test'}:raise ValueError('unsupported dataset selection')
- if manifest['dataset']!=DATASET or manifest['card']!=CARD or manifest['training_performed'] is not False:raise ValueError('manifest provenance mismatch')
+ dataset,card,remote_config,text_field,license_note=source_spec(config)
+ if manifest['dataset']!=dataset or manifest['card']!=card or manifest['training_performed'] is not False:raise ValueError('manifest provenance mismatch')
  if hashlib.sha256(export.read_bytes()).hexdigest()!=manifest['export_sha256']:raise ValueError('export checksum mismatch')
  # URI mode=ro prevents creation/writes to the source database.
  with sqlite3.connect(Path(db_path).resolve().as_uri()+'?mode=ro',uri=True) as db:
@@ -19,7 +20,7 @@ def verify(db_path,export_path):
  for ordinal,text,digest,source,stamp in stored:
   if hashlib.sha256(text.encode()).hexdigest()!=digest:raise ValueError('stored text checksum mismatch')
   url=urlsplit(source);query=parse_qs(url.query)
-  if url.scheme!='https' or url.netloc!='datasets-server.huggingface.co' or url.path!='/rows' or url.username or query.get('dataset')!=[DATASET] or query.get('config')!=[config] or query.get('split')!=[split]:raise ValueError('stored source mismatch')
+  if url.scheme!='https' or url.netloc!='datasets-server.huggingface.co' or url.path!='/rows' or url.username or query.get('dataset')!=[dataset] or query.get('config')!=[remote_config] or query.get('split')!=[split]:raise ValueError('stored source mismatch')
   offset=int(query['offset'][0]);length=int(query['length'][0])
   if not offset<=ordinal<offset+length:raise ValueError('row outside source page')
   if text.strip():expected[ordinal]=(text,digest,source,stamp)
@@ -28,7 +29,7 @@ def verify(db_path,export_path):
   row=json.loads(line);ordinal=row['row_index']
   if ordinal in seen or ordinal not in expected:raise ValueError('duplicate or unexpected export ordinal')
   seen.add(ordinal)
-  if (row['text'],row['sha256'],row['source'],row['fetched_at'])!=expected[ordinal] or row['dataset_card']!=CARD or row['selection']!=key or not row['license'].startswith('CC-BY-SA'):raise ValueError('export correspondence mismatch')
+  if (row['text'],row['sha256'],row['source'],row['fetched_at'])!=expected[ordinal] or row['dataset_card']!=card or row['selection']!=key or row['license']!=license_note:raise ValueError('export correspondence mismatch')
  if seen!=set(expected):raise ValueError('export missing rows')
  if manifest['rows_total_in_db']!=len(stored) or manifest['next_offset']!=cursor[0] or manifest['nonempty_rows_exported']!=len(seen):raise ValueError('manifest count mismatch')
  return {'status':'verified','selection':key,'stored_rows_verified':len(stored),'nonempty_export_rows_verified':len(seen),'next_offset':cursor[0],'export_sha256':manifest['export_sha256'],'training_verified':False}
