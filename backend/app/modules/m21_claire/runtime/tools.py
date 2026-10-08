@@ -56,12 +56,18 @@ class ReadOnlyToolRegistry:
 
     @staticmethod
     def _fingerprint(tool: Tool) -> tuple:
-        return (tool.name, tool.risk, type(tool), tool.spends_money, tool.sends_to_person)
+        def tag(v: Any) -> tuple:
+            return (type(v).__name__, v)  # type-preserving: True != 1, False != 0
+        return (tool.name, tool.risk, type(tool), tag(tool.spends_money), tag(tool.sends_to_person))
 
     def risk_intact(self, name: str) -> bool:
         """True only if name, risk, class and effect declarations still equal what was registered."""
         tool = self._tools.get(name)
-        return tool is not None and self._trusted[name] == self._fingerprint(tool)
+        if tool is None:
+            return False
+        if any(type(getattr(tool, a)) not in (bool, type(None)) for a in ("spends_money", "sends_to_person")):
+            return False
+        return self._trusted[name] == self._fingerprint(tool)
 
     def get(self, name: str) -> Tool | None:
         return self._tools.get(name)

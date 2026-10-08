@@ -279,6 +279,22 @@ def test_effect_metadata_mutation_on_a_never_refused_tool_is_also_refused(store)
     assert r.risk_intact("update_row") is False
 
 
+@pytest.mark.parametrize("attr", ["sends_to_person", "spends_money"])
+@pytest.mark.parametrize("value", [1, 0, 1.0, "true", "", [], 2])
+def test_type_equal_but_not_bool_mutation_is_refused_and_tool_never_runs(store, attr, value):
+    """Reviewer reproduction: True == 1 so a tuple == comparison passed; fingerprint is now type-preserving."""
+    t = make("update_row", risk=ToolRisk.WRITE)
+    setattr(t, attr, True)
+    r = registry(store, t)
+    setattr(t, attr, value)
+    assert r.risk_intact("update_row") is False
+    with pytest.raises(PermissionError):
+        run(r.execute(1, "update_row", {"target": "bob"}))
+    with pytest.raises(PermissionError):
+        run(r.execute(1, "update_row", {"target": "bob"}, Principal("t1", "a1", goal(store))))
+    assert RAN == []
+
+
 @pytest.mark.parametrize("bad", [0, 1, "false", "", {}, [], "True"])
 def test_declared_effects_must_be_exactly_bool_or_none(store, bad):
     for attr in ("spends_money", "sends_to_person"):
