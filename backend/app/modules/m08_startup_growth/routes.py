@@ -3,7 +3,8 @@ from fastapi import APIRouter,Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from app.core.approvals import approvals
 from .schemas import *
-from .service import Service,NotFoundError
+from .service import NotFoundError
+from .runtime_service import Service
 from .sql_repository import Repository
 router=APIRouter(prefix="/startup-growth",tags=["startup-growth"])
 def get_service(tenant:TenantContext=Depends(require_tenant)):return Service(Repository(tenant.tenant_id),approvals)

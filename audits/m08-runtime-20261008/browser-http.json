@@ -1,0 +1,36 @@
+{
+  "literal_text_exact": true,
+  "no_dialogs": true,
+  "no_page_errors": true,
+  "desktop_and_mobile_no_overflow": true,
+  "http": [
+    {
+      "input": "email=bad",
+      "status": 400,
+      "body": {
+        "error": "invalid email"
+      }
+    },
+    {
+      "input": "email=person%40example.com",
+      "status": 503,
+      "body": {
+        "error": "waitlist unavailable"
+      }
+    },
+    {
+      "input": "not-json",
+      "status": 400,
+      "body": {
+        "error": "invalid form"
+      }
+    },
+    {
+      "input": "email=a%40b%40c.com",
+      "status": 400,
+      "body": {
+        "error": "invalid email"
+      }
+    }
+  ]
+}

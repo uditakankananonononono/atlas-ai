@@ -1,0 +1,39 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____________ test_mounted_generated_archive_contains_build_runtime _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-4/test_mounted_generated_archive0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f8d4bde6120>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f8d4bc20f40>
+
+    def test_mounted_generated_archive_contains_build_runtime(tmp_path,monkeypatch,oidc_auth_headers):
+        monkeypatch.setenv('ATLAS_DEV_NO_AUTH','0');monkeypatch.setenv('ATLAS_ENV','production')
+        engine=create_engine('sqlite:///'+str(tmp_path/'builds.db'))
+        monkeypatch.setattr(sql_repository,'engine',engine)
+        sessions=sessionmaker(bind=engine);Base.metadata.create_all(engine)
+        monkeypatch.setattr(routes,'Repository',lambda tenant_id:sql_repository.Repository(tenant_id,sessions))
+        app=FastAPI();app.include_router(routes.router)
+        with TestClient(app) as client:
+            response=client.post('/startup-growth/landing-pages',json=dict(project_id='p',product_name='Atlas',hero='Ship safely',features=['A']),headers=oidc_auth_headers('tenant-a'))
+            assert response.status_code==201
+        row=sql_repository.Repository('tenant-a',sessions).get(response.json()['id'])
+        with zipfile.ZipFile(BytesIO(row.archive)) as z:
+>           assert {'package.json','app/layout.tsx','tsconfig.json','tailwind.config.ts'} <= set(z.namelist())
+E           AssertionError: assert {'app/layout....sconfig.json'} <= {'.env.exampl...app/page.tsx'}
+E             
+E             Extra items in the left set:
+E             'package.json'
+E             'tailwind.config.ts'
+E             'tsconfig.json'
+E             'app/layout.tsx'
+
+tests/modules/test_m08_runtime_regression.py:22: AssertionError
+=============================== warnings summary ===============================
+../m08-py312/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/sandbox/m08-py312/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m08_runtime_regression.py::test_mounted_generated_archive_contains_build_runtime
+1 failed, 1 warning in 0.42s
