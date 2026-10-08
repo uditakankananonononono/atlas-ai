@@ -4,6 +4,8 @@ import uuid
 from dataclasses import dataclass,field
 from typing import Any,Protocol
 from app.core.models import ApprovalRequest,ApprovalStatus
+from .models import ActionRequest
+from .policy import ActionPolicy
 from app.modules.m20_general_cognitive_worker.service import Service as CognitiveService,Run,State
 MODULE_ID=21
 class LocalClient(Protocol):
@@ -46,6 +48,10 @@ class Service:
   if kind not in capabilities:raise ValueError("local capability was not granted by the user")
   preview=await self.local_client.preview(action)
   high_risk=kind in {"delete_file","install_package","uninstall_package","run_command","run_workflow","deploy_preview","connect_tool","send_message","spend_money"} or action.get("external_effect",False)
+  tags=action.get("policy_tags",()) if isinstance(action,dict) else ()
+  verdict=ActionPolicy().evaluate(ActionRequest("local",str(kind),{"policy_tags":list(tags) if isinstance(tags,(list,tuple,set,frozenset)) else []},"local action"))
+  if not verdict.allowed:raise ValueError("action conflicts with Claire boundaries")
+  high_risk=high_risk or verdict.requires_approval
   if high_risk and not approval_token:
    return self.request_environment_change(goal_id,kind,preview)
   result=await self.local_client.execute(action,approval_token)
