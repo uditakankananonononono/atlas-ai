@@ -238,7 +238,7 @@ class Service:
         ids={w.id for w in widgets};kinds={w.kind for w in widgets}
         for d in self.ADDED_WIDGETS:
             if d["kind"] not in kinds and d["id"] not in ids:widgets.append(WidgetConfig(**{**d,"position":len(widgets)}))
-        return DashboardView(widgets=widgets,updated_at=at)
+        return DashboardView(widgets=widgets,updated_at=at,version=int(layout.get("version",0)))
     def save_view(self,data:DashboardViewIn):
         saver=getattr(self.repository,"save_view",None)
         if not saver:raise RuntimeError("repository does not support view preferences")
@@ -250,8 +250,10 @@ class Service:
             if w.kind==WidgetKind.KPI_CARD and w.kpi_id is not None and w.kpi_id not in known:raise ValueError(f"unknown kpi_id {w.kpi_id}")
         ordered=sorted(data.widgets,key=lambda w:w.position)
         for i,w in enumerate(ordered):w.position=i
-        now=_utcnow();saver({"widgets":[w.model_dump(mode="json") for w in ordered]},now)
-        return DashboardView(widgets=ordered,updated_at=now)
+        now=_utcnow();layout={"widgets":[w.model_dump(mode="json") for w in ordered]}
+        # base_version makes the write compare-and-set; without it the old last-write-wins behaviour stays
+        version=saver(layout,now,expect_version=data.base_version) if data.base_version is not None else saver(layout,now)
+        return DashboardView(widgets=ordered,updated_at=now,version=version if isinstance(version,int) else 0)
     # --- approval expiry sweep ---
     def sweep_expired(self,now=None):
         """Flip pending approvals past their expiry to EXPIRED. Returns the expired approvals."""

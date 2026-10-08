@@ -2,7 +2,7 @@ import asyncio,json
 from fastapi import Header, APIRouter,Depends,HTTPException,Request
 from fastapi.responses import StreamingResponse
 from app.auth.context import TenantContext,require_tenant
-from .repository import SqlDashboardRepository
+from .repository import SqlDashboardRepository,ViewVersionConflict
 from .schemas import *
 from .service import Service
 router=APIRouter(prefix="/executive-dashboard",tags=["executive-dashboard"])
@@ -75,6 +75,7 @@ def get_view(service:Service=Depends(get_service)):return service.get_view()
 def save_view(data:DashboardViewIn,service:Service=Depends(get_service)):
     try:return service.save_view(data)
     except ValueError as e:raise HTTPException(422,str(e))
+    except ViewVersionConflict as e:raise HTTPException(409,{"detail":"view changed since base_version","current_version":e.current})
     except RuntimeError as e:raise HTTPException(501,str(e))
 @router.post("/approvals/sweep",response_model=list[Approval])
 def sweep(service:Service=Depends(get_service)):

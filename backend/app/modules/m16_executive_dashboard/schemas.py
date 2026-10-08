@@ -39,8 +39,8 @@ class BulkApprovalDecision(BaseModel):approval_ids:list[str]=Field(min_length=1,
 class BulkDecisionResult(BaseModel):decided:list[Approval];skipped:list[dict[str,str]]
 class WidgetKind(str,Enum):KPI_CARD="kpi_card";MODULE_STATUS="module_status";BLOCKERS="blockers";TIMELINE="timeline";APPROVALS="approvals";ALERTS="alerts";DIGEST="digest";RERUN_SCHEDULES="rerun_schedules"
 class WidgetConfig(BaseModel):id:str=Field(min_length=1,max_length=80);kind:WidgetKind;kpi_id:str|None=None;visible:bool=True;position:int=Field(0,ge=0)
-class DashboardView(BaseModel):widgets:list[WidgetConfig];updated_at:datetime
-class DashboardViewIn(BaseModel):widgets:list[WidgetConfig]=Field(max_length=50)
+class DashboardView(BaseModel):widgets:list[WidgetConfig];updated_at:datetime;version:int=0
+class DashboardViewIn(BaseModel):widgets:list[WidgetConfig]=Field(max_length=50);base_version:int|None=Field(default=None,ge=0)
 # --- planning & measurement entities (feature rows 388-399) ---
 WORK_ITEM_STATUSES=("backlog","ready","in_progress","review","done")
 class WorkItemIn(BaseModel):title:str=Field(min_length=1,max_length=300);item_type:str=Field("feature",max_length=40);estimate:float|None=Field(None,ge=0);reach:float|None=None;impact:float|None=None;confidence:float|None=Field(None,ge=0,le=1);effort:float|None=Field(None,ge=0);value:float|None=Field(None,ge=0);sprint_id:str|None=None;roadmap_id:str|None=None;planned_start:datetime|None=None;planned_end:datetime|None=None
