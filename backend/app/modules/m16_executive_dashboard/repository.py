@@ -166,6 +166,11 @@ class SqlDashboardRepository:
     def kpi_value_at_or_before(self,kpi_id,window_hours,moment):
         with self.sessions() as db:
             return db.scalar(select(KpiPointRow.value).where(KpiPointRow.tenant_id==self.tenant_id,KpiPointRow.kpi_id==kpi_id,KpiPointRow.window_hours==window_hours,KpiPointRow.recorded_at<=moment).order_by(KpiPointRow.recorded_at.desc(),KpiPointRow.pk.desc()).limit(1))
+    def kpi_history(self,kpi_id,window_hours,before,limit=200):
+        """Recorded points strictly before `before`, newest first, at most `limit`."""
+        with self.sessions() as db:
+            rows=db.execute(select(KpiPointRow.recorded_at,KpiPointRow.value).where(KpiPointRow.tenant_id==self.tenant_id,KpiPointRow.kpi_id==kpi_id,KpiPointRow.window_hours==window_hours,KpiPointRow.recorded_at<before).order_by(KpiPointRow.recorded_at.desc(),KpiPointRow.pk.desc()).limit(limit)).all()
+            return [(r[0],float(r[1]) if r[1] is not None else float('nan')) for r in rows]
     def save_kpi_definition(self,d,at):
         with self.sessions.begin() as db:
             r=db.scalar(select(KpiDefinitionRow).where(KpiDefinitionRow.tenant_id==self.tenant_id,KpiDefinitionRow.id==d.id))
