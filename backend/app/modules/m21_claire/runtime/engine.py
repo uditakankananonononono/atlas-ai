@@ -83,6 +83,7 @@ class Engine:
         except asyncio.CancelledError:
             if not task.done():
                 task.cancel()
+            bounded.detach(task)  # outer cancellation: do not wait, but never leave an unretrieved late exception
             raise
 
     async def run(self, goal: str, *, cancel: Event | None = None, principal: Principal | None = None,
