@@ -178,3 +178,61 @@ def test_NEW_timeout_not_below_lease_refuses_to_run(tmp_path, clk):
 def test_NEW_call_timeout_must_be_a_positive_bounded_number(bad):
     with pytest.raises(ValueError):
         ReadOnlyToolRegistry(call_timeout=bad)
+
+
+# ---- reviewer repair: last_outcome must reflect what settle actually did -------------------------
+
+class ModelDownAfterTick:
+    def __init__(self, clk, dt): self.clk, self.dt = clk, dt
+    async def decide(self, messages):
+        from app.modules.m21_claire.runtime.engine import ModelUnavailable
+        self.clk[0] += timedelta(seconds=self.dt); raise ModelUnavailable()
+
+
+def test_PROTECTION_e_final_after_expiry_reports_lease_lost_and_leaves_goal_running(tmp_path, clk):
+    s = mkstore(tmp_path, clk, lease=10); gid = s.create("t1", "a1", "p", CRIT, 3)
+    w = worker(s, Ticking(clk, 11, [final()]), reg(Lookup(), timeout=1), "w1")
+    run(w.run_once())
+    assert w.last_outcome == "lease_lost" and s.get("t1", "a1", gid)["status"] == "running"
+    s.close()
+
+
+def test_PROTECTION_e2_model_error_after_expiry_reports_lease_lost(tmp_path, clk):
+    s = mkstore(tmp_path, clk, lease=10); gid = s.create("t1", "a1", "p", CRIT, 3)
+    w = worker(s, ModelDownAfterTick(clk, 11), reg(Lookup(), timeout=1), "w1")
+    run(w.run_once())
+    assert w.last_outcome == "lease_lost" and s.get("t1", "a1", gid)["status"] == "running"
+    s.close()
+
+
+def test_PROTECTION_e3_replaced_worker_final_reports_lease_lost_and_does_not_touch_the_new_owner(tmp_path, clk):
+    s = mkstore(tmp_path, clk, lease=10); gid = s.create("t1", "a1", "p", CRIT, 3)
+    taken = {}
+    def hook(n):  # while w1's model call is in flight, the lease runs out and w2 claims the goal
+        taken["c2"] = s.claim("w2")
+    w = worker(s, Ticking(clk, 11, [final()], hook), reg(Lookup(), timeout=1), "w1")
+    run(w.run_once())
+    assert taken["c2"] is not None
+    assert w.last_outcome == "lease_lost" and s.get("t1", "a1", gid)["status"] == "running"
+    assert s.renew(taken["c2"]) is True  # the new owner's lease is intact
+    s.close()
+
+
+def test_PROTECTION_e4_timeout_guard_branch_reports_lease_lost_when_settle_is_refused(tmp_path, clk):
+    s = mkstore(tmp_path, clk, lease=10); gid = s.create("t1", "a1", "p", CRIT, 3)
+    def factory(c):
+        clk[0] += timedelta(seconds=11)  # lease expires before the guard's settle
+        return Engine(Ticking(clk, 0, [final()]), reg(Lookup(), timeout=10.0), max_steps=3)
+    w = Worker(s, factory, "w1")
+    run(w.run_once())
+    assert w.last_outcome == "lease_lost" and s.get("t1", "a1", gid)["status"] == "running"
+    s.close()
+
+
+@pytest.mark.parametrize("decisions,status", [([call("lookup"), final()], "completed"), ([final()], "not_accepted")])
+def test_PROTECTION_e5_outcome_equals_the_accepted_status_on_the_normal_path(tmp_path, clk, decisions, status):
+    s = mkstore(tmp_path, clk, lease=10); gid = s.create("t1", "a1", "p", CRIT, 3)
+    w = worker(s, Ticking(clk, 1, decisions), reg(Lookup()), "w1")
+    run(w.run_once())
+    assert w.last_outcome == status == s.get("t1", "a1", gid)["status"]
+    s.close()

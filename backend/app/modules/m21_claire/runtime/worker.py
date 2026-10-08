@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Callable
+from typing import Any, Callable
 from .acceptance import evaluate
 from .engine import Engine
 from .gates import Principal
@@ -15,7 +15,7 @@ class Worker:
 
     def __init__(self, store: GoalStore, engine_factory: EngineFactory, worker_id: str):
         self.store, self.engine_factory, self.worker_id = store, engine_factory, worker_id
-        self.last_outcome: str | None = None  # 'settled', 'blocked', 'lease_lost' (nothing settled) or None
+        self.last_outcome: str | None = None  # the status the store accepted, 'lease_lost' (nothing settled), or None
 
     async def run_once(self) -> str | None:
         claim = self.store.claim(self.worker_id)
@@ -25,26 +25,28 @@ class Worker:
         engine = self.engine_factory(claim)
         if engine.tools.call_timeout >= self.store.lease_seconds:
             # A call allowed to block past the lease defeats renewal: refuse to run at all.
-            self.store.settle(claim, "blocked", blocker="timeout_not_below_lease", report={}, verdict=None)
-            self.last_outcome = "blocked"
+            self._settle(claim, "blocked", blocker="timeout_not_below_lease", report={}, verdict=None)
             return claim.goal_id
         report = await engine.run(claim.purpose, principal=principal, lease=lambda: self.store.renew(claim))
         dump = report.model_dump()
         if report.stop_reason == "lease_lost":
-            self.last_outcome = "lease_lost"  # another worker owns it, or it was cancelled: settle nothing
+            self.last_outcome = "lease_lost"  # another worker owns it, or the lease expired: settle nothing
             return claim.goal_id
-        self.last_outcome = "settled"
         if any(r.reason == "approval_required" for r in report.refusals):
             # A gated action was refused: the goal waits for the owner; it can never be completed from this run.
-            self.store.settle(claim, "awaiting_review", blocker="approval_required", report=dump, verdict=None)
+            self._settle(claim, "awaiting_review", blocker="approval_required", report=dump, verdict=None)
         elif report.stop_reason in {"model_unavailable", "model_invalid_output"}:
-            self.store.settle(claim, "blocked", blocker=report.stop_reason, report=dump, verdict=None)
+            self._settle(claim, "blocked", blocker=report.stop_reason, report=dump, verdict=None)
         elif report.stop_reason in {"step_limit", "replan_limit"}:
-            self.store.settle(claim, "exhausted", blocker=report.stop_reason, report=dump, verdict=None)
+            self._settle(claim, "exhausted", blocker=report.stop_reason, report=dump, verdict=None)
         elif report.stop_reason == "cancelled":
-            self.store.settle(claim, "cancelled", blocker=None, report=dump, verdict=None)
+            self._settle(claim, "cancelled", blocker=None, report=dump, verdict=None)
         else:
             verdict = evaluate(claim.criteria, report)
-            self.store.settle(claim, "completed" if verdict.accepted else "not_accepted",
-                              blocker=None if verdict.accepted else "acceptance_not_met", report=dump, verdict=verdict.model_dump())
+            self._settle(claim, "completed" if verdict.accepted else "not_accepted",
+                         blocker=None if verdict.accepted else "acceptance_not_met", report=dump, verdict=verdict.model_dump())
         return claim.goal_id
+
+    def _settle(self, claim: Claim, status: str, **kw: Any) -> None:
+        """last_outcome reflects what the store actually did: the settled status, or lease_lost if settle was refused."""
+        self.last_outcome = status if self.store.settle(claim, status, **kw) else "lease_lost"
