@@ -206,6 +206,9 @@ def recall_facts(request: SemanticRecallRequest, runtime: Any = Depends(get_runt
         return [{"fact": fact.model_dump(mode="json"), "score": score}
                 for fact, score in runtime.recall_facts(request.query, limit=request.limit)]
     except ValueError as exc:
+        from .chroma_memory import FactIndexPending
+        if isinstance(exc, FactIndexPending):
+            raise HTTPException(409, {'status': exc.status, 'detail': str(exc)}) from exc
         raise HTTPException(422, str(exc)) from exc
 
 
