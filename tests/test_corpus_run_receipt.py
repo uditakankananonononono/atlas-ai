@@ -75,3 +75,16 @@ def test_actual_nongit_install_records_code_hashes_and_runs(tmp_path):
  m=json.loads(receipt.read_text());assert m['source_head'] is None and m['provenance_method']=='module_sha256'
  assert m['status']=='verified' and m['result']['stored_rows_verified']==600
  assert 'public_corpus.py' in m['module_sha256'] and all(len(h)==64 for h in m['module_sha256'].values())
+def test_unrelated_parent_git_not_claimed(tmp_path):
+ import subprocess,shutil,os,sys
+ subprocess.run(['git','init','-q',str(tmp_path)],check=True)
+ subprocess.run(['git','-C',str(tmp_path),'-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','unrelated'],check=True)
+ source=Path(__file__).resolve().parents[1]/'backend'/'app'/'core';package=tmp_path/'installed'/'app'/'core';package.mkdir(parents=True)
+ (package.parent/'__init__.py').write_text('');(package/'__init__.py').write_text('')
+ for path in list(source.glob('corpus*.py'))+[source/'public_corpus.py']:shutil.copyfile(path,package/path.name)
+ db=Path('/tmp/corpus-review/corpus.sqlite')
+ if not db.exists():pytest.skip('actual receipt needed')
+ receipt=tmp_path/'receipt';env={**os.environ,'PYTHONPATH':str(tmp_path/'installed')}
+ r=subprocess.run([sys.executable,'-m','app.core.corpus_run_receipt','--db',str(db),'--export','/tmp/corpus-review/train.jsonl','--receipt',str(receipt)],cwd=tmp_path,env=env,capture_output=True,text=True)
+ assert r.returncode==0,r.stderr
+ assert json.loads(receipt.read_text())['source_head'] is None
