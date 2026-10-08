@@ -129,11 +129,17 @@ def test_embedding_failure_and_model_change_fail_without_writes(engine):
     assert [f.id for f in runtime.repo.list_facts()]==[original.id]
 
 
-def test_database_vector_overflow_rolls_back_authoritative_fact(engine):
+def test_extreme_finite_embeddings_normalize_to_finite_nonzero_pgvector(engine):
     runtime=make_runtime(engine,'a')
-    runtime.semantic.embedder.embed=lambda text:[1e100]+[0.]*1023
-    with pytest.raises(sa.exc.DBAPIError):runtime.remember_fact(SemanticFact(content='overflow'))
-    assert runtime.repo.list_facts()==[]
+    for value in (1e-100, 1e100):
+        runtime.semantic.embedder.embed=lambda text:[value]+[0.]*1023
+        fact=runtime.remember_fact(SemanticFact(content='extreme'))
+        hits=runtime.recall_facts('query')
+        assert all(__import__('math').isfinite(score) for _,score in hits)
+        assert any(found.id==fact.id and score==pytest.approx(1.) for found,score in hits)
+    runtime.semantic.embedder.embed=lambda text:[0.]*1024
+    with pytest.raises(ValueError):runtime.remember_fact(fact.model_copy(update={'content':'bad update'}))
+    assert runtime.repo.list_facts()[-1].content=='extreme'
 
 
 def test_missing_vector_table_or_extension_fails_binding(tmp_path):
@@ -145,3 +151,17 @@ def test_missing_vector_table_or_extension_fails_binding(tmp_path):
         with db.begin() as conn:conn.execute(sa.text('CREATE EXTENSION vector'))
         with pytest.raises(sa.exc.DBAPIError):make_runtime(db,'a')
     finally:db.dispose();server.cleanup()
+
+
+def test_extra_or_missing_vector_identity_refused_after_binding(engine):
+    runtime=make_runtime(engine,'a');fact=runtime.remember_fact(SemanticFact(content='canary'))
+    with sa.orm.Session(engine) as db:
+        row=db.get(MemoryEmbeddingRow,vector_id('a',fact.id))
+        db.add(MemoryEmbeddingRow(id='arbitrary',tenant_id='a',namespace=row.namespace,
+                                 text=row.text,metadata_json=row.metadata_json,embedding=row.embedding))
+        db.commit()
+    with pytest.raises(ValueError,match='identity'):runtime.recall_facts('canary')
+    with pytest.raises(ValueError,match='identity'):make_runtime(engine,'a')
+    with sa.orm.Session(engine) as db:
+        db.delete(db.get(MemoryEmbeddingRow,'arbitrary'));db.delete(db.get(MemoryEmbeddingRow,vector_id('a',fact.id)));db.commit()
+    with pytest.raises(ValueError,match='identity'):runtime.recall_facts('canary')

@@ -1,4 +1,5 @@
 """Opt-in M20 semantic recall. SQL facts are authoritative, vectors are atomic."""
+import struct
 import math
 import hashlib
 import uuid
@@ -45,6 +46,7 @@ class PgVectorSemanticMemory(DurableSemanticMemory):
                     raise ValueError('existing semantic facts require explicit pgvector reindex before binding')
             self._facts[fact.id] = fact
         self._edges = repo.list_edges()
+        self.query('binding validation', limit=1)
 
     def _embed(self, text):
         if self.embedder.model_id != self.model_id:
@@ -52,7 +54,15 @@ class PgVectorSemanticMemory(DurableSemanticMemory):
         vector = embed_snapshot(self.embedder, text)
         if len(vector) != 1024 or not any(vector):
             raise ValueError('pgvector recall requires a nonzero finite 1024D embedding')
-        return vector
+        # pgvector stores float32. Stable unit normalization avoids finite
+        # float64 overflow/underflow changing a nonzero vector into inf/zero.
+        scale = max(abs(value) for value in vector)
+        scaled = [value / scale for value in vector]
+        norm = math.sqrt(math.fsum(value * value for value in scaled))
+        normalized = [struct.unpack('f', struct.pack('f', value / norm))[0] for value in scaled]
+        if not all(math.isfinite(value) for value in normalized) or not any(normalized):
+            raise ValueError('embedding is not representable as a nonzero float32 vector')
+        return normalized
 
     def store(self, fact):
         fact = fact.model_copy(deep=True)
@@ -69,22 +79,39 @@ class PgVectorSemanticMemory(DurableSemanticMemory):
         vector = self._embed(text)
         distance = MemoryEmbeddingRow.embedding.cosine_distance(vector)
         with self.repo._session() as session:
+            # Check the entire tenant namespace, including rows omitted by a
+            # score/limit filter. Never allow extra/missing rows to rank facts.
+            facts = session.scalars(sa.select(FactRow).where(FactRow.tenant_id == self.repo.tenant_id)).all()
+            indexed = session.scalars(sa.select(MemoryEmbeddingRow).where(
+                MemoryEmbeddingRow.tenant_id == self.repo.tenant_id,
+                MemoryEmbeddingRow.namespace == NAMESPACE)).all()
+            expected = {vector_id(self.repo.tenant_id, fact.id): fact for fact in facts}
+            if set(expected) != {row.id for row in indexed}:
+                raise ValueError('semantic vector identity set diverged; explicit reindex required')
+            for indexed_row in indexed:
+                fact = expected[indexed_row.id]
+                metadata = indexed_row.metadata_json
+                if metadata.get('fact_id') != fact.id or metadata.get('sha256') != fingerprint(fact.content) or metadata.get('model_id') != self.model_id:
+                    raise ValueError('semantic vector diverged; explicit reindex required')
+                if not any(indexed_row.embedding) or not all(math.isfinite(float(value)) for value in indexed_row.embedding):
+                    raise ValueError('semantic vector is zero or nonfinite; explicit reindex required')
             # Authoritative fact content must match the indexed snapshot.
-            stmt = sa.select(FactRow, MemoryEmbeddingRow.metadata_json, distance).join(
-                MemoryEmbeddingRow,
-                sa.and_(MemoryEmbeddingRow.metadata_json['fact_id'].as_string() == FactRow.id,
-                        MemoryEmbeddingRow.tenant_id == FactRow.tenant_id)
-            ).where(FactRow.tenant_id == self.repo.tenant_id,
-                    MemoryEmbeddingRow.tenant_id == self.repo.tenant_id,
-                    MemoryEmbeddingRow.namespace == NAMESPACE,
-                    1-distance >= min_score).order_by(distance, FactRow.id).limit(limit)
+            stmt = sa.select(MemoryEmbeddingRow.id, MemoryEmbeddingRow.metadata_json, distance).where(
+                MemoryEmbeddingRow.tenant_id == self.repo.tenant_id,
+                MemoryEmbeddingRow.namespace == NAMESPACE,
+                MemoryEmbeddingRow.id.in_(expected),
+                1-distance >= min_score).order_by(distance, MemoryEmbeddingRow.id).limit(limit)
             results = []
-            for row, metadata, value in session.execute(stmt):
-                if metadata.get('sha256') != fingerprint(row.content) or metadata.get('model_id') != self.model_id:
+            for ident, metadata, value in session.execute(stmt):
+                row = expected[ident]
+                if metadata.get('fact_id') != row.id or metadata.get('sha256') != fingerprint(row.content) or metadata.get('model_id') != self.model_id:
                     raise ValueError('semantic vector diverged from authoritative fact; explicit reindex required')
                 fact = SemanticFact(id=row.id, content=row.content, kind=row.kind,
                                     confidence=row.confidence, decay_rate=row.decay_rate,
                                     provenance=row.provenance_json or {}, created_at=row.created_at,
                                     last_confirmed_at=row.last_confirmed_at)
-                results.append((fact, 1-float(value)))
+                score = 1-float(value)
+                if not math.isfinite(score):
+                    raise ValueError('semantic recall produced a nonfinite score')
+                results.append((fact, score))
             return results
