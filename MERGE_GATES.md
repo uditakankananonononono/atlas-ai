@@ -2,17 +2,16 @@
 
 This prototype is not production clearance. A green local regression does not close the gates below. These gates must remain in the eventual merge commit until the corresponding evidence is recorded and reviewed.
 
-## Production prerequisite: PostgreSQL unknown-hold migration
+## PostgreSQL scratch evidence and production deployment prerequisite
 
-The PostgreSQL unknown-hold migration path is untested. The PostgreSQL-specific canary was skipped because `pgserver` is absent in both available interpreters. SQLite upgrade and hold-preserving downgrade refusal passed. PostgreSQL upgrade, restart retention of unresolved holds, and downgrade refusal while holds remain must be tested before production clearance.
+Independent October 8 scratch PostgreSQL evidence now passes: existing SQLite/PostgreSQL unknown-hold migration suite 2 passed, 0 skipped; new real PostgreSQL reviewed-payload CAS/risk-revision suite 3 passed, 0 skipped. Dependencies installed outside the repository: pgserver 0.1.4 and psycopg 3.3.6. Upgrade, restart retention, hold-preserving downgrade refusal, successful activation and separate-writer CAS rejection are tested locally. Production deployment/rollback configuration and operations remain unverified; scratch tests are not production clearance. Receipts: `audits/rebuild-20261008/postgres-gates/`.
 
 ## Peer PostgreSQL scratch corroboration
 
 The peer reports 87 supplied canaries passed in its isolated checkout of our
 ebba4b3 bundle, including the PostgreSQL migration parameter using its available
 pgserver interpreter. This is attributed corroborating local scratch evidence,
-not our independent reproduction or production verification. The PostgreSQL
-unknown-hold migration production prerequisite remains open.
+not our independent reproduction or production verification. The Production unknown-hold deployment prerequisite remains open; independent local PostgreSQL evidence is now recorded above.
 
 ## Known Alembic revision collision
 
@@ -57,8 +56,8 @@ These bounded comparisons are assessed as stated. They do not close broader prod
 
 The following assessments retain named boundaries; none grants combined production clearance:
 
-- `risk_register`: additive local surface, absent from actual peer b944215; retain tenant-scoped transactional revisions/CAS and detached snapshots. Selected SQLite/runtime/HTTP 31 passed plus one new snapshot/non-authority canary. PostgreSQL multi-writer behavior and independent evidence/authority remain unverified.
-- `htn_planner`: reviewed-payload TOCTOU found and locally fixed with durable hash checking plus exact JSON-snapshot compare-and-set in the activation UPDATE. Two SQLite cross-instance/check-to-write race canaries pass; PostgreSQL multi-writer CAS behavior remains untested. Scoped planner source comparison assessed by preserving stronger local validation/snapshots/bindings and fresh state. Selected suite 54 passed. Semantic applicability, reviewer identity and concurrent durable usage-counter updates remain unverified.
+- `risk_register`: additive local surface, absent from actual peer b944215; retain tenant-scoped transactional revisions/CAS and detached snapshots. Selected SQLite/runtime/HTTP 31 passed plus one new snapshot/non-authority canary. Real scratch PostgreSQL simultaneous-writer revision CAS now passes; production deployment and independent evidence/authority remain unverified.
+- `htn_planner`: reviewed-payload TOCTOU found and locally fixed with durable hash checking plus exact JSON-snapshot compare-and-set in the activation UPDATE. Two SQLite cross-instance/check-to-write race canaries pass; Real scratch PostgreSQL successful and separately committed check-to-update race CAS now pass; production deployment remains unverified. Scoped planner source comparison assessed by preserving stronger local validation/snapshots/bindings and fresh state. Selected suite 54 passed. Semantic applicability, reviewer identity and concurrent durable usage-counter updates remain unverified.
 - `model_ideation`: additive response path assessed; typed unknown flattening to unavailable/503 corrected to ProviderOutcomeUnknown and 409 with retry_allowed=false. No durable cross-request hold/reconciliation is provided by this service API; that broader boundary remains open. Proposed ideas remain unverified.
 - `ActionRow` migration: scoped SQLite additive schema/journal roundtrip assessed (10 selected tests plus 1 migration-only unknown-payload canary). PostgreSQL deployment remains untested. Downgrade drops the journal and is data-destructive, not an automatic uncertainty-preserving recovery path.
 - `safety.py`: scoped source/effect-binding assessment compatible; peer differs only by lacking our two deep-copy protections. Preserve ours. Approval provenance, durable cross-worker token state and complete semantic effect classification remain unverified boundaries.
@@ -80,3 +79,7 @@ Reconciliation does not dispatch, renew approval, supply successful structured o
 ## Scope and publication
 
 The prototype does not include the non-M20 divergent peer commit range. Main merge requires the integration owner's explicit go after review. Publication is separate from local merge approval. No push is authorized by this file. The earlier GitHub incident restriction was lifted by the integration owner's retry-wave signal, and the reviewed commits were published with remote readback. Future incidents require a fresh publication-state check, not reuse of that recovery signal.
+
+## Reviewer provenance design gate
+
+Mounted method activation authenticates tenant membership but has no reviewer-role requirement or durable actor receipt. A matching payload hash authenticates content equality, not independent reviewer identity. Reviewer role, proposer/reviewer independence and audit receipt requirements need an integration-owner decision before implementation. No role policy is inferred from these tests.
