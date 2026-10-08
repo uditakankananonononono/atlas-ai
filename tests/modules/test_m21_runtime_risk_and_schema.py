@@ -58,19 +58,19 @@ def _alembic(db, *args):
 def test_runtime_goals_downgrade_drops_only_an_empty_table(tmp_path):
     db = tmp_path / "d.sqlite"
     assert _alembic(db, "upgrade", "20261008_m21_runtime_goals").returncode == 0
-    assert _alembic(db, "downgrade", "20261008_m16_identity_forward").returncode == 0
+    assert _alembic(db, "downgrade", "20261008_m16_view_version").returncode == 0
     assert "claire_runtime_goals" not in inspect(create_engine(f"sqlite:///{db}")).get_table_names()
     assert _alembic(db, "upgrade", "20261008_m21_runtime_goals").returncode == 0
     store = GoalStore(f"sqlite:///{db}")
     store.create("t", "a", "p", [{"kind": "tool_receipt", "tool": "x", "min_count": 1}], 1)
     store.close()
-    r = _alembic(db, "downgrade", "20261008_m16_identity_forward")
+    r = _alembic(db, "downgrade", "20261008_m16_view_version")
     assert r.returncode != 0 and "holds goal evidence" in r.stderr
     assert "claire_runtime_goals" in inspect(create_engine(f"sqlite:///{db}")).get_table_names()
 
 
 def _prepare_at_previous_head(db):
-    assert _alembic(db, "upgrade", "20261008_m16_identity_forward").returncode == 0
+    assert _alembic(db, "upgrade", "20261008_m16_view_version").returncode == 0
 
 
 def test_upgrade_refuses_a_preexisting_wrong_shape_table(tmp_path):
@@ -82,7 +82,7 @@ def test_upgrade_refuses_a_preexisting_wrong_shape_table(tmp_path):
     r = _alembic(db, "upgrade", "20261008_m21_runtime_goals")
     assert r.returncode != 0 and "incompatible shape" in r.stderr and "missing column tenant_id" in r.stderr
     con = sqlite3.connect(db)
-    assert con.execute("select version_num from alembic_version").fetchone()[0] == "20261008_m16_identity_forward"  # not stamped
+    assert con.execute("select version_num from alembic_version").fetchone()[0] == "20261008_m16_view_version"  # not stamped
     assert [row[1] for row in con.execute("pragma table_info('claire_runtime_goals')")] == ["id"]  # untouched
     con.close()
 
