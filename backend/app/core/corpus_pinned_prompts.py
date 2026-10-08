@@ -1,6 +1,7 @@
 """Fixed CC0 publisher snapshot. No stamping commits onto mutable API rows."""
 import argparse,csv,hashlib,io,json,re,tempfile,os
 from pathlib import Path
+from time import monotonic,sleep
 import httpx
 from urllib.parse import urljoin,urlsplit
 DATASET='fka/prompts.chat'
@@ -13,9 +14,14 @@ def download(output,max_rows=100):
  out=Path(output);manifest=out.with_suffix(out.suffix+'.manifest.json')
  if out.exists() or manifest.exists():raise FileExistsError('new artifacts required')
  urls={name:f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/{name}' for name in ('README.md','prompts.csv')}
- blobs={}
+ blobs={};last_request=None
+ def pace():
+  nonlocal last_request
+  if last_request is not None:sleep(max(0.0,3-(monotonic()-last_request)))
+  last_request=monotonic()
  with httpx.Client(timeout=30,follow_redirects=False) as client:
   for name,url in urls.items():
+   pace()
    with client.stream('GET',url) as initial:
     status=initial.status_code;location=initial.headers.get('location','')
    if status in (301,302,303,307,308):
@@ -25,6 +31,7 @@ def download(output,max_rows=100):
     if parsed_url.scheme!='https' or parsed_url.netloc!='huggingface.co' or parsed_url.path!=expected:raise ValueError('unapproved publisher redirect')
     url=target
    elif status!=200:raise ValueError('publisher file unavailable')
+   pace()
    with client.stream('GET',url) as response:
     response.raise_for_status()
     data=bytearray()
@@ -47,7 +54,7 @@ def download(output,max_rows=100):
     text=row['prompt']
     if not text:raise ValueError('empty publisher prompt')
     stream.write(json.dumps({'text':text,'row_index':ordinal,'source':urls['prompts.csv'],'publisher_revision':REVISION,'license':'CC0-1.0','license_url':LICENSE,'act':row.get('act'),'contributor':row.get('contributor'),'sha256':hashlib.sha256(text.encode()).hexdigest()},ensure_ascii=False)+'\n');rows+=1
-  record={'dataset':DATASET,'publisher_revision':REVISION,'revision_discovery_api':API,'license':'CC0-1.0','license_url':LICENSE,'rows_exported':rows,'requested_max_rows':max_rows,'source_urls':urls,'publisher_file_sha256':{k:hashlib.sha256(v).hexdigest() for k,v in blobs.items()},'publisher_bytes_downloaded':sum(len(v) for v in blobs.values()),'export_sha256':hashlib.sha256(stage.read_bytes()).hexdigest(),'training_performed':False}
+  record={'dataset':DATASET,'publisher_revision':REVISION,'revision_discovery_api':API,'license':'CC0-1.0','license_url':LICENSE,'rows_exported':rows,'requested_max_rows':max_rows,'source_urls':urls,'publisher_file_sha256':{k:hashlib.sha256(v).hexdigest() for k,v in blobs.items()},'publisher_bytes_downloaded':sum(len(v) for v in blobs.values()),'export_sha256':hashlib.sha256(stage.read_bytes()).hexdigest(),'training_performed':False,'request_min_interval_seconds':3}
   stage_manifest=Path(directory)/'manifest.json';stage_manifest.write_text(json.dumps(record,indent=2)+'\n')
   os.link(stage,out)
   try:os.link(stage_manifest,manifest)
