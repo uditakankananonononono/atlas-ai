@@ -21,6 +21,7 @@ def extract_checked(archive,manifest,destination,*,max_total_bytes=32_000_000,ma
     records=json.loads(Path(manifest).read_text());expected={};total=0
     if not isinstance(records,list) or not records or len(records)>max_files:raise ValueError('manifest count cap')
     for row in records:
+        if not isinstance(row,dict) or set(row)!={'path','bytes','sha256'} or not isinstance(row['path'],str):raise ValueError('invalid manifest row shape')
         name=str(_path(row['path']))
         if name in expected or type(row['bytes']) is not int or not 0<=row['bytes']<=max_file_bytes or not isinstance(row['sha256'],str) or not re.fullmatch('[0-9a-f]{64}',row['sha256']):raise ValueError('invalid manifest record')
         expected[name]=row;total+=row['bytes']
