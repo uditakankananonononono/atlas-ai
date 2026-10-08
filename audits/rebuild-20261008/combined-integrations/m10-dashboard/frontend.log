@@ -1,0 +1,12 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /tmp/atlas-m05-m19-integration/stage/frontend
+
+ ✓ components/ExecutiveDashboard.test.tsx (12 tests) 805ms
+ ✓ components/executive-dashboard/write-ordering.test.tsx (7 tests) 9ms
+
+ Test Files  2 passed (2)
+      Tests  19 passed (19)
+   Start at  16:52:28
+   Duration  2.60s (transform 271ms, setup 99ms, collect 473ms, tests 814ms, environment 706ms, prepare 194ms)
+
