@@ -106,3 +106,20 @@ def test_multipart_report_and_exact_review_handoff_blocks_changed_payload():
         svc.approve_handoff(handoff, reviewed_artifact_json=changed, reviewer="Udita", approved_at=NOW)
     with pytest.raises(ValidationError, match="exact-review"):
         svc.assert_dispatchable(handoff, approval, changed)
+
+
+@pytest.mark.parametrize('kind', ['document', 'opportunity'])
+def test_corpus_rejects_duplicate_source_identity_instead_of_overwriting(kind):
+    if kind == 'document':
+        first = CorpusDocument('same', 'Original', '40 percent baseline',
+                               'https://original.test', NOW)
+        second = CorpusDocument('same', 'Other', '99 percent baseline',
+                                'https://other.test', NOW)
+        with pytest.raises(ValidationError, match='duplicate document id'):
+            GrantCorpus(documents=[first, second])
+    else:
+        def opportunity(url):
+            return Opportunity('same', 'Call', 'Sponsor', NOW, (), (), url, 'rules', NOW)
+        with pytest.raises(ValidationError, match='duplicate opportunity id'):
+            GrantCorpus(opportunities=[opportunity('https://original.test'),
+                                       opportunity('https://other.test')])
