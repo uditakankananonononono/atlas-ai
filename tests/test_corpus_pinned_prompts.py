@@ -5,10 +5,12 @@ import pytest,httpx
 import app.core.corpus_pinned_prompts as module
 @pytest.fixture
 def snapshot(tmp_path):
- p=Path('/tmp/pinned-review/live.jsonl')
+ p=Path('/tmp/archive-review/live.jsonl')
  if not p.exists():pytest.skip('real publisher snapshot required')
  out=tmp_path/'copy.jsonl'
- shutil.copyfile(p,out);shutil.copyfile(p.with_suffix('.jsonl.manifest.json'),out.with_suffix('.jsonl.manifest.json'));return out
+ shutil.copyfile(p,out);shutil.copyfile(p.with_suffix('.jsonl.manifest.json'),out.with_suffix('.jsonl.manifest.json'))
+ shutil.copytree(Path(str(p)+'.source'),Path(str(out)+'.source'))
+ m=json.loads(out.with_suffix('.jsonl.manifest.json').read_text());m['source_archive']=out.name+'.source';out.with_suffix('.jsonl.manifest.json').write_text(json.dumps(m));return out
 def test_actual_pinned_snapshot(snapshot):assert module.verify_snapshot(snapshot)==100
 @pytest.mark.parametrize('fault',['hash','commit'])
 def test_actual_tamper_refused(snapshot,fault):
@@ -62,3 +64,9 @@ def test_csv_closed_on_parse_failure(tmp_path,monkeypatch):
  with pytest.raises(ValueError,match='empty publisher prompt'):module.download(tmp_path/'out')
  assert opened and all(stream.closed for stream in opened)
  assert not (tmp_path/'out').exists()
+def test_coordinated_export_rehash_cannot_claim_publisher_text(snapshot):
+ import hashlib
+ lines=snapshot.read_text().splitlines();row=json.loads(lines[0]);row['text']='invented text absent from publisher';row['sha256']=hashlib.sha256(row['text'].encode()).hexdigest();lines[0]=json.dumps(row)
+ snapshot.write_text('\n'.join(lines)+'\n')
+ p=snapshot.with_suffix('.jsonl.manifest.json');m=json.loads(p.read_text());m['export_sha256']=hashlib.sha256(snapshot.read_bytes()).hexdigest();p.write_text(json.dumps(m))
+ with pytest.raises(ValueError):module.verify_snapshot(snapshot)

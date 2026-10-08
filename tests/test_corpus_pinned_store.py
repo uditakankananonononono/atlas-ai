@@ -5,7 +5,7 @@ from app.core.corpus_pinned_store import collect_pinned
 from app.core.corpus_pinned_prompts import REVISION,verify_snapshot
 
 def test_actual_pinned_store():
- root=Path('/tmp/pinned-store-review')
+ root=Path('/tmp/archive-store-review')
  if not (root/'live.sqlite').exists():pytest.skip('real pinned collection run required')
  assert verify_snapshot(root/'live.jsonl')==100
  with sqlite3.connect(root/'live.sqlite') as db:
