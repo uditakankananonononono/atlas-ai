@@ -1,6 +1,7 @@
 """Fixed CC0 publisher snapshot. No stamping commits onto mutable API rows."""
 import argparse,csv,hashlib,io,json,re,tempfile,os
 from pathlib import Path
+from contextlib import ExitStack
 from time import monotonic,sleep
 import httpx
 from urllib.parse import urljoin,urlsplit
@@ -10,8 +11,8 @@ EXPECTED_HASHES={'README.md':'5e8b91b0c80be0af464727e1aca8eabb1dc63a1545dc03f36b
 API='https://huggingface.co/api/datasets/fka/prompts.chat'
 LICENSE='https://creativecommons.org/publicdomain/zero/1.0/'
 def download(output,max_rows=100):
- with tempfile.TemporaryDirectory(prefix='pinned-source-') as source_dir:
-  return _download(output,max_rows,Path(source_dir))
+ with tempfile.TemporaryDirectory(prefix='pinned-source-') as source_dir,ExitStack() as stack:
+  return _download(output,max_rows,Path(source_dir),stack)
 
 def stream_capped(response,path,cap=8_000_000):
  digest=hashlib.sha256();total=0
@@ -21,7 +22,7 @@ def stream_capped(response,path,cap=8_000_000):
    stream.write(chunk);digest.update(chunk);total+=len(chunk)
  return total,digest.hexdigest()
 
-def _download(output,max_rows,source_dir):
+def _download(output,max_rows,source_dir,stack):
  if isinstance(max_rows,bool) or not isinstance(max_rows,int) or not 1<=max_rows<=1000:raise ValueError('bounded integer rows 1..1000')
  out=Path(output);manifest=out.with_suffix(out.suffix+'.manifest.json')
  if out.exists() or manifest.exists():raise FileExistsError('new artifacts required')
@@ -53,7 +54,7 @@ def _download(output,max_rows,source_dir):
   if digest!=EXPECTED_HASHES[name]:raise ValueError('publisher file checksum mismatch')
  card=files['README.md'].read_text()
  if not re.search(r'^license:\s*cc0-1.0\s*$',card,re.M):raise ValueError('pinned publisher card does not identify CC0')
- csv_stream=files['prompts.csv'].open(encoding='utf-8-sig',newline='')
+ csv_stream=stack.enter_context(files['prompts.csv'].open(encoding='utf-8-sig',newline=''))
  parsed=csv.DictReader(csv_stream)
  if not parsed.fieldnames or 'prompt' not in parsed.fieldnames:raise ValueError('publisher schema lacks prompt')
  out.parent.mkdir(parents=True,exist_ok=True)
