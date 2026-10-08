@@ -4,6 +4,7 @@ from threading import Event
 from typing import Any, Callable, Protocol
 from pydantic import ValidationError
 from .redaction import redact, scrub_text
+from .gates import GateRefused, Principal
 from .tools import ReadOnlyToolRegistry
 from .types import AgentDecision, Refusal, RunReport
 
@@ -41,7 +42,7 @@ class Engine:
         self.model, self.tools, self.max_steps = model, tools, max_steps
         self.policy = policy or AllowAllReads()
 
-    async def run(self, goal: str, *, cancel: Event | None = None,
+    async def run(self, goal: str, *, cancel: Event | None = None, principal: Principal | None = None,
                   context: Callable[[], list[dict[str, Any]]] | None = None) -> RunReport:
         if self.model is None:
             return RunReport(stop_reason="model_unavailable", steps_used=0)
@@ -80,7 +81,13 @@ class Engine:
                 refusals.append(Refusal(step=step, tool=call.name, risk=tool.risk.value, reason="policy_denied"))
                 messages.append({"role": "tool", "content": json.dumps({"ok": False, "error": "policy_denied"})})
             else:
-                receipt = await self.tools.execute(step, call.name, call.arguments)
-                receipts.append(receipt)
-                messages.append({"role": "tool", "content": receipt.model_dump_json()})
+                try:
+                    receipt = await self.tools.execute(step, call.name, call.arguments, principal)
+                except GateRefused as gr:
+                    refusals.append(Refusal(step=step, tool=call.name, risk=tool.risk.value, reason=gr.reason,
+                                            gates=list(gr.gates), digest=gr.digest, arguments=redact(call.arguments)))
+                    messages.append({"role": "tool", "content": json.dumps({"ok": False, "error": gr.reason, "gates": list(gr.gates)})})
+                else:
+                    receipts.append(receipt)
+                    messages.append({"role": "tool", "content": receipt.model_dump_json()})
         return RunReport(stop_reason="step_limit", steps_used=self.max_steps, receipts=receipts, refusals=refusals)

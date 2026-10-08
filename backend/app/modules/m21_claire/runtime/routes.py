@@ -52,3 +52,36 @@ def cancel_goal(goal_id: str, tenant: TenantContext = Depends(require_tenant), s
     if outcome == "not_cancellable":
         raise HTTPException(409, "only queued goals can be cancelled in this release")
     return store.get(tenant.tenant_id, tenant.actor_id, goal_id)
+
+
+class ApprovalIn(BaseModel):
+    capability: str = Field(min_length=1, max_length=100)
+    gate: str = Field(pattern="^(payment|comms)$")
+    digest: str = Field(min_length=64, max_length=64)
+    ttl_seconds: int = Field(default=900, ge=1, le=86400)
+
+
+@router.post("/goals/{goal_id}/approvals", status_code=201)
+def approve(goal_id: str, body: ApprovalIn, tenant: TenantContext = Depends(require_tenant), store: GoalStore = Depends(get_store)) -> dict[str, Any]:
+    """The owner approves one gate of one exact call that this goal's own report refused. Single use, expiring."""
+    goal = store.get(tenant.tenant_id, tenant.actor_id, goal_id)
+    if goal is None:
+        raise HTTPException(404, "goal not found")
+    refused = [r for r in (goal.get("report") or {}).get("refusals", [])
+               if r.get("reason") == "approval_required" and r.get("digest") == body.digest
+               and r.get("tool") == body.capability and body.gate in r.get("gates", [])]
+    if not refused:
+        raise HTTPException(422, "no refused call in this goal matches that capability, gate and digest")
+    aid = store.grant(tenant.tenant_id, tenant.actor_id, goal_id, body.capability, body.gate, body.digest,
+                      approver=tenant.actor_id, ttl_seconds=body.ttl_seconds)
+    return {"approval_id": aid, "goal_id": goal_id, "capability": body.capability, "gate": body.gate, "single_use": True}
+
+
+@router.post("/goals/{goal_id}/requeue")
+def requeue_goal(goal_id: str, tenant: TenantContext = Depends(require_tenant), store: GoalStore = Depends(get_store)) -> dict[str, Any]:
+    outcome = store.requeue(tenant.tenant_id, tenant.actor_id, goal_id)
+    if outcome == "not_found":
+        raise HTTPException(404, "goal not found")
+    if outcome == "not_requeueable":
+        raise HTTPException(409, "only goals awaiting review with attempts left can be requeued")
+    return store.get(tenant.tenant_id, tenant.actor_id, goal_id)

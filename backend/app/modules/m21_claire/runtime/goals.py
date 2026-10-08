@@ -8,7 +8,11 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 Clock = Callable[[], datetime]
-TERMINAL = {"completed", "blocked", "failed", "exhausted", "not_accepted", "cancelled"}
+TERMINAL = {"completed", "blocked", "failed", "exhausted", "not_accepted", "cancelled", "awaiting_review"}
+
+
+class _NoApproval(Exception):
+    pass
 
 
 class Base(DeclarativeBase):
@@ -33,6 +37,22 @@ class GoalRow(Base):
     verdict: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[str] = mapped_column(String(40))
     updated_at: Mapped[str] = mapped_column(String(40))
+
+
+class ApprovalRow(Base):
+    """One single-use approval for one gate of one exact call (tenant+actor+goal+capability+payload digest)."""
+    __tablename__ = "claire_runtime_approvals"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(String(200), index=True)
+    actor_id: Mapped[str] = mapped_column(String(200), index=True)
+    goal_id: Mapped[str] = mapped_column(String(36), index=True)
+    capability: Mapped[str] = mapped_column(String(100))
+    gate: Mapped[str] = mapped_column(String(20))
+    payload_digest: Mapped[str] = mapped_column(String(64))
+    approver: Mapped[str] = mapped_column(String(200))
+    expires_at: Mapped[str] = mapped_column(String(40))
+    created_at: Mapped[str] = mapped_column(String(40))
+    consumed_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
 
 
 @dataclass(frozen=True)
@@ -131,6 +151,55 @@ class GoalStore:
                             .values(status=status, blocker=blocker, report=json.dumps(report), verdict=json.dumps(verdict),
                                     lease_token=None, lease_expires_at=None, updated_at=_iso(self.clock())))
             return res.rowcount == 1
+
+    def requeue(self, tenant_id: str, actor_id: str, goal_id: str) -> str:
+        """awaiting_review -> queued so the owner's new approvals can be used. Returns requeued | not_found | not_requeueable."""
+        with self._sessions.begin() as s:
+            res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                            GoalRow.actor_id == actor_id, GoalRow.status == "awaiting_review", GoalRow.attempts < self.max_attempts)
+                            .values(status="queued", blocker=None, updated_at=_iso(self.clock())))
+            if res.rowcount == 1:
+                return "requeued"
+            exists = s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                                                        GoalRow.actor_id == actor_id)).first()
+        return "not_requeueable" if exists else "not_found"
+
+    # --- approval ledger -------------------------------------------------------------------------
+    def grant(self, tenant_id: str, actor_id: str, goal_id: str, capability: str, gate: str, digest: str,
+              approver: str, ttl_seconds: int = 900) -> str:
+        if gate not in {"payment", "comms"}:
+            raise ValueError("unknown gate")
+        if not (1 <= ttl_seconds <= 86400) or len(digest) != 64:
+            raise ValueError("invalid approval")
+        now = self.clock()
+        with self._sessions.begin() as s:
+            if not s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                                                      GoalRow.actor_id == actor_id)).first():
+                raise KeyError(goal_id)
+            aid = str(uuid.uuid4())
+            s.add(ApprovalRow(id=aid, tenant_id=tenant_id, actor_id=actor_id, goal_id=goal_id, capability=capability, gate=gate,
+                              payload_digest=digest, approver=approver, expires_at=_iso(now + timedelta(seconds=ttl_seconds)),
+                              created_at=_iso(now)))
+        return aid
+
+    def consume_all(self, principal: Any, capability: str, digest: str, gates: tuple[str, ...]) -> bool:
+        """All-or-nothing: every gate needs its own unexpired, unconsumed, exactly-matching approval; consumed in one transaction."""
+        now = _iso(self.clock())
+        try:
+          with self._sessions.begin() as s:
+            for gate in gates:
+                res = s.execute(update(ApprovalRow).where(
+                    ApprovalRow.id == select(ApprovalRow.id).where(
+                        ApprovalRow.tenant_id == principal.tenant_id, ApprovalRow.actor_id == principal.actor_id,
+                        ApprovalRow.goal_id == principal.goal_id, ApprovalRow.capability == capability,
+                        ApprovalRow.gate == gate, ApprovalRow.payload_digest == digest,
+                        ApprovalRow.consumed_at.is_(None), ApprovalRow.expires_at > now).limit(1).scalar_subquery(),
+                    ApprovalRow.consumed_at.is_(None)).values(consumed_at=now))
+                if res.rowcount != 1:
+                    raise _NoApproval  # rolls the whole transaction back: nothing is consumed
+        except _NoApproval:
+            return False
+        return True
 
     @staticmethod
     def _view(row: GoalRow) -> dict[str, Any]:

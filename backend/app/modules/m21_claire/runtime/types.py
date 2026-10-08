@@ -47,7 +47,10 @@ class Refusal(BaseModel):
     step: int
     tool: str
     risk: str | None
-    reason: str  # unknown_tool | review_required | policy_denied
+    reason: str  # unknown_tool | policy_denied | risk_changed | blocked | approval_required
+    gates: list[str] = Field(default_factory=list)
+    digest: str | None = None
+    arguments: dict[str, Any] | None = None
 
 
 class RunReport(BaseModel):

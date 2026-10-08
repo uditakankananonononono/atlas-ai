@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Callable
 from .acceptance import evaluate
 from .engine import Engine
+from .gates import Principal
 from .goals import Claim, GoalStore
 
 EngineFactory = Callable[[Claim], Engine]
@@ -19,9 +20,13 @@ class Worker:
         claim = self.store.claim(self.worker_id)
         if claim is None:
             return None
-        report = await self.engine_factory(claim).run(claim.purpose)
+        principal = Principal(claim.tenant_id, claim.actor_id, claim.goal_id)
+        report = await self.engine_factory(claim).run(claim.purpose, principal=principal)
         dump = report.model_dump()
-        if report.stop_reason in {"model_unavailable", "model_invalid_output"}:
+        if any(r.reason == "approval_required" for r in report.refusals):
+            # A gated action was refused: the goal waits for the owner; it can never be completed from this run.
+            self.store.settle(claim, "awaiting_review", blocker="approval_required", report=dump, verdict=None)
+        elif report.stop_reason in {"model_unavailable", "model_invalid_output"}:
             self.store.settle(claim, "blocked", blocker=report.stop_reason, report=dump, verdict=None)
         elif report.stop_reason == "step_limit":
             self.store.settle(claim, "exhausted", blocker="step_limit", report=dump, verdict=None)
