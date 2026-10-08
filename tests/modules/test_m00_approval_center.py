@@ -474,3 +474,47 @@ def test_status_lists_classify_lazy_expiry_before_limit(service, clock):
     assert [v['id'] for v in service.list(status=ApprovalStatus.PENDING, limit=1)] == [fresh['id']]
     assert [v['id'] for v in service.list(status=ApprovalStatus.EXPIRED, limit=1)] == [overdue['id']]
     assert [event['event'] for event in service.audit(overdue['id'])] == ['created', 'expired']
+
+
+@pytest.mark.parametrize('winner', [ApprovalStatus.APPROVED, ApprovalStatus.DENIED])
+@pytest.mark.parametrize('loser', [ApprovalStatus.APPROVED, ApprovalStatus.DENIED])
+def test_expiry_composition_decision_winner_loser_pairs(service, winner, loser):
+    view = submit(service)
+    fetch = service._fetch
+    raced = []
+    def fetch_then_decide(db, aid):
+        row = fetch(db, aid)
+        if not raced:
+            raced.append(True)
+            service.decide(aid, winner, decided_by='winner')
+        return row
+    service._fetch = fetch_then_decide
+    with pytest.raises(ApprovalConflictError):
+        service.decide(view['id'], loser, decided_by='loser')
+    service._fetch = fetch
+    assert service.get(view['id'])['status'] == winner
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', winner.value]
+
+
+@pytest.mark.parametrize('case', ['same', 'different_effect', 'different_payload', 'occupied_elsewhere'])
+def test_expiry_composition_permit_exactness(service, case):
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='winner')
+    kwargs = dict(module_id=view['module_id'], action_type=view['action_type'],
+                  payload=view['payload'], user_id=view['user_id'], actor='worker')
+    service.consume_effect(view['id'], effect_id='used', **kwargs)
+    if case == 'same':
+        assert service.consume_effect(view['id'], effect_id='used', **kwargs)['allowed']
+    elif case == 'different_effect':
+        with pytest.raises(ApprovalConflictError):
+            service.consume_effect(view['id'], effect_id='other', **kwargs)
+    elif case == 'different_payload':
+        with pytest.raises(ApprovalConflictError):
+            service.consume_effect(view['id'], effect_id='used', **{**kwargs, 'payload': {'changed': True}})
+    else:
+        other = submit(service)
+        service.decide(other['id'], ApprovalStatus.APPROVED, decided_by='winner')
+        with pytest.raises(ApprovalConflictError, match='effect id'):
+            service.consume_effect(other['id'], effect_id='used', **kwargs)
+        assert [e['event'] for e in service.audit(other['id'])] == ['created', 'approved']
+    assert [e['event'] for e in service.audit(view['id'])] == ['created', 'approved', 'effect_consumed']
