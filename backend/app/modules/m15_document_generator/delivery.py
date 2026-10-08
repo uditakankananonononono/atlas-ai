@@ -58,6 +58,10 @@ class DeliveryError(RuntimeError):
     """Base error for approved delivery."""
 
 
+class DeliveryOutcomeUnknown(DeliveryError):
+    """Permit consumed, file/receipt may exist; reconcile by read, never retry."""
+
+
 class DeliveryNotFound(DeliveryError, KeyError):
     pass
 
@@ -455,19 +459,25 @@ class ApprovedDeliveryService:
             if type(exc).__name__ == "ApprovalConflictError":
                 raise DeliveryConflict(str(exc)) from exc
             raise
-        sha = self.store.put(self.tenant_id, data)
-        filename = f"{re.sub(r'[^A-Za-z0-9._-]', '_', version.document_id)[:80]}-v{version.version_number}.{EXT[version.format]}"
-        receipt = {"delivery_id": str(uuid4()), "approval_id": approval_id, "tenant_id": self.tenant_id,
-                   "actor_id": self.actor_id, "document_id": version.document_id, "version_id": version.id,
-                   "version_number": version.version_number, "format": version.format,
-                   "template_id": version.template_id, "approved_content_hash": payload["content_hash"],
-                   "sha256": sha, "byte_size": len(data), "mime_type": MIME[version.format],
-                   "filename": filename, "validation": check, "access": "private",
-                   "render_seconds": round(time.monotonic() - started, 3),
-                   "permit_consumed_at": str(permit.get("consumed_at")), "delivered_at": _now()}
-        receipt["receipt_sha256"] = hashlib.sha256(_canonical(receipt).encode()).hexdigest()
-        self.store.save(self.tenant_id, receipt)
-        return self._link(receipt)
+        try:
+            sha = self.store.put(self.tenant_id, data)
+            filename = f"{re.sub(r'[^A-Za-z0-9._-]', '_', version.document_id)[:80]}-v{version.version_number}.{EXT[version.format]}"
+            receipt = {"delivery_id": str(uuid4()), "approval_id": approval_id, "tenant_id": self.tenant_id,
+                       "actor_id": self.actor_id, "document_id": version.document_id, "version_id": version.id,
+                       "version_number": version.version_number, "format": version.format,
+                       "template_id": version.template_id, "approved_content_hash": payload["content_hash"],
+                       "sha256": sha, "byte_size": len(data), "mime_type": MIME[version.format],
+                       "filename": filename, "validation": check, "access": "private",
+                       "render_seconds": round(time.monotonic() - started, 3),
+                       "permit_consumed_at": str(permit.get("consumed_at")), "delivered_at": _now()}
+            receipt["receipt_sha256"] = hashlib.sha256(_canonical(receipt).encode()).hexdigest()
+            self.store.save(self.tenant_id, receipt)
+            return self._link(receipt)
+        except Exception as error:
+            raise DeliveryOutcomeUnknown(
+                "delivery failed after approval permit was consumed; bytes or receipt "
+                "may exist; reconcile by readback before requesting a new approval; "
+                "no automatic retry or rollback is performed") from error
 
     def readback(self, approval_id: str) -> dict[str, Any]:
         receipt = self.store.get(self.tenant_id, approval_id)
