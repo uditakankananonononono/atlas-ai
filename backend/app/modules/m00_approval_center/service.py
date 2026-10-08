@@ -211,19 +211,28 @@ class Service:
         limit: int = 100,
     ) -> list[dict[str, Any]]:
         """List requests newest first, optionally filtered."""
+        from sqlalchemy import and_, or_
+        now = self._clock()
         with self._sessions.begin() as db:
             statement = select(ApprovalRequestRow).order_by(ApprovalRequestRow.created_at.desc()).limit(limit)
-            if status is not None:
+            if status == ApprovalStatus.PENDING:
+                statement = statement.where(
+                    ApprovalRequestRow.status == status.value,
+                    or_(ApprovalRequestRow.expires_at.is_(None), ApprovalRequestRow.expires_at > now))
+            elif status == ApprovalStatus.EXPIRED:
+                statement = statement.where(or_(ApprovalRequestRow.status == status.value,
+                    and_(ApprovalRequestRow.status == ApprovalStatus.PENDING.value,
+                         ApprovalRequestRow.expires_at.is_not(None), ApprovalRequestRow.expires_at <= now)))
+            elif status is not None:
                 statement = statement.where(ApprovalRequestRow.status == status.value)
             if module_id is not None:
                 statement = statement.where(ApprovalRequestRow.module_id == module_id)
             if user_id is not None:
                 statement = statement.where(ApprovalRequestRow.user_id == user_id)
             rows = list(db.scalars(statement))
-            now = self._clock()
             for row in rows:
                 self._expire_if_overdue(db, row, now)
-            return [_view(row) for row in rows]
+            return [_view(row) for row in rows if status is None or row.status == status.value]
 
     def decide(self, approval_id: str, decision: ApprovalStatus, decided_by: str) -> dict[str, Any]:
         """Record a human decision using conditional pending-state transitions.
