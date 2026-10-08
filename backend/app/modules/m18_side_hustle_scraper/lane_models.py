@@ -18,62 +18,57 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit, unquote
 
 _SENSITIVE_QUERY_KEYS = frozenset({"key", "api_key", "apikey", "token", "access_token"})
 
 
-def _redact_url(url: str) -> str:
-    """Redact credentials before a URL is recorded.
+FAILURE_RECORD_MAX_CHARS = 8192
 
-    Collector fetches need the real URL, but failure records are persisted
-    and reported. Two credential carriers are stripped: sensitive query
-    parameters (e.g. the YouTube Data API key, passed as ``?key=``) and any
-    userinfo (``https://user:password@host``). The fragment is left
-    unchanged: recorded request URLs do not carry OAuth-style fragment
-    tokens today. URLs with nothing to redact are returned byte-identical.
-    Query key names are percent-decoded once by ``parse_qsl`` before
-    matching, so a single-encoded name such as ``api%5fkey`` IS redacted;
-    a double-encoded name is not. The fragment is left unchanged: recorded
-    request URLs do not carry OAuth-style fragment tokens today (documented
-    residual, not owner-accepted). This is bounded redaction, not general
-    credential hygiene; see ``_scrub_text`` for the reason-text boundary.
+
+def _sensitive_key(key: str) -> bool:
+    # Decode at most twice; deeper encodings are outside this bounded contract.
+    return unquote(unquote(key)).lower() in _SENSITIVE_QUERY_KEYS
+
+
+def _redact_url(url: str) -> str:
+    """Bounded URL record: remove userinfo and enumerated query/fragment keys.
+    Unknown credential shapes and deeper encodings remain out of scope.
+    Malformed URL parser input is refused as a record, not echoed raw.
     """
-    parts = urlsplit(url)
-    pairs = parse_qsl(parts.query, keep_blank_values=True)
-    has_sensitive = any(key.lower() in _SENSITIVE_QUERY_KEYS for key, _ in pairs)
-    has_userinfo = parts.username is not None or parts.password is not None
-    if not has_sensitive and not has_userinfo:
-        return url  # no credentials: keep the recorded URL byte-identical
-    query = [(key, "[REDACTED]" if key.lower() in _SENSITIVE_QUERY_KEYS else value)
-             for key, value in pairs]
-    # Keep the original authority verbatim minus userinfo: hostname/port are
-    # copied from the raw netloc so IPv6 brackets (``[::1]:8080``) survive and
-    # urlsplit().port - which raises on some inputs - is never consulted.
-    netloc = parts.netloc.rsplit("@", 1)[-1]
-    return urlunsplit((parts.scheme, netloc, parts.path, urlencode(query), parts.fragment))
+    url = str(url)[:FAILURE_RECORD_MAX_CHARS]
+    try:
+        parts = urlsplit(url)
+        query = parse_qsl(parts.query, keep_blank_values=True)
+        fragment = parse_qsl(parts.fragment, keep_blank_values=True)
+        sensitive_query = any(_sensitive_key(k) for k, _ in query)
+        sensitive_fragment = any(_sensitive_key(k) for k, _ in fragment)
+        userinfo = '@' in parts.netloc
+        if not sensitive_query and not sensitive_fragment and not userinfo:
+            return url
+        scrub = lambda pairs: urlencode([(k, '[REDACTED]' if _sensitive_key(k) else v) for k,v in pairs])
+        return urlunsplit((parts.scheme,parts.netloc.rsplit('@',1)[-1],parts.path,
+                          scrub(query) if sensitive_query else parts.query,
+                          scrub(fragment) if sensitive_fragment else parts.fragment))[:FAILURE_RECORD_MAX_CHARS]
+    except ValueError:
+        return '[REDACTED MALFORMED URL]'
 
 
 _SENSITIVE_ASSIGNMENT = re.compile(
-    r"(?i)\b(key|api_key|apikey|token|access_token)=[^\s&]+")
-_USERINFO = re.compile(r"://[^/@\s]+:[^/@\s]+@")
+    r"(?i)\b(key|api_key|apikey|token|access_token)[\"']?\s*[:=]\s*(?:\"[^\"]*\"|'[^']*'|[^\s&;,}]+)")
+_BEARER = re.compile(r"(?i)\bBearer\s+[^\s,;]+")
+_URL_IN_TEXT = re.compile(r"https?://[^\s\"'<>]+", re.I)
 
 
 def _scrub_text(text: str) -> str:
-    """Redact credential-shaped material inside free text (e.g. a reason
-    string that embeds a failing URL). Arbitrary reasons are not trusted to
-    be secret-free, so they are scrubbed against a bounded pattern.
-
-    Covered: ``key|api_key|apikey|token|access_token=<value>`` assignments
-    (case-insensitive, value runs to whitespace or ``&``) and
-    ``://user:pass@`` userinfo. Documented residuals, NOT covered: spaced
-    assignments (``key = value``), Bearer or other scheme-prefixed tokens,
-    percent-encoded key names (no decoding here, unlike ``_redact_url``),
-    username-only userinfo, JSON/colon shapes (``"token": "v"``), and any
-    secret shape outside the enumerated patterns."""
-
+    """Bounded enumerated redaction: URL credentials, spaced/colon/quoted
+    key assignments and Bearer tokens. Not arbitrary secret detection.
+    Processing and stored output are capped at 8192 characters.
+    """
+    text = str(text)[:FAILURE_RECORD_MAX_CHARS]
+    text = _URL_IN_TEXT.sub(lambda m: _redact_url(m.group()), text)
     text = _SENSITIVE_ASSIGNMENT.sub(lambda m: f"{m.group(1)}=[REDACTED]", text)
-    return _USERINFO.sub("://[REDACTED]@", text)
+    return _BEARER.sub('Bearer [REDACTED]', text)[:FAILURE_RECORD_MAX_CHARS]
 from enum import Enum
 from typing import Any, Mapping, Optional
 from urllib.parse import urlsplit
