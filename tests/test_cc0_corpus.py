@@ -15,7 +15,8 @@ def test_cc0_fixed_source_contract():
 def test_actual_cc0_corpus_and_license():
  p=Path('/tmp/cc0-review/live.jsonl')
  if not p.exists():pytest.skip('requires real CC0 public collector run')
- report=verify(p.with_name('live.sqlite'),p);assert report['stored_rows_verified']==100
+ report=verify(p.with_name('live.sqlite'),p);assert report['stored_rows_verified']>=100
+ assert report['stored_rows_verified']==len(p.read_text().splitlines())
  assert stream_verify(p.with_name('live.sqlite'),p)['export_sha256']==report['export_sha256']
  manifest=json.loads(p.with_suffix('.jsonl.manifest.json').read_text())
  assert manifest['dataset']=='fka/prompts.chat' and manifest['license_url']=='https://creativecommons.org/publicdomain/zero/1.0/'
