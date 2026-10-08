@@ -1,7 +1,19 @@
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.modules.m00_approval_center import service as m00_service
 from app.core.approvals import ApprovalStore
 from app.modules.m20_general_cognitive_worker.service import Service as Cognitive
 from app.modules.m21_claire.service import Service
+@pytest.fixture(autouse=True)
+def isolated_approval_center(tmp_path, monkeypatch):
+ # Without this the facade binds to the shared ./atlas.db, whose m00 tables exist only if some
+ # other test or process created them (ATLAS_AUTO_CREATE_SCHEMA is off by default).
+ engine=create_engine(f"sqlite:///{tmp_path}/approvals.db",connect_args={"check_same_thread":False})
+ m00_service.Base.metadata.create_all(engine)
+ monkeypatch.setattr(m00_service,"_default_service",m00_service.Service(session_factory=sessionmaker(bind=engine,expire_on_commit=False)))
+ yield
+ engine.dispose()
 class Model:
  async def __call__(self,purpose,payload):return {"steps":[{"id":"p","title":"prepare safely","risk":"read"}]}
 @pytest.mark.asyncio

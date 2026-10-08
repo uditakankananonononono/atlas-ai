@@ -29,6 +29,7 @@ class ReadOnlyToolRegistry:
     """
     def __init__(self) -> None:
         self._tools: dict[str, Tool] = {}
+        self._trusted: dict[str, tuple[ToolRisk, type]] = {}  # frozen at registration
 
     def register(self, tool: Tool) -> None:
         if tool.risk is not ToolRisk.READ:
@@ -36,6 +37,12 @@ class ReadOnlyToolRegistry:
         if tool.name in self._tools:
             raise ValueError("tool name already registered")
         self._tools[tool.name] = tool
+        self._trusted[tool.name] = (ToolRisk.READ, type(tool))
+
+    def risk_intact(self, name: str) -> bool:
+        """True only if the object still reports READ and is the class registered as READ."""
+        tool = self._tools.get(name)
+        return tool is not None and self._trusted[name] == (tool.risk, type(tool)) and tool.risk is ToolRisk.READ
 
     def get(self, name: str) -> Tool | None:
         return self._tools.get(name)
@@ -44,6 +51,8 @@ class ReadOnlyToolRegistry:
         return [t.schema() for t in self._tools.values()]
 
     async def execute(self, step: int, name: str, arguments: dict[str, Any]) -> ToolReceipt:
+        if not self.risk_intact(name):
+            raise PermissionError("tool is no longer a registered read-risk tool")
         tool = self._tools[name]
         safe_args = redact(arguments)
         try:

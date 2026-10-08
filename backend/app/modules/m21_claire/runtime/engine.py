@@ -3,7 +3,7 @@ import json
 from threading import Event
 from typing import Any, Callable, Protocol
 from pydantic import ValidationError
-from .redaction import scrub_text
+from .redaction import redact, scrub_text
 from .tools import ReadOnlyToolRegistry
 from .types import AgentDecision, Refusal, RunReport
 
@@ -48,7 +48,7 @@ class Engine:
         goal = scrub_text(goal)
         messages = [{"role": "system", "content": SYSTEM},
                     {"role": "user", "content": json.dumps({"goal": goal, "tools": self.tools.schemas(),
-                                                            "context": context() if context else []}, default=str)}]
+                                                            "context": redact(context()) if context else []}, default=str)}]
         receipts, refusals, replans = [], [], 0
         for step in range(1, self.max_steps + 1):
             if cancel is not None and cancel.is_set():
@@ -73,6 +73,9 @@ class Engine:
             if tool is None:
                 refusals.append(Refusal(step=step, tool=call.name[:100], risk=None, reason="unknown_tool"))
                 messages.append({"role": "tool", "content": json.dumps({"ok": False, "error": "unknown_tool"})})
+            elif not self.tools.risk_intact(call.name):
+                refusals.append(Refusal(step=step, tool=call.name, risk=tool.risk.value, reason="risk_changed"))
+                messages.append({"role": "tool", "content": json.dumps({"ok": False, "error": "risk_changed"})})
             elif not self.policy.allows(call.name, call.arguments):
                 refusals.append(Refusal(step=step, tool=call.name, risk=tool.risk.value, reason="policy_denied"))
                 messages.append({"role": "tool", "content": json.dumps({"ok": False, "error": "policy_denied"})})
