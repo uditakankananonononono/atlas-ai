@@ -57,8 +57,14 @@ class GrantWriterService:
         *,
         as_of: datetime,
     ) -> tuple[CritiqueItem, ...]:
+        if as_of.tzinfo is None:
+            raise ValidationError("grounding observation cutoff must be timezone-aware")
         opportunity = self.corpus.get_opportunity(opportunity_id, as_of=as_of)
         parts = tuple(sections)
+        grounding = tuple(grounding)
+        for hit in grounding:
+            if hit.observed_at.tzinfo is None or hit.observed_at > as_of:
+                raise ValidationError("grounding observation must be timezone-aware and no later than cutoff")
         evidence = {h.document_id for h in grounding}
         items: list[CritiqueItem] = []
         present = {p.name.lower(): p for p in parts}

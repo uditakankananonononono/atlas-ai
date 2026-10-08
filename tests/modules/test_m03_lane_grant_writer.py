@@ -140,3 +140,11 @@ def test_review_approval_binds_handoff_recipient_and_action(field, value):
                                   reviewer='Fixture', approved_at=NOW)
     with pytest.raises(ValidationError, match='exact-review'):
         svc.assert_dispatchable(replace(handoff, **{field: value}), approval, handoff.artifact_json)
+@pytest.mark.parametrize('observed', [datetime(2027, 1, 1, tzinfo=UTC),
+                                    datetime(2026, 9, 1)])
+def test_critique_refuses_future_or_naive_supplied_grounding(observed):
+    from app.modules.m03_grant_writer.lane_models import GroundingHit
+    hit = GroundingHit('baseline', 'Future or undated', 'https://source.test',
+                       '40 percent baseline', 1.0, observed)
+    with pytest.raises(ValidationError, match='grounding observation'):
+        service().critique('opp', complete_sections(), [hit], as_of=NOW)
