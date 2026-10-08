@@ -1,8 +1,9 @@
 "use client";
-import React,{FormEvent,useCallback,useEffect,useMemo,useState} from "react";
+import React,{FormEvent,useCallback,useEffect,useMemo,useRef,useState} from "react";
 import OperationsChart from "./OperationsChart";
 import {Card,CardContent,CardHeader} from "./ui/card";
 import {Approval,ApprovalCenterRequest,Blocker,DashboardView,Digest,DrilldownResult,KPI,ModuleStatus,RerunProposalRow,RerunScheduleCard as RerunCard,Snapshot,WidgetConfig,dashboardApi} from "./executive-dashboard/api";
+import {WriteSequencer} from "./executive-dashboard/write-ordering";
 import RerunScheduleCard from "./executive-dashboard/RerunScheduleCard";
 import RerunApprovalPanel,{RerunApprovalState} from "./executive-dashboard/RerunApprovalPanel";
 import OutreachApprovalPanel,{OUTREACH_MODULE_ID,OutreachApprovalState} from "./executive-dashboard/OutreachApprovalPanel";
@@ -28,6 +29,7 @@ function DrilldownPanel({data,onClose}:{data:DrilldownResult|null;onClose:()=>vo
 export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}){
   const api=useMemo<Api>(()=>dashboardApi(apiBase),[apiBase]);
   const [view,setView]=useState<DashboardView|null>(null);
+  const sequencer=useRef(new WriteSequencer<DashboardView>()).current;
   const [kpis,setKpis]=useState<KPI[]>([]);const [modules,setModules]=useState<ModuleStatus[]>([]);const [blockers,setBlockers]=useState<Blocker[]>([]);
   const [approvals,setApprovals]=useState<Approval[]>([]);const [digest,setDigest]=useState<Digest|null>(null);const [snapshot,setSnapshot]=useState<Snapshot|null>(null);
   const [drilldown,setDrilldown]=useState<DrilldownResult|null>(null);
@@ -67,12 +69,12 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
   const refresh=useCallback(async()=>{
     try{
       const [v,k,m,b,a,d,s]=await Promise.all([api.getView(),api.kpis(),api.modules(),api.blockers(),api.approvals(),api.digest(),api.snapshot()]);
-      setView(v);setKpis(k);setModules(m);setBlockers(b);setApprovals(a);setDigest(d);setSnapshot(s);setError(null);
+      sequencer.reconcile("view",v.version);setView(v);setKpis(k);setModules(m);setBlockers(b);setApprovals(a);setDigest(d);setSnapshot(s);setError(null);
       // fetched separately so an M04 outage never blanks the other cards
       api.rerunSchedules().then(setRerunCard,()=>setRerunCard(null));
       loadOutreachRequests();
     }catch(e){setError(e instanceof Error?e.message:"dashboard refresh failed")}
-  },[api,loadOutreachRequests]);
+  },[api,loadOutreachRequests,sequencer]);
   useEffect(()=>{refresh();setLive(true);const timer=window.setInterval(refresh,30000);return()=>window.clearInterval(timer)},[refresh]);
   async function submitCommand(e:FormEvent){e.preventDefault();if(!command.trim())return;setPreview(await api.preview(command))}
   async function runCommand(){if(!preview)return;await api.execute(preview.id);setPreview(null);setCommand("");refresh()}
@@ -83,12 +85,27 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     setSelected(new Set());refresh();
   }
   function toggleSelect(id:string){setSelected(prev=>{const next=new Set(prev);if(next.has(id))next.delete(id);else next.add(id);return next})}
-  async function moveWidget(id:string,direction:-1|1){
-    if(!view)return;const widgets=[...view.widgets];const i=widgets.findIndex(w=>w.id===id);const j=i+direction;
-    if(i<0||j<0||j>=widgets.length)return;[widgets[i],widgets[j]]=[widgets[j],widgets[i]];
-    widgets.forEach((w,idx)=>w.position=idx);setView(await api.saveView(widgets));
+  // Layout saves go through one sequencer: same-base writes cannot both be sent, and an aborted/unknown write blocks
+  // further saves until the layout is re-read from the server.
+  const [viewNote,setViewNote]=useState<string|null>(null);const [viewBusy,setViewBusy]=useState(false);
+  async function saveLayout(widgets:WidgetConfig[]){
+    if(!view)return;setViewBusy(true);setViewNote(null);
+    const {result}=sequencer.enqueue("view",view.version,async signal=>{const v=await api.saveView(widgets,view.version,signal);return {version:v.version,value:v}});
+    try{
+      const r=await result;
+      if(r.status==="committed"&&r.value)setView(r.value);
+      else{
+        setViewNote(r.status==="stale_base"?"Layout changed elsewhere. Reloaded the latest, repeat your edit.":r.status==="failed"&&/changed/.test(r.error??"")?"Layout changed elsewhere. Reloaded the latest, repeat your edit.":`Layout not saved (${r.status}${r.error?`: ${r.error}`:""}). Reloaded from the server.`);
+        const fresh=await api.getView();sequencer.reconcile("view",fresh.version);setView(fresh);
+      }
+    }finally{setViewBusy(false)}
   }
-  async function toggleWidget(id:string){if(!view)return;setView(await api.saveView(view.widgets.map(w=>w.id===id?{...w,visible:!w.visible}:w)))}
+  async function moveWidget(id:string,direction:-1|1){
+    if(!view||viewBusy)return;const widgets=view.widgets.map(w=>({...w}));const i=widgets.findIndex(w=>w.id===id);const j=i+direction;
+    if(i<0||j<0||j>=widgets.length)return;[widgets[i],widgets[j]]=[widgets[j],widgets[i]];
+    widgets.forEach((w,idx)=>w.position=idx);await saveLayout(widgets);
+  }
+  async function toggleWidget(id:string){if(!view||viewBusy)return;await saveLayout(view.widgets.map(w=>w.id===id?{...w,visible:!w.visible}:w))}
   const alerts=(snapshot?.data?.alerts??[]).slice(-8).reverse();
   const sections:Record<string,()=>React.JSX.Element|null>={
     rerun_schedules:()=><RerunScheduleCard card={rerunCard} onOpenApproval={openRerunApproval}/>,
@@ -108,7 +125,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     <header className="flex items-center justify-between"><div><p className="text-xs text-cyan-400">MODULE 16</p><h1 className="text-2xl font-semibold">Executive Dashboard</h1></div><div className="flex items-center gap-3 text-sm"><button onClick={()=>setEditView(v=>!v)} className="rounded bg-slate-800 px-3 py-1">{editView?"Done":"Layout"}</button><span className={live?"text-emerald-400":"text-amber-400"}>{live?"Live":"Reconnecting"}</span></div></header>
     {error&&<p className="rounded bg-red-950 p-2 text-sm text-red-300">{error}</p>}
     {kpis.length>0&&<Card><CardHeader>Live KPI trend</CardHeader><CardContent><OperationsChart data={kpis.slice(0,12).map(k=>({time:k.label,value:k.value}))}/></CardContent></Card>}
-    {editView&&view&&<section className="rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm"><h2 className="font-semibold">Layout</h2><ul className="mt-2 space-y-1">{[...view.widgets].sort((a,b)=>a.position-b.position).map(w=><li key={w.id} className="flex items-center gap-2"><button onClick={()=>moveWidget(w.id,-1)} className="rounded bg-slate-800 px-2">Up</button><button onClick={()=>moveWidget(w.id,1)} className="rounded bg-slate-800 px-2">Down</button><label className="flex items-center gap-1"><input type="checkbox" checked={w.visible} onChange={()=>toggleWidget(w.id)}/>{w.kind}{w.kpi_id?`: ${w.kpi_id}`:""}</label></li>)}</ul></section>}
+    {editView&&view&&<section className="rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm"><h2 className="font-semibold">Layout</h2>{viewNote&&<p role="status" className="text-xs text-amber-300">{viewNote}</p>}<ul className="mt-2 space-y-1">{[...view.widgets].sort((a,b)=>a.position-b.position).map(w=><li key={w.id} className="flex items-center gap-2"><button onClick={()=>moveWidget(w.id,-1)} className="rounded bg-slate-800 px-2">Up</button><button onClick={()=>moveWidget(w.id,1)} className="rounded bg-slate-800 px-2">Down</button><label className="flex items-center gap-1"><input type="checkbox" checked={w.visible} onChange={()=>toggleWidget(w.id)}/>{w.kind}{w.kpi_id?`: ${w.kpi_id}`:""}</label></li>)}</ul></section>}
     <form onSubmit={submitCommand} className="rounded-xl border border-slate-700 bg-slate-900 p-4"><label className="text-sm" htmlFor="atlas-command">Ask Atlas or prepare an action</label><div className="mt-2 flex gap-2"><input id="atlas-command" value={command} onChange={e=>setCommand(e.target.value)} className="flex-1 rounded bg-slate-800 p-3" placeholder="Show blockers"/><button className="rounded bg-cyan-500 px-4 text-slate-950">Preview</button></div>{preview&&<div className="mt-3 rounded bg-slate-800 p-3"><p>{preview.intent} · {Math.round(preview.confidence*100)}% confidence</p><p className="text-sm text-slate-300">{preview.read_only?"Read-only":"Requires approval before any action"}</p><button type="button" onClick={runCommand} className="mt-2 rounded border border-cyan-400 px-3 py-1">{preview.read_only?"Run":"Send to approvals"}</button></div>}</form>
     {widgets.map(w=>{const render=sections[w.kind];return render?<div key={w.id}>{render()}</div>:null})}
     <DrilldownPanel data={drilldown} onClose={()=>setDrilldown(null)}/>
