@@ -564,12 +564,32 @@ def _install_extensions() -> None:
 
     def consume_effect(self: Service, approval_id: str, *, module_id: int, action_type: str,
                        payload: dict[str, Any], user_id: str, effect_id: str,
-                       actor: str) -> dict[str, Any]:
-        """Atomically issue a one-shot permit bound to the exact reviewed request."""
+                       actor: str, max_age_seconds: float | int | None = None) -> dict[str, Any]:
+        """Atomically issue a one-shot permit bound to the exact reviewed request.
+
+        max_age_seconds (default None = unchanged behaviour) bounds how long an APPROVED permit stays usable:
+        evaluated with a FRESH clock reading inside the consuming transaction, after the approval row lock is held,
+        valid iff 0 <= now - decided_at <= max_age_seconds (a future decided_at is refused)."""
+        if max_age_seconds is not None:
+            import math
+            if (isinstance(max_age_seconds, bool) or not isinstance(max_age_seconds, (int, float))
+                    or not math.isfinite(max_age_seconds) or max_age_seconds <= 0):
+                raise ValueError("max_age_seconds must be a positive finite number")
         digest = _request_hash(module_id=module_id, action_type=action_type, payload=payload, user_id=user_id)
         now = self._clock()
+        from sqlalchemy.exc import IntegrityError
+        try:
+            return self._consume_effect_locked(approval_id, module_id, action_type, payload, user_id, effect_id, actor,
+                                               max_age_seconds, digest, now)
+        except IntegrityError:
+            raise ApprovalConflictError("approval has already been consumed") from None
+
+    def _consume_effect_locked(self, approval_id, module_id, action_type, payload, user_id, effect_id, actor,
+                               max_age_seconds, digest, now):
         with self._sessions.begin() as db:
-            row = self._fetch(db, approval_id)
+            row = db.get(ApprovalRequestRow, approval_id, with_for_update=True)  # row lock on databases that support it
+            if row is None:
+                raise ApprovalNotFoundError(approval_id)
             if self._expire_if_overdue(db, row, now):
                 raise ApprovalConflictError("approval has expired")
             existing = db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id == approval_id))
@@ -580,6 +600,13 @@ def _install_extensions() -> None:
                 raise ApprovalConflictError("approval has already been consumed")
             if row.status != ApprovalStatus.APPROVED.value:
                 raise ApprovalConflictError(f"approval is {row.status}, not approved")
+            if max_age_seconds is not None:
+                fresh = _aware(self._clock())  # read AFTER the lock, never cached before it
+                if row.decided_at is None:
+                    raise ApprovalConflictError("approval is stale")
+                age = (fresh - _aware(row.decided_at)).total_seconds()
+                if age < 0 or age > max_age_seconds:
+                    raise ApprovalConflictError("approval is stale")
             stored = _request_hash(module_id=row.module_id, action_type=row.action_type,
                                    payload=row.payload, user_id=row.user_id)
             if stored != digest:
@@ -596,6 +623,7 @@ def _install_extensions() -> None:
     Service.evaluate_policy = evaluate_policy
     Service.gate = gate
     Service.consume_effect = consume_effect
+    Service._consume_effect_locked = _consume_effect_locked
 
 
 _install_extensions()

@@ -172,7 +172,7 @@ class _Local:
 
 def _local_service():
     class Appr:
-        def put(self, item): return item
+        def put(self, item, **kw): return item
         def list(self): return []
     s = ClaireService(object(), Appr(), local_client=_Local())
     g = s.intake("g", [], {}, tenant_id="t1", actor_id="a1")
@@ -182,17 +182,17 @@ def _local_service():
 @pytest.mark.parametrize("kind", ["send_message", "spend_money"])
 def test_PROTECTION_local_action_without_a_token_files_a_request_and_does_not_execute(kind):
     s, gid = _local_service()
-    out = asyncio.run(s.local_action(gid, {"kind": kind}))
+    out = asyncio.run(s.local_action(gid, {"kind": kind}, tenant_id="t1", actor_id="a1"))
     assert s.local_client.executed == [] and out.action_type == f"claire:{kind}"
 
 
-def test_CHARACTERIZATION_local_action_accepts_any_non_empty_token_it_is_not_validated_here_service_py_55_57():
-    # KNOWN GAP: service.py:55 only tests the token for truthiness, then :57 passes it to local_client.execute. No approval lookup happens in the Service.
-    # Whether the daemon validates it is NOT enforced or visible in this tree: local_client_protocol.py has no token check (a documented-promise vs
-    # enforcement split: PairingService is described there as reference handshake state, line 22). Treat the daemon as unverified.
+def test_CONVERTED_local_action_no_longer_accepts_an_arbitrary_token_slice_15():
+    # CONVERTED from a CHARACTERIZATION (audited tip 404e01a7: any non-empty token executed). Slice 15 requires a real Module 0 approval; this store has no
+    # full_view/consume_effect, so it fails closed. Full coverage: tests/modules/test_m21_local_action_binding.py.
     s, gid = _local_service()
-    asyncio.run(s.local_action(gid, {"kind": "spend_money"}, approval_token="anything"))
-    assert len(s.local_client.executed) == 1
+    with pytest.raises(ValueError, match="local action approval refused"):
+        asyncio.run(s.local_action(gid, {"kind": "spend_money"}, approval_token="anything", tenant_id="t1", actor_id="a1"))
+    assert s.local_client.executed == []
 
 
 def test_PROTECTION_production_wiring_builds_the_service_without_a_local_client_so_local_action_is_unreachable_in_tree():
