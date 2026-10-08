@@ -17,6 +17,7 @@ makes it survive crashes and retried deliveries:
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import asdict
 from datetime import datetime, timezone
 from typing import Any, Callable, Mapping
@@ -138,8 +139,9 @@ class ClaireExecutionRepository:
                  intent_min_age_seconds: float = 600.0) -> None:
         if not tenant_id:
             raise ValueError("tenant_id is required")
-        if intent_min_age_seconds < 0:
-            raise ValueError("intent_min_age_seconds must be >= 0")
+        if (type(intent_min_age_seconds) not in (int, float) or not math.isfinite(intent_min_age_seconds)
+                or intent_min_age_seconds < 0):
+            raise ValueError("intent_min_age_seconds must be a finite number >= 0")
         self.intent_min_age_seconds = intent_min_age_seconds
         self.engine = engine
         self.tenant_id = tenant_id
@@ -284,6 +286,8 @@ class ClaireExecutionRepository:
             if row is None or row.state not in ("intent", "unknown"):
                 raise EffectResolutionError("no unresolved effect for that step")
             if row.state == "intent":
+                if type(confirm_executor_stopped) is not bool:
+                    raise EffectResolutionError("confirm_executor_stopped must be a bool")
                 age = (datetime.now(timezone.utc) - _aware(row.updated_at)).total_seconds()
                 if not confirm_executor_stopped or age < self.intent_min_age_seconds:
                     raise EffectResolutionError("the step may still be running; confirm it stopped and wait for the fence")

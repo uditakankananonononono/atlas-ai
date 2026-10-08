@@ -213,3 +213,44 @@ def test_durable_orchestrator_refuses_a_volatile_store():
     with pytest.raises(ValueError):
         DurableExecutionOrchestrator(repo_on(engine()), executor=BoundedExecutor(IdempotencyStore()))
     DurableExecutionOrchestrator(repo_on(engine()), executor=BoundedExecutor(SqlIdempotencyStore(repo_on(engine()))))
+
+
+# PROTECTION (reviewer finding): bookkeeping failures after the body ran must never delete the intent row
+@pytest.mark.parametrize("broken", ["mark_unknown", "complete"])
+def test_persistence_error_after_body_keeps_the_intent_and_blocks_rerun(broken):
+    eng = engine()
+    repo = repo_on(eng)
+    effects = []
+    p = plan()
+    o = orch(repo, effects, send_exc=ConnectionError("reset") if broken == "mark_unknown" else None)
+    approve(o, p)
+
+    real = getattr(o.bounded.store, broken)
+
+    def boom(key, *a, **k):
+        if key.endswith("send-1"):
+            raise OSError("db went away")
+        return real(key, *a, **k)
+    setattr(o.bounded.store, broken, boom)
+    with pytest.raises((OSError, AttemptsExhausted)):
+        o.execute(p)
+    assert repo.effect_states(p.plan_id)["send-1"] == "intent"  # never deleted
+    with pytest.raises(EffectUnknown):
+        orch(repo_on(eng), effects).resume(p.plan_id)
+    assert effects == ["draft", "send"]
+
+
+# PROTECTION (reviewer edges): NaN fence config and truthy non-bool confirmation
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), -1.0, "600", True])
+def test_intent_min_age_must_be_a_finite_non_negative_number(bad):
+    with pytest.raises(ValueError):
+        ClaireExecutionRepository(engine(), intent_min_age_seconds=bad)
+
+
+@pytest.mark.parametrize("truthy", [1, "yes", "false", [1], object()])
+def test_confirmation_must_be_a_strict_bool(truthy):
+    eng = engine()
+    p, _ = crashed(eng)
+    with pytest.raises(EffectResolutionError):
+        repo_on(eng).resolve_effect(p.plan_id, "send-1", "absent", confirm_executor_stopped=truthy)
+    assert repo_on(eng).effect_states(p.plan_id)["send-1"] == "intent"
