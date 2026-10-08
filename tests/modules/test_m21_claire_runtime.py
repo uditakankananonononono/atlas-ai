@@ -203,3 +203,42 @@ def test_acceptance_ignores_failed_receipts():
     rep = RunReport(final="x", stop_reason="final", steps_used=1,
                     receipts=[ToolReceipt(step=1, tool="lookup", arguments={}, ok=False, error="OSError")])
     assert acceptance.evaluate(CRIT, rep).accepted is False
+
+
+def test_injected_context_is_redacted_before_the_model_sees_it():
+    seen = []
+    class Capture:
+        async def decide(self, messages):
+            seen.append(" ".join(m["content"] for m in messages)); return final()
+    ctx = lambda: [{"note": "api_key: PRIVATE_CANARY_CONTEXT_1", "api_key": "PRIVATE_CANARY_CONTEXT_2", "text": "password=PRIVATE_CANARY_CONTEXT_3"}]
+    run(Engine(Capture(), registry(Lookup())).run("g", context=ctx))
+    assert "PRIVATE_CANARY_CONTEXT" not in seen[0] and "REDACTED" in seen[0]
+
+
+def test_risk_mutated_after_registration_is_refused_and_never_executes():
+    ran = []
+    class Spy(Lookup):
+        def run(self, a): ran.append(1); return {}
+    r = registry(Spy())
+    r.get("lookup").risk = ToolRisk.WRITE  # configuration mutation after registration
+    rep = run(Engine(Script(call("lookup", key="k"), final()), r).run("g"))
+    assert rep.refusals[0].reason == "risk_changed" and rep.receipts == [] and ran == []
+    with pytest.raises(PermissionError):
+        run(r.execute(1, "lookup", {"key": "k"}))
+    r2 = registry(Spy())
+    r2._tools["lookup"] = Lookup()  # object swapped for another class still reporting READ
+    assert r2.risk_intact("lookup") is False
+
+
+def test_lease_contract_is_replacement_fenced_not_expiry_fenced(tmp_path):
+    """Declared contract: a claim settles until another worker re-claims the goal. Expiry alone
+    does not void it (first settler wins). A long read can therefore be re-run by a second worker
+    after lease expiry; only one result settles. Harmless for read-only tools; must change
+    before any write tool exists."""
+    t = [datetime(2026, 10, 8, tzinfo=timezone.utc)]
+    s = GoalStore(f"sqlite:///{tmp_path}/e.db", clock=lambda: t[0], lease_seconds=10)
+    s.create("t1", "a1", "p", CRIT, 3)
+    c1 = s.claim("w1")
+    t[0] += timedelta(seconds=60)  # expired, not yet re-claimed
+    assert s.settle(c1, "blocked", blocker="x", report={}, verdict=None) is True
+    s.close()
