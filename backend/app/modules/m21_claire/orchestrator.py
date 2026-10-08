@@ -117,7 +117,7 @@ class ExecutionOrchestrator:
         except Exception as exc:
             if step.state is StepState.RUNNING:
                 step.state = StepState.FAILED
-            step.error = str(exc)
+            step.error = type(exc).__name__
             plan.state = PlanState.FAILED
             raise
         plan.state = PlanState.SUCCEEDED

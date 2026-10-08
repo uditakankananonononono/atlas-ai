@@ -15,13 +15,17 @@ class ExecutionResult:
 
 class AttemptsExhausted(RuntimeError):
     def __init__(self, attempts: int, last_error: Exception) -> None:
-        super().__init__(f"execution failed after {attempts} attempt(s): {last_error}")
+        super().__init__(f"execution failed after {attempts} attempt(s): {type(last_error).__name__}")
         self.attempts = attempts
         self.last_error = last_error
 
 
 class IdempotencyConflict(RuntimeError):
     pass
+
+
+class EffectUnknown(RuntimeError):
+    """A step's effect may have landed (intent recorded, no outcome). Never re-run it; the owner resolves it."""
 
 
 @dataclass(slots=True)

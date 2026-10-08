@@ -25,7 +25,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from .execution import (
-    AttemptsExhausted, BoundedExecutor, ExecutionResult, IdempotencyStore,
+    AttemptsExhausted, BoundedExecutor, EffectUnknown, ExecutionResult, IdempotencyConflict,
 )
 from .models import (
     ActionRequest, Approval, ExecutionPlan, PlanState, PlanStep, ReviewSnapshot,
@@ -84,6 +84,27 @@ class AuditRow(Base):
     event = sa.Column(sa.String, nullable=False)
     detail_json = sa.Column(sa.JSON, nullable=False, default=dict)
     created_at = sa.Column(sa.DateTime(timezone=True), nullable=False)
+
+
+class StepEffectRow(Base):
+    """Effect journal for durable steps. Written (intent) BEFORE the executor runs; stores no parameters."""
+    __tablename__ = "claire_step_effects"
+
+    tenant_id = sa.Column(sa.String, primary_key=True)
+    effect_key = sa.Column(sa.String, primary_key=True)
+    fingerprint = sa.Column(sa.String, nullable=False)
+    state = sa.Column(sa.String, nullable=False)  # intent | committed | unknown
+    result_json = sa.Column(sa.JSON, nullable=True)
+    created_at = sa.Column(sa.DateTime(timezone=True), nullable=False)
+    updated_at = sa.Column(sa.DateTime(timezone=True), nullable=False)
+
+
+def effect_key(plan_id: str, action_id: str) -> str:
+    return f"{plan_id}:{action_id}"
+
+
+class EffectResolutionError(ValueError):
+    pass
 
 
 def _aware(dt: datetime | None) -> datetime | None:
@@ -186,6 +207,76 @@ class ClaireExecutionRepository:
         }
         return plan
 
+    # -- effect journal ------------------------------------------------------
+
+    def effect_claim(self, key: str, fingerprint: str) -> tuple[bool, Any]:
+        now = datetime.now(timezone.utc)
+        with self._session_factory() as session:
+            session.add(StepEffectRow(tenant_id=self.tenant_id, effect_key=key, fingerprint=fingerprint,
+                                      state="intent", created_at=now, updated_at=now))
+            try:
+                session.commit()
+                return True, None
+            except sa.exc.IntegrityError:
+                session.rollback()
+        with self._session_factory() as session:
+            row = session.get(StepEffectRow, (self.tenant_id, key))
+            if row is None:  # raced with an abandon; refuse rather than guess
+                raise EffectUnknown("effect state changed during claim")
+            if row.fingerprint != fingerprint:
+                raise IdempotencyConflict("key was already used for a different reviewed action")
+            if row.state == "committed":
+                return False, row.result_json
+            raise EffectUnknown("a previous execution of this step has no recorded outcome")
+
+    def effect_complete(self, key: str, result: Any) -> None:
+        with self._session_factory() as session:
+            n = (session.query(StepEffectRow)
+                 .filter(StepEffectRow.tenant_id == self.tenant_id, StepEffectRow.effect_key == key,
+                         StepEffectRow.state == "intent")
+                 .update({"state": "committed", "result_json": result if _jsonable(result) else repr(result),
+                          "updated_at": datetime.now(timezone.utc)}))
+            if n != 1:
+                session.rollback()
+                raise KeyError(key)
+            session.commit()
+
+    def effect_abandon(self, key: str) -> None:
+        with self._session_factory() as session:
+            (session.query(StepEffectRow)
+             .filter(StepEffectRow.tenant_id == self.tenant_id, StepEffectRow.effect_key == key,
+                     StepEffectRow.state == "intent").delete())
+            session.commit()
+
+    def effect_states(self, plan_id: str) -> dict[str, str]:
+        prefix = effect_key(plan_id, "")
+        with self._session_factory() as session:
+            rows = (session.query(StepEffectRow)
+                    .filter(StepEffectRow.tenant_id == self.tenant_id, StepEffectRow.effect_key.like(prefix + "%"))
+                    .all())
+            return {r.effect_key[len(prefix):]: r.state for r in rows}
+
+    def resolve_effect(self, plan_id: str, action_id: str, outcome: str, result: Any = None) -> None:
+        """Owner decision for an effect with no recorded outcome. 'committed' marks it landed (resume replays it,
+        never re-runs it); 'absent' deletes the record so resume may run the step."""
+        if outcome not in {"committed", "absent"}:
+            raise EffectResolutionError("outcome must be committed or absent")
+        key = effect_key(plan_id, action_id)
+        with self._session_factory() as session:
+            q = session.query(StepEffectRow).filter(
+                StepEffectRow.tenant_id == self.tenant_id, StepEffectRow.effect_key == key,
+                StepEffectRow.state.in_(("intent", "unknown")))
+            if outcome == "absent":
+                n = q.delete(synchronize_session=False)
+            else:
+                n = q.update({"state": "committed", "result_json": result if _jsonable(result) else repr(result),
+                              "updated_at": datetime.now(timezone.utc)}, synchronize_session=False)
+            if n != 1:
+                session.rollback()
+                raise EffectResolutionError("no unresolved effect for that step")
+            session.commit()
+        self.audit(plan_id, "effect_resolved", action_id=action_id, detail={"outcome": outcome})
+
     # -- audit ---------------------------------------------------------------
 
     def audit(self, plan_id: str, event: str, *, action_id: str | None = None,
@@ -218,6 +309,24 @@ def _jsonable(value: Any) -> bool:
         return False
 
 
+class SqlIdempotencyStore:
+    """Durable claim/complete/abandon over the effect journal. claim() commits the intent row BEFORE the executor
+    runs, so a crash leaves an intent that blocks re-execution (EffectUnknown) instead of silently re-running.
+    Limit: an executor that RAISES a normal Exception is treated as not-landed (row deleted), as before."""
+
+    def __init__(self, repo: "ClaireExecutionRepository") -> None:
+        self.repo = repo
+
+    def claim(self, key: str, fingerprint: str) -> tuple[bool, Any]:
+        return self.repo.effect_claim(key, fingerprint)
+
+    def complete(self, key: str, result: Any) -> None:
+        self.repo.effect_complete(key, result)
+
+    def abandon(self, key: str) -> None:
+        self.repo.effect_abandon(key)
+
+
 class DurableExecutionOrchestrator(ExecutionOrchestrator):
     """Exact-review orchestration with durable, idempotent, bounded steps."""
 
@@ -233,7 +342,9 @@ class DurableExecutionOrchestrator(ExecutionOrchestrator):
     ) -> None:
         super().__init__(policy=policy, clock=clock)
         self.repo = repo
-        self.bounded = executor or BoundedExecutor(IdempotencyStore())
+        if executor is not None and not isinstance(executor.store, SqlIdempotencyStore):
+            raise ValueError("a durable orchestrator requires a durable idempotency store")
+        self.bounded = executor or BoundedExecutor(SqlIdempotencyStore(repo))
         if not 1 <= max_attempts <= 5:
             raise ValueError("max_attempts must be between 1 and 5")
         self.max_attempts = max_attempts
@@ -263,7 +374,7 @@ class DurableExecutionOrchestrator(ExecutionOrchestrator):
             raise ExecutorNotRegistered(request.capability)
         fingerprint = self.review_snapshot(plan, request.action_id).digest
         result: ExecutionResult = self.bounded.run(
-            key=f"{plan.plan_id}:{request.action_id}",
+            key=effect_key(plan.plan_id, request.action_id),
             fingerprint=fingerprint,
             operation=lambda params: executor_fn(params),
             parameters=request.parameters,
@@ -309,11 +420,13 @@ class DurableExecutionOrchestrator(ExecutionOrchestrator):
                     self._execute_step(plan, step)
                 except Exception as exc:
                     step.state = StepState.FAILED
-                    step.error = str(exc)
+                    step.error = type(exc).__name__  # class name only: exception text can carry secrets
                     plan.state = PlanState.FAILED
                     self.repo.save_plan(plan)
+                    if isinstance(exc, EffectUnknown):
+                        self.repo.audit(plan.plan_id, "effect_unknown", action_id=request.action_id)
                     self.repo.audit(plan.plan_id, "step_failed",
-                                    action_id=request.action_id, detail={"error": str(exc)[:400]})
+                                    action_id=request.action_id, detail={"error": type(exc).__name__})
                     raise
                 step.state = StepState.SUCCEEDED
                 succeeded.add(request.action_id)
