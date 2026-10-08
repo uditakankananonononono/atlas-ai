@@ -2,13 +2,14 @@
 import argparse,hashlib,json,sqlite3
 from pathlib import Path
 from urllib.parse import urlsplit,parse_qs
-from .public_corpus import CARD,DATASET,CONFIGS
+from .public_corpus import CARD,DATASET,CONFIGS,source_spec
 
 def verify(db_path,export_path):
  export=Path(export_path);manifest=json.loads(export.with_suffix(export.suffix+'.manifest.json').read_text())
  key=manifest['selection'];config,split=key.split('/')
  if config not in CONFIGS or split not in {'train','validation','test'}:raise ValueError('unsupported selection')
- if manifest['dataset']!=DATASET or manifest['card']!=CARD or manifest['training_performed'] is not False:raise ValueError('manifest provenance mismatch')
+ dataset,card,remote_config,text_field,license_note=source_spec(config)
+ if manifest['dataset']!=dataset or manifest['card']!=card or manifest['training_performed'] is not False:raise ValueError('manifest provenance mismatch')
  digest=hashlib.sha256()
  with export.open('rb') as stream:
   for block in iter(lambda:stream.read(65536),b''):digest.update(block)
@@ -21,13 +22,13 @@ def verify(db_path,export_path):
    stored+=1
    if hashlib.sha256(text.encode()).hexdigest()!=sha:raise ValueError('stored text checksum mismatch')
    url=urlsplit(source);query=parse_qs(url.query)
-   if url.scheme!='https' or url.netloc!='datasets-server.huggingface.co' or url.path!='/rows' or url.username or query.get('dataset')!=[DATASET] or query.get('config')!=[config] or query.get('split')!=[split]:raise ValueError('stored source mismatch')
+   if url.scheme!='https' or url.netloc!='datasets-server.huggingface.co' or url.path!='/rows' or url.username or query.get('dataset')!=[dataset] or query.get('config')!=[remote_config] or query.get('split')!=[split]:raise ValueError('stored source mismatch')
    if not int(query['offset'][0])<=ordinal<int(query['offset'][0])+int(query['length'][0]):raise ValueError('row outside source page')
    if not text.strip():continue
    line=stream.readline()
    if not line:raise ValueError('export missing row')
    row=json.loads(line)
-   if (row['row_index'],row['text'],row['sha256'],row['source'],row['fetched_at'])!=(ordinal,text,sha,source,stamp) or row['dataset_card']!=CARD or row['selection']!=key or not row['license'].startswith('CC-BY-SA'):raise ValueError('ordered export correspondence mismatch')
+   if (row['row_index'],row['text'],row['sha256'],row['source'],row['fetched_at'])!=(ordinal,text,sha,source,stamp) or row['dataset_card']!=card or row['selection']!=key or row['license']!=license_note:raise ValueError('ordered export correspondence mismatch')
    written+=1
   if stream.readline():raise ValueError('unexpected extra export row')
   if not cursor or cursor[0]!=stored:raise ValueError('cursor mismatch')
