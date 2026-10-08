@@ -27,21 +27,21 @@ def main():
     suites = ET.parse(junit).getroot()
     cases = list(suites.iter("testcase"))
     failed = sum(case.find("failure") is not None or case.find("error") is not None for case in cases)
-    residual = sum("residual" in case.attrib["name"] or case.attrib["name"] in {"test_http_error_itself_remains_unscrubbed", "test_source_field_is_outside_redaction_contract", "test_malformed_ipv6_can_raise_instead_of_recording"} for case in cases)
+    residual = sum("former_" in case.attrib["name"] or case.attrib["name"] in {"test_http_error_itself_is_minimized", "test_arbitrary_source_field_is_removed", "test_malformed_ipv6_records_redacted_instead_of_raising"} for case in cases)
     models = ROOT / "backend/app/modules/m18_side_hustle_scraper/lane_models.py"
     receipt = {
         "verdict": "SCOPED" if completed.returncode == 0 else "PARTIAL",
         "head": git("rev-parse", "HEAD"),
-        "base": "dd06ca21a9dca28c749a11b78d59e8ab473bc554",
+        "base": "3eef2c0ab2344abfcc2de912e154a1b28f43d087",
         "python": sys.version,
         "tests_executed": len(cases),
         "failed_tests": failed,
-        "residual_characterization_tests": residual,
+        "former_residual_removal_tests": residual,
         "other_tests": len(cases) - residual,
-        "loopback_transport_tests": 1,
+        "loopback_transport_tests": 2,
         "module_sha256": hashlib.sha256(models.read_bytes()).hexdigest(),
         "command": command,
-        "limits": ["Passing residual tests reproduce unsafe behavior, not a fix.", "No production files changed.", "Loopback HTTP is a real transport test against a controlled server, not an external website or owner PC test.", "No general credential-hygiene, header-scrubbing, legacy-cleanup or collection permission claim.", "Public main at observed 7eb17975 lacks this pinned redaction implementation."],
+        "limits": ["13 former residual tests now assert removal or safe fallback.", "Diagnostics deliberately lose all URL path/query/fragment and unknown source/reason prose.", "Loopback HTTP is a real transport test against a controlled server, not an external website or owner PC test.", "No hostname-credential, raw request/headers, legacy-cleanup or collection permission claim.", "Reapplied onto observed main 3eef2c0; its bounded redactor is replaced with diagnostic minimization."],
     }
     (args.output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(json.dumps(receipt, indent=2))

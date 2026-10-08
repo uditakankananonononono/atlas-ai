@@ -14,11 +14,12 @@ import urllib.request
 from datetime import datetime
 from typing import Callable, Mapping, Optional, Protocol
 
-from .lane_models import FetchPolicy, HttpResponseRecord, utcnow
+from .lane_models import FetchPolicy, HttpResponseRecord, utcnow, _redact_url, _scrub_text
 
 
 class HttpError(Exception):
     def __init__(self, url: str, status: Optional[int], reason: str, retry_after: Optional[float] = None):
+        url, reason = _redact_url(url), _scrub_text(reason)
         super().__init__(f"HTTP {status} for {url}: {reason}")
         self.url = url
         self.status = status
@@ -108,9 +109,12 @@ class UrllibHttpClient:
                     retry_after = float(exc.headers["Retry-After"])
                 except ValueError:
                     retry_after = None
-            raise HttpError(url, exc.code, exc.reason or "http error", retry_after) from exc
+            failure = HttpError(url, exc.code, exc.reason or "http error", retry_after)
         except urllib.error.URLError as exc:
-            raise HttpError(url, None, str(exc.reason)) from exc
+            failure = HttpError(url, None, str(exc.reason))
+        # Raise outside the handler so the raw urllib exception is not retained
+        # as __context__ or __cause__ on the public failure object.
+        raise failure
 
 
 class FakeHttpClient:
