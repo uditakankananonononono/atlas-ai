@@ -46,6 +46,14 @@ def test_service_reads_real_recorded_history_and_excludes_the_current_points_own
     s.repository.record_kpi_points([(kid.id, kid.window_hours, 777)], now - timedelta(minutes=1))
     v = s.kpi_anomaly(kid.id, now)
     assert v.points_used == 9 and v.baseline_median == 10.0
+    assert v.newest_point.replace(tzinfo=timezone.utc) == now - timedelta(hours=12)
+    assert v.oldest_point.replace(tzinfo=timezone.utc) == now - timedelta(hours=20)
+    assert v.baseline_mad == 1.0
+    # Establish that recent data really exists in SQL; exclusion is the
+    # service's five-minute boundary, not a failed fixture insertion.
+    all_points = s.repository.kpi_history(kid.id, kid.window_hours, now, 60)
+    assert len(all_points) == 10 and all_points[0][1] == 777.0
+    assert all_points[0][0].replace(tzinfo=timezone.utc) == now - timedelta(minutes=1)
     with pytest.raises(LookupError): s.kpi_anomaly("nope", now)
 
 def test_http_route():
@@ -80,7 +88,11 @@ def test_finite_but_overflowing_values_are_refused_not_inf():
     v = detect("k", 24, 1e308, pts([-1e308, 1e308, -1e308, 1e308, -1e308, 1e308, -1e308, 1e308]))
     assert v.status == "invalid_data" and v.robust_z is None
     v2 = detect("k", 24, -1e308, pts(GOOD))
-    assert v2.status in ("invalid_data", "anomalous") and (v2.robust_z is None or math.isfinite(v2.robust_z))
+    assert v2.status == "anomalous" and v2.direction == "below"
+    assert v2.baseline_median == 10.0 and v2.baseline_mad == 1.0
+    assert v2.robust_z == -6.745e307 and math.isfinite(v2.robust_z)
+    assert v2.reason is None
+    json.loads(v2.model_dump_json(), parse_constant=lambda c: (_ for _ in ()).throw(AssertionError(c)))
 
 def _strict(resp):
     return json.loads(resp.text, parse_constant=lambda c: (_ for _ in ()).throw(AssertionError(f"non-finite {c} in JSON")))
