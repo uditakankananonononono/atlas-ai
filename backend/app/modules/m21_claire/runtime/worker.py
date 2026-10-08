@@ -28,8 +28,8 @@ class Worker:
             self.store.settle(claim, "awaiting_review", blocker="approval_required", report=dump, verdict=None)
         elif report.stop_reason in {"model_unavailable", "model_invalid_output"}:
             self.store.settle(claim, "blocked", blocker=report.stop_reason, report=dump, verdict=None)
-        elif report.stop_reason == "step_limit":
-            self.store.settle(claim, "exhausted", blocker="step_limit", report=dump, verdict=None)
+        elif report.stop_reason in {"step_limit", "replan_limit"}:
+            self.store.settle(claim, "exhausted", blocker=report.stop_reason, report=dump, verdict=None)
         elif report.stop_reason == "cancelled":
             self.store.settle(claim, "cancelled", blocker=None, report=dump, verdict=None)
         else:

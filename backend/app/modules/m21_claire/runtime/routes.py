@@ -1,5 +1,6 @@
 from __future__ import annotations
 import os
+import threading
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -10,12 +11,14 @@ from .redaction import scrub_text
 
 router = APIRouter(prefix="/runtime", tags=["claire-runtime"])
 _store: GoalStore | None = None
+_store_lock = threading.Lock()
 
 
 def get_store() -> GoalStore:
     """Durable store from ATLAS_CLAIRE_RUNTIME_DB. Unset fails closed: no silent in-memory goals."""
     global _store
-    if _store is None:
+    with _store_lock:
+      if _store is None:
         url = os.getenv("ATLAS_CLAIRE_RUNTIME_DB", "").strip()
         if not url:
             raise HTTPException(503, "Claire runtime store is not configured")

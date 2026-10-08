@@ -32,8 +32,12 @@ def redact(value: Any, key: str = "") -> Any:
         return {"redacted": True, "sha256": hashlib.sha256(enc).hexdigest(), "bytes": len(enc)}
     if isinstance(value, dict):
         return {str(k): redact(v, str(k)) for k, v in value.items()}
-    if isinstance(value, list):
+    if isinstance(value, (list, tuple)):
         return [redact(v) for v in value]
+    if isinstance(value, (set, frozenset)):
+        return sorted((redact(v) for v in value), key=repr)
+    if isinstance(value, (bytes, bytearray)):
+        return {"bytes_redacted": True, "sha256": hashlib.sha256(bytes(value)).hexdigest(), "bytes": len(value)}
     if isinstance(value, str):
         value = scrub_text(value)
         if len(value) > 20_000:

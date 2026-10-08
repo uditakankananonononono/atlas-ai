@@ -1,5 +1,6 @@
 from __future__ import annotations
 import inspect
+import re
 from abc import ABC, abstractmethod
 from typing import Any
 from pydantic import BaseModel, ValidationError
@@ -28,26 +29,39 @@ class ReadOnlyToolRegistry:
     """Registry. Without an enforcer only tools declared READ can be registered at all (milestone 1).
     With a GateEnforcer, write/execute tools may register but every dispatch is classified and gated.
 
+    TRUST BOUNDARY: tool classes and their declarations are trusted Python code. The registry freezes name, risk, class and
+    effect declarations at registration and refuses dispatch if any change; it cannot stop code that replaces the class itself.
     Risk comes from the registered tool, never from the model's call. Names are exact;
     an alias the model invents is an unknown tool, not a lower-risk spelling of a real one.
     """
     def __init__(self, enforcer: Any = None) -> None:
         self._tools: dict[str, Tool] = {}
-        self._trusted: dict[str, tuple[ToolRisk, type]] = {}  # frozen at registration
+        self._trusted: dict[str, tuple] = {}  # (name, risk, class, spends_money, sends_to_person) frozen at registration
         self.enforcer = enforcer
 
+    NAME_GRAMMAR = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
+
     def register(self, tool: Tool) -> None:
+        if not isinstance(tool.name, str) or not self.NAME_GRAMMAR.match(tool.name):
+            raise ValueError("tool name must match [a-z][a-z0-9_]{0,63} (lowercase words joined by underscores)")
+        for attr in ("spends_money", "sends_to_person"):
+            if getattr(tool, attr) not in (True, False, None) or type(getattr(tool, attr)) not in (bool, type(None)):
+                raise ValueError(f"{attr} must be exactly True, False or None")
         if tool.risk is not ToolRisk.READ and self.enforcer is None:
             raise ValueError("a registry without a gate enforcer accepts read-risk tools only")
         if tool.name in self._tools:
             raise ValueError("tool name already registered")
         self._tools[tool.name] = tool
-        self._trusted[tool.name] = (tool.risk, type(tool))
+        self._trusted[tool.name] = self._fingerprint(tool)
+
+    @staticmethod
+    def _fingerprint(tool: Tool) -> tuple:
+        return (tool.name, tool.risk, type(tool), tool.spends_money, tool.sends_to_person)
 
     def risk_intact(self, name: str) -> bool:
-        """True only if the object still reports READ and is the class registered as READ."""
+        """True only if name, risk, class and effect declarations still equal what was registered."""
         tool = self._tools.get(name)
-        return tool is not None and self._trusted[name] == (tool.risk, type(tool))
+        return tool is not None and self._trusted[name] == self._fingerprint(tool)
 
     def get(self, name: str) -> Tool | None:
         return self._tools.get(name)

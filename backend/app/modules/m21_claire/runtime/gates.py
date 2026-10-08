@@ -39,13 +39,43 @@ def payload_digest(goal_id: str, capability: str, arguments: dict[str, Any]) -> 
     return hashlib.sha256(enc.encode()).hexdigest()
 
 
+def _words(text: str) -> set[str]:
+    """Split on space, slash, hyphen, dot, underscore and camelCase boundaries."""
+    spaced = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", str(text))
+    return {w for w in re.split(r"[^a-z0-9]+", spaced.lower()) if w}
+
+
 def _tokens(name: str, arguments: dict[str, Any]) -> set[str]:
-    toks = set(name.lower().replace("-", "_").replace(".", "_").split("_"))
+    toks = _words(name)
     tags = arguments.get("policy_tags", ()) if isinstance(arguments, dict) else ()
     if isinstance(tags, (list, tuple, set, frozenset)):
         for tag in tags:
-            toks |= set(str(tag).lower().replace("-", "_").split("_"))
+            toks |= _words(tag)
     return toks
+
+
+def require_plain_json(value: Any, _depth: int = 0) -> None:
+    """Gated-call arguments must be plain JSON so a digest cannot collide across types (tuple vs list, bytes, etc.)."""
+    if _depth > 50:
+        raise ValueError("arguments nested too deeply")
+    t = type(value)
+    if value is None or t in (bool, str, int):
+        return
+    if t is float:
+        if value != value or value in (float("inf"), float("-inf")):
+            raise ValueError("non-finite number")
+        return
+    if t is list:
+        for v in value:
+            require_plain_json(v, _depth + 1)
+        return
+    if t is dict:
+        for k, v in value.items():
+            if type(k) is not str:
+                raise ValueError("non-string key")
+            require_plain_json(v, _depth + 1)
+        return
+    raise ValueError("not plain JSON")
 
 
 def classify(tool: Any, arguments: dict[str, Any], policy: ActionPolicy | None = None) -> Classification:
@@ -83,6 +113,10 @@ class GateEnforcer:
         self.ledger, self.policy = ledger, policy or ActionPolicy()
 
     def authorize(self, tool: Any, arguments: dict[str, Any], principal: Principal | None) -> None:
+        try:
+            require_plain_json(arguments)
+        except (ValueError, RecursionError):
+            raise GateRefused("invalid_arguments", (), "") from None
         c = classify(tool, arguments, self.policy)
         digest = payload_digest(principal.goal_id if principal else "", tool.name, arguments)
         if c.blocked:

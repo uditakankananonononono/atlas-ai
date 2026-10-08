@@ -5,6 +5,7 @@ Limits: test-only fake tools; SQLite; no effect reconciliation or idempotency fo
 write tool); Claire's older ActionPolicy/orchestrator verb gate is unchanged and not consulted by this runtime.
 """
 import asyncio
+from typing import Any
 import sqlite3
 from datetime import datetime, timedelta, timezone
 
@@ -27,7 +28,7 @@ RAN: list[tuple] = []
 
 
 class Args(BaseModel):
-    target: str = ""
+    target: Any = ""
     policy_tags: list[str] = []
 
 
@@ -252,3 +253,63 @@ def test_standing_no_names_are_blocked_on_word_boundaries_not_substrings():
         assert classify(make(n), {}).blocked is True, n
     assert classify(make("update_row"), {}).blocked is False
     assert classify(make("pirated_name_checker_unrelated"), {}).blocked is False  # 'pirated' != 'piracy'
+
+
+@pytest.mark.parametrize("attr,value", [("sends_to_person", False), ("spends_money", False), ("risk", ToolRisk.READ), ("name", "other")])
+def test_mutating_any_gated_attribute_after_registration_is_refused_at_dispatch(store, attr, value):
+    """Reviewer reproduction: gated tool correctly refused, then the SAME object is mutated to look ungated."""
+    t = make("notify_person", risk=ToolRisk.WRITE, money=True, person=True)
+    r = registry(store, t)
+    p = Principal("t1", "a1", goal(store))
+    with pytest.raises(GateRefused):
+        run(r.execute(1, "notify_person", {"target": "bob"}, p))
+    setattr(t, attr, value)
+    assert r.risk_intact("notify_person") is False
+    with pytest.raises(PermissionError):
+        run(r.execute(1, "notify_person", {"target": "bob"}))          # no principal, no approval
+    rep = run(Engine(Script(call("notify_person", target="bob"), final()), r).run("g", principal=p))
+    assert rep.receipts == [] and rep.refusals[0].reason == "risk_changed"
+    assert RAN == []
+
+
+def test_effect_metadata_mutation_on_a_never_refused_tool_is_also_refused(store):
+    t = make("update_row")  # autonomous at registration
+    r = registry(store, t)
+    t.sends_to_person = True  # upgrading is also a change from what was reviewed at registration
+    assert r.risk_intact("update_row") is False
+
+
+@pytest.mark.parametrize("bad", [0, 1, "false", "", {}, [], "True"])
+def test_declared_effects_must_be_exactly_bool_or_none(store, bad):
+    for attr in ("spends_money", "sends_to_person"):
+        t = make("update_row"); setattr(t, attr, bad)
+        with pytest.raises(ValueError):
+            registry(store, t)
+
+
+@pytest.mark.parametrize("name", ["send email", "send/email", "sendEmail", "Pay_Invoice", "pay-invoice", "x" * 65, "", "1abc", "pay.invoice"])
+def test_tool_names_outside_the_grammar_cannot_register(store, name):
+    t = make("update_row"); t.name = name
+    with pytest.raises(ValueError):
+        registry(store, t)
+
+
+def test_word_splitting_in_policy_tags_and_underscore_names_escalates_even_when_declared_ungated():
+    t = make("update_row")
+    for tag in ("send email", "send/email", "sendEmail", "pay invoice", "pay-invoice", "payInvoice"):
+        assert classify(t, {"policy_tags": [tag]}).gates, tag
+    assert classify(make("send_email_now"), {}).gates == ("comms",)
+    assert classify(make("pay_invoice_now"), {}).gates == ("payment",)
+
+
+def test_gated_arguments_must_be_plain_json_so_digests_cannot_collide(store):
+    r = registry(store, make("send_email", person=True))
+    gid = goal(store); p = Principal("t1", "a1", gid)
+    d = payload_digest(gid, "send_email", {"target": ["a", "b"]})
+    store.grant("t1", "a1", gid, "send_email", "comms", d, "a1")
+    for args in ({"target": ("a", "b")}, {"target": {"a"}}, {"target": b"a"}, {1: "x"}, {"target": float("nan")}):
+        with pytest.raises(GateRefused) as e:
+            run(r.execute(1, "send_email", args, p))
+        assert e.value.reason == "invalid_arguments"
+    assert RAN == []
+    assert run(r.execute(1, "send_email", {"target": ["a", "b"]}, p)).ok  # the exact approved plain-JSON call still works
