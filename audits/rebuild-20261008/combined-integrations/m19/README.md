@@ -1,0 +1,1 @@
+M19 reviewed e61e4dec replayed afbd94fa after M05. test_m19*199passed using isolated SQLite URL/root conftest; earlier ordinary run192passed/7skip was fixture scope, not counted as full probe. Covers affected legacy/portfolio/analysis ownership routes and store. Limits: legacy run store in-memory, SQLite only, no real IdP; dependencies scoped to M19, no broad ownership claim.
