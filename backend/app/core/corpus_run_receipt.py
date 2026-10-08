@@ -19,7 +19,10 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100,
  try:git_head=subprocess.run(['git','-C',str(root),'rev-parse','HEAD'],capture_output=True,text=True)
  except FileNotFoundError:git_head=subprocess.CompletedProcess([],128,stdout='',stderr='')
  revision=None;dirty=False;hashes={};provenance='module_sha256'
+ tracked=False
  if git_head.returncode==0:
+  tracked=subprocess.run(['git','-C',str(root),'ls-files','--error-unmatch',str(Path(__file__).resolve())],capture_output=True,text=True).returncode==0
+ if git_head.returncode==0 and tracked:
   revision=git_head.stdout.strip()
   dirty=bool(subprocess.run(['git','-C',str(root),'status','--porcelain'],capture_output=True,text=True,check=True).stdout)
   provenance='git_head'
