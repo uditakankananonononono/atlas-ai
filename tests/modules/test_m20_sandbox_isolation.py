@@ -14,6 +14,7 @@ def test_policy_canonical_containment_and_symlink_escape(tmp_path):
  assert not SandboxPolicy().allows_path(str(root))
 
 
+@pytest.mark.usefixtures("real_bubblewrap_environment")
 def test_actual_execution_cannot_read_or_write_host_outside_project(tmp_path,monkeypatch):
  monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
  outside=tmp_path/'private.txt';outside.write_text('host-secret-canary')
@@ -53,6 +54,7 @@ def test_network_permission_does_not_enable_unsafe_execution(tmp_path):
   runner.run_python('a','print(4)',allowed_hosts=['example.com'])
 
 
+@pytest.mark.usefixtures("real_bubblewrap_environment")
 def test_actual_mounted_runtime_route_isolates_host_and_same_project_across_owners(tmp_path,monkeypatch,oidc_auth_headers):
  from fastapi.testclient import TestClient
  from sqlalchemy import create_engine
@@ -85,6 +87,7 @@ def test_actual_mounted_runtime_route_isolates_host_and_same_project_across_owne
  assert r.status_code==403 and 'execution refused' in r.text
 
 
+@pytest.mark.usefixtures("real_bubblewrap_environment")
 def test_os_network_namespace_blocks_raw_socket_bypass_to_host_listener(tmp_path,monkeypatch):
  import socket
  monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
@@ -104,6 +107,7 @@ except OSError: print('OS_NETWORK_BLOCKED')
   assert r.stdout=='OS_NETWORK_BLOCKED\n'
 
 
+@pytest.mark.usefixtures("real_bubblewrap_environment")
 def test_output_symlinks_removed_and_run_refused_before_future_host_reader(tmp_path,monkeypatch):
  monkeypatch.setenv('ATLAS_SANDBOX_BACKEND','bubblewrap')
  secret=tmp_path/'host-secret';secret.write_text('private')
