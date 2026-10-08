@@ -20,17 +20,40 @@ class StoryRepository:
   # the transaction. A unique-(project_id,version) collision - two
   # concurrent allocations observing the same maximum - retries with a
   # recomputed number in a fresh transaction, bounded to three attempts,
-  # then fails with a domain error. A raw IntegrityError never escapes.
-  # Deterministic handler-path contract only; no real-race closure claimed.
+  # then fails with a domain error. Integrity classification is
+  # driver-identified (SQLite result codes, PostgreSQL SQLSTATE): a
+  # recognized non-unique integrity error raises IntegrityWriteError on the
+  # first attempt, an unclassifiable driver signal raises
+  # UnclassifiedIntegrityError; neither is collision-labeled or retried.
+  # A commit-time or post-commit failure raises CommitOutcomeUnknown: the
+  # call failed while the version may have persisted; reconcile by listing
+  # current versions before resubmitting. No automatic retry, compensation
+  # or deduplication of the ambiguous case. Deterministic handler-path
+  # contract only; no real-race closure claimed.
   from sqlalchemy.exc import IntegrityError as _IE
+  from ._commit_contract import CommitOutcomeUnknown,IntegrityWriteError,UnclassifiedIntegrityError,classify_integrity_error
   last=None
   for _ in range(3):
+   committed=False
    try:
-    with self.sessions.begin() as db:
+    with self.sessions() as db:
      p=db.get(StoryProjectRow,project_id)
      if not p or p.tenant_id!=self.tenant_id:raise LookupError(project_id)
-     current=db.scalar(select(func.max(StoryVersionRow.version)).where(StoryVersionRow.project_id==project_id));v=(current or 0)+1;db.add(StoryVersionRow(project_id=project_id,version=v,student_text=text,coach_feedback=feedback));return v
-   except _IE as exc:last=exc
+     current=db.scalar(select(func.max(StoryVersionRow.version)).where(StoryVersionRow.project_id==project_id));v=(current or 0)+1;db.add(StoryVersionRow(project_id=project_id,version=v,student_text=text,coach_feedback=feedback));db.flush()
+     try:db.commit()
+     except _IE:raise
+     except Exception as exc:raise CommitOutcomeUnknown('story version commit outcome unknown; the version may have persisted; reconcile by listing current versions before resubmitting; no automatic retry, compensation or deduplication is performed') from exc
+     committed=True
+     return v
+   except _IE as exc:
+    kind=classify_integrity_error(exc)
+    if kind=='unique':last=exc;continue
+    if kind=='non_unique':raise IntegrityWriteError('story version write failed on a recognized non-collision integrity error; rolled back without write; not a version collision') from exc
+    raise UnclassifiedIntegrityError('story version write failed on an integrity error this driver cannot classify; rolled back without write; identification covers SQLite and PostgreSQL only') from exc
+   except CommitOutcomeUnknown:raise
+   except Exception as exc:
+    if committed:raise CommitOutcomeUnknown('story version call failed after a returned commit; the version persisted while the call failed; reconcile by listing current versions before resubmitting; no automatic retry, compensation or deduplication is performed') from exc
+    raise
   raise ValueError('story version allocation collided repeatedly; resubmit the student text') from last
  def evolve_brand(self,values,patterns,strengths,evidence,_db=None):
   if not evidence:raise ValueError('BrandID requires student-supplied evidence')

@@ -43,11 +43,12 @@ def test_hz18_lost_race_rejects_stale_answer_instead_of_shifting_questions(tmp_p
                 'UNIQUE constraint failed: m23_identity_interview_turns.session_id, m23_identity_interview_turns.ordinal'))
 
     class RacingSessions(sessionmaker):
-        def begin(self):
+        def __call__(self, **kwargs):
             # The competitor's answer commits at the retry boundary (the
             # first attempt's transaction has fully rolled back, so the
             # database is unlocked): turn ordinal 1 plus the question_index
-            # advance, exactly what answer() would write.
+            # advance, exactly what answer() would write. hz29: the retry
+            # boundary is the fresh-session call, no longer begin().
             if state['failed_once'] and not state['competitor_done']:
                 state['competitor_done'] = True
                 other = sqlite3.connect(db_path)
@@ -59,7 +60,7 @@ def test_hz18_lost_race_rejects_stale_answer_instead_of_shifting_questions(tmp_p
                     "UPDATE m23_identity_interviews SET question_index = 1 WHERE id = ?",
                     (started['id'],))
                 other.commit(); other.close()
-            return super().begin()
+            return super().__call__(**kwargs)
 
     r = IdentityInterviewRepository('tenant-hz18', RacingSessions(bind=e))
     started = r.start('college')
