@@ -56,28 +56,30 @@ router.include_router(atomic_concepts_router_47_69)
 
 from .local_client_protocol import PairingService
 from pydantic import BaseModel
-_pairing=PairingService()
+_pairing=PairingService(require_tenant=True)
 class PairConfirmIn(BaseModel):
  server_nonce:str;code:str;name:str;certificate_fingerprint:str;capabilities:set[str]
+def _public_device(d):return {'id':d.id,'name':d.name,'certificate_fingerprint':d.certificate_fingerprint,'capabilities':d.capabilities,'revoked':d.revoked}  # tenant_id is never serialized
 @router.post('/devices/pairing-challenge')
-def pairing_challenge(ttl_seconds:int=300):
- c=_pairing.challenge(max(60,min(ttl_seconds,600)));return {'server_nonce':c.server_nonce,'code':c.code,'expires_at':c.expires_at}
+def pairing_challenge(ttl_seconds:int=300,tenant:TenantContext=Depends(require_tenant)):
+ c=_pairing.challenge(max(60,min(ttl_seconds,600)),tenant_id=tenant.tenant_id);return {'server_nonce':c.server_nonce,'code':c.code,'expires_at':c.expires_at}
 @router.post('/devices/pair')
-def pair_device(body:PairConfirmIn):
- try:return _pairing.confirm(body.server_nonce,body.code,body.name,body.certificate_fingerprint,body.capabilities)
- except (KeyError,ValueError) as e:raise HTTPException(422,str(e))
+def pair_device(body:PairConfirmIn,tenant:TenantContext=Depends(require_tenant)):
+ try:return _public_device(_pairing.confirm(body.server_nonce,body.code,body.name,body.certificate_fingerprint,body.capabilities,tenant_id=tenant.tenant_id))
+ except KeyError:raise HTTPException(422,'pairing challenge not found') from None
+ except ValueError as e:raise HTTPException(422,str(e)) from None
 @router.get('/devices')
-def devices():return list(_pairing.devices.values())
+def devices(tenant:TenantContext=Depends(require_tenant)):return [_public_device(d) for d in _pairing.list_devices(tenant.tenant_id)]
 @router.delete('/devices/{device_id}')
-def revoke_device(device_id:str):
- try:_pairing.revoke(device_id);return {'device_id':device_id,'revoked':True}
- except KeyError:raise HTTPException(404,'device not found')
+def revoke_device(device_id:str,tenant:TenantContext=Depends(require_tenant)):
+ try:_pairing.revoke(device_id,tenant_id=tenant.tenant_id);return {'device_id':device_id,'revoked':True}
+ except KeyError:raise HTTPException(404,'device not found') from None
 
 class DeviceReceiptIn(BaseModel):events:list[dict[str,Any]]=Field(min_length=1,max_length=10000)
 @router.post('/devices/{device_id}/verify-receipt')
-def verify_device_receipt(device_id:str,body:DeviceReceiptIn):
- try:return _pairing.verify_receipt(device_id,body.events)
- except KeyError:raise HTTPException(404,'device not found')
+def verify_device_receipt(device_id:str,body:DeviceReceiptIn,tenant:TenantContext=Depends(require_tenant)):
+ try:return _pairing.verify_receipt(device_id,body.events,tenant_id=tenant.tenant_id)
+ except KeyError:raise HTTPException(404,'device not found') from None
  except ValueError as error:raise HTTPException(422,str(error)) from error
 
 from .runtime.routes import router as claire_runtime_router

@@ -7,10 +7,10 @@ import hashlib,hmac,json,secrets,uuid
 
 @dataclass
 class PairingChallenge:
- code:str;server_nonce:str;expires_at:datetime
+ code:str;server_nonce:str;expires_at:datetime;tenant_id:str|None=None
 @dataclass
 class PairedDevice:
- id:str;name:str;certificate_fingerprint:str;capabilities:set[str];revoked:bool=False
+ id:str;name:str;certificate_fingerprint:str;capabilities:set[str];revoked:bool=False;tenant_id:str|None=None
 @dataclass
 class LocalAction:
  id:str;session_id:str;goal_id:str;kind:str;arguments:dict[str,Any];requires_approval:bool;idempotency_key:str
@@ -20,19 +20,37 @@ class AuditEvent:
 
 class PairingService:
  """Reference handshake state; production issues pinned mTLS client certificates."""
- def __init__(self):self.pending={};self.devices={}
- def challenge(self,ttl_seconds:int=300):
-  code=f"{secrets.randbelow(1_000_000):06d}";nonce=secrets.token_urlsafe(32);c=PairingChallenge(code,nonce,datetime.now(timezone.utc)+timedelta(seconds=ttl_seconds));self.pending[nonce]=c;return c
- def confirm(self,server_nonce:str,code:str,name:str,certificate_fingerprint:str,capabilities:set[str]):
+ def __init__(self,require_tenant:bool=False):
+  # require_tenant=True is the route-facing mode: a missing/blank tenant fails BEFORE any lookup or mutation.
+  # In the default (library) mode tenant None is its own legacy namespace and never a wildcard over scoped records.
+  self.pending={};self.devices={};self.require_tenant=require_tenant
+ def _scope(self,tenant_id):
+  if self.require_tenant and (not isinstance(tenant_id,str) or not tenant_id.strip()):raise ValueError("tenant is required")
+  if tenant_id is not None and (not isinstance(tenant_id,str) or not tenant_id.strip()):raise ValueError("tenant is required")
+  return tenant_id
+ def challenge(self,ttl_seconds:int=300,tenant_id:str|None=None):
+  tenant_id=self._scope(tenant_id)
+  code=f"{secrets.randbelow(1_000_000):06d}";nonce=secrets.token_urlsafe(32);c=PairingChallenge(code,nonce,datetime.now(timezone.utc)+timedelta(seconds=ttl_seconds),tenant_id);self.pending[nonce]=c;return c
+ def confirm(self,server_nonce:str,code:str,name:str,certificate_fingerprint:str,capabilities:set[str],tenant_id:str|None=None):
+  tenant_id=self._scope(tenant_id)
+  held=self.pending.get(server_nonce)
+  if held is None or held.tenant_id!=tenant_id:raise KeyError(server_nonce)  # foreign == unknown; the rightful challenge is NOT consumed
   challenge=self.pending.pop(server_nonce)
   if challenge.expires_at<=datetime.now(timezone.utc):raise ValueError("pairing challenge expired")
   if not name.strip() or not certificate_fingerprint.strip():raise ValueError("device name and certificate fingerprint are required")
   if not capabilities:raise ValueError("at least one owner-granted capability is required")
   if not hmac.compare_digest(challenge.code,code):raise ValueError("pairing code mismatch")
-  device=PairedDevice(str(uuid.uuid4()),name,certificate_fingerprint,capabilities);self.devices[device.id]=device;return device
- def revoke(self,device_id:str):self.devices[device_id].revoked=True
- def verify_receipt(self,device_id:str,events:list[dict[str,Any]])->dict[str,Any]:
-  device=self.devices[device_id]
+  device=PairedDevice(str(uuid.uuid4()),name,certificate_fingerprint,capabilities,False,tenant_id);self.devices[device.id]=device;return device
+ def _own(self,device_id:str,tenant_id):
+  tenant_id=self._scope(tenant_id)
+  device=self.devices.get(device_id)
+  if device is None or device.tenant_id!=tenant_id:raise KeyError(device_id)  # foreign == unknown, before any flag or fingerprint
+  return device
+ def list_devices(self,tenant_id:str|None=None):
+  tenant_id=self._scope(tenant_id);return [d for d in self.devices.values() if d.tenant_id==tenant_id]
+ def revoke(self,device_id:str,tenant_id:str|None=None):self._own(device_id,tenant_id).revoked=True
+ def verify_receipt(self,device_id:str,events:list[dict[str,Any]],tenant_id:str|None=None)->dict[str,Any]:
+  device=self._own(device_id,tenant_id)
   if device.revoked:raise ValueError("device is revoked")
   previous="0"*64
   for position,raw in enumerate(events,1):
