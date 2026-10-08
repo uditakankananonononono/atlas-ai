@@ -2,7 +2,7 @@
 from alembic import op
 import sqlalchemy as sa
 revision='20261008_m21_runtime_goals'
-down_revision='20261008_m16_identity_forward'
+down_revision='20261008_m16_view_version'
 branch_labels=None
 depends_on=None
 EXPECTED_COLUMNS={'id':(sa.String,False),'tenant_id':(sa.String,False),'actor_id':(sa.String,False),'purpose':(sa.Text,False),
