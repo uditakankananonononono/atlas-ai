@@ -3,7 +3,7 @@ import json, secrets, uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
-from sqlalchemy import Integer, String, Text, UniqueConstraint, create_engine, select, update
+from sqlalchemy import Integer, String, Text, UniqueConstraint, create_engine, exists, insert, literal, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -205,33 +205,55 @@ class GoalStore:
                             EffectRow.tenant_id == principal.tenant_id, EffectRow.actor_id == principal.actor_id)).first()
             return None if row is None else self._effect_view(row, with_receipt=True)
 
-    def begin_effect(self, principal: Any, tool: str, key: str, *, takeover_pending: bool) -> tuple[str, str | None, str | None]:
-        """Fenced on the live lease. Returns (status, effect_id, receipt_json):
-        new | replay | pending | lease_lost. 'new' means the caller now owns a fresh intent row and may dispatch."""
-        now = self.clock()
-        with self._sessions.begin() as s:
-            live = s.scalars(select(GoalRow.id).where(
-                GoalRow.id == principal.goal_id, GoalRow.tenant_id == principal.tenant_id, GoalRow.actor_id == principal.actor_id,
+    def _live_lease(self, principal: Any):
+        """SQL condition: the goal row still carries THIS principal's token, is running and unexpired. It is embedded in the
+        journal write statement itself, so the check and the write are one atomic statement (no check-then-write gap)."""
+        return (GoalRow.id == principal.goal_id, GoalRow.tenant_id == principal.tenant_id, GoalRow.actor_id == principal.actor_id,
                 GoalRow.lease_token == principal.lease_token, GoalRow.status == "running",
-                GoalRow.lease_expires_at >= _iso(now))).first()
-            if live is None or principal.lease_token is None:
-                return ("lease_lost", None, None)
-            row = s.scalars(select(EffectRow).where(EffectRow.goal_id == principal.goal_id, EffectRow.idempotency_key == key)).first()
+                GoalRow.lease_expires_at >= _iso(self.clock()))
+
+    def begin_effect(self, principal: Any, tool: str, key: str, *, takeover_pending: bool,
+                     gates: tuple[str, ...] = ()) -> tuple[str, str | None, str | None]:
+        """Returns (status, effect_id, receipt_json): new | replay | pending | lease_lost | approval_required.
+        'new' means the caller owns an intent row and may dispatch. ONE transaction: the fenced reservation and the consumption
+        of the gate approvals (capability = tool, digest = key) commit together or not at all, so replay, pending, lease_lost and
+        a missing approval never consume anything and never leave an intent behind."""
+        if principal.lease_token is None:
+            return ("lease_lost", None, None)
+        try:
+            return self._begin_effect(principal, tool, key, takeover_pending, gates)
+        except _NoApproval:
+            return ("approval_required", None, None)
+        except IntegrityError:
+            return ("pending", None, None)  # another handle inserted the same call first; this transaction rolled back
+
+    def _begin_effect(self, principal: Any, tool: str, key: str, takeover_pending: bool, gates: tuple[str, ...]) -> tuple[str, str | None, str | None]:
+        with self._sessions.begin() as s:
+            row = s.scalars(select(EffectRow).where(EffectRow.goal_id == principal.goal_id, EffectRow.idempotency_key == key,
+                                                    EffectRow.tenant_id == principal.tenant_id,
+                                                    EffectRow.actor_id == principal.actor_id)).first()
+            now = _iso(self.clock())
             if row is None:
                 eid = str(uuid.uuid4())
-                try:
-                    with s.begin_nested():
-                        s.add(EffectRow(id=eid, tenant_id=principal.tenant_id, actor_id=principal.actor_id, goal_id=principal.goal_id,
-                                        tool=tool, idempotency_key=key, state="intent", attempts=1, created_at=_iso(now), updated_at=_iso(now)))
-                except IntegrityError:
-                    return ("pending", None, None)  # another handle inserted the same call first
+                cols = ("id", "tenant_id", "actor_id", "goal_id", "tool", "idempotency_key", "state", "attempts", "created_at", "updated_at")
+                vals = (eid, principal.tenant_id, principal.actor_id, principal.goal_id, tool, key, "intent", 1, now, now)
+                src = select(*[literal(v) for v in vals]).where(exists(select(GoalRow.id).where(*self._live_lease(principal))))
+                res = s.execute(insert(EffectRow).from_select(cols, src))  # no SAVEPOINT: pysqlite would commit it early
+                if res.rowcount != 1:
+                    return ("lease_lost", None, None)
+                self._consume(s, principal, tool, key, gates)  # raises _NoApproval: the reservation above rolls back too
                 return ("new", eid, None)
             if row.state == "committed":
                 return ("replay", row.id, row.receipt_json)
             if row.state in RETRIABLE or (row.state in PENDING and takeover_pending):
-                res = s.execute(update(EffectRow).where(EffectRow.id == row.id, EffectRow.state == row.state)
-                                .values(state="intent", attempts=EffectRow.attempts + 1, updated_at=_iso(now)))
-                return ("new", row.id, None) if res.rowcount == 1 else ("pending", row.id, None)
+                res = s.execute(update(EffectRow).where(EffectRow.id == row.id, EffectRow.state == row.state,
+                                exists(select(GoalRow.id).where(*self._live_lease(principal))))
+                                .values(state="intent", attempts=EffectRow.attempts + 1, updated_at=now))
+                if res.rowcount == 1:
+                    self._consume(s, principal, tool, key, gates)
+                    return ("new", row.id, None)
+                live = s.scalars(select(GoalRow.id).where(*self._live_lease(principal))).first()
+                return ("lease_lost", None, None) if live is None else ("pending", row.id, None)
             return ("pending", row.id, None)
 
     def mark_effect(self, effect_id: str, state: str, receipt: dict[str, Any] | None = None) -> bool:
@@ -303,21 +325,25 @@ class GoalStore:
                               created_at=_iso(now)))
         return aid
 
+    def _consume(self, s: Any, principal: Any, capability: str, digest: str, gates: tuple[str, ...]) -> None:
+        """Inside the caller's transaction. Raises _NoApproval (the caller rolls back) unless every gate had its own approval."""
+        now = _iso(self.clock())
+        for gate in gates:
+            res = s.execute(update(ApprovalRow).where(
+                ApprovalRow.id == select(ApprovalRow.id).where(
+                    ApprovalRow.tenant_id == principal.tenant_id, ApprovalRow.actor_id == principal.actor_id,
+                    ApprovalRow.goal_id == principal.goal_id, ApprovalRow.capability == capability,
+                    ApprovalRow.gate == gate, ApprovalRow.payload_digest == digest,
+                    ApprovalRow.consumed_at.is_(None), ApprovalRow.expires_at > now).limit(1).scalar_subquery(),
+                ApprovalRow.consumed_at.is_(None)).values(consumed_at=now))
+            if res.rowcount != 1:
+                raise _NoApproval
+
     def consume_all(self, principal: Any, capability: str, digest: str, gates: tuple[str, ...]) -> bool:
         """All-or-nothing: every gate needs its own unexpired, unconsumed, exactly-matching approval; consumed in one transaction."""
-        now = _iso(self.clock())
         try:
-          with self._sessions.begin() as s:
-            for gate in gates:
-                res = s.execute(update(ApprovalRow).where(
-                    ApprovalRow.id == select(ApprovalRow.id).where(
-                        ApprovalRow.tenant_id == principal.tenant_id, ApprovalRow.actor_id == principal.actor_id,
-                        ApprovalRow.goal_id == principal.goal_id, ApprovalRow.capability == capability,
-                        ApprovalRow.gate == gate, ApprovalRow.payload_digest == digest,
-                        ApprovalRow.consumed_at.is_(None), ApprovalRow.expires_at > now).limit(1).scalar_subquery(),
-                    ApprovalRow.consumed_at.is_(None)).values(consumed_at=now))
-                if res.rowcount != 1:
-                    raise _NoApproval  # rolls the whole transaction back: nothing is consumed
+            with self._sessions.begin() as s:
+                self._consume(s, principal, capability, digest, gates)
         except _NoApproval:
             return False
         return True

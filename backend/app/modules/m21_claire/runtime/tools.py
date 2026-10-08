@@ -6,7 +6,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import Any
 from pydantic import BaseModel, ValidationError
-from .gates import GateRefused, payload_digest, require_plain_json
+from .gates import GateRefused, require_plain_json
 from .redaction import redact
 from .types import ToolReceipt, ToolRisk
 
@@ -141,18 +141,15 @@ class ReadOnlyToolRegistry:
         if principal is not None and principal.lease_token is None:
             raise PermissionError("non-read dispatch needs a principal fenced by a lease token")
         safe_args = redact(arguments)
-        key = payload_digest(principal.goal_id if principal else "", name, arguments)
-        takeover = tool.idempotent is True
-        if principal is not None:
-            prior = self.journal.peek_effect(principal, key)  # before authorize: a replay or a refusal consumes no approval
-            if prior is not None and prior["state"] == "committed":
-                return self._replay(step, name, safe_args, prior["receipt_json"])
-            if prior is not None and prior["state"] in ("intent", "unknown") and not takeover:
-                raise GateRefused("effect_unknown", (), key)
-        self.enforcer.authorize(tool, arguments, principal)  # raises GateRefused; consumes approvals atomically
+        gates, key = self.enforcer.evaluate(tool, arguments, principal)  # classifies only; consumes nothing
         if principal is None:
             raise PermissionError("non-read dispatch needs a principal fenced by a lease token")
-        status, effect_id, stored = self.journal.begin_effect(principal, name, key, takeover_pending=takeover)
+        takeover = tool.idempotent is True
+        # Reservation and approval consumption are one transaction inside the journal: replay, pending, lease_lost and a
+        # missing approval can never consume an approval or leave an intent row behind.
+        status, effect_id, stored = self.journal.begin_effect(principal, name, key, takeover_pending=takeover, gates=gates)
+        if status == "approval_required":
+            raise GateRefused("approval_required", gates, key)
         if status == "lease_lost":
             raise GateRefused("lease_lost", (), key)
         if status == "replay":

@@ -386,3 +386,125 @@ def test_NEW_effects_migration_matches_model_refuses_wrong_shape_and_downgrade_g
     con = sqlite3.connect(bad); con.execute("CREATE TABLE claire_runtime_effects (id TEXT PRIMARY KEY)"); con.commit(); con.close()
     r = alembic(bad, "upgrade", "head")
     assert r.returncode != 0 and "incompatible shape" in r.stderr
+
+
+# ---- reviewer repair: the lease fence must be atomic with the journal write ---------------------
+
+@pytest.mark.parametrize("path", ["insert", "takeover_update"])
+def test_PROTECTION_replacement_between_fence_and_journal_write_cannot_write_intent(tmp_path, clk, path):
+    """Interleaving: just before the journal INSERT/UPDATE statement executes, the old lease expires and a second store claims a
+    replacement token. The old principal must get lease_lost and the journal must not gain/revive an intent for it."""
+    from sqlalchemy import event
+    url = f"sqlite:///{tmp_path}/r.db"
+    a = GoalStore(url, clock=lambda: clk[0], lease_seconds=10, create_schema=True)
+    b = GoalStore(url, clock=lambda: clk[0], lease_seconds=10)
+    gid = goal(a); c1 = a.claim("one"); p = Principal("t1", "a1", gid, c1.lease_token)
+    key = payload_digest(gid, "write_row", {})
+    if path == "takeover_update":
+        eid = a.begin_effect(p, "write_row", key, takeover_pending=False)[1]
+        assert a.mark_effect(eid, "failed")
+    seen: dict[str, Any] = {}
+    def hook(conn, cursor, statement, params, context, many):
+        if not seen and statement.lstrip().upper().startswith(("INSERT INTO CLAIRE_RUNTIME_EFFECTS", "UPDATE CLAIRE_RUNTIME_EFFECTS")):
+            seen["c2"] = "pending"
+            clk[0] += timedelta(seconds=11)
+            seen["c2"] = b.claim("two")
+    event.listen(a.engine, "before_cursor_execute", hook)
+    status = a.begin_effect(p, "write_row", key, takeover_pending=False)[0]
+    event.remove(a.engine, "before_cursor_execute", hook)
+    assert seen.get("c2") not in (None, "pending")               # the replacement really happened mid-call
+    assert status == "lease_lost"
+    effects = b.list_effects("t1", "a1", gid)
+    assert [e["state"] for e in effects] == ([] if path == "insert" else ["failed"])
+    a.close(); b.close()
+
+
+# ---- reviewer repair 2: reservation and approval consumption are one atomic step ----------------
+
+def _consumed(store, gid):
+    from app.modules.m21_claire.runtime.goals import ApprovalRow
+    with store._sessions() as s:
+        return [r.consumed_at is not None for r in s.query(ApprovalRow).filter(ApprovalRow.goal_id == gid).all()]
+
+
+def test_PROTECTION_concurrent_commit_between_classification_and_reservation_replays_without_consuming(store):
+    gid = goal(store); p = live(store, gid)
+    r = reg(store, make("send_note", person=True))
+    key = payload_digest(gid, "send_note", {"target": "a"})
+    store.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    real = store.begin_effect
+    def racing(principal, tool, k, **kw):  # another caller reserves and commits the same effect right before ours
+        st, eid, _ = real(principal, tool, k, takeover_pending=False)
+        assert st == "new" and store.mark_effect(eid, "committed", {"content": {"by": "other caller"}})
+        return real(principal, tool, k, **kw)
+    store.begin_effect = racing
+    got = run(r.execute(1, "send_note", {"target": "a"}, p))
+    assert got.replayed is True and got.content == {"by": "other caller"}
+    assert WORLD == {} and _consumed(store, gid) == [False]          # replay ran nothing and spent nothing
+
+
+def test_PROTECTION_pending_effect_refusal_consumes_no_approval(store):
+    gid = goal(store); p = live(store, gid)
+    r = reg(store, make("send_note", person=True, mode="oserror_after"))
+    key = payload_digest(gid, "send_note", {"target": "a"})
+    store.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    assert run(r.execute(1, "send_note", {"target": "a"}, p)).error == "OSError"      # spends the first approval
+    store.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    with pytest.raises(GateRefused) as e:
+        run(r.execute(2, "send_note", {"target": "a"}, p))
+    assert e.value.reason == "effect_unknown" and sorted(_consumed(store, gid)) == [False, True]
+
+
+def test_PROTECTION_missing_approval_leaves_no_intent_and_consumes_nothing_partial(store):
+    gid = goal(store); p = live(store, gid)
+    r = reg(store, make("book_slot", money=True, person=True))
+    key = payload_digest(gid, "book_slot", {"target": "a"})
+    store.grant("t1", "a1", gid, "book_slot", "comms", key, "a1")          # the payment gate has no approval
+    with pytest.raises(GateRefused) as e:
+        run(r.execute(1, "book_slot", {"target": "a"}, p))
+    assert e.value.reason == "approval_required" and states(store, gid) == [] and _consumed(store, gid) == [False] and WORLD == {}
+
+
+@pytest.mark.parametrize("path", ["insert", "takeover_update"])
+def test_PROTECTION_lease_replaced_before_the_reservation_write_consumes_no_approval(tmp_path, clk, path):
+    from sqlalchemy import event
+    url = f"sqlite:///{tmp_path}/r2.db"
+    a = GoalStore(url, clock=lambda: clk[0], lease_seconds=10, create_schema=True)
+    b = GoalStore(url, clock=lambda: clk[0], lease_seconds=10)
+    gid = goal(a); c1 = a.claim("one"); p = Principal("t1", "a1", gid, c1.lease_token)
+    key = payload_digest(gid, "send_note", {})
+    if path == "takeover_update":
+        eid = a.begin_effect(p, "send_note", key, takeover_pending=False)[1]; a.mark_effect(eid, "failed")
+    a.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    seen: dict[str, Any] = {}
+    def hook(conn, cursor, statement, params, context, many):
+        if not seen and statement.lstrip().upper().startswith(("INSERT INTO CLAIRE_RUNTIME_EFFECTS", "UPDATE CLAIRE_RUNTIME_EFFECTS")):
+            seen["x"] = "pending"; clk[0] += timedelta(seconds=11); seen["x"] = b.claim("two")
+    event.listen(a.engine, "before_cursor_execute", hook)
+    status = a.begin_effect(p, "send_note", key, takeover_pending=False, gates=("comms",))[0]
+    event.remove(a.engine, "before_cursor_execute", hook)
+    assert seen["x"] not in (None, "pending") and status == "lease_lost"
+    assert _consumed(a, gid) == [False]
+    assert [e["state"] for e in b.list_effects("t1", "a1", gid)] == ([] if path == "insert" else ["failed"])
+    a.close(); b.close()
+
+
+def test_PROTECTION_concurrent_transition_before_takeover_update_neither_reserves_nor_consumes(tmp_path, clk):
+    from sqlalchemy import event
+    url = f"sqlite:///{tmp_path}/r3.db"
+    a = GoalStore(url, clock=lambda: clk[0], create_schema=True); b = GoalStore(url, clock=lambda: clk[0])
+    gid = goal(a); c1 = a.claim("one"); p = Principal("t1", "a1", gid, c1.lease_token)
+    key = payload_digest(gid, "send_note", {})
+    eid = a.begin_effect(p, "send_note", key, takeover_pending=False)[1]; a.mark_effect(eid, "failed")
+    a.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    done: list[Any] = []
+    def hook(conn, cursor, statement, params, context, many):
+        if not done and statement.lstrip().upper().startswith("UPDATE CLAIRE_RUNTIME_EFFECTS"):
+            done.append(1)   # the other handle retries and commits the same effect first
+            st, e2, _ = b.begin_effect(p, "send_note", key, takeover_pending=False)
+            assert st == "new" and b.mark_effect(e2, "committed", {"content": {}})
+    event.listen(a.engine, "before_cursor_execute", hook)
+    status = a.begin_effect(p, "send_note", key, takeover_pending=False, gates=("comms",))[0]
+    event.remove(a.engine, "before_cursor_execute", hook)
+    assert done and status == "pending" and _consumed(a, gid) == [False]
+    a.close(); b.close()
