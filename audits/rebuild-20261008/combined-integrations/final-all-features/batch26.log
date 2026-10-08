@@ -1,0 +1,24 @@
+........................................................................ [ 20%]
+........................................................................ [ 40%]
+........................................................................ [ 61%]
+........................................................................ [ 81%]
+..................................................................       [100%]
+=============================== warnings summary ===============================
+../../../home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/modules/test_m16_view_versioning.py::test_get_returns_version_zero_before_any_save_then_increments
+tests/modules/test_m16_view_versioning.py::test_same_base_second_write_is_rejected_and_nothing_is_overwritten
+tests/modules/test_m16_view_versioning.py::test_save_without_base_still_works_last_write_wins
+tests/modules/test_m16_view_versioning.py::test_http_route_maps_conflict_to_409_with_current_version
+  /tmp/atlas-m05-m19-integration/stage/backend/app/modules/m16_executive_dashboard/repository.py:104: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    if not r:r=SnapshotRow(tenant_id=self.tenant_id,version=0,last_sequence=0,data={"metrics":{},"timeline":[],"alerts":[],"freshness":{}},generated_at=datetime.utcnow());db.add(r);db.flush()
+
+tests/modules/test_m17_coaching_state_machines_710_809.py::test_route_mounted_owner_scoped_and_validated
+tests/modules/test_m17_coaching_state_machines_710_809.py::test_route_mounted_owner_scoped_and_validated
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    result = context.run(func, *args)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+354 passed, 7 warnings in 20.90s

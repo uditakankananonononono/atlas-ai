@@ -1,0 +1,10 @@
+{
+  "source_head": "2c2e9624810c7d9a23b9bff3ea8908931e3080a3",
+  "complete_cycles": 2,
+  "downgrade_target": "20261008_m16_identity_forward",
+  "final_revision": "20261008_m16_view_version",
+  "view_version_column": true,
+  "draft_account_column": true,
+  "account_scoped_message_unique": true,
+  "scope": "local SQLite only, not production or combined PG cycles"
+}
