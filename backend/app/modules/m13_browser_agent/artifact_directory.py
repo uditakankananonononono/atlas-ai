@@ -14,13 +14,23 @@ than advisory:
    closes the mkdir-then-write gap where a concurrent swap of the session
    directory sent screenshot bytes outside the root.
 
-Residual, honestly scoped: artifacts this process writes itself (via
-``write_bytes``) are fully contained. Artifacts the Playwright *driver*
-process writes later from a path string (the per-session ``audit.har``) are
-not re-resolvable through our descriptors; those directories are pinned and
-re-verified at context creation, but a same-UID local process that swaps the
-session directory mid-context could still redirect that one driver write.
-Directory modes are 0700 to narrow that window. Do not claim more than this.
+Same-UID adversaries: a held descriptor pins the *inode*, not the path - a
+rename of the session directory after the walk would move the inode outside
+the root, and a naive fd write would follow it. ``write_bytes`` therefore
+re-reads the kernel-reported path of every held descriptor (``/proc/self/fd``)
+immediately before the file create and again after the write, refusing and
+unwinding if the resolved location has left the root. The rename pin is
+tested. What remains residual, and is NOT claimed: a rename that lands in the
+microseconds between the final post-write check and the kernel flush, and
+bind-mount setups whose kernel-reported paths hide the real location - full
+confinement against a hostile same-UID process needs mount namespaces, not
+path checks. Artifacts the Playwright *driver* process writes later from a
+path string (the per-session ``audit.har``) cannot use our descriptors at
+all; those directories are pinned at creation and the HAR location is
+verified again when the context closes (detection, raising on violation),
+but a same-UID rename during the context's life could still redirect that
+one driver write before we can detect it. Directory modes are 0700 to narrow
+every one of these windows. Do not claim more than this.
 """
 from __future__ import annotations
 
@@ -60,6 +70,22 @@ def validate_segment(value: str, what: str = "path segment") -> str:
     if value.strip(".") == "":
         raise ArtifactContainmentError(f"invalid {what}: dot-only names are not allowed")
     return value
+
+
+def _kernel_path(fd: int) -> "Path | None":
+    """Current absolute path of an open descriptor, per the kernel.
+
+    Linux ``/proc/self/fd`` reflects renames: a directory moved out from
+    under us shows its new location here. Returns None when the platform
+    cannot report it.
+    """
+    try:
+        raw = os.readlink(f"/proc/self/fd/{fd}")
+    except OSError:
+        return None
+    if raw.endswith(" (deleted)"):
+        return None  # unlinked inode; there is no safe path to validate
+    return Path(raw)
 
 
 class ArtifactRoot:
@@ -104,8 +130,39 @@ class ArtifactRoot:
             raise ArtifactContainmentError(
                 f"artifact path component is missing or not a real directory: {name!r}") from error
 
+    def _assert_fd_contained(self, fd: int, what: str) -> None:
+        """Refuse if the kernel-reported path of ``fd`` has left the root.
+
+        This is the rename pin: a descriptor pins an inode, and a same-UID
+        rename can move that inode outside the root after the walk. The
+        kernel still reports the moved location, so check it.
+        """
+        reported = _kernel_path(fd)
+        if reported is None:
+            raise ArtifactContainmentError(
+                f"cannot re-verify the location of {what}; refusing the write")
+        try:
+            resolved = reported.resolve(strict=False)
+        except OSError as error:
+            raise ArtifactContainmentError(f"cannot resolve the location of {what}") from error
+        if resolved != self._display and self._display not in resolved.parents:
+            raise ArtifactContainmentError(
+                f"{what} was moved outside the trusted root before the write")
+
+    def assert_dir_intact(self, *segments: str) -> None:
+        """Verify ``root/segments...`` still exists, is real, and is contained."""
+        fd = self.open_dir(*segments, create=False)
+        try:
+            self._assert_fd_contained(fd, "artifact directory")
+        finally:
+            os.close(fd)
+
     def open_dir(self, *segments: str, create: bool = True) -> int:
-        """Return a descriptor for ``root/segments...``; caller must close it."""
+        """Return a descriptor for ``root/segments...``; caller must close it.
+
+        The returned descriptor's kernel-reported path is verified inside
+        the root before return.
+        """
         fd = self._fd
         held = False
         try:
@@ -114,6 +171,8 @@ class ArtifactRoot:
                 if held:
                     os.close(fd)
                 fd, held = nxt, True
+            if segments:
+                self._assert_fd_contained(fd, "artifact directory")
             return fd
         except BaseException:
             if held:
@@ -155,26 +214,52 @@ class ArtifactRoot:
         validate_segment(filename, "artifact filename")
         dir_fd = self.open_dir(*segments, create=True)
         try:
-            try:
-                file_fd = os.open(
-                    filename,
-                    os.O_WRONLY | os.O_CREAT | os.O_EXCL | _O_NOFOLLOW,
-                    _FILE_MODE,
-                    dir_fd=dir_fd,
-                )
-            except OSError as error:
-                raise ArtifactContainmentError(
-                    f"artifact filename refuses a safe create: {filename!r}") from error
-            try:
-                view = memoryview(data)
-                while view:
-                    written = os.write(file_fd, view)
-                    view = view[written:]
-            finally:
-                os.close(file_fd)
+            self.write_fd(dir_fd, filename, data)
         finally:
             os.close(dir_fd)
         return self._display.joinpath(*segments, filename)
+
+    def write_fd(self, dir_fd: int, filename: str, data: bytes) -> None:
+        """Contained write of ``data`` to ``filename`` below a held dir fd.
+
+        Safe against the held-fd rename attack: a descriptor pins the inode,
+        not the path, so the kernel-reported location of the directory is
+        re-validated immediately before the file create, and the file's own
+        location is re-validated before and after the bytes are written. On
+        a post-write violation the file is unlinked through the same fd and
+        the write is refused.
+        """
+        validate_segment(filename, "artifact filename")
+        self._assert_fd_contained(dir_fd, "artifact directory")
+        try:
+            file_fd = os.open(
+                filename,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | _O_NOFOLLOW,
+                _FILE_MODE,
+                dir_fd=dir_fd,
+            )
+        except OSError as error:
+            raise ArtifactContainmentError(
+                f"artifact filename refuses a safe create: {filename!r}") from error
+        try:
+            self._assert_fd_contained(file_fd, "artifact file")
+            view = memoryview(data)
+            while view:
+                written = os.write(file_fd, view)
+                view = view[written:]
+            # Post-write re-check: if a rename raced the write, the bytes
+            # escaped through no fault of the walk - unwind what we can
+            # and refuse loudly rather than claim containment.
+            try:
+                self._assert_fd_contained(file_fd, "artifact file")
+            except ArtifactContainmentError:
+                try:
+                    os.unlink(filename, dir_fd=dir_fd)
+                except OSError:
+                    pass
+                raise
+        finally:
+            os.close(file_fd)
 
     def write_path(self, path: str | Path, data: bytes) -> Path:
         """Write ``data`` at ``path``, which must resolve inside the root.

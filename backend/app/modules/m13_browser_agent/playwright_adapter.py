@@ -8,7 +8,7 @@ from typing import Any
 
 from playwright.async_api import Browser, BrowserContext, Playwright, async_playwright
 
-from .artifact_directory import ArtifactRoot, validate_segment
+from .artifact_directory import ArtifactContainmentError, ArtifactRoot, validate_segment
 from .security import NavigationBlocked, validate_public_url
 
 
@@ -19,6 +19,7 @@ _SAFE_ID = re.compile(r"^[A-Za-z0-9_.-]{1,120}$")
 class _Session:
     context: BrowserContext
     persistent: bool
+    har_path: Path | None = None
 
 
 class PlaywrightSessions:
@@ -50,8 +51,13 @@ class PlaywrightSessions:
     async def close(self) -> None:
         async with self._lock:
             sessions, self._sessions = self._sessions, {}
-            for session in sessions.values():
+            har_violation: ArtifactContainmentError | None = None
+            for (tenant_id, session_id), session in sessions.items():
                 await session.context.close()
+                try:
+                    self._verify_har_intact(tenant_id, session_id, session.har_path)
+                except ArtifactContainmentError as error:
+                    har_violation = har_violation or error
             if self._browser:
                 await self._browser.close()
             if self._pw:
@@ -59,6 +65,24 @@ class PlaywrightSessions:
             self._browser = None
             self._pw = None
             self._artifacts.close()
+            if har_violation is not None:
+                raise har_violation
+
+    def _verify_har_intact(self, tenant_id: str, session_id: str, har_path: Path | None) -> None:
+        """Post-close HAR containment check.
+
+        The Playwright *driver* writes ``audit.har`` from a path string at
+        context close, outside our descriptor walk. We cannot atomically
+        contain that write; what we can and do do is detect a violation as
+        soon as the context closes: the session directory must still be a
+        real, in-root directory and the HAR's resolved location must still
+        be inside the trusted root. A same-UID rename or swap during the
+        context's life surfaces here as a loud refusal, never a silent pass.
+        """
+        if har_path is None:
+            return
+        self._artifacts.assert_dir_intact(tenant_id, session_id)
+        self._artifacts.verify_contained(har_path)
 
     async def close_session(self, tenant_id: str, session_id: str) -> bool:
         key = (self._check_id(tenant_id), self._check_id(session_id))
@@ -66,6 +90,7 @@ class PlaywrightSessions:
             session = self._sessions.pop(key, None)
         if session:
             await session.context.close()
+            self._verify_har_intact(key[0], key[1], session.har_path)
             return True
         return False
 
@@ -91,9 +116,10 @@ class PlaywrightSessions:
                 # Pinned, swap-refusing directory creation; the HAR path
                 # handed to the driver is re-verified inside the root.
                 path = self._artifacts.prepare_dir(tenant_id, session_id)
-                context = await self._browser.new_context(record_har_path=str(path / "audit.har"))
+                har_path = path / "audit.har"
+                context = await self._browser.new_context(record_har_path=str(har_path))
                 await context.route("**/*", self._guard_route)
-                existing = _Session(context=context, persistent=persistent)
+                existing = _Session(context=context, persistent=persistent, har_path=har_path)
                 self._sessions[key] = existing
             pages = existing.context.pages
             return pages[0] if pages else await existing.context.new_page()
