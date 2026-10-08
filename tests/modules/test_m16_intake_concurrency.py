@@ -43,7 +43,7 @@ class _LosingCommit:
         self.ctx.__exit__(Exception,Exception("roll back the conflicting attempt"),None)
         if exc_type is None:
             if self.parent.on_conflict:self.parent.on_conflict(staged)
-            raise IntegrityError("INSERT INTO m16_events",{},Exception("UNIQUE constraint failed: m16_events.tenant_id, m16_events.sequence"))
+            raise IntegrityError("INSERT INTO m16_events",{}, __import__('sqlite3').IntegrityError("UNIQUE constraint failed: m16_events.tenant_id, m16_events.sequence"))
         return False
 def test_append_event_retries_sequence_collision_and_persists():
     flaky=FailCommits(factory(),fail_times=2)

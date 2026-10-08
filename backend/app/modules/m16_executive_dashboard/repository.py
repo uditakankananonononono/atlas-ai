@@ -2,11 +2,12 @@ from __future__ import annotations
 from datetime import datetime,timezone
 from sqlalchemy import JSON,Boolean,DateTime,Float,Integer,String,Text,UniqueConstraint,func,select,update
 from sqlalchemy.exc import IntegrityError
+import sqlite3
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 from .schemas import *
 class EventRow(Base):
-    __tablename__="m16_events";__table_args__=(UniqueConstraint("tenant_id","sequence",name="uq_m16_sequence"),)
+    __tablename__="m16_events";__table_args__=(UniqueConstraint("tenant_id","sequence",name="uq_m16_sequence"),UniqueConstraint("tenant_id","id",name="uq_m16_event_id"))
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));sequence:Mapped[int]=mapped_column(Integer);topic:Mapped[str]=mapped_column(String(120));aggregate_type:Mapped[str]=mapped_column(String(80));aggregate_id:Mapped[str]=mapped_column(String(200));payload:Mapped[dict]=mapped_column(JSON);occurred_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
 class SnapshotRow(Base):
     __tablename__="m16_snapshots";tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True);version:Mapped[int]=mapped_column(Integer);last_sequence:Mapped[int]=mapped_column(Integer);data:Mapped[dict]=mapped_column(JSON);generated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
@@ -60,15 +61,9 @@ def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.int
 class SqlDashboardRepository:
     def __init__(self,tenant_id,actor_id,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
     def append_event(self,e:Event):
-        # The row's only unique constraint is (tenant_id, sequence); concurrent
-        # intakes can read the same max(sequence) and collide there. Retry the
-        # whole dedup-check + read + insert in a fresh transaction, bounded at 3
-        # attempts so a persistent conflict fails instead of looping. Any
-        # IntegrityError retries (no vendor-specific error parsing); the only
-        # unique constraint this insert can violate is the sequence one. The
-        # per-attempt dedup re-check returns the winner's row when a same-id
-        # intake committed between attempts; event id has no DB unique
-        # constraint, so id uniqueness rests on that re-check, not the schema.
+        # Both sequence allocation and event identity are DB-constrained.
+        # Retry only identified collisions on those constraints, in a fresh
+        # transaction; the identity re-read returns the committed winner.
         attempts=0
         while True:
             try:
@@ -86,7 +81,17 @@ class SqlDashboardRepository:
                     if e.occurred_at.tzinfo is None:raise ValueError("occurred_at must be timezone-aware")
                     max_seq=db.scalar(select(func.coalesce(func.max(EventRow.sequence),0)).where(EventRow.tenant_id==self.tenant_id));e.sequence=max_seq+1
                     data=e.model_dump();data["occurred_at"]=e.occurred_at.astimezone(timezone.utc);db.add(EventRow(tenant_id=self.tenant_id,**data));return e
-            except IntegrityError:
+            except IntegrityError as exc:
+                orig=exc.orig
+                if isinstance(orig,sqlite3.IntegrityError):
+                    code=getattr(orig,"sqlite_errorcode",None)
+                    collision=(code is None or code==sqlite3.SQLITE_CONSTRAINT_UNIQUE) and str(orig) in (
+                        "UNIQUE constraint failed: m16_events.tenant_id, m16_events.sequence",
+                        "UNIQUE constraint failed: m16_events.tenant_id, m16_events.id")
+                else:
+                    state=getattr(orig,"sqlstate",None) or getattr(orig,"pgcode",None)
+                    collision=state=="23505" and getattr(getattr(orig,"diag",None),"constraint_name",None) in ("uq_m16_sequence","uq_m16_event_id")
+                if not collision:raise
                 attempts+=1
                 if attempts>=3:raise
     def events_after(self,cursor,limit=500):
@@ -187,9 +192,8 @@ class SqlDashboardRepository:
             db.delete(r);return True
     def expire_approvals_before(self,moment):
         with self.sessions.begin() as db:
-            rows=db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value,ApprovalRow.expires_at.isnot(None),ApprovalRow.expires_at<moment)).all()
-            for r in rows:r.state=ApprovalState.EXPIRED.value
-            db.flush()
+            # Pending predicate belongs to the write, not a stale earlier read.
+            rows=db.scalars(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value,ApprovalRow.expires_at.isnot(None),ApprovalRow.expires_at<moment).values(state=ApprovalState.EXPIRED.value).returning(ApprovalRow)).all()
             return [_approval(r) for r in rows]
     def save_view(self,layout,at):
         with self.sessions.begin() as db:
