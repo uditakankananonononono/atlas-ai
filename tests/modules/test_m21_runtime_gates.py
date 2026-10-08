@@ -398,7 +398,9 @@ def test_route_refuses_self_approval_and_missing_role_and_records_approver(store
 
 
 # NEW: an approver who did not create the goal can read exactly what they approve, and nothing more
-def test_approver_view_shows_refusal_digest_without_purpose_or_arguments(store):
+def test_approver_view_shows_refusal_digest_and_bounded_preview_without_purpose(store):
+    # CONVERTED (slice 9): used to pin 'no arguments'. Now covers: the approver reads a bounded redacted preview of the stored
+    # arguments (from the same refusal as the digest), labelled untrusted; the goal purpose is still withheld.
     gid, ref = _refused_goal(store)
     who = {"ctx": TenantContext("t1", "ap1", frozenset({"claire-approver"}))}
     c = _client(who)
@@ -406,8 +408,11 @@ def test_approver_view_shows_refusal_digest_without_purpose_or_arguments(store):
         v = c.get(f"{URL}/{gid}/approver-view")
         assert v.status_code == 200
         j = v.json()
-        assert j["actor_id"] == "a1" and j["refusals"] == [{"tool": "send_email", "gates": ["comms"], "digest": ref["digest"], "reason": "approval_required"}]
-        assert "purpose" not in j and "bob" not in repr(j)
+        r0 = j["refusals"][0]
+        assert j["actor_id"] == "a1" and len(j["refusals"]) == 1 and j["untrusted_model_content"] is True
+        assert (r0["tool"], r0["gates"], r0["digest"], r0["reason"]) == ("send_email", ["comms"], ref["digest"], "approval_required")
+        assert r0["preview"]["value"]["target"] == "bob" and r0["preview"]["untrusted_model_content"] is True and r0["preview"]["truncated"] is False
+        assert "purpose" not in j and "do work" not in repr(j)
         who["ctx"] = TenantContext("t1", "ap1")
         assert c.get(f"{URL}/{gid}/approver-view").status_code == 403
         who["ctx"] = TenantContext("t2", "ap1", frozenset({"claire-approver"}))

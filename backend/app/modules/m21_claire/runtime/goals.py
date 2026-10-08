@@ -3,6 +3,7 @@ import json, secrets, uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
+from .preview import render_preview
 from sqlalchemy import Integer, String, Text, UniqueConstraint, case, create_engine, exists, insert, literal, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
@@ -356,11 +357,13 @@ class GoalStore:
             if row is None:
                 return None
             report = json.loads(row.report) if row.report else {}
-            refusals = [{k: r.get(k) for k in ("tool", "gates", "digest", "reason")} for r in (report or {}).get("refusals", [])
-                        if r.get("reason") == "approval_required"]
+            # Each preview is rendered from the SAME stored refusal row as its digest (pure function, no re-redaction).
+            refusals = [{**{k: r.get(k) for k in ("tool", "gates", "digest", "reason")}, "preview": render_preview(r.get("arguments"))}
+                        for r in (report or {}).get("refusals", []) if r.get("reason") == "approval_required"]
             pending = s.scalars(select(EffectRow).where(EffectRow.goal_id == goal_id, EffectRow.tenant_id == tenant_id,
                                                         EffectRow.state.in_(PENDING)).order_by(EffectRow.created_at)).all()
             return {"goal_id": row.id, "actor_id": row.actor_id, "status": row.status, "refusals": refusals,
+                    "untrusted_model_content": True,
                     "pending_effects": [self._effect_view(r) for r in pending]}
 
     def list_effects(self, tenant_id: str, actor_id: str, goal_id: str) -> list[dict[str, Any]] | None:
