@@ -2,6 +2,7 @@ from __future__ import annotations
 import os
 import threading
 from typing import Any
+from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
@@ -54,8 +55,11 @@ def cancel_goal(goal_id: str, tenant: TenantContext = Depends(require_tenant), s
     if outcome == "not_found":
         raise HTTPException(404, "goal not found")
     if outcome == "not_cancellable":
-        raise HTTPException(409, "only queued goals can be cancelled in this release")
-    return store.get(tenant.tenant_id, tenant.actor_id, goal_id)
+        raise HTTPException(409, "only queued or running goals can be cancelled")
+    body = store.get(tenant.tenant_id, tenant.actor_id, goal_id)
+    if outcome == "cancel_requested":
+        return JSONResponse(status_code=202, content={**(body or {}), "cancel_requested": True})
+    return body
 
 
 APPROVER_ROLES = ("claire-approver", "atlas-admin")

@@ -31,12 +31,19 @@ class Worker:
             # An earlier attempt left an effect with no recorded outcome: run nothing new until it is resolved.
             self._settle(claim, "awaiting_review", blocker="effect_unknown", report={}, verdict=None)
             return claim.goal_id
-        report = await engine.run(claim.purpose, principal=principal, lease=lambda: self.store.renew(claim))
+        report = await engine.run(claim.purpose, principal=principal, lease=lambda: self.store.renew(claim),
+                                  cancel_check=lambda: self.store.cancel_requested(claim))
         dump = report.model_dump()
+        if self.store.cancel_requested(claim):
+            dump["cancel_requested"] = True  # recorded either way: a goal that finished first keeps its real outcome
         if report.stop_reason == "lease_lost" or any(r.reason == "lease_lost" for r in report.refusals):
             self.last_outcome = "lease_lost"  # another worker owns it, or the lease expired: settle nothing
             return claim.goal_id
-        if engine.tools.journal is self.store and engine.tools.blocking_effects(claim.goal_id):
+        if report.stop_reason == "cancelled":
+            # Cancelled never hides an in-flight write: an interrupted effect has no recorded outcome, so the report says so.
+            unknown = engine.tools.journal is self.store and bool(engine.tools.blocking_effects(claim.goal_id))
+            self._settle(claim, "cancelled", blocker="effect_unknown" if unknown else None, report=dump, verdict=None)
+        elif engine.tools.journal is self.store and engine.tools.blocking_effects(claim.goal_id):
             # Some write ended without a recorded outcome (timeout, error, crash): never report such a goal complete.
             self._settle(claim, "awaiting_review", blocker="effect_unknown", report=dump, verdict=None)
         elif any(r.reason == "effect_unknown" for r in report.refusals):
@@ -48,8 +55,6 @@ class Worker:
             self._settle(claim, "blocked", blocker=report.stop_reason, report=dump, verdict=None)
         elif report.stop_reason in {"step_limit", "replan_limit"}:
             self._settle(claim, "exhausted", blocker=report.stop_reason, report=dump, verdict=None)
-        elif report.stop_reason == "cancelled":
-            self._settle(claim, "cancelled", blocker=None, report=dump, verdict=None)
         else:
             verdict = evaluate(claim.criteria, report)
             self._settle(claim, "completed" if verdict.accepted else "not_accepted",
