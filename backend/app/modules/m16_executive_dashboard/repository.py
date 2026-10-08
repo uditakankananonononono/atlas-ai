@@ -31,7 +31,7 @@ class AlertRuleRow(Base):
 class ViewVersionConflict(Exception):
     def __init__(self,current:int):super().__init__(f"view is at version {current}");self.current=current
 class ViewPrefsRow(Base):
-    __tablename__="m16_view_prefs";tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True);layout:Mapped[dict]=mapped_column(JSON);updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+    __tablename__="m16_view_prefs";tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True);layout:Mapped[dict]=mapped_column(JSON);updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));version:Mapped[int]=mapped_column(Integer,nullable=False,default=0,server_default="0")
 class WorkItemRow(Base):
     __tablename__="m16_work_items";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_work_item"),)
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(36));title:Mapped[str]=mapped_column(String(300));item_type:Mapped[str]=mapped_column(String(40));status:Mapped[str]=mapped_column(String(20),index=True);estimate:Mapped[float|None]=mapped_column(Float,nullable=True);reach:Mapped[float|None]=mapped_column(Float,nullable=True);impact:Mapped[float|None]=mapped_column(Float,nullable=True);confidence:Mapped[float|None]=mapped_column(Float,nullable=True);effort:Mapped[float|None]=mapped_column(Float,nullable=True);value:Mapped[float|None]=mapped_column(Float,nullable=True);rank:Mapped[int]=mapped_column(Integer);sprint_id:Mapped[str|None]=mapped_column(String(36),nullable=True,index=True);roadmap_id:Mapped[str|None]=mapped_column(String(36),nullable=True,index=True);planned_start:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True);planned_end:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True));completed_at:Mapped[datetime|None]=mapped_column(DateTime(timezone=True),nullable=True)
@@ -198,20 +198,38 @@ class SqlDashboardRepository:
             rows=db.scalars(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value,ApprovalRow.expires_at.isnot(None),ApprovalRow.expires_at<moment).values(state=ApprovalState.EXPIRED.value).returning(ApprovalRow)).all()
             return [_approval(r) for r in rows]
     def save_view(self,layout,at,expect_version=None):
-        """Store the layout and return its new version. With expect_version the write only happens if the
-        stored version still equals it (row locked for the compare); otherwise raises ViewVersionConflict."""
-        with self.sessions.begin() as db:
-            r=db.get(ViewPrefsRow,self.tenant_id,with_for_update=True)
-            current=int((r.layout or {}).get("version",0)) if r else 0
-            if expect_version is not None and expect_version!=current:raise ViewVersionConflict(current)
-            stored={**layout,"version":current+1}
-            if r:r.layout=stored;r.updated_at=at
-            else:db.add(ViewPrefsRow(tenant_id=self.tenant_id,layout=stored,updated_at=at))
-            return current+1
+        """Store the layout and return its new version.
+        The version check and the write are ONE statement (UPDATE ... WHERE version=expected), so it is atomic on
+        every database, SQLite included; rowcount 0 means someone else won. Without expect_version the bump is
+        still one atomic statement (version=version+1). A missing row is inserted only when expect_version is
+        None or 0; a concurrent first insert loses on the primary key and is reported as a conflict."""
+        from sqlalchemy import update
+        from sqlalchemy.exc import IntegrityError
+        def current(db):
+            return db.scalar(select(ViewPrefsRow.version).where(ViewPrefsRow.tenant_id==self.tenant_id))
+        for _ in range(3):
+            with self.sessions.begin() as db:
+                cond=[ViewPrefsRow.tenant_id==self.tenant_id]
+                if expect_version is not None:cond.append(ViewPrefsRow.version==expect_version)
+                n=db.execute(update(ViewPrefsRow).where(*cond).values(layout=layout,updated_at=at,version=ViewPrefsRow.version+1)).rowcount
+                if n==1:return current(db)
+                cur=current(db)
+                if cur is not None:
+                    if expect_version is None:continue  # row appeared/changed between statements; retry the atomic bump
+                    raise ViewVersionConflict(cur)
+                if expect_version not in (None,0):raise ViewVersionConflict(0)
+                try:
+                    with db.begin_nested():db.add(ViewPrefsRow(tenant_id=self.tenant_id,layout=layout,updated_at=at,version=1))
+                    return 1
+                except IntegrityError:
+                    cur=current(db)
+                    if expect_version is None:continue
+                    raise ViewVersionConflict(cur or 0)
+        raise ViewVersionConflict(-1)
     def get_view(self):
         with self.sessions() as db:
             r=db.get(ViewPrefsRow,self.tenant_id)
-            return (dict(r.layout),r.updated_at) if r else (None,None)
+            return ({**dict(r.layout),"version":int(r.version or 0)},r.updated_at) if r else (None,None)
     def save_work_item(self,item:WorkItemOut):
         with self.sessions.begin() as db:
             r=db.scalar(select(WorkItemRow).where(WorkItemRow.tenant_id==self.tenant_id,WorkItemRow.id==item.id))
