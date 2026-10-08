@@ -91,6 +91,8 @@ class BoundedExecutor:
             return ExecutionResult(prior, 0, True)
         attempts = 0
         durable = hasattr(self.store, "mark_unknown")
+        if durable:
+            return self._run_durable(key, operation, parameters, max_attempts, retryable)
         try:
             while attempts < max_attempts:
                 attempts += 1
@@ -99,18 +101,31 @@ class BoundedExecutor:
                     self.store.complete(key, result)
                     return ExecutionResult(result, attempts, False)
                 except Exception as exc:
-                    never_ran = isinstance(exc, NotExecuted)
-                    if durable and not never_ran:
-                        # The body began and failed: the effect may have landed. Keep the intent, never re-run.
-                        self.store.mark_unknown(key)
-                        raise AttemptsExhausted(attempts, exc) from exc
                     if attempts >= max_attempts or retryable is None or not retryable(exc):
                         raise AttemptsExhausted(attempts, exc) from exc
-        except AttemptsExhausted as exc:
-            if not (durable and not isinstance(exc.last_error, NotExecuted)):
-                self.store.abandon(key)
-            raise
         except Exception:
             self.store.abandon(key)
             raise
         raise AssertionError("unreachable")
+
+    def _run_durable(self, key: str, operation: Callable[[Mapping[str, Any]], Any],
+                     parameters: Mapping[str, Any], max_attempts: int,
+                     retryable: Callable[[Exception], bool] | None) -> ExecutionResult:
+        """Fail closed: the journal row is removed ONLY on the explicit NotExecuted proof. Any other exception (the body
+        failing, mark_unknown/complete raising a persistence error, anything raised after the body may have begun) leaves
+        the row in place, so the next run sees EffectUnknown instead of repeating the effect."""
+        attempts = 0
+        while True:
+            attempts += 1
+            try:
+                result = operation(dict(parameters))
+            except NotExecuted as exc:
+                if attempts < max_attempts and retryable is not None and retryable(exc):
+                    continue
+                self.store.abandon(key)  # proven never-ran; if this raises the row stays (fail closed)
+                raise AttemptsExhausted(attempts, exc) from exc
+            except Exception as exc:
+                self.store.mark_unknown(key)  # if this raises, the intent row stays and the error propagates
+                raise AttemptsExhausted(attempts, exc) from exc
+            self.store.complete(key, result)  # if this raises the intent stays: effect landed, outcome unrecorded
+            return ExecutionResult(result, attempts, False)
