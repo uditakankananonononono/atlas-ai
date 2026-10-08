@@ -67,7 +67,7 @@ def env(tmp_path):
         capabilities=["navigate", "extract", "screenshot", "read_values", "fill",
                       "click_nav", "click_submit", "close"])
     hub = FakeHub()
-    sessions = BridgedSessions(registry, hub)
+    sessions = BridgedSessions(registry, hub, artifact_root=str(tmp_path / 'artifacts'))
     session_id = protocol.make_pc_session(device["device_id"], "main")
     return sessions, hub, device, session_id
 
@@ -89,7 +89,8 @@ async def test_page_ops_roundtrip_through_transport(env):
 async def test_screenshot_writes_bytes_to_path(env, tmp_path):
     sessions, hub, device, session_id = env
     page = await sessions.page("t", session_id)
-    target = tmp_path / "shot.png"
+    # Caller paths are confined to the sessions' pinned artifact root.
+    target = sessions.artifacts.prepare_dir("t") / "shot.png"
     await page.screenshot(path=str(target), full_page=True,
                           mask=[page.locator("#secret")])
     assert target.read_bytes() == b"\x89PNG-fake"

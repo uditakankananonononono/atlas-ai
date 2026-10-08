@@ -8,6 +8,7 @@ from typing import Any
 
 from playwright.async_api import Browser, BrowserContext, Playwright, async_playwright
 
+from .artifact_directory import ArtifactRoot, validate_segment
 from .security import NavigationBlocked, validate_public_url
 
 
@@ -31,12 +32,13 @@ class PlaywrightSessions:
         self._browser: Browser | None = None
         self._sessions: dict[tuple[str, str], _Session] = {}
         self._lock = asyncio.Lock()
+        self._artifacts = ArtifactRoot(self.root)
 
     @staticmethod
     def _check_id(value: str) -> str:
-        if not _SAFE_ID.fullmatch(value):
-            raise ValueError("invalid tenant or session id")
-        return value
+        # Dot-only names (".", "..") matched the old charset check; the
+        # shared validator rejects them, closing the traversal primitive.
+        return validate_segment(value, "tenant or session id")
 
     async def start(self) -> None:
         async with self._lock:
@@ -56,6 +58,7 @@ class PlaywrightSessions:
                 await self._pw.stop()
             self._browser = None
             self._pw = None
+            self._artifacts.close()
 
     async def close_session(self, tenant_id: str, session_id: str) -> bool:
         key = (self._check_id(tenant_id), self._check_id(session_id))
@@ -85,8 +88,9 @@ class PlaywrightSessions:
                 if len(self._sessions) >= self.max_sessions:
                     raise RuntimeError("browser session capacity reached")
                 assert self._browser is not None
-                path = self.root / tenant_id / session_id
-                path.mkdir(parents=True, exist_ok=True)
+                # Pinned, swap-refusing directory creation; the HAR path
+                # handed to the driver is re-verified inside the root.
+                path = self._artifacts.prepare_dir(tenant_id, session_id)
                 context = await self._browser.new_context(record_har_path=str(path / "audit.har"))
                 await context.route("**/*", self._guard_route)
                 existing = _Session(context=context, persistent=persistent)

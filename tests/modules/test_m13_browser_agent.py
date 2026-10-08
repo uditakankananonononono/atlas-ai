@@ -30,7 +30,10 @@ class Page:
         return Locator(self, selector)
 
     async def screenshot(self, **kwargs):
-        open(kwargs["path"], "wb").write(b"png")
+        data = b"png"
+        if "path" in kwargs:  # legacy callers; the confined path passes no path
+            open(kwargs["path"], "wb").write(data)
+        return data
 
     async def content(self):
         return "<html/>"

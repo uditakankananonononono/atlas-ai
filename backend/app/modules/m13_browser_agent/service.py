@@ -5,6 +5,7 @@ import secrets
 from pathlib import Path
 from typing import Any
 
+from .artifact_directory import ArtifactRoot, validate_segment
 from .domain import ActionType, AuditEvent, RunStatus
 from .forms import FieldDescriptor, match_fields
 from .security import file_digest, validate_public_url, values_digest
@@ -16,6 +17,7 @@ class Service:
         self.approvals = approval_service
         self.store = store
         self.root = Path(artifact_root)
+        self.artifacts = ArtifactRoot(self.root)
         self.allowed_hosts = allowed_hosts
 
     async def navigate(self, tenant_id: str, session_id: str, url: str, persistent: bool = False) -> dict[str, Any]:
@@ -41,13 +43,21 @@ class Service:
         return {"status": "ok"}
 
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
-        """Full-page screenshot; masked selectors are covered so field values never land in the image."""
-        directory = self.root / tenant_id / session_id
-        directory.mkdir(parents=True, exist_ok=True)
-        path = directory / f"{secrets.token_hex(12)}.png"
+        """Full-page screenshot; masked selectors are covered so field values never land in the image.
+
+        Ids are validated before any filesystem use, and the PNG bytes are
+        written through the pinned artifact root, so a session directory
+        swapped for a symlink before or during the write is refused instead
+        of followed outside the root.
+        """
+        validate_segment(tenant_id, "tenant id")
+        validate_segment(session_id, "session id")
         page = await self.sessions.page(tenant_id, session_id, False)
         mask = [page.locator(selector) for selector in (mask_selectors or [])]
-        await page.screenshot(path=str(path), full_page=True, mask=mask)
+        png = await page.screenshot(full_page=True, mask=mask)
+        if not isinstance(png, (bytes, bytearray)):
+            raise ValueError("browser adapter returned no screenshot bytes")
+        path = self.artifacts.write_bytes((tenant_id, session_id), f"{secrets.token_hex(12)}.png", bytes(png))
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SCREENSHOT, {"path": str(path), "sha256": file_digest(str(path)), "masked_count": len(mask)}))
         return str(path)
 
