@@ -123,3 +123,20 @@ def test_corpus_rejects_duplicate_source_identity_instead_of_overwriting(kind):
         with pytest.raises(ValidationError, match='duplicate opportunity id'):
             GrantCorpus(opportunities=[opportunity('https://original.test'),
                                        opportunity('https://other.test')])
+
+
+@pytest.mark.parametrize('field,value', [('recipient', 'other@foundation.test'),
+                                         ('action', 'publish proposal')])
+def test_review_approval_binds_handoff_recipient_and_action(field, value):
+    from dataclasses import replace
+    svc = service()
+    hits = svc.retrieve_grounding('opp', 'health', as_of=NOW)
+    budget = svc.build_budget([BudgetRequestLine('nurse_hour', Decimal('1'), 'Nursing')],
+                              as_of=NOW.date(), observed_by=NOW)
+    report = svc.build_report('opp', complete_sections(), budget, hits, as_of=NOW)
+    handoff = svc.prepare_review_handoff(report, recipient='grants@foundation.test',
+                                        action='submit proposal', created_at=NOW)
+    approval = svc.approve_handoff(handoff, reviewed_artifact_json=handoff.artifact_json,
+                                  reviewer='Fixture', approved_at=NOW)
+    with pytest.raises(ValidationError, match='exact-review'):
+        svc.assert_dispatchable(replace(handoff, **{field: value}), approval, handoff.artifact_json)
