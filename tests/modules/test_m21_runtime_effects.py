@@ -198,18 +198,18 @@ def test_PROTECTION_consumed_approval_is_not_refunded_after_unknown(store):
     gid = goal(store); p = live(store, gid)
     r = reg(store, make("send_note", person=True, mode="oserror_after"))
     d = payload_digest(gid, "send_note", {"target": "a"})
-    store.grant("t1", "a1", gid, "send_note", "comms", d, "a1")
+    store.grant("t1", "a1", gid, "send_note", "comms", d, "ap1")
     assert run(r.execute(1, "send_note", {"target": "a"}, p)).error == "OSError"      # approval consumed, outcome unknown
     with pytest.raises(GateRefused) as e:
         run(r.execute(2, "send_note", {"target": "a"}, p))
     assert e.value.reason == "effect_unknown"
-    store.grant("t1", "a1", gid, "send_note", "comms", d, "a1")                         # a fresh approval alone does not unblock
+    store.grant("t1", "a1", gid, "send_note", "comms", d, "ap1")                         # a fresh approval alone does not unblock
     with pytest.raises(GateRefused) as e:
         run(r.execute(3, "send_note", {"target": "a"}, p))
     assert e.value.reason == "effect_unknown" and WORLD["send_note:a"] == 1
     eid = store.list_effects("t1", "a1", gid)[0]["id"]
     set_status(store, gid, "awaiting_review"); p = live(store, gid)
-    assert store.resolve_effect(gid, eid, "absent", tenant_id="t1", actor_id="a1") == "resolved"
+    assert store.resolve_effect(gid, eid, "absent", tenant_id="t1", resolver_id="ap1") == "resolved"
     assert run(r.execute(4, "send_note", {"target": "a"}, p)).error == "OSError"        # absent + a spare approval -> the retry really ran
     assert WORLD["send_note:a"] == 2
 
@@ -314,10 +314,22 @@ def test_NEW_reconcile_exceptions_are_contained_to_named_classes_and_leave_the_e
 @pytest.fixture
 def client(store):
     c = TestClient(app)
-    def as_(tenant, actor): app.dependency_overrides[require_tenant] = lambda: TenantContext(tenant, actor)
+    def as_(tenant, actor, roles=frozenset()): app.dependency_overrides[require_tenant] = lambda: TenantContext(tenant, actor, frozenset(roles))
     c.as_ = as_; as_("t1", "a1")
     yield c
     app.dependency_overrides.pop(require_tenant, None)
+
+
+APPROVER = ("claire-approver",)
+
+
+def resolve_as(client, gid, eid, body, tenant="t1", actor="ap1", roles=APPROVER):
+    """Slice 5: resolving is an approver act by a principal other than the goal's actor (a1). Restores the owner view after."""
+    client.as_(tenant, actor, roles)
+    try:
+        return client.post(f"{URL}/{gid}/effects/{eid}/resolve", json=body)
+    finally:
+        client.as_("t1", "a1")
 
 
 def _unknown_effect(store):
@@ -332,14 +344,14 @@ def test_NEW_resolve_route_committed_means_never_rerun(store, client):
     gid, eid, r = _unknown_effect(store)
     listed = client.get(f"{URL}/{gid}/effects").json()["effects"]
     assert listed[0]["state"] == "unknown" and "arguments" not in listed[0]
-    assert client.post(f"{URL}/{gid}/effects/{eid}/resolve", json={"outcome": "committed"}).json()["state"] == "committed"
+    assert resolve_as(client, gid, eid, {"outcome": "committed"}).json()["state"] == "committed"
     p = live(store, gid)
     assert run(r.execute(2, "write_row", {"target": "a"}, p)).replayed is True and WORLD["write_row:a"] == 1
 
 
 def test_NEW_resolve_route_absent_allows_a_retry(store, client):
     gid, eid, r = _unknown_effect(store)
-    assert client.post(f"{URL}/{gid}/effects/{eid}/resolve", json={"outcome": "absent"}).status_code == 200
+    assert resolve_as(client, gid, eid, {"outcome": "absent"}).status_code == 200
     p = live(store, gid)
     assert run(r.execute(2, "write_row", {"target": "a"}, p)).error == "OSError" and WORLD["write_row:a"] == 2
 
@@ -347,19 +359,24 @@ def test_NEW_resolve_route_absent_allows_a_retry(store, client):
 def test_NEW_resolve_route_is_owner_scoped_and_state_checked(store, client):
     gid, eid, _ = _unknown_effect(store)
     body = {"outcome": "absent"}
+    # CONVERTED (slice 5): was actor-scoped; resolving is now approver-scoped by tenant. Covers: other tenant, no role,
+    # and the goal's own actor are all refused; the owner's own read view stays actor-scoped.
+    assert resolve_as(client, gid, eid, body, tenant="t2", actor="ap1").status_code == 404
     client.as_("t2", "a1")
-    assert client.post(f"{URL}/{gid}/effects/{eid}/resolve", json=body).status_code == 404
     assert client.get(f"{URL}/{gid}/effects").status_code == 404
     client.as_("t1", "a2")
-    assert client.post(f"{URL}/{gid}/effects/{eid}/resolve", json=body).status_code == 404
+    assert client.get(f"{URL}/{gid}/effects").status_code == 404
     client.as_("t1", "a1")
-    assert client.post(f"{URL}/{gid}/effects/no-such/resolve", json=body).status_code == 404
-    assert client.post(f"{URL}/{gid}/effects/{eid}/resolve", json={"outcome": "maybe"}).status_code == 422
+    assert resolve_as(client, gid, eid, body, actor="ap1", roles=()).status_code == 403             # no approver role
+    assert resolve_as(client, gid, eid, body, actor="a1").status_code == 403                         # the goal's own actor
+    assert states(store, gid) == ["unknown"]
+    assert resolve_as(client, gid, "no-such", body).status_code == 404
+    assert resolve_as(client, gid, eid, {"outcome": "maybe"}).status_code == 422
     set_status(store, gid, "running")
-    assert client.post(f"{URL}/{gid}/effects/{eid}/resolve", json=body).status_code == 409      # goal running
+    assert resolve_as(client, gid, eid, body).status_code == 409      # goal running
     set_status(store, gid, "awaiting_review")
-    assert client.post(f"{URL}/{gid}/effects/{eid}/resolve", json=body).status_code == 200
-    assert client.post(f"{URL}/{gid}/effects/{eid}/resolve", json=body).status_code == 409      # already resolved
+    assert resolve_as(client, gid, eid, body).status_code == 200
+    assert resolve_as(client, gid, eid, body).status_code == 409      # already resolved
     assert states(store, gid) == ["absent"]
 
 
@@ -378,7 +395,7 @@ def test_NEW_effects_migration_matches_model_refuses_wrong_shape_and_downgrade_g
     assert {i["name"] for i in insp.get_indexes(t.name)} >= {i.name for i in t.indexes}
     assert any(u["column_names"] == ["goal_id", "idempotency_key"] for u in insp.get_unique_constraints(t.name))
     con = sqlite3.connect(db)
-    con.execute("INSERT INTO claire_runtime_effects VALUES ('e','t','a','g','tool','k','unknown',1,NULL,'x','x')"); con.commit(); con.close()
+    con.execute("INSERT INTO claire_runtime_effects (id,tenant_id,actor_id,goal_id,tool,idempotency_key,state,attempts,receipt_json,created_at,updated_at) VALUES ('e','t','a','g','tool','k','unknown',1,NULL,'x','x')"); con.commit(); con.close()
     r = alembic(db, "downgrade", "20261008_m21_runtime_approvals")
     assert r.returncode != 0 and "holds effect journal records" in r.stderr
     bad = tmp_path / "b.sqlite"
@@ -431,7 +448,7 @@ def test_PROTECTION_concurrent_commit_between_classification_and_reservation_rep
     gid = goal(store); p = live(store, gid)
     r = reg(store, make("send_note", person=True))
     key = payload_digest(gid, "send_note", {"target": "a"})
-    store.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    store.grant("t1", "a1", gid, "send_note", "comms", key, "ap1")
     real = store.begin_effect
     def racing(principal, tool, k, **kw):  # another caller reserves and commits the same effect right before ours
         st, eid, _ = real(principal, tool, k, takeover_pending=False)
@@ -447,9 +464,9 @@ def test_PROTECTION_pending_effect_refusal_consumes_no_approval(store):
     gid = goal(store); p = live(store, gid)
     r = reg(store, make("send_note", person=True, mode="oserror_after"))
     key = payload_digest(gid, "send_note", {"target": "a"})
-    store.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    store.grant("t1", "a1", gid, "send_note", "comms", key, "ap1")
     assert run(r.execute(1, "send_note", {"target": "a"}, p)).error == "OSError"      # spends the first approval
-    store.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    store.grant("t1", "a1", gid, "send_note", "comms", key, "ap1")
     with pytest.raises(GateRefused) as e:
         run(r.execute(2, "send_note", {"target": "a"}, p))
     assert e.value.reason == "effect_unknown" and sorted(_consumed(store, gid)) == [False, True]
@@ -459,7 +476,7 @@ def test_PROTECTION_missing_approval_leaves_no_intent_and_consumes_nothing_parti
     gid = goal(store); p = live(store, gid)
     r = reg(store, make("book_slot", money=True, person=True))
     key = payload_digest(gid, "book_slot", {"target": "a"})
-    store.grant("t1", "a1", gid, "book_slot", "comms", key, "a1")          # the payment gate has no approval
+    store.grant("t1", "a1", gid, "book_slot", "comms", key, "ap1")          # the payment gate has no approval
     with pytest.raises(GateRefused) as e:
         run(r.execute(1, "book_slot", {"target": "a"}, p))
     assert e.value.reason == "approval_required" and states(store, gid) == [] and _consumed(store, gid) == [False] and WORLD == {}
@@ -475,7 +492,7 @@ def test_PROTECTION_lease_replaced_before_the_reservation_write_consumes_no_appr
     key = payload_digest(gid, "send_note", {})
     if path == "takeover_update":
         eid = a.begin_effect(p, "send_note", key, takeover_pending=False)[1]; a.mark_effect(eid, "failed")
-    a.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    a.grant("t1", "a1", gid, "send_note", "comms", key, "ap1")
     seen: dict[str, Any] = {}
     def hook(conn, cursor, statement, params, context, many):
         if not seen and statement.lstrip().upper().startswith(("INSERT INTO CLAIRE_RUNTIME_EFFECTS", "UPDATE CLAIRE_RUNTIME_EFFECTS")):
@@ -496,7 +513,7 @@ def test_PROTECTION_concurrent_transition_before_takeover_update_neither_reserve
     gid = goal(a); c1 = a.claim("one"); p = Principal("t1", "a1", gid, c1.lease_token)
     key = payload_digest(gid, "send_note", {})
     eid = a.begin_effect(p, "send_note", key, takeover_pending=False)[1]; a.mark_effect(eid, "failed")
-    a.grant("t1", "a1", gid, "send_note", "comms", key, "a1")
+    a.grant("t1", "a1", gid, "send_note", "comms", key, "ap1")
     done: list[Any] = []
     def hook(conn, cursor, statement, params, context, many):
         if not done and statement.lstrip().upper().startswith("UPDATE CLAIRE_RUNTIME_EFFECTS"):
@@ -508,3 +525,54 @@ def test_PROTECTION_concurrent_transition_before_takeover_update_neither_reserve
     event.remove(a.engine, "before_cursor_execute", hook)
     assert done and status == "pending" and _consumed(a, gid) == [False]
     a.close(); b.close()
+
+
+# ---- slice 5: resolver identity -----------------------------------------------------------------
+
+# NEW: the resolver is recorded on the journal row and shown in the owner view; reconcile is recorded as the system
+def test_NEW_resolver_identity_is_recorded_and_visible(store, client):
+    gid, eid, _ = _unknown_effect(store)
+    assert resolve_as(client, gid, eid, {"outcome": "committed"}, actor="ap7").status_code == 200
+    e = client.get(f"{URL}/{gid}/effects").json()["effects"][0]
+    assert e["resolved_by"] == "ap7" and e["self_resolved"] is False
+
+
+# PROTECTION: the store refuses the goal's own actor and a missing resolver, whatever the route does
+def test_PROTECTION_store_refuses_self_resolution_and_blank_resolver(store):
+    from app.modules.m21_claire.runtime.goals import SelfApprovalRefused
+    gid, eid, _ = _unknown_effect(store)
+    with pytest.raises(SelfApprovalRefused):
+        store.resolve_effect(gid, eid, "absent", tenant_id="t1", resolver_id="a1")
+    for bad in (None, "", " "):
+        with pytest.raises(ValueError):
+            store.resolve_effect(gid, eid, "absent", tenant_id="t1", resolver_id=bad)
+    assert states(store, gid) == ["unknown"]
+
+
+# NEW: with the escape hatch on, self-resolution is allowed and tagged
+def test_NEW_self_resolution_with_escape_hatch_is_tagged(tmp_path):
+    solo = GoalStore(f"sqlite:///{tmp_path}/s.db", create_schema=True, owner_may_self_approve=True)
+    gid, eid, _ = _unknown_effect(solo)
+    assert solo.resolve_effect(gid, eid, "absent", tenant_id="t1", resolver_id="a1") == "resolved"
+    e = solo.list_effects("t1", "a1", gid)[0]
+    assert e["resolved_by"] == "a1" and e["self_resolved"] is True
+
+
+# NEW: migration adds resolved_by and refuses to drop it when it holds resolver records
+def test_NEW_separation_migration_adds_resolved_by_and_downgrade_guards_data(tmp_path):
+    import os, subprocess, sys, sqlite3
+    def alembic(db, *a):
+        return subprocess.run([sys.executable, "-m", "alembic", *a], env={**os.environ, "ATLAS_DATABASE_URL": f"sqlite:///{db}"},
+                              text=True, capture_output=True, timeout=110)
+    db = tmp_path / "m.sqlite"
+    assert alembic(db, "upgrade", "20261008_m21_runtime_effects").returncode == 0
+    con = sqlite3.connect(db)
+    assert "resolved_by" not in [r[1] for r in con.execute("PRAGMA table_info(claire_runtime_effects)")]
+    con.close()
+    assert alembic(db, "upgrade", "head").returncode == 0
+    con = sqlite3.connect(db)
+    assert "resolved_by" in [r[1] for r in con.execute("PRAGMA table_info(claire_runtime_effects)")]
+    con.execute("INSERT INTO claire_runtime_effects (id,tenant_id,actor_id,goal_id,tool,idempotency_key,state,attempts,created_at,updated_at,resolved_by) VALUES ('e','t','a','g','x','k','absent',1,'x','x','ap1')")
+    con.commit(); con.close()
+    r = alembic(db, "downgrade", "20261008_m21_runtime_effects")
+    assert r.returncode != 0 and "resolver records" in r.stderr

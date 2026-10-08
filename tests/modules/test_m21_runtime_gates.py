@@ -18,7 +18,7 @@ from app.main import app
 from app.modules.m21_claire.runtime import routes as rroutes
 from app.modules.m21_claire.runtime.engine import Engine
 from app.modules.m21_claire.runtime.gates import GateEnforcer, GateRefused, Principal, classify, payload_digest
-from app.modules.m21_claire.runtime.goals import GoalStore
+from app.modules.m21_claire.runtime.goals import GoalStore, SelfApprovalRefused
 from app.modules.m21_claire.runtime.tools import ReadOnlyToolRegistry, Tool
 from app.modules.m21_claire.runtime.types import AgentDecision, ToolCall, ToolRisk
 from app.modules.m21_claire.runtime.worker import Worker
@@ -133,7 +133,7 @@ def test_blocked_standing_no_is_refused_even_with_an_approval(store):
     r = registry(store, make("impersonate_user", person=True))
     gid = goal(store); p = live(store, gid, "t1", "a1")
     d = payload_digest(gid, "impersonate_user", {"target": "x"})
-    store.grant("t1", "a1", gid, "impersonate_user", "comms", d, "a1")
+    store.grant("t1", "a1", gid, "impersonate_user", "comms", d, "ap1")
     with pytest.raises(GateRefused) as e:
         run(r.execute(1, "impersonate_user", {"target": "x"}, p))
     assert e.value.reason == "blocked" and RAN == []
@@ -149,7 +149,8 @@ def test_direct_dispatch_without_principal_or_approval_never_runs(store):
 
 def test_end_to_end_gate_awaiting_review_approve_requeue_single_use(store, t0):
     c = TestClient(app)
-    app.dependency_overrides[require_tenant] = lambda: TenantContext("t1", "a1")
+    who = {"ctx": TenantContext("t1", "a1")}  # CONVERTED (slice 5): the goal's actor reads/requeues; a distinct approver approves
+    app.dependency_overrides[require_tenant] = lambda: who["ctx"]
     try:
         gid = goal(store)
         tools = registry(store, make("write_note"), make("send_email", person=True))
@@ -160,9 +161,11 @@ def test_end_to_end_gate_awaiting_review_approve_requeue_single_use(store, t0):
         ref = g["report"]["refusals"][0]
         assert ref["reason"] == "approval_required" and ref["gates"] == ["comms"] and ref["tool"] == "send_email"
         bad = {"capability": "send_email", "gate": "comms", "digest": "0" * 64}
+        who["ctx"] = TenantContext("t1", "ap1", frozenset({"claire-approver"}))
         assert c.post(f"{URL}/{gid}/approvals", json=bad).status_code == 422          # cannot pre-sign a cheque
         ok = {"capability": "send_email", "gate": "comms", "digest": ref["digest"]}
         assert c.post(f"{URL}/{gid}/approvals", json=ok).status_code == 201
+        who["ctx"] = TenantContext("t1", "a1")
         assert c.post(f"{URL}/{gid}/requeue").json()["status"] == "queued"
         run(work(store, Script(call("send_email", target="bob"), final()), tools).run_once())
         assert ("send_email", "bob") in RAN
@@ -184,7 +187,7 @@ def test_approval_binding_changed_payload_goal_actor_expiry_and_all_or_nothing(s
     gid = goal(store); other = goal(store)
     p = live(store, gid, "t1", "a1")
     d = payload_digest(gid, "send_email", {"target": "bob"})
-    store.grant("t1", "a1", gid, "send_email", "comms", d, "a1", ttl_seconds=60)
+    store.grant("t1", "a1", gid, "send_email", "comms", d, "ap1", ttl_seconds=60)
     with pytest.raises(GateRefused):  # changed recipient
         run(r.execute(1, "send_email", {"target": "mallory"}, p))
     with pytest.raises(GateRefused):  # same call under another goal
@@ -199,10 +202,10 @@ def test_approval_binding_changed_payload_goal_actor_expiry_and_all_or_nothing(s
     assert RAN == []
     # book needs BOTH gates; one approval is not enough and is not consumed by the failed attempt
     bd = payload_digest(gid, "book_table", {"target": "x"})
-    store.grant("t1", "a1", gid, "book_table", "comms", bd, "a1")
+    store.grant("t1", "a1", gid, "book_table", "comms", bd, "ap1")
     with pytest.raises(GateRefused):
         run(r.execute(1, "book_table", {"target": "x"}, p))
-    store.grant("t1", "a1", gid, "book_table", "payment", bd, "a1")
+    store.grant("t1", "a1", gid, "book_table", "payment", bd, "ap1")
     assert run(r.execute(1, "book_table", {"target": "x"}, p)).ok and RAN == [("book_table", "x")]
     assert run(r.execute(1, "book_table", {"target": "x"}, p)).replayed is True and RAN == [("book_table", "x")]  # replay, not a re-run
     with pytest.raises(GateRefused):  # a different payload needs its own approvals
@@ -212,20 +215,23 @@ def test_approval_binding_changed_payload_goal_actor_expiry_and_all_or_nothing(s
 def test_grant_is_scoped_to_the_owners_goal_and_known_gates(store):
     gid = goal(store)
     with pytest.raises(KeyError):
-        store.grant("t2", "a1", gid, "x", "comms", "0" * 64, "a1")
+        store.grant("t2", "a1", gid, "x", "comms", "0" * 64, "ap1")
     with pytest.raises(KeyError):
-        store.grant("t1", "a2", gid, "x", "comms", "0" * 64, "a1")
+        store.grant("t1", "a2", gid, "x", "comms", "0" * 64, "ap1")
     with pytest.raises(ValueError):
-        store.grant("t1", "a1", gid, "x", "review", "0" * 64, "a1")
+        store.grant("t1", "a1", gid, "x", "review", "0" * 64, "ap1")
 
 
 def test_approve_route_is_owner_scoped(store):
     c = TestClient(app)
     gid = goal(store)
-    app.dependency_overrides[require_tenant] = lambda: TenantContext("t1", "intruder")
+    # CONVERTED (slice 5): approvals are tenant+role scoped now; the owner-only routes (requeue) stay actor scoped.
+    app.dependency_overrides[require_tenant] = lambda: TenantContext("t2", "approver-x", frozenset({"claire-approver"}))
     try:
         body = {"capability": "send_email", "gate": "comms", "digest": "0" * 64}
-        assert c.post(f"{URL}/{gid}/approvals", json=body).status_code == 404
+        assert c.post(f"{URL}/{gid}/approvals", json=body).status_code == 404            # other tenant's approver
+        app.dependency_overrides[require_tenant] = lambda: TenantContext("t1", "intruder")
+        assert c.post(f"{URL}/{gid}/approvals", json=body).status_code == 403            # no approver role
         assert c.post(f"{URL}/{gid}/requeue").status_code == 404
     finally:
         app.dependency_overrides.pop(require_tenant, None)
@@ -335,10 +341,95 @@ def test_gated_arguments_must_be_plain_json_so_digests_cannot_collide(store):
     r = registry(store, make("send_email", person=True))
     gid = goal(store); p = live(store, gid, "t1", "a1")
     d = payload_digest(gid, "send_email", {"target": ["a", "b"]})
-    store.grant("t1", "a1", gid, "send_email", "comms", d, "a1")
+    store.grant("t1", "a1", gid, "send_email", "comms", d, "ap1")
     for args in ({"target": ("a", "b")}, {"target": {"a"}}, {"target": b"a"}, {1: "x"}, {"target": float("nan")}):
         with pytest.raises(GateRefused) as e:
             run(r.execute(1, "send_email", args, p))
         assert e.value.reason == "invalid_arguments"
     assert RAN == []
     assert run(r.execute(1, "send_email", {"target": ["a", "b"]}, p)).ok  # the exact approved plain-JSON call still works
+
+
+# ---- slice 5: separation of duties (the goal's actor proposes; a different principal with the approver role decides) ----
+
+def _client(who):
+    c = TestClient(app)
+    app.dependency_overrides[require_tenant] = lambda: who["ctx"]
+    return c
+
+
+def _refused_goal(store):
+    gid = goal(store)
+    tools = registry(store, make("send_email", person=True))
+    run(work(store, Script(call("send_email", target="bob"), final()), tools).run_once())
+    return gid, store.get("t1", "a1", gid)["report"]["refusals"][0]
+
+
+# PROTECTION
+def test_store_refuses_the_goals_own_actor_as_approver_and_blank_approvers(store):
+    gid, ref = _refused_goal(store)
+    with pytest.raises(SelfApprovalRefused):
+        store.grant("t1", "a1", gid, "send_email", "comms", ref["digest"], "a1")
+    for bad in ("", "  ", None, 5):
+        with pytest.raises(ValueError):
+            store.grant("t1", "a1", gid, "send_email", "comms", ref["digest"], bad)
+    assert store.grant("t1", "a1", gid, "send_email", "comms", ref["digest"], "ap1")
+
+
+# PROTECTION: the invariant lives in the store, not only the route
+def test_route_refuses_self_approval_and_missing_role_and_records_approver(store):
+    gid, ref = _refused_goal(store)
+    body = {"capability": "send_email", "gate": "comms", "digest": ref["digest"]}
+    who = {"ctx": TenantContext("t1", "a1", frozenset({"claire-approver"}))}
+    c = _client(who)
+    try:
+        assert c.post(f"{URL}/{gid}/approvals", json=body).status_code == 403          # own actor, even with the role
+        who["ctx"] = TenantContext("t1", "ap1")
+        assert c.post(f"{URL}/{gid}/approvals", json=body).status_code == 403          # distinct but no role
+        who["ctx"] = TenantContext("t1", "ap1", frozenset({"atlas-reviewer"}))
+        assert c.post(f"{URL}/{gid}/approvals", json=body).status_code == 403          # reviewer role is not an approver role
+        who["ctx"] = TenantContext("t1", "ap1", frozenset({"claire-approver"}))
+        ok = c.post(f"{URL}/{gid}/approvals", json=body)
+        assert ok.status_code == 201 and ok.json()["approver"] == "ap1" and ok.json()["self_approved"] is False
+        who["ctx"] = TenantContext("t1", "ap2", frozenset({"atlas-admin"}))
+        assert c.post(f"{URL}/{gid}/approvals", json=body).status_code == 201          # atlas-admin also decides
+    finally:
+        app.dependency_overrides.pop(require_tenant, None)
+
+
+# NEW: an approver who did not create the goal can read exactly what they approve, and nothing more
+def test_approver_view_shows_refusal_digest_without_purpose_or_arguments(store):
+    gid, ref = _refused_goal(store)
+    who = {"ctx": TenantContext("t1", "ap1", frozenset({"claire-approver"}))}
+    c = _client(who)
+    try:
+        v = c.get(f"{URL}/{gid}/approver-view")
+        assert v.status_code == 200
+        j = v.json()
+        assert j["actor_id"] == "a1" and j["refusals"] == [{"tool": "send_email", "gates": ["comms"], "digest": ref["digest"], "reason": "approval_required"}]
+        assert "purpose" not in j and "bob" not in repr(j)
+        who["ctx"] = TenantContext("t1", "ap1")
+        assert c.get(f"{URL}/{gid}/approver-view").status_code == 403
+        who["ctx"] = TenantContext("t2", "ap1", frozenset({"claire-approver"}))
+        assert c.get(f"{URL}/{gid}/approver-view").status_code == 404
+    finally:
+        app.dependency_overrides.pop(require_tenant, None)
+
+
+# NEW: the escape hatch is explicit, default OFF, strict bool, and visible in the record
+def test_self_approval_escape_hatch_is_default_off_and_visible(tmp_path):
+    with pytest.raises(ValueError):
+        GoalStore(f"sqlite:///{tmp_path}/x.db", create_schema=True, owner_may_self_approve="yes")
+    assert GoalStore(f"sqlite:///{tmp_path}/y.db", create_schema=True).owner_may_self_approve is False
+    solo = GoalStore(f"sqlite:///{tmp_path}/z.db", create_schema=True, owner_may_self_approve=True)
+    gid, ref = _refused_goal(solo)
+    who = {"ctx": TenantContext("t1", "a1", frozenset({"claire-approver"}))}
+    from app.modules.m21_claire.runtime import routes as _r
+    app.dependency_overrides[_r.get_store] = lambda: solo
+    c = _client(who)
+    try:
+        ok = c.post(f"{URL}/{gid}/approvals", json={"capability": "send_email", "gate": "comms", "digest": ref["digest"]})
+        assert ok.status_code == 201 and ok.json()["self_approved"] is True
+    finally:
+        app.dependency_overrides.pop(require_tenant, None)
+        app.dependency_overrides.pop(_r.get_store, None)

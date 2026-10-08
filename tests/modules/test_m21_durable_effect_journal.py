@@ -87,7 +87,7 @@ def test_owner_resolves_committed_and_resume_replays_without_rerun():
     eng = engine()
     p, effects = crashed(eng)
     repo2 = repo_on(eng)
-    repo2.resolve_effect(p.plan_id, "send-1", "committed", {"sent": True}, confirm_executor_stopped=True)
+    repo2.resolve_effect(p.plan_id, "send-1", "committed", {"sent": True}, confirm_executor_stopped=True, resolver_id="ap1")
     done = orch(repo2, effects).resume(p.plan_id)
     assert done.state is PlanState.SUCCEEDED and effects == ["draft", "send"]
 
@@ -96,7 +96,7 @@ def test_owner_resolves_absent_and_resume_runs_once():
     eng = engine()
     p, effects = crashed(eng)
     repo2 = repo_on(eng)
-    repo2.resolve_effect(p.plan_id, "send-1", "absent", confirm_executor_stopped=True)
+    repo2.resolve_effect(p.plan_id, "send-1", "absent", confirm_executor_stopped=True, resolver_id="ap1")
     done = orch(repo2, effects).resume(p.plan_id)
     assert done.state is PlanState.SUCCEEDED and effects == ["draft", "send", "send"]
 
@@ -105,13 +105,13 @@ def test_resolve_is_tenant_scoped_and_only_for_unresolved_effects():
     eng = engine()
     p, _ = crashed(eng)
     with pytest.raises(EffectResolutionError):
-        repo_on(eng, "other").resolve_effect(p.plan_id, "send-1", "absent")
+        repo_on(eng, "other").resolve_effect(p.plan_id, "send-1", "absent", resolver_id="ap1")
     with pytest.raises(EffectResolutionError):
-        repo_on(eng).resolve_effect(p.plan_id, "send-1", "maybe")
+        repo_on(eng).resolve_effect(p.plan_id, "send-1", "maybe", resolver_id="ap1")
     r = repo_on(eng)
-    r.resolve_effect(p.plan_id, "send-1", "committed", confirm_executor_stopped=True)
+    r.resolve_effect(p.plan_id, "send-1", "committed", confirm_executor_stopped=True, resolver_id="ap1")
     with pytest.raises(EffectResolutionError):
-        r.resolve_effect(p.plan_id, "send-1", "absent")  # committed effects cannot be erased
+        r.resolve_effect(p.plan_id, "send-1", "absent", resolver_id="ap1")  # committed effects cannot be erased
 
 
 # PROTECTION (reviewer finding): resolving a possibly-live intent row would let a second executor run the step
@@ -121,9 +121,9 @@ def test_live_intent_cannot_be_resolved_without_confirmation_and_age():
     fenced = repo_on(eng, min_age=3600.0)
     for outcome in ("absent", "committed"):
         with pytest.raises(EffectResolutionError):
-            fenced.resolve_effect(p.plan_id, "send-1", outcome)  # no confirmation
+            fenced.resolve_effect(p.plan_id, "send-1", outcome, resolver_id="ap1")  # no confirmation
         with pytest.raises(EffectResolutionError):
-            fenced.resolve_effect(p.plan_id, "send-1", outcome, confirm_executor_stopped=True)  # too young
+            fenced.resolve_effect(p.plan_id, "send-1", outcome, confirm_executor_stopped=True, resolver_id="ap1")  # too young
     assert fenced.effect_states(p.plan_id)["send-1"] == "intent"
     with pytest.raises(EffectUnknown):  # the row still blocks any other orchestrator
         orch(repo_on(eng), []).resume(p.plan_id)
@@ -137,7 +137,7 @@ def test_unknown_after_reported_failure_resolves_without_the_live_fence():
     approve(o, p)
     with pytest.raises(AttemptsExhausted):
         o.execute(p)
-    repo.resolve_effect(p.plan_id, "send-1", "absent")
+    repo.resolve_effect(p.plan_id, "send-1", "absent", resolver_id="ap1")
     assert repo.effect_states(p.plan_id) == {"draft-1": "committed"}
 
 
@@ -252,5 +252,19 @@ def test_confirmation_must_be_a_strict_bool(truthy):
     eng = engine()
     p, _ = crashed(eng)
     with pytest.raises(EffectResolutionError):
-        repo_on(eng).resolve_effect(p.plan_id, "send-1", "absent", confirm_executor_stopped=truthy)
+        repo_on(eng).resolve_effect(p.plan_id, "send-1", "absent", confirm_executor_stopped=truthy, resolver_id="ap1")
     assert repo_on(eng).effect_states(p.plan_id)["send-1"] == "intent"
+
+
+# NEW (slice 5): the durable resolver identity is required and recorded in the audit log. Durable plans carry no actor,
+# so there is NO distinct-identity check on this path (stated limit).
+def test_resolver_id_is_required_and_audited():
+    eng = engine()
+    p, _ = crashed(eng)
+    r = repo_on(eng)
+    for bad in (None, "", "  ", 3):
+        with pytest.raises(EffectResolutionError):
+            r.resolve_effect(p.plan_id, "send-1", "absent", resolver_id=bad, confirm_executor_stopped=True)
+    r.resolve_effect(p.plan_id, "send-1", "absent", resolver_id="ap9", confirm_executor_stopped=True)
+    ev = [e for e in r.audit_log(p.plan_id) if e["event"] == "effect_resolved"]
+    assert ev and ev[0]["detail"] == {"outcome": "absent", "resolver": "ap9"}
