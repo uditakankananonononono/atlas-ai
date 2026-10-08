@@ -91,12 +91,24 @@ class IdentityInterviewRepository:
         # question; cross-call late answers are NOT rejected or deduplicated
         # (client idempotency/expected-question semantics are not invented
         # here).
+        # Integrity classification is driver-identified (SQLite result
+        # codes, PostgreSQL SQLSTATE): a recognized non-unique integrity
+        # error raises IntegrityWriteError on the first attempt, an
+        # unclassifiable driver signal raises UnclassifiedIntegrityError;
+        # neither is collision-labeled or retried. A commit-time or
+        # post-commit failure raises CommitOutcomeUnknown: the call failed
+        # while the answer may have persisted; reconcile by reading the
+        # interview before resubmitting. No automatic retry, compensation
+        # or deduplication of the ambiguous case.
         from sqlalchemy.exc import IntegrityError as _IE
+        from ._commit_contract import (CommitOutcomeUnknown, IntegrityWriteError,
+                                       UnclassifiedIntegrityError, classify_integrity_error)
         expected_index: int | None = None
         last = None
         for _ in range(3):
+            committed = False
             try:
-                with self.sessions.begin() as db:
+                with self.sessions() as db:
                     row = db.scalar(select(IdentityInterviewRow).where(
                         IdentityInterviewRow.id == session_id,
                         IdentityInterviewRow.tenant_id == self.tenant_id))
@@ -138,9 +150,41 @@ class IdentityInterviewRepository:
                     # committed, never a post-commit re-read that could
                     # observe interleaved writes.
                     view = self._view(row, turns)
-                return view
+                    try:
+                        db.commit()
+                    except _IE:
+                        raise
+                    except Exception as exc:
+                        raise CommitOutcomeUnknown(
+                            "interview answer commit outcome unknown; the answer may have "
+                            "persisted; reconcile by reading the interview before "
+                            "resubmitting; no automatic retry, compensation or deduplication "
+                            "is performed") from exc
+                    committed = True
+                    return view
             except _IE as exc:
-                last = exc
+                kind = classify_integrity_error(exc)
+                if kind == "unique":
+                    last = exc
+                    continue
+                if kind == "non_unique":
+                    raise IntegrityWriteError(
+                        "interview answer failed on a recognized non-collision integrity "
+                        "error; rolled back without write; not an answer collision") from exc
+                raise UnclassifiedIntegrityError(
+                    "interview answer failed on an integrity error this driver cannot "
+                    "classify; rolled back without write; identification covers SQLite and "
+                    "PostgreSQL only") from exc
+            except CommitOutcomeUnknown:
+                raise
+            except Exception as exc:
+                if committed:
+                    raise CommitOutcomeUnknown(
+                        "interview answer call failed after a returned commit; the answer "
+                        "persisted while the call failed; reconcile by reading the interview "
+                        "before resubmitting; no automatic retry, compensation or "
+                        "deduplication is performed") from exc
+                raise
         raise ValueError("interview answer collided repeatedly; resubmit the answer") from last
 
     @staticmethod

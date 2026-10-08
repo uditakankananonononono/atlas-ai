@@ -1,9 +1,14 @@
-"""Local error-boundary characterizations, not repair kills or retry policy.
+"""Error-boundary contracts for story versions and interview answers.
 
-Temporary SQLite only. Injected driver errors and a transaction wrapper are
-controlled fixtures, not real concurrent writes, crash recovery, or proof of
-supported-driver classification. Commit-then-exit fixtures deliberately model
-one known persisted outcome of a failed call; other failed calls can roll back.
+Supersedes the hz28 pre-repair characterization: recognized non-unique
+integrity errors are no longer retried or collision-labeled
+(IntegrityWriteError, first attempt), and commit-time or post-commit
+failures now carry the CommitOutcomeUnknown outward contract (failed call,
+write may have persisted, no automatic retry/compensation/dedup). Temporary
+SQLite only. Injected driver errors are controlled fixtures, not real
+concurrent writes, crash recovery, or cross-driver proof; the
+driver-identification evidence for SQLite and PostgreSQL lives in
+tests/modules/test_m23_hz29_driver_constraint_and_commit_contract.py.
 Ordinary expected-UNIQUE compatibility is kept in separately named tests.
 """
 from contextlib import contextmanager
@@ -12,10 +17,13 @@ import sqlite3
 import pytest
 from sqlalchemy import create_engine, event, select
 from sqlalchemy.exc import IntegrityError, OperationalError
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.database import Base
 from app.modules.m23_study_abroad import interview, story
+from app.modules.m23_study_abroad._commit_contract import (
+    CommitOutcomeUnknown, IntegrityWriteError,
+)
 from app.modules.m23_study_abroad.interview import IdentityInterviewRepository, QUESTIONS
 from app.modules.m23_study_abroad.story import BrandIdRow, StoryRepository, StoryVersionRow
 
@@ -23,27 +31,23 @@ ANSWER = 'I organized a neighborhood science club after our school lab closed.'
 
 
 class CountingSessions:
-    """Delegate real local transactions; count attempts only when armed."""
+    """Delegate real session creation; count attempts only when armed."""
     def __init__(self, factory):
         self.factory = factory
         self.armed = False
         self.attempts = 0
-        self.exit_error = None
 
     def __call__(self):
+        if self.armed:
+            self.attempts += 1
         return self.factory()
 
     @contextmanager
     def begin(self):
-        armed = self.armed
-        if armed:
-            self.attempts += 1
+        # Setup paths (project/start) still use begin(); pass through
+        # uncounted - attempts are the outer version/answer calls.
         with self.factory.begin() as db:
             yield db
-        # Inner context has returned normally: the local transaction committed.
-        # This is a synthetic wrapper-exit failure, not a DB driver guarantee.
-        if armed and self.exit_error is not None:
-            raise self.exit_error
 
 
 @pytest.fixture
@@ -98,23 +102,23 @@ def _sql_fault(engine, sessions, predicate, error_type, cause):
 
 
 @pytest.mark.parametrize('stage', ['read', 'insert'])
-def test_characterization_story_unrelated_integrity_retried_and_collision_labeled(local, stage):
+def test_repair_story_nonunique_integrity_first_attempt_not_collision_labeled(local, stage):
     repo, project, engine, sessions = _story(local)
-    predicate = (lambda sql: sql.lstrip().startswith('SELECT') and 'M23_STORY_PROJECTS' in sql
+    predicate = (lambda sql: sql.lstrip().startswith('SELECT') and 'M23_STORY_VERSIONS' in sql
                  ) if stage == 'read' else (lambda sql: sql.lstrip().startswith('INSERT INTO M23_STORY_VERSIONS'))
     errors = _sql_fault(engine, sessions, predicate, IntegrityError,
                         lambda: sqlite3.IntegrityError('CHECK constraint failed: unrelated_story_check'))
     sessions.armed = True
-    with pytest.raises(ValueError, match='story version allocation collided repeatedly') as failed:
+    with pytest.raises(IntegrityWriteError, match='not a version collision') as failed:
         repo.add_student_version(project, ANSWER, {})
     sessions.armed = False
-    assert sessions.attempts == len(errors) == 3
+    assert sessions.attempts == len(errors) == 1
     assert failed.value.__cause__ is errors[-1]
     assert 'unrelated_story_check' in str(failed.value.__cause__.orig)
     assert _story_versions(sessions, project) == []
 
 
-def test_characterization_interview_brand_unrelated_integrity_retried_and_collision_labeled(local, monkeypatch):
+def test_repair_interview_brand_nonunique_first_attempt_not_collision_labeled(local, monkeypatch):
     repo, ident, engine, sessions = _interview(local)
     errors = []
 
@@ -127,10 +131,10 @@ def test_characterization_interview_brand_unrelated_integrity_retried_and_collis
 
     monkeypatch.setattr(StoryRepository, 'evolve_brand', fail_brand)
     sessions.armed = True
-    with pytest.raises(ValueError, match='interview answer collided repeatedly') as failed:
+    with pytest.raises(IntegrityWriteError, match='not an answer collision') as failed:
         repo.answer(ident, ANSWER)
     sessions.armed = False
-    assert sessions.attempts == len(errors) == 3
+    assert sessions.attempts == len(errors) == 1
     assert failed.value.__cause__ is errors[-1]
     assert 'unrelated_brand_check' in str(failed.value.__cause__.orig)
     view = repo.get(ident)
@@ -166,22 +170,55 @@ def test_characterization_prewrite_operational_error_escapes_without_success_or_
 
 
 @pytest.mark.parametrize('kind', ['story', 'interview'])
-@pytest.mark.parametrize('error_kind', ['operational', 'unexpected'])
-def test_characterization_committed_then_exit_error_is_failed_call_with_persisted_state(local, kind, error_kind):
+def test_contract_commit_error_raises_commit_outcome_unknown_single_attempt(local, kind, monkeypatch):
     if kind == 'story':
         repo, ident, engine, sessions = _story(local)
         call = lambda: repo.add_student_version(ident, ANSWER, {})
     else:
         repo, ident, engine, sessions = _interview(local)
         call = lambda: repo.answer(ident, ANSWER, evidence_tags=['initiative'])
-    error = (OperationalError('synthetic postcommit exit', {}, sqlite3.OperationalError('exit failed'))
-             if error_kind == 'operational' else RuntimeError('synthetic postcommit exit failed'))
-    sessions.exit_error = error
+    raised = []
+
+    def failing_commit(self, _real=Session.commit):
+        error = OperationalError('synthetic commit failure', {}, sqlite3.OperationalError('commit failed'))
+        raised.append(error)
+        raise error
+
+    monkeypatch.setattr(Session, 'commit', failing_commit)
     sessions.armed = True
-    with pytest.raises(type(error)) as failed:
+    with pytest.raises(CommitOutcomeUnknown, match='may have persisted') as failed:
         call()
     sessions.armed = False
-    assert failed.value is error and sessions.attempts == 1
+    assert sessions.attempts == 1 and len(raised) == 1
+    assert failed.value.__cause__ is raised[0]
+    # The persisted state is deliberately NOT asserted here: a commit-time
+    # failure is exactly the ambiguous case, and the contract is the outward
+    # type plus no automatic retry, not a state guarantee.
+
+
+@pytest.mark.parametrize('kind', ['story', 'interview'])
+def test_contract_postcommit_error_raises_commit_outcome_unknown_with_persisted_state(local, kind, monkeypatch):
+    if kind == 'story':
+        repo, ident, engine, sessions = _story(local)
+        call = lambda: repo.add_student_version(ident, ANSWER, {})
+    else:
+        repo, ident, engine, sessions = _interview(local)
+        call = lambda: repo.answer(ident, ANSWER, evidence_tags=['initiative'])
+    raised = []
+
+    def failing_close(self, _real=Session.close):
+        error = RuntimeError('synthetic postcommit close failure')
+        raised.append(error)
+        raise error
+
+    monkeypatch.setattr(Session, 'close', failing_close)
+    sessions.armed = True
+    with pytest.raises(CommitOutcomeUnknown, match='persisted while the call failed') as failed:
+        call()
+    sessions.armed = False
+    assert sessions.attempts == 1 and len(raised) == 1
+    assert failed.value.__cause__ is raised[0]
+    monkeypatch.undo()
     if kind == 'story':
         assert _story_versions(sessions, ident) == [1]
         with sessions() as db:
