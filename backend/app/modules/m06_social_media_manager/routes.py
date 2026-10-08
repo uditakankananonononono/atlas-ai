@@ -26,6 +26,7 @@ from .analytics import ABTestStateError, ABTestNotFoundError, Analytics, Snapsho
 from .scheduler import (
     Scheduler,
     ScheduleNotFoundError,
+    NaivePublishTimeError,
     ScheduleStateError,
 )
 from .models import Platform
@@ -228,6 +229,8 @@ def request_schedule(plan_id: str, request: ScheduleIn, service: Service = Depen
     try:
         return service.request_schedule(plan_id, request.publish_at, sponsored=request.sponsored,
                                         source=request.source, references=request.references or None)
+    except NaivePublishTimeError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
     except PlanNotFoundError as error:
         raise HTTPException(status_code=404, detail="plan not found") from error
     except DraftComplianceError as error:

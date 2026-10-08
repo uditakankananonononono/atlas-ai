@@ -45,7 +45,7 @@ from .adapters import (
 )
 from .analytics import ABTest
 from .compliance import ComplianceIssue, is_blocking, validate_draft
-from .scheduler import Scheduler, ScheduleEntry
+from .scheduler import Scheduler, ScheduleEntry, require_aware
 
 # Signature of the shared BYOK generator (app.core.providers.generate).
 GenerateFn = Callable[..., Awaitable[tuple[str, str]]]
@@ -420,6 +420,8 @@ class Service:
         approval-verified execution gate in scheduler.py performs the actual
         platform API call after a human approves.
         """
+        if publish_at is not None:
+            require_aware(publish_at)  # reject before any plan, compliance or approval work
         plan = self.get_plan(plan_id)
         findings = self.check_compliance(plan_id, sponsored=sponsored)
         blocking = [issue for issue in findings if issue.severity == "error"]
