@@ -262,6 +262,30 @@ class GCWRepository:
             session.commit()
         return fact
 
+    def save_fact_with_embedding(self, fact, vector, model_id):
+        """Commit the authoritative fact and its pgvector snapshot together."""
+        from app.core.vector_store import MemoryEmbeddingRow
+        from .pgvector_memory import NAMESPACE, vector_id, fingerprint
+        with self._session_factory() as session:
+            token = self._execution_session.set(session)
+            try:
+                self.save_fact(fact)  # borrowed commit is a flush, not a commit
+                ident = vector_id(self.tenant_id, fact.id)
+                row = session.get(MemoryEmbeddingRow, ident)
+                if row is not None and (row.tenant_id != self.tenant_id or row.namespace != NAMESPACE):
+                    raise PermissionError('semantic vector owner mismatch')
+                values = dict(tenant_id=self.tenant_id, namespace=NAMESPACE, text=fact.content,
+                              metadata_json={'fact_id': fact.id, 'sha256': fingerprint(fact.content), 'model_id': model_id},
+                              embedding=vector)
+                if row is None:
+                    session.add(MemoryEmbeddingRow(id=ident, **values))
+                else:
+                    for name, value in values.items(): setattr(row, name, value)
+                session.commit()
+            finally:
+                self._execution_session.reset(token)
+        return fact
+
     def list_facts(self) -> list[SemanticFact]:
         with self._session() as session:
             return [

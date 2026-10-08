@@ -13,7 +13,7 @@ from functools import wraps
 from fastapi import APIRouter, HTTPException, Depends
 from app.auth.context import TenantContext,require_tenant
 from app.auth.environment import insecure_development_auth_enabled
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from .runtime import GCWRuntime, RuntimeBusy
 from .schemas import Budget
@@ -174,6 +174,39 @@ def sandbox_run(request: SandboxRunRequest, runtime: Any = Depends(get_runtime))
     except SandboxViolation as violation:
         raise HTTPException(status_code=403, detail=violation.reasons)
     return result.as_dict()
+
+
+from .schemas import SemanticFact
+
+class SemanticFactRequest(SemanticFact):
+    model_config = ConfigDict(extra='forbid')
+    content: str = Field(min_length=1, max_length=20000)
+    confidence: float = Field(default=1.0, ge=0, le=1, allow_inf_nan=False)
+    decay_rate: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+
+class SemanticRecallRequest(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    query: str = Field(min_length=1, max_length=2000)
+    limit: int = Field(default=5, ge=1, le=50)
+
+@router.post("/memory/facts", status_code=201)
+@_busy_conflict
+def remember_fact(fact: SemanticFactRequest, runtime: Any = Depends(get_runtime)):
+    try:
+        return runtime.remember_fact(fact).model_dump(mode="json")
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+@router.post("/memory/recall")
+@_busy_conflict
+def recall_facts(request: SemanticRecallRequest, runtime: Any = Depends(get_runtime)):
+    try:
+        return [{"fact": fact.model_dump(mode="json"), "score": score}
+                for fact, score in runtime.recall_facts(request.query, limit=request.limit)]
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 @router.get("/memory/facts")

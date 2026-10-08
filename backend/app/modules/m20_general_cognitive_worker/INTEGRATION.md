@@ -180,3 +180,7 @@ zero-valued; one first-best index shifts up to10pp with other mass proportional.
 A certain selected outcome's shifted-away mass is assigned zero. This convention
 is not an empirical fact about omitted outcomes. Caller probabilities/values
 remain unverified and no actual financial decision is taken.
+
+## Optional pgvector semantic recall
+
+Bind `GCWRuntime(repo, semantic_backend="pgvector", embedder=provider)` with an explicit 1024D synchronous EmbeddingProvider and stable `provider.model_id`. PostgreSQL, vector extension and migrated memory_embeddings must exist. Fact and vector writes commit atomically. Existing unindexed facts or a changed model ID require explicit reindexing before binding; no automatic rewriting or silent fallback occurs. The default SQL-backed semantic memory is unchanged. Runtime memory POST/recall routes use the bound authenticated tenant, not a body tenant. The loop now consumes database-ranked semantic recall when opted in. Local real-PG tests cover recall entering working memory and vector-error rollback, not deployed auth, model quality, ANN/index performance or concurrent cache coherence.
