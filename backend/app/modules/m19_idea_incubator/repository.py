@@ -31,7 +31,9 @@ class SqlIdeaRepository:
         with self.sessions.begin() as db:
             r=db.scalar(select(IdeaRow).where(IdeaRow.tenant_id==self.tenant_id,IdeaRow.id==x.id))
             if r and expected_version is not None and r.version!=expected_version:raise RuntimeError("idea changed; refresh before deciding")
-            if r is None:r=IdeaRow(tenant_id=self.tenant_id,id=x.id);db.add(r)
+            if r is None:
+                if db.scalar(select(IdeaRow.pk).where(IdeaRow.id==x.id)) is not None:raise RuntimeError('idea id unavailable')
+                r=IdeaRow(tenant_id=self.tenant_id,id=x.id);db.add(r)
             for k,v in {"title":x.title,"problem":x.problem,"proposed_solution":x.proposed_solution,"tags":x.tags,"metadata_json":x.metadata,"stage":x.stage.value,"version":x.version,"created_at":x.created_at,"updated_at":x.updated_at}.items():setattr(r,k,v)
         return x
     def get_idea(self,i):
