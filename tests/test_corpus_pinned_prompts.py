@@ -23,3 +23,11 @@ def test_transport_tamper_refused_without_output(tmp_path,monkeypatch,fault):
  monkeypatch.setattr(module.httpx,'Client',lambda **kwargs:real(transport=httpx.MockTransport(handle),**kwargs))
  with pytest.raises(ValueError):module.download(tmp_path/'out.jsonl')
  assert list(tmp_path.iterdir())==[]
+def test_request_starts_paced_on_pinned_fetch(tmp_path,monkeypatch):
+ real=httpx.Client;clock=[0.0];starts=[]
+ monkeypatch.setattr(module,'monotonic',lambda:clock[0],raising=False)
+ monkeypatch.setattr(module,'sleep',lambda seconds:clock.__setitem__(0,clock[0]+seconds),raising=False)
+ def handle(request):starts.append(clock[0]);return httpx.Response(200,content=b'incorrect fixed file hash',request=request)
+ monkeypatch.setattr(module.httpx,'Client',lambda **kwargs:real(transport=httpx.MockTransport(handle),**kwargs))
+ with pytest.raises(ValueError):module.download(tmp_path/'out.jsonl')
+ assert len(starts)>=2 and all(b-a>=3 for a,b in zip(starts,starts[1:]))
