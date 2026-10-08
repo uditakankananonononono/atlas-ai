@@ -594,25 +594,27 @@ def _install_extensions() -> None:
         try:
             with self._sessions.begin() as db:
                 row = self._fetch(db, approval_id)
-                if self._expire_if_overdue(db, row, now):
-                    raise ApprovalConflictError("approval has expired")
-                existing = db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id == approval_id))
-                if existing:
-                    if existing.effect_id == effect_id and existing.request_hash == digest:
-                        return {"approval_id": approval_id, "effect_id": effect_id,
-                                "allowed": True, "consumed_at": _aware(existing.consumed_at)}
-                    raise ApprovalConflictError("approval has already been consumed")
-                if row.status != ApprovalStatus.APPROVED.value:
-                    raise ApprovalConflictError(f"approval is {row.status}, not approved")
-                stored = _request_hash(module_id=row.module_id, action_type=row.action_type,
-                                       payload=row.payload, user_id=row.user_id)
-                if stored != digest:
-                    raise ApprovalConflictError("effect does not match approved request")
-                if db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.effect_id == effect_id)):
-                    raise ApprovalConflictError("effect id has already been used")
-                db.add(ApprovalEffectRow(approval_id=approval_id, effect_id=effect_id,
-                                         request_hash=digest, actor=actor, consumed_at=now))
-                db.add(ApprovalEventRow(approval_id=approval_id, event="effect_consumed", actor=actor, at=now))
+                expired = self._expire_if_overdue(db, row, now)
+                if not expired:
+                    existing = db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id == approval_id))
+                    if existing:
+                        if existing.effect_id == effect_id and existing.request_hash == digest:
+                            return {"approval_id": approval_id, "effect_id": effect_id,
+                                    "allowed": True, "consumed_at": _aware(existing.consumed_at)}
+                        raise ApprovalConflictError("approval has already been consumed")
+                    if row.status != ApprovalStatus.APPROVED.value:
+                        raise ApprovalConflictError(f"approval is {row.status}, not approved")
+                    stored = _request_hash(module_id=row.module_id, action_type=row.action_type,
+                                           payload=row.payload, user_id=row.user_id)
+                    if stored != digest:
+                        raise ApprovalConflictError("effect does not match approved request")
+                    if db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.effect_id == effect_id)):
+                        raise ApprovalConflictError("effect id has already been used")
+                    db.add(ApprovalEffectRow(approval_id=approval_id, effect_id=effect_id,
+                                             request_hash=digest, actor=actor, consumed_at=now))
+                    db.add(ApprovalEventRow(approval_id=approval_id, event="effect_consumed", actor=actor, at=now))
+            if expired:
+                raise ApprovalConflictError("approval has expired")
         except IntegrityError:
             # Inspect committed winner in a fresh transaction. An unrelated
             # integrity error is not evidence that the permit was consumed.

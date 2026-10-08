@@ -454,3 +454,15 @@ def test_consume_unrelated_integrity_error_is_not_fake_consumption(service, monk
         service.consume_effect(view['id'], module_id=view['module_id'], action_type=view['action_type'],
                                payload=view['payload'], user_id=view['user_id'], effect_id='none', actor='worker')
     assert [e['event'] for e in service.audit(view['id'])] == ['created', 'approved']
+
+
+def test_overdue_consume_refusal_persists_expiry_without_lazy_read(service, clock):
+    from app.modules.m00_approval_center.service import ApprovalRequestRow
+    view = submit(service, ttl_seconds=1)
+    clock.now = T0 + timedelta(seconds=2)
+    with pytest.raises(ApprovalConflictError, match='expired'):
+        service.consume_effect(view['id'], module_id=view['module_id'], action_type=view['action_type'],
+                               payload=view['payload'], user_id=view['user_id'], effect_id='unused', actor='worker')
+    with service._sessions() as db:
+        assert db.get(ApprovalRequestRow, view['id']).status == ApprovalStatus.EXPIRED.value
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', 'expired']
