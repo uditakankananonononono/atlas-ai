@@ -53,5 +53,5 @@ def test_a05_react_flow_is_rendered_by_real_knowledge_workspace():
 def test_a06_recharts_responsive_accessible_chart_is_real_component():
     p=package(); source=(FRONTEND/'components/OperationsChart.tsx').read_text()
     assert p['dependencies']['recharts'].startswith('^2.')
-    assert 'ResponsiveContainer' in source and 'LineChart' in source and 'Line' in source
-    assert 'aria-label="Operations metric chart"' in source
+    assert 'ResponsiveContainer' in source and 'BarChart' in source and 'Bar' in source
+    assert 'aria-label="Current KPI values by unit"' in source
