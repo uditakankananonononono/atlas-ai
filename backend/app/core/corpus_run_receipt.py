@@ -2,6 +2,7 @@
 import argparse,hashlib,json,os,subprocess,sys,time,tempfile
 from datetime import datetime,timezone
 from pathlib import Path
+DEFAULT_TIMEOUT_SECONDS=900
 
 def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100):
  if mode not in {'verify','collect'}:raise ValueError('mode must be verify or collect')
@@ -15,8 +16,10 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100)
  command=[sys.executable,'-m','app.core.corpus_cli','verify','--db',str(db),'--export',str(export)] if mode=='verify' else [sys.executable,'-m','app.core.corpus_locked_cli','--db',str(db),'--export',str(export),'--max-rows',str(max_rows)]
  env={**os.environ,'PYTHONPATH':str(root/'backend')}
  started=datetime.now(timezone.utc).isoformat();start=time.monotonic()
- launch_error=None
- try:result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True)
+ launch_error=None;timed_out=False
+ try:result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True,timeout=DEFAULT_TIMEOUT_SECONDS)
+ except subprocess.TimeoutExpired:
+  timed_out=True;result=subprocess.CompletedProcess(command,None,stdout='',stderr='')
  except OSError as exc:
   launch_error=type(exc).__name__;result=subprocess.CompletedProcess(command,None,stdout='',stderr='')
  elapsed=time.monotonic()-start
@@ -27,6 +30,8 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100)
  success=result.returncode==0 and isinstance(output,dict) and output.get('status')=='verified'
  # Do not persist absolute paths, raw stderr, environment or credentials.
  report={'mode':mode,'source_head':revision,'source_tree_dirty':bool(dirty),'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'elapsed_seconds':elapsed,'exit_status':result.returncode,'status':'verified' if success else 'failed','stdout_sha256':hashlib.sha256(result.stdout.encode()).hexdigest(),'stderr_sha256':hashlib.sha256(result.stderr.encode()).hexdigest(),'command_template':'python -m app.core.corpus_cli verify --db <corpus> --export <export>' if mode=='verify' else 'python -m app.core.corpus_locked_cli --db <corpus> --export <export> --max-rows N','max_rows':max_rows if mode=='collect' else None,'training_performed':False}
+ report['wall_clock_timeout_seconds']=DEFAULT_TIMEOUT_SECONDS
+ if timed_out:report['timed_out']=True
  if launch_error:report['launch_error_type']=launch_error
  if success:report['result']={k:output[k] for k in ('stored_rows_verified','nonempty_export_rows_verified','next_offset','export_sha256')}
  receipt.parent.mkdir(parents=True,exist_ok=True)
