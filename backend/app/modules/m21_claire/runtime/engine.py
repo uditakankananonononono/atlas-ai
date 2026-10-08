@@ -3,6 +3,7 @@ import asyncio, json
 from threading import Event
 from typing import Any, Callable, Protocol
 from pydantic import ValidationError
+from . import bounded
 from .redaction import redact, scrub_text
 from .gates import GateRefused, Principal
 from .tools import ReadOnlyToolRegistry
@@ -33,6 +34,12 @@ class NoAdditionalPolicy:
         return True
 
 
+def _checked_timeout(value: Any) -> float:
+    if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0.05 <= value <= 3600:  # NaN fails the comparison
+        raise ValueError("model_timeout_seconds must be between 0.05 and 3600")
+    return float(value)
+
+
 class Engine:
     """Bounded loop. Produces a RunReport (evidence). Completion is decided elsewhere."""
 
@@ -49,31 +56,33 @@ class Engine:
         # None = the Worker derives it from the lease (min(60s, lease/2)); standalone use falls back to 60s. There is deliberately
         # NO lease heartbeat: a hung model call would keep a heartbeated lease alive for ever (goal stuck running). Every await
         # is instead bounded below the lease, and the lease is renewed at each step boundary.
-        if model_timeout_seconds is not None:
-            if not isinstance(model_timeout_seconds, (int, float)) or isinstance(model_timeout_seconds, bool) \
-                    or not 0.05 <= model_timeout_seconds <= 3600:
-                raise ValueError("model_timeout_seconds must be between 0.05 and 3600")
-            model_timeout_seconds = float(model_timeout_seconds)
-        self.model_timeout = model_timeout_seconds
+        self.model_timeout = None if model_timeout_seconds is None else _checked_timeout(model_timeout_seconds)
 
-    async def _interruptible(self, aw: Any, cancelled: Callable[[], bool]) -> tuple[bool, Any]:
-        """Await aw, polling for cancel. (False, None) only if the awaited task was actually cancelled. A call that finished
-        in the same instant keeps its result (a receipt is never discarded). Sync tool threads cannot be killed: they keep
-        running, which is why an interrupted non-read effect stays unknown in the journal."""
+    async def _interruptible(self, aw: Any, cancelled: Callable[[], bool], timeout: float | None = None) -> tuple[bool, Any]:
+        """Await aw, polling for cancel and enforcing an optional timeout. (False, None) only if the awaitable was actually
+        cancelled. Raises asyncio.TimeoutError on timeout. Neither path waits longer than CANCEL_GRACE for the cancelled body's
+        cleanup (it is detached), so the wait is bounded below the lease. A call that finished in the same instant keeps its
+        result. Sync tool threads cannot be killed: they keep running, which is why an interrupted non-read effect stays unknown."""
         task = asyncio.ensure_future(aw)
+        loop = asyncio.get_running_loop()
+        deadline = None if timeout is None else loop.time() + timeout
         try:
             while True:
-                done, _ = await asyncio.wait({task}, timeout=self.cancel_poll)
+                wait = self.cancel_poll if deadline is None else max(0.0, min(self.cancel_poll, deadline - loop.time()))
+                done, _ = await asyncio.wait({task}, timeout=wait)
                 if done:
                     return True, task.result()
                 if cancelled():
-                    task.cancel()
-                    await asyncio.wait({task})
-                    if task.cancelled():
-                        return False, None
-                    return True, task.result()
+                    await bounded.stop(task)
+                    if task.done() and not task.cancelled():
+                        return True, task.result()
+                    return False, None
+                if deadline is not None and loop.time() >= deadline:
+                    await bounded.stop(task)
+                    raise asyncio.TimeoutError
         except asyncio.CancelledError:
-            task.cancel()
+            if not task.done():
+                task.cancel()
             raise
 
     async def run(self, goal: str, *, cancel: Event | None = None, principal: Principal | None = None,
@@ -87,7 +96,7 @@ class Engine:
                     {"role": "user", "content": json.dumps({"goal": goal, "tools": self.tools.schemas(),
                                                             "context": redact(context()) if context else []}, default=str)}]
         receipts, refusals, replans, replan_log = [], [], 0, []
-        decide_timeout = model_timeout or self.model_timeout or 60.0
+        decide_timeout = _checked_timeout(model_timeout) if model_timeout is not None else (self.model_timeout or 60.0)
 
         def cancelled() -> bool:
             return (cancel is not None and cancel.is_set()) or (cancel_check is not None and cancel_check())
@@ -100,7 +109,7 @@ class Engine:
             if lease is not None and not lease():
                 return _rr(stop_reason="lease_lost", steps_used=step - 1, receipts=receipts, refusals=refusals)
             try:
-                ok, decision = await self._interruptible(asyncio.wait_for(self.model.decide(messages), decide_timeout), cancelled)
+                ok, decision = await self._interruptible(self.model.decide(messages), cancelled, decide_timeout)
                 if not ok:
                     return _rr(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
             except (ModelUnavailable, asyncio.TimeoutError):  # a hung/slow model is 'unavailable'; no provider text

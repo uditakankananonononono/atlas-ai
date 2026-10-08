@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Callable
 from .acceptance import evaluate
+from .bounded import CANCEL_GRACE
 from .engine import Engine
 from .gates import Principal
 from .goals import Claim, GoalStore
@@ -23,8 +24,8 @@ class Worker:
             return None
         principal = Principal(claim.tenant_id, claim.actor_id, claim.goal_id, claim.lease_token)
         engine = self.engine_factory(claim)
-        if engine.tools.call_timeout >= self.store.lease_seconds or \
-                (engine.model_timeout is not None and engine.model_timeout >= self.store.lease_seconds):
+        if engine.tools.call_timeout + CANCEL_GRACE >= self.store.lease_seconds or \
+                (engine.model_timeout is not None and engine.model_timeout + CANCEL_GRACE >= self.store.lease_seconds):
             # A call allowed to block past the lease defeats renewal: refuse to run at all.
             self._settle(claim, "blocked", blocker="timeout_not_below_lease", report={}, verdict=None)
             return claim.goal_id

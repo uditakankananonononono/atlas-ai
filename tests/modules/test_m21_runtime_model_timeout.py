@@ -101,8 +101,8 @@ def test_NEW_step_longer_than_the_lease_survives_and_is_never_double_claimed(tmp
             await asyncio.sleep(0.4); self.n += 1
             return call("slow_read", target="a") if self.n == 1 else final()
     gid = s.create("t", "a", "p", READ_CRIT, 4)
-    w1 = Worker(s, lambda c: Engine(Model(), tools(slow, timeout=0.9), max_steps=4, model_timeout_seconds=0.6), "w1")
-    w2 = Worker(s, lambda c: Engine(Model(), tools(slow, timeout=0.9), max_steps=4, model_timeout_seconds=0.6), "w2")
+    w1 = Worker(s, lambda c: Engine(Model(), tools(slow, timeout=0.7), max_steps=4, model_timeout_seconds=0.6), "w1")
+    w2 = Worker(s, lambda c: Engine(Model(), tools(slow, timeout=0.7), max_steps=4, model_timeout_seconds=0.6), "w2")
 
     async def go():
         t1 = asyncio.ensure_future(w1.run_once()); await asyncio.sleep(1.1)
@@ -111,3 +111,80 @@ def test_NEW_step_longer_than_the_lease_survives_and_is_never_double_claimed(tmp
         return second
     assert run(go()) is None
     assert s.get("t", "a", gid)["status"] == "completed" and w1.last_outcome == "completed"
+
+
+# ---- repair: a body with slow cooperative cleanup must not outlive the lease ------------------------------------
+
+class SlowCleanupModel:
+    seen: list = []
+    async def decide(self, m):
+        SlowCleanupModel.seen.append("enter")
+        try:
+            await asyncio.sleep(30)
+        finally:
+            await asyncio.sleep(1.0)                     # cooperative cleanup that does NOT swallow CancelledError
+            SlowCleanupModel.seen.append("exit")
+
+
+def test_PROTECTION_slow_cancellation_cleanup_is_detached_so_a_second_worker_cannot_overlap(tmp_path):
+    """Lease 1s, model timeout 0.3s, model cleanup takes 1.0s. wait_for would wait for that cleanup (>lease) and a second worker
+    would claim while the first is still active. Now the wait is bounded by timeout + CANCEL_GRACE and the goal is blocked first."""
+    SlowCleanupModel.seen = []
+    s = mk(tmp_path, lease=1); gid = s.create("t", "a", "p", READ_CRIT, 3)
+    w1 = Worker(s, lambda c: Engine(SlowCleanupModel(), tools(rd(), timeout=0.2), max_steps=3, model_timeout_seconds=0.3), "w1")
+
+    async def go():
+        t = asyncio.ensure_future(w1.run_once()); await asyncio.sleep(0.75)   # 0.3 timeout + 0.2 grace has passed; lease not yet
+        settled = s.get("t", "a", gid)["status"]
+        await t
+        await asyncio.sleep(1.1)                         # let the detached cleanup finish: no unhandled-task noise, no effect
+        return settled
+    assert run(go()) == "blocked" and w1.last_outcome == "blocked"
+    assert s.get("t", "a", gid)["blocker"] == "model_unavailable" and s.claim("w2") is None
+
+
+def test_PROTECTION_cancel_with_slow_cleanup_is_also_bounded(tmp_path):
+    SlowCleanupModel.seen = []
+    s = mk(tmp_path, lease=3); gid = s.create("t", "a", "p", READ_CRIT, 3)
+    w = Worker(s, lambda c: Engine(SlowCleanupModel(), tools(rd(), timeout=1), max_steps=3, model_timeout_seconds=2,
+                                   cancel_poll_seconds=0.02), "w1")
+
+    async def go():
+        task = asyncio.ensure_future(w.run_once()); await asyncio.sleep(0.2)
+        s.cancel("t", "a", gid); t0 = time.monotonic()
+        await asyncio.wait_for(task, 3)
+        took = time.monotonic() - t0
+        await asyncio.sleep(1.0)                         # let the detached cleanup finish quietly
+        return took
+    assert run(go()) < 0.8 and s.get("t", "a", gid)["status"] == "cancelled"
+
+
+def test_PROTECTION_bounded_wait_with_slow_cleanup_returns_within_timeout_plus_grace():
+    from app.modules.m21_claire.runtime import bounded
+
+    async def body():
+        try:
+            await asyncio.sleep(30)
+        finally:
+            await asyncio.sleep(1.0)
+    async def go():
+        t0 = time.monotonic()
+        with pytest.raises(asyncio.TimeoutError):
+            await bounded.run_bounded(body(), 0.2)
+        took = time.monotonic() - t0
+        await asyncio.sleep(1.1)                         # the detached body finishes quietly
+        return took
+    assert run(go()) < 0.2 + bounded.CANCEL_GRACE + 0.3
+
+
+def test_PROTECTION_run_level_model_timeout_override_is_validated():
+    for bad in (0, -1, float("nan"), True, "5", 99999):
+        with pytest.raises(ValueError):
+            run(Engine(Script(final()), tools(rd())).run("g", model_timeout=bad))
+
+
+def test_PROTECTION_timeouts_must_leave_room_for_the_cancel_grace(tmp_path):
+    s = mk(tmp_path, lease=2); gid = s.create("t", "a", "p", READ_CRIT, 3)
+    w = Worker(s, lambda c: Engine(Hung(), tools(rd(), timeout=1), max_steps=3, model_timeout_seconds=1.9), "w1")
+    run(w.run_once())
+    assert s.get("t", "a", gid)["blocker"] == "timeout_not_below_lease"      # 1.9 + 0.2 grace >= 2
