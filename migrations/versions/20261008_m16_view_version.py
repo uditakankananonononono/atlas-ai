@@ -2,7 +2,7 @@
 from alembic import op
 import sqlalchemy as sa
 revision = '20261008_m16_view_version'
-down_revision = '20261007_m20_model_unknown'
+down_revision = '20261008_m16_identity_forward'
 branch_labels = None
 depends_on = None
 
