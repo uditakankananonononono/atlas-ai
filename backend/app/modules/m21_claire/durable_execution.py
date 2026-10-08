@@ -271,7 +271,7 @@ class ClaireExecutionRepository:
             return {r.effect_key[len(prefix):]: r.state for r in rows}
 
     def resolve_effect(self, plan_id: str, action_id: str, outcome: str, result: Any = None, *,
-                       confirm_executor_stopped: bool = False) -> None:
+                       resolver_id: str, confirm_executor_stopped: bool = False) -> None:
         """Owner decision for an effect with no recorded outcome. 'committed' marks it landed (resume replays it,
         never re-runs it); 'absent' deletes the record so resume may run the step.
         FENCE: an 'unknown' row (the executor already reported failure) can be resolved directly. An 'intent' row may
@@ -280,6 +280,8 @@ class ClaireExecutionRepository:
         proof the executor is dead; a long synchronous effect can outlive it."""
         if outcome not in {"committed", "absent"}:
             raise EffectResolutionError("outcome must be committed or absent")
+        if not (isinstance(resolver_id, str) and resolver_id.strip()):
+            raise EffectResolutionError("resolver_id is required")  # recorded in the audit log; plans carry no actor, so no distinct-identity check here
         key = effect_key(plan_id, action_id)
         with self._session_factory() as session:
             row = session.get(StepEffectRow, (self.tenant_id, key))
@@ -304,7 +306,7 @@ class ClaireExecutionRepository:
                 session.rollback()
                 raise EffectResolutionError("the effect changed while resolving")
             session.commit()
-        self.audit(plan_id, "effect_resolved", action_id=action_id, detail={"outcome": outcome})
+        self.audit(plan_id, "effect_resolved", action_id=action_id, detail={"outcome": outcome, "resolver": resolver_id})
 
     # -- audit ---------------------------------------------------------------
 

@@ -73,6 +73,7 @@ class EffectRow(Base):
     receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[str] = mapped_column(String(40))
     updated_at: Mapped[str] = mapped_column(String(40))
+    resolved_by: Mapped[str | None] = mapped_column(String(200), nullable=True)  # who resolved an unknown effect (null: never)
 
 
 PENDING = ("intent", "unknown")
@@ -98,10 +99,18 @@ def _iso(d: datetime) -> str:
     return d.astimezone(timezone.utc).isoformat()
 
 
+class SelfApprovalRefused(PermissionError):
+    """The approver or resolver is the goal's own actor. The agent proposes; a different principal decides."""
+
+
 class GoalStore:
     """Durable, tenant+actor-scoped goal/job store. Every read and write is keyed on both."""
 
-    def __init__(self, url: str = "sqlite://", *, clock: Clock = _now, max_attempts: int = 3, lease_seconds: int = 120, create_schema: bool = False):
+    def __init__(self, url: str = "sqlite://", *, clock: Clock = _now, max_attempts: int = 3, lease_seconds: int = 120, create_schema: bool = False,
+                 owner_may_self_approve: bool = False):
+        if type(owner_may_self_approve) is not bool:
+            raise ValueError("owner_may_self_approve must be a bool")
+        self.owner_may_self_approve = owner_may_self_approve  # dev/solo escape hatch; self-approvals stay visible in the record
         kwargs: dict[str, Any] = {}
         if url == "sqlite://":
             kwargs = {"poolclass": StaticPool, "connect_args": {"check_same_thread": False}}
@@ -273,23 +282,46 @@ class GoalStore:
             return [self._effect_view(r) for r in rows]
 
     def resolve_effect(self, goal_id: str, effect_id: str, outcome: str, *, receipt: dict[str, Any] | None = None,
-                       tenant_id: str | None = None, actor_id: str | None = None, require_not_running: bool = False) -> str:
-        """intent|unknown -> committed | absent. Returns resolved | not_found | not_pending | goal_running."""
+                       tenant_id: str | None = None, resolver_id: str | None = None, require_not_running: bool = False) -> str:
+        """intent|unknown -> committed | absent. Returns resolved | not_found | not_pending | goal_running.
+        With tenant_id (an owner-authority call) a resolver_id is REQUIRED and must differ from the goal's own actor
+        unless owner_may_self_approve; the resolver is recorded. Without tenant_id (the worker's own reconcile) the
+        resolver is recorded as system:reconcile. Raises SelfApprovalRefused."""
         if outcome not in ("committed", "absent"):
             raise ValueError("bad outcome")
+        if tenant_id is not None and not (isinstance(resolver_id, str) and resolver_id.strip()):
+            raise ValueError("resolver_id is required")
         with self._sessions.begin() as s:
             q = select(EffectRow).where(EffectRow.id == effect_id, EffectRow.goal_id == goal_id)
             if tenant_id is not None:
-                q = q.where(EffectRow.tenant_id == tenant_id, EffectRow.actor_id == actor_id)
+                q = q.where(EffectRow.tenant_id == tenant_id)
             row = s.scalars(q).first()
             if row is None:
                 return "not_found"
+            if tenant_id is not None and resolver_id == row.actor_id and not self.owner_may_self_approve:
+                raise SelfApprovalRefused("the goal's own actor cannot resolve its effect")
             if require_not_running and s.scalars(select(GoalRow.status).where(GoalRow.id == goal_id)).first() == "running":
                 return "goal_running"
             res = s.execute(update(EffectRow).where(EffectRow.id == effect_id, EffectRow.state.in_(PENDING))
                             .values(state=outcome, receipt_json=json.dumps(receipt) if outcome == "committed" and receipt is not None else None,
+                                    resolved_by=resolver_id if tenant_id is not None else "system:reconcile",
                                     updated_at=_iso(self.clock())))
             return "resolved" if res.rowcount == 1 else "not_pending"
+
+    def approver_view(self, tenant_id: str, goal_id: str) -> dict[str, Any] | None:
+        """Read-only view for a DIFFERENT principal deciding on this goal: the goal's actor and its approval-required
+        refusals (tool, gates, digest) plus unresolved effects. No purpose text, no arguments."""
+        with self._sessions() as s:
+            row = s.scalars(select(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id)).first()
+            if row is None:
+                return None
+            report = json.loads(row.report) if row.report else {}
+            refusals = [{k: r.get(k) for k in ("tool", "gates", "digest", "reason")} for r in (report or {}).get("refusals", [])
+                        if r.get("reason") == "approval_required"]
+            pending = s.scalars(select(EffectRow).where(EffectRow.goal_id == goal_id, EffectRow.tenant_id == tenant_id,
+                                                        EffectRow.state.in_(PENDING)).order_by(EffectRow.created_at)).all()
+            return {"goal_id": row.id, "actor_id": row.actor_id, "status": row.status, "refusals": refusals,
+                    "pending_effects": [self._effect_view(r) for r in pending]}
 
     def list_effects(self, tenant_id: str, actor_id: str, goal_id: str) -> list[dict[str, Any]] | None:
         with self._sessions.begin() as s:
@@ -302,7 +334,8 @@ class GoalStore:
     @staticmethod
     def _effect_view(row: EffectRow, *, with_receipt: bool = False) -> dict[str, Any]:
         out = {"id": row.id, "tool": row.tool, "idempotency_key": row.idempotency_key, "state": row.state,
-               "attempts": row.attempts, "created_at": row.created_at, "updated_at": row.updated_at}
+               "attempts": row.attempts, "created_at": row.created_at, "updated_at": row.updated_at,
+               "resolved_by": row.resolved_by, "self_resolved": row.resolved_by is not None and row.resolved_by == row.actor_id}
         if with_receipt:
             out["receipt_json"] = row.receipt_json
         return out
@@ -314,6 +347,10 @@ class GoalStore:
             raise ValueError("unknown gate")
         if not (1 <= ttl_seconds <= 86400) or len(digest) != 64:
             raise ValueError("invalid approval")
+        if not (isinstance(approver, str) and approver.strip()):
+            raise ValueError("approver is required")
+        if approver == actor_id and not self.owner_may_self_approve:
+            raise SelfApprovalRefused("the goal's own actor cannot approve its gated call")
         now = self.clock()
         with self._sessions.begin() as s:
             if not s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,

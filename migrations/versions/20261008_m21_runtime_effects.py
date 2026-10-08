@@ -9,6 +9,7 @@ T='claire_runtime_effects'
 EXPECTED={'id':(sa.String,False),'tenant_id':(sa.String,False),'actor_id':(sa.String,False),'goal_id':(sa.String,False),
  'tool':(sa.String,False),'idempotency_key':(sa.String,False),'state':(sa.String,False),'attempts':(sa.Integer,False),
  'receipt_json':(sa.Text,True),'created_at':(sa.String,False),'updated_at':(sa.String,False)}
+LATER={'resolved_by'}  # added by 20261008_m21_runtime_separation; a table created from the current model has it
 IDX={'ix_claire_runtime_effects_tenant_id':['tenant_id'],'ix_claire_runtime_effects_actor_id':['actor_id'],'ix_claire_runtime_effects_goal_id':['goal_id']}
 UQ=('uq_claire_runtime_effects_goal_key',['goal_id','idempotency_key'])
 def _verify(inspector):
@@ -18,7 +19,7 @@ def _verify(inspector):
   if c is None:problems.append(f'missing column {n}');continue
   if not isinstance(c['type'],kind):problems.append(f'column {n} has type {type(c["type"]).__name__}')
   if bool(c['nullable'])!=nullable:problems.append(f'column {n} nullability differs')
- for n in sorted(set(cols)-set(EXPECTED)):problems.append(f'unexpected column {n}')
+ for n in sorted(set(cols)-set(EXPECTED)-LATER):problems.append(f'unexpected column {n}')
  if inspector.get_pk_constraint(T).get('constrained_columns')!=['id']:problems.append('primary key is not (id)')
  have={i['name']:i['column_names'] for i in inspector.get_indexes(T)}
  for n,c in IDX.items():
