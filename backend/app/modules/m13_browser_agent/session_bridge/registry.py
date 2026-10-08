@@ -15,7 +15,7 @@ import json
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import Boolean, DateTime, JSON, String, select
+from sqlalchemy import Boolean, DateTime, JSON, String, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
@@ -99,7 +99,16 @@ class BridgeRegistry:
                 raise PairingError("pairing challenge expired")
             if not hmac.compare_digest(challenge.code_hash, _hash_code(code)):
                 raise PairingError("pairing code mismatch")
-            challenge.consumed = True
+            # Claim once in the same transaction as the device insert. The
+            # stale ORM read alone cannot authorize a second consumer.
+            claimed = db.execute(update(PairingChallengeRow).where(
+                PairingChallengeRow.nonce == nonce,
+                PairingChallengeRow.consumed.is_(False),
+                PairingChallengeRow.code_hash == _hash_code(code),
+                PairingChallengeRow.expires_at > datetime.now(timezone.utc),
+            ).values(consumed=True).execution_options(synchronize_session=False))
+            if claimed.rowcount != 1:
+                raise PairingError("unknown, expired or already-used pairing challenge")
             device = PairedDeviceRow(
                 device_id=secrets.token_hex(16),
                 tenant_id=challenge.tenant_id,
