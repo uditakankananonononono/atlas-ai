@@ -11,7 +11,7 @@ from app.modules.m13_browser_agent.session_bridge.registry import (
 @pytest.fixture
 def registry(tmp_path):
     engine=create_engine(f"sqlite:///{tmp_path/'pair.db'}")
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine, tables=[PairingChallengeRow.__table__, PairedDeviceRow.__table__])
     factory=sessionmaker(engine, expire_on_commit=False)
     yield BridgeRegistry(factory),factory
     engine.dispose()
@@ -56,7 +56,7 @@ def test_real_postgres_eight_consumers_one_device(tmp_path):
     server=pgserver.get_server(str(tmp_path/'pg'))
     engine=create_engine(server.get_uri())
     try:
-        Base.metadata.create_all(engine)
+        Base.metadata.create_all(engine, tables=[PairingChallengeRow.__table__, PairedDeviceRow.__table__])
         factory=sessionmaker(engine,expire_on_commit=False)
         reg=BridgeRegistry(factory)
         for turn in range(5):
