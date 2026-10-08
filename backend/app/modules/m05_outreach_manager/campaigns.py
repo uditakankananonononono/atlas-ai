@@ -10,6 +10,8 @@ and follow-ups come back as drafts that need their own approval.
 """
 from __future__ import annotations
 
+from threading import RLock
+
 from datetime import datetime, timedelta, timezone
 from typing import Any, Awaitable, Callable, Literal, Protocol
 from uuid import uuid4
@@ -134,6 +136,7 @@ class MessageEvent(BaseModel):
 class CampaignRepository(Protocol):
     """Storage boundary for campaigns, messages, and their audit events."""
 
+    def claim_delivery(self, message: OutreachMessage) -> bool: ...
     def save_campaign(self, campaign: Campaign) -> Campaign: ...
     def get_campaign(self, campaign_id: str) -> Campaign | None: ...
     def list_campaigns(self, project_id: str | None = None) -> list[Campaign]: ...
@@ -152,9 +155,21 @@ class InMemoryCampaignRepository:
     """Small development repository; production injects SqlCampaignRepository."""
 
     def __init__(self) -> None:
+        self._delivery_lock = RLock()
+        self._delivery_claims: dict[str, OutreachMessage] = {}
         self._campaigns: dict[str, Campaign] = {}
         self._messages: dict[str, OutreachMessage] = {}
         self._events: dict[str, list[MessageEvent]] = {}
+
+    def claim_delivery(self, message: OutreachMessage) -> bool:
+        """Permanent claim from exact current approved snapshot; process-local."""
+        with self._delivery_lock:
+            current = self._messages.get(message.id)
+            if (message.id in self._delivery_claims or current is None
+                    or current.status != 'approved' or current != message):
+                return False
+            self._delivery_claims[message.id] = message.model_copy(deep=True)
+            return True
 
     def save_campaign(self, campaign: Campaign) -> Campaign:
         stored = campaign.model_copy(deep=True)
@@ -172,10 +187,11 @@ class InMemoryCampaignRepository:
         return [item.model_copy(deep=True) for item in items]
 
     def save_message(self, message: OutreachMessage, event: MessageEvent) -> OutreachMessage:
-        stored = message.model_copy(deep=True)
-        self._messages[stored.id] = stored
-        self._events.setdefault(stored.id, []).append(event.model_copy(deep=True))
-        return stored.model_copy(deep=True)
+        with self._delivery_lock:
+            stored = message.model_copy(deep=True)
+            self._messages[stored.id] = stored
+            self._events.setdefault(stored.id, []).append(event.model_copy(deep=True))
+            return stored.model_copy(deep=True)
 
     def get_message(self, message_id: str) -> OutreachMessage | None:
         item = self._messages.get(message_id)

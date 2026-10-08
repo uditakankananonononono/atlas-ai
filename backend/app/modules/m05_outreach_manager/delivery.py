@@ -9,8 +9,13 @@ effect, and it does so only after independently verifying that:
 3. the approval payload still matches the exact recipient, subject, and
    body being sent - content edited after approval is blocked, not sent.
 
-Every attempt, success, failure, and block is written to the append-only
-message event log, which is the module's delivery audit.
+Successful sends, provider failures and payload mismatch blocks are written
+in the message event log. Claims are separate permanent repository snapshots;
+claim refusals are raised, not appended as message events. A provider receipt
+is not proof of delivery. The optional reviewed-account route uses a trusted
+caller-supplied inspector; the default HTTP route has no such inspector.
+Once a claim is consumed, failure/cancellation/crash never reopens it. This is
+at-most-one boundary attempt per repository message, not exactly-once mail.
 """
 from __future__ import annotations
 
@@ -19,7 +24,9 @@ import smtplib
 from dataclasses import dataclass
 from email.message import EmailMessage
 from email.utils import formatdate, make_msgid
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
+
+from .send_account_snapshot import SnapshotStore, SendState, PreflightRefused
 
 from pydantic import BaseModel, Field
 
@@ -159,10 +166,20 @@ class DeliveryService:
         campaigns: CampaignService,
         gate: ApprovalGate,
         sender: MailSender,
+        *,
+        review_store: SnapshotStore | None = None,
+        review_token: str | None = None,
+        inspect_account: Callable[[str, str], SendState] | None = None,
     ) -> None:
         self.campaigns = campaigns
         self.gate = gate
         self.sender = sender
+        configured = [review_store is not None, review_token is not None, inspect_account is not None]
+        if any(configured) and not all(configured):
+            raise ValueError('account review requires store, token and live inspector together')
+        self.review_store = review_store
+        self.review_token = review_token
+        self.inspect_account = inspect_account
 
     async def send_approved(self, message_id: str) -> OutreachMessage:
         message = self.campaigns.get_message(message_id)
@@ -184,11 +201,32 @@ class DeliveryService:
             raise DeliveryApprovalError(
                 "message content changed after approval; re-approval required"
             )
+        from_account = None
+        if self.review_store is not None:
+            try:
+                snapshot = self.review_store.claim(
+                    self.campaigns.tenant_id, self.review_token, self.inspect_account
+                )
+            except PreflightRefused as exc:
+                raise DeliveryApprovalError(str(exc)) from exc
+            if (snapshot.message_id != message.id or snapshot.message_revision != str(message.version)
+                    or snapshot.contact_id != contact.id or snapshot.contact_revision != str(contact.version)
+                    or snapshot.recipient != str(contact.email) or snapshot.subject != message.subject
+                    or snapshot.body != message.body):
+                raise DeliveryApprovalError('account review does not match Module0-approved message')
+            from_account = snapshot.from_address
+        claim = getattr(self.campaigns.campaigns, 'claim_delivery', None)
+        if claim is None or not claim(message):
+            raise DeliveryApprovalError(
+                'delivery claim unavailable, consumed or message changed; reconcile, do not retry'
+            )
+        # Claim persists even on cancellation, ambiguous provider error or crash.
         try:
             receipt = await self.sender.send(
                 to=str(contact.email),
                 subject=message.subject,
                 body=message.body,
+                **({'from_account': from_account} if from_account is not None else {}),
             )
         except DeliverySendError as exc:
             self.campaigns.record_delivery_failure(message.id, reason=str(exc))
