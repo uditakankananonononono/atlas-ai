@@ -1,0 +1,350 @@
+........................................................................ [ 57%]
+..................................F.F.................                   [100%]
+=================================== FAILURES ===================================
+________ test_analysis_is_only_proposed_and_network_access_is_rejected _________
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: in do_execute
+    cursor.execute(statement, parameters)
+E   sqlite3.OperationalError: no such table: m00_approval_events
+
+The above exception was the direct cause of the following exception:
+tests/modules/test_m04_research_scientist.py:69: in test_analysis_is_only_proposed_and_network_access_is_rejected
+    safe = client.post("/research-scientist/analyses/proposals", json={
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:552: in post
+    return super().post(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m04_research_scientist/routes.py:47: in propose_analysis
+    approval = default_service().submit(module_id=4, action_type=proposal.action_type, user_id=tenant.tenant_id, payload=proposal.model_dump(mode="json"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m00_approval_center/service.py:191: in submit
+    with self._sessions.begin() as db:
+         ^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/contextlib.py:144: in __exit__
+    next(self.gen)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1879: in _maker_context_manager
+    with self.begin():
+         ^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/util.py:144: in __exit__
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:166: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/util.py:142: in __exit__
+    self.commit()
+<sqlalchemy generated _go() wrapper for sqlalchemy.orm.session.SessionTransaction.commit>:2: in commit
+    return target(fn, self, _to_root=_to_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1330: in commit
+    self._prepare_impl()
+<sqlalchemy generated _go() wrapper for sqlalchemy.orm.session.SessionTransaction._prepare_impl>:2: in _prepare_impl
+    return target(fn, self)
+           ^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1304: in _prepare_impl
+    self.session.flush()
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4536: in flush
+    self._flush(objects)
+<sqlalchemy generated warned() wrapper for sqlalchemy.orm.session.Session._flush>:2: in _flush
+    return target(fn, self, objects=objects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py:281: in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4679: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:166: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4640: in _flush
+    flush_context.execute()
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:467: in execute
+    rec.execute(self)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:643: in execute
+    util.preloaded.orm_persistence._save_obj(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:92: in _save_obj
+    _emit_insert_statements(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:1237: in _emit_insert_statements
+    result = connection.execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1448: in execute
+    return meth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1668: in _execute_clauseelement
+    ret = self._execute_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1822: in _execute_context
+    return self._exec_single_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1962: in _exec_single_context
+    self._handle_dbapi_exception(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2332: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: in do_execute
+    cursor.execute(statement, parameters)
+E   sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: m00_approval_events
+E   [SQL: INSERT INTO m00_approval_events (approval_id, event, actor, at) VALUES (?, ?, ?, ?)]
+E   [parameters: ('19566dce-d1c9-45b0-bcd4-26e6e98a9fa7', 'created', None, '2026-10-08 11:28:03.417789')]
+E   (Background on this error at: https://sqlalche.me/e/21/e3q8)
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+____________________ test_route_persists_analysis_approval _____________________
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: in do_execute
+    cursor.execute(statement, parameters)
+E   sqlite3.OperationalError: no such table: m00_approval_events
+
+The above exception was the direct cause of the following exception:
+tests/modules/test_m04_research_scientist.py:100: in test_route_persists_analysis_approval
+    response=TestClient(app).post("/research-scientist/analyses/proposals",headers={"x-atlas-tenant":"research-tenant","x-atlas-actor":"u"},json={"objective":"Run an approved differential analysis","language":"python","code":"print(1)","network_access":False})
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:552: in post
+    return super().post(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m04_research_scientist/routes.py:47: in propose_analysis
+    approval = default_service().submit(module_id=4, action_type=proposal.action_type, user_id=tenant.tenant_id, payload=proposal.model_dump(mode="json"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m00_approval_center/service.py:191: in submit
+    with self._sessions.begin() as db:
+         ^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/contextlib.py:144: in __exit__
+    next(self.gen)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1879: in _maker_context_manager
+    with self.begin():
+         ^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/util.py:144: in __exit__
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:166: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/util.py:142: in __exit__
+    self.commit()
+<sqlalchemy generated _go() wrapper for sqlalchemy.orm.session.SessionTransaction.commit>:2: in commit
+    return target(fn, self, _to_root=_to_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1330: in commit
+    self._prepare_impl()
+<sqlalchemy generated _go() wrapper for sqlalchemy.orm.session.SessionTransaction._prepare_impl>:2: in _prepare_impl
+    return target(fn, self)
+           ^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1304: in _prepare_impl
+    self.session.flush()
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4536: in flush
+    self._flush(objects)
+<sqlalchemy generated warned() wrapper for sqlalchemy.orm.session.Session._flush>:2: in _flush
+    return target(fn, self, objects=objects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py:281: in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4679: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:166: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4640: in _flush
+    flush_context.execute()
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:467: in execute
+    rec.execute(self)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:643: in execute
+    util.preloaded.orm_persistence._save_obj(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:92: in _save_obj
+    _emit_insert_statements(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:1237: in _emit_insert_statements
+    result = connection.execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1448: in execute
+    return meth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1668: in _execute_clauseelement
+    ret = self._execute_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1822: in _execute_context
+    return self._exec_single_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1962: in _exec_single_context
+    self._handle_dbapi_exception(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2332: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: in do_execute
+    cursor.execute(statement, parameters)
+E   sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: m00_approval_events
+E   [SQL: INSERT INTO m00_approval_events (approval_id, event, actor, at) VALUES (?, ?, ?, ?)]
+E   [parameters: ('68b5a005-3121-4599-8b79-4cfec2e37194', 'created', None, '2026-10-08 11:28:04.527600')]
+E   (Background on this error at: https://sqlalche.me/e/21/e3q8)
+------------------------------ Captured log call -------------------------------
+WARNING  app.auth.context:context.py:145 INSECURE DEVELOPMENT AUTH BYPASS: ATLAS_DEV_NO_AUTH=1 trusts identity headers; never deploy this mode
+=============================== warnings summary ===============================
+../../../home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m04_research_scientist.py::test_analysis_is_only_proposed_and_network_access_is_rejected
+FAILED tests/modules/test_m04_research_scientist.py::test_route_persists_analysis_approval
+2 failed, 124 passed, 1 warning in 38.29s

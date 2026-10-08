@@ -1,0 +1,32 @@
+....................FFF................................................. [ 72%]
+...........................                                              [100%]
+=================================== FAILURES ===================================
+_____ test_migration_scopes_unique_per_account_and_backfills_draft_account _____
+tests/modules/test_m10_account_isolation_lane.py:72: in test_migration_scopes_unique_per_account_and_backfills_draft_account
+    assert run("20261008_m16_identity_forward").returncode == 0
+E   AssertionError: assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'upgrade', '20261008_m16_identity_f...tUNIQUE (approval_id), \n\tUNIQUE (effect_id)\n)\n\n]\n(Background on this error at: https://sqlalche.me/e/21/e3q8)\n').returncode
+E    +    where CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'upgrade', '20261008_m16_identity_f...tUNIQUE (approval_id), \n\tUNIQUE (effect_id)\n)\n\n]\n(Background on this error at: https://sqlalche.me/e/21/e3q8)\n') = <function test_migration_scopes_unique_per_account_and_backfills_draft_account.<locals>.<lambda> at 0x7fa46882c7c0>('20261008_m16_identity_forward')
+________________ test_migration_up_down_up_on_real_sqlite_file _________________
+tests/modules/test_m10_account_isolation_lane.py:117: in test_migration_up_down_up_on_real_sqlite_file
+    assert _alembic(db, "upgrade", "head").returncode == 0
+E   AssertionError: assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'upgrade', 'head'], returncode=1, s...tUNIQUE (approval_id), \n\tUNIQUE (effect_id)\n)\n\n]\n(Background on this error at: https://sqlalche.me/e/21/e3q8)\n').returncode
+E    +    where CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'upgrade', 'head'], returncode=1, s...tUNIQUE (approval_id), \n\tUNIQUE (effect_id)\n)\n\n]\n(Background on this error at: https://sqlalche.me/e/21/e3q8)\n') = _alembic(PosixPath('/tmp/pytest-of-sandbox/pytest-1216/test_migration_up_down_up_on_r0/cycle.sqlite'), 'upgrade', 'head')
+____ test_migration_downgrade_refuses_when_collision_would_lose_uniqueness _____
+tests/modules/test_m10_account_isolation_lane.py:138: in test_migration_downgrade_refuses_when_collision_would_lose_uniqueness
+    assert _alembic(db, "upgrade", "head").returncode == 0
+E   AssertionError: assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'upgrade', 'head'], returncode=1, s...tUNIQUE (approval_id), \n\tUNIQUE (effect_id)\n)\n\n]\n(Background on this error at: https://sqlalche.me/e/21/e3q8)\n').returncode
+E    +    where CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'upgrade', 'head'], returncode=1, s...tUNIQUE (approval_id), \n\tUNIQUE (effect_id)\n)\n\n]\n(Background on this error at: https://sqlalche.me/e/21/e3q8)\n') = _alembic(PosixPath('/tmp/pytest-of-sandbox/pytest-1216/test_migration_downgrade_refus0/refuse.sqlite'), 'upgrade', 'head')
+=============================== warnings summary ===============================
+../../../home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m10_account_isolation_lane.py::test_migration_scopes_unique_per_account_and_backfills_draft_account
+FAILED tests/modules/test_m10_account_isolation_lane.py::test_migration_up_down_up_on_real_sqlite_file
+FAILED tests/modules/test_m10_account_isolation_lane.py::test_migration_downgrade_refuses_when_collision_would_lose_uniqueness
+3 failed, 96 passed, 1 warning in 49.03s

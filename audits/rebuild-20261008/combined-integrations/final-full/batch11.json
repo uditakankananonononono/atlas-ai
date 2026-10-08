@@ -1,0 +1,1 @@
+{"batch": 11, "files": 10, "exit": 0, "seconds": 51.788236788001086, "counts": {"passed": 99}, "log": "batch11-corrected.log", "correction": "One-time separate schema initialization, auto-create flag unset in test and migration processes; unchanged product"}

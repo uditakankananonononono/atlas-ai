@@ -1,0 +1,1 @@
+{"batch": 25, "files": 10, "exit": 0, "seconds": 50.834697539001354, "counts": {"passed": 207}, "log": "batch25-corrected.log", "correction": "Two historical-forward upgrade calls pinned to identity_forward; no product drift", "source_head": "617146775034d2659df2a63d9fa4652ba5b02410"}

@@ -1,0 +1,14 @@
+........................................................................ [ 34%]
+........................................................................ [ 69%]
+...............................................................          [100%]
+=============================== warnings summary ===============================
+../../../home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/modules/test_m16_intake_concurrency.py::test_read_boundary_coercion_pins
+  /tmp/atlas-m05-m19-integration/stage/backend/app/modules/m16_executive_dashboard/repository.py:104: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    if not r:r=SnapshotRow(tenant_id=self.tenant_id,version=0,last_sequence=0,data={"metrics":{},"timeline":[],"alerts":[],"freshness":{}},generated_at=datetime.utcnow());db.add(r);db.flush()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+207 passed, 2 warnings in 50.76s
