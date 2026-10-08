@@ -48,3 +48,22 @@ def test_store_without_migration_or_opt_in_does_not_create_tables(tmp_path):
     assert "no such table" in str(e.value)  # test asserts the failure text; production never echoes it
     store.close()
     assert sqlite3.connect(db).execute("select count(*) from sqlite_master").fetchone()[0] == 0
+
+
+def _alembic(db, *args):
+    env = {**os.environ, "ATLAS_DATABASE_URL": f"sqlite:///{db}"}
+    return subprocess.run([sys.executable, "-m", "alembic", *args], env=env, text=True, capture_output=True, timeout=110)
+
+
+def test_runtime_goals_downgrade_drops_only_an_empty_table(tmp_path):
+    db = tmp_path / "d.sqlite"
+    assert _alembic(db, "upgrade", "20261008_m21_runtime_goals").returncode == 0
+    assert _alembic(db, "downgrade", "20261008_m16_identity_forward").returncode == 0
+    assert "claire_runtime_goals" not in inspect(create_engine(f"sqlite:///{db}")).get_table_names()
+    assert _alembic(db, "upgrade", "20261008_m21_runtime_goals").returncode == 0
+    store = GoalStore(f"sqlite:///{db}")
+    store.create("t", "a", "p", [{"kind": "tool_receipt", "tool": "x", "min_count": 1}], 1)
+    store.close()
+    r = _alembic(db, "downgrade", "20261008_m16_identity_forward")
+    assert r.returncode != 0 and "holds goal evidence" in r.stderr
+    assert "claire_runtime_goals" in inspect(create_engine(f"sqlite:///{db}")).get_table_names()

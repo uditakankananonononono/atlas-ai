@@ -29,5 +29,11 @@ def upgrade():
  op.create_index('ix_claire_runtime_goals_actor_id','claire_runtime_goals',['actor_id'])
  op.create_index('ix_claire_runtime_goals_status','claire_runtime_goals',['status'])
 def downgrade():
- # Goals hold owner work and evidence; dropping them is not automatic.
- raise RuntimeError('Cannot drop claire_runtime_goals automatically: it holds goal evidence')
+ bind=op.get_bind()
+ if bind.execute(sa.text('SELECT 1 FROM claire_runtime_goals LIMIT 1')).first():
+  # Goals hold owner work and evidence; a non-empty table is never dropped automatically.
+  raise RuntimeError('Cannot drop claire_runtime_goals automatically: it holds goal evidence')
+ op.drop_index('ix_claire_runtime_goals_status',table_name='claire_runtime_goals')
+ op.drop_index('ix_claire_runtime_goals_actor_id',table_name='claire_runtime_goals')
+ op.drop_index('ix_claire_runtime_goals_tenant_id',table_name='claire_runtime_goals')
+ op.drop_table('claire_runtime_goals')
