@@ -16,7 +16,8 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100,
  if receipt.exists():raise FileExistsError('receipt destination already exists')
  package_root=Path(__file__).resolve().parents[2]
  root=package_root.parent
- git_head=subprocess.run(['git','-C',str(root),'rev-parse','HEAD'],capture_output=True,text=True)
+ try:git_head=subprocess.run(['git','-C',str(root),'rev-parse','HEAD'],capture_output=True,text=True)
+ except FileNotFoundError:git_head=subprocess.CompletedProcess([],128,stdout='',stderr='')
  revision=None;dirty=False;hashes={};provenance='module_sha256'
  if git_head.returncode==0:
   revision=git_head.stdout.strip()
