@@ -67,3 +67,56 @@ def test_runtime_goals_downgrade_drops_only_an_empty_table(tmp_path):
     r = _alembic(db, "downgrade", "20261008_m16_identity_forward")
     assert r.returncode != 0 and "holds goal evidence" in r.stderr
     assert "claire_runtime_goals" in inspect(create_engine(f"sqlite:///{db}")).get_table_names()
+
+
+def _prepare_at_previous_head(db):
+    assert _alembic(db, "upgrade", "20261008_m16_identity_forward").returncode == 0
+
+
+def test_upgrade_refuses_a_preexisting_wrong_shape_table(tmp_path):
+    db = tmp_path / "w.sqlite"
+    _prepare_at_previous_head(db)
+    con = sqlite3.connect(db)
+    con.execute("CREATE TABLE claire_runtime_goals (id TEXT PRIMARY KEY)")
+    con.commit(); con.close()
+    r = _alembic(db, "upgrade", "20261008_m21_runtime_goals")
+    assert r.returncode != 0 and "incompatible shape" in r.stderr and "missing column tenant_id" in r.stderr
+    con = sqlite3.connect(db)
+    assert con.execute("select version_num from alembic_version").fetchone()[0] == "20261008_m16_identity_forward"  # not stamped
+    assert [row[1] for row in con.execute("pragma table_info('claire_runtime_goals')")] == ["id"]  # untouched
+    con.close()
+
+
+def test_upgrade_refuses_wrong_nullability_extra_column_or_missing_index(tmp_path):
+    for variant, sql in {
+        "nullable": "tenant_id VARCHAR(200)",
+        "extra": "tenant_id VARCHAR(200) NOT NULL, rogue TEXT",
+        "noindex": "tenant_id VARCHAR(200) NOT NULL",
+    }.items():
+        db = tmp_path / f"{variant}.sqlite"
+        _prepare_at_previous_head(db)
+        base = ("id VARCHAR(36) NOT NULL PRIMARY KEY, {t}, actor_id VARCHAR(200) NOT NULL, purpose TEXT NOT NULL, criteria TEXT NOT NULL, "
+                "max_steps INTEGER NOT NULL, status VARCHAR(20) NOT NULL, attempts INTEGER NOT NULL, lease_owner VARCHAR(100), "
+                "lease_token VARCHAR(64), lease_expires_at VARCHAR(40), blocker VARCHAR(100), report TEXT, verdict TEXT, "
+                "created_at VARCHAR(40) NOT NULL, updated_at VARCHAR(40) NOT NULL").format(t=sql)
+        con = sqlite3.connect(db)
+        con.execute(f"CREATE TABLE claire_runtime_goals ({base})")
+        if variant != "noindex":
+            for n, c in (("tenant_id", "tenant_id"), ("actor_id", "actor_id"), ("status", "status")):
+                con.execute(f"CREATE INDEX ix_claire_runtime_goals_{n} ON claire_runtime_goals ({c})")
+        con.commit(); con.close()
+        r = _alembic(db, "upgrade", "20261008_m21_runtime_goals")
+        assert r.returncode != 0 and "incompatible shape" in r.stderr, variant
+
+
+def test_upgrade_noops_and_stamps_a_preexisting_correct_table(tmp_path):
+    db = tmp_path / "c.sqlite"
+    _prepare_at_previous_head(db)
+    store = GoalStore(f"sqlite:///{db}", create_schema=True)  # older create_all rollout, correct shape
+    gid = store.create("t", "a", "p", [{"kind": "tool_receipt", "tool": "x", "min_count": 1}], 1)
+    store.close()
+    assert _alembic(db, "upgrade", "20261008_m21_runtime_goals").returncode == 0
+    con = sqlite3.connect(db)
+    assert con.execute("select version_num from alembic_version").fetchone()[0] == "20261008_m21_runtime_goals"
+    assert con.execute("select count(*) from claire_runtime_goals where id=?", (gid,)).fetchone()[0] == 1  # data kept
+    con.close()
