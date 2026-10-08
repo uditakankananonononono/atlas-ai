@@ -1,0 +1,909 @@
+........................................................................ [ 64%]
+..............................FFFF.....                                  [100%]
+=================================== FAILURES ===================================
+________ test_get_returns_version_zero_before_any_save_then_increments _________
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f3991edb2c0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f399211ad20>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f399601f560>
+parameters = [('t-edf712ec966943fdb8f579e5ab492bb6',)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+cursor = <sqlite3.Cursor object at 0x7f39937b4dc0>
+statement = 'SELECT m16_view_prefs.tenant_id, m16_view_prefs.layout, m16_view_prefs.updated_at, m16_view_prefs.version \nFROM m16_view_prefs \nWHERE m16_view_prefs.tenant_id = ?'
+parameters = ('t-edf712ec966943fdb8f579e5ab492bb6',)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f399211ad20>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such column: m16_view_prefs.version
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    def test_get_returns_version_zero_before_any_save_then_increments():
+        s = svc()
+>       assert s.get_view().version == 0
+               ^^^^^^^^^^^^
+
+tests/modules/test_m16_view_versioning.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m16_executive_dashboard/service.py:234: in get_view
+    layout,at=(getter() if getter else (None,None))
+               ^^^^^^^^
+backend/app/modules/m16_executive_dashboard/repository.py:231: in get_view
+    r=db.get(ViewPrefsRow,self.tenant_id)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:3845: in get
+    return self._get_impl(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4032: in _get_impl
+    return db_load_fn(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/loading.py:702: in _load_on_pk_identity
+    session.execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2473: in execute
+    return self._execute_internal(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2363: in _execute_internal
+    compile_state_cls.orm_execute_statement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:316: in orm_execute_statement
+    result = conn.execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1448: in execute
+    return meth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1668: in _execute_clauseelement
+    ret = self._execute_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1822: in _execute_context
+    return self._exec_single_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1962: in _exec_single_context
+    self._handle_dbapi_exception(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2332: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+cursor = <sqlite3.Cursor object at 0x7f39937b4dc0>
+statement = 'SELECT m16_view_prefs.tenant_id, m16_view_prefs.layout, m16_view_prefs.updated_at, m16_view_prefs.version \nFROM m16_view_prefs \nWHERE m16_view_prefs.tenant_id = ?'
+parameters = ('t-edf712ec966943fdb8f579e5ab492bb6',)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f399211ad20>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: m16_view_prefs.version
+E       [SQL: SELECT m16_view_prefs.tenant_id, m16_view_prefs.layout, m16_view_prefs.updated_at, m16_view_prefs.version 
+E       FROM m16_view_prefs 
+E       WHERE m16_view_prefs.tenant_id = ?]
+E       [parameters: ('t-edf712ec966943fdb8f579e5ab492bb6',)]
+E       (Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+______ test_same_base_second_write_is_rejected_and_nothing_is_overwritten ______
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f3991e3a2a0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3991e39640>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f3991e39340>
+parameters = [('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:29.927194', 1, 't-ccd64b7ee3fd4907b37459ae0967fb38')]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+cursor = <sqlite3.Cursor object at 0x7f3992178c40>
+statement = 'UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ?'
+parameters = ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:29.927194', 1, 't-ccd64b7ee3fd4907b37459ae0967fb38')
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3991e39640>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such column: m16_view_prefs.version
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    def test_same_base_second_write_is_rejected_and_nothing_is_overwritten():
+        s = svc()
+>       v1 = s.save_view(body("a")).version
+             ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m16_view_versioning.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m16_executive_dashboard/service.py:255: in save_view
+    version=saver(layout,now,expect_version=data.base_version) if data.base_version is not None else saver(layout,now)
+                                                                                                     ^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/repository.py:214: in save_view
+    n=db.execute(update(ViewPrefsRow).where(*cond).values(layout=layout,updated_at=at,version=ViewPrefsRow.version+1)).rowcount
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2473: in execute
+    return self._execute_internal(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2363: in _execute_internal
+    compile_state_cls.orm_execute_statement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:1693: in orm_execute_statement
+    return super().orm_execute_statement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:316: in orm_execute_statement
+    result = conn.execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1448: in execute
+    return meth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1668: in _execute_clauseelement
+    ret = self._execute_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1822: in _execute_context
+    return self._exec_single_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1962: in _exec_single_context
+    self._handle_dbapi_exception(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2332: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+cursor = <sqlite3.Cursor object at 0x7f3992178c40>
+statement = 'UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ?'
+parameters = ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:29.927194', 1, 't-ccd64b7ee3fd4907b37459ae0967fb38')
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3991e39640>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: m16_view_prefs.version
+E       [SQL: UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ?]
+E       [parameters: ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:29.927194', 1, 't-ccd64b7ee3fd4907b37459ae0967fb38')]
+E       (Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+______________ test_save_without_base_still_works_last_write_wins ______________
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f3991ed92b0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3991edbef0>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f3991ed8440>
+parameters = [('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:30.213241', 1, 't-34661c5d29f447be9647ef8605bfe1f2', 0)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+cursor = <sqlite3.Cursor object at 0x7f3991daf840>
+statement = 'UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ? AND m16_view_prefs.version = ?'
+parameters = ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:30.213241', 1, 't-34661c5d29f447be9647ef8605bfe1f2', 0)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3991edbef0>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such column: m16_view_prefs.version
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    def test_save_without_base_still_works_last_write_wins():
+>       s = svc(); s.save_view(body("a", base=0))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m16_view_versioning.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m16_executive_dashboard/service.py:255: in save_view
+    version=saver(layout,now,expect_version=data.base_version) if data.base_version is not None else saver(layout,now)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/repository.py:214: in save_view
+    n=db.execute(update(ViewPrefsRow).where(*cond).values(layout=layout,updated_at=at,version=ViewPrefsRow.version+1)).rowcount
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2473: in execute
+    return self._execute_internal(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2363: in _execute_internal
+    compile_state_cls.orm_execute_statement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:1693: in orm_execute_statement
+    return super().orm_execute_statement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:316: in orm_execute_statement
+    result = conn.execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1448: in execute
+    return meth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1668: in _execute_clauseelement
+    ret = self._execute_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1822: in _execute_context
+    return self._exec_single_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1962: in _exec_single_context
+    self._handle_dbapi_exception(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2332: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+cursor = <sqlite3.Cursor object at 0x7f3991daf840>
+statement = 'UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ? AND m16_view_prefs.version = ?'
+parameters = ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:30.213241', 1, 't-34661c5d29f447be9647ef8605bfe1f2', 0)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3991edbef0>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: m16_view_prefs.version
+E       [SQL: UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ? AND m16_view_prefs.version = ?]
+E       [parameters: ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:30.213241', 1, 't-34661c5d29f447be9647ef8605bfe1f2', 0)]
+E       (Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+__________ test_http_route_maps_conflict_to_409_with_current_version ___________
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f39935585f0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3993558290>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f3991ed8440>
+parameters = [('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:30.569223', 1, 't-7ad7148eac154ae5acdbba506222e7bc', 0)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+cursor = <sqlite3.Cursor object at 0x7f399184ec40>
+statement = 'UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ? AND m16_view_prefs.version = ?'
+parameters = ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:30.569223', 1, 't-7ad7148eac154ae5acdbba506222e7bc', 0)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3993558290>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such column: m16_view_prefs.version
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    def test_http_route_maps_conflict_to_409_with_current_version():
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        from app.modules.m16_executive_dashboard import routes
+        s = svc(); app = FastAPI(); app.include_router(routes.router)
+        app.dependency_overrides[routes.get_service] = lambda: s
+        c = TestClient(app); put = lambda **kw: c.put("/executive-dashboard/view", json=kw)
+        w = lambda i: [{"id": i, "kind": "blockers", "position": 0, "visible": True, "kpi_id": None}]
+>       assert put(widgets=w("a"), base_version=0).json()["version"] == 1
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m16_view_versioning.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m16_view_versioning.py:39: in <lambda>
+    c = TestClient(app); put = lambda **kw: c.put("/executive-dashboard/view", json=kw)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:583: in put
+    return super().put(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:1181: in put
+    return self.request(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:451: in request
+    return super().request(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:354: in handle_request
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:351: in handle_request
+    portal.call(self.app, scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/applications.py:113: in __call__
+    await self.middleware_stack(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:736: in app
+    await route.handle(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:290: in handle
+    await self.app(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:78: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/routing.py:75: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/routing.py:302: in app
+    raw_response = await run_endpoint_function(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/fastapi/routing.py:215: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/concurrency.py:38: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/routes.py:76: in save_view
+    try:return service.save_view(data)
+               ^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/service.py:255: in save_view
+    version=saver(layout,now,expect_version=data.base_version) if data.base_version is not None else saver(layout,now)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/repository.py:214: in save_view
+    n=db.execute(update(ViewPrefsRow).where(*cond).values(layout=layout,updated_at=at,version=ViewPrefsRow.version+1)).rowcount
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2473: in execute
+    return self._execute_internal(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2363: in _execute_internal
+    compile_state_cls.orm_execute_statement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:1693: in orm_execute_statement
+    return super().orm_execute_statement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:316: in orm_execute_statement
+    result = conn.execute(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1448: in execute
+    return meth(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1668: in _execute_clauseelement
+    ret = self._execute_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1822: in _execute_context
+    return self._exec_single_context(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1962: in _exec_single_context
+    self._handle_dbapi_exception(
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2332: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1943: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f39a9e65280>
+cursor = <sqlite3.Cursor object at 0x7f399184ec40>
+statement = 'UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ? AND m16_view_prefs.version = ?'
+parameters = ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:30.569223', 1, 't-7ad7148eac154ae5acdbba506222e7bc', 0)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f3993558290>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: m16_view_prefs.version
+E       [SQL: UPDATE m16_view_prefs SET layout=?, updated_at=?, version=(m16_view_prefs.version + ?) WHERE m16_view_prefs.tenant_id = ? AND m16_view_prefs.version = ?]
+E       [parameters: ('{"widgets": [{"id": "a", "kind": "blockers", "kpi_id": null, "visible": true, "position": 0}]}', '2026-10-08 11:15:30.569223', 1, 't-7ad7148eac154ae5acdbba506222e7bc', 0)]
+E       (Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+/home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+=============================== warnings summary ===============================
+../../../home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/modules/test_m16_view_versioning.py::test_same_base_second_write_is_rejected_and_nothing_is_overwritten
+tests/modules/test_m16_view_versioning.py::test_save_without_base_still_works_last_write_wins
+tests/modules/test_m16_view_versioning.py::test_http_route_maps_conflict_to_409_with_current_version
+  /tmp/atlas-m05-m19-integration/stage/backend/app/modules/m16_executive_dashboard/repository.py:104: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    if not r:r=SnapshotRow(tenant_id=self.tenant_id,version=0,last_sequence=0,data={"metrics":{},"timeline":[],"alerts":[],"freshness":{}},generated_at=datetime.utcnow());db.add(r);db.flush()
+
+tests/migrations/test_clean_database_upgrade.py::test_clean_database_upgrades_to_head_with_product_and_cognitive_tables
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/alembic/config.py:604: DeprecationWarning: No path_separator found in configuration; falling back to legacy splitting on spaces, commas, and colons for prepend_sys_path.  Consider adding path_separator=os to Alembic config.
+    util.warn_deprecated(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m16_view_versioning.py::test_get_returns_version_zero_before_any_save_then_increments
+FAILED tests/modules/test_m16_view_versioning.py::test_same_base_second_write_is_rejected_and_nothing_is_overwritten
+FAILED tests/modules/test_m16_view_versioning.py::test_save_without_base_still_works_last_write_wins
+FAILED tests/modules/test_m16_view_versioning.py::test_http_route_maps_conflict_to_409_with_current_version
+4 failed, 107 passed, 5 warnings in 97.06s (0:01:37)
