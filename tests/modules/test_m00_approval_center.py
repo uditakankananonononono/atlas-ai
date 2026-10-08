@@ -405,3 +405,52 @@ def test_combined_stale_decision_loses_to_committed_expiry(service, clock):
     assert service.get(view['id'])['status'] == ApprovalStatus.EXPIRED
     assert [event['event'] for event in service.audit(view['id'])] == ['created', 'expired']
     assert len(callbacks) == 1 and callbacks[0]['status'] == ApprovalStatus.EXPIRED
+
+
+@pytest.mark.parametrize('winner_effect', ['winner', 'loser'])
+def test_consume_insert_race_returns_winner_or_conflict(service, monkeypatch, winner_effect):
+    from sqlalchemy.orm import Session
+    from app.modules.m00_approval_center.service import ApprovalEffectRow
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    kwargs = dict(module_id=view['module_id'], action_type=view['action_type'],
+                  payload=view['payload'], user_id=view['user_id'], actor='worker')
+    flush = Session.flush
+    raced = []
+
+    def competing_flush(db, *args, **kw):
+        if not raced and any(isinstance(row, ApprovalEffectRow) for row in db.new):
+            raced.append(True)
+            service.consume_effect(view['id'], effect_id=winner_effect, **kwargs)
+        return flush(db, *args, **kw)
+
+    monkeypatch.setattr(Session, 'flush', competing_flush)
+    if winner_effect == 'loser':
+        assert service.consume_effect(view['id'], effect_id='loser', **kwargs)['allowed']
+    else:
+        with pytest.raises(ApprovalConflictError, match='consumed'):
+            service.consume_effect(view['id'], effect_id='loser', **kwargs)
+    with service._sessions() as db:
+        from sqlalchemy import select
+        assert [row.effect_id for row in db.scalars(select(ApprovalEffectRow))] == [winner_effect]
+    assert [e['event'] for e in service.audit(view['id'])] == ['created', 'approved', 'effect_consumed']
+
+
+def test_consume_unrelated_integrity_error_is_not_fake_consumption(service, monkeypatch):
+    from sqlalchemy.exc import IntegrityError
+    from sqlalchemy.orm import Session
+    from app.modules.m00_approval_center.service import ApprovalEffectRow
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    flush = Session.flush
+
+    def fail(db, *args, **kwargs):
+        if any(isinstance(row, ApprovalEffectRow) for row in db.new):
+            raise IntegrityError('fixture', {}, RuntimeError('unrelated'))
+        return flush(db, *args, **kwargs)
+
+    monkeypatch.setattr(Session, 'flush', fail)
+    with pytest.raises(IntegrityError):
+        service.consume_effect(view['id'], module_id=view['module_id'], action_type=view['action_type'],
+                               payload=view['payload'], user_id=view['user_id'], effect_id='none', actor='worker')
+    assert [e['event'] for e in service.audit(view['id'])] == ['created', 'approved']
