@@ -11,6 +11,13 @@ describe('bounded authenticated approval stream',()=>{
   expect(signal).toHaveBeenCalledTimes(1);
   expect(()=>new ApprovalFrameParser(signal,10).push(encode('data: oversized frame'))).toThrow();
  });
+ it('drains a large chunk of small frames without exceeding the per-frame cap',()=>{
+  const signal=vi.fn(),parser=new ApprovalFrameParser(signal,256);
+  const frame='data: {"type":"approval_request","approval_id":"a"}\n\n';
+  parser.push(encode(frame.repeat(2000)));
+  expect(signal).toHaveBeenCalledTimes(2000);
+  expect(()=>parser.push(encode('data: '+ 'x'.repeat(300)+'\n\n'))).toThrow();
+ });
  it('has four total attempts even when every attempt connects briefly',async()=>{
   const states:string[]=[],signal=vi.fn();
   const fetcher=vi.fn(async(_url:RequestInfo|URL,_init?:RequestInit)=>new Response(new ReadableStream({start(c){c.enqueue(encode('data: {"type":"approval_decision","approval_id":"a"}\n\n'));c.close()}}),{headers:{'Content-Type':'text/event-stream'}}));

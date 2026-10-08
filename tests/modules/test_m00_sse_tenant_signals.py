@@ -19,6 +19,8 @@ def test_actual_sse_filters_foreign_unknown_and_tampered_tenant_then_minimal_sig
     async def journey():
         response=await stream_events(Response(),service,TenantContext('a','alice'))
         assert response.media_type=='text/event-stream'
+        service.broadcaster.publish({'type':[], 'approval':own})
+        service.broadcaster.publish({'type':{}, 'approval':own})
         service.broadcaster.publish({'type':'unknown','approval':own})
         service.broadcaster.publish({'type':'approval_request'})
         service.broadcaster.publish({'type':'approval_request','approval':{**foreign,'user_id':'a'}})

@@ -130,7 +130,7 @@ async def stream_events(response: Response, service: Service = Depends(get_servi
             while True:
                 try:
                     event = await asyncio.to_thread(subscriber.get, True, SSE_HEARTBEAT_SECONDS)
-                    if not isinstance(event, dict) or event.get("type") not in {"approval_request", "approval_decision", "approval_expired"}:
+                    if not isinstance(event, dict) or not isinstance(event.get("type"), str) or event.get("type") not in {"approval_request", "approval_decision", "approval_expired"}:
                         continue
                     approval = event.get("approval")
                     approval_id = approval.get("id") if isinstance(approval, dict) else event.get("approval_id")
