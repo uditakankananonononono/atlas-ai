@@ -35,7 +35,11 @@ def plan_for(*requests):
     return CrossModulePlanner().build("goal", requests)
 
 
-# ---- plain / durable plan dispatch (ExecutionOrchestrator) ------------------------------------------------------------------------------
+# ---- plain / durable plan dispatch (ExecutionOrchestrator) ---
+# Evidence kinds: BEHAVIOURALLY EXERCISED = the test runs that class. SOURCE-TRACED ONLY = DurableExecutionOrchestrator.execute (durable_execution.py:423-468)
+# is read: it calls self.policy.require_allowed (:441) and blocks unless a digest-matching, valid approval exists, but ONLY when decision.requires_approval
+# (:442). So gating is exactly as strong as the lexical ActionPolicy; an action the policy does not flag runs with no approval. Below, the plain
+# orchestrator tests are exercised on the plain class; the durable class is exercised by test_PROTECTION_durable_* and still inherits the lexical limit.---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("verb", sorted(PAYMENT_TOKENS | COMMS_TOKENS))
 def test_PROTECTION_plain_orchestrator_does_not_run_a_payment_or_comms_named_action_without_an_exact_approval(verb):
@@ -182,8 +186,10 @@ def test_PROTECTION_local_action_without_a_token_files_a_request_and_does_not_ex
     assert s.local_client.executed == [] and out.action_type == f"claire:{kind}"
 
 
-def test_CHARACTERIZATION_local_action_accepts_any_non_empty_token_it_is_not_validated_here_service_py_139():
-    # KNOWN GAP: the Service never checks the token against an approval; it relies on the paired daemon (service.py:11-15).
+def test_CHARACTERIZATION_local_action_accepts_any_non_empty_token_it_is_not_validated_here_service_py_55_57():
+    # KNOWN GAP: service.py:55 only tests the token for truthiness, then :57 passes it to local_client.execute. No approval lookup happens in the Service.
+    # Whether the daemon validates it is NOT enforced or visible in this tree: local_client_protocol.py has no token check (a documented-promise vs
+    # enforcement split: PairingService is described there as reference handshake state, line 22). Treat the daemon as unverified.
     s, gid = _local_service()
     asyncio.run(s.local_action(gid, {"kind": "spend_money"}, approval_token="anything"))
     assert len(s.local_client.executed) == 1
@@ -313,3 +319,52 @@ def test_CHARACTERIZATION_cognitive_approval_is_not_single_use_a_failed_then_ret
                                  payload=a.items[0].payload, status=ApprovalStatus.APPROVED)
     asyncio.run(s.loop.execute(run))
     assert len(calls) == 2 and len(set(calls)) == 2                        # same approval, two dispatches, two different keys
+
+
+# ---- durable orchestrator, exercised directly (previously source-traced only) --------------------------------------------------------------
+
+@pytest.mark.parametrize("verb", sorted(PAYMENT_TOKENS | COMMS_TOKENS))
+def test_PROTECTION_durable_orchestrator_does_not_run_a_payment_or_comms_named_action_without_an_exact_approval(verb):
+    from sqlalchemy import create_engine
+    from sqlalchemy.pool import StaticPool
+    from app.modules.m21_claire.durable_execution import ClaireExecutionRepository, DurableExecutionOrchestrator
+    eng = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    repo = ClaireExecutionRepository(eng, tenant_id="default")
+    repo.create_schema()
+    ran = []
+    o = DurableExecutionOrchestrator(repo)
+    o.register(f"m.{verb}", lambda p: ran.append(p))
+    plan = plan_for(req("m", verb, to="x"))
+    o.prepare(plan)
+    with pytest.raises(ReviewMismatch):
+        o.execute(plan)
+    assert ran == []
+
+
+def test_CHARACTERIZATION_durable_orchestrator_gate_is_the_lexical_policy_an_unflagged_name_runs_without_approval():
+    from sqlalchemy import create_engine
+    from sqlalchemy.pool import StaticPool
+    from app.modules.m21_claire.durable_execution import ClaireExecutionRepository, DurableExecutionOrchestrator
+    eng = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    repo = ClaireExecutionRepository(eng, tenant_id="default")
+    repo.create_schema()
+    ran = []
+    o = DurableExecutionOrchestrator(repo)
+    o.register("m.sendemail", lambda p: ran.append(p) or "ok")   # glued name: not a policy token (durable_execution.py:442 gate is conditional)
+    plan = plan_for(req("m", "sendemail", to="x"))
+    o.prepare(plan)
+    o.execute(plan)
+    assert ran                                                  # KNOWN GAP: passing records ungated dispatch, it does not endorse it
+
+
+def test_PROTECTION_unauthenticated_calls_to_device_and_goal_routes_are_rejected_at_the_mount(monkeypatch):
+    # The handlers in routes.py:57-81 declare no auth dependency themselves; authentication comes from main.py's
+    # include_router(module_spec.router, dependencies=[Depends(require_tenant)]) loop. Exercised with NO override: 401.
+    # the suite's autouse fixture opts into insecure dev auth; remove it so deployment defaults apply (conftest.py:58-63)
+    monkeypatch.delenv("ATLAS_DEV_NO_AUTH", raising=False)
+    monkeypatch.delenv("ATLAS_ENV", raising=False)
+    app.dependency_overrides.pop(require_tenant, None)
+    c = TestClient(app)
+    for method, path in [("get", "/api/v1/claire/devices"), ("post", "/api/v1/claire/devices/pairing-challenge"),
+                         ("delete", "/api/v1/claire/devices/x"), ("post", "/api/v1/claire/goals")]:
+        assert getattr(c, method)(path).status_code == 401
