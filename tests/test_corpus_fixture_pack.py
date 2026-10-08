@@ -28,3 +28,10 @@ def test_manifest_rights_scope_and_limits(tmp_path):
  with pytest.raises(ValueError):extract_checked('/tmp/cc0-offline-pack/fixtures.tar.gz',manifest,tmp_path/'out')
  with pytest.raises(ValueError):extract_checked('/tmp/cc0-offline-pack/fixtures.tar.gz','/tmp/cc0-offline-pack/CONTENTS.json',tmp_path/'out',max_total_bytes=1)
  assert not (tmp_path/'out').exists()
+
+@pytest.mark.parametrize('body',['[null]','[{"path":"cc0-review/x","bytes":1}]','[42]'])
+def test_manifest_row_shape_controlled_refusal(tmp_path,body):
+ from app.core.corpus_fixture_pack import extract_checked
+ manifest=tmp_path/'manifest';manifest.write_text(body)
+ with pytest.raises(ValueError):extract_checked('/tmp/cc0-offline-pack/fixtures.tar.gz',manifest,tmp_path/'out')
+ assert not (tmp_path/'out').exists()
