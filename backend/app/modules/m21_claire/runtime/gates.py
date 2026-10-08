@@ -113,7 +113,9 @@ class GateEnforcer:
     def __init__(self, ledger: Any, policy: ActionPolicy | None = None):
         self.ledger, self.policy = ledger, policy or ActionPolicy()
 
-    def authorize(self, tool: Any, arguments: dict[str, Any], principal: Principal | None) -> None:
+    def evaluate(self, tool: Any, arguments: dict[str, Any], principal: Principal | None) -> tuple[tuple[str, ...], str]:
+        """Classify without consuming anything. Returns (gates, digest) or raises GateRefused (invalid, blocked, or gated
+        with no principal). Consumption is a separate step so a caller can make it atomic with its own reservation."""
         try:
             require_plain_json(arguments)
         except (ValueError, RecursionError):
@@ -122,9 +124,11 @@ class GateEnforcer:
         digest = payload_digest(principal.goal_id if principal else "", tool.name, arguments)
         if c.blocked:
             raise GateRefused("blocked", (), digest)
-        if not c.gates:
-            return
-        if principal is None:
+        if c.gates and principal is None:
             raise GateRefused("approval_required", c.gates, digest)
-        if not self.ledger.consume_all(principal, tool.name, digest, c.gates):
-            raise GateRefused("approval_required", c.gates, digest)
+        return c.gates, digest
+
+    def authorize(self, tool: Any, arguments: dict[str, Any], principal: Principal | None) -> None:
+        gates, digest = self.evaluate(tool, arguments, principal)
+        if gates and not self.ledger.consume_all(principal, tool.name, digest, gates):
+            raise GateRefused("approval_required", gates, digest)
