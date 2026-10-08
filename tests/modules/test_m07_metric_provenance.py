@@ -43,12 +43,14 @@ def test_bool_claim_is_invalid_regression():
     assert r.label == INVALID
     assert verify_metrics({"views": 1}, [ev(datetime(2026,1,5,tzinfo=U), value=1)], S, E)[0].label == VERIFIED
 
-def test_service_heading_only_over_verified():
+def test_service_heading_only_over_verified(monkeypatch):
     import sys; sys.path.insert(0, __file__.rsplit("/",1)[0])
     from test_m07_brand_collaboration import Repo, Approvals
     from app.modules.m07_brand_collaboration.schemas import BrandDiscoveryIn, MediaKitIn, ReportIn, PartnershipEventIn
     from app.modules.m07_brand_collaboration.service import Service
     r = Repo(); svc = Service(r, Approvals())
+    # Inspect the HTML template contract independently of optional PDF rendering.
+    monkeypatch.setattr(svc, "_pdf", lambda html: (html.encode(), "text/html"))
     b = svc.discover(BrandDiscoveryIn(name="A", mission="science", public_url="https://a.test"), "science")
     svc.log_event(PartnershipEventIn(brand_id=b.id, kind="metric", occurred_at=datetime(2026,1,5,tzinfo=U), data={"metric":"views","value":10}))
     def kit(m, ps=S, pe=E):

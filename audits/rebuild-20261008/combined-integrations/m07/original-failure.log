@@ -1,0 +1,25 @@
+..........................F.........                                     [100%]
+=================================== FAILURES ===================================
+___________________ test_service_heading_only_over_verified ____________________
+tests/modules/test_m07_metric_provenance.py:58: in test_service_heading_only_over_verified
+    assert lab == {"views": "VERIFIED"} and "Verified metrics" in html
+E   assert ({'views': 'VERIFIED'} == {'views': 'VERIFIED'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Use -v to get more diff and 'Verified metrics' in "%PDF-1.7\n%🖤\n5 0 obj\n<</Filter /FlateDecode/Length 392>>\nstream\nxڅTJ@\x10}W\x0f\x14Z\x14>\x01\x11!ƶO}P\x1fݸcB&{;s...13\x01\x125Ћ\x0bFbtZ$0pPBn%TPC\x03'\x13w\x1dmr\x1b`\t\x02̶v<\x0f\x19;\x07\nendstream\nendobj\nstartxref\n8345\n%%EOF\n")
+------------------------------ Captured log call -------------------------------
+WARNING  weasyprint:fonts.py:213 Using fontTools instead of HarfBuzz-Subset for font "DejaVu Serif". This will be unsupported in future versions of WeasyPrint. Please install HarfBuzz-Subset >= 4.1.0 with your package manager.
+WARNING  weasyprint:fonts.py:213 Using fontTools instead of HarfBuzz-Subset for font "DejaVu Serif". This will be unsupported in future versions of WeasyPrint. Please install HarfBuzz-Subset >= 4.1.0 with your package manager.
+=============================== warnings summary ===============================
+tests/modules/test_m07_brand_collaboration.py::test_full_brand_flow_is_gated
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/weasyprint/text/ffi.py:528: DeprecationWarning: HarfBuzz-Subset will be required by future versions of WeasyPrint. Please install this library with your package manager.
+    warnings.warn(
+
+tests/modules/test_m07_obligations.py::test_http_routes_create_and_track
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m07_metric_provenance.py::test_service_heading_only_over_verified
+1 failed, 35 passed, 2 warnings in 2.68s
