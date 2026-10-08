@@ -66,3 +66,31 @@ def test_service_heading_only_over_verified():
 def test_iso_string_timestamps_from_ledger():
     e = ev("2026-01-05T10:00:00Z"); n = ev("2026-01-05T10:00:00"); g = ev("garbage")
     assert verify_metrics({"views": 10}, [e, n, g], S, E)[0].label == VERIFIED
+
+def test_schema_rejects_bool_metrics_before_float_coercion():
+    from pydantic import ValidationError
+    from app.modules.m07_brand_collaboration.schemas import MediaKitIn, ReportIn
+    for bad in (True, False):
+        with pytest.raises(ValidationError):
+            MediaKitIn(brand_id="b", creator_name="A", creator_mission="science", metrics={"views": bad})
+        with pytest.raises(ValidationError):
+            ReportIn(brand_id="b", period_start=S, period_end=E, metrics={"views": bad})
+    assert MediaKitIn(brand_id="b", creator_name="A", creator_mission="science", metrics={"views": 1, "x": 2.5}).metrics == {"views": 1.0, "x": 2.5}
+    assert ReportIn(brand_id="b", period_start=S, period_end=E, metrics={"views": 1}).metrics == {"views": 1.0}
+
+def test_service_path_bool_never_verifies():
+    import sys; sys.path.insert(0, __file__.rsplit("/",1)[0])
+    from pydantic import ValidationError
+    from test_m07_brand_collaboration import Repo, Approvals
+    from app.modules.m07_brand_collaboration.schemas import BrandDiscoveryIn, MediaKitIn, ReportIn, PartnershipEventIn
+    from app.modules.m07_brand_collaboration.service import Service
+    r = Repo(); svc = Service(r, Approvals())
+    b = svc.discover(BrandDiscoveryIn(name="A", mission="science", public_url="https://a.test"), "science")
+    svc.log_event(PartnershipEventIn(brand_id=b.id, kind="metric", occurred_at=datetime(2026,1,5,tzinfo=U), data={"metric":"views","value":1}))
+    with pytest.raises(ValidationError):
+        svc.media_kit(MediaKitIn(brand_id=b.id, creator_name="A", creator_mission="science", metrics={"views": True}, period_start=S, period_end=E))
+    with pytest.raises(ValidationError):
+        svc.report(ReportIn(brand_id=b.id, period_start=S, period_end=E, metrics={"views": True}))
+    # model_construct bypasses schema validation: the verifier itself must still say INVALID
+    raw = MediaKitIn.model_construct(brand_id=b.id, creator_name="A", creator_mission="science", metrics={"views": True}, period_start=S, period_end=E, audience={}, case_studies=[])
+    assert svc.media_kit(raw).metadata["metric_labels"] == {"views": "INVALID"}
