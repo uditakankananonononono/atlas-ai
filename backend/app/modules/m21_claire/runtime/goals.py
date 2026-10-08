@@ -3,7 +3,7 @@ import json, secrets, uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
-from sqlalchemy import Integer, String, Text, UniqueConstraint, create_engine, exists, insert, literal, select, update
+from sqlalchemy import Integer, String, Text, UniqueConstraint, case, create_engine, exists, insert, literal, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -159,25 +159,24 @@ class GoalStore:
                             .values(status="cancelled", updated_at=now))
             if res.rowcount == 1:
                 return "cancelled"
-            row = s.scalars(select(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
-                            GoalRow.actor_id == actor_id, GoalRow.status == "awaiting_review")).first()
-            if row is not None:
-                # One transaction: a pending effect keeps the goal from ever looking cleanly cancelled; unused approvals die with it.
-                pending = s.scalars(select(EffectRow.id).where(EffectRow.goal_id == goal_id, EffectRow.state.in_(PENDING))).first()
-                res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.status == "awaiting_review")
-                                .values(status="cancelled", blocker="effect_unknown" if pending else None, updated_at=now))
-                if res.rowcount == 1:
-                    s.execute(update(ApprovalRow).where(ApprovalRow.goal_id == goal_id, ApprovalRow.consumed_at.is_(None),
-                                                        ApprovalRow.expires_at > now).values(expires_at=now))
-                    return "cancelled"
+            # Write first, in ONE statement: the status change takes the goal's write lock (grant() takes the same lock first),
+            # and a pending effect keeps the goal from ever looking cleanly cancelled. Unused approvals die with it.
+            pending = exists().where(EffectRow.goal_id == GoalRow.id, EffectRow.state.in_(PENDING))
+            res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                            GoalRow.actor_id == actor_id, GoalRow.status == "awaiting_review")
+                            .values(status="cancelled", blocker=case((pending, "effect_unknown"), else_=None), updated_at=now))
+            if res.rowcount == 1:
+                s.execute(update(ApprovalRow).where(ApprovalRow.goal_id == goal_id, ApprovalRow.consumed_at.is_(None),
+                                                    ApprovalRow.expires_at > now).values(expires_at=now))
+                return "cancelled"
             res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
                             GoalRow.actor_id == actor_id, GoalRow.status == "running")
                             .values(cancel_requested_at=now, updated_at=now))
             if res.rowcount == 1:
                 return "cancel_requested"
-            exists = s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+            found = s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
                                                         GoalRow.actor_id == actor_id)).first()
-        return "not_cancellable" if exists else "not_found"
+        return "not_cancellable" if found else "not_found"
 
     def cancel_requested(self, claim: Claim) -> bool:
         """True if the owner asked to cancel this claim's goal. Read-only; a lost claim reads False (lease checks own that)."""
@@ -386,11 +385,16 @@ class GoalStore:
             raise SelfApprovalRefused("the goal's own actor cannot approve its gated call")
         now = self.clock()
         with self._sessions.begin() as s:
-            status = s.scalars(select(GoalRow.status).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
-                                                            GoalRow.actor_id == actor_id)).first()
-            if status is None:
-                raise KeyError(goal_id)
-            if status in NOT_GRANTABLE:
+            # Take the goal's write lock FIRST with a conditional no-op update: a concurrent cancel then either committed before
+            # (rowcount 0, refused) or waits until this approval is committed and then expires it. Check-then-insert would not be safe.
+            locked = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                               GoalRow.actor_id == actor_id, GoalRow.status.not_in(NOT_GRANTABLE))
+                               .values(updated_at=GoalRow.updated_at))
+            if locked.rowcount != 1:
+                status = s.scalars(select(GoalRow.status).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                                                                GoalRow.actor_id == actor_id)).first()
+                if status is None:
+                    raise KeyError(goal_id)
                 raise GoalNotGrantable(status)
             aid = str(uuid.uuid4())
             s.add(ApprovalRow(id=aid, tenant_id=tenant_id, actor_id=actor_id, goal_id=goal_id, capability=capability, gate=gate,
