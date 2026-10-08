@@ -230,17 +230,14 @@ def test_risk_mutated_after_registration_is_refused_and_never_executes():
     assert r2.risk_intact("lookup") is False
 
 
-def test_lease_contract_is_replacement_fenced_not_expiry_fenced(tmp_path):
-    """Declared contract: a claim settles until another worker re-claims the goal. Expiry alone
-    does not void it (first settler wins). A long read can therefore be re-run by a second worker
-    after lease expiry; only one result settles. Harmless for read-only tools; must change
-    before any write tool exists."""
+def test_settle_after_lease_expiry_is_refused_even_without_reclaim(tmp_path):
+    """Slice 3a: replaces the old 'replacement-fenced only' contract. Token match is no longer enough."""
     t = [datetime(2026, 10, 8, tzinfo=timezone.utc)]
     s = GoalStore(f"sqlite:///{tmp_path}/e.db", clock=lambda: t[0], lease_seconds=10, create_schema=True)
     s.create("t1", "a1", "p", CRIT, 3)
     c1 = s.claim("w1")
-    t[0] += timedelta(seconds=60)  # expired, not yet re-claimed
-    assert s.settle(c1, "blocked", blocker="x", report={}, verdict=None) is True
+    t[0] += timedelta(seconds=60)  # expired, nobody re-claimed
+    assert s.settle(c1, "blocked", blocker="x", report={}, verdict=None) is False
     s.close()
 
 

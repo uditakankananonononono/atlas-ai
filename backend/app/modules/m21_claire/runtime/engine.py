@@ -44,7 +44,8 @@ class Engine:
         self.policy = policy or NoAdditionalPolicy()
 
     async def run(self, goal: str, *, cancel: Event | None = None, principal: Principal | None = None,
-                  context: Callable[[], list[dict[str, Any]]] | None = None) -> RunReport:
+                  context: Callable[[], list[dict[str, Any]]] | None = None,
+                  lease: Callable[[], bool] | None = None) -> RunReport:
         if self.model is None:
             return RunReport(stop_reason="model_unavailable", steps_used=0)
         goal = scrub_text(goal)
@@ -55,6 +56,8 @@ class Engine:
         for step in range(1, self.max_steps + 1):
             if cancel is not None and cancel.is_set():
                 return RunReport(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
+            if lease is not None and not lease():
+                return RunReport(stop_reason="lease_lost", steps_used=step - 1, receipts=receipts, refusals=refusals)
             try:
                 decision = await self.model.decide(messages)
             except ModelUnavailable:
@@ -83,6 +86,9 @@ class Engine:
             elif not self.policy.allows(call.name, call.arguments):
                 refusals.append(Refusal(step=step, tool=call.name, risk=tool.risk.value, reason="policy_denied"))
                 messages.append({"role": "tool", "content": json.dumps({"ok": False, "error": "policy_denied"})})
+            elif lease is not None and not lease():
+                # The model call may have outlived the lease: nothing is dispatched after the lease is lost.
+                return RunReport(stop_reason="lease_lost", steps_used=step - 1, receipts=receipts, refusals=refusals)
             else:
                 try:
                     receipt = await self.tools.execute(step, call.name, call.arguments, principal)
