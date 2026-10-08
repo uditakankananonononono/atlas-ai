@@ -27,5 +27,10 @@ test('A02 A03 A05 A06 actual React Tailwind graph and chart with controlled API 
  await expect(graph.locator('.react-flow__edge')).toHaveCount(1);
  await expect(graph.locator('.react-flow__minimap')).toBeVisible();
  await page.screenshot({path:'../audits/rebuild-20261008/source-units/frontend-render/graph.png',fullPage:true});
+ await graph.locator('.react-flow__node').filter({hasText:'Controlled paper'}).dblclick();
+ await expect(page.getByRole('dialog',{name:'Controlled paper'})).toBeVisible();
+ await expect(page.getByText('Fixture evidence',{exact:true})).toBeVisible();
+ await page.screenshot({path:'../audits/rebuild-20261008/source-units/frontend-render/dialog.png',fullPage:true});
+ await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);
  await graph.getByRole('button',{name:'claim',exact:true}).click();await expect(graph.locator('.react-flow__node')).toHaveCount(1);await expect(graph.locator('.react-flow__edge')).toHaveCount(0);
 });

@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
+import {Dialog,DialogContent,DialogTitle,DialogDescription} from "./ui/dialog";
 import {authFetch} from "../lib/supabase";
 import {Background,Controls,Handle,MiniMap,Position,ReactFlow,type Edge as FlowEdge,type Node as FlowNode} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -17,5 +18,5 @@ export default function KnowledgeWorkspace({seedId,apiBase="/api/v1"}:{seedId:st
  return <section className="rounded-2xl border border-slate-700 bg-slate-950 p-5 text-white" aria-label="Knowledge graph"><header className="flex items-center justify-between"><div><p className="text-xs text-cyan-400">MODULE 9</p><h2 className="text-xl font-semibold">Knowledge Workspace</h2></div><p className="text-xs text-slate-400">{shown.length} nodes · {flowEdges.length} links</p></header>
  {error&&<p role="alert" className="mt-4 text-red-300">{error}</p>}<div className="mt-4 flex flex-wrap gap-2">{[...new Set(nodes.map(n=>n.node_type))].map(t=><button key={t} aria-pressed={types.has(t)} onClick={()=>toggle(t)} className={`rounded-full px-3 py-1 text-xs ${types.has(t)?"bg-cyan-500 text-slate-950":"bg-slate-800"}`}>{t}</button>)}</div>
  <div className="mt-4 h-[560px] overflow-hidden rounded-xl border border-slate-800"><ReactFlow colorMode="dark" nodes={flowNodes} edges={flowEdges} nodeTypes={nodeTypes} fitView onNodeDoubleClick={(_,n)=>setSelected(n.data as GraphNode)}><Background/><MiniMap style={{backgroundColor:"#0f172a"}} nodeColor="#64748b" maskColor="rgba(2, 6, 23, 0.6)"/><Controls/></ReactFlow></div>
- {selected&&<aside className="mt-4 rounded-xl bg-slate-900 p-4"><div className="flex justify-between"><h3 className="font-semibold">{selected.title}</h3><button onClick={()=>setSelected(null)}>Close</button></div><p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">{selected.body||"No notes"}</p><p className="mt-3 text-xs text-slate-500">Edits use the versioned node API so stale tabs cannot overwrite newer work.</p></aside>}</section>
+ <Dialog open={selected!==null} onOpenChange={open=>{if(!open)setSelected(null)}}><DialogContent><DialogTitle>{selected?.title||"Knowledge node"}</DialogTitle><DialogDescription>Notes from the selected knowledge node. Edits use the versioned API.</DialogDescription><p className="mt-4 whitespace-pre-wrap text-sm text-slate-300">{selected?.body||"No notes"}</p></DialogContent></Dialog></section>
 }
