@@ -25,7 +25,8 @@ def stream_capped(response,path,cap=8_000_000):
 def _download(output,max_rows,source_dir,stack):
  if isinstance(max_rows,bool) or not isinstance(max_rows,int) or not 1<=max_rows<=1000:raise ValueError('bounded integer rows 1..1000')
  out=Path(output);manifest=out.with_suffix(out.suffix+'.manifest.json')
- if out.exists() or manifest.exists():raise FileExistsError('new artifacts required')
+ archive=Path(str(out)+'.source')
+ if out.exists() or manifest.exists() or archive.exists():raise FileExistsError('new artifacts required')
  urls={name:f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/{name}' for name in ('README.md','prompts.csv')}
  files={};hashes={};sizes={};last_request=None
  def pace():
@@ -67,6 +68,11 @@ def _download(output,max_rows,source_dir,stack):
     if not text:raise ValueError('empty publisher prompt')
     stream.write(json.dumps({'text':text,'row_index':ordinal,'source':urls['prompts.csv'],'publisher_revision':REVISION,'license':'CC0-1.0','license_url':LICENSE,'act':row.get('act'),'contributor':row.get('contributor'),'sha256':hashlib.sha256(text.encode()).hexdigest()},ensure_ascii=False)+'\n');rows+=1
   record={'dataset':DATASET,'publisher_revision':REVISION,'revision_discovery_api':API,'license':'CC0-1.0','license_url':LICENSE,'rows_exported':rows,'requested_max_rows':max_rows,'source_urls':urls,'publisher_file_sha256':hashes,'publisher_bytes_downloaded':sum(sizes.values()),'source_file_caps_bytes':{'README.md':65536,'prompts.csv':8_000_000},'download_buffer_bytes':65536,'export_sha256':hashlib.sha256(stage.read_bytes()).hexdigest(),'training_performed':False,'request_min_interval_seconds':3}
+  record['source_archive']=archive.name
+  stage_archive=Path(directory)/'source';stage_archive.mkdir()
+  for name,path in files.items():
+   os.link(path,stage_archive/name)
+  os.rename(stage_archive,archive)
   stage_manifest=Path(directory)/'manifest.json';stage_manifest.write_text(json.dumps(record,indent=2)+'\n')
   os.link(stage,out)
   try:os.link(stage_manifest,manifest)
@@ -78,14 +84,25 @@ def verify_snapshot(path):
  if m['publisher_revision']!=REVISION:raise ValueError('wrong publisher commit')
  expected_urls={name:f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/{name}' for name in EXPECTED_HASHES}
  if m['dataset']!=DATASET or m['publisher_file_sha256']!=EXPECTED_HASHES or m['source_urls']!=expected_urls or m['license_url']!=LICENSE or m['license']!='CC0-1.0':raise ValueError('manifest source/hash/license identity mismatch')
+ archive=Path(str(path)+'.source')
+ if m.get('source_archive')!=archive.name:raise ValueError('source archive identity missing')
+ for name,expected in EXPECTED_HASHES.items():
+  h=hashlib.sha256()
+  with (archive/name).open('rb') as original:
+   for chunk in iter(lambda:original.read(65536),b''):h.update(chunk)
+  if h.hexdigest()!=expected:raise ValueError('archived publisher bytes mismatch')
  if hashlib.sha256(path.read_bytes()).hexdigest()!=m['export_sha256']:raise ValueError('export checksum mismatch')
  rows=0
- for line in path.read_text().splitlines():
-  r=json.loads(line)
-  if r['publisher_revision']!=REVISION or r['source']!=f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/prompts.csv':raise ValueError('row commit/source mismatch')
-  if r['sha256']!=hashlib.sha256(r['text'].encode()).hexdigest():raise ValueError('text checksum mismatch')
-  if r['row_index']!=rows:raise ValueError('ordinal mismatch')
-  rows+=1
+ with (archive/'prompts.csv').open(encoding='utf-8-sig',newline='') as original:
+  publisher=csv.DictReader(original)
+  for line in path.read_text().splitlines():
+   r=json.loads(line)
+   source_row=next(publisher,None)
+   if source_row is None or r['text']!=source_row.get('prompt') or r.get('act')!=source_row.get('act') or r.get('contributor')!=source_row.get('contributor'):raise ValueError('export differs from archived publisher row')
+   if r['publisher_revision']!=REVISION or r['source']!=f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/prompts.csv':raise ValueError('row commit/source mismatch')
+   if r['sha256']!=hashlib.sha256(r['text'].encode()).hexdigest():raise ValueError('text checksum mismatch')
+   if r['row_index']!=rows:raise ValueError('ordinal mismatch')
+   rows+=1
  if rows!=m['rows_exported']:raise ValueError('row count mismatch')
  return rows
 if __name__=='__main__':
