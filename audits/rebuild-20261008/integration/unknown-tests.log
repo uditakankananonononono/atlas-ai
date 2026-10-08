@@ -1,0 +1,40 @@
+FF..FFFF                                                                 [100%]
+=================================== FAILURES ===================================
+________________ test_atlas_shared_generation_stops_after_error ________________
+tests/test_shared_unknown_effect.py:14: in test_atlas_shared_generation_stops_after_error
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate('fixture','shared'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ProviderOutcomeUnknown
+____________ test_atlas_freefirst_cannot_restart_after_shared_error ____________
+tests/test_shared_unknown_effect.py:20: in test_atlas_freefirst_cannot_restart_after_shared_error
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(model_catalog.generate_free_first('fixture'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ProviderOutcomeUnknown
+________ test_actual_local_shared_http_error_never_invokes_backup[503] _________
+tests/test_shared_unknown_effect.py:49: in test_actual_local_shared_http_error_never_invokes_backup
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate('fixture','shared'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ProviderOutcomeUnknown
+_____ test_actual_local_shared_http_error_never_invokes_backup[malformed] ______
+tests/test_shared_unknown_effect.py:49: in test_actual_local_shared_http_error_never_invokes_backup
+    with pytest.raises(providers.ProviderOutcomeUnknown):asyncio.run(providers.generate('fixture','shared'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ProviderOutcomeUnknown
+_____ test_dispatched_os_transport_failure_is_classified_unknown[urlerror] _____
+tests/test_shared_unknown_effect.py:61: in test_dispatched_os_transport_failure_is_classified_unknown
+    with pytest.raises(providers.ProviderOutcomeUnknown) as error:asyncio.run(providers.generate('fixture','shared'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ProviderOutcomeUnknown
+_____ test_dispatched_os_transport_failure_is_classified_unknown[oserror] ______
+tests/test_shared_unknown_effect.py:61: in test_dispatched_os_transport_failure_is_classified_unknown
+    with pytest.raises(providers.ProviderOutcomeUnknown) as error:asyncio.run(providers.generate('fixture','shared'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ProviderOutcomeUnknown
+=========================== short test summary info ============================
+FAILED tests/test_shared_unknown_effect.py::test_atlas_shared_generation_stops_after_error
+FAILED tests/test_shared_unknown_effect.py::test_atlas_freefirst_cannot_restart_after_shared_error
+FAILED tests/test_shared_unknown_effect.py::test_actual_local_shared_http_error_never_invokes_backup[503]
+FAILED tests/test_shared_unknown_effect.py::test_actual_local_shared_http_error_never_invokes_backup[malformed]
+FAILED tests/test_shared_unknown_effect.py::test_dispatched_os_transport_failure_is_classified_unknown[urlerror]
+FAILED tests/test_shared_unknown_effect.py::test_dispatched_os_transport_failure_is_classified_unknown[oserror]
+6 failed, 2 passed in 1.13s

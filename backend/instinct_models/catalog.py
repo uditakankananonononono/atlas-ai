@@ -53,9 +53,16 @@ class _Links(HTMLParser):
             self._href = None
 
 
+class _NoCatalogRedirect(urllib.request.HTTPRedirectHandler):
+    """Do not leave the URL whose robots permission the caller checked."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def _get(url: str, timeout: float = 20) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
+    with urllib.request.build_opener(_NoCatalogRedirect()).open(req, timeout=timeout) as r:
         return r.read(3_000_000).decode("utf-8", "replace")
 
 
@@ -97,6 +104,8 @@ class AILibraryCatalog:
     def browse(self, section: str = "", query: str | None = None, limit: int = 50) -> list[CatalogItem]:
         if section not in self.SECTIONS:
             raise ValueError(f"section must be one of {sorted(self.SECTIONS)}")
+        if limit <= 0:
+            return []
         url = BASE + self.SECTIONS[section]
         p = _Links(); p.feed(self._page(url))
         items, seen = [], set()
@@ -104,10 +113,13 @@ class AILibraryCatalog:
             if not href or not text or len(text) < 3:
                 continue
             full = urllib.parse.urljoin(url, href)
-            host = urllib.parse.urlsplit(full).hostname or ""
-            if not host.endswith("theailibrary.co") or full in seen:
+            parsed = urllib.parse.urlsplit(full)
+            if parsed.scheme not in ("http", "https"):
                 continue
-            path = urllib.parse.urlsplit(full).path
+            host = parsed.hostname or ""
+            if not (host == "theailibrary.co" or host.endswith(".theailibrary.co")) or full in seen:
+                continue
+            path = parsed.path
             if path in ("/", "/pricing", "/terms-of-service", "/privacy-policy", "/about-us") or path.startswith(("/login", "/signup", "/submit")):
                 continue
             kind = "prompt" if "/prompt" in path else "tool" if re.search(r"/(tool|tools|ai-tools|product)s?/", path) else "link"

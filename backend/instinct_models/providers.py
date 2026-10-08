@@ -36,16 +36,34 @@ class ChatResult:
 Transport = Callable[[str, dict, dict, float], dict]
 
 
+class _NoTransportRedirect(urllib.request.HTTPRedirectHandler):
+    """Refuse redirects so credentials and private request data stay at the chosen endpoint."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def http_json(url: str, body: dict, headers: dict, timeout: float) -> dict:
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"Content-Type": "application/json", **headers})
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with urllib.request.build_opener(_NoTransportRedirect()).open(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode())
+    except (ValueError, RecursionError) as exc:
+        raise ProviderError("provider returned invalid JSON") from exc
     except urllib.error.HTTPError as exc:
         raise ProviderError(f"HTTP {exc.code} from {url}: {exc.read()[:300]!r}") from exc
     except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
         raise ProviderUnavailable(f"cannot reach {url}: {exc}") from exc
+
+
+def message_text(content) -> str:
+    """Plain text of a chat message's content (string, content-parts list, or null)."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return " ".join(p["text"] for p in content if isinstance(p, dict) and isinstance(p.get("text"), str))
+    return ""
 
 
 class Provider(ABC):
@@ -79,11 +97,27 @@ class _OpenAICompat(Provider):
         data = self.transport(f"{self.base_url}/chat/completions", body, headers, self.timeout)
         try:
             msg = data["choices"][0]["message"]
-        except (KeyError, IndexError, TypeError) as exc:
+            if not isinstance(msg, dict):
+                raise ValueError("message must be an object")
+            text = msg.get("content")
+            if text is not None and not isinstance(text, str):
+                raise ValueError("content must be text or null")
+            raw_calls = msg.get("tool_calls")
+            if raw_calls is None:
+                raw_calls = []
+            if not isinstance(raw_calls, list):
+                raise ValueError("tool_calls must be an array")
+            calls = []
+            for call in raw_calls:
+                function = call["function"]
+                name = function["name"]
+                arguments = json.loads(function["arguments"])
+                if not isinstance(name, str) or not name or not isinstance(arguments, dict):
+                    raise ValueError("tool call needs a name and object arguments")
+                calls.append({"name": name, "arguments": arguments})
+        except (KeyError, IndexError, TypeError, ValueError, RecursionError) as exc:
             raise ProviderError(f"{self.name}: unexpected response shape") from exc
-        calls = [{"name": c["function"]["name"], "arguments": json.loads(c["function"].get("arguments") or "{}")}
-                 for c in (msg.get("tool_calls") or [])]
-        return ChatResult(self.name, self.model, msg.get("content") or "", calls, data)
+        return ChatResult(self.name, self.model, text or "", calls, data)
 
 
 class InklingLocal(_OpenAICompat):
@@ -98,9 +132,13 @@ class OrnithOpenAICompat(_OpenAICompat):
 
 def require_loopback_url(url: str) -> str:
     """Refuse nonlocal and credential-bearing URLs for privileged/local agent routes."""
-    u = urlsplit(url)
+    try:
+        u = urlsplit(url)
+        port = u.port
+    except ValueError as exc:
+        raise ProviderUnavailable("local agent endpoint is not a valid URL") from exc
     if (u.scheme != "http" or u.hostname not in ("127.0.0.1", "localhost", "::1")
-            or u.username or u.password or not u.port or u.query or u.fragment):
+            or u.username or u.password or not port or u.query or u.fragment):
         raise ProviderUnavailable("local agent endpoint must be http on loopback with an explicit port")
     return url.rstrip("/")
 
@@ -110,7 +148,13 @@ class HermesLocal(_OpenAICompat):
     name, locality = "hermes-local", LOCAL
 
     def available(self) -> bool:
-        return super().available() and bool(self.base_url and self._local_url())
+        if not super().available():
+            return False
+        try:
+            self._local_url()
+        except ProviderUnavailable:
+            return False
+        return True
 
     def _local_url(self) -> str:
         return require_loopback_url(self.base_url)
@@ -130,6 +174,8 @@ def _openclaw_http(url: str, body: dict, headers: dict, timeout: float) -> dict:
     try:
         with urllib.request.build_opener(NoRedirect()).open(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode())
+    except (ValueError, RecursionError) as exc:
+        raise ProviderError("provider returned invalid JSON") from exc
     except urllib.error.HTTPError as exc:
         raise ProviderError(f"OpenClaw HTTP {exc.code}") from exc
     except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
@@ -146,7 +192,7 @@ class OpenClawOwner(_OpenAICompat):
     name, locality = "openclaw-owner", LOCAL
 
     def __init__(self, base_url: str, token: str, model: str = "openclaw/default", **kwargs):
-        if not token:
+        if not isinstance(token, str) or not token.strip():
             raise ProviderUnavailable("OpenClaw owner token required")
         if model != "openclaw/default":
             raise ProviderUnavailable("only the default OpenClaw agent is supported")
@@ -254,8 +300,9 @@ class NeedleLocal(Provider):
         threshold applies to the base model only."""
         if not tools:
             raise ProviderUnavailable("Needle only handles tool-calling turns")
-        query = next((m["content"] for m in reversed(messages) if m.get("role") == "user"), "")
-        system = next((m["content"] for m in messages if m.get("role") == "system"), None)
+        msgs = [m for m in messages if isinstance(m, dict)]
+        query = message_text(next((m.get("content") for m in reversed(msgs) if m.get("role") == "user"), ""))
+        system = message_text(next((m.get("content") for m in msgs if m.get("role") == "system"), None)) or None
         kwargs: dict[str, Any] = {"tools": tools}
         if self.weights:
             kwargs["weights"] = self.weights
@@ -265,12 +312,26 @@ class NeedleLocal(Provider):
         out = agent.complete(query, max_new_tokens=min(max_tokens, 256))
         if not isinstance(out, dict) or not out.get("success", True):
             raise ProviderError(f"needle failed: {out.get('error') if isinstance(out, dict) else out!r}")
-        calls = list(out.get("function_calls") or []) if out.get("type") == "call" else []
+        raw_calls = out.get("function_calls") if out.get("type") == "call" else []
+        if raw_calls is None:
+            raw_calls = []
+        if not isinstance(raw_calls, list):
+            raise ProviderError("needle: function_calls must be an array")
+        for call in raw_calls:
+            if (not isinstance(call, dict) or not isinstance(call.get("name"), str)
+                    or not call["name"] or not isinstance(call.get("arguments"), dict)):
+                raise ProviderError("needle: malformed function call")
+        validation = out.get("validation")
+        if validation is None:
+            validation = {}
+        if not isinstance(validation, dict):
+            raise ProviderError("needle: validation must be an object")
+        calls = list(raw_calls)
         conf = out.get("confidence")
         if calls and not self.weights and isinstance(conf, (int, float)) and conf < self.min_confidence:
             calls = []  # low confidence: let the router escalate
         # validation.ungrounded is written by needle/__init__.py _annotate_ungrounded (cactus-needle 3.0.5).
-        if calls and (out.get("validation") or {}).get("ungrounded"):
+        if calls and validation.get("ungrounded"):
             calls = []  # Needle flagged argument values not found in the query: escalate instead of trusting them
         return ChatResult(self.name, self.weights or "needle-base", "", calls, out)
 
@@ -295,8 +356,10 @@ def _jev_http(url: str, body: dict, headers: dict, timeout: float) -> dict:
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"Content-Type": "application/json", **headers})
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with urllib.request.build_opener(_NoTransportRedirect()).open(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode())
+    except (ValueError, RecursionError) as exc:
+        raise ProviderError("provider returned invalid JSON") from exc
     except urllib.error.HTTPError as exc:
         raise JevStatusError(exc.code, exc.read()[:300].decode("utf-8", "replace")) from exc
     except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
@@ -385,7 +448,7 @@ class JevEval(Provider):
                 if exc.status == 401:
                     raise ProviderError("jev: API key missing or invalid (401); check " + ("AI_GATEWAY_API_KEY" if gateway else "JEV_API_KEY")) from exc
                 raise
-        if not isinstance(data, dict) or "answers" not in data:
-            raise ProviderError("jev: unexpected response shape (no 'answers' field)")
+        if not isinstance(data, dict) or not isinstance(data.get("answers"), dict):
+            raise ProviderError("jev: unexpected response shape (no 'answers' object)")
         return {"model": data.get("model", selected_model), "answers": data["answers"],
                 "usage": data.get("usage") or {}, "raw": data}
