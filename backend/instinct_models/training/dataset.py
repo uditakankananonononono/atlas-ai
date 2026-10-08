@@ -49,12 +49,23 @@ def _values(obj) -> list[str]:
 
 
 def check_row(row: ExampleRow) -> str | None:
+    if not isinstance(row.tools, list) or not all(isinstance(t, dict) for t in row.tools):
+        return "tools must be a list of objects"
+    if not isinstance(row.answers, list) or not all(isinstance(c, dict) for c in row.answers):
+        return "answers must be a list of objects"
     names = {t.get("name") for t in row.tools}
     for call in row.answers:
         if call.get("name") not in names:
             return f"answer calls unknown tool {call.get('name')!r}"
-        for v in _values(call.get("arguments", {})):
-            if v.strip() and v.casefold() not in row.query.casefold():
+        args = call.get("arguments", {})
+        if args is None:
+            args = {}
+        if not isinstance(args, dict):
+            return f"arguments for {call.get('name')!r} must be an object"
+        for v in _values(args):
+            if not v.strip():
+                return "blank argument value (omit optional fields without evidence)"
+            if v.casefold() not in row.query.casefold():
                 return f"argument value {v!r} is not present in the query"
     if not row.query.strip():
         return "empty query"
@@ -63,6 +74,7 @@ def check_row(row: ExampleRow) -> str | None:
 
 def build_needle_jsonl(dataset: DomainDataset, out_path: str | Path, *, min_off_topic_ratio: float = 0.1) -> dict:
     kept, dropped, off_topic, private = [], [], 0, False
+    seen: set[str] = set()
     for row in dataset.rows():
         if not row.confirmed:
             dropped.append({"source_ref": row.source_ref, "reason": "not owner-confirmed"})
@@ -80,6 +92,11 @@ def build_needle_jsonl(dataset: DomainDataset, out_path: str | Path, *, min_off_
             rec["reasoning"] = row.reasoning
         if row.system:
             rec["system"] = row.system
+        key = json.dumps(rec, sort_keys=True, ensure_ascii=False)
+        if key in seen:
+            dropped.append({"source_ref": row.source_ref, "reason": "duplicate of an earlier row"})
+            continue
+        seen.add(key)
         kept.append(rec)
         off_topic += not row.answers
         private = private or row.private

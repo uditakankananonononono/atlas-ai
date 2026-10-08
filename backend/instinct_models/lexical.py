@@ -39,6 +39,14 @@ def _feats(text: str) -> list[str]:
     return w + [f"{a}_{b}" for a, b in zip(w, w[1:])]
 
 
+def _text(content) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return " ".join(p["text"] for p in content if isinstance(p, dict) and isinstance(p.get("text"), str))
+    return ""
+
+
 class LexicalToolModel:
     def __init__(self, min_confidence: float = 0.6, alpha: float = 0.3):
         self.min_confidence, self.alpha = min_confidence, alpha
@@ -71,7 +79,17 @@ class LexicalToolModel:
 
     @classmethod
     def from_jsonl(cls, path: str | Path, **kw) -> "LexicalToolModel":
-        rows = [json.loads(l) for l in Path(path).read_text().splitlines() if l.strip()]
+        rows = []
+        for n, line in enumerate(Path(path).read_text().splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except (ValueError, RecursionError) as exc:
+                raise ValueError(f"{path}: line {n} is not valid JSON") from exc
+            if not isinstance(row, dict) or not isinstance(row.get("query"), str):
+                raise ValueError(f"{path}: line {n} must be an object with a string 'query'")
+            rows.append(row)
         return cls(**kw).fit(rows)
 
     def _add(self, label, feats, weight=1.0):
@@ -102,6 +120,10 @@ class LexicalToolModel:
         if not labels:
             return NONE, 0.0
         feats = _feats(query)
+        if not feats:
+            return NONE, 0.0  # nothing to go on: abstain rather than pick a tool by prior alone
+        if not any(f in self.vocab for f in feats):
+            return NONE, 0.0  # no word was ever seen in training: the prior alone must not trigger a call
         total = sum(self.class_n[l] for l in labels)
         v = max(len(self.vocab), 1)
         logp = {}
@@ -118,13 +140,18 @@ class LexicalToolModel:
         out: dict = {}
         quoted = [a or b for a, b in _QUOTED.findall(query)]
         for p, spec in props.items():
+            if not isinstance(spec, dict):
+                spec = {}
             t = spec.get("type", "string")
             val = None
             if spec.get("enum"):
                 val = next((e for e in spec["enum"] if str(e).casefold() in query.casefold()), None)
             elif t in ("integer", "number"):
                 m = _NUM.search(query)
-                val = (float(m.group()) if "." in m.group() else int(m.group())) if m else None
+                if m is None or (t == "integer" and "." in m.group()):
+                    val = None
+                else:
+                    val = float(m.group()) if "." in m.group() else int(m.group())
             elif "email" in p.lower() and _EMAIL.search(query):
                 val = _EMAIL.search(query).group()
             elif ("date" in p.lower() or p.lower() in ("due", "deadline")) and _DATE.search(query):
@@ -157,7 +184,9 @@ class LexicalToolModel:
 
     def predict(self, query: str, tools: list[dict]) -> dict | None:
         """Return {name, arguments, confidence} or None (abstain => escalate)."""
-        by = {t["name"]: t for t in tools}
+        by = {t["name"]: t for t in tools if isinstance(t, dict) and isinstance(t.get("name"), str) and t["name"]}
+        if not by:
+            return None
         name, conf = self.classify(query, list(by))
         if name == NONE or conf < self.min_confidence:
             return None
@@ -183,7 +212,7 @@ class LexicalLocal(Provider):
             raise ProviderUnavailable("lexical model is not trained")
         if not tools:
             raise ProviderUnavailable("lexical model only makes tool calls")
-        user = next((m["content"] for m in reversed(messages) if m.get("role") == "user"), "")
+        user = _text(next((m.get("content") for m in reversed(messages) if isinstance(m, dict) and m.get("role") == "user"), ""))
         call = self.model.predict(user, tools)
         calls = [{"name": call["name"], "arguments": call["arguments"]}] if call else []
         return ChatResult(self.name, "lexical-nb", "", calls, {"prediction": call})
