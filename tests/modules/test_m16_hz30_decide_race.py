@@ -41,7 +41,7 @@ def pending_approval(aid):
 
 def make_repo(url, actor='reviewer'):
     engine = create_engine(url)
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine, tables=[ApprovalRow.__table__])
     sessions = sessionmaker(bind=engine, expire_on_commit=False)
     return SqlDashboardRepository('t', actor, session_factory=sessions), sessions
 
@@ -82,7 +82,7 @@ def test_competitor_decision_between_check_and_write_wins(tmp_path):
     overwrote the competitor; both callers were told they decided."""
     db_path = tmp_path / 'd.db'
     engine = create_engine(f'sqlite:///{db_path}')
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine, tables=[ApprovalRow.__table__])
     sessions = sessionmaker(bind=engine, expire_on_commit=False)
     repo = SqlDashboardRepository('t', 'reviewer', session_factory=sessions)
     a = pending_approval('a3')
