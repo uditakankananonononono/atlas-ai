@@ -119,3 +119,10 @@ def test_route_success_and_errors():
     assert client.post(url, json={"local_time": "2026-11-01T01:30:00", "timezone": NY, "on_ambiguous": "later"}).status_code == 201
     assert client.post("/api/v1/social-media-manager/plans/nope/schedule-local",
                        json={"local_time": "2026-10-08T17:30:00", "timezone": "Asia/Kolkata"}).status_code == 404
+
+
+@pytest.mark.parametrize("invalid", [123, None, True, [], {}, b"UTC"])
+def test_timezone_nonstring_is_controlled_error(invalid):
+    from app.modules.m06_social_media_manager.local_time import resolve_local, InvalidTimezoneError
+    with pytest.raises(InvalidTimezoneError):
+        resolve_local(datetime(2026, 1, 1, 12, 0), invalid)

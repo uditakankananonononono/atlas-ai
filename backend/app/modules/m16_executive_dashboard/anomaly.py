@@ -21,6 +21,12 @@ class AnomalyVerdict(BaseModel):
     baseline_median:float|None=None;baseline_mad:float|None=None;robust_z:float|None=None;direction:str|None=None
     oldest_point:datetime|None=None;newest_point:datetime|None=None;method:str="median/MAD robust z-score (heuristic)";limits:list[str]=LIMITS
 def detect(kpi_id:str,window_hours:int,value:float,points:list[tuple[datetime,float]],min_points:int=MIN_POINTS,z_limit:float=Z_LIMIT)->AnomalyVerdict:
+    """Score supplied history; window_hours identifies the KPI aggregation bucket.
+
+    This function does not select or time-filter points. The service/repository
+    selects matching aggregation buckets and excludes the last five minutes.
+    window_hours is NOT a lookback cutoff or seasonality model.
+    """
     bad_hist=sum(1 for p in points if p[1] is None or not isfinite(float(p[1])))
     cur_ok=value is not None and isfinite(float(value))
     base=dict(kpi_id=kpi_id,window_hours=window_hours,value=float(value) if cur_ok else None,points_used=len(points),min_points=min_points,z_limit=z_limit)
@@ -33,7 +39,8 @@ def detect(kpi_id:str,window_hours:int,value:float,points:list[tuple[datetime,fl
     base.update(baseline_median=med,baseline_mad=mad)
     if not (isfinite(med) and isfinite(mad) and isfinite(value-med)):return AnomalyVerdict(status="invalid_data",reason="values too large for a finite robust z-score",**{**base,"baseline_median":None,"baseline_mad":None})
     if mad==0:
-        # history is (near) constant: z is undefined. Report a changed flat baseline as such instead of inventing a score.
+        # Zero median absolute deviation: z is undefined, even if outliers exist.
+        # Report a changed baseline without inventing a score.
         if value==med:return AnomalyVerdict(status="normal",direction=None,**base)
         return AnomalyVerdict(status="flat_baseline_changed",direction="above" if value>med else "below",**base)
     z=0.6745*(value-med)/mad

@@ -46,7 +46,7 @@ class ResolvedLocalTime:
 
 
 def _zone(name: str) -> ZoneInfo:
-    if not name or not name.strip() or name.strip().lower() in {"utc+0", "local"}:
+    if not isinstance(name, str) or not name or not name.strip() or name.strip().lower() in {"utc+0", "local"}:
         raise InvalidTimezoneError(f"unknown timezone: {name!r}")
     try:
         return ZoneInfo(name.strip())
