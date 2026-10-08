@@ -454,3 +454,13 @@ def prepare_read_step_retry(task_id: str, node_id: str, request: ReadStepRetryRe
         raise HTTPException(422, str(exc))
     except ValueError as exc:
         raise HTTPException(409 if str(exc).startswith('retry conflict') else 422, str(exc))
+
+
+@router.get("/events")
+def runtime_events(limit: int = 100, runtime: Any = Depends(get_runtime)):
+    if not runtime.repo.enable_event_outbox:
+        raise HTTPException(503, 'runtime event outbox is not enabled')
+    try:
+        return runtime.repo.list_runtime_events(limit=limit)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc

@@ -158,3 +158,15 @@ def run_m12_checkpoint_worker() -> dict[str, int]:
         result = CheckpointLoop(tenant_id).run_once()
         completed += len(result["completed"]); failed += len(result["failed"]); skipped += len(result["skipped"])
     return {"tenants": len(tenants), "completed": completed, "failed": failed, "skipped": skipped, "provider_calls": 0}
+
+
+@celery_app.task(name="atlas.m20.drain_runtime_events")
+def drain_runtime_events(limit: int = 100):
+    """Internal explicit drain; no beat schedule or external notification."""
+    import os
+    if os.getenv('ATLAS_M20_EVENT_OUTBOX') != '1':
+        raise ValueError('M20 runtime event outbox delivery is not enabled')
+    from app.core.database import engine
+    from app.platform.integrations import RedisStreamBus
+    from app.modules.m20_general_cognitive_worker.event_outbox import drain_events
+    return drain_events(engine, RedisStreamBus(), limit=limit)
