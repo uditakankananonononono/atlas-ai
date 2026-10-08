@@ -105,3 +105,15 @@ def test_legacy_run_is_not_readable_or_previewable_by_another_tenant(c, monkeypa
     assert c.get(f"/api/v1/idea-incubator/ideas/{rid}", headers=c.h("tenant-b")).status_code == 404, "tenant B read tenant A's run"
     r = c.post(f"/api/v1/idea-incubator/ideas/{rid}/preview", json={"artifacts": ["x"], "estimated_cost": 1}, headers=c.h("tenant-b"))
     assert r.status_code == 404, f"tenant B created an approval request against tenant A's run ({r.status_code})"
+
+def test_analysis_routes_require_idea_owned_by_caller(c):
+    i = mk(c, "tenant-a")
+    A, B = c.h("tenant-a"), c.h("tenant-b")
+    spec = c.app.openapi()["paths"]
+    names = [p for p in spec if p.endswith(("business-analyses", "operations-analyses", "research-analyses"))]
+    assert len(names) == 3
+    for p in names:
+        url = p.replace("{idea_id}", i)
+        assert c.post(url, json={}, headers=B).status_code == 404, p          # foreign id: same as missing
+        assert c.post(p.replace("{idea_id}", "missing"), json={}, headers=B).status_code == 404, p
+        assert c.post(url, json={}, headers=A).status_code != 404, p         # owner passes the guard (body may still 422)

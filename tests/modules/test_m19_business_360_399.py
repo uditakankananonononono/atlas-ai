@@ -37,7 +37,7 @@ def test_qualitative_missing_fields_fail_instead_of_fabricating():
  with pytest.raises(ValueError,match="missing required inputs"):service().analyze("i",req(361,{"competitors":["A"]}))
 
 def test_mounted_business_api():
- app=FastAPI();app.include_router(router);c=TestClient(app);payload=req(379,{"acquisition_spend":100,"new_customers":5}).model_dump(mode="json");r=c.post("/portfolio/ideas/x/business-analyses",json=payload);assert r.status_code==201 and r.json()["result"]["cac"]==20
+ app=FastAPI();app.include_router(router);__import__("_m19_owned").own_idea_x(app);c=TestClient(app);payload=req(379,{"acquisition_spend":100,"new_customers":5}).model_dump(mode="json");r=c.post("/portfolio/ideas/x/business-analyses",json=payload);assert r.status_code==201 and r.json()["result"]["cac"]==20
 
 def test_row_361_competitor_matrix_calculates_weighted_scores():
  a=service().analyze("i",req(361,{"competitors":[{"id":"A","scores":{"price":4}}],"criteria":[{"id":"price","weight":2}]}));assert a.result["competitor_matrix"][0]["score"]==8

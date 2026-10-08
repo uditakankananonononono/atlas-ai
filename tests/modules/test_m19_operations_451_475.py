@@ -35,7 +35,7 @@ def test_no_provenance_rejected():
  with pytest.raises(Exception):OperationsAnalysisRequest(feature=451,inputs={"vendors":[1]},provenance=[],confidence=.5)
 def test_low_confidence_is_flagged():assert "low" in svc().analyze("i",req(453,{"annual_demand":1,"order_cost":1,"annual_holding_cost_per_unit":1,"lead_time_days":1,"daily_demand":1},.2)).uncertainty.limitations[0]
 def test_mounted_operations_api():
- app=FastAPI();app.include_router(router);c=TestClient(app);payload=req(454,{"history":[1,2,3,4]}).model_dump(mode="json");r=c.post("/portfolio/ideas/x/operations-analyses",json=payload);assert r.status_code==201 and r.json()["execution_status"]=="not_executed"
+ app=FastAPI();app.include_router(router);__import__("_m19_owned").own_idea_x(app);c=TestClient(app);payload=req(454,{"history":[1,2,3,4]}).model_dump(mode="json");r=c.post("/portfolio/ideas/x/operations-analyses",json=payload);assert r.status_code==201 and r.json()["execution_status"]=="not_executed"
 
 def test_row_451_vendor_selection_normalizes_cost_and_exposes_components():
  a=svc().analyze("i",req(451,{"vendors":[{"id":"cheap","cost":5,"quality":50,"delivery":50,"risk":50},{"id":"expensive","cost":10,"quality":50,"delivery":50,"risk":50}],"weights":{"cost":1,"quality":0,"delivery":0,"risk":0}}))

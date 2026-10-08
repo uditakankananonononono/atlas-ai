@@ -35,4 +35,4 @@ def test_missing_inputs_fail_not_fabricate():
 def test_no_provenance_rejected():
  with pytest.raises(Exception):ResearchAnalysisRequest(feature=110,inputs={"x":1},provenance=[],confidence=.5)
 def test_mounted_api():
- app=FastAPI();app.include_router(router);c=TestClient(app);r=c.post("/portfolio/ideas/x/research-analyses",json=req(134,{"successes":4,"trials":5}).model_dump(mode="json"));assert r.status_code==201 and r.json()["analysis"]["posterior_alpha"]==5
+ app=FastAPI();app.include_router(router);__import__("_m19_owned").own_idea_x(app);c=TestClient(app);r=c.post("/portfolio/ideas/x/research-analyses",json=req(134,{"successes":4,"trials":5}).model_dump(mode="json"));assert r.status_code==201 and r.json()["analysis"]["posterior_alpha"]==5
