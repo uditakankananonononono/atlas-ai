@@ -86,6 +86,7 @@ def _download(output,max_rows,source_dir,stack):
  return record
 def verify_snapshot(path):
  path=Path(path);m=json.loads(path.with_suffix(path.suffix+'.manifest.json').read_text())
+ if m.get('training_performed') is not False:raise ValueError('training claim unsupported')
  if m['publisher_revision']!=REVISION:raise ValueError('wrong publisher commit')
  expected_urls={name:f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/{name}' for name in EXPECTED_HASHES}
  if m['dataset']!=DATASET or m['publisher_file_sha256']!=EXPECTED_HASHES or m['source_urls']!=expected_urls or m['license_url']!=LICENSE or m['license']!='CC0-1.0':raise ValueError('manifest source/hash/license identity mismatch')
@@ -104,6 +105,7 @@ def verify_snapshot(path):
    r=json.loads(line)
    source_row=next(publisher,None)
    if source_row is None or r['text']!=source_row.get('prompt') or r.get('act')!=source_row.get('act') or r.get('contributor')!=source_row.get('contributor'):raise ValueError('export differs from archived publisher row')
+   if r.get('license')!='CC0-1.0' or r.get('license_url')!=LICENSE:raise ValueError('row license identity mismatch')
    if r['publisher_revision']!=REVISION or r['source']!=f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/prompts.csv':raise ValueError('row commit/source mismatch')
    if r['sha256']!=hashlib.sha256(r['text'].encode()).hexdigest():raise ValueError('text checksum mismatch')
    if r['row_index']!=rows:raise ValueError('ordinal mismatch')

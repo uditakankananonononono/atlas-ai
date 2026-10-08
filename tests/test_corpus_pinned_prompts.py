@@ -85,3 +85,13 @@ def test_export_link_failure_removes_owned_archive(tmp_path,monkeypatch):
  monkeypatch.setattr(module.os,'link',fail)
  with pytest.raises(OSError):module.download(out)
  assert not out.exists() and not Path(str(out)+'.source').exists()
+
+def test_verifier_refuses_training_and_row_license_claims(snapshot):
+ import json,hashlib
+ manifest=snapshot.with_suffix('.jsonl.manifest.json');m=json.loads(manifest.read_text())
+ m['training_performed']=True;manifest.write_text(json.dumps(m))
+ with pytest.raises(ValueError):module.verify_snapshot(snapshot)
+ m['training_performed']=False;manifest.write_text(json.dumps(m))
+ lines=snapshot.read_text().splitlines();r=json.loads(lines[0]);r['license']='invented';lines[0]=json.dumps(r)
+ snapshot.write_text('\n'.join(lines)+'\n');m['export_sha256']=hashlib.sha256(snapshot.read_bytes()).hexdigest();manifest.write_text(json.dumps(m))
+ with pytest.raises(ValueError):module.verify_snapshot(snapshot)
