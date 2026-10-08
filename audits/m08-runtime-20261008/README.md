@@ -39,3 +39,14 @@ Limits:
 - Generated package pins direct versions; npm lockfile receipt locks transitive
   dependencies for this run. Generator does not embed that receipt's lockfile.
 - No push/main edits. Branch package requires independent integration review.
+
+## Rebase acceptance on 3eef2c0
+
+New integration base: 3eef2c0ab2344abfcc2de912e154a1b28f43d087.
+No conflicts. Base introduces static docs AST extraction in service.py and
+one test_m08_docs_completeness.py test. Our subclass inherits those new methods;
+no service.py changes in this lane. Complete M08 selection now 37 passed, one
+same Starlette deprecation warning. Fresh SQLite-generated archive install,
+production Next build, typecheck, local HTTP and Chromium checks all pass again.
+New desktop/mobile screenshots inspected and unchanged in layout. Old-base
+receipts above and initial failed receipts preserved in the package.
