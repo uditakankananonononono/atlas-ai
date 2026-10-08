@@ -64,12 +64,14 @@ def run(messages: list[dict], *, tools: list[dict] | None = None, private: bool 
 
 
 class _GenerationGuard:
-    def __init__(self, provider): self.provider = provider
+    def __init__(self, provider, state): self.provider = provider; self.state = state
+    def available(self): return self.state[0] is None and self.provider.available()
     def __getattr__(self, name): return getattr(self.provider, name)
     def chat(self, *args, **kwargs):
         from instinct_models.providers import ProviderError
         try: return self.provider.chat(*args, **kwargs)
         except (ProviderError, TimeoutError, OSError, ValueError, KeyError, TypeError) as exc:
+            self.state[0] = exc
             raise SharedAttemptUnknown("shared generation outcome unknown; no fallback") from exc
 
 
@@ -100,9 +102,12 @@ async def generate(prompt: str, *, private: bool = True, max_tokens: int = 2048,
 
     r = router or atlas_router()
     from instinct_models.providers import NeedleLocal
-    guarded = Router([_GenerationGuard(p) for p in r.providers if not isinstance(p, NeedleLocal)])
+    state = [None]
+    guarded = Router([_GenerationGuard(p, state) for p in r.providers if not isinstance(p, NeedleLocal)])
     res = await asyncio.to_thread(guarded.run, Task(messages=[{"role": "user", "content": prompt}], private=private,
                                               max_tokens=max_tokens))
+    if state[0] is not None:
+        raise SharedAttemptUnknown("shared generation outcome unknown; no fallback") from state[0]
     if not res.ok:
         raise SharedModelError("no shared-model route answered: " + _describe(res), res.attempts)
     return res.result.provider, res.result.model, res.result.text
