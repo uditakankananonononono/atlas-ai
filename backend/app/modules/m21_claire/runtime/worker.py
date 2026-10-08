@@ -23,7 +23,8 @@ class Worker:
             return None
         principal = Principal(claim.tenant_id, claim.actor_id, claim.goal_id, claim.lease_token)
         engine = self.engine_factory(claim)
-        if engine.tools.call_timeout >= self.store.lease_seconds:
+        if engine.tools.call_timeout >= self.store.lease_seconds or \
+                (engine.model_timeout is not None and engine.model_timeout >= self.store.lease_seconds):
             # A call allowed to block past the lease defeats renewal: refuse to run at all.
             self._settle(claim, "blocked", blocker="timeout_not_below_lease", report={}, verdict=None)
             return claim.goal_id
@@ -32,6 +33,7 @@ class Worker:
             self._settle(claim, "awaiting_review", blocker="effect_unknown", report={}, verdict=None)
             return claim.goal_id
         report = await engine.run(claim.purpose, principal=principal, lease=lambda: self.store.renew(claim),
+                                  model_timeout=None if engine.model_timeout is not None else min(60.0, self.store.lease_seconds / 2),
                                   cancel_check=lambda: self.store.cancel_requested(claim))
         dump = report.model_dump()
         if self.store.cancel_requested(claim):

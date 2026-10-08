@@ -37,7 +37,8 @@ class Engine:
     """Bounded loop. Produces a RunReport (evidence). Completion is decided elsewhere."""
 
     def __init__(self, model: ModelPort | None, tools: ReadOnlyToolRegistry, *, max_steps: int = 12,
-                 policy: ActionPolicy | None = None, cancel_poll_seconds: float = 0.2) -> None:
+                 policy: ActionPolicy | None = None, cancel_poll_seconds: float = 0.2,
+                 model_timeout_seconds: float | None = None) -> None:
         if not 1 <= max_steps <= 50:
             raise ValueError("max_steps must be between 1 and 50")
         self.model, self.tools, self.max_steps = model, tools, max_steps
@@ -45,6 +46,15 @@ class Engine:
         if not isinstance(cancel_poll_seconds, (int, float)) or isinstance(cancel_poll_seconds, bool) or not 0.01 <= cancel_poll_seconds <= 5:
             raise ValueError("cancel_poll_seconds must be between 0.01 and 5")
         self.cancel_poll = float(cancel_poll_seconds)
+        # None = the Worker derives it from the lease (min(60s, lease/2)); standalone use falls back to 60s. There is deliberately
+        # NO lease heartbeat: a hung model call would keep a heartbeated lease alive for ever (goal stuck running). Every await
+        # is instead bounded below the lease, and the lease is renewed at each step boundary.
+        if model_timeout_seconds is not None:
+            if not isinstance(model_timeout_seconds, (int, float)) or isinstance(model_timeout_seconds, bool) \
+                    or not 0.05 <= model_timeout_seconds <= 3600:
+                raise ValueError("model_timeout_seconds must be between 0.05 and 3600")
+            model_timeout_seconds = float(model_timeout_seconds)
+        self.model_timeout = model_timeout_seconds
 
     async def _interruptible(self, aw: Any, cancelled: Callable[[], bool]) -> tuple[bool, Any]:
         """Await aw, polling for cancel. (False, None) only if the awaited task was actually cancelled. A call that finished
@@ -68,7 +78,8 @@ class Engine:
 
     async def run(self, goal: str, *, cancel: Event | None = None, principal: Principal | None = None,
                   context: Callable[[], list[dict[str, Any]]] | None = None,
-                  lease: Callable[[], bool] | None = None, cancel_check: Callable[[], bool] | None = None) -> RunReport:
+                  lease: Callable[[], bool] | None = None, cancel_check: Callable[[], bool] | None = None,
+                  model_timeout: float | None = None) -> RunReport:
         if self.model is None:
             return RunReport(stop_reason="model_unavailable", steps_used=0)
         goal = scrub_text(goal)
@@ -76,6 +87,7 @@ class Engine:
                     {"role": "user", "content": json.dumps({"goal": goal, "tools": self.tools.schemas(),
                                                             "context": redact(context()) if context else []}, default=str)}]
         receipts, refusals, replans, replan_log = [], [], 0, []
+        decide_timeout = model_timeout or self.model_timeout or 60.0
 
         def cancelled() -> bool:
             return (cancel is not None and cancel.is_set()) or (cancel_check is not None and cancel_check())
@@ -88,10 +100,10 @@ class Engine:
             if lease is not None and not lease():
                 return _rr(stop_reason="lease_lost", steps_used=step - 1, receipts=receipts, refusals=refusals)
             try:
-                ok, decision = await self._interruptible(self.model.decide(messages), cancelled)
+                ok, decision = await self._interruptible(asyncio.wait_for(self.model.decide(messages), decide_timeout), cancelled)
                 if not ok:
                     return _rr(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
-            except ModelUnavailable:
+            except (ModelUnavailable, asyncio.TimeoutError):  # a hung/slow model is 'unavailable'; no provider text
                 return _rr(stop_reason="model_unavailable", steps_used=step - 1, receipts=receipts, refusals=refusals)
             except (ValidationError, json.JSONDecodeError):
                 return _rr(stop_reason="model_invalid_output", steps_used=step - 1, receipts=receipts, refusals=refusals)
