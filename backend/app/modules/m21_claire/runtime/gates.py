@@ -3,14 +3,12 @@ import hashlib, json, re
 from dataclasses import dataclass
 from typing import Any
 from app.modules.m21_claire.models import ActionRequest
-from app.modules.m21_claire.policy import ActionPolicy
+from app.modules.m21_claire.policy import ActionPolicy, COMMS_TOKENS as _COMMS_TOKENS, name_words, PAYMENT_TOKENS as _PAYMENT_TOKENS
 from .risk import claire_risk
 from .types import ToolRisk
 
 PAYMENT, COMMS = "payment", "comms"
 # Verb tokens that can only RAISE a tool's gates, whatever the tool declared.
-_PAYMENT_TOKENS = frozenset({"purchase", "book", "transfer", "pay", "payment", "spend", "buy", "charge", "refund", "subscribe"})
-_COMMS_TOKENS = frozenset({"send", "publish", "share", "invite", "submit", "post", "email", "message", "sms", "dm", "reply", "tweet", "notify", "call", "book"})
 
 
 class GateRefused(PermissionError):
@@ -40,10 +38,7 @@ def payload_digest(goal_id: str, capability: str, arguments: dict[str, Any]) -> 
     return hashlib.sha256(enc.encode()).hexdigest()
 
 
-def _words(text: str) -> set[str]:
-    """Split on space, slash, hyphen, dot, underscore and camelCase boundaries."""
-    spaced = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", str(text))
-    return {w for w in re.split(r"[^a-z0-9]+", spaced.lower()) if w}
+_words = name_words  # one shared implementation (policy.name_words); identity-tested
 
 
 def _tokens(name: str, arguments: dict[str, Any]) -> set[str]:
