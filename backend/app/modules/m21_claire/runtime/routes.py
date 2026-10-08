@@ -19,7 +19,7 @@ def get_store() -> GoalStore:
         url = os.getenv("ATLAS_CLAIRE_RUNTIME_DB", "").strip()
         if not url:
             raise HTTPException(503, "Claire runtime store is not configured")
-        _store = GoalStore(url)
+        _store = GoalStore(url, create_schema=os.getenv("ATLAS_AUTO_CREATE_SCHEMA") == "1")
     return _store
 
 

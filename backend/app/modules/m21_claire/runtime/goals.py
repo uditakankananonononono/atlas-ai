@@ -57,12 +57,13 @@ def _iso(d: datetime) -> str:
 class GoalStore:
     """Durable, tenant+actor-scoped goal/job store. Every read and write is keyed on both."""
 
-    def __init__(self, url: str = "sqlite://", *, clock: Clock = _now, max_attempts: int = 3, lease_seconds: int = 120):
+    def __init__(self, url: str = "sqlite://", *, clock: Clock = _now, max_attempts: int = 3, lease_seconds: int = 120, create_schema: bool = False):
         kwargs: dict[str, Any] = {}
         if url == "sqlite://":
             kwargs = {"poolclass": StaticPool, "connect_args": {"check_same_thread": False}}
         self.engine = create_engine(url, **kwargs)
-        Base.metadata.create_all(self.engine)
+        if create_schema:  # production schema is owned by Alembic (20261008_m21_runtime_goals)
+            Base.metadata.create_all(self.engine)
         self._sessions = sessionmaker(self.engine, expire_on_commit=False)
         self.clock, self.max_attempts, self.lease_seconds = clock, max_attempts, lease_seconds
 

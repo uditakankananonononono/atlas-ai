@@ -60,7 +60,7 @@ def registry(*tools):
 
 @pytest.fixture
 def store(tmp_path, monkeypatch):
-    s = GoalStore(f"sqlite:///{tmp_path}/g.db")
+    s = GoalStore(f"sqlite:///{tmp_path}/g.db", create_schema=True)
     monkeypatch.setattr(rroutes, "_store", s)
     yield s
     s.close()
@@ -95,7 +95,7 @@ def test_mounted_goal_to_receipt_to_acceptance_survives_restart(client, store, t
     assert client.get(f"{URL}/{gid}").json()["status"] == "queued"
     run(worker(store, Script(call("lookup", key="k"), final()), registry(Lookup())).run_once())
     store.close()
-    fresh = GoalStore(f"sqlite:///{tmp_path}/g.db")  # simulated API/worker restart
+    fresh = GoalStore(f"sqlite:///{tmp_path}/g.db", create_schema=True)  # simulated API/worker restart
     rroutes._store = fresh
     got = client.get(f"{URL}/{gid}").json()
     fresh.close()
@@ -149,7 +149,7 @@ def test_unlisted_tool_bug_is_not_swallowed(client, store):
 
 def test_bug_leases_expire_and_attempts_are_bounded(tmp_path):
     t = [datetime(2026, 10, 8, tzinfo=timezone.utc)]
-    s = GoalStore(f"sqlite:///{tmp_path}/b.db", clock=lambda: t[0], max_attempts=2, lease_seconds=10)
+    s = GoalStore(f"sqlite:///{tmp_path}/b.db", clock=lambda: t[0], max_attempts=2, lease_seconds=10, create_schema=True)
     gid = s.create("t1", "a1", "p", CRIT, 3)
     for _ in range(2):
         assert s.claim("w") is not None
@@ -161,7 +161,7 @@ def test_bug_leases_expire_and_attempts_are_bounded(tmp_path):
 
 def test_two_workers_cannot_settle_one_lease(tmp_path):
     t = [datetime(2026, 10, 8, tzinfo=timezone.utc)]
-    s = GoalStore(f"sqlite:///{tmp_path}/l.db", clock=lambda: t[0], lease_seconds=10)
+    s = GoalStore(f"sqlite:///{tmp_path}/l.db", clock=lambda: t[0], lease_seconds=10, create_schema=True)
     s.create("t1", "a1", "p", CRIT, 3)
     c1 = s.claim("w1")
     assert s.claim("w2") is None  # live lease
@@ -236,7 +236,7 @@ def test_lease_contract_is_replacement_fenced_not_expiry_fenced(tmp_path):
     after lease expiry; only one result settles. Harmless for read-only tools; must change
     before any write tool exists."""
     t = [datetime(2026, 10, 8, tzinfo=timezone.utc)]
-    s = GoalStore(f"sqlite:///{tmp_path}/e.db", clock=lambda: t[0], lease_seconds=10)
+    s = GoalStore(f"sqlite:///{tmp_path}/e.db", clock=lambda: t[0], lease_seconds=10, create_schema=True)
     s.create("t1", "a1", "p", CRIT, 3)
     c1 = s.claim("w1")
     t[0] += timedelta(seconds=60)  # expired, not yet re-claimed
