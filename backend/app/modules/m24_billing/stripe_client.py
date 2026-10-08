@@ -15,7 +15,12 @@ class StripeClient:
   headers={"Authorization":f"Bearer {self.key}"}
   async with httpx.AsyncClient(timeout=30,transport=self.transport) as client:
    item=await client.post("https://api.stripe.com/v1/invoiceitems",headers={**headers,"Idempotency-Key":f"{approval_id}:invoice-item"},data={"customer":customer_id,"description":description,"amount":str(amount_cents),"currency":currency});item.raise_for_status()
-   invoice=await client.post("https://api.stripe.com/v1/invoices",headers={**headers,"Idempotency-Key":f"{approval_id}:draft-invoice"},data={"customer":customer_id,"auto_advance":"false","metadata[atlas_approval_id]":approval_id});invoice.raise_for_status();return invoice.json()
+   try:
+    invoice=await client.post("https://api.stripe.com/v1/invoices",headers={**headers,"Idempotency-Key":f"{approval_id}:draft-invoice"},data={"customer":customer_id,"auto_advance":"false","metadata[atlas_approval_id]":approval_id});invoice.raise_for_status();return invoice.json()
+   except (httpx.HTTPError, ValueError) as error:
+    # The accepted first request is not undone by a later failure. Do not
+    # expose provider error bodies or claim the draft definitely did not exist.
+    raise RuntimeError("invoice item accepted; draft invoice outcome unknown; reconcile with provider before retry") from error
 
 
 class UnconfiguredStripeClient:
