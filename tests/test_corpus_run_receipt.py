@@ -29,3 +29,20 @@ def test_startup_exception_is_failed_receipt(tmp_path,monkeypatch):
  p=tmp_path/'receipt';r=run_receipted(tmp_path/'db',tmp_path/'out',p)
  assert r['status']=='failed' and r['exit_status'] is None and r['launch_error_type']=='OSError'
  assert 'private launch' not in p.read_text()
+def test_real_child_killed_on_wall_clock_timeout(tmp_path,monkeypatch):
+ import subprocess,time,os
+ import app.core.corpus_run_receipt as module
+ db=Path('/tmp/corpus-review/corpus.sqlite');export=Path('/tmp/corpus-review/train.jsonl')
+ if not db.exists():pytest.skip('actual public receipt needed')
+ real=subprocess.run;pidfile=tmp_path/'pid';finished=tmp_path/'finished'
+ code='import os,time,pathlib;pathlib.Path('+repr(str(pidfile))+').write_text(str(os.getpid()));time.sleep(0.6);pathlib.Path('+repr(str(finished))+').write_text("completed");from app.core.corpus_cli import main;raise SystemExit(main(["verify","--db",'+repr(str(db))+',"--export",'+repr(str(export))+']))'
+ def runner(command,*args,**kwargs):
+  if command[0]=='git':return real(command,*args,**kwargs)
+  return real([command[0],'-c',code],*args,**kwargs)
+ monkeypatch.setattr(module,'DEFAULT_TIMEOUT_SECONDS',0.2,raising=False)
+ monkeypatch.setattr(module.subprocess,'run',runner)
+ started=time.monotonic();r=run_receipted(db,export,tmp_path/'receipt')
+ assert r['status']=='failed' and r.get('timed_out') is True
+ assert r['exit_status'] is None and time.monotonic()-started<0.6
+ assert pidfile.exists() and not finished.exists()
+ with pytest.raises(ProcessLookupError):os.kill(int(pidfile.read_text()),0)
