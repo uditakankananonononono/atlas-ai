@@ -170,3 +170,15 @@ def drain_runtime_events(limit: int = 100):
     from app.platform.integrations import RedisStreamBus
     from app.modules.m20_general_cognitive_worker.event_outbox import drain_events
     return drain_events(engine, RedisStreamBus(), limit=limit)
+
+
+@celery_app.task(name='atlas.m16.consume_m20_status')
+def consume_m20_status(tenant_id: str, limit: int = 100):
+    """Explicit internal subscriber, never auto-retry a poison event."""
+    import os
+    if os.getenv('ATLAS_M20_EVENT_OUTBOX') != '1':
+        raise ValueError('M20 runtime event delivery is not enabled')
+    from app.core.database import engine
+    from app.platform.integrations import RedisStreamBus
+    from app.modules.m16_executive_dashboard.m20_subscriber import consume_task_status
+    return consume_task_status(engine, RedisStreamBus(), tenant_id, limit=limit)

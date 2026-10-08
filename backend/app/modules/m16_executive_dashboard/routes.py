@@ -312,3 +312,16 @@ def retire_producer_key(producer:str,key_id:str,context:TenantContext=Depends(re
  try:
   row=registry.retire(producer,key_id);return {'tenant_id':context.tenant_id,'producer':producer,'key_id':key_id,'active':row.active,'retired_at':row.retired_at}
  except ValueError as error:raise HTTPException(404,str(error)) from error
+
+
+def get_m20_status_engine():
+    from app.core.database import engine
+    return engine
+
+
+@router.get('/m20-task-status')
+def m20_task_status(limit: int = Query(100, ge=1, le=1000),
+                    principal: TenantContext = Depends(require_tenant),
+                    engine=Depends(get_m20_status_engine)):
+    from .m20_subscriber import read_task_status
+    return read_task_status(engine, principal.tenant_id, limit=limit)

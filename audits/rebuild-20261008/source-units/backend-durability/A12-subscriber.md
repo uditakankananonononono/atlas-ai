@@ -1,0 +1,21 @@
+# A12: M20 producer -> Redis -> M16 task-status consumer
+
+The explicit `atlas.m16.consume_m20_status` task reads a tenant-hashed stream through RedisStreamBus and writes a minimal M16 task-status projection. It requires ATLAS_M20_EVENT_OUTBOX=1, PostgreSQL and the additive subscriber migration. No periodic scheduler or automatic retry is installed.
+
+Redis event content is not authority. The consumer validates the exact five-key payload, stream owner, typed IDs, checkpoint state and sorted unique action IDs. It then matches the payload against the SQL-authoritative outbox event. In one SQL transaction it locks the tenant/consumer cursor, inserts a consumer+tenant+event_id receipt, projects current SQL TaskRow state and committed ActionRow IDs, and advances cursor. Duplicate event IDs advance cursor without another projection. Task status is current at consumption, not a continuously live source: the event is a historical refresh signal and its state is never projected as current truth. This protects against delayed old events regressing newer task state.
+
+The read-only M16 `/executive-dashboard/m20-task-status` endpoint returns exactly task_id, state, action_ids for its authenticated tenant, with bounded results. No goal, memory, action body, trace or provider text is stored in this projection or returned. Tests use the authenticated dependency seam, not a deployed OIDC provider.
+
+## Invalid-event/operator repair
+
+Invalid/tampered events raise InvalidRuntimeEvent. The entire batch's SQL cursor/receipt/projection changes roll back. There is no silent skip and no auto-retry schedule, so the task surfaces an error rather than looping on a poison entry. The operator must stop further consumption of that tenant stream, inspect the exact offending stream entry and compare against the SQL outbox authority, preserve its diagnostic evidence, explicitly delete only that invalid Redis entry using XDEL, and republish the verified SQL payload when appropriate. Then rerun the explicit consumer task. Do not advance the SQL cursor or delete legitimate entries to hide the problem. Manual deletion/republication is an operational side effect requiring separate owner authorization; this unit does not perform it on real data. Tests exercise that repair in isolated fixture streams. A transport JSON decode failure similarly rolls back and needs inspection. Stream trimming/data-loss repair is not implemented.
+
+## Acceptance
+
+`PYTHONPATH=backend ATLAS_ACCEPTANCE_REDIS_URL=redis://127.0.0.1:16412/0 python -m pytest tests/modules/test_m16_m20_subscriber.py tests/modules/test_m20_event_outbox.py tests/modules/test_m20_pgvector_consumer.py tests/modules/test_m20_runtime_depth.py tests/test_workers.py tests/test_worker_module_tasks.py`
+
+Observed: 219 passed with real local PostgreSQL16.2 and Redis8.10.2, controlled embeddings. Producer->drain->subscriber->M16 HTTP journey pins two-tenant isolation and exact minimal endpoint payload. Stale checkpoint after newer TaskRow state projects newer authority; duplicate cursor advances without reprojecting. Five poison variants pin no cursor advance and explicit isolated repair. Projection failure rolls back receipts/cursor, concurrent consumers commit one receipt/projection, additive migration roundtrip preserves unrelated table. Temporary servers stopped.
+
+## Boundaries
+
+No deployed service/worker scheduling, Redis consumer groups/acks, retention, trimmed-stream recovery, automatic poison repair, semantic/provider quality or production auth. Cursor lock is held across bounded network read; task row is locked during projection, but no global serializable task/action snapshot is claimed. Dedup receipts, cursors and projections have no purge policy. SQL projection can remain stale until a unique new event triggers refresh; same-state/action-set producer coalescing and duplicate-skip semantics are deliberate. M20 producer events cover save_execution checkpoints only. Missing source authority fails instead of clearing dedup or fabricating state. Additive downgrade removes projection/cursors/receipts, losing consumer history; replay may reproject on later re-enable. No exactly-once transport claim.
