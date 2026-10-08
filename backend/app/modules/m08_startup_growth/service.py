@@ -2,7 +2,7 @@
 from datetime import datetime,timezone
 from hashlib import sha256
 from io import BytesIO
-import json,re,zipfile
+import ast,json,re,zipfile
 from uuid import uuid4
 from app.core.models import ApprovalRequest
 from .schemas import *
@@ -39,15 +39,51 @@ class Service:
         return self._store(data.project_id,"pitch_deck",files)
     def documentation(self,data:DocumentationIn):
         endpoints=[]
+        warnings=[]
         for path,text in data.code_files.items():
-            for method,route in re.findall(r'@(?:router|app)\.(get|post|put|patch|delete)\(["\']([^"\']+)',text):endpoints.append((method.upper(),route,path))
+            if not path.endswith('.py'):
+                warnings.append(f"{path}: non-Python source not inspected")
+                continue
+            try:
+                tree=ast.parse(text)
+            except SyntaxError:
+                # Legacy snippets containing decorators without bodies remain
+                # supported, but explicitly marked partial, not complete APIs.
+                warnings.append(f"{path}: snippet regex fallback; prefixes unresolved")
+                for method,route in re.findall(r'@(?:router|app)\.(get|post|put|patch|delete|head|options)\([\"\']([^\"\']+)',text):
+                    endpoints.append((method.upper(),route,path))
+                continue
+            prefixes={'app':'','router':''}
+            for node in ast.walk(tree):
+                if isinstance(node,ast.Assign) and isinstance(node.value,ast.Call):
+                    func=node.value.func
+                    if isinstance(func,ast.Name) and func.id in {'APIRouter','FastAPI'}:
+                        value=next((k.value for k in node.value.keywords if k.arg=='prefix'),ast.Constant(''))
+                        if isinstance(value,ast.Constant) and isinstance(value.value,str):
+                            for target in node.targets:
+                                if isinstance(target,ast.Name): prefixes[target.id]=value.value
+                        else: warnings.append(f"{path}: dynamic router prefix unresolved")
+            for node in ast.walk(tree):
+                if not isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)):continue
+                for decorator in node.decorator_list:
+                    if not isinstance(decorator,ast.Call) or not isinstance(decorator.func,ast.Attribute):continue
+                    func=decorator.func
+                    if func.attr not in {'get','post','put','patch','delete','head','options'}:continue
+                    owner=func.value.id if isinstance(func.value,ast.Name) else None
+                    if owner not in prefixes:
+                        warnings.append(f"{path}: unresolved router for {node.name}");continue
+                    route=decorator.args[0] if decorator.args else next((k.value for k in decorator.keywords if k.arg=='path'),None)
+                    if not isinstance(route,ast.Constant) or not isinstance(route.value,str):
+                        warnings.append(f"{path}: dynamic path unresolved for {node.name}");continue
+                    endpoints.append((func.attr.upper(),prefixes[owner]+route.value,path))
+        warnings.append('Static endpoint inventory only; include_router mount prefixes, dynamic routes, request/response schemas and security are not inferred. Not a complete runtime OpenAPI contract.')
         paths={}
         for method,route,path in endpoints:
             operations=paths.setdefault(route,{})
             if method.lower() in operations:raise ValueError(f"duplicate operation {method} {route}; router prefixes must be resolved explicitly")
             operations[method.lower()]={"summary":f"Discovered in {path}","responses":{"200":{"description":"Success"}}}
         openapi={"openapi":"3.1.0","info":{"title":data.title,"version":"0.1.0"},"paths":paths}
-        files={"openapi.json":json.dumps(openapi,indent=2),"redoc.html":'<redoc spec-url="openapi.json"></redoc><script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>',"USER_MANUAL.md":"# "+data.title+"\n\n"+"\n".join(f"- {x}" for x in data.feature_list)+"\n","TECHNICAL_BLOG.md":"# How "+data.title+" works\n\nThis article is grounded in the supplied code snapshot.\n\n"+"\n".join(f"- `{p}`" for p in sorted(data.code_files)),"evidence.json":json.dumps({"code_files":{p:sha256(c.encode()).hexdigest() for p,c in data.code_files.items()},"discovered_endpoints":endpoints},indent=2)}
+        files={"openapi.json":json.dumps(openapi,indent=2),"redoc.html":'<redoc spec-url="openapi.json"></redoc><script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>',"USER_MANUAL.md":"# "+data.title+"\n\n"+"\n".join(f"- {x}" for x in data.feature_list)+"\n","TECHNICAL_BLOG.md":"# How "+data.title+" works\n\nThis article is grounded in the supplied code snapshot.\n\n"+"\n".join(f"- `{p}`" for p in sorted(data.code_files)),"evidence.json":json.dumps({"code_files":{p:sha256(c.encode()).hexdigest() for p,c in data.code_files.items()},"discovered_endpoints":endpoints,"completeness":"partial_static_inventory","limitations":warnings},indent=2)}
         allowed={"openapi":{"openapi.json"},"redoc":{"redoc.html"},"user_manual":{"USER_MANUAL.md"},"technical_blog":{"TECHNICAL_BLOG.md"}};keep={"evidence.json"}|set().union(*(allowed[o] for o in data.outputs));return self._store(data.project_id,"documentation",{k:v for k,v in files.items() if k in keep})
     def propose(self,build_id,action):
         row=self.repo.get(build_id)
