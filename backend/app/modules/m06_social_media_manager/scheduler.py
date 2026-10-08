@@ -125,7 +125,21 @@ class AdapterFactory(Protocol):
         """Return an adapter exposing async ``publish(PublishRequest) -> PublishResult``."""
 
 
+class NaivePublishTimeError(ValueError):
+    """A publish time without a UTC offset was supplied; it would be guessed as UTC."""
+
+
+def require_aware(moment: datetime) -> datetime:
+    """Reject a naive datetime instead of silently reading it as UTC."""
+    if moment.tzinfo is None or moment.utcoffset() is None:
+        raise NaivePublishTimeError(
+            "publish_at needs an explicit UTC offset or timezone (for example 2026-10-08T17:30:00+05:30)"
+        )
+    return moment
+
+
 def _aware(moment: datetime) -> datetime:
+    # Legacy rows saved before the guard may be naive; they are read as UTC.
     if moment.tzinfo is None:
         return moment.replace(tzinfo=timezone.utc)
     return moment
@@ -164,6 +178,7 @@ class Scheduler:
         ``approval_ids`` maps each draft's platform to the approval request
         already filed for it by the caller.
         """
+        require_aware(publish_at)
         findings: list[ComplianceIssue] = []
         for draft in plan.drafts:
             issues = validate_draft(
@@ -318,6 +333,7 @@ class Scheduler:
         return self._repository.save_schedule(entry)
 
     def reschedule(self, schedule_id: str, publish_at: datetime) -> ScheduleEntry:
+        require_aware(publish_at)
         entry = self._entry(schedule_id)
         if entry.status in TERMINAL_STATUSES:
             raise ScheduleStateError(f"cannot reschedule an entry in state {entry.status}")

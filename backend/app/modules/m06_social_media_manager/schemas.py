@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .models import Platform
 
@@ -38,10 +38,22 @@ class ContentPlanOut(BaseModel):
     drafts: list[PlatformDraftOut]
 
 
+def _reject_naive(value: datetime | None) -> datetime | None:
+    if value is not None and (value.tzinfo is None or value.utcoffset() is None):
+        raise ValueError("publish_at needs an explicit UTC offset or timezone, e.g. 2026-10-08T17:30:00+05:30")
+    return value
+
+
 class ScheduleIn(BaseModel):
     """Optional requested publish time; approval is always required."""
 
     publish_at: datetime | None = None
+
+    @field_validator("publish_at")
+    @classmethod
+    def _publish_at_aware(cls, value: datetime | None) -> datetime | None:
+        return _reject_naive(value)
+
     sponsored: bool = False
     source: str | None = Field(default=None, max_length=40000)
     references: dict[int, dict[str, str]] = Field(default_factory=dict)
@@ -71,6 +83,11 @@ class ScheduleEntryOut(BaseModel):
 
 class RescheduleIn(BaseModel):
     publish_at: datetime
+
+    @field_validator("publish_at")
+    @classmethod
+    def _publish_at_aware(cls, value: datetime) -> datetime:
+        return _reject_naive(value)
 
 
 class AttachMediaIn(BaseModel):
