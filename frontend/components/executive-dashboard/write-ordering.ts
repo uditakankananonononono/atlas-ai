@@ -61,7 +61,7 @@ export class WriteSequencer<T=unknown>{
     if(this.running.has(key))return;
     this.running.add(key);
     try{
-      const q=this.queues.get(key)!;
+      const q=this.queues.get(key)??[];
       while(q.length){
         const job=q[0];
         if(this.blocked.has(key)){

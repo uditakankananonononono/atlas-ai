@@ -22,7 +22,8 @@ export type CadenceDecision={allowed:boolean;person?:string;relationship?:string
 export type ContactTimelineRow={message_id:string;campaign_id:string;campaign:string|null;contact_id:string;kind:string;sequence:number;status:string;subject:string;sent_at:string|null;updated_at:string};
 export type ContactTimeline={person:string;relationship:string;rule:{min_gap_days:number;max_per_30_days:number};live_thread_days:number;policy_version:number;contact_records:string[];messages:ContactTimelineRow[]};
 export type ApprovalCenterEvent={event:string;actor:string|null;at:string};
-export type DashboardView={widgets:WidgetConfig[];updated_at:string};
+export type DashboardView={widgets:WidgetConfig[];updated_at:string;version:number};
+export class ViewConflictError extends Error{constructor(public currentVersion:number){super(`dashboard layout changed (server version ${currentVersion})`);}}
 export type CommandPreview={id:string;utterance:string;intent:string;parameters:Record<string,unknown>;plan:Array<Record<string,unknown>>;read_only:boolean;confidence:number;expires_at:string;created_at:string};
 export type BulkDecisionResult={decided:Approval[];skipped:{id:string;reason:string}[]};
 async function req<T>(base:string,path:string,init?:RequestInit):Promise<T>{
@@ -59,7 +60,12 @@ export const dashboardApi=(base:string="/api/v1")=>{
     contactTimeline:(contactId:string)=>req<ContactTimeline>(base,`/outreach-manager/contacts/${encodeURIComponent(contactId)}/timeline`),
     messageCadence:(messageId:string)=>req<CadenceDecision>(base,`/outreach-manager/messages/${encodeURIComponent(messageId)}/cadence`),
     getView:()=>req<DashboardView>(base,`${p}/view`),
-    saveView:(widgets:WidgetConfig[])=>req<DashboardView>(base,`${p}/view`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({widgets})}),
+    saveView:async(widgets:WidgetConfig[],baseVersion?:number,signal?:AbortSignal):Promise<DashboardView>=>{
+      const r=await authFetch(`${base}${p}/view`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({widgets,base_version:baseVersion??null}),signal});
+      if(r.status===409){const b=await r.json().catch(()=>null) as {detail?:{current_version?:number}}|null;throw new ViewConflictError(b?.detail?.current_version??-1)}
+      if(!r.ok)throw new Error(`PUT ${p}/view failed: ${r.status}`);
+      return r.json() as Promise<DashboardView>;
+    },
     liveUrl:`${base}${p}/live`,
   };
 };

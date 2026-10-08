@@ -53,4 +53,7 @@ describe("WriteSequencer",()=>{
     expect((await a.result)).toMatchObject({status:"failed",error:"500"});expect(s.knownVersion("k")).toBe(1);
     expect((await j.result).status).toBe("committed");
   });
+  it("reconcile on a key that never had a write does not throw and sets the version",()=>{
+    const s=new WriteSequencer<string>();expect(()=>s.reconcile("new",3)).not.toThrow();expect(s.knownVersion("new")).toBe(3);
+  });
 });

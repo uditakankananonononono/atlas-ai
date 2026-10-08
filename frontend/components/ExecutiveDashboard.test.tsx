@@ -18,7 +18,7 @@ vi.mock("./OperationsChart",()=>({default:()=>null}));
 const card:Card={available:true,reason:null,as_of:"2026-10-05T09:00:00Z",schedules_total:3,schedules_active:2,schedules_due_now:1,proposals_total:5,
   by_state:{pending:2,approved_not_executed:1,executed:2,denied:0,expired:0},awaiting_approval:2,approved_not_executed:1,overdue_total:1,
   verdicts:{reproduced:1,diverged:1},overdue:[{schedule_id:"s1",original_approval_id:"orig-7",rerun_approval_id:"r1",state:"approved_not_executed",filed_at:"2026-10-01T09:00:00Z",age_hours:96,overdue:true,verdict:null,approval_path:"/approval-center/requests/r1"}],recent:[]};
-const view={updated_at:"2026-10-05T09:00:00Z",widgets:[
+const view={version:4,updated_at:"2026-10-05T09:00:00Z",widgets:[
   {id:"blockers",kind:"blockers",kpi_id:null,visible:true,position:0},
   {id:"approvals",kind:"approvals",kpi_id:null,visible:true,position:1},
   {id:"rerun_schedules",kind:"rerun_schedules",kpi_id:null,visible:true,position:2}]};
@@ -159,5 +159,29 @@ describe("Outreach approval card with contact timeline",()=>{
     await waitFor(()=>expect(apiMock.approvalRequests).toHaveBeenCalled());
     expect(screen.queryByText(/Outreach sends/)).toBeNull();
     expect(screen.queryByText(/failed: 500/)).toBeNull();
+  });
+});
+
+describe("Layout saves are versioned",()=>{
+  const layoutOpen=async()=>{render(<ExecutiveDashboard/>);await userEvent.click(await screen.findByRole("button",{name:"Layout"}))};
+  it("sends the version it read as base_version and keeps the server's new version",async()=>{
+    apiMock.rerunSchedules.mockResolvedValue(card);
+    apiMock.saveView.mockImplementation(async(w:unknown[])=>({...view,widgets:w,version:5}));
+    await layoutOpen();
+    await userEvent.click(screen.getAllByRole("button",{name:"Down"})[0]);
+    await waitFor(()=>expect(apiMock.saveView).toHaveBeenCalledTimes(1));
+    expect(apiMock.saveView.mock.calls[0][1]).toBe(4);
+    await userEvent.click(screen.getAllByRole("button",{name:"Down"})[0]);
+    await waitFor(()=>expect(apiMock.saveView).toHaveBeenCalledTimes(2));
+    expect(apiMock.saveView.mock.calls[1][1]).toBe(5);
+  });
+  it("on a 409 it reloads the server layout and says the edit was not applied",async()=>{
+    apiMock.rerunSchedules.mockResolvedValue(card);
+    apiMock.saveView.mockRejectedValue(new Error("dashboard layout changed (server version 9)"));
+    await layoutOpen();
+    apiMock.getView.mockResolvedValue({...view,version:9});
+    await userEvent.click(screen.getAllByRole("button",{name:"Down"})[0]);
+    expect((await screen.findByRole("status")).textContent).toMatch(/changed elsewhere/i);
+    expect(apiMock.getView.mock.calls.length).toBeGreaterThanOrEqual(2);
   });
 });
