@@ -204,7 +204,7 @@ class Service:
         new_messages = 0
         drafts = 0
         for message_id in message_ids:
-            if self.repository.has_message(message_id):
+            if self.repository.has_message(message_id, account.id):
                 continue
             raw = await self.gmail.get_message(access_token, message_id)
             drafted = await self._ingest_message(account.id, raw)
@@ -258,7 +258,7 @@ class Service:
             ],
         )
         if classification.category in ACTIONABLE_CATEGORIES and "SENT" not in raw.labels:
-            await self._draft_reply(message_id, raw, classification, actions)
+            await self._draft_reply(message_id, raw, classification, actions, account_id)
             return True
         return False
 
@@ -278,6 +278,7 @@ class Service:
         raw: GmailRawMessage,
         classification: Classification,
         actions: list[ActionItem],
+        account_id: str | None = None,
     ) -> EmailDraftView:
         context = self._context_window(raw)
         action_lines = "\n".join(f"- {a.action}" for a in actions) or "- (none extracted)"
@@ -304,6 +305,7 @@ class Service:
                 "tenant_id": self.tenant_id,
                 "draft_id": draft_id,
                 "message_id": message_id,
+                "account_id": account_id,
                 "gmail_id": raw.gmail_id,
                 "thread_id": raw.thread_id,
                 "to": raw.sender,
@@ -317,6 +319,7 @@ class Service:
         self.repository.save_draft(
             draft_id=draft_id, message_id=message_id, approval_id=approval.id,
             to=raw.sender, subject=subject, body=body, model=model,
+            account_id=account_id,
         )
         if self.review_state_capturer is not None:
             try:
@@ -328,7 +331,7 @@ class Service:
                               {"approval_id": approval.id, "error": str(exc)[:200]})
         return EmailDraftView(
             id=draft_id, message_id=message_id, approval_id=approval.id, to=raw.sender,
-            subject=subject, body=body, model=model, created_at=datetime.now(timezone.utc),
+            subject=subject, body=body, model=model, account_id=account_id, created_at=datetime.now(timezone.utc),
         )
 
     def _context_window(self, raw: GmailRawMessage, max_chars: int = 6000) -> str:
@@ -414,7 +417,7 @@ class Service:
             EmailDraftView(
                 id=row.id, message_id=row.message_id, approval_id=row.approval_id,
                 to=row.to, subject=row.subject, body=row.body, model=row.model,
-                status=row.status, created_at=row.created_at,
+                account_id=row.account_id, status=row.status, created_at=row.created_at,
             )
             for row in self.repository.list_drafts()
         ]

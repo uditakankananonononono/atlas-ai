@@ -35,7 +35,7 @@ class GmailAccountRow(Base):
 
 class EmailMessageRow(Base):
     __tablename__ = "m10_email_messages"
-    __table_args__ = (UniqueConstraint("tenant_id", "gmail_id"),)
+    __table_args__ = (UniqueConstraint("tenant_id", "account_id", "gmail_id"),)
     pk: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     tenant_id: Mapped[str] = mapped_column(String(120), index=True)
     id: Mapped[str] = mapped_column(String(36), index=True)
@@ -77,6 +77,7 @@ class EmailDraftRow(Base):
     tenant_id: Mapped[str] = mapped_column(String(120), index=True)
     id: Mapped[str] = mapped_column(String(36), index=True)
     message_id: Mapped[str] = mapped_column(String(36), index=True)
+    account_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     approval_id: Mapped[str] = mapped_column(String(36), index=True)
     to: Mapped[str] = mapped_column(String(320))
     subject: Mapped[str] = mapped_column(Text)
@@ -172,11 +173,16 @@ class SqlEmailRepository:
                           {"watch_expiration": expires_at.isoformat()})
 
     # -- messages ---------------------------------------------------------
-    def has_message(self, gmail_id: str) -> bool:
+    def has_message(self, gmail_id: str, account_id: str | None = None) -> bool:
+        """Gmail ids are unique per mailbox only, so ingestion passes account_id.
+        Without account_id the check is tenant-wide (legacy callers)."""
         with self.sessions() as db:
-            return db.scalar(select(EmailMessageRow.pk).where(
+            statement = select(EmailMessageRow.pk).where(
                 EmailMessageRow.tenant_id == self.tenant_id,
-                EmailMessageRow.gmail_id == gmail_id)) is not None
+                EmailMessageRow.gmail_id == gmail_id)
+            if account_id is not None:
+                statement = statement.where(EmailMessageRow.account_id == account_id)
+            return db.scalar(statement.limit(1)) is not None
 
     def save_message(self, *, message_id: str, account_id: str, gmail_id: str,
                      thread_id: str | None, history_id: str | None, subject: str,
@@ -187,8 +193,9 @@ class SqlEmailRepository:
         with self.sessions.begin() as db:
             if db.scalar(select(EmailMessageRow.pk).where(
                     EmailMessageRow.tenant_id == self.tenant_id,
+                    EmailMessageRow.account_id == account_id,
                     EmailMessageRow.gmail_id == gmail_id)) is not None:
-                return  # idempotent on (tenant, gmail_id)
+                return  # idempotent on (tenant, account, gmail_id)
             db.add(EmailMessageRow(
                 tenant_id=self.tenant_id, id=message_id, account_id=account_id,
                 gmail_id=gmail_id, thread_id=thread_id, history_id=history_id,
@@ -252,14 +259,15 @@ class SqlEmailRepository:
 
     # -- drafts -----------------------------------------------------------
     def save_draft(self, *, draft_id: str, message_id: str, approval_id: str, to: str,
-                   subject: str, body: str, model: str) -> None:
+                   subject: str, body: str, model: str, account_id: str | None = None) -> None:
         with self.sessions.begin() as db:
             db.add(EmailDraftRow(
                 tenant_id=self.tenant_id, id=draft_id, message_id=message_id,
-                approval_id=approval_id, to=to, subject=subject, body=body, model=model,
+                account_id=account_id, approval_id=approval_id, to=to, subject=subject, body=body, model=model,
                 status="pending_approval", created_at=_utcnow()))
             self._log(db, "email_draft", draft_id, "draft_proposed",
-                      {"approval_id": approval_id, "message_id": message_id})
+                      {"approval_id": approval_id, "message_id": message_id,
+                       "account_id": account_id})
 
     def log_event(self, entity: str, entity_id: str, event: str, details: dict) -> None:
         with self.sessions.begin() as db:
