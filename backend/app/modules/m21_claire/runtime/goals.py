@@ -99,12 +99,22 @@ def _now() -> datetime:
 
 
 def _designated_or_none(raw: str) -> list[str]:
-    """Stored list, or [] (nobody matches: fail closed) when the stored value is not a JSON list of strings."""
+    """The stored list, validated against the SAME strict schema normalize_designated enforces (and canonical: no duplicates).
+    A stored [] means restricted to nobody. Any malformed non-NULL value (bad JSON, wrong type, empty or padded or overlong
+    entry, duplicates, more than 20) is refused entirely: [] is returned, so nobody matches (fail closed)."""
     try:
         v = json.loads(raw)
     except json.JSONDecodeError:
         return []
-    return v if isinstance(v, list) and all(type(x) is str for x in v) else []
+    if type(v) is not list:
+        return []
+    if not v:
+        return []
+    try:
+        canon = normalize_designated(v)
+    except ValueError:
+        return []
+    return v if canon == v else []
 
 
 def _iso(d: datetime) -> str:
@@ -119,7 +129,11 @@ NOT_GRANTABLE = {"completed", "blocked", "failed", "exhausted", "not_accepted", 
 
 
 class ApproverNotDesignated(PermissionError):
-    """The goal names its approvers and this principal is not one of them. Carries no principal ids."""
+    """The goal names its approvers and this principal is not one of them. Carries no principal ids.
+
+    SCOPE: designated approvers govern NEW GATE GRANTS (grant()) ONLY. resolve_effect attestations (committed/absent for an
+    unknown effect) are deliberately NOT bound to the list in this slice: an approver-role principal outside the list can still
+    declare an unknown effect committed or absent. That is a known, pinned limit (see the slice 10 tests), not an oversight."""
 
 
 MAX_DESIGNATED = 20
