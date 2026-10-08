@@ -1,45 +1,56 @@
-# Step 2B design note: `Service.local_action` fail-closed approval binding (DESIGN ONLY, no code)
+# Step 2B design note v2: `Service.local_action` fail-closed approval binding (DESIGN ONLY, no code)
 
-Base: `5e1001dd6a52c10150d810dce3cb5c72ada0bb61` (claire-runtime-m1). Audit row 4 of `m21-gate-coverage-audit-404e01a7.md` is the problem statement.
-Limits that apply to this whole note: no role/designation check (m00 decide path is untraced), no actor binding at m00, no daemon token validation, no attestation of OS execution,
-no whole-product claim. The change closes ONE gap: the Service accepting any non-empty string as approval.
+Base: `5e1001dd6a52c10150d810dce3cb5c72ada0bb61` (claire-runtime-m1). v1 was 75c65aa4; v2 folds in the review of v1. Problem statement: audit row 4 of `m21-gate-coverage-audit-404e01a7.md`.
+Limits for the whole note: no role/designation check (m00 decide path untraced), no actor binding at m00, no daemon token validation, no attestation of OS execution, no durable local-effect journal,
+no whole-product claim. The change closes ONE gap: the Service accepting any non-empty string as an approval. Structural guard only; this is not role closure.
 
 ## Today (file:line at base)
-- `m21_claire/service.py:43-60` `local_action`. High-risk = kind in a fixed set, or lexical `ActionPolicy.requires_approval`, or caller-supplied `external_effect` (`:50-54`).
-- `:55-56` high-risk without a token files `request_environment_change` (action_type `claire:<kind>`, payload = goal_id, tenant_id?, environment, daemon `preview`, rollback). The payload does NOT bind the action itself.
-- `:57` any truthy token reaches `local_client.execute(action, token)`. Nothing checks it against Module 0. Pinned today by
-  `tests/modules/test_m21_legacy_policy_superset.py::test_local_action_gates_comms_verb_and_blocks_standing_no` (token "tok" executes `dm`) and the audit CHARACTERIZATION test.
-- `:59` the goal is looked up AFTER execute (`self.goals[goal_id]`): an unknown goal id raises KeyError after the effect already ran. `local_action` has no tenant/actor check at all (`owned` is used only by the routes).
-- No route or in-tree caller; production wiring has no local_client (`routes.py:12`). This change cannot affect a deployed path until an integrator wires one.
+- `m21_claire/service.py:43-60` `local_action`. High-risk = fixed kind set, or lexical `ActionPolicy.requires_approval`, or caller-supplied `external_effect` (`:50-54`).
+- `:55-56` high-risk without a token files `request_environment_change`; payload = goal_id, tenant_id?, environment, daemon `preview`, rollback. It does NOT bind the action.
+- `:57` any truthy token reaches `local_client.execute(action, token)`; nothing checks it. Pinned by `test_m21_legacy_policy_superset.py::test_local_action_gates_comms_verb_and_blocks_standing_no` and the audit CHARACTERIZATION test.
+- `:59` the goal is read AFTER execute: an unknown goal id raises KeyError after the effect ran. `local_action` has no tenant/actor check at all (`owned`, `:31-35`, is used only by routes).
+- Facade `core/approvals.py:6-13` `ApprovalStore.put` passes no ttl; `list` returns `ApprovalRequest` (id, module, action_type, payload, status) with NO user_id/approved_by/decided_at/expires_at.
+- m00: `_expire_if_overdue` (`m00_approval_center/service.py:333-340`) expires only PENDING rows, so a TTL bounds review time, not how long an APPROVED permit stays usable. `consume_effect` (`:565-588`) is atomic and exact-request-bound but has no age check and replays `allowed=True` for an identical effect_id.
+- No route or in-tree caller; production wiring has no local_client (`routes.py:12`): no deployed path is affected until an integrator wires one.
 
-## Proposed behaviour (what CHANGES)
-For a high-risk action (same classification as today, unchanged), `approval_token` is interpreted as a Module 0 approval id and is accepted only if ALL hold, checked in this order and BEFORE any execution:
-1. Goal resolution first: the goal exists, and if the goal has an owner record the caller's tenant_id+actor_id (new keyword-only params) match it; owned goal + missing/blank caller identity = refuse (same indistinguishable KeyError as `owned`). Goals with no owner record stay in the legacy None namespace (existing tests construct goals directly).
-2. The approval exists in Module 0 (`get`), module_id 21, action_type `claire:<kind>`, `user_id` equal to the goal's tenant (or "default" when legacy, matching `put`), payload.goal_id equal to this goal, status APPROVED.
-3. The approval payload carries `action_digest` = sha256 of canonical JSON of {goal_id, kind, action}, and it equals the digest of THIS call. Actions must be plain JSON (as `runtime/gates.py:54-58`), else refused. So an approval for one action cannot authorize another, and the reviewed preview is no longer the only thing bound.
-4. `approved_by` is present and differs from the goal's actor (no self-approval, as the runtime). This is the only approver rule here; role and designation are NOT checked (decide path untraced).
-5. Single use: `consume_effect` (`m00_approval_center/service.py:565-588`) with a fresh uuid effect_id per call. That call is atomic and exact-request-bound; a second call with the same approval is refused ("already consumed"). A fresh effect_id per call is deliberate: consume_effect replays `allowed` for an identical effect_id, which would permit a double run on retry.
-Order: consume, then `local_client.execute`, then audit. A consumed approval is never refunded: a crash or error after consume needs a NEW approval (fail safe; also no automatic retry).
-Evidence/audit append is resolved before execute (goal already held), removing the post-effect KeyError.
-`local_action` filing path: when it files the request (`:56`), it now adds `action_digest` and `goal_id` to the payload so the approval it files can actually authorize that call. Requests filed by the HTTP route `request_environment_change` carry no digest, so they CANNOT authorize local_action (intended: the route files route-reviewed environment changes, not exact-action grants).
-Fail closed: if the injected approval store lacks `get`/`consume_effect` (e.g. the in-memory fakes), or any named error occurs (`ApprovalNotFoundError`, `ApprovalConflictError`, expired, non-approved, mismatch), refuse with a fixed message; no `str(exc)` in text. No blanket except.
-`core/approvals.py` facade gains thin `get` and `consume_effect` delegations to `default_service()`; no change to `put`/`list`.
+## Proposed behaviour
+### A. Order of operations in `local_action(goal_id, action, approval_token=None, *, tenant_id=None, actor_id=None)`
+1. Snapshot: require `action` to be plain JSON (as `runtime/gates.py:54-58`), then `json.loads(json.dumps(action, sort_keys=True))` into a private immutable snapshot BEFORE any await. Digest, FORBIDDEN scan, policy tags, preview, consume and execute all use that snapshot (the client receives its own deep copy of the snapshot each time, so a mutable caller dict or a client mutation cannot drift what was approved). Non-JSON = refuse.
+2. Goal lookup and owner check come FIRST for ALL calls, high-risk or not (before capabilities, preview or any await): unknown goal or mismatch -> the same `KeyError` as `owned`.
+   Legacy rule (explicit): a goal with no owner record, or an owner record of (None, None), is LEGACY. A legacy goal accepts only calls with tenant_id=None and actor_id=None and may run NON-high-risk actions as today; a HIGH-RISK action on a legacy goal is refused because the approver-differs rule has no defined actor. Owned goals require matching non-blank tenant_id and actor_id.
+   This is a behaviour change for non-high-risk calls too (owner check added): called out, and pinned by tests.
+3. Existing checks unchanged: FORBIDDEN, capabilities, preview, lexical policy, high-risk classification.
+4. High-risk without token: files the request as today but now with `goal_id` and `action_digest` (sha256 of canonical JSON of {goal_id, kind, action}) in the payload, pending TTL 24h (see B), returns it. Does not execute.
+5. High-risk with token: `approval_token` is a Module 0 approval id. Verify via a NEW full-view accessor, then consume, then execute (see C and D).
+
+### B. Full-view accessor and expiry separation (review items 1 and 2)
+- New facade method `core/approvals.py::ApprovalStore.full_view(approval_id) -> dict` returning the m00 view (id, module_id, action_type, payload, user_id, status, decided_at, approved_by, expires_at). Existing `put`/`list` behaviour is unchanged, so no existing caller changes. `put` gains an optional keyword `ttl_seconds=None` (default unchanged).
+- Verification from the full view, all required: module_id 21; action_type `claire:<kind>`; user_id == goal tenant; payload.goal_id == goal; payload.action_digest == digest of THIS snapshot; status APPROVED; `approved_by` non-blank and != caller actor (structural self-approval guard only); decided_at present.
+- The permit is consumed against the STORED reviewed payload from that view (never re-derived from the preview the daemon produced, never from the caller), so the m00 request hash covers the exact reviewed record, and the digest in it binds the action.
+- Two separate time controls, both named constants: PENDING review TTL = 24h via `put(ttl_seconds=...)` (existing m00 semantics: only PENDING expires); APPROVED execution validity = 24h from `decided_at`, enforced where the race lives: `consume_effect` gains an optional keyword `max_age_seconds=None` (default None keeps every other caller unchanged). Inside the SAME transaction as the effect-row insert it computes `now` from the service's injected clock (aware, via `_aware`), requires `decided_at` not null and `now <= _aware(decided_at) + max_age`, else `ApprovalConflictError("approval is stale")` before any row is written. A get-time precheck is NOT relied on. Boundary: exactly decided_at + max_age is valid, one microsecond later refused. Clock anchor: decided_at is written by the m00 service clock at decide time.
+- Touching m00 `consume_effect` is a change to shared Module 0 code: one optional keyword, default off, no change to decide, submit, expiry or policy paths.
+
+### C. Single use, no refund, no auto-retry (items for the effect)
+- `consume_effect(approval_id, module_id=21, action_type, payload=<stored payload>, user_id, effect_id=<fresh uuid4 per call>, actor, max_age_seconds=APPROVED_VALIDITY)`. A fresh effect_id per call is deliberate: an identical effect_id replays `allowed=True`, which would allow a double run on retry. Second use of the same approval -> "already consumed" -> refuse.
+- Permit must come back as a dict with `allowed is True`, `approval_id` and `effect_id` equal to what we sent; anything else (missing key, falsy, other id) -> refuse. If the store lacks `full_view` or `consume_effect` -> refuse (fail closed). Fixed refusal messages; no `str(exc)`; named exceptions only (`ApprovalNotFoundError`, `ApprovalConflictError`, `ValueError` from our own checks).
+- A consumed approval is never refunded. The Service never retries `local_action` (no loop exists; test asserts one client call). Any retry needs a NEW approval.
+
+### D. Execute / audit and unknown outcome
+- Immediately after consume and before `local_client.execute`, append `{"local_action": kind, "approval_id": id, "outcome": "unknown"}` to the goal's evidence (intent marker). On success, replace it with the result entry. A `try/finally` flag leaves the marker as "unknown" if `execute` or `audit` raises; the exception then propagates (no blanket `except`), so callers must not render it. Surfaced limit, stated: the marker lives in the in-memory goal state, it is not a durable journal and does not survive a process restart (durable local-effect journal is out of scope). If `execute` succeeded but `audit` fails, the result is kept and the marker records `audit_failed`.
+- The daemon still gets `execute(snapshot, approval_id)`; we do not claim the daemon validates the id.
 
 ## What stays unchanged
-- High-risk classification (kind set, lexical policy, `external_effect` flag), FORBIDDEN list, capabilities check, preview call, non-high-risk actions (executed without approval, token passed through as today).
-- The daemon contract `execute(action, approval_token)`: the Service now passes the approval id as the token and still does NOT claim the daemon validates it.
-- The `claire:*` refusal in the m00 ApprovedExecutionDispatcher allowlist (those approvals are not executed by the dispatcher).
-- Routes, schemas, migrations: none. No persistence added (m00 persists approvals and effect rows already).
+High-risk classification (kind set, lexical policy, `external_effect`), FORBIDDEN list, capability and preview calls, non-high-risk execution (no approval needed), the m00 dispatcher allowlist refusing `claire:*`, routes, schemas, migrations (none), m00 decide/submit/expiry semantics.
 
 ## Out of scope (stated, not closed)
-Approver role/designation and who may call m00 decide; approval TTL (the facade `put` passes no ttl, so these approvals do not expire unless the m00 caller sets one: open decision below); keyed effect journal / unknown-outcome handling for local effects (an error after consume is an unrecorded outcome); lexical classification gaps (`external_effect` omitted = ungated); device-to-action binding (which paired device runs it); wiring a local client in production; the m20 loop and orchestrator approval weaknesses (audit rows 2 and 5).
+Approver role/designation and who may call m00 decide; actor binding at m00; a durable local-effect journal and restart-safe unknown-outcome; lexical classification gaps (an effectful kind with `external_effect` omitted stays ungated); device-to-action binding; production wiring of a local client; daemon-side token validation; m20 loop and orchestrator approval weaknesses (audit rows 2 and 5); whole-product claims.
 
-## Tests (labels)
-- CONVERTED: `test_local_action_gates_comms_verb_and_blocks_standing_no` and the audit CHARACTERIZATION: arbitrary token refused; exact-digest approved approval executes once.
-- NEW (each must fail on base): bogus/unknown id; PENDING, DENIED and expired approval; approval for a different action (same kind, different args); different goal; different kind; foreign tenant approval; self-approved (approved_by == actor); route-filed approval (no digest); second use of the same approval (refused, one execution); concurrent double use (one executes); consume happens before execute (execute failure leaves approval consumed); store lacking `get`/`consume_effect` refuses; non-JSON action refused; unknown goal refused BEFORE execute; owned goal with missing/foreign caller refused; no str(exc) in any refusal text; the filed request now carries action_digest.
-- PROTECTION: forbidden strings still refuse, non-high-risk actions unchanged, no token on high-risk still files a request and does not execute, unwired client still RuntimeError, existing m21 policy-superset tests green.
+## Tests (labels). Each NEW test must fail on base 5e1001dd.
+- CONVERTED: `test_local_action_gates_comms_verb_and_blocks_standing_no` (token "tok" executes `dm` today; now refused, exact approved approval on an owned goal executes once) and the audit CHARACTERIZATION test.
+- NEW local_action: unknown/bogus id; PENDING; DENIED; pending-expired; APPROVED but stale (decided_at older than the window) refused; boundary exactly at window valid, +1us refused; concurrent consume crossing the boundary (one execution at most, zero when stale); different args/goal/kind/tenant; self-approved; blank approved_by; route-filed (no digest); second use refused with one client call; concurrent double use one executes; consume precedes execute; consumed stays consumed after execute failure and marker is "unknown"; audit failure keeps result and marks audit_failed; store lacking `full_view`/`consume_effect` refuses; permit with allowed != True or wrong ids refuses; non-JSON action refused; caller mutation of the action dict after validation and during await does not change what is previewed, consumed or executed; unknown goal refused before preview/execute/await; non-high-risk call on an owned goal with missing/foreign identity refused; legacy goal: high-risk refused, non-high-risk still runs; no `str(exc)` in any refusal; filed request carries goal_id + action_digest + pending TTL.
+- NEW m00: `consume_effect(max_age_seconds=None)` behaves exactly as before; stale/boundary/null decided_at; clock injection and aware/naive datetimes.
+- PROTECTION: FORBIDDEN refusals, non-high-risk actions unchanged, no-token high-risk still files a request and does not execute, unwired client RuntimeError, existing m21 policy-superset and m00 consume tests green.
 
-## Decisions requested
-1. Approval TTL: add an optional ttl to the facade `put` and file local-action approvals with a bounded TTL (proposal: 24h), or leave unbounded as today (limit stated).
-2. Rule 4 (approved_by != actor): keep as proposed, or defer until the m00 decide-path audit.
-3. Keep the effect-failure policy (approval stays consumed, new approval needed), yes/no.
+## Decisions adopted from review
+24h pending TTL and 24h approved validity as separate named constants; `approved_by != actor` as a structural guard, never role closure, legacy/default actor high-risk refused; no refund, no auto-retry.
+Open for review: (a) the `try/finally` marker lets the raw client exception propagate; say if you want a named wrapper exception instead (the client is an external Protocol, so I have no closed class list to catch); (b) 24h as the approved-validity default is long for a local effect, a shorter constant is a one-line change.
