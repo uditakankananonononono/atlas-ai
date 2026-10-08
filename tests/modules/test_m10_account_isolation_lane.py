@@ -69,7 +69,7 @@ def test_migration_scopes_unique_per_account_and_backfills_draft_account(tmp_pat
     env = {**os.environ, "ATLAS_DATABASE_URL": f"sqlite:///{db}"}
     run = lambda rev: subprocess.run([sys.executable, "-m", "alembic", "upgrade", rev],
                                      env=env, text=True, capture_output=True, timeout=120)
-    assert run("20261007_m20_model_unknown").returncode == 0
+    assert run("20261008_m16_identity_forward").returncode == 0
     with sqlite3.connect(db) as c:
         cols = [r[1] for r in c.execute("pragma table_info('m10_email_messages')")]
         vals = {"tenant_id": "t", "id": "m-old", "account_id": "acc-a", "gmail_id": "g1",
