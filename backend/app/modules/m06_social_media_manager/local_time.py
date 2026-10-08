@@ -76,8 +76,9 @@ def resolve_local(
     if in_gap:
         if on_gap == "reject":
             raise NonexistentLocalTimeError(f"{local.isoformat()} does not exist in {tz_name} (DST gap)")
-        # Clocks jump forward by (offset after - offset before): keep the same elapsed
-        # time from the pre-gap offset, which lands on the first valid minute after the gap.
+        # Interpret the wall-clock time with the pre-gap offset, then convert to the zone.
+        # This preserves position across the gap (02:30 -> 03:30 for a one-hour gap),
+        # it does not clamp to the first valid minute (03:00).
         instant = (local - off_first).replace(tzinfo=timezone.utc)
         chosen = instant.astimezone(zone)
         adjustment = "shifted_forward_over_dst_gap"
