@@ -28,6 +28,8 @@ class KpiDefinitionRow(Base):
 class AlertRuleRow(Base):
     __tablename__="m16_alert_rules";__table_args__=(UniqueConstraint("tenant_id","id",name="uq_m16_alert_rule"),)
     pk:Mapped[int]=mapped_column(primary_key=True,autoincrement=True);tenant_id:Mapped[str]=mapped_column(String(120),index=True);id:Mapped[str]=mapped_column(String(80));kpi_id:Mapped[str]=mapped_column(String(80));comparator:Mapped[str]=mapped_column(String(8));threshold:Mapped[float]=mapped_column(Float);severity:Mapped[str]=mapped_column(String(20));message:Mapped[str|None]=mapped_column(String(300),nullable=True);cooldown_hours:Mapped[int]=mapped_column(Integer,default=1);created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
+class ViewVersionConflict(Exception):
+    def __init__(self,current:int):super().__init__(f"view is at version {current}");self.current=current
 class ViewPrefsRow(Base):
     __tablename__="m16_view_prefs";tenant_id:Mapped[str]=mapped_column(String(120),primary_key=True);layout:Mapped[dict]=mapped_column(JSON);updated_at:Mapped[datetime]=mapped_column(DateTime(timezone=True))
 class WorkItemRow(Base):
@@ -195,11 +197,17 @@ class SqlDashboardRepository:
             # Pending predicate belongs to the write, not a stale earlier read.
             rows=db.scalars(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value,ApprovalRow.expires_at.isnot(None),ApprovalRow.expires_at<moment).values(state=ApprovalState.EXPIRED.value).returning(ApprovalRow)).all()
             return [_approval(r) for r in rows]
-    def save_view(self,layout,at):
+    def save_view(self,layout,at,expect_version=None):
+        """Store the layout and return its new version. With expect_version the write only happens if the
+        stored version still equals it (row locked for the compare); otherwise raises ViewVersionConflict."""
         with self.sessions.begin() as db:
-            r=db.get(ViewPrefsRow,self.tenant_id)
-            if r:r.layout=layout;r.updated_at=at
-            else:db.add(ViewPrefsRow(tenant_id=self.tenant_id,layout=layout,updated_at=at))
+            r=db.get(ViewPrefsRow,self.tenant_id,with_for_update=True)
+            current=int((r.layout or {}).get("version",0)) if r else 0
+            if expect_version is not None and expect_version!=current:raise ViewVersionConflict(current)
+            stored={**layout,"version":current+1}
+            if r:r.layout=stored;r.updated_at=at
+            else:db.add(ViewPrefsRow(tenant_id=self.tenant_id,layout=stored,updated_at=at))
+            return current+1
     def get_view(self):
         with self.sessions() as db:
             r=db.get(ViewPrefsRow,self.tenant_id)
