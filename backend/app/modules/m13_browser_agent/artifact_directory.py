@@ -1,36 +1,32 @@
-"""Swap-proof artifact confinement for M13 browser artifacts.
+"""Artifact confinement for M13 browser artifacts (best-effort, non-atomic).
 
 Every M13 artifact write (screenshots, HAR recordings, bridged-page PNGs)
-lands under one trusted root. Two rules make the containment real rather
-than advisory:
+goes under one trusted root whose path components are validated and opened
+relative to a pinned root descriptor with O_NOFOLLOW | O_DIRECTORY, and
+whose kernel-reported location is re-read (/proc/self/fd) immediately
+before and after each write.
 
-1. Path segments are validated before any filesystem use - no empty, dot-only
-   (".", "..", "..."), slashed, or overlong component ever reaches the disk.
-2. Directories are created and opened relative to a pinned root file
-   descriptor, component by component, with O_NOFOLLOW | O_DIRECTORY. A
-   component swapped for a symlink - before the walk or during it - is
-   refused instead of followed, and bytes written through an already-held
-   descriptor cannot be redirected by a later rename or link swap. This
-   closes the mkdir-then-write gap where a concurrent swap of the session
-   directory sent screenshot bytes outside the root.
+What this CLOSES - deterministic, pre-write attacks only:
 
-Same-UID adversaries: a held descriptor pins the *inode*, not the path - a
-rename of the session directory after the walk would move the inode outside
-the root, and a naive fd write would follow it. ``write_bytes`` therefore
-re-reads the kernel-reported path of every held descriptor (``/proc/self/fd``)
-immediately before the file create and again after the write, refusing and
-unwinding if the resolved location has left the root. The rename pin is
-tested. What remains residual, and is NOT claimed: a rename that lands in the
-microseconds between the final post-write check and the kernel flush, and
-bind-mount setups whose kernel-reported paths hide the real location - full
-confinement against a hostile same-UID process needs mount namespaces, not
-path checks. Artifacts the Playwright *driver* process writes later from a
-path string (the per-session ``audit.har``) cannot use our descriptors at
-all; those directories are pinned at creation and the HAR location is
-verified again when the context closes (detection, raising on violation),
-but a same-UID rename during the context's life could still redirect that
-one driver write before we can detect it. Directory modes are 0700 to narrow
-every one of these windows. Do not claim more than this.
+- traversal and dot-only ids ("..") rejected before any filesystem use;
+- preexisting symlink components and planted symlink filenames refused;
+- a directory swap or rename that has ALREADY happened when the walk or
+  the pre/post-write location check runs (the deterministic pre-creation
+  rename attack) is refused, and a component renamed away before the walk
+  is recreated inside the root so bytes never follow the moved inode.
+
+What is NOT closed - the checks are check-then-act, NOT atomic:
+
+- a rename or bind mount that lands AFTER the final post-write check still
+  escapes; the window is small but real;
+- the post-write unlink cannot undo bytes another process read from the
+  escaped file before the check ran;
+- HAR detection happens AFTER the Playwright driver has already written
+  audit.har, so escaped HAR bytes are detected, not prevented.
+
+Against a hostile same-UID actor there is no "zero escaped bytes"
+guarantee here. Full confinement needs mount namespaces, not path checks.
+Do not claim more than this.
 """
 from __future__ import annotations
 
@@ -203,13 +199,15 @@ class ArtifactRoot:
     # -- the atomic write ----------------------------------------------------
 
     def write_bytes(self, segments: tuple[str, ...] | list[str], filename: str, data: bytes) -> Path:
-        """Write ``data`` to ``root/<segments...>/<filename>`` swap-proof.
+        """Write ``data`` to ``root/<segments...>/<filename>`` with best-effort
+        containment (see the module docstring for exactly what is and is not
+        closed; the checks are non-atomic).
 
         The final open is O_CREAT | O_EXCL | O_NOFOLLOW relative to the held
         session-directory descriptor: a pre-existing file or a planted
-        symlink at the filename is refused, and a directory swap that lands
-        after the walk cannot redirect the write, because the bytes go
-        through the descriptor, not the path string.
+        symlink at the filename is refused, and a directory already swapped
+        or renamed when the checks run cannot redirect the write, because
+        the bytes go through the descriptor, not the path string.
         """
         validate_segment(filename, "artifact filename")
         dir_fd = self.open_dir(*segments, create=True)

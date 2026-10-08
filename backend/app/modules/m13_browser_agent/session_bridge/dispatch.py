@@ -172,9 +172,10 @@ class BridgedPage:
         """Return the PNG bytes; when ``path`` is given, also write them.
 
         A caller-supplied path must resolve inside the paired sessions'
-        pinned artifact root, and the write goes through the swap-proof
-        descriptor walk - a planted or swapped directory is refused, never
-        followed outside the root.
+        pinned artifact root, and the write goes through the confined
+        descriptor walk (non-atomic, best-effort; see artifact_directory's
+        docstring) - a directory already planted or swapped when the checks
+        run is refused, never followed outside the root.
         """
         mask_selectors = [item.selector for item in (mask or []) if isinstance(item, BridgedLocator)]
         result = await self._execute(CommandKind.SCREENSHOT,
