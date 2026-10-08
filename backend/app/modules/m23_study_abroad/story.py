@@ -46,6 +46,8 @@ class StoryRepository:
      committed=True
      return v
    except _IE as exc:
+    # Cleanup errors after a returned commit are not write collisions.
+    if committed:raise CommitOutcomeUnknown('story version call failed after a returned commit; the version persisted while the call failed; reconcile by listing current versions before resubmitting; no automatic retry, compensation or deduplication is performed') from exc
     kind=classify_integrity_error(exc)
     if kind=='unique':last=exc;continue
     if kind=='non_unique':raise IntegrityWriteError('story version write failed on a recognized non-collision integrity error; rolled back without write; not a version collision') from exc

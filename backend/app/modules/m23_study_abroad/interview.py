@@ -163,6 +163,15 @@ class IdentityInterviewRepository:
                     committed = True
                     return view
             except _IE as exc:
+                # Session.close can fail after commit returns successfully.
+                # Committed state takes precedence over driver classification:
+                # cleanup cannot turn a persisted answer into a retryable write.
+                if committed:
+                    raise CommitOutcomeUnknown(
+                        "interview answer call failed after a returned commit; the answer "
+                        "persisted while the call failed; reconcile by reading the interview "
+                        "before resubmitting; no automatic retry, compensation or "
+                        "deduplication is performed") from exc
                 kind = classify_integrity_error(exc)
                 if kind == "unique":
                     last = exc
