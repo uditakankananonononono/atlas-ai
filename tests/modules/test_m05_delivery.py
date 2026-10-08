@@ -163,8 +163,10 @@ def test_sender_failure_marks_failed_and_audits():
     service.record_decision(draft.id, approved=True)
     sender = FakeSender()
     delivery = DeliveryService(service, gate_for(approval), sender)
-    asyncio.run(delivery.send_approved(draft.id))
-    assert service.get_message(draft.id).status == "sent"
+    with pytest.raises(DeliveryApprovalError, match='claim'):
+        asyncio.run(delivery.send_approved(draft.id))
+    assert sender.calls == []
+    assert service.get_message(draft.id).status == "approved"
 
 
 def test_smtp_sender_builds_and_transmits_real_message():
