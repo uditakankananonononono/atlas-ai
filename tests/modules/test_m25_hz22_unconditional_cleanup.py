@@ -60,7 +60,8 @@ def test_hz22_unexpected_persist_failure_rolls_back_memory_and_preserves_unconfi
     # KILL: pre-hz22 an unexpected persist failure (not OSError /
     # ManifestOversizeError) escaped the rollback handler, so memory kept
     # claiming a version the manifest never recorded. hz22 drops the
-    # unrecorded claim; the original exception propagates. hz27 refined
+    # unrecorded claim. The readback repair now surfaces an unconfirmed
+    # restore as KnowledgeError, retaining the original exception as cause. hz27 refined
     # the on-disk outcome: this mock fails the claim persist AND the
     # restore rewrite, so the restore is unconfirmed and the version's
     # bytes are PRESERVED (a live manifest may still reference them) -
@@ -76,8 +77,10 @@ def test_hz22_unexpected_persist_failure_rolls_back_memory_and_preserves_unconfi
         raise RuntimeError('unexpected persist failure')
     monkeypatch.setattr(LocalKnowledgePipeline, '_persist_manifest', fail_second_persist)
     before = fd_count()
-    with pytest.raises(RuntimeError, match='unexpected persist failure'):
+    with pytest.raises(KnowledgeError, match='could not be confirmed restored') as caught:
         p.ingest(req())
+    assert isinstance(caught.value.__cause__, RuntimeError)
+    assert str(caught.value.__cause__) == 'unexpected persist failure'
     assert fd_count() == before
     assert p.records['s1'].versions == []
     kept = tmp_path / 'tenant-a' / 's1' / 'v1'
