@@ -1,7 +1,16 @@
 """Contracts for Module 7, Brand Collaboration Manager."""
 from datetime import date, datetime
 from typing import Any, Literal
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
+
+
+def _reject_bool_metrics(v):
+    """bool is an int subclass and pydantic lax float coerces True -> 1.0; refuse before coercion."""
+    if isinstance(v, dict):
+        for k, x in v.items():
+            if isinstance(x, bool):
+                raise ValueError(f"metric {k!r} must be a number, not a boolean")
+    return v
 
 class BrandDiscoveryIn(BaseModel):
     name: str = Field(min_length=1, max_length=200)
@@ -20,6 +29,7 @@ class MediaKitIn(BaseModel):
     metrics: dict[str, float] = Field(default_factory=dict)
     case_studies: list[dict[str, Any]] = Field(default_factory=list, max_length=20)
     period_start: date | None = None; period_end: date | None = None
+    _no_bool_metrics = field_validator("metrics", mode="before")(_reject_bool_metrics)
 
 class SponsorshipPackageIn(BaseModel):
     brand_id: str; currency: str = Field(default="USD", pattern=r"^[A-Z]{3}$")
@@ -44,6 +54,7 @@ class PartnershipEventOut(PartnershipEventIn):
 class ReportIn(BaseModel):
     brand_id: str; period_start: date; period_end: date; metrics: dict[str, float]
     narrative_notes: list[str] = Field(default_factory=list, max_length=100)
+    _no_bool_metrics = field_validator("metrics", mode="before")(_reject_bool_metrics)
 
 class ApprovalProposal(BaseModel):
     approval_id: str; action_type: Literal["send_brand_report", "send_brand_collateral", "send_invoice"]
