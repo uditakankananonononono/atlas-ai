@@ -235,17 +235,23 @@ class Service:
         if decision not in {ApprovalStatus.APPROVED, ApprovalStatus.DENIED}:
             raise ValueError("decision must be approved or denied")
         now = self._clock()
+        expired = False
         with self._sessions.begin() as db:
             row = self._fetch(db, approval_id)
-            if self._expire_if_overdue(db, row, now):
-                raise ApprovalConflictError("approval has expired")
-            if row.status != ApprovalStatus.PENDING.value:
-                raise ApprovalConflictError(f"approval already {row.status}")
-            row.status = decision.value
-            row.decided_at = now
-            row.approved_by = decided_by
-            db.add(ApprovalEventRow(approval_id=row.id, event=decision.value, actor=decided_by, at=now))
+            expired = self._expire_if_overdue(db, row, now)
+            if not expired:
+                if row.status != ApprovalStatus.PENDING.value:
+                    raise ApprovalConflictError(f"approval already {row.status}")
+                row.status = decision.value
+                row.decided_at = now
+                row.approved_by = decided_by
+                db.add(ApprovalEventRow(approval_id=row.id, event=decision.value, actor=decided_by, at=now))
             view = _view(row)
+        if expired:
+            # Raise only after committing expiry and its audit event.
+            self._broadcaster.publish({"type": "approval_expired", "approval_id": approval_id})
+            self._fire_callbacks(approval_id, view)
+            raise ApprovalConflictError("approval has expired")
         self._broadcaster.publish({"type": "approval_decision", "approval": _jsonable(view)})
         self._fire_callbacks(approval_id, view)
         return view
