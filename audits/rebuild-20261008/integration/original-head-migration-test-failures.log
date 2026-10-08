@@ -1,0 +1,20 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_________ test_model_unknown_upgrade_and_lossy_downgrade_hold[sqlite] __________
+tests/modules/test_m20_model_unknown_migration.py:39: in test_model_unknown_upgrade_and_lossy_downgrade_hold
+    result=run(['-m','alembic','downgrade','20261007_m20_risk_register']);assert result.returncode!=0 and 'Cannot remove unresolved M20 model outcome holds' in result.stderr
+                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   assert (1 != 0 and 'Cannot remove unresolved M20 model outcome holds' in 'Traceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>...t remove M16 identity protection automatically\')\nRuntimeError: Cannot remove M16 identity protection automatically\n')
+E    +  where 1 = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'downgrade', '20261007_m20_risk_reg... remove M16 identity protection automatically\')\nRuntimeError: Cannot remove M16 identity protection automatically\n').returncode
+E    +  and   'Traceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>...t remove M16 identity protection automatically\')\nRuntimeError: Cannot remove M16 identity protection automatically\n' = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'downgrade', '20261007_m20_risk_reg... remove M16 identity protection automatically\')\nRuntimeError: Cannot remove M16 identity protection automatically\n').stderr
+________ test_model_unknown_upgrade_and_lossy_downgrade_hold[postgres] _________
+tests/modules/test_m20_model_unknown_migration.py:39: in test_model_unknown_upgrade_and_lossy_downgrade_hold
+    result=run(['-m','alembic','downgrade','20261007_m20_risk_register']);assert result.returncode!=0 and 'Cannot remove unresolved M20 model outcome holds' in result.stderr
+                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   assert (1 != 0 and 'Cannot remove unresolved M20 model outcome holds' in 'Traceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>...t remove M16 identity protection automatically\')\nRuntimeError: Cannot remove M16 identity protection automatically\n')
+E    +  where 1 = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'downgrade', '20261007_m20_risk_reg... remove M16 identity protection automatically\')\nRuntimeError: Cannot remove M16 identity protection automatically\n').returncode
+E    +  and   'Traceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>...t remove M16 identity protection automatically\')\nRuntimeError: Cannot remove M16 identity protection automatically\n' = CompletedProcess(args=['/home/sandbox/atlas-ai/.venv/bin/python', '-m', 'alembic', 'downgrade', '20261007_m20_risk_reg... remove M16 identity protection automatically\')\nRuntimeError: Cannot remove M16 identity protection automatically\n').stderr
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_model_unknown_migration.py::test_model_unknown_upgrade_and_lossy_downgrade_hold[sqlite]
+FAILED tests/modules/test_m20_model_unknown_migration.py::test_model_unknown_upgrade_and_lossy_downgrade_hold[postgres]
+2 failed in 36.29s
