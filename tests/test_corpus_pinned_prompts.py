@@ -39,3 +39,10 @@ def test_actual_snapshot_manifest_identity_tamper(snapshot,fault):
  else:m['license_url']='https://example.invalid/license'
  p.write_text(json.dumps(m))
  with pytest.raises(ValueError):module.verify_snapshot(snapshot)
+def test_file_cap_never_writes_above_bound(tmp_path):
+ path=tmp_path/'bounded'
+ response=httpx.Response(200,content=b'x'*100000)
+ total,sha=module.stream_capped(response,path,100000)
+ assert total==path.stat().st_size==100000
+ with pytest.raises(ValueError):module.stream_capped(response,path,1000)
+ assert path.stat().st_size<=1000
