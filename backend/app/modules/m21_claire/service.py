@@ -56,9 +56,12 @@ class Service:
   item=self.goals[goal_id]
   if self._owners.get(goal_id)!=(tenant_id,actor_id):raise KeyError(goal_id)
   return item
+ def _run_identity(self,goal_id:str):
+  t,a=self._owners.get(goal_id,(None,None))
+  return {"tenant_id":t,"actor_id":a} if (t is not None or a is not None) else {}
  async def realize(self,goal_id:str):
   item=self.goals[goal_id];budget=item.limits.get("budget",{"seconds":1800,"tokens":200000,"money":0})
-  run=await self.cognitive.start(item.goal,{"acceptance":item.acceptance,"environment":"atlas","optional_paired_local_pc":self.local_client is not None,"bounded_retries":self.max_retries,"local_control_requires_user_consent":True,"external_messages_and_spend_require_per_action_approval":True},budget);item.run_id=run.id;item.status=run.status.value;item.evidence=[{"phase":t.phase,"summary":t.summary,"evidence":t.evidence,"decision":t.decision,"policy_basis":t.policy_basis} for t in run.traces]
+  run=await self.cognitive.start(item.goal,{"acceptance":item.acceptance,"environment":"atlas","optional_paired_local_pc":self.local_client is not None,"bounded_retries":self.max_retries,"local_control_requires_user_consent":True,"external_messages_and_spend_require_per_action_approval":True},budget,**self._run_identity(goal_id));item.run_id=run.id;item.status=run.status.value;item.evidence=[{"phase":t.phase,"summary":t.summary,"evidence":t.evidence,"decision":t.decision,"policy_basis":t.policy_basis} for t in run.traces]
   if run.status in {State.FAILED,State.BLOCKED}:item.escalation="Claire paused after bounded attempts or an unmet approval/dependency. User decision required."
   return item
  def request_environment_change(self,goal_id:str,operation:str,preview:dict[str,Any],*,tenant_id:str|None=None,extra:dict[str,Any]|None=None,ttl_seconds:int|None=None):
