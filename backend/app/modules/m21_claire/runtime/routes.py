@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
 from .acceptance import ToolReceiptCriterion
-from .goals import GoalStore, SelfApprovalRefused
+from .goals import GoalNotGrantable, GoalStore, SelfApprovalRefused
 from .redaction import scrub_text
 
 router = APIRouter(prefix="/runtime", tags=["claire-runtime"])
@@ -106,6 +106,8 @@ def approve(goal_id: str, body: ApprovalIn, tenant: TenantContext = Depends(requ
                           approver=tenant.actor_id, ttl_seconds=body.ttl_seconds)
     except SelfApprovalRefused:
         raise HTTPException(403, "self_approval_refused") from None
+    except GoalNotGrantable:
+        raise HTTPException(409, "goal_not_grantable") from None
     return {"approval_id": aid, "goal_id": goal_id, "capability": body.capability, "gate": body.gate, "single_use": True,
             "approver": tenant.actor_id, "self_approved": tenant.actor_id == goal["actor_id"]}
 
