@@ -5,9 +5,31 @@ revision='20261008_m21_runtime_goals'
 down_revision='20261008_m16_identity_forward'
 branch_labels=None
 depends_on=None
+EXPECTED_COLUMNS={'id':(sa.String,False),'tenant_id':(sa.String,False),'actor_id':(sa.String,False),'purpose':(sa.Text,False),
+ 'criteria':(sa.Text,False),'max_steps':(sa.Integer,False),'status':(sa.String,False),'attempts':(sa.Integer,False),
+ 'lease_owner':(sa.String,True),'lease_token':(sa.String,True),'lease_expires_at':(sa.String,True),'blocker':(sa.String,True),
+ 'report':(sa.Text,True),'verdict':(sa.Text,True),'created_at':(sa.String,False),'updated_at':(sa.String,False)}
+EXPECTED_INDEXES={'ix_claire_runtime_goals_tenant_id':['tenant_id'],'ix_claire_runtime_goals_actor_id':['actor_id'],'ix_claire_runtime_goals_status':['status']}
+def _verify_existing(inspector):
+ """A table that already exists is accepted only if its shape matches exactly; otherwise refuse loudly."""
+ problems=[]
+ columns={c['name']:c for c in inspector.get_columns('claire_runtime_goals')}
+ for name,(kind,nullable) in EXPECTED_COLUMNS.items():
+  col=columns.get(name)
+  if col is None:problems.append(f'missing column {name}');continue
+  if not isinstance(col['type'],kind) or (kind is sa.String and isinstance(col['type'],sa.Text)) or (kind is sa.Text and not isinstance(col['type'],sa.Text)):
+   problems.append(f'column {name} has type {type(col["type"]).__name__}')
+  if bool(col['nullable'])!=nullable:problems.append(f'column {name} nullability differs')
+ for name in sorted(set(columns)-set(EXPECTED_COLUMNS)):problems.append(f'unexpected column {name}')
+ if inspector.get_pk_constraint('claire_runtime_goals').get('constrained_columns')!=['id']:problems.append('primary key is not (id)')
+ indexes={i['name']:i['column_names'] for i in inspector.get_indexes('claire_runtime_goals')}
+ for name,cols in EXPECTED_INDEXES.items():
+  if indexes.get(name)!=cols:problems.append(f'missing or wrong index {name}')
+ if problems:raise RuntimeError('claire_runtime_goals already exists with an incompatible shape; refusing to stamp it: '+'; '.join(problems))
 def upgrade():
  inspector=sa.inspect(op.get_bind())
- if 'claire_runtime_goals' in inspector.get_table_names():return
+ if 'claire_runtime_goals' in inspector.get_table_names():
+  _verify_existing(inspector);return
  op.create_table('claire_runtime_goals',
   sa.Column('id',sa.String(36),primary_key=True),
   sa.Column('tenant_id',sa.String(200),nullable=False),
