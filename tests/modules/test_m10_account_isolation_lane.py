@@ -92,3 +92,55 @@ def test_migration_scopes_unique_per_account_and_backfills_draft_account(tmp_pat
         import pytest
         with pytest.raises(sqlite3.IntegrityError):
             ins("acc-a", "m-dup")  # same account + gmail_id: still rejected
+
+
+def _alembic(db, *args):
+    import os, subprocess
+    env = {**os.environ, "ATLAS_DATABASE_URL": f"sqlite:///{db}"}
+    return subprocess.run([sys.executable, "-m", "alembic", *args], env=env,
+                          text=True, capture_output=True, timeout=120)
+
+
+def _shape(db):
+    import sqlite3
+    with sqlite3.connect(db) as c:
+        uq = sorted(
+            tuple(r[2] for r in c.execute(f"pragma index_info('{i[1]}')"))
+            for i in c.execute("pragma index_list('m10_email_messages')") if i[2])
+        dcols = [r[1] for r in c.execute("pragma table_info('m10_email_drafts')")]
+    return uq, "account_id" in dcols
+
+
+def test_migration_up_down_up_on_real_sqlite_file(tmp_path):
+    import sqlite3
+    db = tmp_path / "cycle.sqlite"
+    assert _alembic(db, "upgrade", "head").returncode == 0
+    up_shape = _shape(db)
+    assert ("tenant_id", "account_id", "gmail_id") in up_shape[0] and up_shape[1] is True
+    assert ("tenant_id", "gmail_id") not in up_shape[0]
+    r = _alembic(db, "downgrade", "20261008_m16_identity_forward")
+    assert r.returncode == 0, r.stderr
+    down_shape = _shape(db)
+    assert ("tenant_id", "gmail_id") in down_shape[0] and down_shape[1] is False
+    assert ("tenant_id", "account_id", "gmail_id") not in down_shape[0]
+    r = _alembic(db, "upgrade", "head")
+    assert r.returncode == 0, r.stderr
+    assert _shape(db) == up_shape
+    # second full cycle too
+    assert _alembic(db, "downgrade", "20261008_m16_identity_forward").returncode == 0
+    assert _alembic(db, "upgrade", "head").returncode == 0
+    assert _shape(db) == up_shape
+
+
+def test_migration_downgrade_refuses_when_collision_would_lose_uniqueness(tmp_path):
+    import sqlite3
+    db = tmp_path / "refuse.sqlite"
+    assert _alembic(db, "upgrade", "head").returncode == 0
+    with sqlite3.connect(db) as c:
+        for acc, mid in (("acc-a", "m1"), ("acc-b", "m2")):
+            c.execute(
+                "insert into m10_email_messages (tenant_id,id,account_id,gmail_id,subject,sender,recipients,snippet,body_text,labels,headers,category_confidence,created_at)"
+                " values ('t',?,?,'g1','s','x','[]','','','[]','{}',0.5,'2026-01-01')", (mid, acc))
+    r = _alembic(db, "downgrade", "20261008_m16_identity_forward")
+    assert r.returncode != 0 and "Cannot downgrade" in r.stderr
+    assert _shape(db)[1] is True  # nothing half-applied
