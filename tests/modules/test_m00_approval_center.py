@@ -286,3 +286,25 @@ def test_policies_are_tenant_isolated(service):
     assert service.evaluate_policy(module_id=5, action_type="send_email", tenant_id="tenant-b")[0] == "deny"
     assert service.evaluate_policy(module_id=5, action_type="send_email", tenant_id="tenant-c")[0] == "review"
     assert [p["tenant_id"] for p in service.list_policies(tenant_id="tenant-a")] == ["tenant-a"]
+
+
+def test_rejected_expired_decision_persists_expiry_without_readback(service, clock):
+    view = submit(service, ttl_seconds=1)
+    callbacks = []
+    subscriber = service.broadcaster.subscribe()
+    service.register_callback(view['id'], callbacks.append)
+    clock.now = T0 + timedelta(seconds=2)
+    with pytest.raises(ApprovalConflictError, match='expired'):
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    # Inspect durable state directly. Service.get would mask a rolled-back
+    # expiry by lazily applying it again in a different transaction.
+    from app.modules.m00_approval_center.service import ApprovalRequestRow
+    with service._sessions() as db:
+        assert db.get(ApprovalRequestRow, view['id']).status == ApprovalStatus.EXPIRED.value
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', 'expired']
+    assert len(callbacks) == 1 and callbacks[0]['status'] == ApprovalStatus.EXPIRED
+    assert subscriber.get_nowait()['type'] == 'approval_expired'
+    with pytest.raises(ApprovalConflictError):
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    assert len(callbacks) == 1
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', 'expired']
