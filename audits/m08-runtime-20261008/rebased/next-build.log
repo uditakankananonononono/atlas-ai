@@ -1,0 +1,37 @@
+
+> review-first-landing@1.0.0 build
+> next build --webpack
+
+▲ Next.js 16.4.0 (webpack)
+✓ Running next.config.mjs took 18ms
+- Experiments (use with caution):
+  · cpus: 2
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 7.7s
+  Running TypeScript ...
+
+  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+  	- include was updated to add '.next/dev/types/**/*.ts'
+
+  Finished TypeScript in 2.3s ...
+  Collecting page data using 2 workers ...
+  Generating static pages using 2 workers (0/4) ...
+  Generating static pages using 2 workers (1/4) 
+  Generating static pages using 2 workers (2/4) 
+  Generating static pages using 2 workers (3/4) 
+✓ Generating static pages using 2 workers (4/4) in 249ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+└ ƒ /api/waitlist
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
