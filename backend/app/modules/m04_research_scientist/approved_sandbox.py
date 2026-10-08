@@ -281,23 +281,40 @@ class DockerBackend:
             limits: ExecutionLimits) -> SandboxRun:
         if not self.available(language):
             raise BackendUnavailableError("docker is not installed")
-        os.chmod(output_dir, 0o777)  # container runs as nobody
-        name = f"atlas-sbx-{uuid4().hex[:12]}"
-        logs = Path(tempfile.mkdtemp(prefix="atlas-sbx-logs-"))
-
-        def kill(_proc: Any) -> None:
-            subprocess.run([self.docker or "docker", "kill", name], capture_output=True, timeout=30)
-
-        started, t0 = _now(), time.monotonic()
+        # Snapshot into a private staging directory before granting the container
+        # nobody user read/traverse access. Never chmod caller-owned inputs.
+        staging = Path(tempfile.mkdtemp(prefix="atlas-docker-input-"))
+        logs = None
         try:
+            # Caller supplies a trusted, stable snapshot for the copy duration.
+            # This check is not a defense against concurrent malicious writers.
+            if input_dir.is_symlink():
+                raise ValueError("Docker input root must not be a symlink")
+            for source in input_dir.rglob("*"):
+                if source.is_symlink() or not (source.is_file() or source.is_dir()):
+                    raise ValueError("Docker inputs must be regular files/directories, not links")
+            shutil.copytree(input_dir, staging, dirs_exist_ok=True)
+            os.chmod(staging, 0o755)
+            for item in staging.rglob("*"):
+                os.chmod(item, 0o755 if item.is_dir() else 0o644)
+            os.chmod(output_dir, 0o777)  # container runs as nobody
+            name = f"atlas-sbx-{uuid4().hex[:12]}"
+            logs = Path(tempfile.mkdtemp(prefix="atlas-sbx-logs-"))
+
+            def kill(_proc: Any) -> None:
+                subprocess.run([self.docker or "docker", "kill", name], capture_output=True, timeout=30)
+
+            started, t0 = _now(), time.monotonic()
             code, timed_out = self.process_runner(
-                self.command(name, language, input_dir, output_dir, limits),
+                self.command(name, language, staging, output_dir, limits),
                 stdout_path=logs / "stdout", stderr_path=logs / "stderr",
                 timeout=limits.timeout_seconds, on_timeout=kill)
             out, out_cut = _read_capped(logs / "stdout", limits.max_log_bytes)
             err, err_cut = _read_capped(logs / "stderr", limits.max_log_bytes)
         finally:
-            shutil.rmtree(logs, ignore_errors=True)
+            if logs is not None:
+                shutil.rmtree(logs, ignore_errors=True)
+            shutil.rmtree(staging, ignore_errors=True)
         return SandboxRun(
             backend=self.name,
             isolation={"network": "none", "image": self.images[language], "user": "65534:65534",

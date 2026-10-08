@@ -62,3 +62,45 @@ def explicit_local_auth_opt_in(monkeypatch):
     # Tests of deployment defaults remove this explicit opt-in.
     monkeypatch.setenv("ATLAS_DEV_NO_AUTH", "1")
     monkeypatch.setenv("ATLAS_ENV", "development")
+
+
+def _check_bubblewrap_probe(probe):
+    """Only exact known OS-capability refusals count as unavailable environment."""
+    refusals = {
+        "bwrap: Creating new namespace failed: Operation not permitted",
+        "bwrap: Creating new namespace failed: Permission denied",
+        "bwrap: No permissions to create new namespace, likely because the kernel does not allow non-privileged user namespaces. See <https://deb.li/bubblewrap> or <file:///usr/share/doc/bubblewrap/README.Debian.gz>.",
+    }
+    if probe.returncode != 0 and not probe.stdout and probe.stderr.strip() in refusals:
+        pytest.skip(f"REAL ISOLATION UNVERIFIED: {probe.stderr.strip()}")
+    assert probe.returncode == 0, f"bubblewrap probe failed: {probe.returncode}: {probe.stderr}"
+    assert probe.stdout == "atlas-isolation-probe\n", repr(probe.stdout)
+    assert not probe.stderr, probe.stderr
+
+
+@pytest.fixture(scope="session")
+def real_bubblewrap_environment():
+    """Gate only explicit-bubblewrap acceptance tests on real namespace support."""
+    import subprocess
+    import tempfile
+    from pathlib import Path
+    from app.modules.m04_research_scientist.approved_sandbox import BubblewrapBackend
+    backend = BubblewrapBackend()
+    if backend.bwrap is None:
+        pytest.skip("REAL ISOLATION UNVERIFIED: bubblewrap binary is absent")
+    assert backend.available("python"), "bubblewrap Python interpreter/configuration is invalid"
+    with tempfile.TemporaryDirectory(prefix="atlas-test-bwrap-probe-") as td:
+        root = Path(td)
+        inputs = root / "in"; inputs.mkdir()
+        outputs = root / "out"; outputs.mkdir()
+        (inputs / "analysis.py").write_text("print('atlas-isolation-probe')")
+        # Missing binary, namespace refusal alone may skip. Other OSError and
+        # timeout propagate as test errors; malformed commands must stay red.
+        try:
+            probe = subprocess.run(backend.command("python", inputs, outputs),
+                                   capture_output=True, text=True, timeout=10)
+        except FileNotFoundError as exc:
+            if exc.filename == backend.bwrap:
+                pytest.skip("REAL ISOLATION UNVERIFIED: bubblewrap binary disappeared")
+            raise
+        _check_bubblewrap_probe(probe)

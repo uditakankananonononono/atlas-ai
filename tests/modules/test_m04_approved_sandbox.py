@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import shutil
 from pathlib import Path
 
@@ -605,3 +606,100 @@ def test_beat_task_files_for_every_tenant_and_executes_nothing(center, tmp_path,
         RerunScheduleService(ex).create(scope="analysis", target=orig, interval_hours=1,
                                         first_due_at=datetime.now(timezone.utc) - timedelta(minutes=1))
     assert propose_due_reruns() == {"tenants": 2, "filed": 2, "skipped_open": 0, "errors": 0, "executed": 0}
+
+
+def test_docker_private_input_snapshot_permissions_and_cleanup(tmp_path):
+    """Nobody can read staged inputs, but caller-owned inputs are unchanged."""
+    original = tmp_path / "private-in"; original.mkdir(mode=0o700)
+    (original / "data").mkdir(mode=0o700)
+    (original / "analysis.py").write_text("print(4)")
+    (original / "data" / "private.txt").write_text("fixture")
+    os.chmod(original / "analysis.py", 0o600)
+    os.chmod(original / "data" / "private.txt", 0o600)
+    output = tmp_path / "out"; output.mkdir()
+    observed = []
+    def runner(args, **kw):
+        mount = next(args[i+1] for i,a in enumerate(args) if a == "-v" and args[i+1].endswith(":/input:ro"))
+        stage = Path(mount.removesuffix(":/input:ro")); observed.append(stage)
+        assert stage != original
+        assert stage.stat().st_mode & 0o777 == 0o755
+        assert (stage / "data").stat().st_mode & 0o777 == 0o755
+        for file in (stage / "analysis.py", stage / "data" / "private.txt"):
+            assert file.stat().st_mode & 0o777 == 0o644
+        assert (stage / "data" / "private.txt").read_text() == "fixture"
+        assert args[args.index("--user")+1] == "65534:65534"
+        kw["stdout_path"].write_bytes(b"4\n"); kw["stderr_path"].write_bytes(b"")
+        return 0, False
+    result = DockerBackend(docker="docker", process_runner=runner).run(
+        language="python", input_dir=original, output_dir=output, limits=ExecutionLimits())
+    assert result.exit_code == 0 and result.stdout == b"4\n"
+    assert original.stat().st_mode & 0o777 == 0o700
+    assert (original / "data").stat().st_mode & 0o777 == 0o700
+    assert (original / "analysis.py").stat().st_mode & 0o777 == 0o600
+    assert (original / "data" / "private.txt").stat().st_mode & 0o777 == 0o600
+    assert not observed[0].exists()
+
+
+def test_docker_input_symlink_refused_before_launch(tmp_path):
+    source = tmp_path / "in"; source.mkdir()
+    outside = tmp_path / "private"; outside.write_text("outside")
+    (source / "link").symlink_to(outside)
+    output = tmp_path / "out"; output.mkdir()
+    def forbidden(*args, **kwargs):
+        pytest.fail("must not launch container with linked input")
+    with pytest.raises(ValueError, match="not links"):
+        DockerBackend(docker="docker", process_runner=forbidden).run(
+            language="python", input_dir=source, output_dir=output, limits=ExecutionLimits())
+
+
+def test_docker_input_snapshot_removed_after_launcher_error(tmp_path):
+    inputs = tmp_path / "in"; inputs.mkdir()
+    (inputs / "analysis.py").write_text("print(4)")
+    output = tmp_path / "out"; output.mkdir()
+    observed = []
+    def fail(args, **kw):
+        mount = next(args[i+1] for i,a in enumerate(args) if a == "-v" and args[i+1].endswith(":/input:ro"))
+        observed.append(Path(mount.removesuffix(":/input:ro")))
+        raise OSError("fixture launcher failed")
+    with pytest.raises(OSError, match="fixture launcher failed"):
+        DockerBackend(docker="docker", process_runner=fail).run(
+            language="python", input_dir=inputs, output_dir=output, limits=ExecutionLimits())
+    assert observed and not observed[0].exists()
+
+
+@pytest.mark.parametrize("fail_at", ["output_chmod", "logs_creation"])
+def test_docker_staging_cleanup_before_launcher(tmp_path, monkeypatch, fail_at):
+    from app.modules.m04_research_scientist import approved_sandbox as module
+    inputs = tmp_path / "in"; inputs.mkdir()
+    (inputs / "analysis.py").write_text("print(4)")
+    output = tmp_path / "out"; output.mkdir()
+    stages = []
+    original_mkdtemp = module.tempfile.mkdtemp
+    original_chmod = module.os.chmod
+    def mkdtemp(*args, **kwargs):
+        if kwargs.get("prefix") == "atlas-sbx-logs-" and fail_at == "logs_creation":
+            raise OSError("fixture logs creation")
+        path = original_mkdtemp(*args, **kwargs)
+        if kwargs.get("prefix") == "atlas-docker-input-":
+            stages.append(Path(path))
+        return path
+    def chmod(path, mode, **kwargs):
+        if Path(path) == output and fail_at == "output_chmod":
+            raise OSError("fixture output chmod")
+        return original_chmod(path, mode, **kwargs)
+    monkeypatch.setattr(module.tempfile, "mkdtemp", mkdtemp)
+    monkeypatch.setattr(module.os, "chmod", chmod)
+    with pytest.raises(OSError, match="fixture"):
+        DockerBackend(docker="docker").run(language="python", input_dir=inputs,
+                                          output_dir=output, limits=ExecutionLimits())
+    assert stages and not stages[0].exists()
+
+
+def test_docker_symlink_root_refused(tmp_path):
+    inputs = tmp_path / "real"; inputs.mkdir()
+    (inputs / "secret").write_text("private")
+    linked = tmp_path / "linked"; linked.symlink_to(inputs, target_is_directory=True)
+    output = tmp_path / "out"; output.mkdir()
+    with pytest.raises(ValueError, match="root must not be a symlink"):
+        DockerBackend(docker="docker").run(language="python", input_dir=linked,
+                                          output_dir=output, limits=ExecutionLimits())
