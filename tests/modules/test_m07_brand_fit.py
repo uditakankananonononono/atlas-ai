@@ -18,7 +18,7 @@ def test_stemming_matches_inflections():
     r = rank_brands("teaching girls", [], [("a", "girl teacher programs", [])])
     assert r[0].text_cosine > 0
 
-def test_scores_bounded_identical_text_is_near_one():
+def test_identical_text_and_tags_score_one():
     r = rank_brands("alpha beta gamma", ["x"], [("a", "alpha beta gamma", ["x"])])
     assert math.isclose(r[0].score, 1.0, abs_tol=1e-9)
 
