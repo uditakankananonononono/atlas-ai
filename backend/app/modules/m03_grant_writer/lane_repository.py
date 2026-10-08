@@ -6,7 +6,7 @@ from collections import Counter
 from datetime import datetime
 from typing import Iterable
 
-from .lane_models import CorpusDocument, GroundingHit, Opportunity
+from .lane_models import CorpusDocument, GroundingHit, Opportunity, ValidationError
 
 _TOKEN = re.compile(r"[a-z0-9][a-z0-9_-]+")
 
@@ -39,8 +39,16 @@ class GrantCorpus:
         opportunities: Iterable[Opportunity] = (),
         documents: Iterable[CorpusDocument] = (),
     ) -> None:
-        self._opportunities = {item.id: item for item in opportunities}
-        self._documents = {item.id: item for item in documents}
+        self._opportunities = {}
+        for item in opportunities:
+            if item.id in self._opportunities:
+                raise ValidationError(f"duplicate opportunity id: {item.id}")
+            self._opportunities[item.id] = item
+        self._documents = {}
+        for item in documents:
+            if item.id in self._documents:
+                raise ValidationError(f"duplicate document id: {item.id}")
+            self._documents[item.id] = item
 
     def get_opportunity(self, opportunity_id: str, *, as_of: datetime) -> Opportunity:
         item = self._opportunities.get(opportunity_id)
