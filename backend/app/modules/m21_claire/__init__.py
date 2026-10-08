@@ -6,7 +6,7 @@ try:
 except ImportError:
  spec={"id":21,"slug":"claire","name":"Claire Personal Assistant / Idea Realisation Engine","router":router,"service_type":Service}
 from .audit import AuditEvent, AuditIntegrityError, AuditJournal
-from .execution import AttemptsExhausted, BoundedExecutor, ExecutionResult, IdempotencyConflict, IdempotencyStore
+from .execution import AttemptsExhausted, BoundedExecutor, EffectUnknown, ExecutionResult, IdempotencyConflict, IdempotencyStore
 from .memory import ConsentError, DecisionStore
 from .models import ActionRequest, Approval, DecisionRecord, Evidence, ExecutionPlan, PlanState, Preference, ReviewSnapshot, RiskLevel, StepState
 from .orchestrator import ExecutionOrchestrator, ExecutorNotRegistered, ReviewMismatch
