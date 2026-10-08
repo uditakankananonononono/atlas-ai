@@ -1568,7 +1568,7 @@ from app.core.database import engine as atlas_engine
 from .runtime import GCWRuntime
 from .runtime_routes import router as durable_runtime_router, bind_runtime
 from .sql_repository import GCWRepository
-_durable_runtime_repo = GCWRepository(atlas_engine, tenant_id="local")
+_durable_runtime_repo = GCWRepository(atlas_engine, tenant_id="local", enable_event_outbox=os.getenv("ATLAS_M20_EVENT_OUTBOX") == "1")
 # Alembic owns production schema lifecycle; local auto-create is explicit.
 if os.getenv("ATLAS_AUTO_CREATE_SCHEMA") == "1":
     _durable_runtime_repo.create_schema()

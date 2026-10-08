@@ -104,15 +104,23 @@ def _aware(dt: datetime) -> datetime:
 class GCWRepository:
     """CRUD over the GCW's durable rows. Engine injected; no work at import."""
 
-    def __init__(self, engine: sa.engine.Engine, *, tenant_id: str = "default") -> None:
+    def __init__(self, engine: sa.engine.Engine, *, tenant_id: str = "default", enable_event_outbox: bool = False) -> None:
         if not tenant_id:
             raise ValueError("tenant_id is required")
+        self.enable_event_outbox = enable_event_outbox
+        if enable_event_outbox:
+            if engine.dialect.name != 'postgresql':
+                raise ValueError('runtime event outbox requires PostgreSQL')
+            from .event_outbox import RuntimeEventRow
+            with engine.connect() as conn:
+                conn.execute(sa.select(RuntimeEventRow.event_id).limit(1))
         self.engine = engine
         self.tenant_id = tenant_id
         self._execution_session = ContextVar("gcw_execution_session", default=None)
         self._session_factory = sessionmaker(bind=engine, expire_on_commit=False)
 
     def create_schema(self) -> None:
+        from .event_outbox import RuntimeEventRow
         Base.metadata.create_all(self.engine)
 
     def _session(self) -> Session:
@@ -133,6 +141,12 @@ class GCWRepository:
                 self.save_task(context)
                 for action in actions: self.save_action(action)
                 for trace in traces: self.save_trace(trace)
+                if self.enable_event_outbox:
+                    from .event_outbox import RuntimeEventRow, event_values
+                    from sqlalchemy.dialects.postgresql import insert
+                    values = event_values(self.tenant_id, context, actions)
+                    session.execute(insert(RuntimeEventRow).values(**values).on_conflict_do_nothing(
+                        index_elements=['event_id']))
                 session.commit()
             finally:
                 self._execution_session.reset(token)
@@ -243,6 +257,16 @@ class GCWRepository:
             return [Episode(**row.payload_json) for row in query.all()]
 
     # -- semantic facts ----------------------------------------------------
+
+    def list_runtime_events(self, *, limit=100):
+        from .event_outbox import RuntimeEventRow, payload_for
+        if type(limit) is not int or not 1 <= limit <= 1000:
+            raise ValueError('runtime event limit must be 1..1000')
+        with self._session() as session:
+            rows = session.scalars(sa.select(RuntimeEventRow).where(
+                RuntimeEventRow.tenant_id == self.tenant_id).order_by(
+                RuntimeEventRow.event_id).limit(limit)).all()
+            return [{**payload_for(row), 'delivered': row.delivered} for row in rows]
 
     def save_fact(self, fact: SemanticFact) -> SemanticFact:
         with self._session() as session:
