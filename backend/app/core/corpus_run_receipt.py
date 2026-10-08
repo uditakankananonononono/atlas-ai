@@ -5,6 +5,7 @@ from pathlib import Path
 
 def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100):
  if mode not in {'verify','collect'}:raise ValueError('mode must be verify or collect')
+ if mode=='collect' and (isinstance(max_rows,bool) or not isinstance(max_rows,int) or not 1<=max_rows<=100000):raise ValueError('collect rows must be integer 1..100000')
  db=Path(db_path).resolve();export=Path(export_path).resolve();receipt=Path(receipt_path).resolve()
  if receipt in {db,export,export.with_suffix(export.suffix+'.manifest.json')}:raise ValueError('receipt cannot replace corpus artifacts')
  if receipt.exists():raise FileExistsError('receipt destination already exists')
@@ -14,7 +15,10 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100)
  command=[sys.executable,'-m','app.core.corpus_cli','verify','--db',str(db),'--export',str(export)] if mode=='verify' else [sys.executable,'-m','app.core.corpus_locked_cli','--db',str(db),'--export',str(export),'--max-rows',str(max_rows)]
  env={**os.environ,'PYTHONPATH':str(root/'backend')}
  started=datetime.now(timezone.utc).isoformat();start=time.monotonic()
- result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True)
+ launch_error=None
+ try:result=subprocess.run(command,cwd=root,env=env,capture_output=True,text=True)
+ except OSError as exc:
+  launch_error=type(exc).__name__;result=subprocess.CompletedProcess(command,None,stdout='',stderr='')
  elapsed=time.monotonic()-start
  output=None
  if result.returncode==0:
@@ -23,6 +27,7 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100)
  success=result.returncode==0 and isinstance(output,dict) and output.get('status')=='verified'
  # Do not persist absolute paths, raw stderr, environment or credentials.
  report={'mode':mode,'source_head':revision,'source_tree_dirty':bool(dirty),'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'elapsed_seconds':elapsed,'exit_status':result.returncode,'status':'verified' if success else 'failed','stdout_sha256':hashlib.sha256(result.stdout.encode()).hexdigest(),'stderr_sha256':hashlib.sha256(result.stderr.encode()).hexdigest(),'command_template':'python -m app.core.corpus_cli verify --db <corpus> --export <export>' if mode=='verify' else 'python -m app.core.corpus_locked_cli --db <corpus> --export <export> --max-rows N','max_rows':max_rows if mode=='collect' else None,'training_performed':False}
+ if launch_error:report['launch_error_type']=launch_error
  if success:report['result']={k:output[k] for k in ('stored_rows_verified','nonempty_export_rows_verified','next_offset','export_sha256')}
  receipt.parent.mkdir(parents=True,exist_ok=True)
  # Fully write/fsync temp, then atomically hard-link into absent receipt.
