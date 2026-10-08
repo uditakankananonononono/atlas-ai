@@ -12,10 +12,10 @@ class StripeClient:
   async with httpx.AsyncClient(timeout=30,transport=self.transport) as client:r=await client.delete(f"https://api.stripe.com/v1/subscriptions/{subscription_id}",headers={"Authorization":f"Bearer {self.key}","Idempotency-Key":approval_id})
   r.raise_for_status();return r.json()
  async def create_invoice(self,customer_id,description,amount_cents,currency,approval_id):
-  headers={"Authorization":f"Bearer {self.key}","Idempotency-Key":approval_id}
+  headers={"Authorization":f"Bearer {self.key}"}
   async with httpx.AsyncClient(timeout=30,transport=self.transport) as client:
-   item=await client.post("https://api.stripe.com/v1/invoiceitems",headers=headers,data={"customer":customer_id,"description":description,"amount":str(amount_cents),"currency":currency});item.raise_for_status()
-   invoice=await client.post("https://api.stripe.com/v1/invoices",headers=headers,data={"customer":customer_id,"auto_advance":"false","metadata[atlas_approval_id]":approval_id});invoice.raise_for_status();return invoice.json()
+   item=await client.post("https://api.stripe.com/v1/invoiceitems",headers={**headers,"Idempotency-Key":f"{approval_id}:invoice-item"},data={"customer":customer_id,"description":description,"amount":str(amount_cents),"currency":currency});item.raise_for_status()
+   invoice=await client.post("https://api.stripe.com/v1/invoices",headers={**headers,"Idempotency-Key":f"{approval_id}:draft-invoice"},data={"customer":customer_id,"auto_advance":"false","metadata[atlas_approval_id]":approval_id});invoice.raise_for_status();return invoice.json()
 
 
 class UnconfiguredStripeClient:

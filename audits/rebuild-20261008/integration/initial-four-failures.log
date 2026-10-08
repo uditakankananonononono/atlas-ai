@@ -1,0 +1,55 @@
+........................................................................ [  7%]
+........................................................................ [ 14%]
+........................................................................ [ 21%]
+........................................................................ [ 29%]
+........................................................................ [ 36%]
+........................................................................ [ 43%]
+........................................................................ [ 51%]
+........................................................................ [ 58%]
+..................................................................FFF.F. [ 65%]
+........................................................................ [ 73%]
+........................................................................ [ 80%]
+..................................................s..................... [ 87%]
+........................................................................ [ 95%]
+................................................                         [100%]
+=================================== FAILURES ===================================
+________________ test_decide_pending_approval_records_decision _________________
+tests/modules/test_m16_hz30_decide_race.py:62: in test_decide_pending_approval_records_decision
+    decided = repo.decide(a.id, ApprovalState.APPROVED, 'looks good', NOW)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/repository.py:82: in decide
+    claimed=db.execute(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value).values(state=state.value,reviewed_at=at,reviewed_by=self.actor_id,review_note=note)).rowcount
+                       ^^^^^^
+E   NameError: name 'update' is not defined
+_____________ test_second_decide_returns_none_and_preserves_first ______________
+tests/modules/test_m16_hz30_decide_race.py:72: in test_second_decide_returns_none_and_preserves_first
+    first = repo.decide(a.id, ApprovalState.APPROVED, 'first', NOW)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/repository.py:82: in decide
+    claimed=db.execute(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value).values(state=state.value,reviewed_at=at,reviewed_by=self.actor_id,review_note=note)).rowcount
+                       ^^^^^^
+E   NameError: name 'update' is not defined
+____________ test_competitor_decision_between_check_and_write_wins _____________
+tests/modules/test_m16_hz30_decide_race.py:112: in test_competitor_decision_between_check_and_write_wins
+    result = repo.decide(a.id, ApprovalState.APPROVED, 'approved note', NOW)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/repository.py:82: in decide
+    claimed=db.execute(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value).values(state=state.value,reviewed_at=at,reviewed_by=self.actor_id,review_note=note)).rowcount
+                       ^^^^^^
+E   NameError: name 'update' is not defined
+___________ test_concurrent_decides_exactly_one_claim_lands_postgres ___________
+tests/modules/test_m16_hz30_decide_race.py:168: in test_concurrent_decides_exactly_one_claim_lands_postgres
+    assert not errors
+E   assert not [NameError("name 'update' is not defined"), NameError("name 'update' is not defined"), NameError("name 'update' is not...e 'update' is not defined"), NameError("name 'update' is not defined"), NameError("name 'update' is not defined"), ...]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m16_hz30_decide_race.py::test_decide_pending_approval_records_decision
+FAILED tests/modules/test_m16_hz30_decide_race.py::test_second_decide_returns_none_and_preserves_first
+FAILED tests/modules/test_m16_hz30_decide_race.py::test_competitor_decision_between_check_and_write_wins
+FAILED tests/modules/test_m16_hz30_decide_race.py::test_concurrent_decides_exactly_one_claim_lands_postgres
+4 failed, 979 passed, 1 skipped, 1 warning in 67.38s (0:01:07)

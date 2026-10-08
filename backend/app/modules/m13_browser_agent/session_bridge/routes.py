@@ -72,6 +72,7 @@ def revoke_device(device_id: str, tenant: TenantContext = Depends(require_tenant
 
 
 class ReceiptIn(BaseModel):
+    signature: str = Field(min_length=128, max_length=128, pattern=r"^[0-9a-fA-F]{128}$")
     events: list[dict] = Field(min_length=1, max_length=10000)
 
 
@@ -82,7 +83,7 @@ def verify_receipt(device_id: str, body: ReceiptIn, tenant: TenantContext = Depe
     if device is None or device.tenant_id != tenant.tenant_id:
         raise HTTPException(404, "device not found")
     try:
-        return registry.verify_receipt(device_id, body.events)
+        return registry.verify_receipt(device_id, body.events, body.signature)
     except PairingError as error:
         raise HTTPException(422, str(error)) from error
 

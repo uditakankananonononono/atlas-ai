@@ -90,18 +90,19 @@ def test_connect_signature_verification_and_revocation(registry):
 
 def test_receipt_verification_against_device_identity(registry):
     challenge = registry.create_challenge("tenant-1")
-    _, pem = _keypair()
+    key, pem = _keypair()
     device = registry.confirm_pairing(challenge["server_nonce"], challenge["code"],
                                       name="laptop", public_key=pem, capabilities=["navigate"])
     chain = ReceiptChain(device["device_id"])
     chain.append("cmd-1", "completed", {"kind": "navigate"})
     chain.append("cmd-2", "blocked", {"block": "rate_limit"})
     events = chain.events
-    result = registry.verify_receipt(device["device_id"], events)
+    signature = key.sign(events[-1]["event_hash"].encode()).hex()
+    result = registry.verify_receipt(device["device_id"], events, signature)
     assert result["events_verified"] == 2 and result["receipt_complete"]
     assert result["terminal_phase"] == "blocked"
 
     tampered = [dict(event) for event in events]
     tampered[1]["payload"] = {"block": "nothing-to-see"}
     with pytest.raises(PairingError, match="hash mismatch"):
-        registry.verify_receipt(device["device_id"], tampered)
+        registry.verify_receipt(device["device_id"], tampered, signature)

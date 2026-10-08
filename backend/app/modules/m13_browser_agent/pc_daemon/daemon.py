@@ -136,6 +136,19 @@ class Daemon:
         return self.receipts.append(action_id, phase, payload)
 
     async def execute(self, command: dict[str, Any]) -> dict[str, Any]:
+        answer = await self._execute(command)
+        # Every completed/failed/blocked result carries the full chain needed
+        # by verify-receipt, not just its latest event. The wire loop sends this
+        # envelope with the result. Signature input matches the server exactly.
+        events = self.receipts.events
+        head = events[-1]["event_hash"] if events else "0" * 64
+        answer["signed_receipt"] = {
+            "events": events,
+            "signature": self.identity.sign(head.encode("utf-8")).hex(),
+        }
+        return answer
+
+    async def _execute(self, command: dict[str, Any]) -> dict[str, Any]:
         command_id, kind, args = protocol.parse_command(command)
         session = str(args.get("session", "default"))[:120]
         capability = "click_submit" if kind is CommandKind.CLICK_SUBMIT else kind.value

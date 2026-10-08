@@ -1,0 +1,104 @@
+........................................................................ [ 10%]
+........................................................................ [ 20%]
+........................................................................ [ 31%]
+........................................................................ [ 41%]
+........................................................................ [ 51%]
+........................................................................ [ 62%]
+.............................................F.......................... [ 72%]
+........................................................................ [ 83%]
+........................................................................ [ 93%]
+.....FFFFFFFFF...............................                            [100%]
+=================================== FAILURES ===================================
+________ test_migration_upgrades_existing_table_and_refuses_duplicates _________
+tests/modules/test_m16_expiry_intake_residual.py:46: in test_migration_upgrades_existing_table_and_refuses_duplicates
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1190: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/sandbox/atlas-ai/migrations/versions/20261008_m16_event_identity.py'
+________ test_mark_command_second_claim_loses_and_first_marker_survives ________
+tests/modules/test_m16_intake_concurrency.py:82: in test_mark_command_second_claim_loses_and_first_marker_survives
+    with pytest.raises(RuntimeError,match="command already executed"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_______________ test_mark_command_scoped_to_own_tenant_and_actor _______________
+tests/modules/test_m16_intake_concurrency.py:92: in test_mark_command_scoped_to_own_tenant_and_actor
+    other.mark_command("c1",datetime.now(timezone.utc))
+backend/app/modules/m16_executive_dashboard/repository.py:123: in mark_command
+    with self.sessions.begin() as db:r=db.scalar(select(CommandRow).where(CommandRow.tenant_id==self.tenant_id,CommandRow.actor_id==self.actor_id,CommandRow.id==cid));r.executed_at=at
+                                                                                                                                                                       ^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'executed_at'
+____________ test_losing_concurrent_execute_never_runs_the_executor ____________
+tests/modules/test_m16_intake_concurrency.py:109: in test_losing_concurrent_execute_never_runs_the_executor
+    service.execute("c1")
+backend/app/modules/m16_executive_dashboard/service.py:62: in execute
+    if p.expires_at<now:raise RuntimeError("command preview expired")
+       ^^^^^^^^^^^^^^^^
+E   TypeError: can't compare offset-naive and offset-aware datetimes
+_________________ test_failed_executor_leaves_command_claimed __________________
+tests/modules/test_m16_intake_concurrency.py:116: in test_failed_executor_leaves_command_claimed
+    with pytest.raises(ValueError,match="read failed"):service.execute("c1")
+                                                       ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/service.py:62: in execute
+    if p.expires_at<now:raise RuntimeError("command preview expired")
+       ^^^^^^^^^^^^^^^^
+E   TypeError: can't compare offset-naive and offset-aware datetimes
+________ test_default_sqlite_execute_compares_expiry_without_typeerror _________
+tests/modules/test_m16_intake_concurrency.py:123: in test_default_sqlite_execute_compares_expiry_without_typeerror
+    assert service.execute("c1")["status"]=="completed"  # naive sqlite expiry read is coerced, no TypeError
+           ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/service.py:62: in execute
+    if p.expires_at<now:raise RuntimeError("command preview expired")
+       ^^^^^^^^^^^^^^^^
+E   TypeError: can't compare offset-naive and offset-aware datetimes
+____________ test_successful_execute_claims_then_runs_executor_once ____________
+tests/modules/test_m16_intake_concurrency.py:129: in test_successful_execute_claims_then_runs_executor_once
+    assert service.execute("c1")=={"status":"completed","result":{"ok":True}}
+           ^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m16_executive_dashboard/service.py:62: in execute
+    if p.expires_at<now:raise RuntimeError("command preview expired")
+       ^^^^^^^^^^^^^^^^
+E   TypeError: can't compare offset-naive and offset-aware datetimes
+___________ test_intake_preserves_offset_instants_and_rejects_naive ____________
+tests/modules/test_m16_intake_concurrency.py:141: in test_intake_preserves_offset_instants_and_rejects_naive
+    assert read.occurred_at==datetime(2026,10,7,9,30,tzinfo=timezone.utc)
+E   AssertionError: assert datetime.datetime(2026, 10, 7, 9, 30) == datetime.datetime(2026, 10, 7, 9, 30, tzinfo=datetime.timezone.utc)
+E    +  where datetime.datetime(2026, 10, 7, 9, 30) = Event(id='588f391c-6373-4a7d-9280-d91a72c92408', sequence=1, topic='task.completed', aggregate_type='task', aggregate_id='a1', payload={}, occurred_at=datetime.datetime(2026, 10, 7, 9, 30)).occurred_at
+E    +  and   datetime.datetime(2026, 10, 7, 9, 30, tzinfo=datetime.timezone.utc) = datetime(2026, 10, 7, 9, 30, tzinfo=datetime.timezone.utc)
+E    +    where datetime.timezone.utc = timezone.utc
+_______________________ test_read_boundary_coercion_pins _______________________
+tests/modules/test_m16_intake_concurrency.py:149: in test_read_boundary_coercion_pins
+    assert repo.pending_approvals()[0].expires_at==aware+timedelta(hours=1)  # same instant, tz-attached
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert datetime.datetime(2026, 10, 7, 10, 30) == (datetime.datetime(2026, 10, 7, 9, 30, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=3600))
+E    +  where datetime.datetime(2026, 10, 7, 10, 30) = Approval(id='ap1', module_id=16, action_type='send', title='t', summary='s', risk='medium', evidence={}, proposed_payl... created_at=datetime.datetime(2026, 10, 7, 9, 30), expires_at=datetime.datetime(2026, 10, 7, 10, 30), reviewed_at=None).expires_at
+E    +  and   datetime.timedelta(seconds=3600) = timedelta(hours=1)
+_________ test_direct_append_event_normalizes_aware_and_rejects_naive __________
+tests/modules/test_m16_intake_concurrency.py:159: in test_direct_append_event_normalizes_aware_and_rejects_naive
+    assert read.occurred_at==datetime(2026,10,7,9,30,tzinfo=timezone.utc)
+E   AssertionError: assert datetime.datetime(2026, 10, 7, 9, 30) == datetime.datetime(2026, 10, 7, 9, 30, tzinfo=datetime.timezone.utc)
+E    +  where datetime.datetime(2026, 10, 7, 9, 30) = Event(id='e-off', sequence=1, topic='task.completed', aggregate_type='task', aggregate_id='a-e-off', payload={}, occurred_at=datetime.datetime(2026, 10, 7, 9, 30)).occurred_at
+E    +  and   datetime.datetime(2026, 10, 7, 9, 30, tzinfo=datetime.timezone.utc) = datetime(2026, 10, 7, 9, 30, tzinfo=datetime.timezone.utc)
+E    +    where datetime.timezone.utc = timezone.utc
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m16_expiry_intake_residual.py::test_migration_upgrades_existing_table_and_refuses_duplicates
+FAILED tests/modules/test_m16_intake_concurrency.py::test_mark_command_second_claim_loses_and_first_marker_survives
+FAILED tests/modules/test_m16_intake_concurrency.py::test_mark_command_scoped_to_own_tenant_and_actor
+FAILED tests/modules/test_m16_intake_concurrency.py::test_losing_concurrent_execute_never_runs_the_executor
+FAILED tests/modules/test_m16_intake_concurrency.py::test_failed_executor_leaves_command_claimed
+FAILED tests/modules/test_m16_intake_concurrency.py::test_default_sqlite_execute_compares_expiry_without_typeerror
+FAILED tests/modules/test_m16_intake_concurrency.py::test_successful_execute_claims_then_runs_executor_once
+FAILED tests/modules/test_m16_intake_concurrency.py::test_intake_preserves_offset_instants_and_rejects_naive
+FAILED tests/modules/test_m16_intake_concurrency.py::test_read_boundary_coercion_pins
+FAILED tests/modules/test_m16_intake_concurrency.py::test_direct_append_event_normalizes_aware_and_rejects_naive
+10 failed, 683 passed, 1 warning in 18.21s
