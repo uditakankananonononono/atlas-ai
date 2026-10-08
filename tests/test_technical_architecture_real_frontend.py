@@ -12,7 +12,7 @@ def lock(): return json.loads((FRONTEND/'package-lock.json').read_text())
 
 def test_a01_declared_next_version_matches_lock_and_app_router_source_exists():
     declared=package()['dependencies']['next']
-    assert declared=='16.3.6'
+    assert declared=='16.3.8'
     assert lock()['packages']['node_modules/next']['version']==declared
     assert (FRONTEND/'app/layout.tsx').is_file() and (FRONTEND/'app/page.tsx').is_file()
     assert not (FRONTEND/'pages/_app.tsx').exists()
