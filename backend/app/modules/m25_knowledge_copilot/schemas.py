@@ -7,7 +7,18 @@ class CaptureState(StrEnum): ACTIVE='active'; PAUSED='paused'; STOPPED='stopped'
 class SourceKind(StrEnum): SCREEN_OCR='screen_ocr'; MIC='mic'; SYSTEM_AUDIO='system_audio'; KNOWLEDGE='knowledge'
 class ActionKind(StrEnum): SEND='send'; SUBMIT='submit'; PURCHASE='purchase'; RECORDING_STATE='recording_state'; EXTERNAL_MUTATION='external_mutation'
 class CopilotMode(StrEnum): MEETING='meeting'; STUDY='study'; RESEARCH='research'
-class Redaction(BaseModel): pattern:str=Field(min_length=1,max_length=200); replacement:str='[REDACTED]'
+class Redaction(BaseModel):
+ pattern:str=Field(min_length=1,max_length=200); replacement:str=Field(default='[REDACTED]',max_length=200)
+ @model_validator(mode='after')
+ def pattern_compiles(self):
+  # Compiled with the same engine family used at ingest. Compile-time
+  # validity does not cover execution-time failure modes - replacement
+  # reference errors and the per-pattern time budget are enforced at
+  # execution and reject the event.
+  import regex
+  try: regex.compile(self.pattern)
+  except regex.error as exc: raise ValueError(f'invalid redaction pattern: {exc}') from exc
+  return self
 class CaptureStart(BaseModel):
  device_id:str=Field(min_length=1,max_length=128); selected_screen_ids:list[str]=Field(min_length=1,max_length=8); redactions:list[Redaction]=Field(default_factory=list,max_length=50)
 class AudioStart(BaseModel):

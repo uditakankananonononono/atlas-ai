@@ -18,6 +18,57 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit, unquote
+
+_SENSITIVE_QUERY_KEYS = frozenset({"key", "api_key", "apikey", "token", "access_token"})
+
+
+FAILURE_RECORD_MAX_CHARS = 8192
+
+
+def _sensitive_key(key: str) -> bool:
+    # Decode at most twice; deeper encodings are outside this bounded contract.
+    return unquote(unquote(key)).lower() in _SENSITIVE_QUERY_KEYS
+
+
+def _redact_url(url: str) -> str:
+    """Bounded URL record: remove userinfo and enumerated query/fragment keys.
+    Unknown credential shapes and deeper encodings remain out of scope.
+    Malformed URL parser input is refused as a record, not echoed raw.
+    """
+    url = str(url)[:FAILURE_RECORD_MAX_CHARS]
+    try:
+        parts = urlsplit(url)
+        query = parse_qsl(parts.query, keep_blank_values=True)
+        fragment = parse_qsl(parts.fragment, keep_blank_values=True)
+        sensitive_query = any(_sensitive_key(k) for k, _ in query)
+        sensitive_fragment = any(_sensitive_key(k) for k, _ in fragment)
+        userinfo = '@' in parts.netloc
+        if not sensitive_query and not sensitive_fragment and not userinfo:
+            return url
+        scrub = lambda pairs: urlencode([(k, '[REDACTED]' if _sensitive_key(k) else v) for k,v in pairs])
+        return urlunsplit((parts.scheme,parts.netloc.rsplit('@',1)[-1],parts.path,
+                          scrub(query) if sensitive_query else parts.query,
+                          scrub(fragment) if sensitive_fragment else parts.fragment))[:FAILURE_RECORD_MAX_CHARS]
+    except ValueError:
+        return '[REDACTED MALFORMED URL]'
+
+
+_SENSITIVE_ASSIGNMENT = re.compile(
+    r"(?i)\b(key|api_key|apikey|token|access_token)[\"']?\s*[:=]\s*(?:\"[^\"]*\"|'[^']*'|[^\s&;,}]+)")
+_BEARER = re.compile(r"(?i)\bBearer\s+[^\s,;]+")
+_URL_IN_TEXT = re.compile(r"https?://[^\s\"'<>]+", re.I)
+
+
+def _scrub_text(text: str) -> str:
+    """Bounded enumerated redaction: URL credentials, spaced/colon/quoted
+    key assignments and Bearer tokens. Not arbitrary secret detection.
+    Processing and stored output are capped at 8192 characters.
+    """
+    text = str(text)[:FAILURE_RECORD_MAX_CHARS]
+    text = _URL_IN_TEXT.sub(lambda m: _redact_url(m.group()), text)
+    text = _SENSITIVE_ASSIGNMENT.sub(lambda m: f"{m.group(1)}=[REDACTED]", text)
+    return _BEARER.sub('Bearer [REDACTED]', text)[:FAILURE_RECORD_MAX_CHARS]
 from enum import Enum
 from typing import Any, Mapping, Optional
 from urllib.parse import urlsplit
@@ -166,6 +217,15 @@ class CollectionError:
     reason: str
     status: Optional[int] = None
     occurred_at: datetime = field(default_factory=utcnow)
+
+    def __post_init__(self) -> None:
+        # Records are redacted at construction, whoever constructed the
+        # record: the URL loses sensitive query keys and userinfo, and the
+        # free-text reason is scrubbed for credential-shaped assignments and
+        # userinfo. This is bounded redaction, not a guarantee that no
+        # credential-shaped text survives (residuals: see _scrub_text).
+        object.__setattr__(self, "url", _redact_url(self.url))
+        object.__setattr__(self, "reason", _scrub_text(self.reason))
 
 
 @dataclass(frozen=True)
