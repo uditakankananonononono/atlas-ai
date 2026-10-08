@@ -18,7 +18,7 @@ with engine.begin() as db:
   db.execute(text("ALTER TABLE m20_tasks DROP COLUMN model_outcome_unknown"))
  db.execute(text("INSERT INTO m20_tasks (id,tenant_id,goal,state,importance,plan_json,standup_notes_json,created_at,updated_at) VALUES ('legacy','fixture','fixture','blocked',3,'[]','[]',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"))
 """]);assert result.returncode==0,result.stderr[-2000:]
- result=run(['-m','alembic','upgrade','head']);assert result.returncode==0,result.stderr[-2000:]
+ result=run(['-m','alembic','upgrade','20261007_m20_model_unknown']);assert result.returncode==0,result.stderr[-2000:]
  result=run(['-c',"""
 from sqlalchemy import create_engine,text
 from app.modules.m20_general_cognitive_worker.sql_repository import GCWRepository
