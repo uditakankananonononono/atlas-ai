@@ -466,3 +466,11 @@ def test_overdue_consume_refusal_persists_expiry_without_lazy_read(service, cloc
     with service._sessions() as db:
         assert db.get(ApprovalRequestRow, view['id']).status == ApprovalStatus.EXPIRED.value
     assert [event['event'] for event in service.audit(view['id'])] == ['created', 'expired']
+def test_status_lists_classify_lazy_expiry_before_limit(service, clock):
+    fresh = submit(service, ttl_seconds=100)
+    clock.now = T0 + timedelta(seconds=1)
+    overdue = submit(service, ttl_seconds=1)
+    clock.now = T0 + timedelta(seconds=3)
+    assert [v['id'] for v in service.list(status=ApprovalStatus.PENDING, limit=1)] == [fresh['id']]
+    assert [v['id'] for v in service.list(status=ApprovalStatus.EXPIRED, limit=1)] == [overdue['id']]
+    assert [event['event'] for event in service.audit(overdue['id'])] == ['created', 'expired']
