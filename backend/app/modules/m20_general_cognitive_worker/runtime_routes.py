@@ -89,10 +89,10 @@ class SandboxRunRequest(BaseModel):
 
 @router.post("/tasks", status_code=201)
 @_busy_conflict
-def submit_task(request: GoalRequest, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
+def submit_task(request: GoalRequest, runtime: Any = Depends(get_runtime), tenant: TenantContext = Depends(require_tenant)) -> dict[str, Any]:
     context = runtime.submit_goal(
         request.goal, importance=request.importance,
-        deadline=request.deadline, run_immediately=request.run_immediately,
+        deadline=request.deadline, run_immediately=request.run_immediately, creator_actor_id=tenant.actor_id,
     )
     return _task_dict(context)
 
@@ -218,12 +218,14 @@ class MethodReviewIn(BaseModel):
 
 @router.post("/methods/{name}/activate")
 @_busy_conflict
-def activate_method(name: str, body: MethodReviewIn, runtime: Any = Depends(get_runtime)) -> dict[str, Any]:
+def activate_method(name: str, body: MethodReviewIn, runtime: Any = Depends(get_runtime), tenant: TenantContext = Depends(require_tenant)) -> dict[str, Any]:
+    if not tenant.has_role("atlas-reviewer", "atlas-admin"):
+        raise HTTPException(403, "Atlas reviewer or administrator role required")
     try:
-        if not runtime.activate_method(name, expected_hash=body.expected_hash):
+        if not runtime.activate_method(name, expected_hash=body.expected_hash, actor_id=tenant.actor_id, roles=tenant.roles):
             raise HTTPException(status_code=404, detail="unknown method")
     except PermissionError as exc:
-        raise HTTPException(409,str(exc)) from exc
+        raise HTTPException(409 if "revision" in str(exc) else 403,str(exc)) from exc
     return {"name": name, "review_status": "active"}
 
 

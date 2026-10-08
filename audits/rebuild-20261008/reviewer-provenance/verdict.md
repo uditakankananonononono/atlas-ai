@@ -1,0 +1,11 @@
+# Reviewer provenance and independence gate
+
+Original canaries exposed five failures: same-tenant ordinary member and proposer-as-reviewer/admin could activate; activation had no actor receipt; unknown legacy proposer was treated as acceptable. Original failure log retained. First affected-suite failures after implementation were legacy synthetic fixtures missing the new role/proposer values, not additional product defects; their log is retained and fixtures now explicitly establish distinct test principals.
+
+Activation requires atlas-reviewer or atlas-admin and a distinct, nonempty proposer and reviewer actor id. Mounted actor/roles come from authenticated TenantContext, not body or spoofable headers. Authenticated task creator is persisted in existing runtime JSON and bound to learned proposals, including deferred/restarted planning. Missing legacy proposer fails closed. Trusted direct adapters must supply authenticated identity/roles themselves; accepting Python parameters is not an identity provider.
+
+Receipt (reviewer, proposer, reviewed hash, role and timestamp) is written in the same exact-payload CAS as activation. Content hash excludes receipt/counters, includes proposer. Only that transaction's activated snapshot is published in process; no racy post-commit reload. New proposals clear old activation receipts. No migration or legacy identity fabrication needed; existing JSON schema fields suffice.
+
+Expanded canaries include real signed OIDC production authentication with member/spoof/self rejection and independent reviewer acceptance. No live OIDC provider or production deployment was tested. Actor independence means distinct authenticated subjects, not proof of separate human control or absence of collusion. Trusted in-process registration and multi-worker lifetime/reuse remain separate boundaries. Full regression summary must be read from full-regression/summary.json, not inferred from affected suites.
+
+Final fresh per-file-batch regression: 519 files, 52/52 batches, 10,302 passed, 0 failed, 14 skipped, 0 errors. Test source and shared fixtures were final before these receipts; initial batches were invalidated and rerun after the signed-role fixture extension. Full regression uses isolated groups of up to ten files, not a single-process 519-file order-pollution test.

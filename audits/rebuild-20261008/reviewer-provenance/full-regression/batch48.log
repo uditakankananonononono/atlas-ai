@@ -1,0 +1,12 @@
+............................................                             [100%]
+=============================== warnings summary ===============================
+tests/test_m03_corpus_render.py::test_docx_pdf_renderer_creates_real_files
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/weasyprint/text/ffi.py:528: DeprecationWarning: HarfBuzz-Subset will be required by future versions of WeasyPrint. Please install this library with your package manager.
+    warnings.warn(
+
+tests/test_model_catalog.py::test_http_routes_require_tenant_and_stop_before_paid
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+44 passed, 2 warnings in 5.32s

@@ -156,7 +156,8 @@ class GCWRepository:
             row.standup_notes_json = list(context.standup_notes)
             row.runtime_metadata_json = {"wm_partition": context.wm_partition, "ticks_served": context.ticks_served,
                                          "last_run_at": context.last_run_at.isoformat() if context.last_run_at else None,
-                                         "reconciliation_evidence": context.reconciliation_evidence}
+                                         "reconciliation_evidence": context.reconciliation_evidence,
+                                         "creator_actor_id": context.creator_actor_id}
             row.updated_at = _aware(datetime.now(timezone.utc))
             session.commit()
         return context
@@ -176,6 +177,7 @@ class GCWRepository:
             context.state = TaskState(row.state)
             context.plan = [PlanNode(**n) for n in (row.plan_json or [])]
             context.standup_notes = list(row.standup_notes_json or [])
+            context.creator_actor_id = (row.runtime_metadata_json or {}).get("creator_actor_id")
             metadata = row.runtime_metadata_json or {}
             context.wm_partition = metadata.get("wm_partition", row.id)
             context.reconciliation_evidence = metadata.get("reconciliation_evidence", [])
@@ -572,7 +574,7 @@ def _repository_extension(cls):
                 for row in query.all()
             ]
 
-    def set_method_status(self, method_id: str, status: str, *, expected_hash: str | None = None) -> bool:
+    def set_method_status(self, method_id: str, status: str, *, expected_hash: str | None = None, actor_id: str | None = None, roles=frozenset()):
         with self._session() as session:
             row = session.get(MethodRow, method_id)
             if row is None or row.tenant_id != self.tenant_id:
@@ -584,6 +586,22 @@ def _repository_extension(cls):
                 if DurableHTNPlanner.method_review_hash(method) != expected_hash:
                     raise PermissionError("durable method revision differs from reviewed hash")
             replacement = {**snapshot, "review_status": status}
+            if status == "active":
+                if not actor_id or not actor_id.strip() or not set(roles).intersection({"atlas-reviewer", "atlas-admin"}):
+                    raise PermissionError("independent reviewer role and actor identity required")
+                proposer = snapshot.get("proposer_actor_id")
+                if not proposer or not isinstance(proposer, str) or not proposer.strip():
+                    raise PermissionError("proposer identity is unknown; independent review cannot be established")
+                if actor_id == proposer:
+                    raise PermissionError("proposer cannot activate its own payload")
+                if expected_hash is None:
+                    raise PermissionError("reviewed payload hash required")
+                replacement["activation_review"] = {
+                    "actor_id": actor_id, "proposer_actor_id": proposer,
+                    "reviewed_hash": expected_hash,
+                    "reviewed_at": datetime.now(timezone.utc).isoformat(),
+                    "roles": sorted(set(roles).intersection({"atlas-reviewer", "atlas-admin"})),
+                }
             # Compare the exact serialized JSON snapshot in the UPDATE itself.
             # A separate read/hash check cannot prevent a writer from replacing
             # the payload between the check and status update.
@@ -594,7 +612,7 @@ def _repository_extension(cls):
             if updated.rowcount != 1:
                 raise PermissionError("durable method revision changed during review activation")
             session.commit()
-            return True
+            return HTNMethod(**{k: v for k, v in replacement.items() if k != "review_status"})
 
     # -- calibration claims (M20-30) -----------------------------------------
 

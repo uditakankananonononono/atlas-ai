@@ -232,6 +232,8 @@ class DurableHTNPlanner(HTNPlanner):
             method = method.model_copy(deep=True, update={"id": existing.id})
         if self.require_review and method.source == MethodSource.LEARNED:
             status = "proposed"
+        if status != "active":
+            method.activation_review = None
         self.repo.save_method(method, status=status)
         self._review_status[method.name] = status
         return super().register_method(method)
@@ -242,10 +244,10 @@ class DurableHTNPlanner(HTNPlanner):
             return None
         return match
 
-    def decompose(self, goal: str, *, context: str = ""):
+    def decompose(self, goal: str, *, context: str = "", proposer_actor_id: str | None = None):
         matched = self._match_method(goal, context=context)
         if matched is None:
-            return super().decompose(goal, context=context)
+            return super().decompose(goal, context=context, proposer_actor_id=proposer_actor_id)
         staged = matched.model_copy(deep=True)
         nodes = self._instantiate(staged)
         staged.times_used += 1
@@ -267,19 +269,24 @@ class DurableHTNPlanner(HTNPlanner):
     @staticmethod
     def method_review_hash(method):
         payload=method.model_dump(mode="json")
+        payload.pop("activation_review", None)
         payload.pop("times_used", None)
         payload.pop("success_rate", None)
         payload.pop("outcomes_recorded", None)
         payload.pop("successes_recorded", None)
         return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
 
-    def activate_method(self, name: str, *, expected_hash: str) -> bool:
+    def activate_method(self, name: str, *, expected_hash: str, actor_id: str | None = None, roles=frozenset()) -> bool:
         if name not in self.methods:
             return False
         if expected_hash != self.method_review_hash(self.methods[name]):
             raise PermissionError("method revision differs from reviewed hash")
-        if not self.repo.set_method_status(self.methods[name].id, "active", expected_hash=expected_hash):
+        stored = self.repo.set_method_status(self.methods[name].id, "active", expected_hash=expected_hash, actor_id=actor_id, roles=roles)
+        if not stored:
             return False
+        # Publish only the exact snapshot this transaction activated, never a
+        # separate post-commit read which another writer could have replaced.
+        self._methods[name] = stored
         self._review_status[name] = "active"
         return True
 

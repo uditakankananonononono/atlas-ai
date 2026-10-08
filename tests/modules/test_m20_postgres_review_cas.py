@@ -21,20 +21,20 @@ def engine(tmp_path):
 def planner(engine):
     repo=GCWRepository(engine,tenant_id='fixture')
     first=DurableHTNPlanner(repo,require_review=True)
-    first.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,subtasks=[PlanNode(title='reviewed')]))
+    first.register_method(HTNMethod(name='fixture',goal_pattern='fixture',source=MethodSource.LEARNED,proposer_actor_id='fixture-proposer',subtasks=[PlanNode(title='reviewed')]))
     return repo,first
 
 
 def test_postgres_review_activation_matches_snapshot_and_rejects_stale_replacement(engine):
     repo,first=planner(engine)
     reviewed=first.method_review_hash(first.methods['fixture'])
-    assert first.activate_method('fixture',expected_hash=reviewed)
+    assert first.activate_method('fixture',expected_hash=reviewed,actor_id='fixture-reviewer',roles={'atlas-reviewer'})
     other=DurableHTNPlanner.load(GCWRepository(engine,tenant_id='fixture'),require_review=True)
     replacement=other.methods['fixture'].model_copy(deep=True)
     replacement.subtasks[0].title='replacement'
     other.register_method(replacement)
     with pytest.raises(PermissionError,match='revision'):
-        first.activate_method('fixture',expected_hash=reviewed)
+        first.activate_method('fixture',expected_hash=reviewed,actor_id='fixture-reviewer',roles={'atlas-reviewer'})
     assert repo.list_methods()[0][1]=='proposed'
 
 
@@ -53,7 +53,7 @@ def test_postgres_separate_writer_between_check_and_update_rejected(engine):
     sa.event.listen(engine,'before_cursor_execute',race)
     try:
         with pytest.raises(PermissionError,match='changed during'):
-            first.activate_method('fixture',expected_hash=reviewed)
+            first.activate_method('fixture',expected_hash=reviewed,actor_id='fixture-reviewer',roles={'atlas-reviewer'})
     finally:
         sa.event.remove(engine,'before_cursor_execute',race)
     assert changed and first.method_status('fixture')=='proposed'

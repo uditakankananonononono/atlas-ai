@@ -73,7 +73,7 @@ class HTNPlanner:
                 best = (overlap, method)
         return best[1] if best else None
 
-    def decompose(self, goal: str, *, context: str = "") -> list[PlanNode]:
+    def decompose(self, goal: str, *, context: str = "", proposer_actor_id: str | None = None) -> list[PlanNode]:
         method = self._match_method(goal, context=context)
         if method is not None:
             method.times_used += 1
@@ -87,6 +87,7 @@ class HTNPlanner:
             goal_pattern=goal,
             subtasks=[n.model_copy(deep=True) for n in nodes],
             source=MethodSource.LEARNED,
+            proposer_actor_id=proposer_actor_id,
             generated_goal=goal, generated_context_sha256=hashlib.sha256(context.encode()).hexdigest(),
         )
         self.register_method(learned)
