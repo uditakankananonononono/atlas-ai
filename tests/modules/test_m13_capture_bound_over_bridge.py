@@ -103,7 +103,7 @@ def env(tmp_path):
         capabilities=["navigate", "extract", "screenshot", "read_values", "fill",
                       "click_nav", "click_submit"])
     connection = FakeConnection()
-    sessions = BridgedSessions(registry, FakeHub(connection))
+    sessions = BridgedSessions(registry, FakeHub(connection), artifact_root=str(tmp_path / "artifacts"))
     session_id = protocol.make_pc_session(device["device_id"], "main")
     service = Service(sessions, Approvals(), Store(session_id), str(tmp_path), {"example.com"})
     return service, sessions, device, connection, session_id, sessionmaker(bind=engine, expire_on_commit=False)

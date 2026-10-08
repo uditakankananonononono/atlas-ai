@@ -117,9 +117,11 @@ class FakePage:
     async def content(self):
         return self.html
 
-    async def screenshot(self, path, full_page=True, mask=None):
+    async def screenshot(self, path=None, full_page=True, mask=None):
         self.last_mask = mask
-        Path(path).write_bytes(self.shot_bytes)
+        if path is not None:  # legacy callers; the confined path passes no path
+            Path(path).write_bytes(self.shot_bytes)
+        return self.shot_bytes
 
     async def wheel(self, x, y):
         pass

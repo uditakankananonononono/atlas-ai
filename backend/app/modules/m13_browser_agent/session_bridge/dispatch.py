@@ -19,6 +19,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from ..artifact_directory import ArtifactRoot, validate_segment
 from . import protocol
 from .protocol import (BlockKind, BridgeError, CommandKind, DeviceOffline,
                        PlatformBlocked, clamp_pacing, is_pc_session, split_pc_session)
@@ -166,7 +167,15 @@ class BridgedPage:
         result = await self._execute(CommandKind.EXTRACT, {})
         return str(result.get("html", ""))
 
-    async def screenshot(self, *, path: str, full_page: bool = False, mask: list | None = None) -> None:
+    async def screenshot(self, *, path: str | None = None, full_page: bool = False,
+                         mask: list | None = None) -> bytes | None:
+        """Return the PNG bytes; when ``path`` is given, also write them.
+
+        A caller-supplied path must resolve inside the paired sessions'
+        pinned artifact root, and the write goes through the swap-proof
+        descriptor walk - a planted or swapped directory is refused, never
+        followed outside the root.
+        """
         mask_selectors = [item.selector for item in (mask or []) if isinstance(item, BridgedLocator)]
         result = await self._execute(CommandKind.SCREENSHOT,
                                      {"full_page": bool(full_page), "mask": mask_selectors},
@@ -174,16 +183,21 @@ class BridgedPage:
         encoded = result.get("png_base64")
         if not encoded:
             raise BridgeError("daemon returned no screenshot bytes")
-        Path(path).parent.mkdir(parents=True, exist_ok=True)
-        Path(path).write_bytes(base64.b64decode(encoded))
+        data = base64.b64decode(encoded)
+        if path is None:
+            return data
+        self._sessions.artifacts.write_path(Path(path), data)
+        return data
 
 
 class BridgedSessions:
     """Session factory whose pages run on the owner's paired devices."""
 
-    def __init__(self, registry: BridgeRegistry, hub: ConnectionHub | None = None):
+    def __init__(self, registry: BridgeRegistry, hub: ConnectionHub | None = None,
+                 artifact_root: str = "/tmp/atlas-browser"):
         self.registry = registry
         self.hub = hub or HUB
+        self.artifacts = ArtifactRoot(artifact_root)
         # One armed submit per (tenant, session); consumed by the next click.
         self._armed: dict[tuple[str, str], dict[str, str]] = {}
         # Last URL reported by the daemon per (tenant, session); lets a fresh
@@ -235,12 +249,17 @@ class BridgedSessions:
         return str(result.get("html", ""))
 
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
+        # Validate ids before any filesystem use or page lookup, then write
+        # the daemon-returned bytes through the pinned artifact root.
+        validate_segment(tenant_id, "tenant id")
+        validate_segment(session_id, "session id")
         page = await self.page(tenant_id, session_id, True)
         import secrets as _secrets
-        path = f"/tmp/atlas-browser/{tenant_id}/{session_id}/{_secrets.token_hex(12)}.png"
         mask = [BridgedLocator(page, selector) for selector in (mask_selectors or [])]
-        await page.screenshot(path=path, full_page=True, mask=mask)
-        return path
+        png = await page.screenshot(full_page=True, mask=mask)
+        path = self.artifacts.write_bytes((tenant_id, session_id),
+                                          f"{_secrets.token_hex(12)}.png", png)
+        return str(path)
 
     # -- approval arming ----------------------------------------------------
 
@@ -299,9 +318,11 @@ class HybridSessions:
     both backends so ``pre_submit_capture`` works uniformly.
     """
 
-    def __init__(self, server_sessions: Any, bridged: BridgedSessions):
+    def __init__(self, server_sessions: Any, bridged: BridgedSessions,
+                 artifact_root: str = "/tmp/atlas-browser"):
         self.server = server_sessions
         self.bridged = bridged
+        self.artifacts = ArtifactRoot(artifact_root)
 
     def _backend(self, session_id: str) -> Any:
         return self.bridged if is_pc_session(session_id) else self.server
@@ -338,10 +359,17 @@ class HybridSessions:
     async def screenshot(self, tenant_id: str, session_id: str, mask_selectors: list[str] | None = None) -> str:
         if is_pc_session(session_id):
             return await self.bridged.screenshot(tenant_id, session_id, mask_selectors)
-        import secrets as _secrets
-        path = f"/tmp/atlas-browser/{tenant_id}/{session_id}/{_secrets.token_hex(12)}.png"
+        # Validate ids before any filesystem use or page lookup: previously
+        # the artifact path was built and mkdir'd from raw ids, so a bad id
+        # created directories outside the root before validation ever ran.
+        validate_segment(tenant_id, "tenant id")
+        validate_segment(session_id, "session id")
         page = await self.server.page(tenant_id, session_id, False)
         mask = [page.locator(selector) for selector in (mask_selectors or [])]
-        Path(path).parent.mkdir(parents=True, exist_ok=True)
-        await page.screenshot(path=path, full_page=True, mask=mask)
-        return path
+        png = await page.screenshot(full_page=True, mask=mask)
+        if not isinstance(png, (bytes, bytearray)):
+            raise BridgeError("server browser returned no screenshot bytes")
+        import secrets as _secrets
+        path = self.artifacts.write_bytes((tenant_id, session_id),
+                                          f"{_secrets.token_hex(12)}.png", bytes(png))
+        return str(path)
