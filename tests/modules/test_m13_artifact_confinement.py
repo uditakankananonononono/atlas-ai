@@ -321,3 +321,80 @@ async def test_hybrid_screenshot_confined_and_bytes_written(tmp_path):
     assert path.startswith(str((tmp_path / "artifacts").resolve()))
     with open(path, "rb") as handle:
         assert handle.read() == b"png-server"
+
+
+# -- rename pins (reviewer SCOPE FAIL reproduction) ----------------------------
+
+
+def test_held_fd_rename_write_is_refused(tmp_path):
+    """The reviewer's attack: hold the dir fd, rename the dir outside, write."""
+    import os as _os
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    root = ArtifactRoot(tmp_path / "root")
+    fd = root.open_dir("t", "s")
+    _os.rename(root._display / "t" / "s", outside / "s")
+    with pytest.raises(ArtifactContainmentError):
+        root.write_fd(fd, "x.png", b"x")
+    _os.close(fd)
+    assert not (outside / "s" / "x.png").exists()
+    root.close()
+
+
+def test_write_bytes_after_rename_stays_contained(tmp_path):
+    """write_bytes re-walks from the root: a renamed-away component is
+    recreated inside the root, and no byte follows the moved inode."""
+    import os as _os
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    root = ArtifactRoot(tmp_path / "root")
+    root.prepare_dir("t", "s")
+    _os.rename(root._display / "t" / "s", outside / "s")
+    path = root.write_bytes(("t", "s"), "a.png", b"data")
+    assert str(path).startswith(str(root._display))
+    assert path.read_bytes() == b"data"
+    assert list((outside / "s").iterdir()) == []
+    root.close()
+
+
+def test_assert_dir_intact_detects_rename_and_symlink(tmp_path):
+    import os as _os
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    root = ArtifactRoot(tmp_path / "root")
+    root.prepare_dir("t", "s")
+    root.assert_dir_intact("t", "s")
+    _os.rename(root._display / "t" / "s", outside / "s")
+    with pytest.raises(ArtifactContainmentError):
+        root.assert_dir_intact("t", "s")
+    _os.symlink(outside / "s", root._display / "t" / "s")
+    with pytest.raises(ArtifactContainmentError):
+        root.assert_dir_intact("t", "s")
+    root.close()
+
+
+# -- HAR post-close detection ---------------------------------------------------
+
+
+def test_har_verification_passes_when_intact(tmp_path):
+    sessions = PlaywrightSessions(root=str(tmp_path / "root"))
+    har = sessions._artifacts.prepare_dir("t", "s") / "audit.har"
+    har.write_bytes(b"har")
+    sessions._verify_har_intact("t", "s", har)
+    sessions._artifacts.close()
+
+
+def test_har_verification_detects_rename_and_swap(tmp_path):
+    import os as _os
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    sessions = PlaywrightSessions(root=str(tmp_path / "root"))
+    har = sessions._artifacts.prepare_dir("t", "s") / "audit.har"
+    har.write_bytes(b"har")
+    _os.rename(tmp_path / "root" / "t" / "s", outside / "s")
+    with pytest.raises(ArtifactContainmentError):
+        sessions._verify_har_intact("t", "s", har)
+    _os.symlink(outside / "s", tmp_path / "root" / "t" / "s")
+    with pytest.raises(ArtifactContainmentError):
+        sessions._verify_har_intact("t", "s", har)
+    sessions._artifacts.close()
