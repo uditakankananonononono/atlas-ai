@@ -308,3 +308,23 @@ def test_rejected_expired_decision_persists_expiry_without_readback(service, clo
         service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
     assert len(callbacks) == 1
     assert [event['event'] for event in service.audit(view['id'])] == ['created', 'expired']
+
+
+def test_stale_decision_cannot_overwrite_committed_competing_decision(service):
+    view = submit(service)
+    original_fetch = service._fetch
+    raced = []
+
+    def fetch_then_compete(db, approval_id):
+        row = original_fetch(db, approval_id)
+        if not raced:
+            raced.append(True)
+            service.decide(approval_id, ApprovalStatus.DENIED, decided_by='winner')
+        return row
+
+    service._fetch = fetch_then_compete
+    with pytest.raises(ApprovalConflictError):
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='loser')
+    service._fetch = original_fetch
+    assert service.get(view['id'])['status'] == ApprovalStatus.DENIED
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', 'denied']

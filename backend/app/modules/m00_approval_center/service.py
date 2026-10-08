@@ -242,9 +242,16 @@ class Service:
             if not expired:
                 if row.status != ApprovalStatus.PENDING.value:
                     raise ApprovalConflictError(f"approval already {row.status}")
-                row.status = decision.value
-                row.decided_at = now
-                row.approved_by = decided_by
+                from sqlalchemy import update, or_
+                changed = db.execute(update(ApprovalRequestRow).where(
+                    ApprovalRequestRow.id == approval_id,
+                    ApprovalRequestRow.status == ApprovalStatus.PENDING.value,
+                    or_(ApprovalRequestRow.expires_at.is_(None), ApprovalRequestRow.expires_at > now),
+                ).values(status=decision.value, decided_at=now, approved_by=decided_by),
+                    execution_options={"synchronize_session": False})
+                if changed.rowcount != 1:
+                    raise ApprovalConflictError("approval changed before decision")
+                db.refresh(row)
                 db.add(ApprovalEventRow(approval_id=row.id, event=decision.value, actor=decided_by, at=now))
             view = _view(row)
         if expired:
