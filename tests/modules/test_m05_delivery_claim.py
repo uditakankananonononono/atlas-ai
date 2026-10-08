@@ -184,3 +184,18 @@ def test_sql_replace_update_delete_cannot_reset_claim(tmp_path):
         with pytest.raises(sqlite3.IntegrityError):db.execute("UPDATE m05_delivery_claims SET message_id='reset'")
     assert not repo.claim_delivery(m)
     e.dispose()
+
+
+@pytest.mark.parametrize('field,value', [('tenant_id','other-tenant'),('campaign_id','other-campaign'),
+    ('contact_id','other-contact'),('action_type','send_unrelated'),('id','other-approval')])
+def test_approval_scope_binding_refused(field,value):
+    from app.modules.m05_outreach_manager.delivery import ApprovalView
+    from test_m05_delivery import FakeGate
+    service,_,_,_,draft,approval=make_world(datetime.now(timezone.utc));sender=FakeSender()
+    data={'id':approval.id,'status':'approved','action_type':approval.action_type,'payload':dict(approval.payload)}
+    if field in {'id','action_type'}:data[field]=value
+    else:data['payload'][field]=value
+    gate=FakeGate({approval.id:ApprovalView(**data)})
+    with pytest.raises(DeliveryApprovalError):
+        asyncio.run(DeliveryService(service,gate,sender).send_approved(draft.id))
+    assert sender.calls==[]

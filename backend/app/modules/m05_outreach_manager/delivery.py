@@ -30,7 +30,7 @@ from .send_account_snapshot import SnapshotStore, SendState, PreflightRefused
 
 from pydantic import BaseModel, Field
 
-from .campaigns import CampaignService, MessageEvent, OutreachMessage
+from .campaigns import CampaignService, MessageEvent, OutreachMessage, KIND_TO_ACTION_TYPE
 
 
 class DeliveryError(RuntimeError):
@@ -283,14 +283,21 @@ class DeliveryService:
             ),
         )
 
-    @staticmethod
     def _payload_mismatch(
-        message: OutreachMessage, approval: ApprovalView, recipient: str
+        self, message: OutreachMessage, approval: ApprovalView, recipient: str
     ) -> list[str]:
         expected = {
+            "tenant_id": self.campaigns.tenant_id,
+            "campaign_id": message.campaign_id,
+            "contact_id": message.contact_id,
             "message_id": message.id,
             "recipient": recipient,
             "subject": message.subject,
             "body": message.body,
         }
-        return [key for key, value in expected.items() if approval.payload.get(key) != value]
+        mismatch = [key for key, value in expected.items() if approval.payload.get(key) != value]
+        if approval.id != message.approval_id:
+            mismatch.append('approval_id')
+        if approval.action_type != KIND_TO_ACTION_TYPE[message.kind]:
+            mismatch.append('action_type')
+        return mismatch
