@@ -79,6 +79,15 @@ def test_PROTECTION_cancel_during_write_leaves_the_effect_unknown_never_abandone
     time.sleep(1.0)  # let the orphan thread finish so it cannot leak into later tests
 
 
+def test_PROTECTION_cancel_during_idempotent_write_is_also_effect_unknown(store):
+    t = make(delay=1.0, idempotent=True, accepts=True); r = reg(store, t); gid = goal(store)
+    w = worker(store, Script(call("write_row", target="a")), r)
+    out, took = run(run_and_cancel(store, w, gid, delay=0.3))
+    got = store.get("t1", "a1", gid)
+    assert got["status"] == "cancelled" and got["blocker"] == "effect_unknown" and states(store, gid) == ["intent"]
+    time.sleep(1.0)
+
+
 def test_PROTECTION_cancel_with_lost_lease_settles_nothing(store, clk):
     from datetime import timedelta
     r = reg(store, make()); gid = goal(store)

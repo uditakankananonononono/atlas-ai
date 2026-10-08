@@ -41,7 +41,7 @@ class Worker:
             return claim.goal_id
         if report.stop_reason == "cancelled":
             # Cancelled never hides an in-flight write: an interrupted effect has no recorded outcome, so the report says so.
-            unknown = engine.tools.journal is self.store and bool(engine.tools.blocking_effects(claim.goal_id))
+            unknown = engine.tools.journal is self.store and bool(self.store.pending_effects(claim.goal_id))  # ANY pending row, idempotent or not: idempotency is not proof it never landed
             self._settle(claim, "cancelled", blocker="effect_unknown" if unknown else None, report=dump, verdict=None)
         elif engine.tools.journal is self.store and engine.tools.blocking_effects(claim.goal_id):
             # Some write ended without a recorded outcome (timeout, error, crash): never report such a goal complete.
