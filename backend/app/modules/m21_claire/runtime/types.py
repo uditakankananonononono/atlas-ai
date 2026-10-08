@@ -54,6 +54,13 @@ class Refusal(BaseModel):
     arguments: dict[str, Any] | None = None
 
 
+class ReplanRecord(BaseModel):
+    """A model-proposed plan revision, scrubbed and capped. ADVISORY: never enforced, never acceptance evidence."""
+    revision: int
+    steps: list[str]
+    advisory: bool = True
+
+
 class RunReport(BaseModel):
     """Engine output. Evidence only: it never marks a goal complete by itself."""
     final: str | None = None
@@ -61,3 +68,4 @@ class RunReport(BaseModel):
     steps_used: int
     receipts: list[ToolReceipt] = Field(default_factory=list)
     refusals: list[Refusal] = Field(default_factory=list)
+    replans: list[ReplanRecord] = Field(default_factory=list)  # advisory evidence only

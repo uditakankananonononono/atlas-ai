@@ -38,6 +38,7 @@ class GoalRow(Base):
     verdict: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[str] = mapped_column(String(40))
     updated_at: Mapped[str] = mapped_column(String(40))
+    cancel_requested_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
 
 
 class ApprovalRow(Base):
@@ -142,16 +143,29 @@ class GoalStore:
             return None if row is None else self._view(row)
 
     def cancel(self, tenant_id: str, actor_id: str, goal_id: str) -> str:
-        """Returns cancelled | not_found | not_cancellable (only queued goals can be cancelled in milestone 1)."""
+        """Owner cancel. Returns cancelled (queued, done now) | cancel_requested (running, delivered to the worker through
+        its lease hook) | not_found | not_cancellable. A request never changes a running goal's status by itself."""
+        now = _iso(self.clock())
         with self._sessions.begin() as s:
             res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
                             GoalRow.actor_id == actor_id, GoalRow.status == "queued")
-                            .values(status="cancelled", updated_at=_iso(self.clock())))
+                            .values(status="cancelled", updated_at=now))
             if res.rowcount == 1:
                 return "cancelled"
+            res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                            GoalRow.actor_id == actor_id, GoalRow.status == "running")
+                            .values(cancel_requested_at=now, updated_at=now))
+            if res.rowcount == 1:
+                return "cancel_requested"
             exists = s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
                                                         GoalRow.actor_id == actor_id)).first()
         return "not_cancellable" if exists else "not_found"
+
+    def cancel_requested(self, claim: Claim) -> bool:
+        """True if the owner asked to cancel this claim's goal. Read-only; a lost claim reads False (lease checks own that)."""
+        with self._sessions.begin() as s:
+            return s.scalars(select(GoalRow.id).where(GoalRow.id == claim.goal_id, GoalRow.lease_token == claim.lease_token,
+                             GoalRow.cancel_requested_at.is_not(None))).first() is not None
 
     def claim(self, worker_id: str) -> Claim | None:
         now = self.clock()
@@ -192,7 +206,8 @@ class GoalStore:
             res = s.execute(update(GoalRow).where(GoalRow.id == claim.goal_id, GoalRow.lease_token == claim.lease_token,
                             GoalRow.status == "running", GoalRow.lease_expires_at >= _iso(self.clock()))
                             .values(status=status, blocker=blocker, report=json.dumps(report), verdict=json.dumps(verdict),
-                                    lease_token=None, lease_expires_at=None, updated_at=_iso(self.clock())))
+                                    lease_token=None, lease_expires_at=None, cancel_requested_at=None,
+                                    updated_at=_iso(self.clock())))
             return res.rowcount == 1
 
     def requeue(self, tenant_id: str, actor_id: str, goal_id: str) -> str:

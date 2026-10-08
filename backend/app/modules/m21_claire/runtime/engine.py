@@ -1,12 +1,12 @@
 from __future__ import annotations
-import json
+import asyncio, json
 from threading import Event
 from typing import Any, Callable, Protocol
 from pydantic import ValidationError
 from .redaction import redact, scrub_text
 from .gates import GateRefused, Principal
 from .tools import ReadOnlyToolRegistry
-from .types import AgentDecision, Refusal, RunReport
+from .types import AgentDecision, Refusal, ReplanRecord, RunReport
 
 SYSTEM = """You are Claire's work engine. Work toward the goal with the available tools. Never claim an action
 succeeded unless a tool receipt proves it. Respond only as JSON with exactly one action:
@@ -37,42 +37,74 @@ class Engine:
     """Bounded loop. Produces a RunReport (evidence). Completion is decided elsewhere."""
 
     def __init__(self, model: ModelPort | None, tools: ReadOnlyToolRegistry, *, max_steps: int = 12,
-                 policy: ActionPolicy | None = None) -> None:
+                 policy: ActionPolicy | None = None, cancel_poll_seconds: float = 0.2) -> None:
         if not 1 <= max_steps <= 50:
             raise ValueError("max_steps must be between 1 and 50")
         self.model, self.tools, self.max_steps = model, tools, max_steps
         self.policy = policy or NoAdditionalPolicy()
+        if not isinstance(cancel_poll_seconds, (int, float)) or isinstance(cancel_poll_seconds, bool) or not 0.01 <= cancel_poll_seconds <= 5:
+            raise ValueError("cancel_poll_seconds must be between 0.01 and 5")
+        self.cancel_poll = float(cancel_poll_seconds)
+
+    async def _interruptible(self, aw: Any, cancelled: Callable[[], bool]) -> tuple[bool, Any]:
+        """Await aw, polling for cancel. (False, None) only if the awaited task was actually cancelled. A call that finished
+        in the same instant keeps its result (a receipt is never discarded). Sync tool threads cannot be killed: they keep
+        running, which is why an interrupted non-read effect stays unknown in the journal."""
+        task = asyncio.ensure_future(aw)
+        try:
+            while True:
+                done, _ = await asyncio.wait({task}, timeout=self.cancel_poll)
+                if done:
+                    return True, task.result()
+                if cancelled():
+                    task.cancel()
+                    await asyncio.wait({task})
+                    if task.cancelled():
+                        return False, None
+                    return True, task.result()
+        except asyncio.CancelledError:
+            task.cancel()
+            raise
 
     async def run(self, goal: str, *, cancel: Event | None = None, principal: Principal | None = None,
                   context: Callable[[], list[dict[str, Any]]] | None = None,
-                  lease: Callable[[], bool] | None = None) -> RunReport:
+                  lease: Callable[[], bool] | None = None, cancel_check: Callable[[], bool] | None = None) -> RunReport:
         if self.model is None:
             return RunReport(stop_reason="model_unavailable", steps_used=0)
         goal = scrub_text(goal)
         messages = [{"role": "system", "content": SYSTEM},
                     {"role": "user", "content": json.dumps({"goal": goal, "tools": self.tools.schemas(),
                                                             "context": redact(context()) if context else []}, default=str)}]
-        receipts, refusals, replans = [], [], 0
+        receipts, refusals, replans, replan_log = [], [], 0, []
+
+        def cancelled() -> bool:
+            return (cancel is not None and cancel.is_set()) or (cancel_check is not None and cancel_check())
+
+        def _rr(**kw: Any) -> RunReport:  # every exit carries the advisory replan evidence
+            return RunReport(replans=list(replan_log), **kw)
         for step in range(1, self.max_steps + 1):
-            if cancel is not None and cancel.is_set():
-                return RunReport(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
+            if cancelled():
+                return _rr(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
             if lease is not None and not lease():
-                return RunReport(stop_reason="lease_lost", steps_used=step - 1, receipts=receipts, refusals=refusals)
+                return _rr(stop_reason="lease_lost", steps_used=step - 1, receipts=receipts, refusals=refusals)
             try:
-                decision = await self.model.decide(messages)
+                ok, decision = await self._interruptible(self.model.decide(messages), cancelled)
+                if not ok:
+                    return _rr(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
             except ModelUnavailable:
-                return RunReport(stop_reason="model_unavailable", steps_used=step - 1, receipts=receipts, refusals=refusals)
+                return _rr(stop_reason="model_unavailable", steps_used=step - 1, receipts=receipts, refusals=refusals)
             except (ValidationError, json.JSONDecodeError):
-                return RunReport(stop_reason="model_invalid_output", steps_used=step - 1, receipts=receipts, refusals=refusals)
+                return _rr(stop_reason="model_invalid_output", steps_used=step - 1, receipts=receipts, refusals=refusals)
             messages.append({"role": "assistant", "content": decision.model_dump_json()})
             if decision.final is not None:
-                return RunReport(final=scrub_text(decision.final), stop_reason="final", steps_used=step,
+                return _rr(final=scrub_text(decision.final), stop_reason="final", steps_used=step,
                                  receipts=receipts, refusals=refusals)
             if decision.replan is not None:
                 replans += 1
                 if replans > 3:
-                    return RunReport(stop_reason="replan_limit", steps_used=step, receipts=receipts, refusals=refusals)
+                    return _rr(stop_reason="replan_limit", steps_used=step, receipts=receipts, refusals=refusals)
                 revised = [scrub_text(x)[:500] for x in decision.replan.steps]
+                replan_log.append(ReplanRecord(revision=replans, steps=revised))
                 messages.append({"role": "tool", "content": json.dumps({"replan": True, "revision": replans, "steps": revised})})
                 continue
             call = decision.tool_call
@@ -88,10 +120,14 @@ class Engine:
                 messages.append({"role": "tool", "content": json.dumps({"ok": False, "error": "policy_denied"})})
             elif lease is not None and not lease():
                 # The model call may have outlived the lease: nothing is dispatched after the lease is lost.
-                return RunReport(stop_reason="lease_lost", steps_used=step - 1, receipts=receipts, refusals=refusals)
+                return _rr(stop_reason="lease_lost", steps_used=step - 1, receipts=receipts, refusals=refusals)
+            elif cancelled():
+                return _rr(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
             else:
                 try:
-                    receipt = await self.tools.execute(step, call.name, call.arguments, principal)
+                    ok, receipt = await self._interruptible(self.tools.execute(step, call.name, call.arguments, principal), cancelled)
+                    if not ok:
+                        return _rr(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
                 except GateRefused as gr:
                     refusals.append(Refusal(step=step, tool=call.name, risk=tool.risk.value, reason=gr.reason,
                                             gates=list(gr.gates), digest=gr.digest, arguments=redact(call.arguments)))
@@ -99,4 +135,4 @@ class Engine:
                 else:
                     receipts.append(receipt)
                     messages.append({"role": "tool", "content": receipt.model_dump_json()})
-        return RunReport(stop_reason="step_limit", steps_used=self.max_steps, receipts=receipts, refusals=refusals)
+        return _rr(stop_reason="step_limit", steps_used=self.max_steps, receipts=receipts, refusals=refusals)
