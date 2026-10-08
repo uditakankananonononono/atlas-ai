@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 import inspect
 import re
 from abc import ABC, abstractmethod
@@ -34,7 +35,10 @@ class ReadOnlyToolRegistry:
     Risk comes from the registered tool, never from the model's call. Names are exact;
     an alias the model invents is an unknown tool, not a lower-risk spelling of a real one.
     """
-    def __init__(self, enforcer: Any = None) -> None:
+    def __init__(self, enforcer: Any = None, *, call_timeout: float = 30.0) -> None:
+        if not (isinstance(call_timeout, (int, float)) and not isinstance(call_timeout, bool) and 0 < call_timeout <= 3600):
+            raise ValueError("call_timeout must be a number of seconds in (0, 3600]")
+        self.call_timeout = float(call_timeout)
         self._tools: dict[str, Tool] = {}
         self._trusted: dict[str, tuple] = {}  # (name, risk, class, spends_money, sends_to_person) frozen at registration
         self.enforcer = enforcer
@@ -75,6 +79,14 @@ class ReadOnlyToolRegistry:
     def schemas(self) -> list[dict[str, Any]]:
         return [t.schema() for t in self._tools.values()]
 
+    @staticmethod
+    async def _run(tool: Tool, parsed: BaseModel) -> Any:
+        # Sync bodies run in a worker thread so the timeout can fire; the thread itself cannot be killed.
+        value = await asyncio.to_thread(tool.run, parsed)
+        if inspect.isawaitable(value):
+            value = await value
+        return value
+
     async def execute(self, step: int, name: str, arguments: dict[str, Any], principal: Any = None) -> ToolReceipt:
         if not self.risk_intact(name):
             raise PermissionError("tool no longer matches its registered risk and class")
@@ -86,9 +98,11 @@ class ReadOnlyToolRegistry:
         safe_args = redact(arguments)
         try:
             parsed = tool.arguments_model.model_validate(arguments)
-            value = tool.run(parsed)
-            if inspect.isawaitable(value):
-                value = await value
+            value = await asyncio.wait_for(self._run(tool, parsed), self.call_timeout)
+        except asyncio.TimeoutError:
+            # No retry here. The tool body may still be running or may already have had its effect (effect
+            # reconciliation is slice 3b); the receipt says only that the call did not finish in time.
+            return ToolReceipt(step=step, tool=name, arguments=safe_args, ok=False, error="timed_out")
         except (KeyError, TypeError, ValidationError, ValueError, OSError) as exc:
             # Class name only: str(exc) can embed arguments, paths or URLs.
             return ToolReceipt(step=step, tool=name, arguments=safe_args, ok=False, error=f"{type(exc).__name__}")

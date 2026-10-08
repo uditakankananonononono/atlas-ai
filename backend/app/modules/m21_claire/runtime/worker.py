@@ -15,14 +15,25 @@ class Worker:
 
     def __init__(self, store: GoalStore, engine_factory: EngineFactory, worker_id: str):
         self.store, self.engine_factory, self.worker_id = store, engine_factory, worker_id
+        self.last_outcome: str | None = None  # 'settled', 'blocked', 'lease_lost' (nothing settled) or None
 
     async def run_once(self) -> str | None:
         claim = self.store.claim(self.worker_id)
         if claim is None:
             return None
         principal = Principal(claim.tenant_id, claim.actor_id, claim.goal_id)
-        report = await self.engine_factory(claim).run(claim.purpose, principal=principal)
+        engine = self.engine_factory(claim)
+        if engine.tools.call_timeout >= self.store.lease_seconds:
+            # A call allowed to block past the lease defeats renewal: refuse to run at all.
+            self.store.settle(claim, "blocked", blocker="timeout_not_below_lease", report={}, verdict=None)
+            self.last_outcome = "blocked"
+            return claim.goal_id
+        report = await engine.run(claim.purpose, principal=principal, lease=lambda: self.store.renew(claim))
         dump = report.model_dump()
+        if report.stop_reason == "lease_lost":
+            self.last_outcome = "lease_lost"  # another worker owns it, or it was cancelled: settle nothing
+            return claim.goal_id
+        self.last_outcome = "settled"
         if any(r.reason == "approval_required" for r in report.refusals):
             # A gated action was refused: the goal waits for the owner; it can never be completed from this run.
             self.store.settle(claim, "awaiting_review", blocker="approval_required", report=dump, verdict=None)

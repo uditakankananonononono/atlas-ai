@@ -141,13 +141,23 @@ class GoalStore:
                     return Claim(gid, row.tenant_id, row.actor_id, row.purpose, json.loads(row.criteria), row.max_steps, token)
         return None
 
+    def renew(self, claim: Claim) -> bool:
+        """Extend the lease. True only if this claim's token still owns a running, unexpired goal.
+        False means the lease is lost (expired, replaced, settled or cancelled) and the caller must stop."""
+        now = self.clock()
+        with self._sessions.begin() as s:
+            res = s.execute(update(GoalRow).where(GoalRow.id == claim.goal_id, GoalRow.lease_token == claim.lease_token,
+                            GoalRow.status == "running", GoalRow.lease_expires_at >= _iso(now))
+                            .values(lease_expires_at=_iso(now + timedelta(seconds=self.lease_seconds)), updated_at=_iso(now)))
+            return res.rowcount == 1
+
     def settle(self, claim: Claim, status: str, *, blocker: str | None, report: dict[str, Any], verdict: dict[str, Any] | None) -> bool:
-        """Fenced: only the current lease token can settle. False means the lease was lost."""
+        """Fenced: only the current lease token, with an unexpired lease, can settle. False means the lease was lost."""
         if status not in TERMINAL:
             raise ValueError("not a terminal status")
         with self._sessions.begin() as s:
             res = s.execute(update(GoalRow).where(GoalRow.id == claim.goal_id, GoalRow.lease_token == claim.lease_token,
-                            GoalRow.status == "running")
+                            GoalRow.status == "running", GoalRow.lease_expires_at >= _iso(self.clock()))
                             .values(status=status, blocker=blocker, report=json.dumps(report), verdict=json.dumps(verdict),
                                     lease_token=None, lease_expires_at=None, updated_at=_iso(self.clock())))
             return res.rowcount == 1
