@@ -4,7 +4,7 @@ actually reported. Projection is idempotent (events fold by sequence) and
 runs transactionally against the stored snapshot version.
 """
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime,timezone
 from .schemas import Event,TimelineItem
 TIMELINE_UPSERT_TOPIC="timeline.upsert"
 ALERT_TOPIC="alert"
@@ -21,7 +21,15 @@ def apply_event(data:dict,event:Event)->dict:
     freshness=dict(data.get("freshness",{}))
     seen=event.occurred_at.isoformat()
     key=f"{event.aggregate_type}/{event.aggregate_id}"
-    if freshness.get(key,"")<seen:freshness[key]=seen
+    previous=freshness.get(key)
+    def instant(value):
+        moment=datetime.fromisoformat(value)
+        # Legacy naive observations use the stored UTC convention.
+        if moment.tzinfo is None:moment=moment.replace(tzinfo=timezone.utc)
+        return moment.astimezone(timezone.utc)
+    try:newer=previous is None or instant(previous)<instant(seen)
+    except (TypeError,ValueError):newer=True  # replace invalid prior timestamp
+    if newer:freshness[key]=seen
     data["freshness"]=freshness
     if event.topic==TIMELINE_UPSERT_TOPIC:
         try:item=TimelineItem(**event.payload["item"])
