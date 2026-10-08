@@ -55,3 +55,8 @@ def test_fixed_cc0_selection_receipted_offline(tmp_path):
 def test_unknown_or_absent_selection_refused_pre_execution(tmp_path,config,split):
  with pytest.raises(ValueError):run_receipted(tmp_path/'db',tmp_path/'out',tmp_path/'receipt',mode='collect',config=config,split=split)
  assert list(tmp_path.iterdir())==[]
+@pytest.mark.parametrize('resource',['db','export'])
+def test_receipt_cannot_occupy_writer_lease(tmp_path,resource):
+ db=tmp_path/'db';export=tmp_path/'export';receipt=Path(str(db if resource=='db' else export)+'.collection-lock')
+ with pytest.raises(ValueError):run_receipted(db,export,receipt)
+ assert not receipt.exists()

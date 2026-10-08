@@ -11,7 +11,7 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100,
  if mode not in {'verify','collect'}:raise ValueError('mode must be verify or collect')
  if mode=='collect' and (isinstance(max_rows,bool) or not isinstance(max_rows,int) or not 1<=max_rows<=100000):raise ValueError('collect rows must be integer 1..100000')
  db=Path(db_path).resolve();export=Path(export_path).resolve();receipt=Path(receipt_path).resolve()
- if receipt in {db,export,export.with_suffix(export.suffix+'.manifest.json')}:raise ValueError('receipt cannot replace corpus artifacts')
+ if receipt in {db,export,export.with_suffix(export.suffix+'.manifest.json'),Path(str(db)+'.collection-lock'),Path(str(export)+'.collection-lock')}:raise ValueError('receipt cannot replace corpus artifacts')
  if receipt.exists():raise FileExistsError('receipt destination already exists')
  root=Path(__file__).resolve().parents[3]
  revision=subprocess.run(['git','-C',str(root),'rev-parse','HEAD'],capture_output=True,text=True,check=True).stdout.strip()
