@@ -1,25 +1,29 @@
 from fastapi import APIRouter,Depends,HTTPException
+from app.auth.context import TenantContext,require_tenant
 from app.core.approvals import approvals
 from app.modules.m20_general_cognitive_worker.routes import get_service as cognitive_service
 from .schemas import GoalIn,EnvironmentChangeIn
 from .service import Service
-router=APIRouter(prefix="/claire",tags=["claire"]);_service=None
-def get_service():
- global _service
- if _service is None:_service=Service(cognitive_service(),approvals)
- return _service
+router=APIRouter(prefix="/claire",tags=["claire"]);_services:dict[str,Service]={}
+def get_service(tenant:TenantContext=Depends(require_tenant),cognitive=Depends(cognitive_service))->Service:
+ """One Service per authenticated tenant, bound to that tenant's cognitive service (never a shared global)."""
+ s=_services.get(tenant.tenant_id)
+ if s is None or s.cognitive is not cognitive:
+  s=_services[tenant.tenant_id]=Service(cognitive,approvals)
+ return s
 @router.post("/goals",status_code=201)
-def intake(req:GoalIn,s:Service=Depends(get_service)):
- try:return s.intake(req.goal,req.acceptance,req.limits)
+def intake(req:GoalIn,tenant:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):
+ try:return s.intake(req.goal,req.acceptance,req.limits,tenant_id=tenant.tenant_id,actor_id=tenant.actor_id)
  except ValueError as e:raise HTTPException(422,str(e))
 @router.post("/goals/{goal_id}/realize")
-async def realize(goal_id:str,s:Service=Depends(get_service)):
- try:return await s.realize(goal_id)
+async def realize(goal_id:str,tenant:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):
+ try:s.owned(goal_id,tenant.tenant_id,tenant.actor_id);return await s.realize(goal_id)
  except KeyError:raise HTTPException(404,"goal not found")
 @router.post("/goals/{goal_id}/environment-changes",status_code=201)
-def environment_change(goal_id:str,req:EnvironmentChangeIn,s:Service=Depends(get_service)):
- if goal_id not in s.goals:raise HTTPException(404,"goal not found")
- try:return s.request_environment_change(goal_id,req.operation,req.preview)
+def environment_change(goal_id:str,req:EnvironmentChangeIn,tenant:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):
+ try:s.owned(goal_id,tenant.tenant_id,tenant.actor_id)
+ except KeyError:raise HTTPException(404,"goal not found")
+ try:return s.request_environment_change(goal_id,req.operation,req.preview,tenant_id=tenant.tenant_id)
  except ValueError as e:raise HTTPException(422,str(e))
 
 from typing import Any

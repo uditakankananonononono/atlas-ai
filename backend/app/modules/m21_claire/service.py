@@ -20,18 +20,23 @@ class ClaireGoal:
  goal:str;acceptance:list[str];limits:dict[str,Any];id:str=field(default_factory=lambda:str(uuid.uuid4()));run_id:str|None=None;status:str="draft";artifacts:list[dict[str,Any]]=field(default_factory=list);evidence:list[dict[str,Any]]=field(default_factory=list);escalation:str|None=None
 class Service:
  FORBIDDEN=("self-bot","bot evasion","ban evasion","oceanofpdf","pirated","piracy","fabricate application","invent activity","fake credential","rotating proxy","login scrape","login-driven scraping","disable approval","illegal","lie on my behalf","lie for me","deceive","false statement","impersonate deceptively")
- def __init__(self,cognitive:CognitiveService,approvals:ApprovalStore,local_client:LocalClient|None=None,max_retries:int=3):self.cognitive,self.approvals,self.local_client,self.max_retries=cognitive,approvals,local_client,min(5,max(1,max_retries));self.goals={}
- def intake(self,goal:str,acceptance:list[str],limits:dict[str,Any]):
+ def __init__(self,cognitive:CognitiveService,approvals:ApprovalStore,local_client:LocalClient|None=None,max_retries:int=3):self.cognitive,self.approvals,self.local_client,self.max_retries=cognitive,approvals,local_client,min(5,max(1,max_retries));self.goals={};self._owners={}
+ def intake(self,goal:str,acceptance:list[str],limits:dict[str,Any],*,tenant_id:str|None=None,actor_id:str|None=None):
   if any(x in goal.lower() for x in self.FORBIDDEN):raise ValueError("goal conflicts with Claire's operating boundaries")
-  item=ClaireGoal(goal,acceptance,{"environment":"atlas","optional_capabilities":["paired_local_pc"],"max_retries":self.max_retries,**limits});self.goals[item.id]=item;return item
+  item=ClaireGoal(goal,acceptance,{"environment":"atlas","optional_capabilities":["paired_local_pc"],"max_retries":self.max_retries,**limits});self.goals[item.id]=item;self._owners[item.id]=(tenant_id,actor_id);return item
+ def owned(self,goal_id:str,tenant_id:str,actor_id:str)->ClaireGoal:
+  """Goal lookup scoped to tenant+actor. Another principal's goal is indistinguishable from a missing one."""
+  item=self.goals[goal_id]
+  if self._owners.get(goal_id)!=(tenant_id,actor_id):raise KeyError(goal_id)
+  return item
  async def realize(self,goal_id:str):
   item=self.goals[goal_id];budget=item.limits.get("budget",{"seconds":1800,"tokens":200000,"money":0})
   run=await self.cognitive.start(item.goal,{"acceptance":item.acceptance,"environment":"atlas","optional_paired_local_pc":self.local_client is not None,"bounded_retries":self.max_retries,"local_control_requires_user_consent":True,"external_messages_and_spend_require_per_action_approval":True},budget);item.run_id=run.id;item.status=run.status.value;item.evidence=[{"phase":t.phase,"summary":t.summary,"evidence":t.evidence,"decision":t.decision,"policy_basis":t.policy_basis} for t in run.traces]
   if run.status in {State.FAILED,State.BLOCKED}:item.escalation="Claire paused after bounded attempts or an unmet approval/dependency. User decision required."
   return item
- def request_environment_change(self,goal_id:str,operation:str,preview:dict[str,Any]):
+ def request_environment_change(self,goal_id:str,operation:str,preview:dict[str,Any],*,tenant_id:str|None=None):
   if operation not in {"install_package","uninstall_package","write_file","read_file","move_file","copy_file","delete_file","type_text","click","scroll","browser_navigate","browser_download","run_command","run_workflow","deploy_preview","connect_tool","send_message","spend_money"}:raise ValueError("local operation not supported")
-  req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"claire:{operation}",payload={"goal_id":goal_id,"environment":"paired_local_pc","preview":preview,"rollback":"restore pre-change snapshot"}))
+  req=self.approvals.put(ApprovalRequest(id=str(uuid.uuid4()),module_id=MODULE_ID,action_type=f"claire:{operation}",payload={**({"tenant_id":tenant_id} if tenant_id else {}),"goal_id":goal_id,"environment":"paired_local_pc","preview":preview,"rollback":"restore pre-change snapshot"}))
   return req
  async def local_action(self,goal_id:str,action:dict[str,Any],approval_token:str|None=None):
   if not self.local_client:raise RuntimeError("no signed local client is paired")
