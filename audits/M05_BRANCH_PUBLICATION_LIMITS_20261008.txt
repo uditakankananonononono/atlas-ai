@@ -1,0 +1,8 @@
+Reviewed evidence tip: a536d95d7c496aa0cb142082f1e6e2671bfbac0b
+Branch publication only, not integration clearance. Counterpart owns merge and file-intersection check.
+The optional snapshot inspector is TRUSTED only.
+The default HTTP duplicate guard is NOT account ownership or auth binding.
+Consume-before-dispatch crashes need manual reconciliation.
+No exactly-once, live-provider or Postgres proof.
+README reports preceding full M05 run259pass1fail: cadence401vs422 baseline reproduction remains open.
+This publication commit adds limits documentation only, no code change.
