@@ -2,7 +2,7 @@
 """Slice 10: a goal may name the principals allowed to approve its gated calls.
 
 Labels: PROTECTION_* (must stay closed / unchanged), NEW_*.
-Limits: SQLite only; the list is immutable after creation (no edit API); principal ids are trusted as supplied by Claire's
+Limits: designated approvers govern NEW GATE GRANTS ONLY (see the pin test below); SQLite only; the list is immutable after creation (no edit API); principal ids are trusted as supplied by Claire's
 authenticated contract; resolve_effect (unknown-effect resolution) is NOT bound to the list in this slice; the self-approve
 flag stays default OFF and the list does not widen it.
 """
@@ -101,6 +101,51 @@ def test_NEW_corrupt_stored_list_fails_closed(store):
             s.execute(update(GoalRow).where(GoalRow.id == gid).values(designated_approvers=raw))
         with pytest.raises(ApproverNotDesignated):
             g(store, gid, ref, "ap1")
+
+
+@pytest.mark.parametrize("raw", ['["ap", ""]', '["ap", "  "]', '["ap", " x"]', '["ap", "x "]', '["ap", "ap"]', json.dumps(["ap"] + ["a%d" % i for i in range(20)]),
+                                 json.dumps(["ap", "x" * 201]), '["ap", 1]', '["ap", null]', '["ap", true]', '[["ap"]]'])
+def test_REGRESSION_malformed_stored_list_is_refused_entirely_even_for_a_listed_member(store, raw):
+    # reviewer repro: '["ap", ""]' used to pass because it is a JSON list of str, and 'ap' was accepted
+    gid, ref = refused(store, ["ap"])
+    with store._sessions.begin() as s:
+        s.execute(update(GoalRow).where(GoalRow.id == gid).values(designated_approvers=raw))
+    for who in ("ap", "x", "ap1"):
+        with pytest.raises(ApproverNotDesignated):
+            g(store, gid, ref, who)
+
+
+def test_NEW_stored_empty_list_means_nobody_and_null_means_anyone_and_a_valid_stored_list_still_works(store):
+    gid, ref = refused(store, ["ap"])
+    with store._sessions.begin() as s:
+        s.execute(update(GoalRow).where(GoalRow.id == gid).values(designated_approvers="[]"))
+    with pytest.raises(ApproverNotDesignated):
+        g(store, gid, ref, "ap")
+    assert store.get("t1", "a1", gid)["approver_restricted"] is True
+    with store._sessions.begin() as s:
+        s.execute(update(GoalRow).where(GoalRow.id == gid).values(designated_approvers=None))
+    assert g(store, gid, ref, "anyone")
+    gid2, ref2 = refused(store, ["ap"])
+    with store._sessions.begin() as s:
+        s.execute(update(GoalRow).where(GoalRow.id == gid2).values(designated_approvers=json.dumps(["ap"] + ["b%d" % i for i in range(19)])))
+    assert g(store, gid2, ref2, "b7")  # exactly 20, all valid
+
+
+def test_PROTECTION_documented_limit_designation_binds_grants_only_resolve_effect_is_not_list_bound(store):
+    # Pins the stated semantic limit so it cannot change silently: an approver-role principal OUTSIDE the list can still
+    # attest committed/absent for an unknown effect. Changing this is a separate, reviewed decision.
+    from tests.modules import test_m21_runtime_effects as fx
+    gid = store.create("t1", "a1", "do work", CRIT, 6, designated_approvers=["ap1"])
+    p = fx.live(store, gid)
+    r = fx.reg(store, fx.make("send_note", person=True, mode="oserror_after"))
+    d = fx.payload_digest(gid, "send_note", {"target": "a"})
+    store.grant("t1", "a1", gid, "send_note", "comms", d, "ap1")
+    assert fx.run(r.execute(1, "send_note", {"target": "a"}, p)).error == "OSError"
+    eid = store.list_effects("t1", "a1", gid)[0]["id"]
+    fx.set_status(store, gid, "awaiting_review")
+    with pytest.raises(ApproverNotDesignated):
+        store.grant("t1", "a1", gid, "send_note", "comms", d, "outsider")
+    assert store.resolve_effect(gid, eid, "absent", tenant_id="t1", resolver_id="outsider") == "resolved"
 
 
 def test_PROTECTION_terminal_goal_is_still_not_grantable_and_unknown_goal_still_keyerror(store):

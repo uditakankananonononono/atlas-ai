@@ -150,7 +150,8 @@ def resolve_effect(goal_id: str, effect_id: str, body: ResolveIn, tenant: Tenant
                    store: GoalStore = Depends(get_store)) -> dict[str, Any]:
     """An approver (not the goal's actor, unless self-approval is enabled) states what really happened to an effect
     whose outcome is unknown. committed: it happened, never re-run. absent: it did not happen, so the same call may be
-    retried with a fresh exact approval. The resolver is recorded on the journal row."""
+    retried with a fresh exact approval. The resolver is recorded on the journal row.
+    NOTE: a goal's designated_approvers list does NOT apply here (it binds new gate grants only, by design in this slice)."""
     require_approver(tenant)
     try:
         outcome = store.resolve_effect(goal_id, effect_id, body.outcome, receipt={"content": {"resolved_by_owner": True}},
