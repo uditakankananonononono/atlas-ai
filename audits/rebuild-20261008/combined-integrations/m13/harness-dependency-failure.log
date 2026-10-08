@@ -1,0 +1,22 @@
+...............................................F........................ [ 68%]
+.................................                                        [100%]
+=================================== FAILURES ===================================
+________________ test_real_postgres_eight_consumers_one_device _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-1201/test_real_postgres_eight_consu0')
+
+    def test_real_postgres_eight_consumers_one_device(tmp_path):
+        import threading
+>       import pgserver
+E       ModuleNotFoundError: No module named 'pgserver'
+
+tests/modules/test_m13_pairing_cas_reimplementation.py:55: ModuleNotFoundError
+=============================== warnings summary ===============================
+../../../home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /home/sandbox/atlas-ai/.venv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m13_pairing_cas_reimplementation.py::test_real_postgres_eight_consumers_one_device
+1 failed, 104 passed, 1 warning in 26.98s
