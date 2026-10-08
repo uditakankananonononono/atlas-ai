@@ -37,3 +37,32 @@ def test_invalid_claims_and_periods():
 def test_mutant_exclusive_end_is_caught():
     # an event on the end date must count; exclusive-end bug would make this UNSUPPORTED
     assert verify_metrics({"views": 10}, [ev(datetime(2026,1,31,12,tzinfo=U))], S, E)[0].label == VERIFIED
+
+def test_bool_claim_is_invalid_regression():
+    r = verify_metrics({"views": True}, [ev(datetime(2026,1,5,tzinfo=U), value=1)], S, E)[0]
+    assert r.label == INVALID
+    assert verify_metrics({"views": 1}, [ev(datetime(2026,1,5,tzinfo=U), value=1)], S, E)[0].label == VERIFIED
+
+def test_service_heading_only_over_verified():
+    import sys; sys.path.insert(0, __file__.rsplit("/",1)[0])
+    from test_m07_brand_collaboration import Repo, Approvals
+    from app.modules.m07_brand_collaboration.schemas import BrandDiscoveryIn, MediaKitIn, ReportIn, PartnershipEventIn
+    from app.modules.m07_brand_collaboration.service import Service
+    r = Repo(); svc = Service(r, Approvals())
+    b = svc.discover(BrandDiscoveryIn(name="A", mission="science", public_url="https://a.test"), "science")
+    svc.log_event(PartnershipEventIn(brand_id=b.id, kind="metric", occurred_at=datetime(2026,1,5,tzinfo=U), data={"metric":"views","value":10}))
+    def kit(m, ps=S, pe=E):
+        a = svc.media_kit(MediaKitIn(brand_id=b.id, creator_name="Ada", creator_mission="science", metrics=m, period_start=ps, period_end=pe))
+        return r.a[a.id].content.decode(errors="ignore"), a.metadata["metric_labels"]
+    html, lab = kit({"views": 10})
+    assert lab == {"views": "VERIFIED"} and "Verified metrics" in html
+    html, lab = kit({"views": 11})
+    assert lab == {"views": "PARTIAL"} and "Verified metrics" not in html
+    html, lab = kit({"views": 10}, None, None)
+    assert lab == {"views": "UNVERIFIED"} and "Verified metrics" not in html
+    rep = svc.report(ReportIn(brand_id=b.id, period_start=S, period_end=E, metrics={"views": 99}))
+    assert rep.metadata["metric_labels"] == {"views": "PARTIAL"}
+
+def test_iso_string_timestamps_from_ledger():
+    e = ev("2026-01-05T10:00:00Z"); n = ev("2026-01-05T10:00:00"); g = ev("garbage")
+    assert verify_metrics({"views": 10}, [e, n, g], S, E)[0].label == VERIFIED

@@ -53,6 +53,11 @@ def verify_metrics(claims: Mapping[str, float], events: Iterable, start: date, e
         kind, at, data = _event_fields(ev)
         if kind != "metric" or not isinstance(data, Mapping):
             continue
+        if isinstance(at, str):  # ledger rows are stored via model_dump(mode="json")
+            try:
+                at = datetime.fromisoformat(at.replace("Z", "+00:00"))
+            except ValueError:
+                continue
         if not isinstance(at, datetime) or at.tzinfo is None:
             continue  # naive timestamps cannot be placed in a UTC period
         name, val = data.get("metric"), data.get("value")
@@ -64,7 +69,7 @@ def verify_metrics(claims: Mapping[str, float], events: Iterable, start: date, e
     out = []
     for name in sorted(claims):
         c = claims[name]
-        if not isinstance(c, (int, float)) or not math.isfinite(c) or c < 0:
+        if isinstance(c, bool) or not isinstance(c, (int, float)) or not math.isfinite(c) or c < 0:
             out.append(MetricVerdict(name, c, None, 0, INVALID, "claim must be a finite non-negative number"))
         elif name not in totals:
             out.append(MetricVerdict(name, c, None, 0, UNSUPPORTED, "no ledger metric events in period"))

@@ -19,6 +19,7 @@ class MediaKitIn(BaseModel):
     audience: dict[str, Any] = Field(default_factory=dict)
     metrics: dict[str, float] = Field(default_factory=dict)
     case_studies: list[dict[str, Any]] = Field(default_factory=list, max_length=20)
+    period_start: date | None = None; period_end: date | None = None
 
 class SponsorshipPackageIn(BaseModel):
     brand_id: str; currency: str = Field(default="USD", pattern=r"^[A-Z]{3}$")

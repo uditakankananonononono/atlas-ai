@@ -6,6 +6,7 @@ from io import BytesIO
 from uuid import uuid4
 from app.core.models import ApprovalRequest
 from .schemas import *
+from .metric_provenance import verify_metrics, VERIFIED
 
 MODULE_ID=7
 class NotFoundError(LookupError): pass
@@ -35,10 +36,19 @@ class Service:
             return HTML(string=html).write_pdf(),"application/pdf"
         except ImportError:
             return html.encode(),"text/html"
+    def _metric_block(self,brand_id,metrics,start,end):
+        """Return (heading, <li> rows, verdict labels). 'Verified metrics' only when every number is VERIFIED."""
+        if start is None or end is None or not metrics:
+            rows="".join(f"<li>{escape(str(k))}: {escape(str(v))} [UNVERIFIED: supplied, no period]</li>" for k,v in metrics.items())
+            return "Supplied metrics (unverified)",rows,{k:"UNVERIFIED" for k in metrics}
+        verdicts=verify_metrics(metrics,self.repo.events(brand_id),start,end)
+        labels={v.metric:v.label for v in verdicts}
+        rows="".join(f"<li>{escape(v.metric)}: {escape(str(v.claimed))} [{v.label}]</li>" for v in verdicts)
+        return ("Verified metrics" if all(l==VERIFIED for l in labels.values()) else "Metrics (not all verified)"),rows,labels
     def media_kit(self,data:MediaKitIn)->ArtifactOut:
-        rows="".join(f"<li>{escape(str(k))}: {escape(str(v))}</li>" for k,v in data.metrics.items())
-        html=f"<html><body><h1>{escape(data.creator_name)} x Brand Partnership</h1><h2>Mission</h2><p>{escape(data.creator_mission)}</p><h2>Verified metrics</h2><ul>{rows}</ul><p>Generated from supplied data; verify before sharing.</p></body></html>"
-        content,ctype=self._pdf(html); return self._artifact("media_kit",data.brand_id,content,ctype,{"creator":data.creator_name,"template":"jinja-compatible-v1"})
+        heading,rows,labels=self._metric_block(data.brand_id,data.metrics,data.period_start,data.period_end)
+        html=f"<html><body><h1>{escape(data.creator_name)} x Brand Partnership</h1><h2>Mission</h2><p>{escape(data.creator_mission)}</p><h2>{heading}</h2><ul>{rows}</ul><p>Generated from supplied data; verify before sharing.</p></body></html>"
+        content,ctype=self._pdf(html); return self._artifact("media_kit",data.brand_id,content,ctype,{"creator":data.creator_name,"template":"jinja-compatible-v1","metric_labels":labels})
     def sponsorship(self,data:SponsorshipPackageIn)->ArtifactOut:
         html="<html><body><h1>Sponsorship packages</h1>"+"".join(f"<h2>{escape(str(t.get('name','Tier')))}</h2><pre>{escape(str(t))}</pre>" for t in data.tiers)+"</body></html>"
         content,ctype=self._pdf(html); return self._artifact("sponsorship_package",data.brand_id,content,ctype,{"currency":data.currency,"tier_count":len(data.tiers)})
@@ -51,8 +61,8 @@ class Service:
         self._brand(data.brand_id); out=PartnershipEventOut(id=str(uuid4()),created_at=datetime.now(timezone.utc),**data.model_dump()); self.repo.add_event(**out.model_dump(mode="json")); return out
     def report(self,data:ReportIn)->ArtifactOut:
         if data.period_end<data.period_start: raise ValueError("invalid reporting period")
-        events=self.repo.events(data.brand_id); html=f"<html><body><h1>Brand performance report</h1><p>{data.period_start} to {data.period_end}</p><pre>{escape(str(data.metrics))}</pre><p>{len(events)} partnership ledger events.</p></body></html>"
-        content,ctype=self._pdf(html); return self._artifact("performance_report",data.brand_id,content,ctype,{"period_start":str(data.period_start),"period_end":str(data.period_end),"event_count":len(events)})
+        events=self.repo.events(data.brand_id); heading,rows,labels=self._metric_block(data.brand_id,data.metrics,data.period_start,data.period_end); html=f"<html><body><h1>Brand performance report</h1><p>{data.period_start} to {data.period_end}</p><h2>{heading}</h2><ul>{rows}</ul><p>{len(events)} partnership ledger events.</p></body></html>"
+        content,ctype=self._pdf(html); return self._artifact("performance_report",data.brand_id,content,ctype,{"period_start":str(data.period_start),"period_end":str(data.period_end),"event_count":len(events),"metric_labels":labels})
     def propose_send(self,artifact_id:str,recipient:str)->ApprovalProposal:
         row=self.repo.artifact(artifact_id)
         if not row: raise NotFoundError(artifact_id)
