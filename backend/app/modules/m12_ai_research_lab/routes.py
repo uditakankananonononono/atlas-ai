@@ -1,6 +1,10 @@
 from fastapi import APIRouter,Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from .models import RouteRequest
+from app.core.providers import ProviderOutcomeUnknown
+from .bounded_evidence import EvidenceRejected
+from .executor import ConfidenceUnavailable
+from dataclasses import asdict
 from .schemas import RunIn,WorkflowIn
 from .workflow import Workflow,WorkflowValidationError
 router=APIRouter(prefix="/ai-research-lab",tags=["ai-research-lab"])
@@ -21,6 +25,12 @@ def get_dag_engine():
 @router.post("/run")
 async def run(body:RunIn,tenant:TenantContext=Depends(require_tenant),service=Depends(get_service)):
     try:return await service.execute(RouteRequest(body.task_type,body.output_tokens,body.budget_cents,body.latency_tolerance_ms,tenant.tenant_id),body.prompt)
+    except ProviderOutcomeUnknown as error:
+        raise HTTPException(409,{"state":"unknown","retry_allowed":False,"reason":str(error)}) from error
+    except ConfidenceUnavailable as error:
+        raise HTTPException(422,{"state":"review_required","retry_allowed":False,"result":asdict(error.result)}) from error
+    except (EvidenceRejected, ValueError) as error:
+        raise HTTPException(422,{"state":"invalid_input","retry_allowed":False,"reason":str(error)}) from error
     except RuntimeError as error: raise HTTPException(422,str(error)) from error
 @router.post("/workflows/run")
 async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tenant),engine=Depends(get_dag_engine)):

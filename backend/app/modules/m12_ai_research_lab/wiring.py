@@ -28,7 +28,7 @@ class AtlasProvider:
    raise ProviderError(f"{model_id} is a paid model; set ATLAS_ALLOW_PAID=true to enable it")
   provider,model=model_id.split(':',1)
   chosen,text=await generate(prompt,provider,model)
-  return ModelResult(text=text,model_id=chosen,confidence=.75,metadata={'provider':provider})
+  return ModelResult(text=text,model_id=chosen,confidence=None,metadata={'provider':provider,'confidence_source':'unavailable'})
 
 def build_service():return Service(ModelRouter(active_catalog()),AtlasProvider())
 def build_dag_engine(service):

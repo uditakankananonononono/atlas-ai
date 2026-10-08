@@ -1,7 +1,7 @@
 # M12 opt-in bounded evidence boundary
 
-Base: f64e0c37f3343b289f56583b7c63e5fa6ed5a4f9.
-New module and tests only. No existing wiring is changed.
+Adapted base: 3eef2c0ab2344abfcc2de912e154a1b28f43d087.
+See WIRING.md for actual shipped path and evidence on this base.
 
 ## Use
 
@@ -28,16 +28,13 @@ not inferred owner requirements.
 
 ## Executed evidence
 
-57 boundary tests and 253 existing focused collateral tests pass (310 total).
-Base negative control: new test cannot import missing module, exit 2.
-Two negative controls separately bypass detachment and result checking; each
-kills three tests. Restoring code returns to passing. Providers in tests are
-scripted test doubles. No real model inference is claimed.
+See WIRING.md and delivered receipts. Old-base counts are retained in the
+separate historical package, not acceptance of this adaptation.
 
 ## Limits
 
-This is an opt-in composition, not a repair to the shipped HTTP service or all
-existing entry points. No source authentication, calibrated confidence, actual
+BoundedProvider is also usable as an opt-in composition; this adaptation wires
+it into ResearchExecutor and the single-run HTTP service, not all entry points. No source authentication, calibrated confidence, actual
 billing, aggregate spend authorization, provider timeout, durable replay,
 rollback, prompt-injection resistance or real-provider acceptance is established.
 Budgets bound copied data and traversal work, not provider generation, memory
@@ -45,6 +42,5 @@ already allocated upstream, network transport or concurrent mutation. There is
 no hostile-concurrent-mutation or thread-safe snapshot claim. Exceptions raised
 by an underlying provider are not reclassified or automatically retried here.
 
-Executed on Python 3.10.12 in this local Linux environment. Project metadata
-requires Python >=3.12; Python 3.12 execution and owner PC are not verified.
+Executed on Python 3.12.14 in this local Linux environment. Owner PC is not verified.
 One existing Starlette/httpx deprecation warning remains in collateral tests.
