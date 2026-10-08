@@ -328,3 +328,23 @@ def test_stale_decision_cannot_overwrite_committed_competing_decision(service):
     service._fetch = original_fetch
     assert service.get(view['id'])['status'] == ApprovalStatus.DENIED
     assert [event['event'] for event in service.audit(view['id'])] == ['created', 'denied']
+
+def test_lazy_expiry_cannot_overwrite_competing_approved_decision(service, clock):
+    view = submit(service, ttl_seconds=10)
+    fetch = service._fetch
+    raced = []
+
+    def stale_fetch(db, aid):
+        row = fetch(db, aid)
+        if not raced:
+            raced.append(True)
+            service.decide(aid, ApprovalStatus.APPROVED, decided_by='winner')
+            clock.now = T0 + timedelta(seconds=20)
+        return row
+
+    service._fetch = stale_fetch
+    result = service.get(view['id'])
+    service._fetch = fetch
+    assert result['status'] == ApprovalStatus.APPROVED
+    assert service.get(view['id'])['status'] == ApprovalStatus.APPROVED
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', 'approved']
