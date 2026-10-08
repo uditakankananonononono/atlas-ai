@@ -58,6 +58,7 @@ from .schemas import (
     RevisionOut,
     ScheduleEntryOut,
     ScheduleIn,
+    ScheduleLocalIn,
     SnapshotIn,
     SnapshotOut,
 )
@@ -238,6 +239,29 @@ def request_schedule(plan_id: str, request: ScheduleIn, service: Service = Depen
             status_code=422,
             detail=[{"code": i.code, "severity": i.severity, "message": i.message} for i in error.issues],
         ) from error
+
+
+@router.post("/plans/{plan_id}/schedule-local", status_code=201)
+def request_schedule_local(plan_id: str, request: ScheduleLocalIn, service: Service = Depends(get_service)) -> dict:
+    """Schedule at a local wall-clock time in an IANA zone; DST gap/fold handled by explicit policy."""
+    from dataclasses import asdict
+    from .local_time import LocalTimeError
+    try:
+        approvals, resolved = service.request_schedule_local(
+            plan_id, request.local_time, request.timezone, on_ambiguous=request.on_ambiguous,
+            on_gap=request.on_gap, sponsored=request.sponsored, source=request.source,
+            references=request.references or None)
+    except LocalTimeError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    except PlanNotFoundError as error:
+        raise HTTPException(status_code=404, detail="plan not found") from error
+    except DraftComplianceError as error:
+        raise HTTPException(
+            status_code=422,
+            detail=[{"code": i.code, "severity": i.severity, "message": i.message} for i in error.issues],
+        ) from error
+    return {"approvals": [a.model_dump(mode="json") for a in approvals],
+            "resolved": {**asdict(resolved), "instant_utc": resolved.instant_utc.isoformat()}}
 
 
 @router.get("/plans/{plan_id}/schedule", response_model=list[ScheduleEntryOut])

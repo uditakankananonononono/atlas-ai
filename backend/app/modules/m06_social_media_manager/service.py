@@ -45,6 +45,7 @@ from .adapters import (
 )
 from .analytics import ABTest
 from .compliance import ComplianceIssue, is_blocking, validate_draft
+from .local_time import ResolvedLocalTime, resolve_local
 from .scheduler import Scheduler, ScheduleEntry, require_aware
 
 # Signature of the shared BYOK generator (app.core.providers.generate).
@@ -461,6 +462,22 @@ class Service:
         plan.status = "pending_approval"
         self._repository.save_plan(plan)
         return requests
+
+    def request_schedule_local(
+        self, plan_id: str, local_time: datetime, timezone_name: str, *, on_ambiguous: str = "reject",
+        on_gap: str = "reject", sponsored: bool = False, source: str | None = None,
+        references: dict[int, dict[str, str]] | None = None,
+    ) -> tuple[list[ApprovalRequest], ResolvedLocalTime]:
+        """Schedule at a wall-clock time in an IANA zone (DST-safe), same gates as request_schedule.
+
+        The zone is resolved before any plan, compliance or approval work, so a bad zone or a
+        nonexistent/ambiguous local time files nothing.
+        """
+        resolved = resolve_local(local_time, timezone_name, on_ambiguous=on_ambiguous, on_gap=on_gap)
+        requests = self.request_schedule(
+            plan_id, resolved.instant_utc, sponsored=sponsored, source=source, references=references
+        )
+        return requests, resolved
 
     def list_schedule(self, plan_id: str) -> list[ScheduleEntry]:
         """Schedule entries for one plan (empty when no scheduler is wired)."""

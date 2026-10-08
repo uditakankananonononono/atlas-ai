@@ -291,3 +291,22 @@ class CreativeSpecIn(BaseModel):
     goals: list[str] = Field(default_factory=list, max_length=20)
     facts: dict[str, Any] = Field(default_factory=dict)
     constraints: list[str] = Field(default_factory=list, max_length=50)
+
+
+class ScheduleLocalIn(BaseModel):
+    """Wall-clock publish time plus an IANA timezone name (no offset in the time)."""
+
+    local_time: datetime
+    timezone: str = Field(min_length=1, max_length=64)
+    on_ambiguous: str = "reject"
+    on_gap: str = "reject"
+    sponsored: bool = False
+    source: str | None = Field(default=None, max_length=40000)
+    references: dict[int, dict[str, str]] = Field(default_factory=dict)
+
+    @field_validator("local_time")
+    @classmethod
+    def _local_is_naive(cls, value: datetime) -> datetime:
+        if value.tzinfo is not None:
+            raise ValueError("local_time must not include an offset; send the timezone name instead")
+        return value
