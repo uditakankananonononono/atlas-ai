@@ -3,7 +3,8 @@ import json, secrets, uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
-from sqlalchemy import Integer, String, Text, create_engine, select, update
+from sqlalchemy import Integer, String, Text, UniqueConstraint, create_engine, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -53,6 +54,29 @@ class ApprovalRow(Base):
     expires_at: Mapped[str] = mapped_column(String(40))
     created_at: Mapped[str] = mapped_column(String(40))
     consumed_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
+
+
+class EffectRow(Base):
+    """Journal of one exact non-read call (goal + tool + argument digest). Written BEFORE dispatch.
+    States: intent (dispatching or crashed), unknown (ended without a recorded outcome), committed, failed (never ran),
+    absent (owner or reconcile established that no effect happened)."""
+    __tablename__ = "claire_runtime_effects"
+    __table_args__ = (UniqueConstraint("goal_id", "idempotency_key", name="uq_claire_runtime_effects_goal_key"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(String(200), index=True)
+    actor_id: Mapped[str] = mapped_column(String(200), index=True)
+    goal_id: Mapped[str] = mapped_column(String(36), index=True)
+    tool: Mapped[str] = mapped_column(String(100))
+    idempotency_key: Mapped[str] = mapped_column(String(64))
+    state: Mapped[str] = mapped_column(String(20))
+    attempts: Mapped[int] = mapped_column(Integer, default=1)
+    receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[str] = mapped_column(String(40))
+    updated_at: Mapped[str] = mapped_column(String(40))
+
+
+PENDING = ("intent", "unknown")
+RETRIABLE = ("failed", "absent")
 
 
 @dataclass(frozen=True)
@@ -173,6 +197,93 @@ class GoalStore:
             exists = s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
                                                         GoalRow.actor_id == actor_id)).first()
         return "not_requeueable" if exists else "not_found"
+
+    # --- effect journal --------------------------------------------------------------------------
+    def peek_effect(self, principal: Any, key: str) -> dict[str, Any] | None:
+        with self._sessions.begin() as s:
+            row = s.scalars(select(EffectRow).where(EffectRow.goal_id == principal.goal_id, EffectRow.idempotency_key == key,
+                            EffectRow.tenant_id == principal.tenant_id, EffectRow.actor_id == principal.actor_id)).first()
+            return None if row is None else self._effect_view(row, with_receipt=True)
+
+    def begin_effect(self, principal: Any, tool: str, key: str, *, takeover_pending: bool) -> tuple[str, str | None, str | None]:
+        """Fenced on the live lease. Returns (status, effect_id, receipt_json):
+        new | replay | pending | lease_lost. 'new' means the caller now owns a fresh intent row and may dispatch."""
+        now = self.clock()
+        with self._sessions.begin() as s:
+            live = s.scalars(select(GoalRow.id).where(
+                GoalRow.id == principal.goal_id, GoalRow.tenant_id == principal.tenant_id, GoalRow.actor_id == principal.actor_id,
+                GoalRow.lease_token == principal.lease_token, GoalRow.status == "running",
+                GoalRow.lease_expires_at >= _iso(now))).first()
+            if live is None or principal.lease_token is None:
+                return ("lease_lost", None, None)
+            row = s.scalars(select(EffectRow).where(EffectRow.goal_id == principal.goal_id, EffectRow.idempotency_key == key)).first()
+            if row is None:
+                eid = str(uuid.uuid4())
+                try:
+                    with s.begin_nested():
+                        s.add(EffectRow(id=eid, tenant_id=principal.tenant_id, actor_id=principal.actor_id, goal_id=principal.goal_id,
+                                        tool=tool, idempotency_key=key, state="intent", attempts=1, created_at=_iso(now), updated_at=_iso(now)))
+                except IntegrityError:
+                    return ("pending", None, None)  # another handle inserted the same call first
+                return ("new", eid, None)
+            if row.state == "committed":
+                return ("replay", row.id, row.receipt_json)
+            if row.state in RETRIABLE or (row.state in PENDING and takeover_pending):
+                res = s.execute(update(EffectRow).where(EffectRow.id == row.id, EffectRow.state == row.state)
+                                .values(state="intent", attempts=EffectRow.attempts + 1, updated_at=_iso(now)))
+                return ("new", row.id, None) if res.rowcount == 1 else ("pending", row.id, None)
+            return ("pending", row.id, None)
+
+    def mark_effect(self, effect_id: str, state: str, receipt: dict[str, Any] | None = None) -> bool:
+        """intent -> committed | failed | unknown. Records truth, so it is deliberately not lease-fenced."""
+        if state not in ("committed", "failed", "unknown"):
+            raise ValueError("bad effect state")
+        with self._sessions.begin() as s:
+            res = s.execute(update(EffectRow).where(EffectRow.id == effect_id, EffectRow.state == "intent")
+                            .values(state=state, receipt_json=json.dumps(receipt) if receipt is not None else None,
+                                    updated_at=_iso(self.clock())))
+            return res.rowcount == 1
+
+    def pending_effects(self, goal_id: str) -> list[dict[str, Any]]:
+        with self._sessions.begin() as s:
+            rows = s.scalars(select(EffectRow).where(EffectRow.goal_id == goal_id, EffectRow.state.in_(PENDING))
+                             .order_by(EffectRow.created_at)).all()
+            return [self._effect_view(r) for r in rows]
+
+    def resolve_effect(self, goal_id: str, effect_id: str, outcome: str, *, receipt: dict[str, Any] | None = None,
+                       tenant_id: str | None = None, actor_id: str | None = None, require_not_running: bool = False) -> str:
+        """intent|unknown -> committed | absent. Returns resolved | not_found | not_pending | goal_running."""
+        if outcome not in ("committed", "absent"):
+            raise ValueError("bad outcome")
+        with self._sessions.begin() as s:
+            q = select(EffectRow).where(EffectRow.id == effect_id, EffectRow.goal_id == goal_id)
+            if tenant_id is not None:
+                q = q.where(EffectRow.tenant_id == tenant_id, EffectRow.actor_id == actor_id)
+            row = s.scalars(q).first()
+            if row is None:
+                return "not_found"
+            if require_not_running and s.scalars(select(GoalRow.status).where(GoalRow.id == goal_id)).first() == "running":
+                return "goal_running"
+            res = s.execute(update(EffectRow).where(EffectRow.id == effect_id, EffectRow.state.in_(PENDING))
+                            .values(state=outcome, receipt_json=json.dumps(receipt) if outcome == "committed" and receipt is not None else None,
+                                    updated_at=_iso(self.clock())))
+            return "resolved" if res.rowcount == 1 else "not_pending"
+
+    def list_effects(self, tenant_id: str, actor_id: str, goal_id: str) -> list[dict[str, Any]] | None:
+        with self._sessions.begin() as s:
+            if not s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id, GoalRow.actor_id == actor_id)).first():
+                return None
+            rows = s.scalars(select(EffectRow).where(EffectRow.goal_id == goal_id, EffectRow.tenant_id == tenant_id,
+                             EffectRow.actor_id == actor_id).order_by(EffectRow.created_at)).all()
+            return [self._effect_view(r) for r in rows]
+
+    @staticmethod
+    def _effect_view(row: EffectRow, *, with_receipt: bool = False) -> dict[str, Any]:
+        out = {"id": row.id, "tool": row.tool, "idempotency_key": row.idempotency_key, "state": row.state,
+               "attempts": row.attempts, "created_at": row.created_at, "updated_at": row.updated_at}
+        if with_receipt:
+            out["receipt_json"] = row.receipt_json
+        return out
 
     # --- approval ledger -------------------------------------------------------------------------
     def grant(self, tenant_id: str, actor_id: str, goal_id: str, capability: str, gate: str, digest: str,

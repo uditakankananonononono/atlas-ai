@@ -21,18 +21,27 @@ class Worker:
         claim = self.store.claim(self.worker_id)
         if claim is None:
             return None
-        principal = Principal(claim.tenant_id, claim.actor_id, claim.goal_id)
+        principal = Principal(claim.tenant_id, claim.actor_id, claim.goal_id, claim.lease_token)
         engine = self.engine_factory(claim)
         if engine.tools.call_timeout >= self.store.lease_seconds:
             # A call allowed to block past the lease defeats renewal: refuse to run at all.
             self._settle(claim, "blocked", blocker="timeout_not_below_lease", report={}, verdict=None)
             return claim.goal_id
+        if engine.tools.journal is self.store and await engine.tools.reconcile_pending(claim.goal_id):
+            # An earlier attempt left an effect with no recorded outcome: run nothing new until it is resolved.
+            self._settle(claim, "awaiting_review", blocker="effect_unknown", report={}, verdict=None)
+            return claim.goal_id
         report = await engine.run(claim.purpose, principal=principal, lease=lambda: self.store.renew(claim))
         dump = report.model_dump()
-        if report.stop_reason == "lease_lost":
+        if report.stop_reason == "lease_lost" or any(r.reason == "lease_lost" for r in report.refusals):
             self.last_outcome = "lease_lost"  # another worker owns it, or the lease expired: settle nothing
             return claim.goal_id
-        if any(r.reason == "approval_required" for r in report.refusals):
+        if engine.tools.journal is self.store and engine.tools.blocking_effects(claim.goal_id):
+            # Some write ended without a recorded outcome (timeout, error, crash): never report such a goal complete.
+            self._settle(claim, "awaiting_review", blocker="effect_unknown", report=dump, verdict=None)
+        elif any(r.reason == "effect_unknown" for r in report.refusals):
+            self._settle(claim, "awaiting_review", blocker="effect_unknown", report=dump, verdict=None)
+        elif any(r.reason == "approval_required" for r in report.refusals):
             # A gated action was refused: the goal waits for the owner; it can never be completed from this run.
             self._settle(claim, "awaiting_review", blocker="approval_required", report=dump, verdict=None)
         elif report.stop_reason in {"model_unavailable", "model_invalid_output"}:

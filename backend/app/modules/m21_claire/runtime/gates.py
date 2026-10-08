@@ -24,6 +24,7 @@ class Principal:
     tenant_id: str
     actor_id: str
     goal_id: str
+    lease_token: str | None = None  # set by the worker from its claim; required to journal non-read effects
 
 
 @dataclass(frozen=True)
