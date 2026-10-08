@@ -24,6 +24,12 @@ class IdempotencyConflict(RuntimeError):
     pass
 
 
+class NotExecuted(Exception):
+    """Raised by an executor that can PROVE no side effect began (e.g. it failed validating its inputs or connecting,
+    before any write). The only failure a durable store treats as safe to retry. Any other exception after the body
+    begins leaves the effect unknown: the exception class cannot establish that nothing landed."""
+
+
 class EffectUnknown(RuntimeError):
     """A step's effect may have landed (intent recorded, no outcome). Never re-run it; the owner resolves it."""
 
@@ -84,6 +90,7 @@ class BoundedExecutor:
         if not claimed:
             return ExecutionResult(prior, 0, True)
         attempts = 0
+        durable = hasattr(self.store, "mark_unknown")
         try:
             while attempts < max_attempts:
                 attempts += 1
@@ -92,8 +99,17 @@ class BoundedExecutor:
                     self.store.complete(key, result)
                     return ExecutionResult(result, attempts, False)
                 except Exception as exc:
+                    never_ran = isinstance(exc, NotExecuted)
+                    if durable and not never_ran:
+                        # The body began and failed: the effect may have landed. Keep the intent, never re-run.
+                        self.store.mark_unknown(key)
+                        raise AttemptsExhausted(attempts, exc) from exc
                     if attempts >= max_attempts or retryable is None or not retryable(exc):
                         raise AttemptsExhausted(attempts, exc) from exc
+        except AttemptsExhausted as exc:
+            if not (durable and not isinstance(exc.last_error, NotExecuted)):
+                self.store.abandon(key)
+            raise
         except Exception:
             self.store.abandon(key)
             raise

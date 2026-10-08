@@ -134,9 +134,13 @@ def _request_from_json(data: dict[str, Any]) -> ActionRequest:
 class ClaireExecutionRepository:
     """Durable plan/step/approval/audit rows. Engine injected."""
 
-    def __init__(self, engine: sa.engine.Engine, *, tenant_id: str = "default") -> None:
+    def __init__(self, engine: sa.engine.Engine, *, tenant_id: str = "default",
+                 intent_min_age_seconds: float = 600.0) -> None:
         if not tenant_id:
             raise ValueError("tenant_id is required")
+        if intent_min_age_seconds < 0:
+            raise ValueError("intent_min_age_seconds must be >= 0")
+        self.intent_min_age_seconds = intent_min_age_seconds
         self.engine = engine
         self.tenant_id = tenant_id
         self._session_factory = sessionmaker(bind=engine, expire_on_commit=False)
@@ -241,6 +245,14 @@ class ClaireExecutionRepository:
                 raise KeyError(key)
             session.commit()
 
+    def effect_mark_unknown(self, key: str) -> None:
+        with self._session_factory() as session:
+            (session.query(StepEffectRow)
+             .filter(StepEffectRow.tenant_id == self.tenant_id, StepEffectRow.effect_key == key,
+                     StepEffectRow.state == "intent")
+             .update({"state": "unknown", "updated_at": datetime.now(timezone.utc)}))
+            session.commit()
+
     def effect_abandon(self, key: str) -> None:
         with self._session_factory() as session:
             (session.query(StepEffectRow)
@@ -256,16 +268,29 @@ class ClaireExecutionRepository:
                     .all())
             return {r.effect_key[len(prefix):]: r.state for r in rows}
 
-    def resolve_effect(self, plan_id: str, action_id: str, outcome: str, result: Any = None) -> None:
+    def resolve_effect(self, plan_id: str, action_id: str, outcome: str, result: Any = None, *,
+                       confirm_executor_stopped: bool = False) -> None:
         """Owner decision for an effect with no recorded outcome. 'committed' marks it landed (resume replays it,
-        never re-runs it); 'absent' deletes the record so resume may run the step."""
+        never re-runs it); 'absent' deletes the record so resume may run the step.
+        FENCE: an 'unknown' row (the executor already reported failure) can be resolved directly. An 'intent' row may
+        belong to a LIVE executor, so it is only resolvable when the owner passes confirm_executor_stopped=True AND the
+        intent is at least intent_min_age_seconds old. There is no heartbeat, so this is a time-and-owner fence, not
+        proof the executor is dead; a long synchronous effect can outlive it."""
         if outcome not in {"committed", "absent"}:
             raise EffectResolutionError("outcome must be committed or absent")
         key = effect_key(plan_id, action_id)
         with self._session_factory() as session:
+            row = session.get(StepEffectRow, (self.tenant_id, key))
+            if row is None or row.state not in ("intent", "unknown"):
+                raise EffectResolutionError("no unresolved effect for that step")
+            if row.state == "intent":
+                age = (datetime.now(timezone.utc) - _aware(row.updated_at)).total_seconds()
+                if not confirm_executor_stopped or age < self.intent_min_age_seconds:
+                    raise EffectResolutionError("the step may still be running; confirm it stopped and wait for the fence")
+            state, stamp = row.state, row.updated_at
             q = session.query(StepEffectRow).filter(
                 StepEffectRow.tenant_id == self.tenant_id, StepEffectRow.effect_key == key,
-                StepEffectRow.state.in_(("intent", "unknown")))
+                StepEffectRow.state == state, StepEffectRow.updated_at == stamp)
             if outcome == "absent":
                 n = q.delete(synchronize_session=False)
             else:
@@ -273,7 +298,7 @@ class ClaireExecutionRepository:
                               "updated_at": datetime.now(timezone.utc)}, synchronize_session=False)
             if n != 1:
                 session.rollback()
-                raise EffectResolutionError("no unresolved effect for that step")
+                raise EffectResolutionError("the effect changed while resolving")
             session.commit()
         self.audit(plan_id, "effect_resolved", action_id=action_id, detail={"outcome": outcome})
 
@@ -312,7 +337,8 @@ def _jsonable(value: Any) -> bool:
 class SqlIdempotencyStore:
     """Durable claim/complete/abandon over the effect journal. claim() commits the intent row BEFORE the executor
     runs, so a crash leaves an intent that blocks re-execution (EffectUnknown) instead of silently re-running.
-    Limit: an executor that RAISES a normal Exception is treated as not-landed (row deleted), as before."""
+    A failure after the body begins is kept as 'unknown' (never re-run) unless the executor raised NotExecuted,
+    its explicit proof that no side effect began; only then is the row removed and a retry allowed."""
 
     def __init__(self, repo: "ClaireExecutionRepository") -> None:
         self.repo = repo
@@ -322,6 +348,9 @@ class SqlIdempotencyStore:
 
     def complete(self, key: str, result: Any) -> None:
         self.repo.effect_complete(key, result)
+
+    def mark_unknown(self, key: str) -> None:
+        self.repo.effect_mark_unknown(key)
 
     def abandon(self, key: str) -> None:
         self.repo.effect_abandon(key)
