@@ -39,6 +39,11 @@ def main(argv=None):
     if not all(p.is_file() for p in artifacts):raise ValueError('incomplete corpus artifacts require reconciliation before resume')
     existing=verify(args.db,args.export) # Refuse corrupt resume before any network/write.
     if existing['selection']!=args.config+'/'+args.split:raise ValueError('existing corpus selection differs; use separate corpus artifacts')
+   if args.config=='cc0-pinned':
+    if args.split!='train':raise ValueError('pinned train only')
+    from .corpus_pinned_store import collect_pinned
+    verified=collect_pinned(args.db,args.export,args.max_rows)
+    print(json.dumps(verified,indent=2));return 0
    report=collect(args.db,args.export,config=args.config,split=args.split,max_rows=args.max_rows)
    verified=verify(args.db,args.export);verified['collection']=report;verified['local_lock']=True
    print(json.dumps(verified,indent=2))

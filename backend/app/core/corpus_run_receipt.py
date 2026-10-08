@@ -6,8 +6,9 @@ DEFAULT_TIMEOUT_SECONDS=900
 
 def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100,config='wikitext-2-raw-v1',split='train'):
  from .public_corpus import source_spec
- source_spec(config)
- if split not in {'train','validation','test'} or (config=='cc0-prompts' and split!='train'):raise ValueError('unsupported source split')
+ if config!='cc0-pinned':source_spec(config)
+ elif mode!='collect':raise ValueError('pinned receipt supports fresh collect only')
+ if split not in {'train','validation','test'} or (config in {'cc0-prompts','cc0-pinned'} and split!='train'):raise ValueError('unsupported source split')
  if mode not in {'verify','collect'}:raise ValueError('mode must be verify or collect')
  if mode=='collect' and (isinstance(max_rows,bool) or not isinstance(max_rows,int) or not 1<=max_rows<=100000):raise ValueError('collect rows must be integer 1..100000')
  db=Path(db_path).resolve();export=Path(export_path).resolve();receipt=Path(receipt_path).resolve()
@@ -38,6 +39,7 @@ def run_receipted(db_path,export_path,receipt_path,*,mode='verify',max_rows=100,
  if launch_error:report['launch_error_type']=launch_error
  if success and output.get('selection')!=config+'/'+split:
   success=False;report['status']='failed';report['selection_mismatch']=True
+ if success and output.get('publisher_revision'):report['publisher_revision']=output['publisher_revision']
  if success:report['result']={k:output[k] for k in ('stored_rows_verified','nonempty_export_rows_verified','next_offset','export_sha256')}
  receipt.parent.mkdir(parents=True,exist_ok=True)
  # Fully write/fsync temp, then atomically hard-link into absent receipt.
