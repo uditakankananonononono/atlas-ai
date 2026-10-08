@@ -188,3 +188,34 @@ def test_PROTECTION_timeouts_must_leave_room_for_the_cancel_grace(tmp_path):
     w = Worker(s, lambda c: Engine(Hung(), tools(rd(), timeout=1), max_steps=3, model_timeout_seconds=1.9), "w1")
     run(w.run_once())
     assert s.get("t", "a", gid)["blocker"] == "timeout_not_below_lease"      # 1.9 + 0.2 grace >= 2
+
+
+@pytest.mark.parametrize("where", ["engine_model", "run_bounded"])
+def test_PROTECTION_outer_cancellation_reaps_a_late_exception_from_the_detached_body(where):
+    """Cancelling the caller while a body is mid-cleanup must not leave 'Task exception was never retrieved'."""
+    import gc
+    from app.modules.m21_claire.runtime import bounded
+    captured = []
+
+    class Late:
+        async def decide(self, m):
+            try:
+                await asyncio.sleep(30)
+            finally:
+                await asyncio.sleep(0.3)
+                raise ValueError("late-private-error")
+
+    async def go():
+        asyncio.get_running_loop().set_exception_handler(lambda loop, ctx: captured.append(ctx))
+        if where == "engine_model":
+            coro = Engine(Late(), tools(rd(), timeout=1), model_timeout_seconds=5).run("g")
+        else:
+            coro = bounded.run_bounded(Late().decide([]), 5)
+        task = asyncio.ensure_future(coro); await asyncio.sleep(0.05); task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        assert len(bounded._DETACHED) == 1                 # registered, not abandoned
+        await asyncio.sleep(0.6); gc.collect()
+        assert not bounded._DETACHED
+    run(go())
+    assert captured == []
