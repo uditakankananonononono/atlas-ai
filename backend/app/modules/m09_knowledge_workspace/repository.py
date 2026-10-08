@@ -1,7 +1,7 @@
 """Tenant-scoped adjacency-list persistence with append-only audit history."""
 from __future__ import annotations
 from datetime import datetime
-from sqlalchemy import JSON,DateTime,Float,Integer,String,Text,UniqueConstraint,or_,select
+from sqlalchemy import JSON,DateTime,Float,Integer,String,Text,UniqueConstraint,or_,select,update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
@@ -27,11 +27,20 @@ def _edge(r):return Edge(id=r.id,source_id=r.source_id,target_id=r.target_id,rel
 def _suggestion(r):return LinkSuggestion(id=r.id,source_id=r.source_id,target_id=r.target_id,relationship=Relationship(r.relationship),score=r.score,reasons=r.reasons,status=SuggestionStatus(r.status),created_at=r.created_at,reviewed_at=r.reviewed_at)
 class SqlGraphRepository:
     def __init__(self,tenant_id:str,actor_id:str,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
-    def save_node(self,n:Node,action="node.created"):
+    def save_node(self,n:Node,action="node.created",expected_version:int|None=None):
         with self.sessions.begin() as db:
-            r=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==n.id))
-            if r is None:r=NodeRow(tenant_id=self.tenant_id,id=n.id);db.add(r)
-            for k,v in {"node_type":n.node_type.value,"title":n.title,"body":n.body,"source_uri":n.source_uri,"source_module":n.source_module,"external_id":n.external_id,"metadata_json":n.metadata,"embedding":n.embedding,"version":n.version,"created_at":n.created_at,"updated_at":n.updated_at}.items():setattr(r,k,v)
+            values={"node_type":n.node_type.value,"title":n.title,"body":n.body,"source_uri":n.source_uri,"source_module":n.source_module,"external_id":n.external_id,"metadata_json":n.metadata,"embedding":n.embedding,"version":n.version,"created_at":n.created_at,"updated_at":n.updated_at}
+            if expected_version is not None:
+                # A single conditional UPDATE closes the gap between Service's read
+                # and this write. Failed claims must append no audit row.
+                claimed=db.execute(update(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==n.id,NodeRow.version==expected_version).values(**values))
+                if claimed.rowcount != 1:
+                    db.rollback()
+                    return None
+            else:
+                r=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==n.id))
+                if r is None:r=NodeRow(tenant_id=self.tenant_id,id=n.id);db.add(r)
+                for k,v in values.items():setattr(r,k,v)
             db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action=action,entity_id=n.id,detail={"version":n.version,"title":n.title},created_at=n.updated_at))
         return n
     def get_node(self,node_id):

@@ -3,6 +3,7 @@ import math,re
 from datetime import datetime,timezone
 from uuid import uuid4
 from .schemas import *
+from .repository import DuplicateEdgeError
 class ConflictError(RuntimeError):pass
 class Service:
     def __init__(self,repository,embed=lambda text:None,extract_entities=lambda text:[]):self.repository=repository;self.embed=embed;self.extract_entities=extract_entities
@@ -11,12 +12,15 @@ class Service:
     def update_node(self,node_id,data:NodeUpdate):
         n=self._node(node_id)
         if n.version!=data.expected_version:raise ConflictError("node changed; refresh before editing")
-        changes=data.model_dump(exclude_none=True,exclude={"expected_version"});updated=n.model_copy(update={**changes,"version":n.version+1,"updated_at":datetime.now(timezone.utc)});updated.embedding=self.embed(f"{updated.title}\n{updated.body or ''}");self.repository.save_node(updated,"node.updated");self._suggest(updated);return updated
+        changes=data.model_dump(exclude_none=True,exclude={"expected_version"});updated=n.model_copy(update={**changes,"version":n.version+1,"updated_at":datetime.now(timezone.utc)});updated.embedding=self.embed(f"{updated.title}\n{updated.body or ''}");saved=self.repository.save_node(updated,"node.updated",expected_version=data.expected_version)
+        if saved is None:raise ConflictError("node changed; refresh before editing")
+        self._suggest(updated);return updated
     def create_edge(self,data:EdgeCreate,confidence=1):
         self._node(data.source_id);self._node(data.target_id)
         if data.source_id==data.target_id:raise ConflictError("self edge")
         if data.relationship in {Relationship.CHILD_OF,Relationship.BLOCKS,Relationship.DEPENDS_ON} and self._reachable(data.target_id,data.source_id,data.relationship):raise ConflictError("edge would create a cycle")
-        return self.repository.save_edge(Edge(id=str(uuid4()),confidence=confidence,created_at=datetime.now(timezone.utc),**data.model_dump()))
+        try:return self.repository.save_edge(Edge(id=str(uuid4()),confidence=confidence,created_at=datetime.now(timezone.utc),**data.model_dump()))
+        except DuplicateEdgeError as error:raise ConflictError("edge already exists") from error
     def neighborhood(self,node_id,depth=1,limit=250):
         self._node(node_id);ids={node_id};edges=[];frontier={node_id};truncated=False
         for _ in range(min(depth,5)):
