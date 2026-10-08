@@ -52,14 +52,20 @@ class SqlGraphRepository:
         try:
             with self.sessions.begin() as db:db.add(EdgeRow(tenant_id=self.tenant_id,id=e.id,source_id=e.source_id,target_id=e.target_id,relationship=e.relationship.value,rationale=e.rationale,evidence=e.evidence,confidence=e.confidence,created_at=e.created_at));db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action="edge.created",entity_id=e.id,detail={"relationship":e.relationship.value},created_at=e.created_at))
         except IntegrityError as exc:
-            # Classify by state, not by catching every integrity failure: a
-            # persisted matching edge supports classifying this as a duplicate
-            # edge. It is not proof the original failure was the uniqueness
-            # constraint itself - a concurrent create or a masked secondary
-            # failure can leave the same row - and a concurrent delete can leave
-            # no row for a true duplicate (the original error then propagates).
-            # An unrelated failure that persists no such row (e.g. the audit
-            # INSERT) re-raises.
+            # A matching row is necessary, but cannot identify the error.
+            # Require a supported driver UNIQUE signal first. SQLite extended
+            # code or legacy exact column list; PostgreSQL named SQLSTATE
+            # constraint. Unknown/non-unique errors retain their original type.
+            import sqlite3
+            original=exc.orig
+            if isinstance(original,sqlite3.IntegrityError):
+                code=getattr(original,'sqlite_errorcode',None)
+                unique=(code is None or code==sqlite3.SQLITE_CONSTRAINT_UNIQUE) and str(original)=='UNIQUE constraint failed: m09_edges.tenant_id, m09_edges.source_id, m09_edges.target_id, m09_edges.relationship'
+                if not unique:raise
+            else:
+                state=getattr(original,'sqlstate',None) or getattr(original,'pgcode',None)
+                diagnostic=getattr(original,'diag',None)
+                if state!='23505' or getattr(diagnostic,'constraint_name',None)!='uq_m09_edge':raise
             with self.sessions() as db:
                 duplicate=db.scalar(select(EdgeRow).where(EdgeRow.tenant_id==self.tenant_id,EdgeRow.source_id==e.source_id,EdgeRow.target_id==e.target_id,EdgeRow.relationship==e.relationship.value))
             if duplicate is None:raise
