@@ -109,17 +109,36 @@ class FreeFirstPlannerModel:
         )
 
     def decompose(self, goal: str, *, context: str = "") -> list[dict[str, Any]]:
+        from app.platform.integrations import LangChainPipeline
+        pipeline = LangChainPipeline([
+            self._prepare_stage, self._generate_stage,
+            self._decode_stage, self._validate_stage,
+        ])
+        return pipeline.invoke({"goal": goal, "context": context})["steps"]
+
+    def _prepare_stage(self, state: dict[str, Any]) -> dict[str, Any]:
+        return {**state, "prompt": self._prompt(state["goal"], state["context"])}
+
+    def _generate_stage(self, state: dict[str, Any]) -> dict[str, Any]:
         try:
-            provider, model, text = _run(model_catalog.generate_free_first(self._prompt(goal, context), self.model_name, private=True))
+            provider, model, text = _run(model_catalog.generate_free_first(
+                state["prompt"], self.model_name, private=True))
         except ProviderOutcomeUnknown as exc:
             raise PlannerOutcomeUnknown("planner generation outcome unknown; no automatic retry") from exc
         except ProviderError as exc:
             raise PlanError(f"planner model unavailable: {exc}") from exc
         self.last_route = (provider, model)
+        return {**state, "provider": provider, "model": model, "text": text}
+
+    def _decode_stage(self, state: dict[str, Any]) -> dict[str, Any]:
         try:
-            data = extract_json(text)
+            data = extract_json(state["text"])
         except ValueError as exc:
-            raise PlanError(f"planner model returned no parseable JSON ({provider}/{model})") from exc
+            raise PlanError(f"planner model returned no parseable JSON ({state['provider']}/{state['model']})") from exc
+        return {**state, "data": data}
+
+    def _validate_stage(self, state: dict[str, Any]) -> dict[str, Any]:
+        data = state["data"]
         steps = data.get("steps") if isinstance(data, dict) else data
         if not isinstance(steps, list) or not 1<=len(steps)<=8:
             raise PlanError("planner model must return1..8 concrete steps")
@@ -135,7 +154,7 @@ class FreeFirstPlannerModel:
             raw = step.get("risk", Risk.READ.value)
             if floor is not None and raw in {r.value for r in Risk} and _ORDER.index(Risk(raw)) < _ORDER.index(floor):
                 step["risk"] = floor.value
-        return steps
+        return {**state, "steps": steps}
 
 
 class FreeFirstExecutiveModel:
