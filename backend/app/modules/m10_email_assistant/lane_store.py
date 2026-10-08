@@ -50,6 +50,10 @@ class EmailStore:
         return row[0] if row else None
 
     def save_sync_page(self, tenant_id: str, mailbox_id: str, messages: list[EmailMessage], cursor: str | None) -> tuple[int, int]:
+        # Validate the entire page before opening a transaction or writing:
+        # a later foreign message must not partially update this mailbox.
+        if any(m.tenant_id != tenant_id or m.mailbox_id != mailbox_id for m in messages):
+            raise PermissionError("sync page tenant and mailbox must match every message")
         inserted = updated = 0
         with self.transaction() as db:
             for m in messages:
@@ -72,6 +76,8 @@ class EmailStore:
         return EmailMessage(r['id'],r['tenant_id'],r['mailbox_id'],r['provider_id'],r['thread_id'],r['sender'],tuple(json.loads(r['recipients'])),r['subject'],r['body_text'],datetime.fromisoformat(r['received_at']),json.loads(r['headers']),r['in_reply_to'])
 
     def save_triage(self, tenant_id: str, d: TriageDecision) -> None:
+        if self.get_message(tenant_id, d.message_id) is None:
+            raise PermissionError("triage requires a message owned by the caller tenant")
         self._db.execute("INSERT INTO triage VALUES(?,?,?,?,?,?,?) ON CONFLICT(message_id) DO UPDATE SET label=excluded.label,score=excluded.score,reasons=excluded.reasons,needs_reply=excluded.needs_reply,due_at=excluded.due_at",(d.message_id,tenant_id,d.label.value,d.score,json.dumps(d.reasons),d.needs_reply,iso(d.due_at) if d.due_at else None)); self._db.commit()
 
     def save_draft(self, d: Draft) -> None:
