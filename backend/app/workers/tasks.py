@@ -182,3 +182,13 @@ def consume_m20_status(tenant_id: str, limit: int = 100):
     from app.platform.integrations import RedisStreamBus
     from app.modules.m16_executive_dashboard.m20_subscriber import consume_task_status
     return consume_task_status(engine, RedisStreamBus(), tenant_id, limit=limit)
+
+
+@celery_app.task(name='atlas.m20.index_chroma_facts')
+def index_chroma_facts(tenant_id: str, limit: int = 100):
+    """Explicit worker invocation; worker bootstrap must bind this tenant runtime."""
+    from app.modules.m20_general_cognitive_worker.runtime_routes import _runtimes
+    runtime = _runtimes.get(tenant_id)
+    if runtime is None or runtime.repo.tenant_id != tenant_id:
+        raise ValueError('Chroma index worker has no runtime bound for this tenant')
+    return runtime.index_pending_facts(limit=limit)

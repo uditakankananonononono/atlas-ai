@@ -134,8 +134,9 @@ class GCWRuntime:
         seed: int | None = None,
         _hydrate: bool = True,
         semantic_backend: str = "sql",
+        chroma_path: str | None = None,
     ) -> None:
-        if semantic_backend not in {"sql", "pgvector"}:
+        if semantic_backend not in {"sql", "pgvector", "chroma"}:
             raise ValueError("unknown semantic memory backend")
         if semantic_backend == "pgvector":
             if repo.engine.dialect.name != "postgresql":
@@ -155,6 +156,9 @@ class GCWRuntime:
         if semantic_backend == "pgvector":
             from .pgvector_memory import PgVectorSemanticMemory
             self.semantic = PgVectorSemanticMemory(repo, embedder)
+        elif semantic_backend == "chroma":
+            from .chroma_memory import ChromaSemanticMemory
+            self.semantic = ChromaSemanticMemory(repo, embedder, chroma_path)
         elif semantic_backend == "sql":
             self.semantic = DurableSemanticMemory.load(repo, embedder=embedder) if _hydrate else DurableSemanticMemory(repo, embedder=embedder)
         else:
@@ -251,6 +255,13 @@ class GCWRuntime:
     @_exclusive_execution
     def remember_fact(self, fact):
         return self.semantic.store(fact)
+
+    @_exclusive_execution
+    def index_pending_facts(self, *, limit=100):
+        from .chroma_memory import ChromaSemanticMemory
+        if not isinstance(self.semantic, ChromaSemanticMemory):
+            raise ValueError("Chroma semantic backend is not bound")
+        return self.semantic.index_pending(limit=limit)
 
     @_exclusive_execution
     def recall_facts(self, query, *, limit=5):
