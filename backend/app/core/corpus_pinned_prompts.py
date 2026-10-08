@@ -63,6 +63,8 @@ def download(output,max_rows=100):
 def verify_snapshot(path):
  path=Path(path);m=json.loads(path.with_suffix(path.suffix+'.manifest.json').read_text())
  if m['publisher_revision']!=REVISION:raise ValueError('wrong publisher commit')
+ expected_urls={name:f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/{name}' for name in EXPECTED_HASHES}
+ if m['dataset']!=DATASET or m['publisher_file_sha256']!=EXPECTED_HASHES or m['source_urls']!=expected_urls or m['license_url']!=LICENSE or m['license']!='CC0-1.0':raise ValueError('manifest source/hash/license identity mismatch')
  if hashlib.sha256(path.read_bytes()).hexdigest()!=m['export_sha256']:raise ValueError('export checksum mismatch')
  rows=0
  for line in path.read_text().splitlines():

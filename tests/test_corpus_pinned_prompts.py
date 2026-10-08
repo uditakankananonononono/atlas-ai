@@ -31,3 +31,11 @@ def test_request_starts_paced_on_pinned_fetch(tmp_path,monkeypatch):
  monkeypatch.setattr(module.httpx,'Client',lambda **kwargs:real(transport=httpx.MockTransport(handle),**kwargs))
  with pytest.raises(ValueError):module.download(tmp_path/'out.jsonl')
  assert len(starts)>=2 and all(b-a>=3 for a,b in zip(starts,starts[1:]))
+@pytest.mark.parametrize('fault',['publisher_hash','source_url','license_url'])
+def test_actual_snapshot_manifest_identity_tamper(snapshot,fault):
+ p=snapshot.with_suffix('.jsonl.manifest.json');m=json.loads(p.read_text())
+ if fault=='publisher_hash':m['publisher_file_sha256']['prompts.csv']='0'*64
+ elif fault=='source_url':m['source_urls']['prompts.csv']='https://example.invalid/file'
+ else:m['license_url']='https://example.invalid/license'
+ p.write_text(json.dumps(m))
+ with pytest.raises(ValueError):module.verify_snapshot(snapshot)
