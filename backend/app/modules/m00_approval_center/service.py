@@ -226,7 +226,7 @@ class Service:
             return [_view(row) for row in rows]
 
     def decide(self, approval_id: str, decision: ApprovalStatus, decided_by: str) -> dict[str, Any]:
-        """Record a human decision. Decisions are final; expiry wins races.
+        """Record a human decision using conditional pending-state transitions.
 
         Raises ApprovalNotFoundError for a missing id, ValueError for a
         decision that is not approved/denied, and ApprovalConflictError
