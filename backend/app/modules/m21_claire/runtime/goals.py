@@ -100,6 +100,13 @@ def _iso(d: datetime) -> str:
     return d.astimezone(timezone.utc).isoformat()
 
 
+class GoalNotGrantable(ValueError):
+    """The goal is in a terminal state: an approval granted now could never be used, and would be live authority for nothing."""
+
+
+NOT_GRANTABLE = {"completed", "blocked", "failed", "exhausted", "not_accepted", "cancelled"}
+
+
 class SelfApprovalRefused(PermissionError):
     """The approver or resolver is the goal's own actor. The agent proposes; a different principal decides."""
 
@@ -152,6 +159,17 @@ class GoalStore:
                             .values(status="cancelled", updated_at=now))
             if res.rowcount == 1:
                 return "cancelled"
+            row = s.scalars(select(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                            GoalRow.actor_id == actor_id, GoalRow.status == "awaiting_review")).first()
+            if row is not None:
+                # One transaction: a pending effect keeps the goal from ever looking cleanly cancelled; unused approvals die with it.
+                pending = s.scalars(select(EffectRow.id).where(EffectRow.goal_id == goal_id, EffectRow.state.in_(PENDING))).first()
+                res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.status == "awaiting_review")
+                                .values(status="cancelled", blocker="effect_unknown" if pending else None, updated_at=now))
+                if res.rowcount == 1:
+                    s.execute(update(ApprovalRow).where(ApprovalRow.goal_id == goal_id, ApprovalRow.consumed_at.is_(None),
+                                                        ApprovalRow.expires_at > now).values(expires_at=now))
+                    return "cancelled"
             res = s.execute(update(GoalRow).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
                             GoalRow.actor_id == actor_id, GoalRow.status == "running")
                             .values(cancel_requested_at=now, updated_at=now))
@@ -368,9 +386,12 @@ class GoalStore:
             raise SelfApprovalRefused("the goal's own actor cannot approve its gated call")
         now = self.clock()
         with self._sessions.begin() as s:
-            if not s.scalars(select(GoalRow.id).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
-                                                      GoalRow.actor_id == actor_id)).first():
+            status = s.scalars(select(GoalRow.status).where(GoalRow.id == goal_id, GoalRow.tenant_id == tenant_id,
+                                                            GoalRow.actor_id == actor_id)).first()
+            if status is None:
                 raise KeyError(goal_id)
+            if status in NOT_GRANTABLE:
+                raise GoalNotGrantable(status)
             aid = str(uuid.uuid4())
             s.add(ApprovalRow(id=aid, tenant_id=tenant_id, actor_id=actor_id, goal_id=goal_id, capability=capability, gate=gate,
                               payload_digest=digest, approver=approver, expires_at=_iso(now + timedelta(seconds=ttl_seconds)),
