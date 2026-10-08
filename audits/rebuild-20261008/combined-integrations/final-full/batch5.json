@@ -1,0 +1,1 @@
+{"batch": 5, "files": 10, "exit": 0, "seconds": 41.29388655799994, "counts": {"passed": 126}, "log": "batch5-corrected.log", "correction": "Explicit test schema opt-in for fresh isolated DB; unchanged product"}
