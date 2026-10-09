@@ -1,0 +1,9 @@
+# Memo1+2 integration rebase receipts
+
+Original independently reviewed tip584b985de27c13f9085f2cd96d128c894b87aea3 was based ona1fbe597. Main later gained A01 docs b9fb76d and A32 idle recovery0808473. Rebased the exact two memo1+2 commits onto0808473; backend and test file bytes compare equal to reviewed584b985 (zero diff). This record adds receipts only, no runtime repair or change to scope.
+
+Affected suite296PASS in42.31s after declared dependencies installed. Initial same296scope295PASS/1FAIL because Alembic registry import lacked bs4; base exacta1fbe597 reproduced same import failure. Following dependency installs, first retry progressed to missing scipy. With declared imports installed, exact migration1PASS on rebased branch and1PASS on base. No DDL executed in missing-import failures. Original failure/retry logs retained. One45second call timeout stopped an affected-suite attempt mid-run; partial output retained and not claimed a pass, complete rerun used120second allowance.
+
+Independent reviewer originally reported295PASS/1FAIL on584b985 and basea1fbe597 with the clean SQLite migration unexplained. This lane attributes its OWN failure to missing dependencies, not the reviewer's unknown stderr. Preserve that review observation as unexplained unless its source error matches. This record does not erase it.
+
+Original11179node full aggregate remains11147PASS/31SKIP/1retainedChromiumFAIL, not green; later six acceptance nodes and original serial receipt archive remain the evidence described in the parent packet. No full backend suite rerun for this integration rebase. Existing diagnostic concurrency invalid-barrier failures retained; no memo3 ledger fix implied. Scope is trusted M10 binding and default-refusal conditional seam, not provider atomicity or production dispatch support.

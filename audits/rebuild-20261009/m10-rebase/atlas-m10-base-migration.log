@@ -1,0 +1,65 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_full_clean_sqlite_migration_retains_single_policy_primary_key ______
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-1/test_full_clean_sqlite_migrati0')
+
+    def test_full_clean_sqlite_migration_retains_single_policy_primary_key(tmp_path):
+        import os
+        import sqlite3
+        import subprocess
+        import sys
+        database = tmp_path / 'full-chain.db'
+        result = subprocess.run([sys.executable, '-m', 'alembic', 'upgrade', 'head'],
+                                env={**os.environ, 'ATLAS_DATABASE_URL': f'sqlite:///{database}'},
+                                capture_output=True, text=True, timeout=90)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/tmp/atlas-memo3-venv/lib/python3.12/site-packages/alembic/__main__.py", line 4, in <module>
+E             main(prog="alembic")
+E           File "/tmp/atlas-memo3-venv/lib/python3.12/site-packages/alembic/config.py", line 1039, in main
+E             CommandLine(prog=prog).main(argv=argv)
+E           File "/tmp/atlas-memo3-venv/lib/python3.12/site-packages/alembic/config.py", line 1029, in main
+E             self.run_cmd(cfg, options)
+E           File "/tmp/atlas-memo3-venv/lib/python3.12/site-packages/alembic/config.py", line 963, in run_cmd
+E             fn(
+E           File "/tmp/atlas-memo3-venv/lib/python3.12/site-packages/alembic/command.py", line 487, in upgrade
+E             script.run_env()
+E           File "/tmp/atlas-memo3-venv/lib/python3.12/site-packages/alembic/script/base.py", line 550, in run_env
+E             util.load_python_file(self.dir, "env.py")
+E           File "/tmp/atlas-memo3-venv/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 114, in load_python_file
+E             module = load_module_py(module_id, path)
+E                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/tmp/atlas-memo3-venv/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 132, in load_module_py
+E             spec.loader.exec_module(module)  # type: ignore
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/tmp/atlas-m10-base/migrations/env.py", line 7, in <module>
+E             from app.modules import registry as _registry  # noqa: F401
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/tmp/atlas-m10-base/backend/app/modules/registry.py", line 2, in <module>
+E             from app.modules.m01_opportunity_discovery import spec as opportunity_discovery
+E           File "/tmp/atlas-m10-base/backend/app/modules/m01_opportunity_discovery/__init__.py", line 11, in <module>
+E             from .routes import router
+E           File "/tmp/atlas-m10-base/backend/app/modules/m01_opportunity_discovery/routes.py", line 123, in <module>
+E             from .student_platforms import BY_ID, PLATFORMS, PlatformUnavailable, discover
+E           File "/tmp/atlas-m10-base/backend/app/modules/m01_opportunity_discovery/student_platforms.py", line 16, in <module>
+E             from bs4 import BeautifulSoup
+E         ModuleNotFoundError: No module named 'bs4'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/tmp/atlas-memo3-venv/bin/python', '-m', 'alembic', 'upgrade', 'head'], returncode=1, stdout='...latforms.py", line 16, in <module>\n    from bs4 import BeautifulSoup\nModuleNotFoundError: No module named \'bs4\'\n').returncode
+
+tests/modules/test_m00_approval_center.py:1308: AssertionError
+=============================== warnings summary ===============================
+../atlas-memo3-venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m00_approval_center.py::test_full_clean_sqlite_migration_retains_single_policy_primary_key
+1 failed, 1 warning in 1.32s
