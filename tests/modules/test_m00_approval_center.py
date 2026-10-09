@@ -582,3 +582,18 @@ def test_gate_unrelated_integrity_rethrows_and_leaves_no_request_event_or_signal
             assert list(db.scalars(select(model))) == []
     with pytest.raises(queue.Empty):
         subscriber.get_nowait()
+
+
+@pytest.mark.parametrize('limit', [-1, 0, True, 1.5, 1001])
+def test_list_refuses_noninteger_or_unbounded_limits(service, limit):
+    with pytest.raises(ValueError, match='limit'):
+        service.list(limit=limit)
+
+
+def test_list_limit_negative_does_not_return_entire_sqlite_queue(client, service):
+    from app.auth.context import require_tenant
+    client.app.dependency_overrides[require_tenant] = lambda: TenantContext(
+        tenant_id='udita', actor_id='udita', roles=frozenset({'owner'}))
+    submit(service)
+    response = client.get('/approval-center/requests?limit=-1')
+    assert response.status_code == 422
