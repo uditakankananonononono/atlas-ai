@@ -1,0 +1,370 @@
+
+> e2e
+> playwright test
+
+[WebServer] ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+[WebServer]  We detected multiple lockfiles and selected the directory of /tmp/atlas-a01-recovery/package-lock.json as the root directory.
+[WebServer]  To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+[WebServer]    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+[WebServer]  Detected additional lockfiles: 
+[WebServer]    * /tmp/atlas-a01-recovery/frontend/package-lock.json
+[WebServer] 
+[WebServer] ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+[WebServer]  We detected multiple lockfiles and selected the directory of /tmp/atlas-a01-recovery/package-lock.json as the root directory.
+[WebServer]  To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+[WebServer]    See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+[WebServer]  Detected additional lockfiles: 
+[WebServer]    * /tmp/atlas-a01-recovery/frontend/package-lock.json
+[WebServer] 
+
+Running 11 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/approval-stream.spec.ts:2:5 › A32 authenticated minimal SSE refresh, injected data refused, bounded retries and logout (10.2s)
+  ✓   2 [chromium] › e2e/approval-stream.spec.ts:59:5 › A32 silent connected stream times out and recovers with bounded attempts (865ms)
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/events Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+  ✓   3 [chromium] › e2e/architecture-render.spec.ts:2:5 › A02 A03 A05 A06 actual React Tailwind graph and chart with controlled API fixtures (1.2s)
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/events Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+  ✓   4 [chromium] › e2e/claire-workbench.spec.ts:3:5 › Claire workbench shows consent-gated interview and source-backed opportunity card (771ms)
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/events Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+  ✓   5 [chromium] › e2e/guided-journeys.spec.ts:9:5 › M18 guided experiment sends exact bounded payload and renders receipt (743ms)
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/events Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+  ✓   6 [chromium] › e2e/guided-journeys.spec.ts:15:5 › M24 preview is non-charging and sends verified user inputs (685ms)
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/events Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+  ✓   7 [chromium] › e2e/guided-journeys.spec.ts:20:5 › M25 capture stays disabled until exact scope review and then sends selection (763ms)
+  ✓   8 [chromium] › e2e/product-core-loop.spec.ts:26:5 › unauthenticated visitors get the sign-in gate, not the workspace (429ms)
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/events Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/executive-dashboard/rerun-schedules Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/executive-dashboard/rerun-schedules Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/executive-dashboard/rerun-schedules Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+  ✓   9 [chromium] › e2e/product-core-loop.spec.ts:34:5 › product core loop: create goal, review approval, observe the queue clear (760ms)
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/events Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/executive-dashboard/rerun-schedules Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/executive-dashboard/rerun-schedules Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+  ✓  10 [chromium] › e2e/product-core-loop.spec.ts:63:5 › rejected decisions surface the skip reason instead of disappearing (562ms)
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/events Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Failed to proxy http://api:8000/api/v1/approval-center/requests?status=pending&module_id=5 Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+[WebServer] Error: getaddrinfo ENOTFOUND api
+[WebServer]     at ignore-listed frames {
+[WebServer]   errno: -3008,
+[WebServer]   code: 'ENOTFOUND',
+[WebServer]   syscall: 'getaddrinfo',
+[WebServer]   hostname: 'api'
+[WebServer] }
+  ✓  11 [chromium] › e2e/product-core-loop.spec.ts:74:5 › workbench shows the exact failure when execution is not approved (695ms)
+
+  11 passed (25.8s)

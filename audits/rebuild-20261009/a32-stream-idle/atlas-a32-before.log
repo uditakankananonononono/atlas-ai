@@ -1,0 +1,130 @@
+
+> test:components
+> vitest run --maxWorkers=1 --minWorkers=1 components/approval-stream.test.tsx
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /tmp/atlas-a01-recovery/frontend
+
+ ❯ components/approval-stream.test.tsx (15 tests | 9 failed) 198ms
+   × approval stream inactivity recovery > cancels never-yielding bodies and exhausts exactly four attempts 8ms
+     → expected 'connected' to be 'disconnected' // Object.is equality
+   × approval stream inactivity recovery > heartbeat bytes reset inactivity without inventing approval signals 3ms
+     → expected 'connected' to be 'disconnected' // Object.is equality
+   × approval stream inactivity recovery > empty chunks do not prolong a silent connection 2ms
+     → expected 'connected' to be 'disconnected' // Object.is equality
+   × approval stream inactivity recovery > bounds stalled response headers even if a fixture ignores abort 2ms
+     → expected 'connecting' to be 'disconnected' // Object.is equality
+   × approval stream inactivity recovery > a stuck cancellation hook cannot hold retry exhaustion hostage 1ms
+     → expected 'connected' to be 'disconnected' // Object.is equality
+   × approval stream inactivity recovery > refuses invalid idle timeout 0 2ms
+     → expected [Function] to throw an error
+   × approval stream inactivity recovery > refuses invalid idle timeout -1 1ms
+     → expected [Function] to throw an error
+   × approval stream inactivity recovery > refuses invalid idle timeout NaN 1ms
+     → expected [Function] to throw an error
+   × approval stream inactivity recovery > refuses invalid idle timeout Infinity 1ms
+     → expected [Function] to throw an error
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > cancels never-yielding bodies and exhausts exactly four attempts
+AssertionError: expected 'connected' to be 'disconnected' // Object.is equality
+
+Expected: "disconnected"
+Received: "connected"
+
+ ❯ components/approval-stream.test.tsx:52:26
+     50|    await vi.advanceTimersByTimeAsync(0);expect(states.at(-1)).toBe('co…
+     51|    await vi.advanceTimersByTimeAsync(184);
+     52|    expect(states.at(-1)).toBe('disconnected');expect(fetcher).toHaveBe…
+       |                          ^
+     53|    expect(cancel).toHaveBeenCalledTimes(4);expect(signal).toHaveBeenCa…
+     54|    expect(vi.getTimerCount()).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > heartbeat bytes reset inactivity without inventing approval signals
+AssertionError: expected 'connected' to be 'disconnected' // Object.is equality
+
+Expected: "disconnected"
+Received: "connected"
+
+ ❯ components/approval-stream.test.tsx:71:26
+     69|    expect(signal).toHaveBeenCalledTimes(1);expect(fetcher).toHaveBeenC…
+     70|    await vi.advanceTimersByTimeAsync(46);
+     71|    expect(states.at(-1)).toBe('disconnected');expect(cancel).toHaveBee…
+       |                          ^
+     72|   }finally{stop();vi.useRealTimers()}
+     73|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > empty chunks do not prolong a silent connection
+AssertionError: expected 'connected' to be 'disconnected' // Object.is equality
+
+Expected: "disconnected"
+Received: "connected"
+
+ ❯ components/approval-stream.test.tsx:81:26
+     79|   try{
+     80|    await vi.advanceTimersByTimeAsync(30);stream!.enqueue(new Uint8Arra…
+     81|    expect(states.at(-1)).toBe('disconnected');
+       |                          ^
+     82|   }finally{stop();vi.useRealTimers()}
+     83|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > bounds stalled response headers even if a fixture ignores abort
+AssertionError: expected 'connecting' to be 'disconnected' // Object.is equality
+
+Expected: "disconnected"
+Received: "connecting"
+
+ ❯ components/approval-stream.test.tsx:90:26
+     88|   try{
+     89|    await vi.advanceTimersByTimeAsync(184);
+     90|    expect(states.at(-1)).toBe('disconnected');expect(fetcher).toHaveBe…
+       |                          ^
+     91|    expect(signals.every(s=>s.aborted)).toBe(true);expect(vi.getTimerCo…
+     92|   }finally{stop();vi.useRealTimers()}
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > a stuck cancellation hook cannot hold retry exhaustion hostage
+AssertionError: expected 'connected' to be 'disconnected' // Object.is equality
+
+Expected: "disconnected"
+Received: "connected"
+
+ ❯ components/approval-stream.test.tsx:121:26
+    119|   try{
+    120|    await vi.advanceTimersByTimeAsync(184);
+    121|    expect(states.at(-1)).toBe('disconnected');expect(fetcher).toHaveBe…
+       |                          ^
+    122|   }finally{stop();vi.useRealTimers()}
+    123|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > refuses invalid idle timeout 0
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > refuses invalid idle timeout -1
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > refuses invalid idle timeout NaN
+ FAIL  components/approval-stream.test.tsx > approval stream inactivity recovery > refuses invalid idle timeout Infinity
+AssertionError: expected [Function] to throw an error
+ ❯ components/approval-stream.test.tsx:125:106
+    123|  });
+    124|  it.each([0,-1,NaN,Infinity])('refuses invalid idle timeout %s',idleTi…
+    125|   const fetcher=vi.fn();expect(()=>startApprovalStream('/stream',()=>{…
+       |                                                                                                          ^
+    126|   expect(fetcher).not.toHaveBeenCalled();
+    127|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 6 passed (15)
+   Start at  15:00:11
+   Duration  1.29s (transform 142ms, setup 90ms, collect 121ms, tests 198ms, environment 490ms, prepare 171ms)
+

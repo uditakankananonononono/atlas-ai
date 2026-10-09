@@ -55,3 +55,34 @@ test('A32 authenticated minimal SSE refresh, injected data refused, bounded retr
  await page.waitForTimeout(1500);
  expect(await page.evaluate(()=>(window as unknown as {streamAttempts:number}).streamAttempts)).toBe(count);
 });
+
+test('A32 silent connected stream times out and recovers with bounded attempts',async({page})=>{
+ await page.clock.install();
+ await page.addInitScript(()=>{
+  localStorage.setItem('atlas:onboarding:complete','1');
+  localStorage.setItem('sb-test-auth-token',JSON.stringify({access_token:'test-token',refresh_token:'refresh',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user:{id:'user-1',aud:'authenticated',role:'authenticated',email:'owner@example.test',app_metadata:{},user_metadata:{},created_at:new Date().toISOString()}}));
+  const original=window.fetch.bind(window);
+  const state=window as unknown as {idleAttempts:number;idleCancels:number};state.idleAttempts=0;state.idleCancels=0;
+  window.fetch=async(input,init)=>{
+   if(String(input).endsWith('/approval-center/events')){
+    state.idleAttempts++;
+    return new Response(new ReadableStream<Uint8Array>({cancel(){state.idleCancels++}}),{headers:{'Content-Type':'text/event-stream'}});
+   }
+   return original(input,init);
+  };
+ });
+ await page.route('**/auth/v1/**',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({user:{id:'user-1'}})}));
+ await page.route('**/api/v1/modules',r=>r.fulfill({status:200,contentType:'application/json',body:'[]'}));
+ await page.route('**/api/v1/approval-center/requests*',r=>r.fulfill({status:200,contentType:'application/json',body:'[]'}));
+ await page.route('**/api/v1/executive-dashboard/**',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(r.request().url().includes('/view')?{version:1,widgets:[]}:r.request().url().includes('/snapshot')?{data:{}}:[])}));
+ await page.goto('/');
+ await expect(page.getByLabel('Approval stream status')).toHaveText('Approval updates connected');
+ for(let i=0;i<4;i++){
+  await page.clock.runFor(45001);
+  if(i<3){await page.clock.runFor([1000,2000,4000][i]+1);await expect.poll(()=>page.evaluate(()=>(window as unknown as {idleAttempts:number}).idleAttempts)).toBe(i+2)}
+ }
+ await expect(page.getByLabel('Approval stream status')).toHaveText('Approval updates disconnected; polling');
+ expect(await page.evaluate(()=>(window as unknown as {idleAttempts:number}).idleAttempts)).toBe(4);
+ expect(await page.evaluate(()=>(window as unknown as {idleCancels:number}).idleCancels)).toBe(4);
+ await page.screenshot({path:'../audits/rebuild-20261009/a32-stream-idle/idle-disconnected.png',fullPage:true});
+});

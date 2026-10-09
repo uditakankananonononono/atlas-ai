@@ -1,0 +1,25 @@
+
+> test:components
+> vitest run --maxWorkers=1 --minWorkers=1
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /tmp/atlas-a01-recovery/frontend
+
+ ✓ components/ExecutiveDashboard.test.tsx (12 tests) 1066ms
+ ✓ components/approval-stream.test.tsx (15 tests) 198ms
+ ✓ components/GoalWorkspace.test.tsx (4 tests) 1446ms
+   ✓ GoalWorkspace > renders actual backend ledger output without upgrading invented verifier labels 362ms
+   ✓ GoalWorkspace > registers a goal with its sources and then demands citations per step 469ms
+   ✓ GoalWorkspace > walks plan -> approval -> approved execution -> readback 442ms
+ ✓ components/executive-dashboard/write-ordering.test.tsx (7 tests) 13ms
+ ✓ components/AdmittedCaseReader.test.tsx (1 test) 111ms
+ ✓ components/OperationsChart.test.tsx (1 test) 79ms
+ ✓ components/ui/dialog.test.tsx (1 test) 191ms
+ ✓ components/StudyAbroadPlanning.test.tsx (1 test) 154ms
+
+ Test Files  8 passed (8)
+      Tests  42 passed (42)
+   Start at  15:00:32
+   Duration  11.14s (transform 450ms, setup 544ms, collect 1.84s, tests 3.26s, environment 3.54s, prepare 657ms)
+

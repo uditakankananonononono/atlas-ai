@@ -1,0 +1,15 @@
+
+> test:components
+> vitest run --maxWorkers=1 --minWorkers=1 components/approval-stream.test.tsx
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /tmp/atlas-a01-recovery/frontend
+
+ ✓ components/approval-stream.test.tsx (15 tests) 188ms
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  15:00:13
+   Duration  1.12s (transform 117ms, setup 123ms, collect 97ms, tests 188ms, environment 368ms, prepare 149ms)
+

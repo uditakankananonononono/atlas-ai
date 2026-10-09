@@ -31,27 +31,51 @@ export class ApprovalFrameParser{
  }
 }
 export function startApprovalStream(url:string,onSignal:()=>void,onState:(state:StreamState)=>void,
- options:{fetcher?:typeof authFetch;delays?:number[]}={}){
+ options:{fetcher?:typeof authFetch;delays?:number[];idleTimeoutMs?:number}={}){
+ const idleTimeoutMs=options.idleTimeoutMs??45000; // Three server heartbeat intervals.
+ if(!Number.isFinite(idleTimeoutMs)||idleTimeoutMs<=0)throw new Error('Approval stream timeout must be positive and finite');
  const controller=new AbortController();const fetcher=options.fetcher??authFetch;const delays=options.delays??[1000,2000,4000];
  let reader:ReadableStreamDefaultReader<Uint8Array>|undefined;let timer:ReturnType<typeof setTimeout>|undefined;
  const pause=(ms:number)=>new Promise<void>(resolve=>{
-  timer=setTimeout(resolve,ms);
-  controller.signal.addEventListener('abort',()=>{if(timer)clearTimeout(timer);resolve()},{once:true});
+  const done=()=>{if(timer)clearTimeout(timer);controller.signal.removeEventListener('abort',done);resolve()};
+  timer=setTimeout(done,ms);controller.signal.addEventListener('abort',done,{once:true});
  });
  void (async()=>{
   for(let attempt=0;attempt<=delays.length&&!controller.signal.aborted;attempt++){
    onState(attempt?'reconnecting':'connecting');
+   const attemptController=new AbortController();
+   let idleTimer:ReturnType<typeof setTimeout>|undefined;
+   let rejectDeadline:(error:Error)=>void=()=>{};
+   const deadline=new Promise<never>((_resolve,reject)=>{rejectDeadline=reject});
+   const stopAttempt=()=>{rejectDeadline(new Error('Approval stream stopped'));attemptController.abort()};
+   controller.signal.addEventListener('abort',stopAttempt,{once:true});
+   const armDeadline=()=>{
+    if(idleTimer)clearTimeout(idleTimer);
+    idleTimer=setTimeout(()=>{
+     rejectDeadline(new Error('Approval stream inactive'));attemptController.abort();
+     void reader?.cancel().catch(()=>{});
+    },idleTimeoutMs);
+   };
    try{
-    const response=await fetcher(url,{signal:controller.signal,headers:{Accept:'text/event-stream'}});
+    armDeadline(); // Includes waiting for response headers, not only the body.
+    const response=await Promise.race([fetcher(url,{signal:attemptController.signal,headers:{Accept:'text/event-stream'}}),deadline]);
     if(controller.signal.aborted)return;
     if(response.status===401||response.status===403){onState('auth-required');return}
     if(!response.ok||!response.body||!response.headers.get('content-type')?.includes('text/event-stream'))throw new Error('Approval stream unavailable');
-    onState('connected');onSignal();
+    onState('connected');onSignal();armDeadline();
     const parser=new ApprovalFrameParser(()=>{if(!controller.signal.aborted)onSignal()});
     reader=response.body.getReader();
-    while(!controller.signal.aborted){const {done,value}=await reader.read();if(done)break;if(value)parser.push(value)}
+    while(!controller.signal.aborted){
+     const {done,value}=await Promise.race([reader.read(),deadline]);
+     if(done)break;
+     if(value?.byteLength){armDeadline();parser.push(value)}
+    }
    }catch{if(controller.signal.aborted)return}
-   finally{await reader?.cancel().catch(()=>{});reader=undefined}
+   finally{
+    if(idleTimer)clearTimeout(idleTimer);
+    controller.signal.removeEventListener('abort',stopAttempt);attemptController.abort();
+    void reader?.cancel().catch(()=>{});reader=undefined;
+   }
    if(attempt<delays.length&&!controller.signal.aborted){onState('reconnecting');await pause(delays[attempt])}
   }
   if(!controller.signal.aborted)onState('disconnected');
