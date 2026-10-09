@@ -95,3 +95,19 @@ def test_priorart_label_changes_differentiation_score():
     hit = build_luxury_venture(CAR, priorart={cid: "done-before"})["concepts"]
     d = lambda cs: {c["concept_id"]: c["scores"]["differentiation"] for c in cs}
     assert d(hit)[cid] < d(base)[cid]
+
+
+def test_anchor_score_requires_concept_group_for_every_lever():
+    from app.modules.m19_idea_incubator.luxury_priorart import anchor_score
+    assert anchor_score(["ownership_care"], "Dealer launches preventive service care program for owners") == 1.0
+    assert anchor_score(["ownership_care"], "vehicle owners discuss paint colours") < 0.5
+    assert anchor_score(["ownership_care", "scarcity_access"], "owner maintenance program") < 0.5   # second lever's concept missing
+    assert anchor_score(["ownership_care", "scarcity_access"], "owner maintenance program with a transparent waitlist for buyers") == 1.0
+    assert anchor_score(["unknown_lever"], "anything") == 0.0
+
+
+def test_generic_words_do_not_satisfy_concept_anchors():
+    from app.modules.m19_idea_incubator.luxury_priorart import anchor_score
+    assert anchor_score(["operations_quality"], "Internal Revenue Service reviews analytics for customers") < 0.5
+    assert anchor_score(["ownership_care"], "American Motors Corporation was an owner of many service stations") < 0.5
+    assert anchor_score(["operations_quality"], "Hotel uses guest feedback sentiment to adjust staffing level") == 1.0
