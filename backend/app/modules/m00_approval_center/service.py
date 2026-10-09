@@ -598,9 +598,13 @@ def _install_extensions() -> None:
             ttl = policy["review_ttl_seconds"] if policy else None
             if ttl is not None and (type(ttl) is not int or ttl <= 0):
                 raise ValueError("review policy ttl must be a positive integer")
+            try:
+                expiry = now+timedelta(seconds=ttl) if ttl else None
+            except OverflowError:
+                raise ValueError("review policy ttl exceeds representable expiry") from None
             row = ApprovalRequestRow(id=str(uuid4()), user_id=user_id, module_id=module_id,
                 action_type=action_type, payload=payload, status=ApprovalStatus.PENDING.value,
-                created_at=now, expires_at=now+timedelta(seconds=ttl) if ttl else None)
+                created_at=now, expires_at=expiry)
             try:
                 with self._sessions.begin() as db:
                     db.add(row)
