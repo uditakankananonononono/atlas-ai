@@ -93,3 +93,24 @@ def invoice_operation(operation_id:str,t:TenantContext=Depends(require_tenant)):
    'steps':{role:{k:step[k] for k in ('state','result','failure')} for role,step in steps.items()}}
  except KeyError:raise HTTPException(404,'invoice operation not found')
  except (RuntimeError,ValueError):raise HTTPException(409,'invoice operation binding unavailable')
+
+class ReconciliationAcceptanceIn(__import__('pydantic').BaseModel):
+ evidence_id:str=__import__('pydantic').Field(min_length=36,max_length=36)
+
+@router.post('/operations/{operation_id}/accept-positive')
+def accept_positive(operation_id:str,body:ReconciliationAcceptanceIn,t:TenantContext=Depends(require_tenant)):
+ from app.modules.m00_approval_center.service import default_service
+ from .reconciliation import ReconciliationRepository
+ try:return ReconciliationRepository(default_service()).accept_positive(operation_id,body.evidence_id,t)
+ except KeyError:raise HTTPException(404,'operation or evidence not found')
+ except PermissionError:raise HTTPException(403,'original designated approver required')
+ except (RuntimeError,ValueError):raise HTTPException(409,'operation evidence cannot be accepted')
+
+@router.post('/operations/{operation_id}/cancel-or-close')
+def cancel_or_close(operation_id:str,t:TenantContext=Depends(require_tenant)):
+ from app.modules.m00_approval_center.service import default_service
+ from .reconciliation import ReconciliationRepository
+ try:return ReconciliationRepository(default_service()).cancel_unsent_or_close_unknown(operation_id,t)
+ except KeyError:raise HTTPException(404,'operation not found')
+ except PermissionError:raise HTTPException(403,'original designated approver required')
+ except (RuntimeError,ValueError):raise HTTPException(409,'operation cannot be cancelled or closed')

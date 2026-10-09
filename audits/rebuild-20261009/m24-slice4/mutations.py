@@ -1,0 +1,9 @@
+from pathlib import Path
+import subprocess,os
+items=[('reviewer', 'reconciliation.py',"or reviewer!=principal.actor_id",'', 'test_m24_reconciliation.py::test_wrong_principal_or_missing_designation_refuse[sqlite-other-reviewer]'),('role','reconciliation.py'," or not principal.has_role('atlas-approver','atlas-admin')",'', 'test_m24_reconciliation.py::test_wrong_principal_or_missing_designation_refuse[sqlite-missing-role]'),('evidence-digest','reconciliation.py',"e.evidence_digest!=expected or ",'', 'test_m24_reconciliation.py::test_evidence_digest_alone_corrupt_refuses_even_valid_receipt[sqlite]'),('close-retry','reconciliation.py',"state='closed_unknown' if uncertain else 'cancelled_before_dispatch'", "state='prepared' if uncertain else 'cancelled_before_dispatch'",'test_m24_reconciliation.py::test_uncertain_close_blocks_positive_acceptance_and_never_retries[sqlite]'),('invoice-fence','cancellation.py',"invoice.state='outcome_unknown';invoice.failure='customer-cancellation-fence'", "invoice.failure='customer-cancellation-fence'",'test_m24_cancellation.py::test_cancellation_preparation_fences_existing_draft_before_item[sqlite]'),('delete-postentry','cancellation.py',"state='outcome_unknown' if entered else 'failed_before_dispatch'", "state='failed_before_dispatch'",'test_m24_cancellation.py::test_accepted_delete_timeout_unknown_never_repeated[sqlite]')]
+for name,file,old,new,node in items:
+ p=Path('backend/app/modules/m24_billing')/file;original=p.read_bytes();s=original.decode();assert old in s
+ try:
+  p.write_text(s.replace(old,new,1));r=subprocess.run(['/tmp/atlas-memo3-venv/bin/python','-m','pytest','-q','tests/modules/'+node],env={**os.environ,'PYTHONPATH':'backend'},capture_output=True,text=True,timeout=20)
+  Path('audits/rebuild-20261009/m24-slice4/RED-mutation-'+name+'.log').write_text(r.stdout+r.stderr);print(name,r.returncode)
+ finally:p.write_bytes(original)
