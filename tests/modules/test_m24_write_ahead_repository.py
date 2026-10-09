@@ -22,6 +22,7 @@ def env(tmp_path,request):
     service.decide(view['id'],ApprovalStatus.APPROVED,'owner')
     yield service,service.get(view['id']),sessions,OperationRepository(service)
     engine.dispose()
+    if request.param=='postgres':server.cleanup()
 
 
 def prepare(env,**changes):
@@ -198,6 +199,7 @@ def test_full_postgres_migration_stays_locked_and_empty_downgrade(tmp_path):
     assert result.returncode==0,result.stderr
     assert 'm24_provider_operations' not in inspect(engine).get_table_names()
     engine.dispose()
+    server.cleanup()
 
 
 def test_fabricated_active_database_row_is_not_checked_credential_evidence(env):

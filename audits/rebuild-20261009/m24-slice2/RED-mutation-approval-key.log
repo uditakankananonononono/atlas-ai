@@ -1,0 +1,37 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_exact_snapshot_and_step_key_before_provider[sqlite] ___________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7fad2cfe35c0>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 12, 16, 52, 577449, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+
+    def test_exact_snapshot_and_step_key_before_provider(env):
+>       op=prepare(env);snapshot=env[0].snapshot(op['id'],'t1')
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:45: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:87: in prepare
+    self.snapshot(result['id'],result['tenant_id'])
+backend/app/modules/m24_billing/checkout_dispatcher.py:103: in snapshot
+    snap=self._validated(db,op)
+         ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7fad2cfe35c0>
+db = <sqlalchemy.orm.session.Session object at 0x7fad2ccfb620>
+op = <app.modules.m24_billing.write_ahead.OperationRow object at 0x7fad2cbc5a00>
+
+    def _validated(self,db,op):
+        snap=db.get(CheckoutSnapshotRow,op.id)
+        if snap is None:raise wa.DispatchRefused('checkout immutable snapshot required')
+        if op.environment!='test' or op.api_version!=API_VERSION or op.provider_key!=op.id+':checkout' or op.protocol_epoch!=2:
+>           raise wa.DispatchRefused('checkout immutable adapter binding differs')
+E           app.modules.m24_billing.write_ahead.DispatchRefused: checkout immutable adapter binding differs
+
+backend/app/modules/m24_billing/checkout_dispatcher.py:94: DispatchRefused
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_exact_snapshot_and_step_key_before_provider[sqlite]
+1 failed in 0.57s

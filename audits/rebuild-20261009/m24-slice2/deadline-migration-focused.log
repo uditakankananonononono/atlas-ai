@@ -1,0 +1,42 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /tmp/atlas-memo3-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-m24-design
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, platformdirs-4.12.4, langsmith-0.14.5, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 64 items / 60 deselected / 4 selected
+
+tests/modules/test_m24_checkout_dispatcher.py::test_12h_first_attempt_bound_never_refreshes[sqlite] PASSED [ 25%]
+tests/modules/test_m24_checkout_dispatcher.py::test_12h_first_attempt_bound_never_refreshes[postgres] FAILED [ 50%]
+
+=================================== FAILURES ===================================
+____________ test_12h_first_attempt_bound_never_refreshes[postgres] ____________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f4f47b15340>, <app.modules.m00_approval_...'created_at': datetime.datetime(2026, 10, 9, 12, 7, 30, 25088, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4f47c1d100>
+
+    def test_12h_first_attempt_bound_never_refreshes(env,monkeypatch):
+        op=prepare(env);mock_ready(env,monkeypatch);past=datetime.now(timezone.utc)-timedelta(hours=13)
+        with env[2].begin() as db:db.execute(update(wa.OperationRow).where(wa.OperationRow.id==op['id']).values(first_attempt_at=past))
+        with pytest.raises(wa.DispatchRefused,match='bound'):env[0].claim(op['id'],'t1',protocol_epoch=2)
+>       assert env[0].get(op['id'],'t1')['first_attempt_at'].replace(tzinfo=timezone.utc)==past
+E       AssertionError: assert datetime.datetime(2026, 10, 9, 4, 37, 30, 65929, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 10, 8, 23, 7, 30, 65929, tzinfo=datetime.timezone.utc)
+E        +  where datetime.datetime(2026, 10, 9, 4, 37, 30, 65929, tzinfo=datetime.timezone.utc) = <built-in method replace of datetime.datetime object at 0x7f4f46759920>(tzinfo=datetime.timezone.utc)
+E        +    where <built-in method replace of datetime.datetime object at 0x7f4f46759920> = datetime.datetime(2026, 10, 9, 4, 37, 30, 65929, tzinfo=zoneinfo.ZoneInfo(key='Asia/Calcutta')).replace
+E        +    and   datetime.timezone.utc = timezone.utc
+
+tests/modules/test_m24_checkout_dispatcher.py:307: AssertionError
+=============================== warnings summary ===============================
+tests/modules/test_m24_checkout_dispatcher.py::test_12h_first_attempt_bound_never_refreshes[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_12h_first_attempt_bound_never_refreshes[postgres] - AssertionError: assert datetime.datetime(2026, 10, 9, 4, 37, 30, 65929, tzinfo=datetime.timezone.utc) == datetime.datetime(2026, 10, 8, 23, 7, 30, 65929, tzinfo=datetime.timezone.utc)
+ +  where datetime.datetime(2026, 10, 9, 4, 37, 30, 65929, tzinfo=datetime.timezone.utc) = <built-in method replace of datetime.datetime object at 0x7f4f46759920>(tzinfo=datetime.timezone.utc)
+ +    where <built-in method replace of datetime.datetime object at 0x7f4f46759920> = datetime.datetime(2026, 10, 9, 4, 37, 30, 65929, tzinfo=zoneinfo.ZoneInfo(key='Asia/Calcutta')).replace
+ +    and   datetime.timezone.utc = timezone.utc
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+============ 1 failed, 1 passed, 60 deselected, 1 warning in 1.63s =============

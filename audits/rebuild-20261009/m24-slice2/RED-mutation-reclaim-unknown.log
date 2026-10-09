@@ -1,0 +1,20 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_attempt_committed_before_entry_is_never_reclaimed[sqlite] ________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f9fbb413320>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 12, 16, 49, 135297, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f9fbb406e10>
+
+    def test_attempt_committed_before_entry_is_never_reclaimed(env,monkeypatch):
+        op=prepare(env);mock_ready(env,monkeypatch)
+        fence=env[0].claim(op['id'],'t1',protocol_epoch=2)
+        with env[2].begin() as db:db.execute(update(wa.OperationRow).where(wa.OperationRow.id==op['id']).values(lease_until=datetime.now(timezone.utc)-timedelta(seconds=2)))
+        assert env[0].expire_uncertain(op['id'],'t1')['state']=='outcome_unknown'
+>       with pytest.raises(wa.DispatchRefused):env[0].claim(op['id'],'t1',protocol_epoch=2)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_checkout_dispatcher.py:149: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_attempt_committed_before_entry_is_never_reclaimed[sqlite]
+1 failed in 0.34s

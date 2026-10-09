@@ -31,3 +31,5 @@ import app.modules.m23_study_abroad.advising as _model_28  # noqa: F401
 import app.modules.m23_study_abroad.interview as _model_29  # noqa: F401
 import app.modules.m23_study_abroad.story as _model_30  # noqa: F401
 import app.modules.m24_billing.repository as _model_31  # noqa: F401
+
+import app.modules.m24_billing.checkout_dispatcher as _model_m24_checkout  # noqa: F401

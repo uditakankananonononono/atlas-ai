@@ -1,0 +1,1216 @@
+..F...F.F...FFF.F.F......FFFFFF.F.F.F.F                                  [100%]
+=================================== FAILURES ===================================
+__________ test_exact_snapshot_and_step_key_before_provider[postgres] __________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57f37f80>, <app.modules.m00_approval_...created_at': datetime.datetime(2026, 10, 9, 11, 59, 8, 442224, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+
+    def test_exact_snapshot_and_step_key_before_provider(env):
+>       op=prepare(env);snapshot=env[0].snapshot(op['id'],'t1')
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57f37f80>
+approval_id = '8b0e0ff3-9a35-4b92-b1dc-52bd92fb51f7', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+______ test_real_readiness_still_refuses_forged_row_zero_calls[postgres] _______
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57fe37a0>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 10, 199331, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+
+    def test_real_readiness_still_refuses_forged_row_zero_calls(env):
+>       op=prepare(env);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57fe37a0>
+approval_id = 'e6d6d9fd-0926-470a-9235-eed5c90153fe', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_______ test_succeeded_replay_readback_no_new_calls_or_effects[postgres] _______
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c577da1e0>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 11, 118850, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c5775b350>
+
+    def test_succeeded_replay_readback_no_new_calls_or_effects(env,monkeypatch):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c577da1e0>
+approval_id = 'e1e1d1c9-6945-4b06-92a0-1f3f661b7e39', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_ test_post_entry_failures_stay_unknown_no_replay_even_pruned[postgres-http500] _
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57bd2e10>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 12, 229906, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c57b1a240>
+kind = 'http500'
+
+    @pytest.mark.parametrize('kind',['http500','malformed','timeout'])
+    def test_post_entry_failures_stay_unknown_no_replay_even_pruned(env,monkeypatch,kind):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe(status=500 if kind=='http500' else 200,malformed=kind=='malformed',prune=True)
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57bd2e10>
+approval_id = '994722a5-565e-4f32-a2fc-87e9295941f1', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_ test_post_entry_failures_stay_unknown_no_replay_even_pruned[postgres-malformed] _
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57302d20>, <app.modules.m00_approval_...created_at': datetime.datetime(2026, 10, 9, 11, 59, 13, 53864, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c57302840>
+kind = 'malformed'
+
+    @pytest.mark.parametrize('kind',['http500','malformed','timeout'])
+    def test_post_entry_failures_stay_unknown_no_replay_even_pruned(env,monkeypatch,kind):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe(status=500 if kind=='http500' else 200,malformed=kind=='malformed',prune=True)
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57302d20>
+approval_id = '514b08ba-becb-4d80-bd35-7dbd935ccd51', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_ test_post_entry_failures_stay_unknown_no_replay_even_pruned[postgres-timeout] _
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56b7ec60>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 13, 882672, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c56b7d670>
+kind = 'timeout'
+
+    @pytest.mark.parametrize('kind',['http500','malformed','timeout'])
+    def test_post_entry_failures_stay_unknown_no_replay_even_pruned(env,monkeypatch,kind):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe(status=500 if kind=='http500' else 200,malformed=kind=='malformed',prune=True)
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56b7ec60>
+approval_id = '7f6d148e-ec83-49a5-9030-a0d934bad840', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_______________ test_two_concurrent_claims_one_attempt[postgres] _______________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56bb36e0>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 14, 858889, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c57301c70>
+
+    def test_two_concurrent_claims_one_attempt(env,monkeypatch):
+        from concurrent.futures import ThreadPoolExecutor
+        import threading
+>       op=prepare(env);mock_ready(env,monkeypatch);barrier=threading.Barrier(2)
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56bb36e0>
+approval_id = '4a1bde35-4341-4e8c-811e-d592a9e45ed4', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_______ test_attempt_committed_before_entry_is_never_reclaimed[postgres] _______
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56bf3230>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 15, 953778, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c56b8b110>
+
+    def test_attempt_committed_before_entry_is_never_reclaimed(env,monkeypatch):
+>       op=prepare(env);mock_ready(env,monkeypatch)
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:144: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56bf3230>
+approval_id = '1ce06bef-e968-4ae5-bc90-ab69ee4333b2', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+________ test_changed_bindings_refuse_zero_provider[postgres-approval] _________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c573d3e00>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 19, 336090, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c577d5a60>
+change = 'approval'
+
+    @pytest.mark.parametrize('change',['approval','form','account','version','key','deadline'])
+    def test_changed_bindings_refuse_zero_provider(env,monkeypatch,change):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c573d3e00>
+approval_id = '927bae50-bc30-409d-8653-973663840a73', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+__________ test_changed_bindings_refuse_zero_provider[postgres-form] ___________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57300620>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 20, 322154, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c57f05d60>
+change = 'form'
+
+    @pytest.mark.parametrize('change',['approval','form','account','version','key','deadline'])
+    def test_changed_bindings_refuse_zero_provider(env,monkeypatch,change):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c57300620>
+approval_id = '40cc3731-8a8f-4480-a1c4-ecb994cd4e18', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_________ test_changed_bindings_refuse_zero_provider[postgres-account] _________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56bd0050>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 21, 321431, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c56bd0a70>
+change = 'account'
+
+    @pytest.mark.parametrize('change',['approval','form','account','version','key','deadline'])
+    def test_changed_bindings_refuse_zero_provider(env,monkeypatch,change):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56bd0050>
+approval_id = '2d0a85d4-b5a5-4c5d-a75d-bf4d8489e002', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_________ test_changed_bindings_refuse_zero_provider[postgres-version] _________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56bb3e60>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 22, 273347, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c56b88320>
+change = 'version'
+
+    @pytest.mark.parametrize('change',['approval','form','account','version','key','deadline'])
+    def test_changed_bindings_refuse_zero_provider(env,monkeypatch,change):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56bb3e60>
+approval_id = 'b41ac2fd-227d-410a-8a3b-8b8791022250', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+___________ test_changed_bindings_refuse_zero_provider[postgres-key] ___________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56f6fdd0>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 23, 174555, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c56f6e030>
+change = 'key'
+
+    @pytest.mark.parametrize('change',['approval','form','account','version','key','deadline'])
+    def test_changed_bindings_refuse_zero_provider(env,monkeypatch,change):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56f6fdd0>
+approval_id = 'd5d16bb1-70ec-48a8-8743-84a21a6af3a5', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+________ test_changed_bindings_refuse_zero_provider[postgres-deadline] _________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56f4fb30>, <app.modules.m00_approval_...'created_at': datetime.datetime(2026, 10, 9, 11, 59, 24, 4466, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c56f4f9e0>
+change = 'deadline'
+
+    @pytest.mark.parametrize('change',['approval','form','account','version','key','deadline'])
+    def test_changed_bindings_refuse_zero_provider(env,monkeypatch,change):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56f4fb30>
+approval_id = '1c51cd13-9fe5-4890-a5e8-283f7572ad18', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+______________ test_pre_entry_error_is_local_fact_only[postgres] _______________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56777b90>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 24, 917956, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c56ffbef0>
+
+    def test_pre_entry_error_is_local_fact_only(env,monkeypatch):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c56777b90>
+approval_id = '09d9168a-0f37-4ce7-9a81-8d60f571f572', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_ test_receipt_storage_failure_returns_stable_unknown_no_redispatch[postgres] __
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c567b0440>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 25, 865101, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c5679f470>
+
+    def test_receipt_storage_failure_returns_stable_unknown_no_redispatch(env,monkeypatch):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe()
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c567b0440>
+approval_id = '09606640-a593-4e39-a99b-d77872e244e7', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+__________ test_claim_commit_ack_loss_never_enters_adapter[postgres] ___________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c5563c320>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 26, 737816, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c556e71d0>
+
+    def test_claim_commit_ack_loss_never_enters_adapter(env,monkeypatch):
+>       op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe();original=env[0].claim
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:184: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c5563c320>
+approval_id = '5e7ab6c2-480a-4c7d-899b-755efc52b893', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+_________ test_late_result_recorded_no_stale_fence_or_replay[postgres] _________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c567b1a90>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 11, 59, 27, 670626, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2c555fb920>
+
+    def test_late_result_recorded_no_stale_fence_or_replay(env,monkeypatch):
+>       op=prepare(env);mock_ready(env,monkeypatch);fence=env[0].claim(op['id'],'t1',protocol_epoch=2)
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_checkout_dispatcher.py:44: in prepare
+    return repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/checkout_dispatcher.py:85: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f2c567b1a90>
+approval_id = '56deed96-ccaf-4eaa-847e-51c49a6717e2', tenant_id = 't1'
+
+    def prepare(self,approval_id,tenant_id,*,provider_account,environment,api_version,actor,provider_key=None):
+        for value,name,limit in ((provider_account,'provider_account',200),(api_version,'api_version',80),(actor,'actor',120)):
+            _text(value,name,limit)
+        if environment!='test':raise DispatchRefused('M24 live mode is not enabled')
+        if provider_key is not None:_text(provider_key,'provider_key',255)
+        now=self.clock()
+        try:
+            with self.sessions.begin() as db:
+                # Write-lock the approval before reading binding/permit, serializes competing reservations.
+                locked=db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==approval_id,
+                    ApprovalRequestRow.user_id==tenant_id,ApprovalRequestRow.module_id==24).values(status=ApprovalRequestRow.status))
+                if locked.rowcount!=1:raise ApprovalConflictError('approved tenant-bound M24 request required')
+                approval=db.get(ApprovalRequestRow,approval_id)
+                digest=_digest(approval)
+                prior=db.scalar(select(OperationRow).where(OperationRow.approval_id==approval_id,OperationRow.tenant_id==tenant_id))
+                if prior:
+                    if prior.request_hash!=digest or prior.provider_account!=provider_account or prior.environment!=environment or prior.api_version!=api_version or (provider_key is not None and prior.provider_key!=provider_key):
+                        raise ApprovalConflictError('operation binding differs')
+                    return _out(prior)
+                if approval.expires_at is not None and _aware(approval.expires_at)<=now:
+                    raise ApprovalConflictError('M24 approval deadline elapsed')
+                if db.get(LegacyQuarantineRow,approval_id) is not None:
+                    raise DispatchRefused('legacy M24 operation requires reconciliation')
+                if approval.action_type not in {'create_subscription_checkout','cancel_subscription','issue_invoice'}:
+                    raise ApprovalConflictError('unsupported M24 operation')
+                # One shared Module0 permit validator, joined to this transaction.
+                key=_permit_key(tenant_id,approval_id)
+                self.approvals.consume_effect(approval_id,module_id=24,action_type=approval.action_type,
+                    payload=copy.deepcopy(approval.payload),user_id=tenant_id,effect_id=key,actor=actor,_session=db)
+                operation=OperationRow(id=str(uuid4()),tenant_id=tenant_id,approval_id=approval_id,request_hash=digest,
+                    request=copy.deepcopy(approval.payload),action_type=approval.action_type,provider_account=provider_account,
+                    environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
+                    protocol_epoch=2,state='prepared',created_at=now)
+                db.add(operation)
+                self._add_snapshot(db,operation,approval)
+                db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
+                db.flush();result=_out(operation)
+            return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
+        except IntegrityError:
+>           raise ApprovalConflictError('operation reservation conflict') from None
+E           app.modules.m00_approval_center.service.ApprovalConflictError: operation reservation conflict
+
+backend/app/modules/m24_billing/write_ahead.py:133: ApprovalConflictError
+=============================== warnings summary ===============================
+tests/modules/test_m24_checkout_dispatcher.py::test_exact_snapshot_and_step_key_before_provider[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_exact_snapshot_and_step_key_before_provider[postgres]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_real_readiness_still_refuses_forged_row_zero_calls[postgres]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_succeeded_replay_readback_no_new_calls_or_effects[postgres]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_post_entry_failures_stay_unknown_no_replay_even_pruned[postgres-http500]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_post_entry_failures_stay_unknown_no_replay_even_pruned[postgres-malformed]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_post_entry_failures_stay_unknown_no_replay_even_pruned[postgres-timeout]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_two_concurrent_claims_one_attempt[postgres]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_attempt_committed_before_entry_is_never_reclaimed[postgres]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_changed_bindings_refuse_zero_provider[postgres-approval]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_changed_bindings_refuse_zero_provider[postgres-form]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_changed_bindings_refuse_zero_provider[postgres-account]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_changed_bindings_refuse_zero_provider[postgres-version]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_changed_bindings_refuse_zero_provider[postgres-key]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_changed_bindings_refuse_zero_provider[postgres-deadline]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_pre_entry_error_is_local_fact_only[postgres]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_receipt_storage_failure_returns_stable_unknown_no_redispatch[postgres]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_claim_commit_ack_loss_never_enters_adapter[postgres]
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_late_result_recorded_no_stale_fence_or_replay[postgres]
+18 failed, 21 passed, 1 warning in 20.56s
