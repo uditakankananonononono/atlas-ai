@@ -97,3 +97,23 @@ def test_unvalidated_preview_cannot_be_queued(svc):
         q.enqueue(preview(status="draft"), user_id=U)
     with pytest.raises(ValueError):
         q.enqueue({"subject": "x"}, user_id=U)
+
+
+def test_unreadable_audit_fails_closed(svc, monkeypatch):
+    spy = Spy(); q = LuxuryOutreachQueue(svc, spy)
+    r = q.enqueue(preview(), user_id=U)
+    svc.decide(r["approval_id"], ApprovalStatus.APPROVED, decided_by="owner")
+    monkeypatch.setattr(svc, "audit", lambda _id: (_ for _ in ()).throw(RuntimeError("db down")))
+    with pytest.raises(OutreachRefused, match="unreadable"):
+        q.send(r["approval_id"], preview(), user_id=U)
+    assert spy.calls == []
+
+
+def test_two_queue_instances_share_one_lock_and_second_send_is_refused(svc):
+    spy = Spy(); q1 = LuxuryOutreachQueue(svc, spy); q2 = LuxuryOutreachQueue(svc, spy)
+    r = q1.enqueue(preview(), user_id=U)
+    svc.decide(r["approval_id"], ApprovalStatus.APPROVED, decided_by="owner")
+    q1.send(r["approval_id"], preview(), user_id=U)
+    with pytest.raises(OutreachRefused, match="already used"):
+        q2.send(r["approval_id"], preview(), user_id=U)
+    assert len(spy.calls) == 1

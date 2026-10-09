@@ -98,7 +98,7 @@ def build_pitch_package(request:PitchPackageRequest)->dict:
  concept_id=request.concept_id or studio['recommended_concept_id']
  matches=[x for x in studio['concepts'] if x['concept_id']==concept_id]
  if not matches:raise ValueError('concept_id is not present in this studio result')
- c=matches[0];experiment=studio['validation_experiment']
+ c=matches[0];experiment={**studio['validation_experiment'],'concept_id':concept_id}
  markdown='\n'.join([
   f"# {c['name']} - review-only venture brief",'',
   f"**Target:** {request.brief.brand_or_segment}",f"**Customer job:** {c['customer_job']}",'',
@@ -123,7 +123,7 @@ def validate_outreach_preview(data:OutreachPreview,package:dict)->dict:
  if data.concept_id!=package['concept_id']:raise ValueError('concept_id does not match pitch package')
  unknown=sorted(set(data.evidence_refs)-set(package['evidence_refs']))
  if unknown:raise ValueError('outreach cites evidence absent from pitch package: '+', '.join(unknown))
- banned=('partnered with','official partner','guaranteed','validated demand','endorsed by')
+ banned=('partnered with','in partnership with','official partner','authorized by','authorised by','sponsored by','guaranteed','guarantee','validated demand','proven demand','proven results','endorsed by','endorsement from')
  found=[x for x in banned if x in (data.subject+' '+data.body).lower()]
  if found:raise ValueError('unsupported external claim: '+', '.join(found))
  return {'concept_id':data.concept_id,'recipient_organization':data.recipient_organization,'recipient_role':data.recipient_role,'channel':data.channel,'subject':data.subject,'body':data.body,'evidence_refs':data.evidence_refs,'status':'pending_approval','sent':False,'boundary':'Approval request only. This endpoint does not send or submit the message.'}

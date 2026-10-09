@@ -111,3 +111,21 @@ def test_generic_words_do_not_satisfy_concept_anchors():
     assert anchor_score(["operations_quality"], "Internal Revenue Service reviews analytics for customers") < 0.5
     assert anchor_score(["ownership_care"], "American Motors Corporation was an owner of many service stations") < 0.5
     assert anchor_score(["operations_quality"], "Hotel uses guest feedback sentiment to adjust staffing level") == 1.0
+
+
+def test_keyword_stuffing_is_capped():
+    from app.modules.m19_idea_incubator.luxury_ideation import generate_ideas
+    stuffed = mk("Auto Marque", "automotive", [("limited waitlist allocation exclusive edition collector queue demand sold", .2), ("Owners report long waits for restoration.", .9)], [("svc", "service scheduling data", .8)])
+    ideas = {i["idea_id"]: i for i in generate_ideas(stuffed)["ideas"]}
+    assert ideas["scarcity_access"]["scores"]["evidence_strength"] <= 0.2 * 3 + 1e-9
+
+def test_evidence_exposes_the_source_passage_that_matched():
+    ev = generate_ideas(CAR)["ideas"][0]["evidence"]
+    assert all("source_passages" in e for e in ev)
+
+
+def test_check_ideas_survives_a_malformed_idea():
+    good = generate_ideas(CAR)["ideas"][0]
+    async def f(q): return []
+    out = run(check_ideas([good, {"idea_id": "bad"}], "automotive", f))
+    assert len(out) == 2 and out[1]["label"] == "unchecked"

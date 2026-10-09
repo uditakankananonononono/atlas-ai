@@ -16,6 +16,20 @@ def build_pitch_assets(brief: VentureBrief, idea: dict, priorart: dict | None = 
     missing = [sid for sid in cited if sid not in src]
     if missing: raise ValueError("idea cites unknown sources: " + ", ".join(missing))
     if not idea["evidence"]: raise ValueError("an idea without evidence cannot be pitched")
+    sigs = {x.signal_id: x for x in brief.signals}
+    for e in idea["evidence"]:
+        sig = sigs.get(e["signal_id"])
+        if sig is None or sig.statement != e["quote"]:
+            raise ValueError("evidence quote does not match brief signal " + str(e["signal_id"]))
+        pool = (sig.statement + " " + " ".join(src[x].finding for x in e["source_ids"])).lower()
+        absent = [t for t in e["matched_terms"] if t not in pool]
+        if absent: raise ValueError("matched terms absent from signal and sources: " + ", ".join(absent))
+    if prototype is not None:
+        tr = prototype.get("test_results")
+        if not isinstance(prototype.get("built"), list) or not isinstance(tr, list):
+            raise ValueError("prototype receipt malformed")
+        if prototype.get("all_tests_passed") and (not tr or any(r.get("returncode") != 0 or not r.get("tests_run") for r in tr)):
+            raise ValueError("prototype receipt claims pass but its test_results do not")
     pa = priorart or {"label": "unchecked"}
     proto_line = ("Reference prototype: components " + ", ".join(prototype["built"]) + " built; own tests " +
                   ("passed" if prototype["all_tests_passed"] else "did NOT all pass") + " (synthetic fixtures).") if prototype else "No prototype built yet."
@@ -32,7 +46,10 @@ def build_pitch_assets(brief: VentureBrief, idea: dict, priorart: dict | None = 
     html = ("<!doctype html><meta charset=utf-8><title>" + escape(idea["idea_id"]) + "</title><body style='font-family:Georgia,serif;max-width:42em;margin:2em auto'>"
         f"<h1>{escape(brief.brand_or_segment)}: {escape(idea['idea_id'])}</h1><p><em>Review-only draft. No brand affiliation or endorsement.</em></p>"
         f"<h2>Problem</h2><p>{escape(brief.customer_job)}</p><h2>Idea</h2><p>{escape(idea['mechanism'])}.</p><h2>Evidence</h2><ul>"
-        + "".join(f"<li>{escape(e['quote'])}</li>" for e in idea["evidence"]) + f"</ul><p>{escape(pa_line)}</p><p>{escape(proto_line)}</p>")
+        + "".join(f"<li>{escape(e['quote'])}</li>" for e in idea["evidence"]) + f"</ul><p>{escape(pa_line)}</p><p>{escape(proto_line)}</p><h2>Sources</h2><ul>"
+        + "".join(f"<li>{escape(src[sid].title)} - {escape(src[sid].url)}</li>" for sid in cited)
+        + f"</ul><h2>Scorecard (heuristic)</h2><p>Total {sc['total']}; evidence {sc['evidence_strength']}; readiness {sc['readiness']}</p>"
+        "<h2>Claim limits</h2><ul><li>No validated demand or revenue is claimed.</li><li>Scores rank candidates; they do not predict outcomes.</li><li>Prior-art search covered public indexes only.</li></ul>")
     buf = io.StringIO(); w = csv.writer(buf); w.writerow(["metric", "value"])
     for k, v in sc.items(): w.writerow([k, v])
     return {"idea_id": idea["idea_id"], "review_status": "pending", "external_action_started": False,
