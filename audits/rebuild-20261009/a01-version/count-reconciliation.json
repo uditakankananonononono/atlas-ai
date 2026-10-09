@@ -1,0 +1,38 @@
+{
+  "base": "a1fbe5970471e50dad1df2bb511e47a15506723a",
+  "original_summary": {
+    "total": 229,
+    "verified-pushed": 220,
+    "configured-unaccepted": 9,
+    "thin": 0,
+    "missing": 0,
+    "functional": 221,
+    "safety-replacement": 8
+  },
+  "actual_row_statuses_before": {
+    "verified-pushed": 218,
+    "configured-unaccepted": 9,
+    "facade-unconfigured": 1,
+    "partial-unaccepted": 1
+  },
+  "actual_row_statuses_after": {
+    "SCOPED": 1,
+    "verified-pushed": 217,
+    "configured-unaccepted": 9,
+    "facade-unconfigured": 1,
+    "partial-unaccepted": 1
+  },
+  "counts_after": {
+    "total": 229,
+    "SCOPED": 1,
+    "verified-pushed": 217,
+    "configured-unaccepted": 9,
+    "facade-unconfigured": 1,
+    "partial-unaccepted": 1,
+    "thin": 0,
+    "missing": 0,
+    "functional": 221,
+    "safety-replacement": 8
+  },
+  "limit": "Historical ledger inventory, not 217 behavioral acceptances. Only A01 is newly version-amended SCOPED."
+}

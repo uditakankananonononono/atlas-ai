@@ -16,4 +16,4 @@ Still requires live-environment acceptance before a COVERED verdict:
 - Horizontal Celery benchmark on actual worker nodes, Redis and representative jobs.
 - Universal-LTM proof that every module's generated and ingested artifacts traverse the common ingestion pipeline.
 
-Version mismatches remain explicit: the repo uses Next.js 15 and React 19, newer than the literal Next.js 14/React 18 requirements. They are not exact-version matches.
+The deployed frontend manifest boundary is `frontend/`, not the legacy root package duplicate. Its package and lock pin Next.js 16.3.8 and React 18.3.1. A01 is version-amended, SCOPED under the recorded version exception, never literal Next.js 14 verification; React 18 matches the requested major version. Package pins alone do not prove frontend behavior or deployment. Original Next15/React19 wording is preserved in [the correction record](../audits/rebuild-20261009/a01-version/CORRECTIONS.md).
