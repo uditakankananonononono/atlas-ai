@@ -593,6 +593,8 @@ def _install_extensions() -> None:
                 raise ValueError(f"unknown module id: {module_id}")
             now = self._clock()
             ttl = policy["review_ttl_seconds"] if policy else None
+            if ttl is not None and (type(ttl) is not int or ttl <= 0):
+                raise ValueError("review policy ttl must be a positive integer")
             row = ApprovalRequestRow(id=str(uuid4()), user_id=user_id, module_id=module_id,
                 action_type=action_type, payload=payload, status=ApprovalStatus.PENDING.value,
                 created_at=now, expires_at=now+timedelta(seconds=ttl) if ttl else None)
