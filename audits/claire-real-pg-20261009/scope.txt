@@ -1,0 +1,8 @@
+Base 26aa6ba957cced380814121c0a233f49747abb4a. Own Python 3.12.14 run: 3 passed.
+Command: python -m pytest tests/modules/test_m21_runtime_postgres_seam.py -v -s --junitxml=/tmp/claire-pg.xml
+pgserver 0.1.4 installed as free local harness. SELECT version() captured actual PostgreSQL 16.2.
+Fresh ephemeral local Unix-socket cluster, actual Alembic upgrade chain through 20261008_m21_runtime_revoke; no GoalStore create_all. Schema columns/unique effect constraint inspected.
+Separate GoalStore engines + Barrier(2): exactly one winner of competing claim; clock advanced 11 seconds beyond 10-second lease; replacement claim after store reopen rejects old token's renew/settle; stored state survives separate store reopen and tenant/actor reads refused.
+Second test's settlement report is supplied test data, not tool evidence. Third test separately runs Worker + Engine + real Lookup tool and persists its receipt/verdict in PostgreSQL, with a scripted model (NOT learned model).
+No process kill/restart, server restart, configured HTTP worker on PG, production IdP, Neon/user data, full regression, daemon, migrations after named Claire revision, effect-journal crash recovery or real selected-model evidence. Store disposal/reopen only; simulated clock expiry. Acceptance A NOT met.
+No product code change; tests-only evidence candidate. Independent review/publication pending.
