@@ -54,12 +54,14 @@ def test_priorart_none_found_is_hedged_and_failure_is_unchecked():
     idea = generate_ideas(CAR)["ideas"][0]
     async def empty(q): return []
     async def boom(q): raise RuntimeError("down")
-    r = run(check_idea(idea, "automotive", empty))
+    async def ontopic(q): return [{"title": "Car buyers survey", "snippet": "vehicle owners and drivers discuss paint colours", "url": "https://z"}]
+    r = run(check_idea(idea, "automotive", ontopic))
     assert r["label"] == "no-prior-art-found" and "not proof" in r["caveat"]
+    assert run(check_idea(idea, "automotive", empty))["label"] == "inconclusive"
     assert run(check_idea(idea, "automotive", boom))["label"] == "unchecked"
 
 def test_priorart_unrelated_hits_do_not_count():
     idea = generate_ideas(CAR)["ideas"][0]
     async def junk(q): return [{"title": "Medieval pottery", "snippet": "clay glaze kiln", "url": "https://y"}]
-    assert run(check_idea(idea, "automotive", junk))["label"] == "no-prior-art-found"
+    assert run(check_idea(idea, "automotive", junk))["label"] == "inconclusive"
     assert len(run(check_ideas(generate_ideas(CAR)["ideas"], "automotive", junk))) == len(generate_ideas(CAR)["ideas"])
