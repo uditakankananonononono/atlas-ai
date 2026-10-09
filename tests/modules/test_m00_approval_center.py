@@ -1073,3 +1073,242 @@ def test_register_callback_requires_callable(service):
     view = submit(service)
     with pytest.raises(ValueError, match='callback'):
         service.register_callback(view['id'], 'not callable')
+
+
+def test_broadcast_failure_after_submit_leaves_committed_request(service, monkeypatch):
+    from sqlalchemy import select
+    from app.modules.m00_approval_center.service import ApprovalRequestRow
+    def fail(event):
+        raise RuntimeError('fixture broadcast failure')
+    monkeypatch.setattr(service.broadcaster, 'publish', fail)
+    with pytest.raises(RuntimeError, match='broadcast failure'):
+        submit(service)
+    with service._sessions() as db:
+        rows = list(db.scalars(select(ApprovalRequestRow)))
+        assert len(rows) == 1
+        aid = rows[0].id
+    assert [e['event'] for e in service.audit(aid)] == ['created']
+
+
+def test_callback_registered_after_decision_is_not_replayed(service):
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    calls = []
+    service.register_callback(view['id'], calls.append)
+    assert calls == []
+
+
+def test_valid_http_policy_write_and_list(client):
+    client.app.dependency_overrides[require_admin] = lambda: TenantContext('local', 'admin', frozenset({'atlas-admin'}))
+    response = client.put('/approval-center/policies/fixture', json={
+        'id': 'fixture', 'name': 'Fixture', 'action_pattern': 'send_*', 'effect': 'review',
+        'module_id': 5, 'conditions': {'recipient.role': ['friend']}})
+    assert response.status_code == 200
+    assert client.get('/approval-center/policies?enabled_only=true').json()[0]['id'] == 'fixture'
+
+
+def test_empty_nested_condition_segment_remains_exact_lookup(service):
+    service.upsert_policy(policy_id='fixture', name='Fixture', action_pattern='*', effect='allow',
+                          actor='fixture', tenant_id='udita', conditions={'recipient..role': 'friend'})
+    assert service.evaluate_policy(module_id=5, action_type='send_email',
+                                   context={'recipient': {'role': 'friend'}}, tenant_id='udita')[0] == 'review'
+
+
+@pytest.mark.parametrize('wanted,current', [(True, 1), ([True], 1),
+                                           ({'flag': True}, {'flag': 1}),
+                                           ([{'flags': [False]}], {'flags': [0]})])
+def test_allow_policy_never_matches_json_boolean_as_number(service, wanted, current):
+    service.upsert_policy(policy_id='bool-boundary', name='Fixture', action_pattern='*',
+                          effect='allow', actor='fixture', tenant_id='udita', conditions={'value': wanted})
+    assert service.evaluate_policy(module_id=5, action_type='send_email',
+                                   context={'value': current}, tenant_id='udita')[0] == 'review'
+
+
+def test_condition_exact_values_preserve_numeric_and_nested_membership_controls(service):
+    service.upsert_policy(policy_id='bool-boundary', name='Fixture', action_pattern='*',
+                          effect='allow', actor='fixture', tenant_id='udita',
+                          conditions={'number': 1, 'nested': [{'flags': [True, False]}]})
+    assert service.evaluate_policy(module_id=5, action_type='send_email',
+                                   context={'number': 1.0, 'nested': {'flags': [True, False]}},
+                                   tenant_id='udita')[0] == 'allow'
+
+
+@pytest.mark.parametrize('conditions', [{'value': {1: 'value'}},
+                                       {'value': [{1: 'value'}]},
+                                       {'value': {'nested': {1: 'value'}}}])
+def test_policy_refuses_nested_nonstring_condition_keys(service, conditions):
+    with pytest.raises(ValueError, match='conditions'):
+        service.upsert_policy(policy_id='key-boundary', name='Fixture', action_pattern='*',
+                              effect='allow', actor='fixture', conditions=conditions)
+    assert service.list_policies() == []
+
+
+def test_policy_nested_string_key_conditions_roundtrip_unchanged(service):
+    conditions = {'value': [{'nested': {'1': 'value', '': 'empty string key'}}]}
+    policy = service.upsert_policy(policy_id='key-boundary', name='Fixture', action_pattern='*',
+                                   effect='allow', actor='fixture', conditions=conditions)
+    assert policy['conditions'] == conditions
+    assert service.list_policies()[0]['conditions'] == conditions
+
+
+@pytest.mark.parametrize('effect', ['deny', 'review'])
+@pytest.mark.parametrize('wanted,current', [(True, 1), (False, 0)])
+def test_deny_review_boolean_rules_do_not_match_numbers_and_keep_real_booleans(service, effect, wanted, current):
+    service.upsert_policy(policy_id='fallback', name='Fallback', action_pattern='*', effect='allow',
+                          actor='fixture', tenant_id='udita', priority=0)
+    service.upsert_policy(policy_id='typed', name='Typed', action_pattern='*', effect=effect,
+                          actor='fixture', tenant_id='udita', priority=10, conditions={'value': wanted})
+    actual = service.evaluate_policy(module_id=5, action_type='send_email',
+                                     context={'value': wanted}, tenant_id='udita')
+    assert actual[0] == effect and actual[1]['id'] == 'typed'
+    numeric = service.evaluate_policy(module_id=5, action_type='send_email',
+                                      context={'value': current}, tenant_id='udita')
+    assert numeric[0] == 'allow' and numeric[1]['id'] == 'fallback'
+
+
+@pytest.mark.parametrize('top_effect', ['allow', 'deny', 'review'])
+def test_policy_priority_precedes_effect_severity_for_numeric_equivalence(service, top_effect):
+    for effect in ['allow', 'deny', 'review']:
+        service.upsert_policy(policy_id=effect, name=effect, action_pattern='*', effect=effect,
+                              actor='fixture', tenant_id='udita', conditions={'number': 1},
+                              priority=10 if effect == top_effect else 0)
+    selected = service.evaluate_policy(module_id=5, action_type='send_email',
+                                        context={'number': 1.0}, tenant_id='udita')
+    assert selected[0] == top_effect and selected[1]['id'] == top_effect
+
+
+@pytest.mark.parametrize('effects,expected', [(['allow', 'deny', 'review'], 'deny'),
+                                             (['allow', 'review'], 'review')])
+def test_equal_priority_policy_severity_remains_deny_then_review_then_allow(service, effects, expected):
+    for effect in effects:
+        service.upsert_policy(policy_id=effect, name=effect, action_pattern='*', effect=effect,
+                              actor='fixture', tenant_id='udita', conditions={'number': 1}, priority=10)
+    selected = service.evaluate_policy(module_id=5, action_type='send_email',
+                                        context={'number': 1.0}, tenant_id='udita')
+    assert selected[0] == expected and selected[1]['id'] == expected
+
+
+def test_policy_write_and_list_views_do_not_mutate_persisted_conditions(service):
+    conditions = {'value': {'nested': [True, False]}}
+    written = service.upsert_policy(policy_id='alias', name='Fixture', action_pattern='*',
+                                    effect='review', actor='fixture', conditions=conditions)
+    written['conditions']['value']['nested'][0] = 'changed'
+    listed = service.list_policies()
+    assert listed[0]['conditions'] == {'value': {'nested': [True, False]}}
+    listed[0]['conditions']['value']['nested'][1] = 'changed'
+    assert service.list_policies()[0]['conditions'] == {'value': {'nested': [True, False]}}
+
+
+def test_policy_tuple_condition_write_returns_pre_storage_representation(service):
+    conditions = {'value': {'sequence': (1, 2)}}
+    written = service.upsert_policy(policy_id='representation', name='Fixture', action_pattern='*',
+                                    effect='review', actor='fixture', conditions=conditions)
+    assert written['conditions'] == {'value': {'sequence': (1, 2)}}
+    assert service.list_policies()[0]['conditions'] == {'value': {'sequence': [1, 2]}}
+
+
+def test_same_policy_id_across_tenants_shares_unscoped_event_identity(service):
+    from sqlalchemy import select
+    from app.modules.m00_approval_center.service import ApprovalEventRow
+    for tenant in ['tenant-a', 'tenant-b']:
+        service.upsert_policy(policy_id='shared', name='Fixture', action_pattern='*', effect='review',
+                              actor='admin-' + tenant, tenant_id=tenant)
+    with service._sessions() as db:
+        events = list(db.scalars(select(ApprovalEventRow).where(ApprovalEventRow.approval_id == 'policy:shared')))
+    assert len(events) == 2
+    assert {event.actor for event in events} == {'admin-tenant-a', 'admin-tenant-b'}
+    assert [policy['tenant_id'] for policy in service.list_policies(tenant_id='tenant-a')] == ['tenant-a']
+    assert [policy['tenant_id'] for policy in service.list_policies(tenant_id='tenant-b')] == ['tenant-b']
+
+
+def test_policy_long_valid_identity_exceeds_shared_event_column_width(service):
+    from sqlalchemy import select
+    from app.modules.m00_approval_center.service import ApprovalEventRow
+    policy_id = 'p'*120
+    service.upsert_policy(policy_id=policy_id, name='Fixture', action_pattern='*',
+                          effect='review', actor='admin', tenant_id='tenant-a')
+    with service._sessions() as db:
+        event = db.scalar(select(ApprovalEventRow).where(ApprovalEventRow.approval_id == 'policy:' + policy_id))
+    assert len(event.approval_id) == 127
+    assert ApprovalEventRow.__table__.c.approval_id.type.length == 36
+
+
+def test_policy_priority_sqlite_overflow_rolls_back_policy_and_event(service):
+    from sqlalchemy import select
+    from app.modules.m00_approval_center.service import ApprovalEventRow
+    with pytest.raises(OverflowError):
+        service.upsert_policy(policy_id='priority-boundary', name='Fixture', action_pattern='*',
+                              effect='review', actor='fixture', priority=2**63)
+    assert service.list_policies() == []
+    with service._sessions() as db:
+        assert list(db.scalars(select(ApprovalEventRow))) == []
+
+
+def test_policy_event_is_sdk_readable_but_has_no_request_audit_http_route(client, service):
+    from app.auth.context import require_tenant
+    service.upsert_policy(policy_id='audit', name='Fixture', action_pattern='*',
+                          effect='review', actor='admin', tenant_id='udita')
+    assert [event['event'] for event in service.audit('policy:audit')] == ['policy_created']
+    client.app.dependency_overrides[require_tenant] = lambda: TenantContext('udita', 'admin', frozenset({'atlas-admin'}))
+    assert client.get('/approval-center/requests/policy:audit/audit').status_code == 404
+
+
+def test_policy_input_mutation_after_commit_does_not_change_stored_matching(service):
+    conditions = {'value': {'flag': True}}
+    service.upsert_policy(policy_id='input-alias', name='Fixture', action_pattern='*',
+                          effect='allow', actor='fixture', tenant_id='udita', conditions=conditions)
+    conditions['value']['flag'] = False
+    assert service.evaluate_policy(module_id=5, action_type='send_email',
+                                   context={'value': {'flag': True}}, tenant_id='udita')[0] == 'allow'
+    assert service.evaluate_policy(module_id=5, action_type='send_email',
+                                   context={'value': {'flag': False}}, tenant_id='udita')[0] == 'review'
+
+
+def test_actual_sqlite_policy_migration_keeps_id_only_primary_key(tmp_path):
+    import importlib.util
+    from pathlib import Path
+    import sqlalchemy as sa
+    from alembic.migration import MigrationContext
+    from alembic.operations import Operations
+    path = Path('migrations/versions/20260922_m00_policy_tenant_isolation.py')
+    spec = importlib.util.spec_from_file_location('m00_policy_tenant_migration', path)
+    migration = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migration)
+    engine = sa.create_engine(f"sqlite:///{tmp_path}/migrated.db")
+    metadata = sa.MetaData()
+    table = sa.Table('m00_approval_policies', metadata,
+                     sa.Column('id', sa.String(120), primary_key=True),
+                     sa.Column('name', sa.String(200), nullable=False))
+    metadata.create_all(engine)
+    with engine.begin() as connection:
+        with Operations.context(MigrationContext.configure(connection)):
+            migration.upgrade()
+    assert sa.inspect(engine).get_pk_constraint('m00_approval_policies')['constrained_columns'] == ['id']
+    migrated = sa.Table('m00_approval_policies', sa.MetaData(), autoload_with=engine)
+    with engine.begin() as connection:
+        connection.execute(migrated.insert().values(id='shared', name='A', tenant_id='tenant-a'))
+    with pytest.raises(sa.exc.IntegrityError):
+        with engine.begin() as connection:
+            connection.execute(migrated.insert().values(id='shared', name='B', tenant_id='tenant-b'))
+    with engine.begin() as connection:
+        with Operations.context(MigrationContext.configure(connection)):
+            migration.downgrade()
+    assert 'tenant_id' not in [column['name'] for column in sa.inspect(engine).get_columns('m00_approval_policies')]
+
+
+def test_full_clean_sqlite_migration_retains_single_policy_primary_key(tmp_path):
+    import os
+    import sqlite3
+    import subprocess
+    import sys
+    database = tmp_path / 'full-chain.db'
+    result = subprocess.run([sys.executable, '-m', 'alembic', 'upgrade', 'head'],
+                            env={**os.environ, 'ATLAS_DATABASE_URL': f'sqlite:///{database}'},
+                            capture_output=True, text=True, timeout=90)
+    assert result.returncode == 0, result.stderr
+    with sqlite3.connect(database) as db:
+        columns = db.execute("pragma table_info('m00_approval_policies')").fetchall()
+    assert {column[1] for column in columns if column[5]} == {'id'}
+    assert 'tenant_id' in {column[1] for column in columns}
+    from app.modules.m00_approval_center.service import ApprovalPolicyRow
+    assert {column.name for column in ApprovalPolicyRow.__table__.primary_key} == {'tenant_id', 'id'}
