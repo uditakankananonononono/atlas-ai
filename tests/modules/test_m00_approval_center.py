@@ -614,3 +614,14 @@ def test_policy_review_ttl_requires_actual_integer(service, ttl):
     with pytest.raises(ValueError, match='review_ttl_seconds'):
         service.upsert_policy(policy_id='invalid', name='Fixture', action_pattern='*',
                               effect='review', actor='fixture', review_ttl_seconds=ttl)
+
+
+def test_keyed_gate_refuses_legacy_zero_ttl_policy(service):
+    from app.modules.m00_approval_center.service import ApprovalPolicyRow
+    service.upsert_policy(policy_id='legacy', name='Fixture', action_pattern='*',
+                          effect='review', actor='fixture', review_ttl_seconds=10, tenant_id='local')
+    with service._sessions.begin() as db:
+        db.get(ApprovalPolicyRow, ('local', 'legacy')).review_ttl_seconds = 0
+    with pytest.raises(ValueError, match='ttl'):
+        service.gate(module_id=5, action_type='send_email', payload={}, user_id='local',
+                     idempotency_key='legacy-policy')
