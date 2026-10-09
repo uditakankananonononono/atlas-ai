@@ -104,3 +104,18 @@ def real_bubblewrap_environment():
                 pytest.skip("REAL ISOLATION UNVERIFIED: bubblewrap binary disappeared")
             raise
         _check_bubblewrap_probe(probe)
+
+
+@pytest.fixture
+def m24_postgres_schema():
+    """Initialize every private M24 fixture DB, not only CI's shared service DB."""
+    from sqlalchemy import text
+
+    def initialize(engine):
+        if engine.dialect.name != 'postgresql':
+            return
+        with engine.begin() as db:
+            db.execute(text('CREATE EXTENSION IF NOT EXISTS vector'))
+            assert db.scalar(text("SELECT count(*) FROM pg_extension WHERE extname='vector'")) == 1
+
+    return initialize

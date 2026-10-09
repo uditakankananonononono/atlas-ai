@@ -23,12 +23,13 @@ from app.modules.m24_billing.checkout_dispatcher import CheckoutAdapter,Checkout
 from app.modules.m24_billing.service import PLANS
 
 @pytest.fixture(params=['sqlite','postgres'])
-def env(tmp_path,request):
+def env(tmp_path,request,m24_postgres_schema):
     if request.param=='postgres':
         import pgserver
         pg=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop')
         engine=create_engine(pg.get_uri().replace('postgresql://','postgresql+psycopg://'))
     else:engine=create_engine(f'sqlite:///{tmp_path}/billing.db',connect_args={'check_same_thread':False})
+    m24_postgres_schema(engine)
     Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False)
     svc=Service(session_factory=sessions)
     payload={'tenant_id':'t1','plan':PLANS['pro'].model_dump(),'success_url':'https://example.test/s','cancel_url':'https://example.test/c','provider':'stripe','mode':'subscription'}

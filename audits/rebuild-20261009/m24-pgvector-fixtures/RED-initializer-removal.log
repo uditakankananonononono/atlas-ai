@@ -1,0 +1,277 @@
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_fixture_vector_initialization_idempotent_and_metadata_complete[postgres] _
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f771f9ed6a0>
+dialect = <sqlalchemy.dialects.postgresql.psycopg.PGDialect_psycopg object at 0x7f771f99ba70>
+context = <sqlalchemy.dialects.postgresql.psycopg.PGExecutionContext_psycopg object at 0x7f771e337380>
+statement = <sqlalchemy.dialects.postgresql.base.PGDDLCompiler object at 0x7f771e336090>
+parameters = [immutabledict({})]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: in do_execute
+    cursor.execute(statement, parameters)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Cursor [closed] [BAD] at 0x7f771ef93d10>
+query = '\nCREATE TABLE memory_embeddings (\n\tid VARCHAR(36) NOT NULL, \n\ttenant_id VARCHAR(120) NOT NULL, \n\tnamespace VAR...ttext TEXT NOT NULL, \n\tmetadata_json JSON NOT NULL, \n\tembedding VECTOR(1024) NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+params = immutabledict({})
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool | None = None,
+    ) -> Self:
+        """
+        Execute a query or command to the database.
+        """
+        try:
+            with self._conn.lock:
+                self._conn.wait(
+                    self._execute_gen(query, params, prepare=prepare, binary=binary)
+                )
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           psycopg.errors.UndefinedObject: type "vector" does not exist
+E           LINE 8:  embedding VECTOR(1024) NOT NULL, 
+E                              ^
+
+../atlas-memo3-venv/lib/python3.12/site-packages/psycopg/cursor.py:117: UndefinedObject
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-476/test_fixture_vector_initializa1')
+database = 'postgres'
+m24_postgres_schema = <function m24_postgres_schema.<locals>.initialize at 0x7f771f94d1c0>
+
+    @pytest.mark.parametrize('database', ['sqlite', 'postgres'])
+    def test_fixture_vector_initialization_idempotent_and_metadata_complete(tmp_path, database, m24_postgres_schema):
+        if database == 'postgres':
+            import pgserver
+            pg = pgserver.get_server(tmp_path / 'pg', cleanup_mode='stop')
+            uri = pg.get_uri().replace('postgresql://', 'postgresql+psycopg://')
+        else:
+            uri = f'sqlite:///{tmp_path}/fixture.db'
+        engine = create_engine(uri)
+        try:
+            if database == 'postgres':
+                with engine.begin() as db:
+                    assert db.scalar(text("SELECT count(*) FROM pg_extension WHERE extname='vector'")) == 0
+            m24_postgres_schema(engine)
+            m24_postgres_schema(engine)
+>           Base.metadata.create_all(engine)
+
+tests/modules/test_m24_pgvector_fixture.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:6698: in create_all
+    bind._run_ddl_visitor(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:3238: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2439: in _run_ddl_visitor
+    ).traverse_single(element)
+      ^^^^^^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/visitors.py:650: in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py:1472: in visit_metadata
+    self.traverse_single(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/visitors.py:650: in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py:1515: in visit_table
+    table_create_ddl._invoke_with(self.connection)
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py:337: in _invoke_with
+    return bind.execute(self)
+           ^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1451: in execute
+    return meth(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/ddl.py:203: in _execute_on_connection
+    return connection._execute_ddl(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1560: in _execute_ddl
+    ret = self._execute_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1825: in _execute_context
+    return self._exec_single_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1965: in _exec_single_context
+    self._handle_dbapi_exception(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: in _exec_single_context
+    self.dialect.do_execute(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: in do_execute
+    cursor.execute(statement, parameters)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Cursor [closed] [BAD] at 0x7f771ef93d10>
+query = '\nCREATE TABLE memory_embeddings (\n\tid VARCHAR(36) NOT NULL, \n\ttenant_id VARCHAR(120) NOT NULL, \n\tnamespace VAR...ttext TEXT NOT NULL, \n\tmetadata_json JSON NOT NULL, \n\tembedding VECTOR(1024) NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+params = immutabledict({})
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool | None = None,
+    ) -> Self:
+        """
+        Execute a query or command to the database.
+        """
+        try:
+            with self._conn.lock:
+                self._conn.wait(
+                    self._execute_gen(query, params, prepare=prepare, binary=binary)
+                )
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedObject) type "vector" does not exist
+E           LINE 8:  embedding VECTOR(1024) NOT NULL, 
+E                              ^
+E           [SQL: 
+E           CREATE TABLE memory_embeddings (
+E           	id VARCHAR(36) NOT NULL, 
+E           	tenant_id VARCHAR(120) NOT NULL, 
+E           	namespace VARCHAR(120) NOT NULL, 
+E           	text TEXT NOT NULL, 
+E           	metadata_json JSON NOT NULL, 
+E           	embedding VECTOR(1024) NOT NULL, 
+E           	PRIMARY KEY (id)
+E           )
+E           
+E           ]
+E           (Background on this error at: https://sqlalche.me/e/21/f405)
+
+../atlas-memo3-venv/lib/python3.12/site-packages/psycopg/cursor.py:117: ProgrammingError
+=============================== warnings summary ===============================
+tests/modules/test_m24_pgvector_fixture.py::test_fixture_vector_initialization_idempotent_and_metadata_complete[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_pgvector_fixture.py::test_fixture_vector_initialization_idempotent_and_metadata_complete[postgres]
+1 failed, 1 passed, 1 warning in 1.34s

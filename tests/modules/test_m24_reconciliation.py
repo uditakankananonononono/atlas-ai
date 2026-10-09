@@ -14,12 +14,12 @@ from app.modules.m24_billing.service import PLANS
 from app.modules.m24_billing.reconciliation import ReconciliationRepository,PositiveLookupAdapter,LookupEvidenceRow
 
 @pytest.fixture(params=['sqlite','postgres'])
-def env(tmp_path,request):
+def env(tmp_path,request,m24_postgres_schema):
     if request.param=='postgres':
         import pgserver
         pg=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop');uri=pg.get_uri().replace('postgresql://','postgresql+psycopg://')
     else:uri=f'sqlite:///{tmp_path}/reconcile.db'
-    engine=create_engine(uri);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False);svc=Service(session_factory=sessions)
+    engine=create_engine(uri);m24_postgres_schema(engine);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False);svc=Service(session_factory=sessions)
     a=svc.submit(module_id=24,action_type='create_subscription_checkout',user_id='t1',payload={'tenant_id':'t1','provider':'stripe','mode':'subscription','plan':PLANS['pro'].model_dump(),'success_url':'https://example.test/s','cancel_url':'https://example.test/c'})
     svc.decide(a['id'],ApprovalStatus.APPROVED,'original-owner')
     repo=CheckoutRepository(svc);op=repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
