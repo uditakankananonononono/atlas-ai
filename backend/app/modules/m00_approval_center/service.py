@@ -583,13 +583,37 @@ def _install_extensions() -> None:
                         raise ApprovalConflictError("idempotency key belongs to another request")
                     return {"decision": "review", "allowed": False, "reason": "existing review",
                             "policy_id": policy["id"] if policy else None, "approval": self.get(idem.approval_id)}
-        approval = self.submit(module_id=module_id, action_type=action_type, payload=payload,
-                               user_id=user_id,
-                               ttl_seconds=policy["review_ttl_seconds"] if policy else None)
         if idempotency_key:
-            with self._sessions.begin() as db:
-                db.add(ApprovalIdempotencyRow(key=idempotency_key, request_hash=digest,
-                                               approval_id=approval["id"], created_at=self._clock()))
+            from sqlalchemy.exc import IntegrityError
+            if module_id not in BY_ID:
+                raise ValueError(f"unknown module id: {module_id}")
+            now = self._clock()
+            ttl = policy["review_ttl_seconds"] if policy else None
+            row = ApprovalRequestRow(id=str(uuid4()), user_id=user_id, module_id=module_id,
+                action_type=action_type, payload=payload, status=ApprovalStatus.PENDING.value,
+                created_at=now, expires_at=now+timedelta(seconds=ttl) if ttl else None)
+            try:
+                with self._sessions.begin() as db:
+                    db.add(row)
+                    db.add(ApprovalEventRow(approval_id=row.id, event="created", actor=None, at=now))
+                    db.add(ApprovalIdempotencyRow(key=idempotency_key, request_hash=digest,
+                                                 approval_id=row.id, created_at=now))
+            except IntegrityError:
+                with self._sessions() as db:
+                    winner = db.get(ApprovalIdempotencyRow, idempotency_key)
+                    if winner is None:
+                        raise
+                    if winner.request_hash != digest:
+                        raise ApprovalConflictError("idempotency key belongs to another request") from None
+                    winner_id = winner.approval_id
+                return {"decision": "review", "allowed": False, "reason": "existing review",
+                        "policy_id": policy["id"] if policy else None, "approval": self.get(winner_id)}
+            approval = _view(row)
+            self._broadcaster.publish({"type": "approval_request", "approval": _jsonable(approval)})
+        else:
+            approval = self.submit(module_id=module_id, action_type=action_type, payload=payload,
+                                   user_id=user_id,
+                                   ttl_seconds=policy["review_ttl_seconds"] if policy else None)
         return {"decision": "review", "allowed": False, "reason": "human review required",
                 "policy_id": policy["id"] if policy else None, "approval": approval}
 
