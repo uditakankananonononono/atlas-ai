@@ -1,0 +1,24 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_cancellation_preparation_fences_existing_draft_before_item[sqlite] ____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f0bb5f16c30>, sessionmaker(class_='Session', bind=Engin...reated_at': datetime.datetime(2026, 10, 9, 13, 28, 11, 221200, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+
+    def test_cancellation_preparation_fences_existing_draft_before_item(env):
+        svc,sessions,repo,a=env
+        invoice=svc.submit(module_id=24,action_type='issue_invoice',user_id='t1',payload={'tenant_id':'t1','provider':'stripe','effect':'create_draft_invoice','customer_id':'cus_fixture','description':'draft','amount_cents':1234,'currency':'usd'})
+        svc.decide(invoice['id'],ApprovalStatus.APPROVED,'owner');irepo=InvoiceRepository(svc)
+        op=irepo.prepare(invoice['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker')
+        with sessions.begin() as db:
+            row=db.get(InvoiceStepRow,op['id']+':draft-invoice');row.state='succeeded';row.result={'id':'in_fixture','object':'invoice','customer':'cus_fixture','currency':'usd','livemode':False,'invoice':None,'amount':0}
+        prepare(env)
+>       assert irepo.get(op['id'],'t1')['state']=='outcome_unknown'
+E       AssertionError: assert 'prepared' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + prepared
+
+tests/modules/test_m24_cancellation.py:86: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_cancellation.py::test_cancellation_preparation_fences_existing_draft_before_item[sqlite]
+1 failed in 0.34s

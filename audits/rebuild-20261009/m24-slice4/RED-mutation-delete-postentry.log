@@ -1,0 +1,19 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_accepted_delete_timeout_unknown_never_repeated[sqlite] __________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f045d8b25d0>, sessionmaker(class_='Session', bind=Engin...reated_at': datetime.datetime(2026, 10, 9, 13, 28, 13, 273387, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f045d8b16d0>
+
+    def test_accepted_delete_timeout_unknown_never_repeated(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);mock=Mock(timeout=True)
+>       assert dispatch(env,op,mock)['state']=='outcome_unknown'
+E       AssertionError: assert 'failed_before_dispatch' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + failed_before_dispatch
+
+tests/modules/test_m24_cancellation.py:61: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_cancellation.py::test_accepted_delete_timeout_unknown_never_repeated[sqlite]
+1 failed in 0.34s

@@ -1,0 +1,216 @@
+.F...................................................................... [ 94%]
+....                                                                     [100%]
+=================================== FAILURES ===================================
+________ test_draft_first_exact_snapshot_and_one_atomic_permit[sqlite] _________
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f1b76bcf4a0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f1b76d0f1a0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f1b76a37320>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f1b76a35df0>
+parameters = [('t1', 'cus_fixture', 'cancelled_before_dispatch')]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f1b76d0f1a0>
+cursor = <sqlite3.Cursor object at 0x7f1b76c09fc0>
+statement = 'SELECT m24_provider_operations.id \nFROM m24_provider_operations JOIN m24_cancellation_snapshots ON m24_cancellation_...rovider_operations.tenant_id = ? AND m24_cancellation_snapshots.customer_id = ? AND m24_provider_operations.state != ?'
+parameters = ('t1', 'cus_fixture', 'cancelled_before_dispatch')
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f1b76a37320>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such table: m24_cancellation_snapshots
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+env = (<app.modules.m24_billing.invoice_dispatcher.InvoiceRepository object at 0x7f1b76fc3500>, sessionmaker(class_='Session...reated_at': datetime.datetime(2026, 10, 9, 13, 15, 31, 656489, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+
+    def test_draft_first_exact_snapshot_and_one_atomic_permit(env):
+>       op=prepare(env);steps=env[0].steps(op['id'],'t1')
+           ^^^^^^^^^^^^
+
+tests/modules/test_m24_invoice_dispatcher.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_invoice_dispatcher.py:31: in prepare
+    def prepare(env):return env[0].prepare(env[2]['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker')
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/invoice_dispatcher.py:111: in prepare
+    result=super().prepare(*args,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/write_ahead.py:129: in prepare
+    self._add_snapshot(db,operation,approval)
+backend/app/modules/m24_billing/invoice_dispatcher.py:105: in _add_snapshot
+    validate_parent(db,op,check_cancellation=True)
+backend/app/modules/m24_billing/invoice_dispatcher.py:65: in validate_parent
+    cancelled=db.scalar(select(wa.OperationRow.id).join(CancellationSnapshotRow,CancellationSnapshotRow.operation_id==wa.OperationRow.id).where(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2534: in scalar
+    return self._execute_internal(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2363: in _execute_internal
+    compile_state_cls.orm_execute_statement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:316: in orm_execute_statement
+    result = conn.execute(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1451: in execute
+    return meth(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1671: in _execute_clauseelement
+    ret = self._execute_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1825: in _execute_context
+    return self._exec_single_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1965: in _exec_single_context
+    self._handle_dbapi_exception(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f1b76d0f1a0>
+cursor = <sqlite3.Cursor object at 0x7f1b76c09fc0>
+statement = 'SELECT m24_provider_operations.id \nFROM m24_provider_operations JOIN m24_cancellation_snapshots ON m24_cancellation_...rovider_operations.tenant_id = ? AND m24_cancellation_snapshots.customer_id = ? AND m24_provider_operations.state != ?'
+parameters = ('t1', 'cus_fixture', 'cancelled_before_dispatch')
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f1b76a37320>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: m24_cancellation_snapshots
+E       [SQL: SELECT m24_provider_operations.id 
+E       FROM m24_provider_operations JOIN m24_cancellation_snapshots ON m24_cancellation_snapshots.operation_id = m24_provider_operations.id 
+E       WHERE m24_provider_operations.tenant_id = ? AND m24_cancellation_snapshots.customer_id = ? AND m24_provider_operations.state != ?]
+E       [parameters: ('t1', 'cus_fixture', 'cancelled_before_dispatch')]
+E       (Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: OperationalError
+=============================== warnings summary ===============================
+tests/modules/test_m24_invoice_dispatcher.py::test_draft_first_exact_snapshot_and_one_atomic_permit[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_invoice_dispatcher.py::test_draft_first_exact_snapshot_and_one_atomic_permit[sqlite]
+1 failed, 75 passed, 2 deselected, 1 warning in 62.13s (0:01:02)

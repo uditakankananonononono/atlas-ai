@@ -1,0 +1,38 @@
+FF..                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_local_before_state_drift_alone_refuses_without_permit[sqlite-status-paused] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fd739fd7ec0>, sessionmaker(class_='Session', bind=Engin...reated_at': datetime.datetime(2026, 10, 9, 13, 53, 54, 863593, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+field = 'status', value = 'paused'
+
+    @pytest.mark.parametrize('field,value',[('status','paused'),('cancel_at_period_end',True)])
+    def test_local_before_state_drift_alone_refuses_without_permit(env,field,value):
+        with env[1].begin() as db:setattr(db.get(TenantBillingRow,'t1'),field,value)
+>       with pytest.raises(wa.DispatchRefused,match='before state drift'):prepare(env)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_cancellation.py:242: Failed
+_ test_local_before_state_drift_alone_refuses_without_permit[postgres-status-paused] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fd73a315280>, sessionmaker(class_='Session', bind=Engin...reated_at': datetime.datetime(2026, 10, 9, 13, 53, 55, 789005, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+field = 'status', value = 'paused'
+
+    @pytest.mark.parametrize('field,value',[('status','paused'),('cancel_at_period_end',True)])
+    def test_local_before_state_drift_alone_refuses_without_permit(env,field,value):
+        with env[1].begin() as db:setattr(db.get(TenantBillingRow,'t1'),field,value)
+>       with pytest.raises(wa.DispatchRefused,match='before state drift'):prepare(env)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_cancellation.py:242: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_cancellation.py::test_local_before_state_drift_alone_refuses_without_permit[postgres-status-paused]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_cancellation.py::test_local_before_state_drift_alone_refuses_without_permit[sqlite-status-paused]
+FAILED tests/modules/test_m24_cancellation.py::test_local_before_state_drift_alone_refuses_without_permit[postgres-status-paused]
+2 failed, 2 passed, 64 deselected, 1 warning in 2.22s
