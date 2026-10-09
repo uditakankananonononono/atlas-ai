@@ -1,0 +1,93 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/claire-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-ai
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, platformdirs-4.12.4, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 67 items
+
+tests/modules/test_m21_runtime_postgres_crash.py::test_postgres_crash_after_effect_before_receipt_no_duplicate[False] ACTUAL_PG_VERSION: PostgreSQL 16.2 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 10.2.1 20210130 (Red Hat 10.2.1-11), 64-bit
+MIGRATION_TARGET: 20261008_m21_runtime_revoke; create_all=False
+PASSED
+tests/modules/test_m21_runtime_postgres_crash.py::test_postgres_crash_after_effect_before_receipt_no_duplicate[True] PASSED
+tests/modules/test_m21_runtime_postgres_seam.py::test_real_pg_migration_current_claire_columns_and_unique_effect_key ACTUAL_PG_VERSION: PostgreSQL 16.2 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 10.2.1 20210130 (Red Hat 10.2.1-11), 64-bit
+MIGRATION_TARGET: 20261008_m21_runtime_revoke; create_all=False
+PASSED
+tests/modules/test_m21_runtime_postgres_seam.py::test_real_pg_concurrent_claim_and_expired_token_fenced_after_reopen PASSED
+tests/modules/test_m21_runtime_postgres_seam.py::test_real_pg_worker_real_tool_receipt_survives_separate_store PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_crash_after_effect_then_retry_never_runs_it_twice PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_direct_redispatch_of_an_unknown_effect_is_refused PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_two_store_handles_racing_on_one_call_get_one_intent PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_stale_worker_cannot_write_intent_or_run PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_replaced_lease_token_cannot_write_intent PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_committed_call_replays_stored_receipt_and_runs_nothing PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_timed_out_write_is_unknown_not_failed_and_goal_is_not_completed PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_consumed_approval_is_not_refunded_after_unknown PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_mutating_idempotency_declarations_after_registration_is_refused PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_non_read_tool_without_declared_idempotency_or_journal_cannot_run PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_idempotency_declarations_must_be_exact_bool[1] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_idempotency_declarations_must_be_exact_bool[0] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_idempotency_declarations_must_be_exact_bool[true] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_idempotency_declarations_must_be_exact_bool[bad3] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_idempotency_declarations_must_be_exact_bool[1.0] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_validation_failure_never_reached_the_tool_and_is_retriable PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_identical_read_calls_are_not_journaled PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_idempotent_tool_is_redispatched_with_the_same_key_and_the_world_dedupes PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_reconcile_resolves_unknown_effects_at_the_next_claim[committed-committed-0] PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_reconcile_resolves_unknown_effects_at_the_next_claim[absent-absent-0] PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_reconcile_resolves_unknown_effects_at_the_next_claim[unknown-intent-0] PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_reconcile_exceptions_are_contained_to_named_classes_and_leave_the_effect_blocking PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_resolve_route_committed_means_never_rerun PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_resolve_route_absent_allows_a_retry PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_resolve_route_is_owner_scoped_and_state_checked PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_effects_migration_matches_model_refuses_wrong_shape_and_downgrade_guards_data PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_replacement_between_fence_and_journal_write_cannot_write_intent[insert] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_replacement_between_fence_and_journal_write_cannot_write_intent[takeover_update] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_concurrent_commit_between_classification_and_reservation_replays_without_consuming PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_pending_effect_refusal_consumes_no_approval PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_missing_approval_leaves_no_intent_and_consumes_nothing_partial PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_lease_replaced_before_the_reservation_write_consumes_no_approval[insert] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_lease_replaced_before_the_reservation_write_consumes_no_approval[takeover_update] PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_concurrent_transition_before_takeover_update_neither_reserves_nor_consumes PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_resolver_identity_is_recorded_and_visible PASSED
+tests/modules/test_m21_runtime_effects.py::test_PROTECTION_store_refuses_self_resolution_and_blank_resolver PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_self_resolution_with_escape_hatch_is_tagged PASSED
+tests/modules/test_m21_runtime_effects.py::test_NEW_separation_migration_adds_resolved_by_and_downgrade_guards_data PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_crash_mid_step_never_reruns_the_approved_effect PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_owner_resolves_committed_and_resume_replays_without_rerun PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_owner_resolves_absent_and_resume_runs_once PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_resolve_is_tenant_scoped_and_only_for_unresolved_effects PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_live_intent_cannot_be_resolved_without_confirmation_and_age PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_unknown_after_reported_failure_resolves_without_the_live_fence PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_fingerprint_change_on_a_journaled_key_conflicts PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_journal_row_is_tenant_scoped_and_stores_no_parameters PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_failure_after_body_begins_is_unknown_and_never_reruns PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_not_executed_is_abandoned_and_retry_may_run PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_durable_orchestrator_refuses_a_volatile_store PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_persistence_error_after_body_keeps_the_intent_and_blocks_rerun[mark_unknown] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_persistence_error_after_body_keeps_the_intent_and_blocks_rerun[complete] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_intent_min_age_must_be_a_finite_non_negative_number[nan] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_intent_min_age_must_be_a_finite_non_negative_number[inf] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_intent_min_age_must_be_a_finite_non_negative_number[-1.0] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_intent_min_age_must_be_a_finite_non_negative_number[600] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_intent_min_age_must_be_a_finite_non_negative_number[True] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_confirmation_must_be_a_strict_bool[1] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_confirmation_must_be_a_strict_bool[yes] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_confirmation_must_be_a_strict_bool[false] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_confirmation_must_be_a_strict_bool[truthy3] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_confirmation_must_be_a_strict_bool[truthy4] PASSED
+tests/modules/test_m21_durable_effect_journal.py::test_resolver_id_is_required_and_audited PASSED
+
+=============================== warnings summary ===============================
+../claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459
+  /tmp/claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+../claire-venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /tmp/claire-venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+---------------- generated xml file: /tmp/claire-crash-fix.xml -----------------
+================== 67 passed, 2 warnings in 65.61s (0:01:05) ===================
