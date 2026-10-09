@@ -51,3 +51,23 @@ def test_timeout_and_cancel(monkeypatch):
         await asyncio.sleep(.01);task.cancel()
         with pytest.raises(asyncio.CancelledError):await task
     asyncio.run(cancel())
+
+
+def test_actual_response_scrub_and_cap_protect_secret_shaped_token(monkeypatch):
+    token='sk-'+('A'*48)
+    class Model:
+        async def decide(self,m):return AgentDecision(final='api_key='+token+' '+('x'*1500))
+    monkeypatch.setattr(LocalSharedModel,'select',lambda *a:Model())
+    result=asyncio.run(check_local_model('hermes','http://localhost:8000/v1','m'))
+    assert result.status=='protocol_answered'
+    assert len(result.response)<=1000 and token not in result.response
+    assert len(result.response_sha256)==64
+
+
+@pytest.mark.parametrize('text',['','   ','\n\t'])
+def test_empty_or_whitespace_final_fails_closed(monkeypatch,text):
+    class Model:
+        async def decide(self,m):return AgentDecision(final=text)
+    monkeypatch.setattr(LocalSharedModel,'select',lambda *a:Model())
+    result=asyncio.run(check_local_model('hermes','http://localhost:8000/v1','m'))
+    assert result.status=='invalid_output' and result.response is None and result.response_sha256 is None

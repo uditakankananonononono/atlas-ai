@@ -18,3 +18,7 @@ available during implementation. The script is a canary entrypoint, not certific
 Waiting is bounded5 seconds plus cancellation grace; a synchronous provider thread
 may outlive cancellation, including asyncio.run's threadpool shutdown wait. It is not
 an OS-isolated hard deadline or production health service.
+
+Empty/whitespace-only final text is invalid_output. HTTP503, HTML/invalid provider
+JSON and empty choices map to unavailable: a reachable server speaking the wrong
+provider protocol is treated as unavailable under this canary's semantics.

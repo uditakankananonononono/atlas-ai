@@ -42,7 +42,7 @@ async def check_local_model(provider: str, url: str, model: str, *, timeout_seco
         return ModelReadiness("unavailable", provider, scrub_text(model)[:200])
     except InvalidModelOutput:
         return ModelReadiness("invalid_output", provider, scrub_text(model)[:200])
-    if decision.final is None:
+    if decision.final is None or not decision.final.strip():
         return ModelReadiness("invalid_output", provider, scrub_text(model)[:200])
     digest = hashlib.sha256(decision.model_dump_json().encode()).hexdigest()
     return ModelReadiness("protocol_answered", provider, scrub_text(model)[:200],
