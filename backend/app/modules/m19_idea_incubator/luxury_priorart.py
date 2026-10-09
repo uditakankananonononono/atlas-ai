@@ -11,6 +11,7 @@ An unreachable index returns 'unchecked', never 'no-prior-art-found'.
 """
 from __future__ import annotations
 import asyncio, re
+from urllib.parse import quote
 from typing import Awaitable, Callable
 import httpx
 from .luxury_ideation import tokens
@@ -24,7 +25,7 @@ async def wikipedia_fetch(query: str) -> list[dict]:
         r = await c.get("https://en.wikipedia.org/w/api.php", params={"action": "query", "list": "search", "srsearch": query, "format": "json", "srlimit": 8})
         r.raise_for_status()
     return [{"title": h["title"], "snippet": re.sub("<[^>]+>", "", h.get("snippet", "")),
-             "url": "https://en.wikipedia.org/wiki/" + h["title"].replace(" ", "_")} for h in r.json()["query"]["search"]]
+             "url": "https://en.wikipedia.org/wiki/" + quote(h["title"].replace(" ", "_"))} for h in r.json()["query"]["search"]]
 
 LEVER_QUERY = {
  "provenance": "digital product passport luxury authenticity provenance",
@@ -98,13 +99,12 @@ async def combined_fetch(query: str) -> list[dict]:
 async def check_idea(idea: dict, sector: str, fetch: Fetcher = combined_fetch) -> dict:
     q = query_for(idea, sector)
     idea_terms = (tokens(q) | tokens(idea["mechanism"])) - _STOP
-    brand_terms = set()  # brand name must not count as overlap
     try:
         hits = await fetch(q)
     except Exception as error:
         return {"idea_id": idea["idea_id"], "label": "unchecked", "query": q, "hits": [], "error": type(error).__name__}
     levers = idea.get("levers", [])
-    scored = sorted(({**h, "overlap": anchor_score(levers, h["title"] + " " + h["snippet"]) if levers else overlap(idea_terms - brand_terms, h["title"] + " " + h["snippet"])} for h in hits),
+    scored = sorted(({**h, "overlap": anchor_score(levers, h["title"] + " " + h["snippet"]) if levers else overlap(idea_terms, h["title"] + " " + h["snippet"])} for h in hits),
                     key=lambda h: -h["overlap"])
     top = scored[0]["overlap"] if scored else 0.0
     words = SECTOR_WORDS.get(sector, SECTOR_WORDS["other"])
@@ -122,4 +122,6 @@ async def check_idea(idea: dict, sector: str, fetch: Fetcher = combined_fetch) -
             "caveat": "searched one public index; absence of hits is not proof of novelty"}
 
 async def check_ideas(ideas: list[dict], sector: str, fetch: Fetcher = combined_fetch) -> list[dict]:
-    return list(await asyncio.gather(*(check_idea(i, sector, fetch) for i in ideas)))
+    res = await asyncio.gather(*(check_idea(i, sector, fetch) for i in ideas), return_exceptions=True)
+    return [r if not isinstance(r, BaseException) else {"idea_id": i.get("idea_id", "?"), "label": "unchecked", "query": "", "hits": [], "error": type(r).__name__}
+            for i, r in zip(ideas, res)]

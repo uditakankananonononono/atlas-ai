@@ -5,6 +5,7 @@ unittest file into a directory, then RUNS the tests in a subprocess and returns
 the real exit code and counts. It makes no network calls and never contacts a
 brand. All eight ideation levers have a component. A lever without one is listed as
 unsupported, not stubbed.
+NOTE: out_dir must be a dedicated directory; existing *.py files and __pycache__ in it are deleted before a build.
 Limit: these are working reference components with synthetic fixtures, not a
 production integration with any brand's systems.
 """
@@ -197,6 +198,10 @@ def build_prototype(idea: dict, out_dir: str | Path, timeout: int = 60) -> dict:
     """Write components for the idea's levers, run their tests, return a receipt."""
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     built, unsupported = [], []
+    import shutil
+    shutil.rmtree(out / '__pycache__', ignore_errors=True)  # no stale artifacts may contaminate this run
+    for stale in out.glob('*.py'):
+        stale.unlink()
     for lever in idea["levers"]:
         if lever not in COMPONENTS or not _SAFE.match(lever):
             unsupported.append(lever); continue

@@ -1,0 +1,102 @@
+I’m judging the code shown, not assuming the omitted luxury_ideation module, VentureBrief schema, injected fetchers, or tests behave correctly. REAL means the implementation performs its stated narrow task, not that its conclusions are scientifically or commercially valid.
+1. luxury_priorart.py
+Function / class / constant
+Verdict
+Specific evidence
+Fetcher
+REAL
+Defines an async callable returning list[dict]. This is only a type alias; it does not validate fetcher output at runtime.
+wikipedia_fetch()
+PARTIAL
+Makes an actual Wikipedia API request, checks HTTP status and extracts titles/snippets. It assumes the response contains query.search, does not validate result schemas, and constructs article URLs by replacing spaces only, which mishandles some titles.
+LEVER_QUERY
+PARTIAL
+Supplies real search phrases for eight recognized levers. The mapping is manually curated, and unsupported levers silently contribute nothing to the query.
+SECTOR_WORDS
+PARTIAL
+Provides basic sector keyword sets. These are crude lexical filters, not semantic sector classification; many relevant results will be discarded and irrelevant results retained.
+query_for()
+PARTIAL
+Joins mapped lever queries with the sector string. It neither validates the sector nor guarantees the query expresses the idea’s actual mechanism.
+ANCHORS
+PARTIAL
+Encodes two keyword groups per recognized lever. These are hand-selected substring patterns, not validated concept definitions; some anchors are broad enough to match unrelated uses.
+_has()
+REAL
+Performs case-insensitive substring matching. It works as written, but does not perform stemming, token-boundary matching, or semantic matching despite the anchor comments referring to stems.
+anchor_score()
+PARTIAL
+Implements its documented arithmetic: all first groups must match before the score can reach 0.5. However, it awards a strong score based on keyword co-occurrence, not proof that two ideas use the same mechanism.
+overlap()
+PARTIAL
+Computes the fraction of idea terms present in tokenized text. Its result depends entirely on the omitted tokens() implementation and the quality of the query-derived terms; common vocabulary can inflate overlap.
+news_fetch()
+PARTIAL
+Performs a real RSS request and delegates parsing. But " ".join(query.split()[:5]) throws away most of the query, potentially removing the distinguishing mechanism, and correctness depends on the unshown RSS parser.
+combined_fetch()
+REAL
+Runs both fetchers concurrently, retains results from whichever succeeds, and raises if both fail. It does not deduplicate hits, normalize evidence, or indicate which index produced each result.
+check_idea()
+PARTIAL
+Actually fetches, scores, filters, and labels hits, and returns unchecked on fetch exceptions. Its novelty labels are driven by brittle keyword thresholds, and malformed hits or missing idea fields can still crash it.
+check_ideas()
+REAL
+Concurrently invokes check_idea() for each idea and returns results in input order. It has no concurrency limit, so large batches can overwhelm external services.
+2. luxury_pitch.py
+Function / class
+Verdict
+Specific evidence
+build_pitch_assets()
+PARTIAL
+Generates actual Markdown, HTML, and CSV strings, checks that evidence exists, and rejects citations to unknown source IDs. But it does not verify that quotes match their sources, that evidence supports the mechanism, or that prototype claims are independently substantiated; its HTML omits the scorecard and source bibliography entirely.
+VentureBrief is imported from .luxury_venture, whose schema is not shown. Its field definitions and validation cannot be audited here. The same limitation applies to tokens(), luxury_sources.parse_rss(), and the injected fetchers.
+Top 5 concrete weaknesses
+1. The prior-art verdict does not test the actual mechanism.
+In check_idea():
+Python
+Run
+anchor_score(
+levers,
+h["title"] + " " + h["snippet"]
+)
+When recognized levers exist, the scoring path ignores idea["mechanism"] and uses only generic lever anchors. Two fundamentally different implementations of the same broad concept can receive identical scores. Conversely, genuinely equivalent mechanisms described using different vocabulary can score zero.
+2. The sector filter can suppress relevant prior art.
+Python
+Run
+on_topic = [h for h in scored if topical(h)]
+A directly relevant patent or product disclosure can be discarded because its title and snippet lack two sector keywords. The default Wikipedia search is also not a patent database, and the Google News fetcher truncates the query to five words. The result is a narrow web search, not comprehensive prior-art coverage.
+3. The confidence labels are arbitrary and unvalidated.
+Python
+Run
+STRONG, WEAK = 1.0, 0.5
+done-before requires every recognized lever's concept and context groups to match; possible-prior-art requires every concept group to match but permits missing context groups. No benchmark, labeled evaluation set, precision/recall measurement, or calibration evidence is shown. These labels should not be interpreted as validated assessments of novelty.
+4. The pitch generator does not establish evidence traceability.
+Python
+Run
+cited = sorted({
+sid for e in idea["evidence"]
+for sid in e["source_ids"]
+})
+This proves only that referenced IDs exist in brief.sources. It does not check whether e["quote"] appears in the cited source, whether matched_terms are genuinely present, or whether the source finding supports the claim. The code assembles citations; it does not validate them.
+5. The generated assets are inconsistent and insufficiently validated.
+The HTML output contains the problem, idea, evidence quotes, prior-art note, and prototype note—but omits the Markdown's source bibliography, scorecard, and claim limits. Meanwhile, prototype["built"] and prototype["all_tests_passed"] are trusted without validating the receipt or its provenance. A dictionary claiming all tests passed is not proof that tests ran or that the prototype works.
+Additional bugs and caveats
+Unused variable: brand_terms = set() never removes anything. The comment about excluding brand names is misleading; brand names remain in the term set if tokens() includes them.
+Potential batch failure: check_ideas() uses asyncio.gather() without exception handling around each task. A malformed idea can cause the whole batch call to fail, despite fetch errors being handled inside check_idea().
+Weak URL construction: Wikipedia titles are not properly URL-encoded. Replacing spaces with underscores does not correctly handle all title characters.
+Markdown injection / formatting corruption: Evidence quotes, mechanisms, source titles, and URLs are inserted into Markdown without escaping Markdown syntax. HTML values are escaped, which is good, but the two formats can render materially different content.
+Unchecked input contracts: Required fields such as idea_id, mechanism, evidence, scores, and source_ids are indexed directly. Missing or incorrectly typed fields can produce runtime failures.
+No independent proof of safety: external_action_started: False is a returned constant, not evidence that no external action occurred elsewhere. The function itself does not send anything, but the broader claim depends on the surrounding system.
+Final assessment
+Component
+Verdict
+What is actually established
+luxury_priorart.py
+PARTIAL
+Search orchestration and heuristic scoring exist; reliable novelty assessment is unproven.
+luxury_pitch.py
+PARTIAL
+Three draft formats are generated; evidence validity and prototype claims are not verified.
+Bottom line: Neither file is merely a fake stub. Both perform real work. But the prior-art module risks presenting keyword coincidences as meaningful novelty evidence, while the pitch builder risks presenting unverified source and test claims in polished deliverables. The implementation demonstrates automation—not the reliability its surrounding claims might imply.
+ChatGPT can make mistakes. Check important info.
+Think

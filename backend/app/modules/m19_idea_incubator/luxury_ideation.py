@@ -41,13 +41,17 @@ def _match(brief: VentureBrief) -> dict[str, list[dict]]:
     out: dict[str, list[dict]] = {}
     for sig in brief.signals:
         toks = tokens(sig.statement)
+        passages = []
         for sid in sig.source_ids:
-            if sid in src: toks |= tokens(src[sid].finding)
+            if sid in src:
+                toks |= tokens(src[sid].finding)
+                passages.append({"source_id": sid, "finding": src[sid].finding, "url": src[sid].url})
         for name, lever in LEVERS.items():
             hit = toks & lever["kw"]
             if hit:
                 out.setdefault(name, []).append({"signal_id": sig.signal_id, "importance": sig.importance,
-                    "matched_terms": sorted(hit), "statement": sig.statement, "source_ids": sig.source_ids})
+                    "matched_terms": sorted(hit), "statement": sig.statement, "source_ids": sig.source_ids,
+                    "source_passages": [q for q in passages if tokens(q["finding"]) & lever["kw"]]})
     return out
 
 def _readiness(brief: VentureBrief, needs: set[str]) -> tuple[float, list[str]]:
@@ -62,14 +66,14 @@ def generate_ideas(brief: VentureBrief, max_ideas: int = 8) -> dict:
     ideas = []
     def make(key: str, parts: list[str]) -> dict:
         ev = [e for p in parts for e in matches[p]]
-        strength = sum(e["importance"] * len(e["matched_terms"]) for e in ev)
+        strength = sum(e["importance"] * min(len(e["matched_terms"]), 3) for e in ev)  # capped: keyword stuffing cannot outrank importance
         needs = set().union(*(LEVERS[p]["needs"] for p in parts))
         ready, cap_refs = _readiness(brief, needs)
         mech = " combined with ".join(LEVERS[p]["mechanism"].format(brand=brief.brand_or_segment) for p in parts)
         return {"idea_id": key, "levers": parts, "mechanism": mech,
                 "customer_job": brief.customer_job,
                 "evidence": [{"signal_id": e["signal_id"], "source_ids": e["source_ids"], "matched_terms": e["matched_terms"],
-                              "quote": e["statement"]} for e in ev],
+                              "quote": e["statement"], "source_passages": e["source_passages"]} for e in ev],
                 "capability_refs": cap_refs, "capability_readiness": ready,
                 "scores": {"evidence_strength": round(strength, 3), "readiness": ready,
                            "combination_bonus": 0.15 if len(parts) > 1 else 0.0}}

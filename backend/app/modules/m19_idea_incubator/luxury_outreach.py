@@ -11,10 +11,13 @@ from __future__ import annotations
 import threading
 from typing import Any, Protocol
 
-from app.modules.m00_approval_center.service import ApprovalConflictError, Service, default_service
+from app.modules.m00_approval_center.service import ApprovalConflictError, ApprovalNotFoundError, Service, default_service
 
 MODULE_ID = 19
 ACTION_TYPE = "luxury_venture.outreach.send"
+
+
+_LOCK = threading.Lock()  # process-wide: separate queue instances share it
 
 
 class OutreachRefused(RuntimeError):
@@ -43,7 +46,6 @@ class LuxuryOutreachQueue:
     def __init__(self, service: Service | None = None, sender: Sender = refuse_sender) -> None:
         self._service = service
         self._sender = sender
-        self._lock = threading.Lock()
 
     @property
     def service(self) -> Service:
@@ -64,7 +66,7 @@ class LuxuryOutreachQueue:
         on consume_effect's unique constraints for the permit, not for the adapter call.
         """
         payload = _payload(message)
-        with self._lock:
+        with _LOCK:
             return self._send_locked(approval_id, payload, user_id, actor)
 
     def _send_locked(self, approval_id: str, payload: dict[str, Any], user_id: str, actor: str) -> dict[str, Any]:
@@ -73,8 +75,10 @@ class LuxuryOutreachQueue:
                 raise OutreachRefused("approval already used for a send attempt")
         except OutreachRefused:
             raise
-        except Exception:
+        except ApprovalNotFoundError:
             pass  # unknown id: consume_effect below refuses
+        except Exception as error:  # fail closed: an unreadable audit trail must not allow a send
+            raise OutreachRefused("audit trail unreadable: " + type(error).__name__) from error
         try:
             self.service.consume_effect(approval_id, module_id=MODULE_ID, action_type=ACTION_TYPE, payload=payload,
                                         user_id=user_id, effect_id="luxury-outreach:" + approval_id, actor=actor)

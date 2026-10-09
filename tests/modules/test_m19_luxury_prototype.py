@@ -31,3 +31,10 @@ def test_readme_makes_no_affiliation_claim(tmp_path):
 def test_all_eight_ideation_levers_have_components():
     from app.modules.m19_idea_incubator.luxury_ideation import LEVERS
     assert set(LEVERS) <= set(COMPONENTS)
+
+
+def test_stale_files_in_output_dir_do_not_contaminate(tmp_path):
+    (tmp_path / "test_stale.py").write_text("import unittest\nclass T(unittest.TestCase):\n    def test_x(self): self.fail('stale')\n")
+    (tmp_path / "provenance.py").write_text("raise RuntimeError('old broken component')\n")
+    r = build_prototype(idea(["provenance"]), tmp_path)
+    assert r["all_tests_passed"] and not (tmp_path / "test_stale.py").exists()
