@@ -7,8 +7,8 @@ from .schemas import *
 MODULE_ID=24
 PLANS={p.id:p for p in [Plan(id="free",name="Free",monthly_price_usd=0,included_seats=1,included_runs=100,features=["BYOK","manual collectors"]),Plan(id="pro",name="Pro",monthly_price_usd=29,included_seats=1,included_runs=10000,features=["workers","monitoring","artifacts"]),Plan(id="team",name="Team",monthly_price_usd=99,included_seats=5,included_runs=50000,features=["team workspaces","priority queues","audit exports"])]}
 class Service:
- def __init__(self,approvals,repo,stripe,checkout_dispatcher=None,invoice_dispatcher=None):
-  self.approvals=approvals;self.repo=repo;self.stripe=stripe;self.checkout_dispatcher=checkout_dispatcher;self.invoice_dispatcher=invoice_dispatcher
+ def __init__(self,approvals,repo,stripe,checkout_dispatcher=None,invoice_dispatcher=None,cancellation_dispatcher=None):
+  self.approvals=approvals;self.repo=repo;self.stripe=stripe;self.checkout_dispatcher=checkout_dispatcher;self.invoice_dispatcher=invoice_dispatcher;self.cancellation_dispatcher=cancellation_dispatcher
  def plans(self):return list(PLANS.values())
  def propose_previewed_checkout(self,tenant_id,data:PreviewedCheckoutIn):
   from .precommit import verify_commitment_preview
@@ -42,7 +42,11 @@ class Service:
    environment='test',api_version=API_VERSION,actor='m24-worker')
   return await dispatcher.dispatch(operation['id'],tenant_id)
  def propose_cancel(self,tenant_id,data:CancelIn):
-  payload={"tenant_id":tenant_id,"subscription_id":data.subscription_id,"provider":"stripe","effect":"cancel_subscription"};req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="cancel_subscription",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
+  from .cancellation import TERMS
+  row=self.repo.tenant_billing(tenant_id)
+  if row is None or row.subscription_id!=data.subscription_id or not row.customer_id:raise PermissionError("reviewed tenant subscription mapping required")
+  payload={"tenant_id":tenant_id,"subscription_id":data.subscription_id,"customer_id":row.customer_id,"provider":"stripe","effect":"cancel_subscription",
+   "before_state":{"customer_id":row.customer_id,"subscription_id":row.subscription_id,"status":row.status,"cancel_at_period_end":row.cancel_at_period_end},"cancellation_terms":dict(TERMS)};req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="cancel_subscription",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
  def propose_invoice(self,tenant_id,data:InvoiceIn):
   payload={"tenant_id":tenant_id,**data.model_dump(),"provider":"stripe","effect":"create_draft_invoice"};req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="issue_invoice",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
  async def execute_approved(self,approval_id,tenant_id):
@@ -51,7 +55,15 @@ class Service:
   from .write_ahead import require_dispatch_ready
   require_dispatch_ready()
   action=view["payload"].get("effect")
-  if action=="cancel_subscription":result=await self.stripe.cancel_subscription(view["payload"]["subscription_id"],approval_id)
+  if action=="cancel_subscription":
+   if self.cancellation_dispatcher is None:
+    from .write_ahead import DispatchRefused
+    raise DispatchRefused("M24 durable cancellation adapter is not configured")
+   from .checkout_dispatcher import API_VERSION
+   dispatcher=self.cancellation_dispatcher
+   operation=dispatcher.repo.prepare(approval_id,tenant_id,provider_account=dispatcher.adapter.provider_account,
+    environment='test',api_version=API_VERSION,actor='m24-worker')
+   return await dispatcher.dispatch(operation['id'],tenant_id)
   elif action=="create_draft_invoice":
    if self.invoice_dispatcher is None:
     from .write_ahead import DispatchRefused

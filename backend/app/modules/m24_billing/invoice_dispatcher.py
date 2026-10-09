@@ -53,7 +53,7 @@ def binding(op,role,form):
         'key':op.id+':'+role,'form':form,'adapter':'atlas-invoice-v2'})
 
 
-def validate_parent(db,op):
+def validate_parent(db,op,*,check_cancellation=False):
     p=op.request
     if op.action_type!='issue_invoice' or p.get('effect')!='create_draft_invoice' or p.get('provider')!='stripe' or p.get('tenant_id')!=op.tenant_id:
         raise wa.DispatchRefused('invoice authority binding invalid')
@@ -61,6 +61,11 @@ def validate_parent(db,op):
     if not isinstance(p.get('customer_id'),str) or not re.fullmatch(r'cus_[A-Za-z0-9_]{1,196}',p['customer_id']):raise wa.DispatchRefused('invoice customer identifier invalid')
     customer=db.get(TenantBillingRow,op.tenant_id)
     if customer is None or customer.customer_id!=p['customer_id']:raise wa.DispatchRefused('invoice customer tenant mapping required')
+    from .cancellation import CancellationSnapshotRow
+    cancelled=db.scalar(select(wa.OperationRow.id).join(CancellationSnapshotRow,CancellationSnapshotRow.operation_id==wa.OperationRow.id).where(
+        wa.OperationRow.tenant_id==op.tenant_id,CancellationSnapshotRow.customer_id==p['customer_id'],
+        wa.OperationRow.state!='cancelled_before_dispatch'))
+    if check_cancellation and cancelled is not None:raise wa.DispatchRefused('invoice customer cancellation fence active')
     # A local mapping is only preliminary. Actual adapter account/customer identity
     # must be checked before dispatch; no live account readiness claimed here.
     if type(p.get('amount_cents')) is not int or not 1<=p['amount_cents']<=100000000:raise wa.DispatchRefused('invoice amount invalid')
@@ -96,7 +101,8 @@ def validate_bounded_receipt(op,row,result):
 
 class InvoiceRepository(wa.OperationRepository):
     def _add_snapshot(self,db,op,approval):
-        validate_parent(db,op)
+        db.execute(update(TenantBillingRow).where(TenantBillingRow.tenant_id==op.tenant_id).values(status=TenantBillingRow.status))
+        validate_parent(db,op,check_cancellation=True)
         op.provider_key=op.id+':invoice-parent' # Parent itself never calls a provider.
         add_step(db,op,'draft-invoice')
 
@@ -127,7 +133,9 @@ class InvoiceRepository(wa.OperationRepository):
             if op is None or op.tenant_id!=tenant_id:raise KeyError(operation_id)
             db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==op.approval_id).values(status=ApprovalRequestRow.status))
             db.refresh(op)
-            validate_parent(db,op)
+            db.execute(update(TenantBillingRow).where(TenantBillingRow.tenant_id==op.tenant_id).values(status=TenantBillingRow.status))
+            validate_parent(db,op,check_cancellation=True)
+            if op.state!='prepared':raise wa.DispatchRefused('invoice parent cancelled or held')
             # Reuse shared authority validator, not a duplicated approval-consumption path.
             authority=CheckoutRepository(self.approvals)
             authority._authority(db,op,authority._now(db))
@@ -171,7 +179,9 @@ class InvoiceRepository(wa.OperationRepository):
             if op is None or op.tenant_id!=tenant_id:raise KeyError(operation_id)
             db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==op.approval_id).values(status=ApprovalRequestRow.status))
             db.refresh(op)
+            db.execute(update(TenantBillingRow).where(TenantBillingRow.tenant_id==op.tenant_id).values(status=TenantBillingRow.status))
             op,row=self._load(db,operation_id,tenant_id,role)
+            validate_parent(db,op,check_cancellation=True)
             now=clock._now(db);authority_bound=clock._authority(db,op,now)
             if op.state!='prepared':raise wa.DispatchRefused('invoice parent held')
             first=_aware(row.first_attempt_at) if row.first_attempt_at else now
@@ -191,7 +201,7 @@ class InvoiceRepository(wa.OperationRepository):
     def before_step_entry(self,operation_id,tenant_id,role,fence):
         wa.require_dispatch_ready();clock=CheckoutRepository(self.approvals)
         with self.sessions() as db:
-            op,row=self._load(db,operation_id,tenant_id,role);now=clock._now(db);clock._authority(db,op,now)
+            op,row=self._load(db,operation_id,tenant_id,role);validate_parent(db,op,check_cancellation=True);now=clock._now(db);clock._authority(db,op,now)
             barrier=db.get(wa.CutoverRow,1)
             if barrier is None or barrier.protocol_epoch!=2 or barrier.state!='verified-active' or not barrier.verification_digest or not barrier.verified_at:
                 raise wa.DispatchRefused('invoice cutover lost')
@@ -208,6 +218,7 @@ class InvoiceRepository(wa.OperationRepository):
             if op is None or op.tenant_id!=tenant_id:raise KeyError(operation_id)
             db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==op.approval_id).values(status=ApprovalRequestRow.status))
             db.refresh(op)
+            db.execute(update(TenantBillingRow).where(TenantBillingRow.tenant_id==op.tenant_id).values(status=TenantBillingRow.status))
             op,row=self._load(db,operation_id,tenant_id,role)
             if row.fence!=fence or row.state not in {'dispatching','outcome_unknown'}:raise wa.DispatchRefused('invoice stale or terminal step')
             if state=='failed_before_dispatch' and row.state!='dispatching':raise wa.DispatchRefused('invoice unknown cannot become pre-entry safe')
@@ -215,7 +226,7 @@ class InvoiceRepository(wa.OperationRepository):
             if result is not None:
                 validate_bounded_receipt(op,row,result)
                 row.result=copy.deepcopy(result)
-                row.state='succeeded_late' if row.state=='outcome_unknown' or _aware(row.lease_until)<=now else 'succeeded'
+                row.state='succeeded_late' if op.state!='prepared' or row.state=='outcome_unknown' or _aware(row.lease_until)<=now else 'succeeded'
             else:row.state=state
             row.failure=failure
             db.add(wa.OperationEventRow(operation_id=op.id,event=role+':'+row.state,actor='m24-worker',at=now))
@@ -235,8 +246,10 @@ class InvoiceRepository(wa.OperationRepository):
             if op is None or op.tenant_id!=tenant_id:raise KeyError(operation_id)
             db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==op.approval_id).values(status=ApprovalRequestRow.status))
             db.refresh(op)
+            db.execute(update(TenantBillingRow).where(TenantBillingRow.tenant_id==op.tenant_id).values(status=TenantBillingRow.status))
             op,draft=self._load(db,operation_id,tenant_id,'draft-invoice');_,item=self._load(db,operation_id,tenant_id,'invoice-item')
             if op.state!='prepared' or draft.state!='succeeded' or item.state!='succeeded' or draft.result['id']!=invoice_id or item.result['id']!=item_id:raise wa.DispatchRefused('invoice completion dependency differs')
+            validate_parent(db,op,check_cancellation=True)
             validate_final(verified_invoice,wa._out(op),step_out(draft),step_out(item))
             op.state='succeeded';op.result={'invoice_id':invoice_id,'invoice_item_id':item_id,'status':'draft','amount_cents':op.request['amount_cents'],'currency':op.request['currency']}
             db.add(wa.OperationEventRow(operation_id=op.id,event='invoice-verified-complete',actor='m24-worker',at=CheckoutRepository(self.approvals)._now(db)))
@@ -345,3 +358,7 @@ class InvoiceDispatcher:
         except (Exception,asyncio.CancelledError):
             try:return self.repo.hold_final(operation_id,tenant_id,'invoice-final-verification-unknown')
             except Exception:return {'id':operation_id,'state':'outcome_unknown','failure':'final-storage-unavailable'}
+
+# Register the customer-fence snapshot model before standalone invoice fixtures
+# call create_all. Deferred until all invoice classes exist to avoid an import cycle.
+from . import cancellation as _cancellation_models  # noqa: E402,F401
