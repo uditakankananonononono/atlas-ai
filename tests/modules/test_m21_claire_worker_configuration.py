@@ -87,3 +87,21 @@ def test_configured_worker_consumes_separate_store_and_bounded_drain(tmp_path, m
     fresh = GoalStore(c.database_url)
     assert all(fresh.get("tenant", "actor", gid)["status"] == "completed" for gid in ids)
     fresh.close()
+
+
+@pytest.mark.parametrize("driver", ["sqlalchemy", "psycopg"])
+def test_database_startup_operational_error_is_sanitized(tmp_path, monkeypatch, driver):
+    from sqlalchemy.exc import OperationalError
+    from psycopg import OperationalError as PsycopgError
+    from app.modules.m21_claire.runtime import configuration
+    import traceback
+    raw = "driver host=private.example port=5544 password=secret"
+    error = OperationalError("connect", {}, RuntimeError(raw)) if driver == "sqlalchemy" else PsycopgError(raw)
+    def unavailable(*args, **kwargs): raise error
+    monkeypatch.setattr(configuration, "GoalStore", unavailable)
+    with pytest.raises(ConfigurationError) as caught:
+        ConfiguredReadOnlyWorker(config(tmp_path), [Lookup()])
+    assert str(caught.value) == "Claire runtime database is unavailable"
+    rendered = "".join(traceback.format_exception(caught.value))
+    assert not any(s in rendered for s in ("private.example", "5544", "password=secret"))
+    assert caught.value.__suppress_context__ is True

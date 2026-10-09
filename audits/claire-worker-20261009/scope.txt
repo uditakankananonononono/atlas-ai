@@ -8,3 +8,4 @@ ConfigurationError/repr are redacted, but arbitrary database driver/startup exce
 Drain is bounded by job count, not a total wall-clock deadline. Async cancellation may leave sync threads running. Operator owns tool classes and declarations.
 Design test items for mounted factory-success, actual HTTP through the factory, provider/programming-failure factory integration remain pending.
 No push or integration. Candidate depends on gate verdict for adapter.
+Gate-required repair: GoalStore construction now maps SQLAlchemy OperationalError and psycopg OperationalError to safe ConfigurationError with suppressed exception chaining. Two synthetic fault tests inspect formatted traceback for host/port/password leakage. Combined suite now 89 passed, not additive to prior 87. Unexpected programming failures remain loud; post-construction drain DB errors and non-OperationalError startup failures remain outside this bounded startup fix.
