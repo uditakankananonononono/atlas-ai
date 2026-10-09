@@ -1,0 +1,55 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____________ test_money_requires_proposal_and_approved_execution ______________
+
+    def test_money_requires_proposal_and_approved_execution():
+     r=R();s=Service(A(),r,S());p=s.propose_checkout("t",CheckoutIn(plan_id="pro",success_url="https://ok",cancel_url="https://no"));assert p.status=="pending"
+>    assert asyncio.run(s.execute_checkout(p.approval_id,"t"))["id"]=="cs_test"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/base_billing_comparison.py:16: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/service.py:35: in execute_checkout
+    require_dispatch_ready()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def require_dispatch_ready():
+        """No ready adapter/cutover verifier in slice1. Env flags cannot authorize dispatch."""
+>       raise DispatchRefused('M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required')
+E       app.modules.m24_billing.write_ahead.DispatchRefused: M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required
+
+backend/app/modules/m24_billing/write_ahead.py:184: DispatchRefused
+______ test_cancel_and_invoice_are_separate_tenant_bound_approval_actions ______
+
+    def test_cancel_and_invoice_are_separate_tenant_bound_approval_actions():
+     from app.modules.m24_billing.schemas import CancelIn,InvoiceIn
+     r=R();s=Service(A(),r,S())
+>    c=s.propose_cancel('t',CancelIn(subscription_id='sub_12345'));i=s.propose_invoice('t',InvoiceIn(customer_id='cus_12345',description='Atlas Team',amount_cents=9900))
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/base_billing_comparison.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.service.Service object at 0x7f0496ca7620>
+tenant_id = 't', data = CancelIn(subscription_id='sub_12345')
+
+    def propose_cancel(self,tenant_id,data:CancelIn):
+     from .cancellation import TERMS
+>    row=self.repo.tenant_billing(tenant_id)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+E    AttributeError: 'R' object has no attribute 'tenant_billing'
+
+backend/app/modules/m24_billing/service.py:46: AttributeError
+=========================== short test summary info ============================
+FAILED tests/base_billing_comparison.py::test_money_requires_proposal_and_approved_execution
+FAILED tests/base_billing_comparison.py::test_cancel_and_invoice_are_separate_tenant_bound_approval_actions
+2 failed, 6 deselected in 0.48s

@@ -61,7 +61,8 @@ def test_checkout_without_plan_metadata_does_not_grant_pro(db):
     repo,factory=db
     service=Service(None,repo,None)
     event=BillingEventIn(id='evt_test',type='checkout.session.completed',created=1,data={'object':{'metadata':{'tenant_id':'tenant-a'},'customer':'cus_test'}})
-    service.ingest_event(event,trusted_provider=True)
+    from app.modules.m24_billing.inbox import InboxRefused
+    with pytest.raises(InboxRefused,match='not configured'):service.ingest_event(event,trusted_provider=True)
     assert service.entitlements('tenant-a').plan_id=='free'
     assert not service.entitlements('tenant-a').can_use_paid_features
 

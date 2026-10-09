@@ -7,8 +7,8 @@ from .schemas import *
 MODULE_ID=24
 PLANS={p.id:p for p in [Plan(id="free",name="Free",monthly_price_usd=0,included_seats=1,included_runs=100,features=["BYOK","manual collectors"]),Plan(id="pro",name="Pro",monthly_price_usd=29,included_seats=1,included_runs=10000,features=["workers","monitoring","artifacts"]),Plan(id="team",name="Team",monthly_price_usd=99,included_seats=5,included_runs=50000,features=["team workspaces","priority queues","audit exports"])]}
 class Service:
- def __init__(self,approvals,repo,stripe,checkout_dispatcher=None,invoice_dispatcher=None,cancellation_dispatcher=None):
-  self.approvals=approvals;self.repo=repo;self.stripe=stripe;self.checkout_dispatcher=checkout_dispatcher;self.invoice_dispatcher=invoice_dispatcher;self.cancellation_dispatcher=cancellation_dispatcher
+ def __init__(self,approvals,repo,stripe,checkout_dispatcher=None,invoice_dispatcher=None,cancellation_dispatcher=None,inbox=None,webhook_admission=None):
+  self.approvals=approvals;self.repo=repo;self.stripe=stripe;self.checkout_dispatcher=checkout_dispatcher;self.invoice_dispatcher=invoice_dispatcher;self.cancellation_dispatcher=cancellation_dispatcher;self.inbox=inbox;self.webhook_admission=webhook_admission
  def plans(self):return list(PLANS.values())
  def propose_previewed_checkout(self,tenant_id,data:PreviewedCheckoutIn):
   from .precommit import verify_commitment_preview
@@ -94,18 +94,19 @@ class Service:
   return SubscriptionOut.model_validate(row,from_attributes=True)
  def invoices(self,tenant_id):return [InvoiceOut.model_validate(x,from_attributes=True) for x in self.repo.list_invoices(tenant_id)]
  def _apply_lifecycle_event(self,event):
-  obj=event.data.get("object",{});kind=event.type
-  tenant_id=obj.get("metadata",{}).get("tenant_id") or obj.get("client_reference_id")
-  if kind=="checkout.session.completed" and tenant_id:
-   plan_id=obj.get("metadata",{}).get("plan_id")
-   if plan_id in PLANS:self.repo.upsert_tenant_billing(tenant_id,customer_id=obj.get("customer"),subscription_id=obj.get("subscription"),plan_id=plan_id,status="active")
-  elif kind.startswith("customer.subscription."):
-   tenant_id=tenant_id or obj.get("metadata",{}).get("atlas_tenant_id")
-   if tenant_id:self.repo.upsert_tenant_billing(tenant_id,customer_id=obj.get("customer"),subscription_id=obj.get("id"),status=obj.get("status","canceled" if kind.endswith("deleted") else "active"),cancel_at_period_end=bool(obj.get("cancel_at_period_end")),current_period_start=datetime.fromtimestamp(obj["current_period_start"],timezone.utc) if obj.get("current_period_start") else None,current_period_end=datetime.fromtimestamp(obj["current_period_end"],timezone.utc) if obj.get("current_period_end") else None)
-  elif kind.startswith("invoice."):
-   tenant_id=tenant_id or obj.get("metadata",{}).get("atlas_tenant_id")
-   if tenant_id:self.repo.upsert_invoice(tenant_id,id=obj["id"],status=obj.get("status",kind.removeprefix("invoice.")),currency=obj.get("currency","usd"),amount_due=int(obj.get("amount_due",0)),amount_paid=int(obj.get("amount_paid",0)),period_start=datetime.fromtimestamp(obj["period_start"],timezone.utc) if obj.get("period_start") else None,period_end=datetime.fromtimestamp(obj["period_end"],timezone.utc) if obj.get("period_end") else None,hosted_invoice_url=obj.get("hosted_invoice_url"))
+  from .inbox import InboxRefused
+  raise InboxRefused("legacy nontransactional lifecycle path disabled")
  def ingest_event(self,event:BillingEventIn,*,trusted_provider=False):
-  created=self.repo.save_event(event)
-  if created and trusted_provider:self._apply_lifecycle_event(event)
-  return BillingEventOut(id=event.id,type=event.type,processed=created,processed_at=datetime.now(timezone.utc))
+  # A caller boolean is not authenticated provider provenance. All diagnostics
+  # use a separate quarantine namespace, never the signed event identity.
+  if self.inbox is None:
+   from .inbox import InboxRefused
+   raise InboxRefused("verified billing inbox is not configured")
+  return BillingEventOut(**self.inbox.unsigned(event))
+ async def ingest_webhook(self,payload,signature):
+  if self.inbox is None or self.webhook_admission is None:
+   from .inbox import InboxRefused
+   raise InboxRefused("verified TEST webhook admission is not configured")
+  verified=self.webhook_admission.verify(payload,signature)
+  ident=self.inbox.admit(verified)
+  return BillingEventOut(**{k:v for k,v in self.inbox.apply(ident).items() if k in {'id','type','processed','processed_at'}})

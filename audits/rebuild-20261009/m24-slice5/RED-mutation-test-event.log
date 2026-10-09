@@ -1,0 +1,40 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_signed_envelope_binding_refuses_before_admission[sqlite-livemode-True] __
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f25cc6e5880>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f25ca590fb0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f25ca3f30b0>
+field = 'livemode', value = True
+
+    @pytest.mark.parametrize('field,value',[('livemode',True),('api_version','foreign'),('account','acct_foreign'),('object','subscription')])
+    def test_signed_envelope_binding_refuses_before_admission(env,monkeypatch,field,value):
+        data=event();data[field]=value
+>       with pytest.raises(InboxRefused):admit(env,monkeypatch,data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:90: Failed
+_ test_signed_envelope_binding_refuses_before_admission[postgres-livemode-True] _
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f25ca32c080>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f25ca45e7e0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f25ca23dc10>
+field = 'livemode', value = True
+
+    @pytest.mark.parametrize('field,value',[('livemode',True),('api_version','foreign'),('account','acct_foreign'),('object','subscription')])
+    def test_signed_envelope_binding_refuses_before_admission(env,monkeypatch,field,value):
+        data=event();data[field]=value
+>       with pytest.raises(InboxRefused):admit(env,monkeypatch,data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:90: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_signed_envelope_binding_refuses_before_admission[postgres-livemode-True]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_signed_envelope_binding_refuses_before_admission[sqlite-livemode-True]
+FAILED tests/modules/test_m24_verified_inbox.py::test_signed_envelope_binding_refuses_before_admission[postgres-livemode-True]
+2 failed, 76 deselected, 1 warning in 1.22s

@@ -15,7 +15,10 @@ def test_money_requires_proposal_and_approved_execution():
  r=R();s=Service(A(),r,S());p=s.propose_checkout("t",CheckoutIn(plan_id="pro",success_url="https://ok",cancel_url="https://no"));assert p.status=="pending"
  assert asyncio.run(s.execute_checkout(p.approval_id,"t"))["id"]=="cs_test"
 def test_webhook_idempotency():
- s=Service(A(),R(),S());e=BillingEventIn(id="evt_1",type="invoice.paid",created=1,data={});assert s.ingest_event(e).processed and not s.ingest_event(e).processed
+ from app.modules.m24_billing.inbox import InboxRefused
+ s=Service(A(),R(),S());e=BillingEventIn(id="evt_1",type="invoice.paid",created=1,data={})
+ with pytest.raises(InboxRefused,match='not configured'):s.ingest_event(e)
+ assert s.repo.events==set()
 def test_stripe_requires_test_mode():
  with pytest.raises(ValueError):StripeClient("sk_live_never")
 
@@ -64,10 +67,9 @@ def test_subscription_and_invoice_events_update_lifecycle_once():
  from app.modules.m24_billing.schemas import BillingEventIn
  repo=LifecycleRepo();s=Service(A(),repo,S())
  sub=BillingEventIn(id='evt_sub',type='customer.subscription.updated',created=1,data={'object':{'id':'sub_1','customer':'cus_1','status':'past_due','metadata':{'atlas_tenant_id':'t'}}})
- assert s.ingest_event(sub,trusted_provider=True).processed and repo.billing['t']['status']=='past_due'
- inv=BillingEventIn(id='evt_inv',type='invoice.paid',created=1,data={'object':{'id':'in_1','status':'paid','currency':'usd','amount_due':2900,'amount_paid':2900,'metadata':{'atlas_tenant_id':'t'}}})
- assert s.ingest_event(inv,trusted_provider=True).processed and repo.invoice_rows[0][1]['amount_paid']==2900
- assert not s.ingest_event(inv,trusted_provider=True).processed and len(repo.invoice_rows)==1
+ from app.modules.m24_billing.inbox import InboxRefused
+ with pytest.raises(InboxRefused,match='not configured'):s.ingest_event(sub,trusted_provider=True)
+ assert repo.billing=={} and repo.invoice_rows==[] and repo.events==set()
 
 def test_suspended_tenant_cannot_record_usage():
  from app.modules.m24_billing.schemas import UsageIn

@@ -1,0 +1,38 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____________ test_admit_pending_then_atomic_apply_replay[sqlite] ______________
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7fe9f80722a0>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7fe9f8976d20>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe9f810f8f0>
+
+    def test_admit_pending_then_atomic_apply_replay(env,monkeypatch):
+        ident=admit(env,monkeypatch)
+        assert env[0].get(ident)['state']=='pending'
+        with env[1]() as db:assert db.get(TenantBillingRow,'t1').status=='active'
+>       assert env[0].apply(ident)['processed'] is True
+E       assert False is True
+
+tests/modules/test_m24_verified_inbox.py:44: AssertionError
+____________ test_admit_pending_then_atomic_apply_replay[postgres] _____________
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7fe9f7f14b60>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7fe9f730a0c0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe9f7f5bf50>
+
+    def test_admit_pending_then_atomic_apply_replay(env,monkeypatch):
+        ident=admit(env,monkeypatch)
+        assert env[0].get(ident)['state']=='pending'
+        with env[1]() as db:assert db.get(TenantBillingRow,'t1').status=='active'
+>       assert env[0].apply(ident)['processed'] is True
+E       assert False is True
+
+tests/modules/test_m24_verified_inbox.py:44: AssertionError
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_admit_pending_then_atomic_apply_replay[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_admit_pending_then_atomic_apply_replay[sqlite]
+FAILED tests/modules/test_m24_verified_inbox.py::test_admit_pending_then_atomic_apply_replay[postgres]
+2 failed, 76 deselected, 1 warning in 1.53s

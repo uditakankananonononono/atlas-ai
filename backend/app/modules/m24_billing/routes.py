@@ -22,7 +22,9 @@ async def execute(approval_id:str,t:TenantContext=Depends(require_tenant),s:Serv
  try:return await s.execute_checkout(approval_id,t.tenant_id)
  except (PermissionError,RuntimeError,ValueError) as e:raise HTTPException(409,str(e))
 @router.post("/events",response_model=BillingEventOut)
-def event(data:BillingEventIn,s:Service=Depends(get_service)):return s.ingest_event(data)
+def event(data:BillingEventIn,s:Service=Depends(get_service)):
+ try:return s.ingest_event(data)
+ except RuntimeError:raise HTTPException(409,'billing diagnostics inbox unavailable')
 from fastapi import Request
 from .webhooks import verify_stripe_signature,StripeSignatureError
 @router.post('/cancel-proposals',response_model=ApprovalProposal,status_code=201)
@@ -36,9 +38,9 @@ async def execute_approved(approval_id:str,t:TenantContext=Depends(require_tenan
 @router.post('/stripe-webhook',response_model=BillingEventOut)
 async def stripe_webhook(request:Request,s:Service=Depends(get_service)):
  payload=await request.body()
- try:data=verify_stripe_signature(payload,request.headers.get('stripe-signature',''),os.getenv('STRIPE_WEBHOOK_SECRET',''))
+ try:return await s.ingest_webhook(payload,request.headers.get('stripe-signature',''))
  except StripeSignatureError as e:raise HTTPException(400,str(e))
- return s.ingest_event(BillingEventIn(id=data['id'],type=data['type'],created=data['created'],data=data.get('data',{})),trusted_provider=True)
+ except (RuntimeError,ValueError):raise HTTPException(409,'verified billing event not applied')
 from datetime import datetime
 @router.get('/entitlements',response_model=EntitlementOut)
 def entitlements(t:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):return s.entitlements(t.tenant_id)
