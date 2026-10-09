@@ -7,8 +7,11 @@
   "line_mapping_basis": "1-based non-wrapped plain-text lines from the Google Docs HTML export. Rows decompose source sentences; multiple rows may intentionally map to one source line.",
   "counts": {
     "total": 229,
-    "verified-pushed": 220,
+    "SCOPED": 1,
+    "verified-pushed": 217,
     "configured-unaccepted": 9,
+    "facade-unconfigured": 1,
+    "partial-unaccepted": 1,
     "thin": 0,
     "missing": 0,
     "functional": 221,
@@ -23,11 +26,17 @@
       "source_line_start": 5,
       "source_line_end": 5,
       "source_excerpt": "Frontend: Next.js 14 (App Router), React 18, Tailwind CSS, shadcn/ui components, React Flow for graph visualisations, Recharts for dashboards.",
-      "status": "verified-pushed",
+      "status": "SCOPED",
       "implementation_path": "frontend",
-      "test_evidence": "tests/test_technical_architecture_real_frontend.py::test_a01_next14_is_installed_and_app_router_build_source_exists",
+      "test_evidence": "tests/test_technical_architecture_real_frontend.py::test_a01_declared_next_version_matches_lock_and_app_router_source_exists",
       "kind": "functional",
-      "evidence_kind": "installed-package-and-product-source-behavior"
+      "evidence_kind": "installed-package-and-product-source-behavior",
+      "historical_claim": {
+        "status": "verified-pushed",
+        "test_evidence": "tests/test_technical_architecture_real_frontend.py::test_a01_next14_is_installed_and_app_router_build_source_exists"
+      },
+      "acceptance_scope": "version-amended, SCOPED: Next.js 16.3.8 App Router; not literal Next.js 14 verification",
+      "version_decision": "audits/rebuild-20261009/a01-version/DECISION.md"
     },
     {
       "row": 2,
@@ -3248,5 +3257,14 @@
       "kind": "safety-replacement",
       "evidence_kind": "exact-distinctive-behavior-node"
     }
-  ]
+  ],
+  "historical_counts_before_a01_correction": {
+    "total": 229,
+    "verified-pushed": 220,
+    "configured-unaccepted": 9,
+    "thin": 0,
+    "missing": 0,
+    "functional": 221,
+    "safety-replacement": 8
+  }
 }
