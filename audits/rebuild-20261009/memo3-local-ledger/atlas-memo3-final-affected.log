@@ -1,0 +1,279 @@
+..........................F............................................. [ 21%]
+........................................................................ [ 43%]
+........................................................................ [ 64%]
+........................................................................ [ 86%]
+.............................................                            [100%]
+=================================== FAILURES ===================================
+_ test_execution_two_requests_concurrent_same_effect_id_only_winner_has_permit _
+
+self = <sqlalchemy.engine.base.Connection object at 0x7fe96a18f830>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7fe96a90b380>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7fe96a1b4b30>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7fe96a1b5220>
+parameters = [('e498abe4-d0d0-42be-b1e3-564f932390cf', 'other', 'shared-effect', '40193f28c32829e4b16b82e400491ca42f3b8eab8744aafec9fd46dba3647211', 'v1', 'ready', ...)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7fe96a90b380>
+cursor = <sqlite3.Cursor object at 0x7fe96a19b1c0>
+statement = 'INSERT INTO m00_execution_intents (approval_id, tenant_id, effect_id, request_hash, adapter_version, state, fence, lease_until, failure) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = ('e498abe4-d0d0-42be-b1e3-564f932390cf', 'other', 'shared-effect', '40193f28c32829e4b16b82e400491ca42f3b8eab8744aafec9fd46dba3647211', 'v1', 'ready', ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7fe96a1b4b30>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.IntegrityError: UNIQUE constraint failed: m00_execution_intents.effect_id
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: IntegrityError
+
+The above exception was the direct cause of the following exception:
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fe96a1118b0>, {'action_type': 'fixture', 'approved_by':....db), autoflush=True, expire_on_commit=False), <test_m00_execution_ledger.env.<locals>.Clock object at 0x7fe96a111df0>)
+
+    def test_execution_two_requests_concurrent_same_effect_id_only_winner_has_permit(env):
+        svc,view,sessions,_=env
+        other=svc.submit(module_id=5,action_type='fixture',payload={'value':2},user_id='other')
+        svc.decide(other['id'],ApprovalStatus.APPROVED,'fixture');other=svc.get(other['id']);barrier=threading.Barrier(2)
+        def prepare(local_view):
+            barrier.wait(5)
+            try:execution.prepare(svc,local_view,'shared-effect','v1');return local_view['id']
+            except ApprovalConflictError:return None
+>       with ThreadPoolExecutor(2) as pool:results=list(pool.map(prepare,[view,other]))
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m00_execution_ledger.py:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:619: in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:317: in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/modules/test_m00_execution_ledger.py:274: in prepare
+    try:execution.prepare(svc,local_view,'shared-effect','v1');return local_view['id']
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m00_approval_center/execution.py:90: in prepare
+    raise error
+backend/app/modules/m00_approval_center/execution.py:70: in prepare
+    with service._sessions.begin() as db:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/contextlib.py:144: in __exit__
+    next(self.gen)
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1879: in _maker_context_manager
+    with self.begin():
+         ^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/util.py:144: in __exit__
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:166: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/util.py:142: in __exit__
+    self.commit()
+<sqlalchemy generated _go() wrapper for sqlalchemy.orm.session.SessionTransaction.commit>:2: in commit
+    return target(fn, self, _to_root=_to_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1330: in commit
+    self._prepare_impl()
+<sqlalchemy generated _go() wrapper for sqlalchemy.orm.session.SessionTransaction._prepare_impl>:2: in _prepare_impl
+    return target(fn, self)
+           ^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1304: in _prepare_impl
+    self.session.flush()
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4536: in flush
+    self._flush(objects)
+<sqlalchemy generated warned() wrapper for sqlalchemy.orm.session.Session._flush>:2: in _flush
+    return target(fn, self, objects=objects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py:281: in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4679: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:166: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4640: in _flush
+    flush_context.execute()
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:467: in execute
+    rec.execute(self)
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:643: in execute
+    util.preloaded.orm_persistence._save_obj(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:92: in _save_obj
+    _emit_insert_statements(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:1052: in _emit_insert_statements
+    result = connection.execute(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1451: in execute
+    return meth(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1671: in _execute_clauseelement
+    ret = self._execute_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1825: in _execute_context
+    return self._exec_single_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1965: in _exec_single_context
+    self._handle_dbapi_exception(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7fe96a90b380>
+cursor = <sqlite3.Cursor object at 0x7fe96a19b1c0>
+statement = 'INSERT INTO m00_execution_intents (approval_id, tenant_id, effect_id, request_hash, adapter_version, state, fence, lease_until, failure) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = ('e498abe4-d0d0-42be-b1e3-564f932390cf', 'other', 'shared-effect', '40193f28c32829e4b16b82e400491ca42f3b8eab8744aafec9fd46dba3647211', 'v1', 'ready', ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7fe96a1b4b30>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: m00_execution_intents.effect_id
+E       [SQL: INSERT INTO m00_execution_intents (approval_id, tenant_id, effect_id, request_hash, adapter_version, state, fence, lease_until, failure) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)]
+E       [parameters: ('e498abe4-d0d0-42be-b1e3-564f932390cf', 'other', 'shared-effect', '40193f28c32829e4b16b82e400491ca42f3b8eab8744aafec9fd46dba3647211', 'v1', 'ready', None, None, None)]
+E       (Background on this error at: https://sqlalche.me/e/21/gkpj)
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: IntegrityError
+=============================== warnings summary ===============================
+tests/modules/test_m00_execution_ledger.py::test_execution_postgres_separate_claims_exactly_one_wins_and_fenced_outcome_persists
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m00_execution_ledger.py::test_execution_two_requests_concurrent_same_effect_id_only_winner_has_permit
+1 failed, 332 passed, 1 warning in 67.83s (0:01:07)

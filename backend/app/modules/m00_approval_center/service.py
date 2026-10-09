@@ -763,7 +763,7 @@ def _install_extensions() -> None:
 
     def consume_effect(self: Service, approval_id: str, *, module_id: int, action_type: str,
                        payload: dict[str, Any], user_id: str, effect_id: str,
-                       actor: str) -> dict[str, Any]:
+                       actor: str, _session: Session | None = None) -> dict[str, Any]:
         """Atomically issue a one-shot permit bound to the exact reviewed request."""
         for field, value in (("actor", actor), ("effect_id", effect_id)):
             ceiling = 120 if field == "actor" else 200
@@ -773,7 +773,8 @@ def _install_extensions() -> None:
         now = self._clock()
         from sqlalchemy.exc import IntegrityError
         try:
-            with self._sessions.begin() as db:
+            from contextlib import nullcontext
+            with (self._sessions.begin() if _session is None else nullcontext(_session)) as db:
                 row = self._fetch(db, approval_id)
                 from .impact import ApprovalReviewStateRow, validate_bound_snapshot
                 validate_bound_snapshot(_view(row), db.get(ApprovalReviewStateRow, approval_id))
@@ -799,6 +800,8 @@ def _install_extensions() -> None:
             if expired:
                 raise ApprovalConflictError("approval has expired")
         except IntegrityError:
+            if _session is not None:
+                raise  # Parent transaction must roll back permit and intent together.
             # Inspect committed winner in a fresh transaction. An unrelated
             # integrity error is not evidence that the permit was consumed.
             with self._sessions() as db:

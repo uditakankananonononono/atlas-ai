@@ -1,0 +1,781 @@
+FFFFFFFFFFFFF.FFFF                                                       [100%]
+=================================== FAILURES ===================================
+________ test_concurrent_same_permit_workers_both_execute_local_effect _________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb817850a0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb816f7d40>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution already claimed; retry refused')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution already claimed; retry refused')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[0] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800700e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb800705c0>
+trial = 0
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800700e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb800705c0>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution intent cannot be reclaimed')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution intent cannot be reclaimed')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[1] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800ac740>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb800ac7d0>
+trial = 1
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800ac740>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb800ac7d0>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('ExecutionUnknown', 'execution already claimed; retry refused'), ('BrokenBarrierError', '')]
+E           assert not [('ExecutionUnknown', 'execution already claimed; retry refused'), ('BrokenBarrierError', '')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[2] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800e3b00>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb800e3b90>
+trial = 2
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800e3b00>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb800e3b90>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('ExecutionUnknown', 'execution already claimed; retry refused'), ('BrokenBarrierError', '')]
+E           assert not [('ExecutionUnknown', 'execution already claimed; retry refused'), ('BrokenBarrierError', '')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[3] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800e2cf0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb800e0fe0>
+trial = 3
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800e2cf0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb800e0fe0>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'concurrent execution is already claimed')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'concurrent execution is already claimed')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[4] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ef744a0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ef74530>
+trial = 4
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ef744a0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ef74530>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('ExecutionUnknown', 'execution already claimed; retry refused'), ('BrokenBarrierError', '')]
+E           assert not [('ExecutionUnknown', 'execution already claimed; retry refused'), ('BrokenBarrierError', '')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[5] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ef9baa0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ef9bb60>
+trial = 5
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ef9baa0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ef9bb60>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution already claimed; retry refused')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution already claimed; retry refused')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[6] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ef76600>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ef74950>
+trial = 6
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ef76600>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ef74950>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'concurrent execution is already claimed')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'concurrent execution is already claimed')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[7] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7efe8980>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7efe90a0>
+trial = 7
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7efe8980>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7efe90a0>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'concurrent execution is already claimed')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'concurrent execution is already claimed')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[8] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ee264b0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ee26540>
+trial = 8
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ee264b0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ee26540>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'concurrent execution is already claimed')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'concurrent execution is already claimed')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+__________________ test_own_repeat_original_worker_barrier[9] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7efeb500>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7efeb380>
+trial = 9
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7efeb500>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7efeb380>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution already claimed; retry refused')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution already claimed; retry refused')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+_________________ test_own_repeat_original_worker_barrier[10] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ee65550>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ee67bf0>
+trial = 10
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ee65550>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ee67bf0>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution intent cannot be reclaimed')]
+E           assert not [('BrokenBarrierError', ''), ('ExecutionUnknown', 'execution intent cannot be reclaimed')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+_________________ test_own_repeat_original_worker_barrier[11] __________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7eeb1430>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7eeb14c0>
+trial = 11
+
+    @pytest.mark.parametrize('trial', range(12))
+    def test_own_repeat_original_worker_barrier(service, monkeypatch, trial):
+>       test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch)
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7eeb1430>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7eeb14c0>
+
+    def test_concurrent_same_permit_workers_both_execute_local_effect(service, monkeypatch):
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        view = service.submit(module_id=5, action_type='fixture_concurrent_worker', payload={}, user_id='udita')
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+        barrier = threading.Barrier(2)
+        calls = []
+        lock = threading.Lock()
+        def local_executor(payload):
+            barrier.wait(timeout=5)
+            with lock:
+                calls.append(1)
+                return {'calls': len(calls)}
+        action_registry.register_executor(5, 'fixture_concurrent_worker', local_executor)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(execute_approved_action.run, view['id'], 'concurrent-effect') for _ in range(2)]
+            results, errors = [], []
+            for job in jobs:
+                try:
+                    results.append(job.result(timeout=10))
+                except Exception as error:
+                    errors.append((type(error).__name__, str(error)))
+>           assert not errors, errors
+E           AssertionError: [('ApprovalConflictError', 'effect id has already been used'), ('BrokenBarrierError', '')]
+E           assert not [('ApprovalConflictError', 'effect id has already been used'), ('BrokenBarrierError', '')]
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:33: AssertionError
+______________ test_concurrent_same_permit_race_rate_distribution ______________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb82798500>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb827984a0>
+capsys = <_pytest.capture.CaptureFixture object at 0x7feb827989b0>
+
+    def test_concurrent_same_permit_race_rate_distribution(service, monkeypatch, capsys):
+        """Measure, don't assert away, the concurrent duplicate-execution race."""
+        import concurrent.futures
+        import threading
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        outcomes = {'both_executed': 0, 'one_conflicted': 0, 'other': 0}
+        for trial in range(12):
+            monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+            monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+            view = service.submit(module_id=5, action_type=f'race_trial_{trial}', payload={}, user_id='udita')
+            service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+            calls = []
+            lock = threading.Lock()
+            def local_executor(payload):
+                with lock:
+                    calls.append(1)
+                return {'ok': True}
+            action_registry.register_executor(5, f'race_trial_{trial}', local_executor)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+                jobs = [pool.submit(execute_approved_action.run, view['id'], f'race-effect-{trial}') for _ in range(2)]
+                errors = [job.exception(timeout=10) for job in jobs]
+            if len(calls) == 2:
+                outcomes['both_executed'] += 1
+            elif len(calls) == 1 and any(isinstance(e, ApprovalConflictError) for e in errors):
+                outcomes['one_conflicted'] += 1
+            else:
+                outcomes['other'] += 1
+        print(f'RACE_DISTRIBUTION={outcomes}')
+        assert outcomes['other'] == 0, outcomes
+>       assert outcomes['both_executed'] >= 1, f'replay duplicate-execution path unreachable in 12 trials: {outcomes}'
+E       AssertionError: replay duplicate-execution path unreachable in 12 trials: {'both_executed': 0, 'one_conflicted': 12, 'other': 0}
+E       assert 0 >= 1
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:97: AssertionError
+----------------------------- Captured stdout call -----------------------------
+RACE_DISTRIBUTION={'both_executed': 0, 'one_conflicted': 12, 'other': 0}
+______________________ test_own_worker_start_profiles[0] _______________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7ee9eae0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7ee9e3c0>
+delay = 0
+
+    @pytest.mark.parametrize('delay', [0, 0.001, 0.01])
+    def test_own_worker_start_profiles(service, monkeypatch, delay):
+        import concurrent.futures
+        import threading
+        import time
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        outcomes = {'both': 0, 'one_conflicted': 0, 'other': 0}
+        for trial in range(20):
+            name=f'own_profile_{trial}';view=service.submit(module_id=5, action_type=name, payload={}, user_id='udita')
+            service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+            calls=[];lock=threading.Lock()
+            def execute(payload):
+                with lock:calls.append(1)
+                return {'ok': True}
+            action_registry.register_executor(5,name,execute)
+            def run(sleep):
+                time.sleep(sleep)
+                return execute_approved_action.run(view['id'],f'own-profile-effect-{trial}')
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+                jobs=[pool.submit(run,0),pool.submit(run,delay)];errors=[j.exception(timeout=10) for j in jobs]
+            if len(calls)==2 and not any(errors):outcomes['both']+=1
+            elif len(calls)==1 and sum(isinstance(e,ApprovalConflictError) for e in errors)==1:outcomes['one_conflicted']+=1
+            else:outcomes['other']+=1
+        print('OWN_PROFILE',delay,outcomes)
+>       assert outcomes['other']==0
+E       assert 1 == 0
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:127: AssertionError
+----------------------------- Captured stdout call -----------------------------
+OWN_PROFILE 0 {'both': 0, 'one_conflicted': 19, 'other': 1}
+____________________ test_own_worker_start_profiles[0.001] _____________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb7efc6480>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb7efc4f20>
+delay = 0.001
+
+    @pytest.mark.parametrize('delay', [0, 0.001, 0.01])
+    def test_own_worker_start_profiles(service, monkeypatch, delay):
+        import concurrent.futures
+        import threading
+        import time
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        outcomes = {'both': 0, 'one_conflicted': 0, 'other': 0}
+        for trial in range(20):
+            name=f'own_profile_{trial}';view=service.submit(module_id=5, action_type=name, payload={}, user_id='udita')
+            service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+            calls=[];lock=threading.Lock()
+            def execute(payload):
+                with lock:calls.append(1)
+                return {'ok': True}
+            action_registry.register_executor(5,name,execute)
+            def run(sleep):
+                time.sleep(sleep)
+                return execute_approved_action.run(view['id'],f'own-profile-effect-{trial}')
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+                jobs=[pool.submit(run,0),pool.submit(run,delay)];errors=[j.exception(timeout=10) for j in jobs]
+            if len(calls)==2 and not any(errors):outcomes['both']+=1
+            elif len(calls)==1 and sum(isinstance(e,ApprovalConflictError) for e in errors)==1:outcomes['one_conflicted']+=1
+            else:outcomes['other']+=1
+        print('OWN_PROFILE',delay,outcomes)
+>       assert outcomes['other']==0
+E       assert 3 == 0
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:127: AssertionError
+----------------------------- Captured stdout call -----------------------------
+OWN_PROFILE 0.001 {'both': 0, 'one_conflicted': 17, 'other': 3}
+_____________________ test_own_worker_start_profiles[0.01] _____________________
+
+service = <app.modules.m00_approval_center.service.Service object at 0x7feb800721e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb816181d0>
+delay = 0.01
+
+    @pytest.mark.parametrize('delay', [0, 0.001, 0.01])
+    def test_own_worker_start_profiles(service, monkeypatch, delay):
+        import concurrent.futures
+        import threading
+        import time
+        from app.workers import action_registry
+        from app.workers.tasks import execute_approved_action
+        monkeypatch.setattr(action_registry, '_EXECUTORS', {})
+        monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
+        outcomes = {'both': 0, 'one_conflicted': 0, 'other': 0}
+        for trial in range(20):
+            name=f'own_profile_{trial}';view=service.submit(module_id=5, action_type=name, payload={}, user_id='udita')
+            service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+            calls=[];lock=threading.Lock()
+            def execute(payload):
+                with lock:calls.append(1)
+                return {'ok': True}
+            action_registry.register_executor(5,name,execute)
+            def run(sleep):
+                time.sleep(sleep)
+                return execute_approved_action.run(view['id'],f'own-profile-effect-{trial}')
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+                jobs=[pool.submit(run,0),pool.submit(run,delay)];errors=[j.exception(timeout=10) for j in jobs]
+            if len(calls)==2 and not any(errors):outcomes['both']+=1
+            elif len(calls)==1 and sum(isinstance(e,ApprovalConflictError) for e in errors)==1:outcomes['one_conflicted']+=1
+            else:outcomes['other']+=1
+        print('OWN_PROFILE',delay,outcomes)
+>       assert outcomes['other']==0
+E       assert 16 == 0
+
+audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py:127: AssertionError
+----------------------------- Captured stdout call -----------------------------
+OWN_PROFILE 0.01 {'both': 0, 'one_conflicted': 4, 'other': 16}
+=========================== short test summary info ============================
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_concurrent_same_permit_workers_both_execute_local_effect
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[0]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[1]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[2]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[3]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[4]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[5]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[6]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[7]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[8]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[9]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[10]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_repeat_original_worker_barrier[11]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_concurrent_same_permit_race_rate_distribution
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_worker_start_profiles[0]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_worker_start_profiles[0.001]
+FAILED audits/rebuild-20261009/m10-binding-dispatch/concurrency_harness.py::test_own_worker_start_profiles[0.01]
+17 failed, 1 passed in 69.33s (0:01:09)
