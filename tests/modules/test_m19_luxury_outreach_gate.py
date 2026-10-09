@@ -117,3 +117,18 @@ def test_two_queue_instances_share_one_lock_and_second_send_is_refused(svc):
     with pytest.raises(OutreachRefused, match="already used"):
         q2.send(r["approval_id"], preview(), user_id=U)
     assert len(spy.calls) == 1
+
+
+def test_concurrent_sends_on_separate_instances_deliver_exactly_once(svc):
+    import threading
+    spy = Spy()
+    r = LuxuryOutreachQueue(svc, spy).enqueue(preview(), user_id=U)
+    svc.decide(r["approval_id"], ApprovalStatus.APPROVED, decided_by="owner")
+    barrier = threading.Barrier(4); results = []
+    def go():
+        q = LuxuryOutreachQueue(svc, spy); barrier.wait()
+        try: q.send(r["approval_id"], preview(), user_id=U); results.append("sent")
+        except OutreachRefused: results.append("refused")
+    ts = [threading.Thread(target=go) for _ in range(4)]
+    [t.start() for t in ts]; [t.join() for t in ts]
+    assert results.count("sent") == 1 and len(spy.calls) == 1

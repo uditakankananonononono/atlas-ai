@@ -80,3 +80,10 @@ def test_outreach_validator_blocks_more_affiliation_phrasings():
     for phrase in ('in partnership with your house','proven results for hotels','sponsored by a leading brand'):
         x=outreach();x['body']='We drafted a concept for your review. '+phrase+' and more detail.'
         with pytest.raises(ValueError,match='unsupported'):validate_outreach_preview(OutreachPreview.model_validate(x),pk)
+
+
+def test_package_experiment_concept_id_is_the_requested_concept():
+    from app.modules.m19_idea_incubator.luxury_venture import PitchPackageRequest,build_pitch_package,build_luxury_venture
+    ids=[c['concept_id'] for c in build_luxury_venture(VentureBrief.model_validate(brief()))['concepts']]
+    p=build_pitch_package(PitchPackageRequest(brief=VentureBrief.model_validate(brief()),concept_id=ids[-1]))
+    assert p['experiment']['concept_id']==ids[-1]!=ids[0]

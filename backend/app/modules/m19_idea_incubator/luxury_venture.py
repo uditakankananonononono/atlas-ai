@@ -108,7 +108,7 @@ def build_pitch_package(request:PitchPackageRequest)->dict:
   '## Claim limits',*[f"- {x}" for x in c['prohibited_claims']],'',
   '> Draft for owner review. No brand affiliation, outreach, sale, publication, contract, or spend has occurred.'
  ])
- return {'concept_id':concept_id,'filename':concept_id+'-review-brief.md','media_type':'text/markdown','markdown':markdown,'evidence_refs':c['evidence_refs'],'review_status':'pending','external_action_started':False}
+ return {'concept_id':concept_id,'filename':concept_id+'-review-brief.md','media_type':'text/markdown','markdown':markdown,'experiment':experiment,'evidence_refs':c['evidence_refs'],'review_status':'pending','external_action_started':False}
 
 class OutreachPreview(BaseModel):
  concept_id:str
