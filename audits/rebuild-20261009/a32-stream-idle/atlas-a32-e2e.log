@@ -1,0 +1,25 @@
+
+> e2e
+> playwright test e2e/approval-stream.spec.ts
+
+[WebServer] ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+[WebServer]  We detected multiple lockfiles and selected the directory of /tmp/atlas-a01-recovery/package-lock.json as the root directory.
+[WebServer]  To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+[WebServer]    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+[WebServer]  Detected additional lockfiles: 
+[WebServer]    * /tmp/atlas-a01-recovery/frontend/package-lock.json
+[WebServer] 
+[WebServer] ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+[WebServer]  We detected multiple lockfiles and selected the directory of /tmp/atlas-a01-recovery/package-lock.json as the root directory.
+[WebServer]  To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+[WebServer]    See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+[WebServer]  Detected additional lockfiles: 
+[WebServer]    * /tmp/atlas-a01-recovery/frontend/package-lock.json
+[WebServer] 
+
+Running 2 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/approval-stream.spec.ts:2:5 › A32 authenticated minimal SSE refresh, injected data refused, bounded retries and logout (10.1s)
+  ✓  2 [chromium] › e2e/approval-stream.spec.ts:59:5 › A32 silent connected stream times out and recovers with bounded attempts (881ms)
+
+  2 passed (24.4s)
