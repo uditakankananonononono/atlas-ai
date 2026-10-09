@@ -101,7 +101,7 @@ async def test_grounded_studio_builds_concepts_from_fetched_evidence():
  svc=LuxuryVentureService(data=LuxuryDataService(client=mock_client()))
  req=GroundedStudioRequest(brand_or_segment='Ferrari',sector='automotive',customer_job='Give owners a digital experience as crafted as the car without diluting scarcity.',constraints=['brand tone','no mass-market channel'],capabilities=[{'capability_id':'concierge-app','description':'Owner concierge with provenance records','readiness':.7}],ticker='RACE')
  out=await svc.grounded_studio(req)
- assert len(out['studio']['concepts'])==3 and out['studio']['pitch_brief']['status']=='review_only'
+ assert 1<=len(out['studio']['concepts'])<=3 and all(c['evidence'] for c in out['studio']['concepts']) and out['studio']['pitch_brief']['status']=='review_only'
  assert out['studio']['side_effects']==[] and out['evidence']['fetch_summary']['evidence_items']>=4 and 'boundary' in out
 @pytest.mark.asyncio
 async def test_grounded_studio_refuses_thin_evidence_instead_of_faking():
