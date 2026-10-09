@@ -1,0 +1,55 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+________________ test_unsigned_does_not_poison_signed_identity _________________
+
+    def test_unsigned_does_not_poison_signed_identity():
+        repo=LegacyRepo();s=Service(None,repo,None);s.ingest_event(event())
+        s.ingest_event(event(),trusted_provider=True)
+>       assert len(repo.updates)==1
+E       assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = <test_m24_inbox_legacy_red.LegacyRepo object at 0x7f731d0f7320>.updates
+
+tests/modules/test_m24_inbox_legacy_red.py:21: AssertionError
+_______________ test_failed_apply_signed_redelivery_is_not_lost ________________
+
+    def test_failed_apply_signed_redelivery_is_not_lost():
+        repo=LegacyRepo();s=Service(None,repo,None);repo.fail=True
+        with pytest.raises(RuntimeError):s.ingest_event(event(),trusted_provider=True)
+        repo.fail=False;s.ingest_event(event(),trusted_provider=True)
+>       assert len(repo.updates)==1
+E       assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = <test_m24_inbox_legacy_red.LegacyRepo object at 0x7f731cd71fa0>.updates
+
+tests/modules/test_m24_inbox_legacy_red.py:27: AssertionError
+___________________ test_unpaid_checkout_never_grants_active ___________________
+
+    def test_unpaid_checkout_never_grants_active():
+        repo=LegacyRepo();s=Service(None,repo,None);s.ingest_event(event(payment='unpaid'),trusted_provider=True)
+>       assert repo.updates==[]
+E       AssertionError: assert [('t1', {'cus...ub_fixture'})] == []
+E         
+E         Left contains one more item: ('t1', {'customer_id': 'cus_fixture', 'plan_id': 'pro', 'status': 'active', 'subscription_id': 'sub_fixture'})
+E         Use -v to get more diff
+
+tests/modules/test_m24_inbox_legacy_red.py:31: AssertionError
+___________________ test_older_event_never_overwrites_newer ____________________
+
+    def test_older_event_never_overwrites_newer():
+        repo=LegacyRepo();s=Service(None,repo,None)
+        for ident,created,status in [('evt_new',20,'canceled'),('evt_old',10,'active')]:
+            s.ingest_event(BillingEventIn(id=ident,type='customer.subscription.updated',created=created,data={'object':{
+                'id':'sub_fixture','customer':'cus_fixture','status':status,'metadata':{'atlas_tenant_id':'t1'}}}),trusted_provider=True)
+>       assert len(repo.updates)==1 and repo.updates[-1][1]['status']=='canceled'
+E       AssertionError: assert (2 == 1)
+E        +  where 2 = len([('t1', {'cancel_at_period_end': False, 'current_period_end': None, 'current_period_start': None, 'customer_id': 'cus_...l_at_period_end': False, 'current_period_end': None, 'current_period_start': None, 'customer_id': 'cus_fixture', ...})])
+E        +    where [('t1', {'cancel_at_period_end': False, 'current_period_end': None, 'current_period_start': None, 'customer_id': 'cus_...l_at_period_end': False, 'current_period_end': None, 'current_period_start': None, 'customer_id': 'cus_fixture', ...})] = <test_m24_inbox_legacy_red.LegacyRepo object at 0x7f731cd73080>.updates
+
+tests/modules/test_m24_inbox_legacy_red.py:38: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_inbox_legacy_red.py::test_unsigned_does_not_poison_signed_identity
+FAILED tests/modules/test_m24_inbox_legacy_red.py::test_failed_apply_signed_redelivery_is_not_lost
+FAILED tests/modules/test_m24_inbox_legacy_red.py::test_unpaid_checkout_never_grants_active
+FAILED tests/modules/test_m24_inbox_legacy_red.py::test_older_event_never_overwrites_newer
+4 failed in 0.21s

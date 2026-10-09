@@ -1,0 +1,42 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_older_and_equal_timestamp_conflicts_do_not_overwrite[sqlite] _______
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f0a554650a0>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f0a55062150>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0a551dbdd0>
+
+    def test_older_and_equal_timestamp_conflicts_do_not_overwrite(env,monkeypatch):
+        newer=admit(env,monkeypatch,event('evt_new',200,'canceled'));env[0].apply(newer)
+>       old=admit(env,monkeypatch,event('evt_old',100,'active'));assert env[0].apply(old)['state']=='ignored_stale'
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'applied' == 'ignored_stale'
+E         
+E         - ignored_stale
+E         + applied
+
+tests/modules/test_m24_verified_inbox.py:82: AssertionError
+_____ test_older_and_equal_timestamp_conflicts_do_not_overwrite[postgres] ______
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f0a54161a30>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f0a541e5250>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0a55522d80>
+
+    def test_older_and_equal_timestamp_conflicts_do_not_overwrite(env,monkeypatch):
+        newer=admit(env,monkeypatch,event('evt_new',200,'canceled'));env[0].apply(newer)
+>       old=admit(env,monkeypatch,event('evt_old',100,'active'));assert env[0].apply(old)['state']=='ignored_stale'
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'applied' == 'ignored_stale'
+E         
+E         - ignored_stale
+E         + applied
+
+tests/modules/test_m24_verified_inbox.py:82: AssertionError
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_older_and_equal_timestamp_conflicts_do_not_overwrite[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_older_and_equal_timestamp_conflicts_do_not_overwrite[sqlite]
+FAILED tests/modules/test_m24_verified_inbox.py::test_older_and_equal_timestamp_conflicts_do_not_overwrite[postgres]
+2 failed, 76 deselected, 1 warning in 1.25s

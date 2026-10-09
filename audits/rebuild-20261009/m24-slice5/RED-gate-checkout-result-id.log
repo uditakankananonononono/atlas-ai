@@ -1,0 +1,42 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_checkout_operation_state_or_receipt_id_alone_refuses[sqlite-result-value1] _
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f01ef5a6bd0>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f01ef497bc0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01ef626330>
+field = 'result', value = {'amount_total': 2900, 'id': 'cs_test_other'}
+
+    @pytest.mark.parametrize('field,value',[('state','outcome_unknown'),('result',{'id':'cs_test_other','amount_total':2900})])
+    def test_checkout_operation_state_or_receipt_id_alone_refuses(env,monkeypatch,field,value):
+        data=checkout_event(env,monkeypatch);ident=admit(env,monkeypatch,data)
+        with env[1].begin() as db:setattr(db.get(wa.OperationRow,data['data']['object']['metadata']['atlas_operation_id']),field,value)
+>       with pytest.raises(InboxRefused,match='durable operation differs'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:346: Failed
+_ test_checkout_operation_state_or_receipt_id_alone_refuses[postgres-result-value1] _
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f01ef921d60>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f01ee3371a0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01ef4fe4e0>
+field = 'result', value = {'amount_total': 2900, 'id': 'cs_test_other'}
+
+    @pytest.mark.parametrize('field,value',[('state','outcome_unknown'),('result',{'id':'cs_test_other','amount_total':2900})])
+    def test_checkout_operation_state_or_receipt_id_alone_refuses(env,monkeypatch,field,value):
+        data=checkout_event(env,monkeypatch);ident=admit(env,monkeypatch,data)
+        with env[1].begin() as db:setattr(db.get(wa.OperationRow,data['data']['object']['metadata']['atlas_operation_id']),field,value)
+>       with pytest.raises(InboxRefused,match='durable operation differs'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:346: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_checkout_operation_state_or_receipt_id_alone_refuses[postgres-result-value1]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_checkout_operation_state_or_receipt_id_alone_refuses[sqlite-result-value1]
+FAILED tests/modules/test_m24_verified_inbox.py::test_checkout_operation_state_or_receipt_id_alone_refuses[postgres-result-value1]
+2 failed, 94 deselected, 1 warning in 1.58s

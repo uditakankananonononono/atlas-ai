@@ -1,0 +1,42 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____ test_local_mapping_drift_alone_refuses[sqlite-customer_id-cus_other] _____
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f7565802ab0>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f7565b04fe0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f75658061e0>
+field = 'customer_id', value = 'cus_other'
+
+    @pytest.mark.parametrize('field,value',[('customer_id','cus_other'),('subscription_id','sub_other')])
+    def test_local_mapping_drift_alone_refuses(env,monkeypatch,field,value):
+        ident=admit(env,monkeypatch)
+        with env[1].begin() as db:setattr(db.get(TenantBillingRow,'t1'),field,value)
+>       with pytest.raises(InboxRefused,match='local .* mapping differs'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:335: Failed
+____ test_local_mapping_drift_alone_refuses[postgres-customer_id-cus_other] ____
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f75659f6d20>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f75647761b0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f756564c920>
+field = 'customer_id', value = 'cus_other'
+
+    @pytest.mark.parametrize('field,value',[('customer_id','cus_other'),('subscription_id','sub_other')])
+    def test_local_mapping_drift_alone_refuses(env,monkeypatch,field,value):
+        ident=admit(env,monkeypatch)
+        with env[1].begin() as db:setattr(db.get(TenantBillingRow,'t1'),field,value)
+>       with pytest.raises(InboxRefused,match='local .* mapping differs'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:335: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_local_mapping_drift_alone_refuses[postgres-customer_id-cus_other]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_local_mapping_drift_alone_refuses[sqlite-customer_id-cus_other]
+FAILED tests/modules/test_m24_verified_inbox.py::test_local_mapping_drift_alone_refuses[postgres-customer_id-cus_other]
+2 failed, 94 deselected, 1 warning in 1.28s

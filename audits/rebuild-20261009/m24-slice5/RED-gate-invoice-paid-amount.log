@@ -1,0 +1,42 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+___ test_invoice_confirmed_paid_single_field_refuses[sqlite-amount_paid-99] ____
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f562e221910>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f562e978800>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f562e226570>
+field = 'amount_paid', value = 99
+
+    @pytest.mark.parametrize('field,value',[('status','open'),('amount_paid',99)])
+    def test_invoice_confirmed_paid_single_field_refuses(env,monkeypatch,field,value):
+        from app.modules.m24_billing.repository import InvoiceRow
+        data=invoice_event(env);data['data']['object'][field]=value;ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused,match='not confirmed paid'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:364: Failed
+__ test_invoice_confirmed_paid_single_field_refuses[postgres-amount_paid-99] ___
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f562d1e5c40>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f562df23ef0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f562e068980>
+field = 'amount_paid', value = 99
+
+    @pytest.mark.parametrize('field,value',[('status','open'),('amount_paid',99)])
+    def test_invoice_confirmed_paid_single_field_refuses(env,monkeypatch,field,value):
+        from app.modules.m24_billing.repository import InvoiceRow
+        data=invoice_event(env);data['data']['object'][field]=value;ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused,match='not confirmed paid'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:364: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_invoice_confirmed_paid_single_field_refuses[postgres-amount_paid-99]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_invoice_confirmed_paid_single_field_refuses[sqlite-amount_paid-99]
+FAILED tests/modules/test_m24_verified_inbox.py::test_invoice_confirmed_paid_single_field_refuses[postgres-amount_paid-99]
+2 failed, 94 deselected, 1 warning in 1.28s

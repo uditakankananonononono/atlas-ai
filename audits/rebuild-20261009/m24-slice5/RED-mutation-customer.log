@@ -1,0 +1,40 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_object_binding_refuses_lifecycle_pending[sqlite-customer-cus_foreign] __
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f5795b869f0>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f5795f05220>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f5795bfb1d0>
+field = 'customer', value = 'cus_foreign'
+
+    @pytest.mark.parametrize('field,value',[('customer','cus_foreign'),('metadata',{'atlas_tenant_id':'foreign'}),('livemode',True),('status','invalid'),('cancel_at_period_end','false')])
+    def test_object_binding_refuses_lifecycle_pending(env,monkeypatch,field,value):
+        data=event();data['data']['object'][field]=value;ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:97: Failed
+_ test_object_binding_refuses_lifecycle_pending[postgres-customer-cus_foreign] _
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f5794735d00>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f5794ba12e0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f5795a4aa20>
+field = 'customer', value = 'cus_foreign'
+
+    @pytest.mark.parametrize('field,value',[('customer','cus_foreign'),('metadata',{'atlas_tenant_id':'foreign'}),('livemode',True),('status','invalid'),('cancel_at_period_end','false')])
+    def test_object_binding_refuses_lifecycle_pending(env,monkeypatch,field,value):
+        data=event();data['data']['object'][field]=value;ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:97: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_object_binding_refuses_lifecycle_pending[postgres-customer-cus_foreign]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_object_binding_refuses_lifecycle_pending[sqlite-customer-cus_foreign]
+FAILED tests/modules/test_m24_verified_inbox.py::test_object_binding_refuses_lifecycle_pending[postgres-customer-cus_foreign]
+2 failed, 76 deselected, 1 warning in 1.30s

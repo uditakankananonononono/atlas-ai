@@ -1,0 +1,54 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+___ test_checkout_single_binding_violation_never_grants_plan[sqlite-unpaid] ____
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f33c38ef6b0>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f33c36f6330>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f33c3617590>
+bad = 'unpaid'
+
+    @pytest.mark.parametrize('bad',['unpaid','no_payment_required','deadline','amount','plan','reference','operation','approval'])
+    def test_checkout_single_binding_violation_never_grants_plan(env,monkeypatch,bad):
+        data=checkout_event(env,monkeypatch,deadline=50 if bad=='deadline' else 200);obj=data['data']['object']
+        if bad in {'unpaid','no_payment_required'}:obj['payment_status']=bad
+        elif bad=='amount':obj['amount_total']=1
+        elif bad=='plan':obj['metadata']['plan_id']='team'
+        elif bad=='reference':obj['client_reference_id']='foreign'
+        elif bad=='operation':obj['metadata']['atlas_operation_id']='missing'
+        elif bad=='approval':obj['metadata']['atlas_approval_id']='missing'
+        ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:152: Failed
+__ test_checkout_single_binding_violation_never_grants_plan[postgres-unpaid] ___
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f33c3212120>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f33c23a5700>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f33c350fe30>
+bad = 'unpaid'
+
+    @pytest.mark.parametrize('bad',['unpaid','no_payment_required','deadline','amount','plan','reference','operation','approval'])
+    def test_checkout_single_binding_violation_never_grants_plan(env,monkeypatch,bad):
+        data=checkout_event(env,monkeypatch,deadline=50 if bad=='deadline' else 200);obj=data['data']['object']
+        if bad in {'unpaid','no_payment_required'}:obj['payment_status']=bad
+        elif bad=='amount':obj['amount_total']=1
+        elif bad=='plan':obj['metadata']['plan_id']='team'
+        elif bad=='reference':obj['client_reference_id']='foreign'
+        elif bad=='operation':obj['metadata']['atlas_operation_id']='missing'
+        elif bad=='approval':obj['metadata']['atlas_approval_id']='missing'
+        ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:152: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_checkout_single_binding_violation_never_grants_plan[postgres-unpaid]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_checkout_single_binding_violation_never_grants_plan[sqlite-unpaid]
+FAILED tests/modules/test_m24_verified_inbox.py::test_checkout_single_binding_violation_never_grants_plan[postgres-unpaid]
+2 failed, 76 deselected, 1 warning in 1.33s
