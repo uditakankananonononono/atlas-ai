@@ -1,0 +1,32 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_uncommitted_or_unknown_draft_never_prepares_item[sqlite] _________
+
+env = (<app.modules.m24_billing.invoice_dispatcher.InvoiceRepository object at 0x7f8be53e3320>, sessionmaker(class_='Session...reated_at': datetime.datetime(2026, 10, 9, 12, 49, 39, 593787, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+
+    def test_uncommitted_or_unknown_draft_never_prepares_item(env):
+        op=prepare(env)
+>       with pytest.raises(wa.DispatchRefused,match='not committed'):env[0].prepare_item(op['id'],'t1')
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m24_invoice_dispatcher.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m24_billing/invoice_dispatcher.py:137: in prepare_item
+    validate_bounded_receipt(op,draft,draft.result)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+op = <app.modules.m24_billing.write_ahead.OperationRow object at 0x7f8be5020b00>
+row = <app.modules.m24_billing.invoice_dispatcher.InvoiceStepRow object at 0x7f8be5021a60>
+result = None
+
+    def validate_bounded_receipt(op,row,result):
+        role=row.role
+        prefix='in_' if role=='draft-invoice' else 'ii_'
+>       if set(result)!={'id','object','customer','currency','livemode','invoice','amount'} or not isinstance(result['id'],str) or not re.fullmatch(prefix+r'[A-Za-z0-9_]{1,196}',result['id']) or result['customer']!=op.request['customer_id'] or result['currency']!=op.request['currency'] or result['livemode'] is not False or result['object']!=('invoice' if role=='draft-invoice' else 'invoiceitem'):
+           ^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not iterable
+
+backend/app/modules/m24_billing/invoice_dispatcher.py:91: TypeError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_invoice_dispatcher.py::test_uncommitted_or_unknown_draft_never_prepares_item[sqlite]
+1 failed in 0.41s

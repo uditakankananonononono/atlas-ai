@@ -7,8 +7,8 @@ from .schemas import *
 MODULE_ID=24
 PLANS={p.id:p for p in [Plan(id="free",name="Free",monthly_price_usd=0,included_seats=1,included_runs=100,features=["BYOK","manual collectors"]),Plan(id="pro",name="Pro",monthly_price_usd=29,included_seats=1,included_runs=10000,features=["workers","monitoring","artifacts"]),Plan(id="team",name="Team",monthly_price_usd=99,included_seats=5,included_runs=50000,features=["team workspaces","priority queues","audit exports"])]}
 class Service:
- def __init__(self,approvals,repo,stripe,checkout_dispatcher=None):
-  self.approvals=approvals;self.repo=repo;self.stripe=stripe;self.checkout_dispatcher=checkout_dispatcher
+ def __init__(self,approvals,repo,stripe,checkout_dispatcher=None,invoice_dispatcher=None):
+  self.approvals=approvals;self.repo=repo;self.stripe=stripe;self.checkout_dispatcher=checkout_dispatcher;self.invoice_dispatcher=invoice_dispatcher
  def plans(self):return list(PLANS.values())
  def propose_previewed_checkout(self,tenant_id,data:PreviewedCheckoutIn):
   from .precommit import verify_commitment_preview
@@ -52,7 +52,15 @@ class Service:
   require_dispatch_ready()
   action=view["payload"].get("effect")
   if action=="cancel_subscription":result=await self.stripe.cancel_subscription(view["payload"]["subscription_id"],approval_id)
-  elif action=="create_draft_invoice":result=await self.stripe.create_invoice(view["payload"]["customer_id"],view["payload"]["description"],view["payload"]["amount_cents"],view["payload"]["currency"],approval_id)
+  elif action=="create_draft_invoice":
+   if self.invoice_dispatcher is None:
+    from .write_ahead import DispatchRefused
+    raise DispatchRefused("M24 durable invoice adapter is not configured")
+   from .checkout_dispatcher import API_VERSION
+   dispatcher=self.invoice_dispatcher
+   operation=dispatcher.repo.prepare(approval_id,tenant_id,provider_account=dispatcher.adapter.provider_account,
+    environment='test',api_version=API_VERSION,actor='m24-worker')
+   return await dispatcher.dispatch(operation['id'],tenant_id)
   else:raise ValueError("unsupported approved billing action")
   self.repo.record_execution(approval_id,result);return result
  def entitlements(self,tenant_id):

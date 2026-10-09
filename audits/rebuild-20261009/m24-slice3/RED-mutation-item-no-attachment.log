@@ -1,0 +1,21 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_item_snapshot_binds_committed_draft_id_not_pending_customer_item[sqlite] _
+
+env = (<app.modules.m24_billing.invoice_dispatcher.InvoiceRepository object at 0x7f885c4e3470>, sessionmaker(class_='Session...reated_at': datetime.datetime(2026, 10, 9, 12, 49, 42, 125807, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+
+    def test_item_snapshot_binds_committed_draft_id_not_pending_customer_item(env):
+        op=prepare(env)
+        with env[1].begin() as db:
+            row=db.get(InvoiceStepRow,op['id']+':draft-invoice');row.state='succeeded';row.result={'id':'in_fixture','object':'invoice','customer':'cus_fixture','currency':'usd','livemode':False,'invoice':None,'amount':0}
+        item=env[0].prepare_item(op['id'],'t1')
+>       assert item['form']['invoice']=='in_fixture' and item['form']['amount']=='1234'
+E       AssertionError: assert ('in_wrong' == 'in_fixture'
+E         
+E         - in_fixture
+E         + in_wrong)
+
+tests/modules/test_m24_invoice_dispatcher.py:53: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_invoice_dispatcher.py::test_item_snapshot_binds_committed_draft_id_not_pending_customer_item[sqlite]
+1 failed in 0.44s
