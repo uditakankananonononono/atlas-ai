@@ -1,0 +1,125 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+__________ test_prepare_durable_intent_and_permit_reopen_exact_replay __________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fb3e8ffbc80>, {'action_type': 'create_subscription_chec...lush=True, expire_on_commit=False), <app.modules.m24_billing.write_ahead.OperationRepository object at 0x7fb3e86f6cc0>)
+
+    def test_prepare_durable_intent_and_permit_reopen_exact_replay(env):
+        service,view,sessions,repo=env
+>       result=prepare(env);assert result['state']=='prepared'
+               ^^^^^^^^^^^^
+
+tests/modules/test_m24_write_ahead_repository.py:29: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_write_ahead_repository.py:24: in prepare
+    return repo.prepare(view['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker',**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/write_ahead.py:116: in prepare
+    if approval.status!='approved' or _aware(approval.expires_at)<=now:
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+moment = None
+
+    def _aware(moment: datetime) -> datetime:
+        """Treat naive datetimes coming back from SQLite as UTC."""
+>       if moment.tzinfo is None:
+           ^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'tzinfo'
+
+backend/app/modules/m00_approval_center/service.py:47: AttributeError
+________ test_epoch_activation_no_boolean_or_environment_flag_authority ________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fb3e8669130>, {'action_type': 'create_subscription_chec...lush=True, expire_on_commit=False), <app.modules.m24_billing.write_ahead.OperationRepository object at 0x7fb3e8a91370>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb3e866a390>
+
+    def test_epoch_activation_no_boolean_or_environment_flag_authority(env,monkeypatch):
+>       result=prepare(env);repo=env[3]
+               ^^^^^^^^^^^^
+
+tests/modules/test_m24_write_ahead_repository.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_write_ahead_repository.py:24: in prepare
+    return repo.prepare(view['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker',**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/write_ahead.py:116: in prepare
+    if approval.status!='approved' or _aware(approval.expires_at)<=now:
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+moment = None
+
+    def _aware(moment: datetime) -> datetime:
+        """Treat naive datetimes coming back from SQLite as UTC."""
+>       if moment.tzinfo is None:
+           ^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'tzinfo'
+
+backend/app/modules/m00_approval_center/service.py:47: AttributeError
+__________ test_foreign_and_changed_binding_refuse_without_new_permit __________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fb3e8574500>, {'action_type': 'create_subscription_chec...lush=True, expire_on_commit=False), <app.modules.m24_billing.write_ahead.OperationRepository object at 0x7fb3e876f800>)
+
+    def test_foreign_and_changed_binding_refuse_without_new_permit(env):
+>       result=prepare(env);repo=env[3]
+               ^^^^^^^^^^^^
+
+tests/modules/test_m24_write_ahead_repository.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_write_ahead_repository.py:24: in prepare
+    return repo.prepare(view['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker',**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/write_ahead.py:116: in prepare
+    if approval.status!='approved' or _aware(approval.expires_at)<=now:
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+moment = None
+
+    def _aware(moment: datetime) -> datetime:
+        """Treat naive datetimes coming back from SQLite as UTC."""
+>       if moment.tzinfo is None:
+           ^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'tzinfo'
+
+backend/app/modules/m00_approval_center/service.py:47: AttributeError
+_______________ test_intent_failure_rolls_back_permit_and_audit ________________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fb3e85ce9f0>, {'action_type': 'create_subscription_chec...lush=True, expire_on_commit=False), <app.modules.m24_billing.write_ahead.OperationRepository object at 0x7fb3e8575190>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb3e85cc7d0>
+
+    def test_intent_failure_rolls_back_permit_and_audit(env,monkeypatch):
+        from sqlalchemy.orm import Session
+        original=Session.add
+        def fail(self,value,*a,**kw):
+            if isinstance(value,OperationRow):raise RuntimeError('intent insert fixture failure')
+            return original(self,value,*a,**kw)
+        monkeypatch.setattr(Session,'add',fail)
+>       with pytest.raises(RuntimeError):prepare(env)
+                                         ^^^^^^^^^^^^
+
+tests/modules/test_m24_write_ahead_repository.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_write_ahead_repository.py:24: in prepare
+    return repo.prepare(view['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker',**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/write_ahead.py:116: in prepare
+    if approval.status!='approved' or _aware(approval.expires_at)<=now:
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+moment = None
+
+    def _aware(moment: datetime) -> datetime:
+        """Treat naive datetimes coming back from SQLite as UTC."""
+>       if moment.tzinfo is None:
+           ^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'tzinfo'
+
+backend/app/modules/m00_approval_center/service.py:47: AttributeError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_write_ahead_repository.py::test_prepare_durable_intent_and_permit_reopen_exact_replay
+FAILED tests/modules/test_m24_write_ahead_repository.py::test_epoch_activation_no_boolean_or_environment_flag_authority
+FAILED tests/modules/test_m24_write_ahead_repository.py::test_foreign_and_changed_binding_refuse_without_new_permit
+FAILED tests/modules/test_m24_write_ahead_repository.py::test_intent_failure_rolls_back_permit_and_audit
+4 failed in 0.61s

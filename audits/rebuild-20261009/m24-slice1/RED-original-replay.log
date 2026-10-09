@@ -1,0 +1,44 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_recorded_replay_refused_before_mock_provider_calls ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-135/test_recorded_replay_refused_b0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fef06bec2f0>
+
+    @pytest.mark.asyncio
+    async def test_recorded_replay_refused_before_mock_provider_calls(tmp_path, monkeypatch):
+        engine = create_engine(f'sqlite:///{tmp_path}/billing.sqlite')
+        sessions = sessionmaker(bind=engine, expire_on_commit=False)
+        monkeypatch.setattr(repository, 'engine', engine); monkeypatch.setattr(repository, 'SessionLocal', sessions)
+        Base.metadata.create_all(engine)
+        center = Center(session_factory=sessions, broadcaster=ApprovalBroadcaster())
+        view = center.submit(module_id=24, action_type='issue_invoice', user_id='fixture', payload={
+            'tenant_id': 'fixture', 'effect': 'create_draft_invoice', 'customer_id': 'cus_fixture',
+            'description': 'fixture', 'amount_cents': 100, 'currency': 'usd'})
+        center.decide(view['id'], ApprovalStatus.APPROVED, decided_by='fixture-reviewer')
+        calls = []
+        def accepted(request):
+            calls.append({'path': request.url.path, 'key': request.headers['Idempotency-Key']})
+            return httpx.Response(200, json={'id': 'in_fixture'})
+        service = Service(None, repository.Repository(), StripeClient('sk_test_fixture', httpx.MockTransport(accepted)))
+        try:
+            first = await service.execute_approved(view['id'], 'fixture'); before = len(calls)
+            error = None
+            try: await service.execute_approved(view['id'], 'fixture')
+            except Exception as exc: error = {'type': type(exc).__name__, 'message': str(exc)}
+            with sessions() as db: rows = list(db.scalars(select(repository.BillingExecutionRow)))
+            print(json.dumps({'first': first, 'first_call_count': before, 'total_call_count': len(calls), 'calls': calls,
+                              'persisted_executions': len(rows), 'error': error,
+                              'boundary': 'MockTransport only, no provider-idempotency acceptance claim'}))
+            assert len(rows) == 1 and error is not None
+>           assert len(calls) == before, 'recorded execution checked only after repeated mock provider calls'
+E           AssertionError: recorded execution checked only after repeated mock provider calls
+E           assert 4 == 2
+E            +  where 4 = len([{'key': '64e392c3-11ee-482a-a1cd-aefbabca15c8:invoice-item', 'path': '/v1/invoiceitems'}, {'key': '64e392c3-11ee-482a...m', 'path': '/v1/invoiceitems'}, {'key': '64e392c3-11ee-482a-a1cd-aefbabca15c8:draft-invoice', 'path': '/v1/invoices'}])
+
+tests/modules/test_m24_recorded_replay_audit.py:40: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"first": {"id": "in_fixture"}, "first_call_count": 2, "total_call_count": 4, "calls": [{"path": "/v1/invoiceitems", "key": "64e392c3-11ee-482a-a1cd-aefbabca15c8:invoice-item"}, {"path": "/v1/invoices", "key": "64e392c3-11ee-482a-a1cd-aefbabca15c8:draft-invoice"}, {"path": "/v1/invoiceitems", "key": "64e392c3-11ee-482a-a1cd-aefbabca15c8:invoice-item"}, {"path": "/v1/invoices", "key": "64e392c3-11ee-482a-a1cd-aefbabca15c8:draft-invoice"}], "persisted_executions": 1, "error": {"type": "RuntimeError", "message": "billing approval already executed"}, "boundary": "MockTransport only, no provider-idempotency acceptance claim"}
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_recorded_replay_audit.py::test_recorded_replay_refused_before_mock_provider_calls
+1 failed in 0.39s

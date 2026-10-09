@@ -12,10 +12,13 @@ class Repo:
 class Stripe:
  async def create_checkout(self,*args):return {'id':'cs_test','url':'https://stripe.test'}
 def preview():return preview_commitment(plan=PLANS['pro'].model_dump(),cancellation_policy='Cancel before renewal',as_of=datetime(2026,9,22,tzinfo=timezone.utc))
-def test_preview_bound_proposal_and_execution_revalidate_exact_approved_charge():
+def test_preview_bound_proposal_revalidates_charge_but_dispatch_is_cutover_blocked():
  repo=Repo();s=Service(A(),repo,Stripe());p=s.propose_previewed_checkout('tenant',PreviewedCheckoutIn(success_url='https://ok',cancel_url='https://cancel',commitment_preview=preview()))
  assert p.payload['commitment_preview_sha256']==preview()['preview_sha256'] and p.payload['expected_charge_cents']==2900
- repo.item={'status':'approved','payload':p.payload};assert asyncio.run(s.execute_checkout(p.approval_id,'tenant'))['id']=='cs_test'
+ repo.item={'status':'approved','payload':p.payload}
+ from app.modules.m24_billing.write_ahead import DispatchRefused
+ with pytest.raises(DispatchRefused,match='cutover'):asyncio.run(s.execute_checkout(p.approval_id,'tenant'))
+ assert repo.recorded==[]
 def test_tampering_or_unsupported_checkout_shape_fails_closed():
  p=preview();p['exact_charge']='1.00'
  with pytest.raises(ValueError,match='hash mismatch'):verify_commitment_preview(p,PLANS['pro'].model_dump(),checkout_supported=True)
