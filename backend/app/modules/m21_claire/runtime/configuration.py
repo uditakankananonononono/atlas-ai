@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 import math
 from collections.abc import Mapping, Sequence
 from sqlalchemy.engine import make_url
+from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
+from psycopg import OperationalError as PsycopgOperationalError
 from instinct_models.providers import ProviderError, require_loopback_url
 from .bounded import CANCEL_GRACE
 from .engine import Engine
@@ -105,8 +107,11 @@ class ConfiguredReadOnlyWorker:
         for tool in tools:
             registry.register(tool)
         model = LocalSharedModel.select(config.provider, config.model_url, config.model_name)
-        self.store = GoalStore(config.database_url, lease_seconds=config.lease_seconds,
-                               create_schema=config.development_schema, owner_may_self_approve=False)
+        try:
+            self.store = GoalStore(config.database_url, lease_seconds=config.lease_seconds,
+                                   create_schema=config.development_schema, owner_may_self_approve=False)
+        except (SQLAlchemyOperationalError, PsycopgOperationalError):
+            raise ConfigurationError("Claire runtime database is unavailable") from None
         self.worker = Worker(self.store, lambda claim: Engine(model, registry, max_steps=claim.max_steps,
                               model_timeout_seconds=config.model_timeout), config.worker_id)
 
