@@ -1,0 +1,57 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/claire-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-ai
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, platformdirs-4.12.4, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 37 items
+
+tests/modules/test_m21_runtime_supervisor.py::test_database_retry_waits_full_lease_and_returns_safe_status PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_failure_budget_is_global_and_finite PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_job_limit_stops_and_unexpected_bug_stays_loud PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_disposal_failure_is_safe_terminal_status PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_cancellation_during_recovery_propagates PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits0] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits1] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits2] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits3] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits4] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits5] PASSED
+tests/modules/test_m21_runtime_supervisor_pg.py::test_supervisor_handles_real_database_loss_without_caller_retry[backend] ACTUAL_PG_VERSION: PostgreSQL 16.2 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 10.2.1 20210130 (Red Hat 10.2.1-11), 64-bit
+MIGRATION_TARGET: 20261008_m21_runtime_revoke; create_all=False
+PASSED
+tests/modules/test_m21_runtime_supervisor_pg.py::test_supervisor_handles_real_database_loss_without_caller_retry[server-restart] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change0] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change1] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change2] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change3] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change4] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change5] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change6] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change7] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change8] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change9] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change10] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change11] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change12] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change13] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change14] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change15] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change16] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_invalid_configuration_is_safe[change17] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_repr_redacted_and_postgres_allowed PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_environment_explicit_and_schema_opt_in PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_empty_or_write_tools_refused PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_configured_worker_consumes_separate_store_and_bounded_drain PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_database_startup_operational_error_is_sanitized[sqlalchemy] PASSED
+tests/modules/test_m21_claire_worker_configuration.py::test_database_startup_operational_error_is_sanitized[psycopg] PASSED
+
+=============================== warnings summary ===============================
+../claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459
+  /tmp/claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+--------------- generated xml file: /tmp/supervisor-combined.xml ---------------
+======================== 37 passed, 1 warning in 16.02s ========================

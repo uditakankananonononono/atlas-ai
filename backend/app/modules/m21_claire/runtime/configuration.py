@@ -128,3 +128,47 @@ class ConfiguredReadOnlyWorker:
 
     def close(self) -> None:
         self.store.close()
+
+
+@dataclass(frozen=True)
+class SupervisionResult:
+    status: str  # queue_empty | job_limit | database_unavailable
+    goals: tuple[str, ...]
+    database_failures: int
+
+
+async def supervise_read_only(worker: ConfiguredReadOnlyWorker, *, max_jobs: int = 10,
+                             max_database_failures: int = 3) -> SupervisionResult:
+    """Bounded in-process DB recovery, not an OS process/service supervisor.
+
+    Only declared DB OperationalError is retried. One full lease wait prevents a
+    still-live failed claim being treated as an empty queue and abandoned. Existing
+    fencing and effect reconciliation decide whether work is safe to retry.
+    Waiting is cancellable; sync DB calls themselves have no wall-time bound here.
+    """
+    import asyncio
+    if type(max_jobs) is not int or not 1 <= max_jobs <= 100:
+        raise ConfigurationError("max_jobs must be between 1 and 100")
+    if type(max_database_failures) is not int or not 1 <= max_database_failures <= 10:
+        raise ConfigurationError("max_database_failures must be between 1 and 10")
+    goals: list[str] = []
+    failures = 0
+    while len(goals) < max_jobs:
+        try:
+            goal = await worker.worker.run_once()
+        except (SQLAlchemyOperationalError, PsycopgOperationalError):
+            failures += 1
+            # Dispose drops stale idle connections; already checked-out handles
+            # may outlive disposal. It neither resets goals nor clears effects.
+            try:
+                worker.store.engine.dispose()
+            except (SQLAlchemyOperationalError, PsycopgOperationalError):
+                return SupervisionResult("database_unavailable", tuple(goals), failures)
+            if failures >= max_database_failures:
+                return SupervisionResult("database_unavailable", tuple(goals), failures)
+            await asyncio.sleep(worker.store.lease_seconds + CANCEL_GRACE)
+            continue
+        if goal is None:
+            return SupervisionResult("queue_empty", tuple(goals), failures)
+        goals.append(goal)
+    return SupervisionResult("job_limit", tuple(goals), failures)
