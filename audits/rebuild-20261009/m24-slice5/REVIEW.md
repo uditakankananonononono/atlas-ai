@@ -57,3 +57,13 @@ https://docs.stripe.com/webhooks (raw signature, duplicates/order/version destin
 https://docs.stripe.com/api/events/object (account Connect-only, livemode/api_version/created)
 https://docs.stripe.com/api/checkout/sessions/object (payment_status field)
 No invented provider object links or live provider claims.
+
+## Gate-requested guard additions after 5e330527
+
+Original gate SCOPED PASS reproduced78nodes and confirmed2preexistingbillingfailures; landing still held for re-review+executor+parent decision. Tests/receipts/docs only, no product/migration/readiness/defaultadmission/worker changes.
+
+18 added SQLite/PG nodes isolate futurecreated>now+300, localcustomer/local subscription mapping drift, checkoutoperationstate and exactreceiptID, invoicepaidstatus vs amountpaid independently, existinginvoiceforeignownership, deletedsubscriptionactive rather thancanceled. Each changes only named field and asserts pending/unchangedlifecycle+cursor where relevant.9mutations independently remove/weaken these guards and all returnpytest1 DID NOT RAISE,2FAIL each. checkout-state selector additionallyruns2passingresultIDcontrols, explicitly not mutation evidence. Restored bytes aftereach. GREENadditions18PASS78deselected7.98s; restored fullnonmigration94PASS2deselected49.83s. Original2migrationnodes unchanged/notrerunhere. Updatedacceptancemanifest96nodes. Initial78+18new=96distinctcontrols, NOT172fromoverlap. Updatedaffectedmanifest669includes2namedknownbillingfailures;649earlierdistinctpasses+18added=667distinctcompletedpasses across disjoint/overlappingruns, NOTfreshcombinedsuite.
+
+Binding.provider_account check is redundant by construction in normal production rows: identity is fixedaccount:test:resource and no public provisioning exists. Retained defense-in-depth against malformedinternalprovisioning/DBrows, not independentlytested behavior. Do NOT count original tests as isolating this guard. Verified internal object/database trust limits unchanged.
+
+Reproduce newmutations using PYTHONPATH=backend python audits/rebuild-20261009/m24-slice5/gate-addition-mutations.py in disposableclone; harnessexactselectors+rawRED-gate logs retained. Product restored. Fulloriginal15mutationrun not repeatedforthese test-only additions; originalreceipts remain. No activation/providertraffic/push.

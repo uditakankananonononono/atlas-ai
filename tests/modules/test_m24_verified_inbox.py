@@ -320,3 +320,70 @@ def test_concurrent_newer_older_resource_events_never_revert(env,monkeypatch):
         assert db.get(TenantBillingRow,'t1').status=='canceled'
         assert db.get(ResourceBindingRow,identity('acct_fixture','sub_fixture')).version==200
     assert results[0]['state']=='applied' and results[1]['state'] in {'applied','ignored_stale'}
+
+
+def test_future_created_bound_alone_refuses_signed_event(env,monkeypatch):
+    data=event(created=int(time.time())+3600)
+    with pytest.raises(InboxRefused,match='created time'):admit(env,monkeypatch,data)
+    with env[1]() as db:assert db.scalar(select(InboxRow)) is None
+
+
+@pytest.mark.parametrize('field,value',[('customer_id','cus_other'),('subscription_id','sub_other')])
+def test_local_mapping_drift_alone_refuses(env,monkeypatch,field,value):
+    ident=admit(env,monkeypatch)
+    with env[1].begin() as db:setattr(db.get(TenantBillingRow,'t1'),field,value)
+    with pytest.raises(InboxRefused,match='local .* mapping differs'):env[0].apply(ident)
+    with env[1]() as db:
+        assert db.get(TenantBillingRow,'t1').status=='active'
+        assert db.get(ResourceBindingRow,identity('acct_fixture','sub_fixture')).version==0
+        assert db.get(InboxRow,ident).state=='pending'
+
+
+@pytest.mark.parametrize('field,value',[('state','outcome_unknown'),('result',{'id':'cs_test_other','amount_total':2900})])
+def test_checkout_operation_state_or_receipt_id_alone_refuses(env,monkeypatch,field,value):
+    data=checkout_event(env,monkeypatch);ident=admit(env,monkeypatch,data)
+    with env[1].begin() as db:setattr(db.get(wa.OperationRow,data['data']['object']['metadata']['atlas_operation_id']),field,value)
+    with pytest.raises(InboxRefused,match='durable operation differs'):env[0].apply(ident)
+    with env[1]() as db:
+        assert db.get(TenantBillingRow,'t1').plan_id=='free'
+        assert db.get(ResourceBindingRow,identity('acct_fixture','sub_fixture')).version==0
+        assert db.get(InboxRow,ident).state=='pending'
+
+
+def invoice_event(env,*,status='paid',paid=100):
+    with env[1].begin() as db:db.add(ResourceBindingRow(identity=identity('acct_fixture','in_fixture'),provider_account='acct_fixture',environment='test',resource_id='in_fixture',tenant_id='t1',customer_id='cus_fixture',version=0))
+    data=event();data['type']='invoice.paid';data['data']['object']={
+        'id':'in_fixture','object':'invoice','customer':'cus_fixture','livemode':False,'currency':'usd','status':status,'amount_due':100,'amount_paid':paid,'metadata':{'atlas_tenant_id':'t1'}}
+    return data
+
+
+@pytest.mark.parametrize('field,value',[('status','open'),('amount_paid',99)])
+def test_invoice_confirmed_paid_single_field_refuses(env,monkeypatch,field,value):
+    from app.modules.m24_billing.repository import InvoiceRow
+    data=invoice_event(env);data['data']['object'][field]=value;ident=admit(env,monkeypatch,data)
+    with pytest.raises(InboxRefused,match='not confirmed paid'):env[0].apply(ident)
+    with env[1]() as db:
+        assert db.get(InvoiceRow,'in_fixture') is None
+        assert db.get(ResourceBindingRow,identity('acct_fixture','in_fixture')).version==0
+        assert db.get(InboxRow,ident).state=='pending'
+
+
+def test_current_invoice_foreign_tenant_alone_refuses(env,monkeypatch):
+    from app.modules.m24_billing.repository import InvoiceRow
+    data=invoice_event(env)
+    with env[1].begin() as db:db.add(InvoiceRow(id='in_fixture',tenant_id='foreign',status='open',currency='usd',amount_due=100,amount_paid=0))
+    ident=admit(env,monkeypatch,data)
+    with pytest.raises(InboxRefused,match='invoice tenant differs'):env[0].apply(ident)
+    with env[1]() as db:
+        row=db.get(InvoiceRow,'in_fixture');assert row.tenant_id=='foreign' and row.status=='open' and row.amount_paid==0
+        assert db.get(ResourceBindingRow,identity('acct_fixture','in_fixture')).version==0
+        assert db.get(InboxRow,ident).state=='pending'
+
+
+def test_deleted_subscription_active_status_alone_refuses(env,monkeypatch):
+    data=event(status='active');data['type']='customer.subscription.deleted';ident=admit(env,monkeypatch,data)
+    with pytest.raises(InboxRefused,match='deleted subscription not canceled'):env[0].apply(ident)
+    with env[1]() as db:
+        assert db.get(TenantBillingRow,'t1').status=='active'
+        assert db.get(ResourceBindingRow,identity('acct_fixture','sub_fixture')).version==0
+        assert db.get(InboxRow,ident).state=='pending'
