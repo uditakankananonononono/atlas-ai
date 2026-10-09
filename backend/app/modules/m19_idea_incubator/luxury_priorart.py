@@ -80,8 +80,11 @@ async def check_idea(idea: dict, sector: str, fetch: Fetcher = combined_fetch) -
                     key=lambda h: -h["overlap"])
     top = scored[0]["overlap"] if scored else 0.0
     words = SECTOR_WORDS.get(sector, SECTOR_WORDS["other"])
-    on_topic = [h for h in scored if tokens(h["title"] + " " + h["snippet"]) & words]
-    if top < WEAK and not on_topic:
+    def topical(h: dict) -> bool:
+        # two distinct sector words anywhere, or one in the title; one stray word is not enough
+        return len(tokens(h["title"] + " " + h["snippet"]) & words) >= 2 or bool(tokens(h["title"]) & words)
+    on_topic = [h for h in scored if topical(h)]
+    if not on_topic:
         return {"idea_id": idea["idea_id"], "label": "inconclusive", "query": q, "top_overlap": top, "hits": scored[:3],
                 "caveat": "index returned no on-topic results; this says nothing about novelty"}
     # a strong label needs an on-topic hit; an off-topic overlap on common words is noise

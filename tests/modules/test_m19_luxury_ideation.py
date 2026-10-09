@@ -65,3 +65,12 @@ def test_priorart_unrelated_hits_do_not_count():
     async def junk(q): return [{"title": "Medieval pottery", "snippet": "clay glaze kiln", "url": "https://y"}]
     assert run(check_idea(idea, "automotive", junk))["label"] == "inconclusive"
     assert len(run(check_ideas(generate_ideas(CAR)["ideas"], "automotive", junk))) == len(generate_ideas(CAR)["ideas"])
+
+
+def test_one_stray_sector_word_in_snippet_is_not_on_topic():
+    idea = [i for i in generate_ideas(CAR)["ideas"] if i["idea_id"] == "operations_quality"][0]
+    async def stray(q): return [{"title": "Maldives Police Service", "snippet": "staff reviews complaints analytics quality, once led by a driver", "url": "https://p"}]
+    r = run(check_idea(idea, "automotive", stray))
+    assert r["label"] == "inconclusive"
+    async def real(q): return [{"title": "Automotive dealer staffing analytics", "snippet": "service quality reviews and complaints analytics for car dealers", "url": "https://d"}]
+    assert run(check_idea(idea, "automotive", real))["label"] in ("possible-prior-art", "done-before")
