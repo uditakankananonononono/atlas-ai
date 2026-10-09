@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/claire-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-ai
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, platformdirs-4.12.4, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+tests/modules/test_m21_runtime_generation_transport_kill.py::test_external_kill_during_model_then_fresh_process_recovers[generation] ACTUAL_PG_VERSION: PostgreSQL 16.2 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 10.2.1 20210130 (Red Hat 10.2.1-11), 64-bit
+MIGRATION_TARGET: 20261008_m21_runtime_revoke; create_all=False
+PASSED
+tests/modules/test_m21_runtime_generation_transport_kill.py::test_external_kill_during_model_then_fresh_process_recovers[transport] PASSED
+
+=============================== warnings summary ===============================
+../claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459
+  /tmp/claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+---------------- generated xml file: /tmp/claire-model-kill.xml ----------------
+======================== 2 passed, 1 warning in 35.39s =========================
