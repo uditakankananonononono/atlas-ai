@@ -20,6 +20,10 @@ class ModelUnavailable(RuntimeError):
     """Raised by a model adapter when no usable model answered. Carries no provider text."""
 
 
+class InvalidModelOutput(ValueError):
+    """Malformed adapter response, without provider diagnostics."""
+
+
 class ModelPort(Protocol):
     async def decide(self, messages: list[dict[str, str]]) -> AgentDecision: ...
 
@@ -115,7 +119,7 @@ class Engine:
                     return _rr(stop_reason="cancelled", steps_used=step - 1, receipts=receipts, refusals=refusals)
             except (ModelUnavailable, asyncio.TimeoutError):  # a hung/slow model is 'unavailable'; no provider text
                 return _rr(stop_reason="model_unavailable", steps_used=step - 1, receipts=receipts, refusals=refusals)
-            except (ValidationError, json.JSONDecodeError):
+            except (InvalidModelOutput, ValidationError, json.JSONDecodeError):
                 return _rr(stop_reason="model_invalid_output", steps_used=step - 1, receipts=receipts, refusals=refusals)
             messages.append({"role": "assistant", "content": decision.model_dump_json()})
             if decision.final is not None:

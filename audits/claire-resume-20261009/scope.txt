@@ -1,0 +1,8 @@
+Python 3.12.14. Atlas base 3f7321be32816dc27e8015d9f49d01b1554a8fb5.
+Command: /tmp/claire-venv/bin/python -m pytest tests/modules/test_m21_claire_runtime.py tests/modules/test_m21_runtime_model_timeout.py tests/modules/test_m21_claire_model_adapter.py -q --junitxml=/tmp/claire-small.xml
+Result: 65 passed. 27 adapter tests are protocol/transport protections; remaining 38 are existing runtime and timeout regressions. No counts additive across repeated runs.
+Initial collection failed on missing bs4/scipy/asn1crypto; installed dependencies in ephemeral venv, no product dependency changes.
+Larger sweep interrupted by execution deadline after partial progress; NOT PASS. interrupted-runtime-sweep.log retained. Full Atlas/Meemee suites NOT run.
+No learned model, hosted inference, real PostgreSQL, live deployment inventory, production OIDC, channel canary or desktop daemon verified.
+Synthetic loopback HTTP endpoint proves transport only. Mounted failure test uses a provider test double and dependency-overridden tenant.
+No provider credentials used. No push, integration, live migration, deletion or email.
