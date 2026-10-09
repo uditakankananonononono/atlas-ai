@@ -1,0 +1,22 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_final_total_or_incomplete_binding_holds_without_compensation[sqlite-total] _
+
+env = (<app.modules.m24_billing.invoice_dispatcher.InvoiceRepository object at 0x7ff2419dea80>, sessionmaker(class_='Session...reated_at': datetime.datetime(2026, 10, 9, 12, 49, 44, 449369, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff2411af440>
+mismatch = 'total'
+
+    @pytest.mark.parametrize('mismatch',['total','lines','item'])
+    def test_final_total_or_incomplete_binding_holds_without_compensation(env,monkeypatch,mismatch):
+        op=prepare(env);ready(env,monkeypatch);mock=MockStripe(mismatch=mismatch)
+>       result=dispatch(env,op,mock);assert result['state']=='outcome_unknown'
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'succeeded' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + succeeded
+
+tests/modules/test_m24_invoice_dispatcher.py:135: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_invoice_dispatcher.py::test_final_total_or_incomplete_binding_holds_without_compensation[sqlite-total]
+1 failed in 0.41s

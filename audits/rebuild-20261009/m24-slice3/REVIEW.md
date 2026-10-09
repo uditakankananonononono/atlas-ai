@@ -1,0 +1,42 @@
+# M24 slice3 inactive invoice substeps
+
+Base landed7c87ad902b0d6891797adf812bcc6958eca31d31. Branchm24-slice3-invoice-substeps-20261009. LOCAL candidate, not published/deployed; exact-tip independent gate required. No provider credentials read/rotated, no real Stripe requests/account readiness. Existing unconditional require_dispatch_ready remains; tests explicitly monkeypatch it and insertfixture-onlycutoverrow. No activation API/configuration/checker; pinnedversion2026-09-30.endive is not verified TESTaccount support.
+
+## Product diff
+
+NewInvoiceStep/AttemptSQLmodels, migration20261009_m24_invoice_steps on landedcheckouthead; parent authoritativeOperationRow consumesONE M00permit with draftsnapshot in originaltransaction. ServerkeysO:draft-invoice/O:invoice-item, parentkeyO:invoice-parent NEVER dispatched. Exactmetadata/account/version/formbinding. No legacybackfill or converting olditem-firstoperations. PopulatedSQLite/PGupgrade keepsoldintentswithoutsteps; populateddowngraderefuses.
+
+Draft-firstPOST /v1/invoices withcustomer/currency/auto_advancefalse/pendingitemsbehavior exclude, exactopaqueoperationmetadata. Onlydurablesucceededboundedreceipt canmakeitemeligible; id-onlyfakeDBreceiptfails. ItemPOSTincludesexplicitcommittedinvoiceID/amount/currency/description/discountablefalse. EachstepclaimSQLCASprepared/fencenull/cutoverpredicate, approvallock and refresh, DBclock, finite60slease/12hfirstattemptbound shortenedbyauthority. Confirmedcommitreadback and preentryauthority/cutover/fence/formcheck. No uncertain/late takeover. MarkerLOCALINPROCESSonly; restartcannottrustmissingentryevidence. CancelledErrorafterentrydeliberatelyunknown.
+
+Acceptedresponsebinding checked beforeboundedreceiptstored, noURL/rawerror/secret. Receipt-storagefailureholdsdispatching; draftunknowncannotcreateitem. Latedrafts/items heldsucceeded_late, no automaticnextstep/acceptance. Existingparent remainspreparedwhilesubstepheld; dispatcher/status derivesoutcome_unknown rather than blessingparentpreparedasdispatchable. No reconciliation/closure APIyet.
+
+Afterbothreceipts, authenticatedsameadapterGETexactinvoicehandle, validatecustomer/currency/TEST/draft/autoadvance/metadata/totalapprovedamount and exactly1line binding parent.invoice_item_details.invoice_item tocommitteditem. has_moretrue ormultiplelines conservativelyHOLDS, no partialpageclaim. Finalvalidation repeatedinsidefinishtransaction usingthe same rawretrievedinvoice; no arbitraryIDonlyfinish. Nofinalize/send/pay/delete/refund/compensation. Serviceexecute_approved routesinjected invoicedispatcher notlegacyStripeClient/receipt; defaultservicedispatcherNONEandreadinessunavailable. TenantauthGETinvoiceoperations returnsboundedstatuses/receiptsonly, foreign404.
+
+LocalcustomerTenantBillingmappingrequired; it is preliminary, NOT liveprovideraccountcustomeridentityverification. Credentialaccountbinding mustbeverifiedbeforeactivation. SharedCheckoutRepositoryauthority/DBclockhelpers reusedinternally (checkoutwordinginerrors), noM00helperchange. Noindependentdomainpermitvalidator.
+
+## Acceptance
+
+Python3.12.14, samevenv /tmp/atlas-memo3-venv, LinuxSQLite3.53.1/pgserver0.1.4PG16.2. ExactprefixPYTHONPATH=backend PATH=/tmp/atlas-memo3-venv/bin:$PATH /tmp/atlas-memo3-venv/bin/python -m pytest -q.
+
+CompletedDISJOINTsets,455distinctnamednodes, NOT onecombined/fullrepositoryrun:
+-74PASS/2deselected59.28s: tests/modules/test_m24_invoice_dispatcher.py -k 'not populated_invoice', nonmigration-final74.log.
+-2PASS/74deselected54.88s: samefile-kpopulated_invoice,migration-final2.log.
+-84PASS/2deselected55.67s: test_m24_checkout_dispatcher.py -k 'not populated_checkout',affected-checkout-84.log. Subsequentchangesonlyinvoicecode/tests/sharedserviceinvoicebranch, no checkoutlogicchanges; notfullpostcheckpointreplay.
+-2PASS/84deselected53.47s: checkoutfile-kpopulated_checkout,affected-checkout-migrations2.log.
+-29PASS47.54s:test_m24_write_ahead_repository.py,affected-storage29.log.
+-264PASS27.48s:sortedtest_m24*.py excludinginvoice_dispatcher/checkout_dispatcher/write_ahead_repository plusm00_approval_center/m00_impact_preview,affected-other264.log.
+Acceptance76newmanifest and455affectedmanifest collectedatcandidate. Earlier11/29/41/45/56/68runsOVERLAP, neveradditive.
+
+12externalSIGKILLnodes(draft/item xattempt/accepted/receipt xSQLite/PG): fsyncedPIDbarrier, parentSIGKILL and-SIGKILLassertion, PIDdistinctrestart. Draft/itemeffectcounts<=1each. Attemptcommitted oracceptedbeforereceipt remainsheld; noadditionalmutation. Draftreceiptcommitted restartcanprepare/deliveritem; itemreceiptcommitted restartGETverifiesthenfinish. EffectsarefsyncedFIXTURElogs, notrealStripeacceptance/idempotency. PGprocesscrashnotserverrestart/powerloss/failover. Preparedcommit/storagekillcoveragefrompriorinactiveSlice1notrelabeled.
+
+6mutationsbite:removeddraftdependency,wrongattachedinvoiceID,dropfinaltotal,allowincompletelines,classifypostentrysafe,dropreadbackfence. Rawreceipts +harness. RemoveddraftdependencybitecanbeValueErrorfrommissingreceipt, notnecessarilyunsafeitemcreation; treatasguardcontractclassification. PostentrysafeinitiallySURVIVEDbecauseparentunknownmaskedstepstate; retainedmutation-survived-parent-unknown-masks-step.log. Strengthenedtimeouttestsassertstepstateunknown, nowmutationfails; final74rerunincludesfix. REDmissingmodulecollectionERRORretained, notbehavioralRED. NootherbuilderproductFAILduringnewgreenfixtureiterations. OldomittedpendingitembehaviorisDOCSBASEDmockcontract test: legacyitemfirstomitsinvoice anddraftomitsbehavior, fixturedefault excludespendingitem=>emptydrafttotal0. TestPASScharacterizesrisk, notlivecustomerdefect.
+
+## Limits requiring gate judgment
+
+Nooperationalcheckedcutover/accountTESTreadiness/credential-egressrotation/accountidentity proof. Noledgerofmultiplelateconflictingreceipts; noexpiryreconciliationjob, signedinbox, budget, cancellation, parentterminalclose/reviewretry. Stepsunknownremainheldindefinitely. Actualproviderlookuppositive/absence evidence notimplemented; no externalexactlyonce.
+
+Noall-linespagination:has_more/incomplete/multiplelineshold. Parentlineobjectshapechosenfromfetchedcurrentdocs, notaccount-testedpin.60slease+httpx30sPERPHASE mayoutlivelease;lateheld. Noheartbeat/skewruntimeacceptance. Localpreentryrevocationchecknotexternalconditionalenforcement; cancellationafterentrydoesnotundo. Finalreadfailureheldeveniftemporary, noautoGETretryyet. Loopback/publicAPIcallavailabilitynotproductionverified. NoPGrestart/WAL/synchronous/powerloss/failover/interruptedmigrationmatrix/fullsuite/CI. Defaultlegacycancelexecutionstillblockedbyreadiness; laterSlice4ownsit.
+
+Directinternalfinishreceivesrawinvoicevalidatedstructurally, notcaller-signedauthentication; onlydispatcherfetchpathisintendedentry, notpublicadjudicationAPI. MemoryDBeditscanfabricateevidence, productdoesnotclaimresilienceagainsttrustedDBoperator. Gateinspectclaim/outcomefencing/dependency/lateparentpolicy/service/statusHTTProutes/migration/fixtureonlyreadiness. Nochanged/publicmigrationrename ormemo3/Claireheadintegration.
+
+Sourcesinspected: https://docs.stripe.com/api/invoices/line_item (parent.invoice_item_details.invoice_item); https://docs.stripe.com/api/invoices/retrieve. Priorclearedexactrequestdesign carries https://docs.stripe.com/api/invoices/create and https://docs.stripe.com/api/invoiceitems/create. NoURLsconstructedfromIDs, noproviderobjectlinkclaimed.

@@ -78,3 +78,18 @@ def checkout_operation(operation_id:str,t:TenantContext=Depends(require_tenant))
   operation=CheckoutRepository(default_service()).get(operation_id,t.tenant_id)
   return {k:operation[k] for k in ('id','state','result','failure','first_attempt_at','dispatch_not_after')}
  except KeyError:raise HTTPException(404,'checkout operation not found')
+
+@router.get('/invoice-operations/{operation_id}')
+def invoice_operation(operation_id:str,t:TenantContext=Depends(require_tenant)):
+ from app.modules.m00_approval_center.service import default_service
+ from .invoice_dispatcher import InvoiceRepository
+ try:
+  repo=InvoiceRepository(default_service());parent=repo.get(operation_id,t.tenant_id)
+  if parent['action_type']!='issue_invoice':raise KeyError(operation_id)
+  steps=repo.steps(operation_id,t.tenant_id)
+  state=parent['state']
+  if state=='prepared' and any(s['state']!='prepared' and s['state']!='succeeded' for s in steps.values()):state='outcome_unknown'
+  return {'id':parent['id'],'state':state,'result':parent['result'],'failure':parent['failure'],
+   'steps':{role:{k:step[k] for k in ('state','result','failure')} for role,step in steps.items()}}
+ except KeyError:raise HTTPException(404,'invoice operation not found')
+ except (RuntimeError,ValueError):raise HTTPException(409,'invoice operation binding unavailable')

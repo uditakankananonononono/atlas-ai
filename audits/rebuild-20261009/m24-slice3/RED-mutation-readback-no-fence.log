@@ -1,0 +1,25 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_invoice_claim_readback_mismatch_no_adapter[sqlite] ____________
+
+env = (<app.modules.m24_billing.invoice_dispatcher.InvoiceRepository object at 0x7f08ad6ea4b0>, sessionmaker(class_='Session...reated_at': datetime.datetime(2026, 10, 9, 12, 49, 51, 140969, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f08ad6ea390>
+
+    def test_invoice_claim_readback_mismatch_no_adapter(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);mock=MockStripe();original=env[0].step
+        def mismatch(*a,**kw):
+            value=original(*a,**kw)
+            if value['step']['state']=='dispatching':value['step']['fence']='bad-readback'
+            return value
+        monkeypatch.setattr(env[0],'step',mismatch)
+>       result=dispatch(env,op,mock);assert result['state']=='outcome_unknown' and mock.calls==[]
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ('succeeded' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + succeeded)
+
+tests/modules/test_m24_invoice_dispatcher.py:301: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_invoice_dispatcher.py::test_invoice_claim_readback_mismatch_no_adapter[sqlite]
+1 failed in 0.40s
