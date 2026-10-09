@@ -129,3 +129,26 @@ def test_check_ideas_survives_a_malformed_idea():
     async def f(q): return []
     out = run(check_ideas([good, {"idea_id": "bad"}], "automotive", f))
     assert len(out) == 2 and out[1]["label"] == "unchecked"
+
+
+def test_source_passage_content_matches_the_source_finding():
+    d = CAR.model_dump()
+    d["sources"][0]["finding"] = "Owners wait months for restoration and service appointments at the dealer."
+    brief = VentureBrief.model_validate(d)
+    passages = [p for i in generate_ideas(brief)["ideas"] for e in i["evidence"] for p in e["source_passages"]]
+    assert passages
+    assert all(p["finding"] == d["sources"][0]["finding"] and p["source_id"] == "s0" for p in passages)
+
+
+def test_check_ideas_converts_an_idea_that_raises_into_unchecked():
+    good = generate_ideas(CAR)["ideas"][0]
+    out = run(check_ideas([{"idea_id": "bad"}, good], "automotive", lambda q: asyncio.sleep(0, result=[])))
+    assert out[0]["label"] == "unchecked" and out[0]["error"] and out[1]["idea_id"] == good["idea_id"]
+
+
+def test_combined_fetch_survives_one_failing_index(monkeypatch):
+    from app.modules.m19_idea_incubator import luxury_priorart as lp
+    async def boom(q): raise RuntimeError("down")
+    async def ok(q): return [{"title": "t", "snippet": "s", "url": "u"}]
+    monkeypatch.setattr(lp, "wikipedia_fetch", boom); monkeypatch.setattr(lp, "news_fetch", ok)
+    assert run(lp.combined_fetch("x")) == [{"title": "t", "snippet": "s", "url": "u"}]
