@@ -636,3 +636,11 @@ def test_list_accepts_documented_limit_boundaries(service, limit):
 def test_submit_unrepresentable_ttl_is_validation_error(service):
     with pytest.raises(ValueError, match='ttl_seconds'):
         submit(service, ttl_seconds=10**30)
+
+
+def test_keyed_gate_unrepresentable_policy_ttl_is_validation_error(service, monkeypatch):
+    monkeypatch.setattr(service, 'evaluate_policy', lambda **kwargs: (
+        'review', {'id': 'fixture', 'review_ttl_seconds': 10**30}))
+    with pytest.raises(ValueError, match='ttl'):
+        service.gate(module_id=5, action_type='send_email', payload={}, user_id='local',
+                     idempotency_key='huge-ttl')
