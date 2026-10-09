@@ -525,6 +525,7 @@ def test_gate_insert_race_retains_only_committed_winner(service, monkeypatch, sa
     from sqlalchemy import select
     from sqlalchemy.orm import Session
     from app.modules.m00_approval_center.service import ApprovalIdempotencyRow, ApprovalRequestRow
+    subscriber = service.broadcaster.subscribe()
     flush = Session.flush
     winners = []
     args = dict(module_id=5, action_type='send_email', user_id='udita', idempotency_key='race')
@@ -544,3 +545,40 @@ def test_gate_insert_race_retains_only_committed_winner(service, monkeypatch, sa
             service.gate(payload={'to': 'loser@test'}, **args)
     with service._sessions() as db:
         assert [row.id for row in db.scalars(select(ApprovalRequestRow))] == [winners[0]['approval']['id']]
+    assert subscriber.get_nowait()['approval']['id'] == winners[0]['approval']['id']
+    import queue
+    with pytest.raises(queue.Empty):
+        subscriber.get_nowait()
+    assert [event['event'] for event in service.audit(winners[0]['approval']['id'])] == ['created']
+    from app.modules.m00_approval_center.service import ApprovalEventRow
+    with service._sessions() as db:
+        assert len(list(db.scalars(select(ApprovalEventRow)))) == 1
+
+
+def test_gate_unrelated_integrity_rethrows_and_leaves_no_request_event_or_signal(service, monkeypatch):
+    import queue
+    from sqlalchemy import select
+    from sqlalchemy.exc import IntegrityError
+    from sqlalchemy.orm import Session
+    from app.modules.m00_approval_center.service import (
+        ApprovalIdempotencyRow, ApprovalRequestRow, ApprovalEventRow,
+    )
+    subscriber = service.broadcaster.subscribe()
+    original = Session.flush
+    failure = IntegrityError('fixture insert', {}, RuntimeError('unrelated fixture failure'))
+
+    def fail_key_insert(db, *args, **kwargs):
+        if any(isinstance(row, ApprovalIdempotencyRow) for row in db.new):
+            raise failure
+        return original(db, *args, **kwargs)
+
+    monkeypatch.setattr(Session, 'flush', fail_key_insert)
+    with pytest.raises(IntegrityError) as raised:
+        service.gate(module_id=5, action_type='send_email', payload={'to': 'fixture@test'},
+                     user_id='udita', idempotency_key='failed-key')
+    assert raised.value is failure
+    with service._sessions() as db:
+        for model in (ApprovalRequestRow, ApprovalEventRow, ApprovalIdempotencyRow):
+            assert list(db.scalars(select(model))) == []
+    with pytest.raises(queue.Empty):
+        subscriber.get_nowait()
