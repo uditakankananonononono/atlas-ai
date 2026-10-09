@@ -46,35 +46,48 @@ ANGLES=(
  ('provenance_storytelling','A provenance experience that turns verified craft, place, and product records into a customer-facing narrative.'),
 )
 
-def _score(angle:int,brief:VentureBrief)->dict:
- evidence=round(100*sum(s.importance for s in brief.signals)/len(brief.signals),1)
- readiness=round(100*sum(c.readiness for c in brief.capabilities)/len(brief.capabilities),1)
- # Explicit, reproducible heuristics. Scores are prioritization aids, not market facts.
- fit=round(min(100,55+5*len(brief.constraints)+angle*3),1)
- differentiation=round(min(100,62+len(brief.sources)*2-angle*2),1)
- effort=round(max(0,100-readiness+angle*7),1)
- risk=round(min(100,25+5*len(brief.constraints)+angle*4),1)
+BOUNDARY='Concept research and packaging only. No affiliation claim, outreach, publication, sale, contract, purchase, or spend occurs. Review current public sources and obtain explicit approval before any external action.'
+
+_DIFF={'done-before':20.0,'possible-prior-art':40.0,'no-prior-art-found':65.0}
+
+def _score(idea:dict,brief:VentureBrief,priorart_label:str|None=None)->dict:
+ """Scores derived from the idea's own evidence, matched capabilities and (optional) prior-art label.
+ brand_fit and risk remain simple heuristics over the brief's constraints; differentiation is neutral (50) unless a prior-art label is supplied.
+ They rank candidates and are not market facts."""
+ from .luxury_ideation import tokens
+ imps=[s.importance for s in brief.signals if s.signal_id in {e['signal_id'] for e in idea['evidence']}]
+ evidence=round(100*sum(imps)/len(imps),1) if imps else 0.0
+ readiness=round(100*idea['capability_readiness'],1)
+ mech=tokens(idea['mechanism'])|{t for e in idea['evidence'] for t in e['matched_terms']}
+ fit=round(100*sum(1 for c in brief.constraints if tokens(c)&mech)/len(brief.constraints),1)
+ differentiation=_DIFF.get(priorart_label or '',50.0)
+ effort=round(max(0,min(100,100-readiness+10*(len(idea['levers'])-1))),1)
+ risk=round(min(100,25+5*len(brief.constraints)),1)
  total=round(.25*evidence+.2*readiness+.2*fit+.15*differentiation+.1*(100-effort)+.1*(100-risk),1)
  return {'desirability_evidence':evidence,'feasibility':readiness,'brand_fit':fit,'differentiation':differentiation,'implementation_effort':effort,'risk':risk,'weighted_total':total}
 
-def build_luxury_venture(brief:VentureBrief)->dict:
+def build_luxury_venture(brief:VentureBrief,priorart:dict[str,str]|None=None)->dict:
+ """Concepts come from luxury_ideation (evidence-matched levers). Raises ValueError when no lever matches the evidence."""
+ from .luxury_ideation import generate_ideas
  source_ids={s.source_id for s in brief.sources}
  if len(source_ids)!=len(brief.sources):raise ValueError('source_id values must be unique')
  unknown=sorted({x for s in brief.signals for x in s.source_ids}-source_ids)
  if unknown:raise ValueError('signals cite unknown source_ids: '+', '.join(unknown))
- cited=sorted({x for s in brief.signals for x in s.source_ids})
+ gen=generate_ideas(brief,max_ideas=3)
+ if not gen['ideas']:raise ValueError('no idea lever matched the supplied evidence; unmatched signals: '+', '.join(gen['unmatched_signals']))
  concepts=[]
- for i,(key,promise) in enumerate(ANGLES):
-  scores=_score(i,brief)
-  concepts.append({'concept_id':key,'name':key.replace('_',' ').title(),'promise':promise,
-   'customer_job':brief.customer_job,'evidence_refs':cited,'capability_refs':[c.capability_id for c in brief.capabilities],
-   'scores':scores,'assumptions':['brand stakeholder has not validated this concept','customer willingness to pay is unknown'],
+ for idea in gen['ideas']:
+  refs=sorted({x for e in idea['evidence'] for x in e['source_ids']})
+  concepts.append({'concept_id':idea['idea_id'],'name':idea['idea_id'].replace('_',' ').replace('+',' + ').title(),'promise':idea['mechanism'][0].upper()+idea['mechanism'][1:]+'.',
+   'customer_job':brief.customer_job,'evidence_refs':refs,'capability_refs':idea['capability_refs'],'evidence':idea['evidence'],
+   'scores':_score(idea,brief,(priorart or {}).get(idea['idea_id'])),
+   'assumptions':['brand stakeholder has not validated this concept','customer willingness to pay is unknown'],
    'prohibited_claims':['brand affiliation or endorsement','validated demand','guaranteed revenue or outcome']})
  concepts.sort(key=lambda x:(-x['scores']['weighted_total'],x['concept_id']))
  winner=concepts[0]
  experiment={'concept_id':winner['concept_id'],'budget_limit':0,'method':'Five structured problem interviews using a review-approved, non-leading script','success_metric':'At least 3 of 5 qualified participants independently rank the problem among their top two','external_action_started':False,'requires_approval_before_contact':True}
  pitch={'status':'review_only','brand_or_segment':brief.brand_or_segment,'problem':brief.customer_job,'recommended_concept_id':winner['concept_id'],'evidence_refs':winner['evidence_refs'],'next_proof':experiment['success_metric'],'claim_limits':winner['prohibited_claims']}
- return {'brand_or_segment':brief.brand_or_segment,'sector':brief.sector,'concepts':concepts,'recommended_concept_id':winner['concept_id'],'validation_experiment':experiment,'pitch_brief':pitch,'side_effects':[],'boundary':'Concept research and packaging only. No affiliation claim, outreach, publication, sale, contract, purchase, or spend occurs. Review current public sources and obtain explicit approval before any external action.'}
+ return {'brand_or_segment':brief.brand_or_segment,'sector':brief.sector,'concepts':concepts,'recommended_concept_id':winner['concept_id'],'validation_experiment':experiment,'pitch_brief':pitch,'side_effects':[],'boundary':BOUNDARY,'coverage':{'levers_matched':gen['levers_matched'],'unmatched_signals':gen['unmatched_signals']}}
 
 class PitchPackageRequest(BaseModel):
  brief:VentureBrief
@@ -85,7 +98,7 @@ def build_pitch_package(request:PitchPackageRequest)->dict:
  concept_id=request.concept_id or studio['recommended_concept_id']
  matches=[x for x in studio['concepts'] if x['concept_id']==concept_id]
  if not matches:raise ValueError('concept_id is not present in this studio result')
- c=matches[0];experiment=studio['validation_experiment']
+ c=matches[0];experiment={**studio['validation_experiment'],'concept_id':concept_id}
  markdown='\n'.join([
   f"# {c['name']} - review-only venture brief",'',
   f"**Target:** {request.brief.brand_or_segment}",f"**Customer job:** {c['customer_job']}",'',
@@ -95,7 +108,7 @@ def build_pitch_package(request:PitchPackageRequest)->dict:
   '## Claim limits',*[f"- {x}" for x in c['prohibited_claims']],'',
   '> Draft for owner review. No brand affiliation, outreach, sale, publication, contract, or spend has occurred.'
  ])
- return {'concept_id':concept_id,'filename':concept_id+'-review-brief.md','media_type':'text/markdown','markdown':markdown,'evidence_refs':c['evidence_refs'],'review_status':'pending','external_action_started':False}
+ return {'concept_id':concept_id,'filename':concept_id+'-review-brief.md','media_type':'text/markdown','markdown':markdown,'experiment':experiment,'evidence_refs':c['evidence_refs'],'review_status':'pending','external_action_started':False}
 
 class OutreachPreview(BaseModel):
  concept_id:str
@@ -110,7 +123,7 @@ def validate_outreach_preview(data:OutreachPreview,package:dict)->dict:
  if data.concept_id!=package['concept_id']:raise ValueError('concept_id does not match pitch package')
  unknown=sorted(set(data.evidence_refs)-set(package['evidence_refs']))
  if unknown:raise ValueError('outreach cites evidence absent from pitch package: '+', '.join(unknown))
- banned=('partnered with','official partner','guaranteed','validated demand','endorsed by')
+ banned=('partnered with','in partnership with','official partner','authorized by','authorised by','sponsored by','guaranteed','guarantee','validated demand','proven demand','proven results','endorsed by','endorsement from')
  found=[x for x in banned if x in (data.subject+' '+data.body).lower()]
  if found:raise ValueError('unsupported external claim: '+', '.join(found))
  return {'concept_id':data.concept_id,'recipient_organization':data.recipient_organization,'recipient_role':data.recipient_role,'channel':data.channel,'subject':data.subject,'body':data.body,'evidence_refs':data.evidence_refs,'status':'pending_approval','sent':False,'boundary':'Approval request only. This endpoint does not send or submit the message.'}

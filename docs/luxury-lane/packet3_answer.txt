@@ -1,0 +1,92 @@
+Overall verdict: PARTIAL. The visible code implements real data validation, deterministic scoring, Markdown packaging, outreach-preview checks, outcome consistency checks, and subprocess-based prototype testing. But it repeatedly confuses a plausible workflow artifact with evidence that the underlying business idea, outreach safety, or prototype functionality has been validated.
+Scope limitation: luxury_ideation.generate_ideas, tokens, and the COMPONENTS templates are not shown. I cannot certify their behavior, the generated components' actual functionality, or the quality of their tests. Verdicts below apply to the supplied implementation, not unseen code.
+1. luxury_venture.py — function-by-function verdicts
+Function / class
+Verdict
+Specific reason
+Source
+PARTIAL
+Pydantic enforces string lengths and an HTTP(S) URL prefix, but does not establish that a URL exists, that the source is public or trustworthy, or that finding is supported by it. observed_at is merely a length-constrained string, not a validated timestamp.
+Signal
+PARTIAL
+Enforces basic field constraints, including a nonempty list of source IDs, but does not itself verify that IDs exist or that the statement follows from those sources. importance is caller-supplied, not independently measured.
+Capability
+PARTIAL
+Validates a description and a 0–1 readiness score, but does not verify the capability exists or that its readiness assessment is justified.
+VentureBrief
+PARTIAL
+Enforces schema constraints and strips two text fields, but accepts unverified evidence, duplicate signal/capability IDs, arbitrary constraints, and subjective importance/readiness values.
+_score
+PARTIAL
+Computes a reproducible weighted score, but its inputs and formulas are heuristic: constraint overlap determines fit, readiness is taken directly from the idea, and risk depends only on the number of constraints. The score is not a validated prediction of demand, feasibility, or business risk.
+build_luxury_venture
+PARTIAL
+Checks unique source IDs and signal-to-source references, calls generate_ideas, ranks concepts, and assembles a pitch and experiment. It does not independently verify evidence or demand, and its quality depends on the unseen idea generator; the proposed experiment is a plan, not a performed validation.
+PitchPackageRequest
+PARTIAL
+Validates the embedded brief through Pydantic, but does not validate concept_id beyond its optional string type.
+build_pitch_package
+PARTIAL
+Produces a real Markdown package and rejects a concept ID not in the newly generated studio results. However, it calls build_luxury_venture(request.brief) without forwarding prior-art data, and it uses the winning concept's experiment even when a different concept is requested.
+OutreachPreview
+PARTIAL
+Validates basic message fields and limits, but recipient identity, recipient authorization, and the relevance or accuracy of evidence are not checked.
+validate_outreach_preview
+PARTIAL
+Checks the concept ID, evidence-reference subset, and five exact prohibited phrases, then returns a review-only object. It is not a comprehensive claim-safety validator: unsupported wording can evade the phrase list, and the evidence references are not verified against source contents.
+VentureOutcome
+PARTIAL
+Validates the status enum and basic field constraints, but does not establish that the observed value or target was measured correctly, that the source references exist, or that the outcome is attributable to the venture.
+summarize_outcome
+PARTIAL
+Checks consistency between succeeded/failed and observed_value >= target, and generates a recommendation. It allows inconclusive even when the target is met or missed, and it does not independently validate the result or learning claims.
+2. luxury_prototype.py — build_prototype
+Verdict: PARTIAL.
+It genuinely writes Python component and test files, runs unittest in a subprocess, records return codes and reported test counts, and returns a receipt. But it proves only that the supplied tests ran and passed—not that the components implement the intended mechanisms correctly, integrate with real systems, or satisfy the venture's requirements.
+Specific code-level findings:
+Template selection: if lever not in COMPONENTS or not _SAFE.match(lever) rejects unsupported lever names and names outside the permitted character pattern. This is a real guard, but it does not validate the contents of COMPONENTS.
+File generation: write_text(textwrap.dedent(code).lstrip()) writes the selected template to disk. This is real file generation, not proof of a functional application.
+Test execution: subprocess.run([... "-m", "unittest", f"test_{lever}", "-v"], ...) executes tests, but there is no explicit clean environment, dependency isolation, or protection against stale files.
+Test accounting: re.search(r"Ran (\d+) tests?", p.stderr) extracts the test count from stderr. If the expected summary is absent, the function records zero; it does not distinguish all causes of missing test summaries.
+Pass determination: all(r["returncode"] == 0 and r["tests_run"] > 0 for r in results) establishes that every recorded run exited successfully and reported at least one test. It cannot detect weak assertions, mocked-away functionality, or tests that merely confirm hard-coded outputs.
+Output receipt: The returned all_tests_passed is a meaningful report of the implemented test gate, but not a general certification of prototype correctness.
+3. Top five concrete weaknesses
+1
+The scoring system manufactures apparent precision.
+_score() uses fixed weights, caller-assigned importance and readiness, token overlap, and a risk formula based on constraint count. The resulting weighted_total can rank concepts deterministically without demonstrating that the ranking predicts real customer demand or implementation success. _DIFF also assigns fixed differentiation scores based on a supplied label, not a documented prior-art search.
+2
+The pitch package can misrepresent the selected concept's validation plan.
+build_pitch_package() selects c using the requested concept_id, but obtains experiment from studio['validation_experiment'], which belongs to the studio's recommended winner. If the caller requests another concept, the package combines that concept with the winner's experiment and success metric.
+3
+The outreach validator is easy to bypass semantically.
+validate_outreach_preview() checks five literal substrings: partnered with, official partner, guaranteed, validated demand, and endorsed by. It does not check equivalent claims, misleading implications, other unsupported factual statements, or whether the proposed recipient and evidence are legitimate. Passing this check is not proof that a message is safe or truthful.
+4
+The prototype test gate is vulnerable to stale artifacts and weak tests.
+build_prototype() writes into an existing directory without cleaning it, then invokes tests by module name. Old files can remain and contaminate later discovery or results. A zero exit code and a positive test count do not establish meaningful behavioral coverage; the unseen templates and tests are essential to assessing actual functionality.
+5
+Outcome reporting and evidence handling stop at structural checks.
+summarize_outcome() trusts the submitted measurements and source references. Source checks only URL syntax and string lengths, while build_luxury_venture() checks referential integrity rather than whether the cited findings substantiate the signals. The system can therefore produce internally consistent packages built on inaccurate or irrelevant evidence.
+Final audit verdict
+Capability claimed
+Assessment
+Brief and data validation
+Real, but shallow
+Evidence-grounded idea generation
+Unverified; generator omitted
+Concept ranking
+Real heuristic; not empirically validated
+Pitch package generation
+Real, with a concept/experiment mismatch bug
+Outreach preview validation
+Real but narrow and bypassable
+Outcome summary
+Real consistency checks, not outcome verification
+Prototype file generation
+Real
+Prototype test execution
+Real, but limited assurance
+Production-ready venture studio
+Not established
+Bottom line: This is a functioning concept-packaging and reference-code scaffolding pipeline, not a demonstrated autonomous venture studio. The visible code does not establish market validation, reliable differentiation, comprehensive outreach safety, or functional prototype quality. To upgrade that verdict, inspect luxury_ideation.generate_ideas, tokens, every COMPONENTS template, and their tests—and fix the cross-concept experiment bug first.
+ChatGPT can make mistakes. Check important info.
+Think
