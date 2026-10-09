@@ -1,0 +1,11 @@
+............................{'delay': 0, 'outcomes': {'executed': 20, 'held': 20}, 'adapter_calls': 20}
+.{'delay': 0.001, 'outcomes': {'executed': 20, 'held': 20}, 'adapter_calls': 20}
+.{'delay': 0.01, 'outcomes': {'executed': 20, 'held': 20}, 'adapter_calls': 20}
+.
+=============================== warnings summary ===============================
+tests/modules/test_m00_execution_ledger.py::test_execution_postgres_separate_claims_exactly_one_wins_and_fenced_outcome_persists
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+31 passed, 1 warning in 18.38s

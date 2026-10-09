@@ -1,0 +1,55 @@
+......F......                                                            [100%]
+=================================== FAILURES ===================================
+______ test_execution_expired_live_worker_cannot_complete_or_be_reclaimed ______
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fa1b8c555b0>, {'action_type': 'fixture', 'approved_by':....db), autoflush=True, expire_on_commit=False), <test_m00_execution_ledger.env.<locals>.Clock object at 0x7fa1b8c55610>)
+
+    def test_execution_expired_live_worker_cannot_complete_or_be_reclaimed(env):
+        svc,view,_,clock=env
+        execution.prepare(svc,view,'effect','v1');token=execution.claim(svc,view,'effect',lease_seconds=1)
+        clock.now+=timedelta(seconds=2)
+>       with pytest.raises(execution.ExecutionUnknown):execution.prior_result(svc,view,'effect')
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m00_execution_ledger.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m00_approval_center/execution.py:56: in prior_result
+    db.execute(update(ExecutionRow).where(ExecutionRow.approval_id == row.approval_id,
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2473: in execute
+    return self._execute_internal(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2363: in _execute_internal
+    compile_state_cls.orm_execute_statement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:1693: in orm_execute_statement
+    return super().orm_execute_statement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:319: in orm_execute_statement
+    return cls.orm_setup_cursor_result(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:852: in orm_setup_cursor_result
+    cls._do_post_synchronize_evaluate(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:1786: in _do_post_synchronize_evaluate
+    matched_objects = cls._get_matched_objects_on_criteria(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:968: in _get_matched_objects_on_criteria
+    evaled_condition = eval_condition(obj)
+                       ^^^^^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/evaluator.py:194: in evaluate
+    value = sub_evaluate(obj)
+            ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+obj = <app.modules.m00_approval_center.execution.ExecutionRow object at 0x7fa1b8df6d20>
+
+    def evaluate(obj):
+        left_val = eval_left(obj)
+        right_val = eval_right(obj)
+        if left_val is _EXPIRED_OBJECT or right_val is _EXPIRED_OBJECT:
+            return _EXPIRED_OBJECT
+        elif left_val is None or right_val is None:
+            return None
+    
+>       return operator(eval_left(obj), eval_right(obj))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: can't compare offset-naive and offset-aware datetimes
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/evaluator.py:263: TypeError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m00_execution_ledger.py::test_execution_expired_live_worker_cannot_complete_or_be_reclaimed
+1 failed, 12 passed in 1.36s

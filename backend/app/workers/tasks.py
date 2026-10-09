@@ -8,36 +8,34 @@ def expire_approval_requests() -> list[str]:
 @celery_app.task(name="atlas.modules.execute_approved")
 def execute_approved_action(approval_id: str, effect_id: str) -> dict[str, object]:
     """Consume one approved permit, then invoke its exact registered executor."""
-    from app.modules.m00_approval_center.service import default_service
-    from app.workers.action_registry import execute_registered
-    view = default_service().get(approval_id)
-    status = view["status"].value if hasattr(view["status"], "value") else view["status"]
-    if status != "approved": raise ValueError("approval is not approved")
-    from app.modules.m00_approval_center.impact import consume_effect_checked, impact_preview, approval_context, PROBES
-    conditional = None
-    condition = None
-    if (view["module_id"], view["action_type"]) == (10, "send_email_reply"):
-        from app.workers.action_registry import require_conditional_executor
-        conditional = require_conditional_executor(view["module_id"], view["action_type"])
-        preview = impact_preview(default_service(), approval_id, registry=PROBES)
-        if preview["verdict"] != "unchanged":
-            from app.modules.m00_approval_center.service import ApprovalConflictError
-            raise ApprovalConflictError("M10 dispatch requires unchanged bound review")
-        condition = {"binding": approval_context(view).binding(),
-                     "state_hash": preview["current"]["state_hash"]}
-    permit = consume_effect_checked(default_service(), approval_id, module_id=view["module_id"],
-        action_type=view["action_type"], payload=view["payload"], user_id=view["user_id"],
-        effect_id=effect_id, actor="celery-worker", **({"registry": PROBES} if conditional is not None else {}))
-    if conditional is not None:
-        import copy
-        # The adapter must compare the exact bound version and perform the effect
-        # in its conditional operation. A preflight read is not this guarantee.
-        result = conditional.dispatch_if_current(copy.deepcopy(view["payload"]), copy.deepcopy(condition))
-        if not isinstance(result, dict):
-            raise TypeError("conditional executor must return a mapping")
-    else:
-        result = execute_registered(view["module_id"], view["action_type"], view["payload"])
-    return {"approval_id":approval_id,"effect_id":permit["effect_id"],"status":"executed","result":result}
+    import copy
+    from app.modules.m00_approval_center.service import default_service, ApprovalConflictError
+    from app.modules.m00_approval_center import execution
+    from app.workers.action_registry import require_executor, require_conditional_executor
+    from app.modules.m00_approval_center.impact import impact_preview, approval_context, PROBES
+    service=default_service();view=service.get(approval_id)
+    replay=execution.prior_result(service,view,effect_id)
+    if replay is not None:
+        return {"approval_id":approval_id,"effect_id":effect_id,"status":"executed","result":replay}
+    status=view["status"].value if hasattr(view["status"],"value") else view["status"]
+    if status != "approved":raise ValueError("approval is not approved")
+    conditional=(view["module_id"],view["action_type"])==(10,"send_email_reply")
+    adapter=require_conditional_executor(view["module_id"],view["action_type"]) if conditional else require_executor(view["module_id"],view["action_type"])
+    version=getattr(adapter,"execution_version","legacy-v1")
+    preview=impact_preview(service,approval_id,registry=PROBES)
+    if preview["verdict"] in {"drifted","no_probe"} or (conditional and preview["verdict"]!="unchanged"):
+        raise ApprovalConflictError("execution requires unchanged reviewed state")
+    condition={"binding":approval_context(view).binding(),"state_hash":(preview["current"] or {}).get("state_hash")}
+    execution.prepare(service,view,effect_id,version)
+    token=execution.claim(service,view,effect_id)
+    try:
+        execution.verify_dispatch_claim(service,approval_id,token)
+        result=adapter.dispatch_if_current(copy.deepcopy(view["payload"]),copy.deepcopy(condition)) if conditional else adapter(copy.deepcopy(view["payload"]))
+        result=execution.complete(service,approval_id,token,result)
+    except BaseException:
+        execution.unknown(service,approval_id,token)
+        raise
+    return {"approval_id":approval_id,"effect_id":effect_id,"status":"executed","result":result}
 
 @celery_app.task(name="atlas.collection.dispatch_due")
 def dispatch_due_collection_sources(limit: int = 1000) -> dict[str, int]:

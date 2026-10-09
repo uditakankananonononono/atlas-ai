@@ -11,3 +11,6 @@ from app.modules.types import ModuleSpec
 spec = ModuleSpec(id=0, slug="approval-center", name="Human Approval Center", router=router, service_type=Service)
 
 __all__ = ["spec", "router", "Service", "request_approval"]
+
+# Register durable execution ledger metadata without executing any effect.
+from .execution import ExecutionRow
