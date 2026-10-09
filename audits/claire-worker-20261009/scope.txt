@@ -1,0 +1,10 @@
+Base: adapter candidate 383645f371a2692aa674f6e232c9357ea9c354e5, itself not integrated.
+Python 3.12.14. Command: python -m pytest tests/modules/test_m21_claire_worker_configuration.py tests/modules/test_m21_claire_model_adapter.py tests/modules/test_m21_claire_runtime.py tests/modules/test_m21_runtime_model_timeout.py -q --junitxml=/tmp/claire-worker.xml
+87 passed: 22 configuration/factory tests + 27 adapter tests + 38 existing runtime/timeout tests. Repeated earlier counts not additive.
+Configured worker success test uses scripted model injection, separate SQLite stores and reopen. It is not a mounted-HTTP or real-model configured-worker proof. Existing adapter test proves synthetic loopback transport and mounted malformed-output blocker, separately.
+No production service, real model, PostgreSQL, production OIDC, migration, deployed inventory, supervisor or channel parity proof.
+Direct configuration constructor's development_schema bool is application-code trust; from_environment requires ATLAS_ENV=development for schema opt-in. Direct provider injection boundary is inherited from adapter candidate.
+ConfigurationError/repr are redacted, but arbitrary database driver/startup exceptions are not sanitized by this factory; deployment must handle them in private operational diagnostics, not return them to model/user/public logs.
+Drain is bounded by job count, not a total wall-clock deadline. Async cancellation may leave sync threads running. Operator owns tool classes and declarations.
+Design test items for mounted factory-success, actual HTTP through the factory, provider/programming-failure factory integration remain pending.
+No push or integration. Candidate depends on gate verdict for adapter.
