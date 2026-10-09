@@ -10,11 +10,11 @@ def test_every_supported_lever_builds_and_its_own_tests_pass(tmp_path):
         assert (tmp_path / lever / f"{lever}.py").exists() and (tmp_path / lever / "README.md").exists()
 
 def test_combined_idea_builds_both_and_reports_unsupported(tmp_path):
-    r = build_prototype(idea(["provenance", "pricing_demand"]), tmp_path)
-    assert r["built"] == ["provenance"] and r["unsupported_levers"] == ["pricing_demand"] and r["all_tests_passed"]
+    r = build_prototype(idea(["provenance", "no_such_lever"]), tmp_path)
+    assert r["built"] == ["provenance"] and r["unsupported_levers"] == ["no_such_lever"] and r["all_tests_passed"]
 
 def test_only_unsupported_levers_is_not_a_pass(tmp_path):
-    r = build_prototype(idea(["pricing_demand"]), tmp_path)
+    r = build_prototype(idea(["no_such_lever"]), tmp_path)
     assert r["built"] == [] and r["all_tests_passed"] is False
 
 def test_a_broken_component_is_reported_failed_not_hidden(tmp_path, monkeypatch):
@@ -26,3 +26,8 @@ def test_a_broken_component_is_reported_failed_not_hidden(tmp_path, monkeypatch)
 def test_readme_makes_no_affiliation_claim(tmp_path):
     build_prototype(idea(["scarcity_access"]), tmp_path)
     assert "Not affiliated" in (tmp_path / "README.md").read_text()
+
+
+def test_all_eight_ideation_levers_have_components():
+    from app.modules.m19_idea_incubator.luxury_ideation import LEVERS
+    assert set(LEVERS) <= set(COMPONENTS)
