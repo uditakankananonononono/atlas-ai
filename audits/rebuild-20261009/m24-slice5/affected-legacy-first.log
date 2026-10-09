@@ -1,0 +1,128 @@
+...F..FF..F.F.                                                           [100%]
+=================================== FAILURES ===================================
+____________ test_checkout_without_plan_metadata_does_not_grant_pro ____________
+
+db = (<app.modules.m24_billing.repository.Repository object at 0x7fb436b14440>, sessionmaker(class_='Session', bind=Engine(.../tmp/pytest-of-sandbox/pytest-284/test_checkout_without_plan_met0/billing.db), autoflush=True, expire_on_commit=False))
+
+    def test_checkout_without_plan_metadata_does_not_grant_pro(db):
+        repo,factory=db
+        service=Service(None,repo,None)
+        event=BillingEventIn(id='evt_test',type='checkout.session.completed',created=1,data={'object':{'metadata':{'tenant_id':'tenant-a'},'customer':'cus_test'}})
+>       service.ingest_event(event,trusted_provider=True)
+
+tests/modules/test_m24_residual_reimplementation.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.service.Service object at 0x7fb4369b99a0>
+event = BillingEventIn(id='evt_test', type='checkout.session.completed', created=1, data={'object': {'metadata': {'tenant_id': 'tenant-a'}, 'customer': 'cus_test'}})
+
+    def ingest_event(self,event:BillingEventIn,*,trusted_provider=False):
+     # A caller boolean is not authenticated provider provenance. All diagnostics
+     # use a separate quarantine namespace, never the signed event identity.
+     if self.inbox is None:
+      from .inbox import InboxRefused
+>     raise InboxRefused("verified billing inbox is not configured")
+E     app.modules.m24_billing.inbox.InboxRefused: verified billing inbox is not configured
+
+backend/app/modules/m24_billing/service.py:104: InboxRefused
+_____________ test_money_requires_proposal_and_approved_execution ______________
+
+    def test_money_requires_proposal_and_approved_execution():
+     r=R();s=Service(A(),r,S());p=s.propose_checkout("t",CheckoutIn(plan_id="pro",success_url="https://ok",cancel_url="https://no"));assert p.status=="pending"
+>    assert asyncio.run(s.execute_checkout(p.approval_id,"t"))["id"]=="cs_test"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_billing.py:16: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/service.py:35: in execute_checkout
+    require_dispatch_ready()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def require_dispatch_ready():
+        """No ready adapter/cutover verifier in slice1. Env flags cannot authorize dispatch."""
+>       raise DispatchRefused('M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required')
+E       app.modules.m24_billing.write_ahead.DispatchRefused: M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required
+
+backend/app/modules/m24_billing/write_ahead.py:184: DispatchRefused
+___________________________ test_webhook_idempotency ___________________________
+
+    def test_webhook_idempotency():
+>    s=Service(A(),R(),S());e=BillingEventIn(id="evt_1",type="invoice.paid",created=1,data={});assert s.ingest_event(e).processed and not s.ingest_event(e).processed
+                                                                                                      ^^^^^^^^^^^^^^^^^
+
+tests/test_billing.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.service.Service object at 0x7fb4368f3230>
+event = BillingEventIn(id='evt_1', type='invoice.paid', created=1, data={})
+
+    def ingest_event(self,event:BillingEventIn,*,trusted_provider=False):
+     # A caller boolean is not authenticated provider provenance. All diagnostics
+     # use a separate quarantine namespace, never the signed event identity.
+     if self.inbox is None:
+      from .inbox import InboxRefused
+>     raise InboxRefused("verified billing inbox is not configured")
+E     app.modules.m24_billing.inbox.InboxRefused: verified billing inbox is not configured
+
+backend/app/modules/m24_billing/service.py:104: InboxRefused
+______ test_cancel_and_invoice_are_separate_tenant_bound_approval_actions ______
+
+    def test_cancel_and_invoice_are_separate_tenant_bound_approval_actions():
+     from app.modules.m24_billing.schemas import CancelIn,InvoiceIn
+     r=R();s=Service(A(),r,S())
+>    c=s.propose_cancel('t',CancelIn(subscription_id='sub_12345'));i=s.propose_invoice('t',InvoiceIn(customer_id='cus_12345',description='Atlas Team',amount_cents=9900))
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_billing.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.service.Service object at 0x7fb436bacbf0>
+tenant_id = 't', data = CancelIn(subscription_id='sub_12345')
+
+    def propose_cancel(self,tenant_id,data:CancelIn):
+     from .cancellation import TERMS
+>    row=self.repo.tenant_billing(tenant_id)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+E    AttributeError: 'R' object has no attribute 'tenant_billing'
+
+backend/app/modules/m24_billing/service.py:46: AttributeError
+__________ test_subscription_and_invoice_events_update_lifecycle_once __________
+
+    def test_subscription_and_invoice_events_update_lifecycle_once():
+     from app.modules.m24_billing.schemas import BillingEventIn
+     repo=LifecycleRepo();s=Service(A(),repo,S())
+     sub=BillingEventIn(id='evt_sub',type='customer.subscription.updated',created=1,data={'object':{'id':'sub_1','customer':'cus_1','status':'past_due','metadata':{'atlas_tenant_id':'t'}}})
+>    assert s.ingest_event(sub,trusted_provider=True).processed and repo.billing['t']['status']=='past_due'
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_billing.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.service.Service object at 0x7fb436a41d30>
+event = BillingEventIn(id='evt_sub', type='customer.subscription.updated', created=1, data={'object': {'id': 'sub_1', 'customer': 'cus_1', 'status': 'past_due', 'metadata': {'atlas_tenant_id': 't'}}})
+
+    def ingest_event(self,event:BillingEventIn,*,trusted_provider=False):
+     # A caller boolean is not authenticated provider provenance. All diagnostics
+     # use a separate quarantine namespace, never the signed event identity.
+     if self.inbox is None:
+      from .inbox import InboxRefused
+>     raise InboxRefused("verified billing inbox is not configured")
+E     app.modules.m24_billing.inbox.InboxRefused: verified billing inbox is not configured
+
+backend/app/modules/m24_billing/service.py:104: InboxRefused
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_residual_reimplementation.py::test_checkout_without_plan_metadata_does_not_grant_pro
+FAILED tests/test_billing.py::test_money_requires_proposal_and_approved_execution
+FAILED tests/test_billing.py::test_webhook_idempotency - app.modules.m24_bill...
+FAILED tests/test_billing.py::test_cancel_and_invoice_are_separate_tenant_bound_approval_actions
+FAILED tests/test_billing.py::test_subscription_and_invoice_events_update_lifecycle_once
+5 failed, 9 passed in 0.84s

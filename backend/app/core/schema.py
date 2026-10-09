@@ -36,3 +36,5 @@ import app.modules.m24_billing.checkout_dispatcher as _model_m24_checkout  # noq
 import app.modules.m24_billing.invoice_dispatcher as _model_m24_invoice  # noqa: F401
 import app.modules.m24_billing.reconciliation as _model_m24_reconciliation  # noqa: F401
 import app.modules.m24_billing.cancellation as _model_m24_cancellation  # noqa: F401
+
+import app.modules.m24_billing.inbox as _model_m24_inbox  # noqa: F401
