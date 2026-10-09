@@ -210,7 +210,9 @@ class Service:
         user_id: str | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        """List requests newest first, optionally filtered."""
+        """List requests newest first, optionally filtered; at most 1000 rows."""
+        if type(limit) is not int or not 1 <= limit <= 1000:
+            raise ValueError("limit must be an integer between 1 and 1000")
         from sqlalchemy import and_, or_
         now = self._clock()
         with self._sessions.begin() as db:

@@ -7,7 +7,7 @@ import asyncio
 import json
 import queue
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, Query
 
 from app.auth.context import TenantContext, require_admin, require_tenant, require_worker
 from fastapi.responses import StreamingResponse
@@ -61,7 +61,7 @@ def list_requests(
     status: ApprovalStatus | None = None,
     module_id: int | None = None,
     user_id: str | None = None,
-    limit: int = 100,
+    limit: int = Query(default=100, ge=1, le=1000),
     service: Service = Depends(get_service),
     tenant: TenantContext = Depends(require_tenant),
 ) -> list[dict]:
