@@ -17,7 +17,7 @@ from .luxury_ideation import tokens
 
 Fetcher = Callable[[str], Awaitable[list[dict]]]  # query -> [{title,snippet,url}]
 _STOP = {"the","a","an","of","for","and","to","with","that","in","on","its","their","before","early","each","own"}
-STRONG, WEAK = 0.34, 0.18
+STRONG, WEAK = 1.0, 0.5  # strong: every concept anchor group met; weak: half of them
 
 async def wikipedia_fetch(query: str) -> list[dict]:
     async with httpx.AsyncClient(timeout=20, headers={"User-Agent": "AtlasAI/1.0 (prior-art research client)"}) as c:
@@ -51,6 +51,33 @@ def query_for(idea: dict, sector: str) -> str:
     phrases = [LEVER_QUERY[l] for l in idea.get("levers", []) if l in LEVER_QUERY]
     return (" ".join(phrases) + " " + sector.replace("_", " ")).strip()
 
+# Concept anchors per lever: a hit must contain a stem from EVERY group to count as the same mechanism.
+# Stems match by prefix, so "traceab" covers traceability and traceable.
+ANCHORS = {
+ "provenance": [("passport", "provenance", "authentic", "traceab", "certificate of"), ("luxury", "product", "item", "brand", "resale")],
+ "ownership_care": [("preventive", "maintenance program", "care program", "care plan", "restoration", "aftercare", "service plan", "service program"), ("owner", "vehicle", "car ", "cars", "fleet", "customer")],
+ "personalization": [("personali", "bespoke", "tailored", "concierge", "preference"), ("consent", "privacy", "loyalty", "guest", "customer")],
+ "scarcity_access": [("allocation", "waitlist", "wait list", "virtual queue", "lottery", "limited edition"), ("fair", "transparent", "buyer", "collector", "release", "customer")],
+ "sustainability_proof": [("sustainab", "traceab", "recycled", "carbon", "emission"), ("proof", "verif", "certif", "audit", "label", "claim")],
+ "digital_world": [("game", "virtual", "digital", "metaverse", "app"), ("fan", "character", "licens", "brand", "franchise")],
+ "operations_quality": [("staffing level", "workforce", "guest feedback", "complaint", "service quality", "sentiment", "guest review", "customer review"), ("dealer", "hotel", "guest", "resort", "dealership")],
+ "pricing_demand": [("pricing", "price", "elasticit", "demand"), ("monitor", "sensitiv", "forecast", "analytics", "model")],
+}
+
+def _has(text: str, stems: tuple) -> bool:
+    low = text.lower()
+    return any(st in low for st in stems)
+
+def anchor_score(levers: list[str], text: str) -> float:
+    """0..1. Every lever's concept group (first) must match, else the score stays below 0.5.
+    With all concept groups matched, score = 0.5 + 0.5 * share of context groups (second) matched."""
+    known = [l for l in levers if l in ANCHORS]
+    if not known: return 0.0
+    concept = [_has(text, ANCHORS[l][0]) for l in known]
+    if not all(concept): return round(0.25 * sum(concept) / len(known), 3)
+    context = [_has(text, ANCHORS[l][1]) for l in known]
+    return round(0.5 + 0.5 * sum(context) / len(known), 3)
+
 def overlap(idea_terms: set[str], text: str) -> float:
     t = tokens(text) - _STOP
     return round(len(idea_terms & t) / len(idea_terms), 3) if idea_terms else 0.0
@@ -76,7 +103,8 @@ async def check_idea(idea: dict, sector: str, fetch: Fetcher = combined_fetch) -
         hits = await fetch(q)
     except Exception as error:
         return {"idea_id": idea["idea_id"], "label": "unchecked", "query": q, "hits": [], "error": type(error).__name__}
-    scored = sorted(({**h, "overlap": overlap(idea_terms - brand_terms, h["title"] + " " + h["snippet"])} for h in hits),
+    levers = idea.get("levers", [])
+    scored = sorted(({**h, "overlap": anchor_score(levers, h["title"] + " " + h["snippet"]) if levers else overlap(idea_terms - brand_terms, h["title"] + " " + h["snippet"])} for h in hits),
                     key=lambda h: -h["overlap"])
     top = scored[0]["overlap"] if scored else 0.0
     words = SECTOR_WORDS.get(sector, SECTOR_WORDS["other"])
