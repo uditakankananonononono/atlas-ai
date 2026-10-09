@@ -347,8 +347,8 @@ class GoalStore:
                 cols = ("id", "tenant_id", "actor_id", "goal_id", "tool", "idempotency_key", "state", "attempts", "created_at", "updated_at")
                 vals = (eid, principal.tenant_id, principal.actor_id, principal.goal_id, tool, key, "intent", 1, now, now)
                 src = select(*[literal(v) for v in vals]).where(exists(select(GoalRow.id).where(*self._live_lease(principal))))
-                res = s.execute(insert(EffectRow).from_select(cols, src))  # no SAVEPOINT: pysqlite would commit it early
-                if res.rowcount != 1:
+                res = s.execute(insert(EffectRow).from_select(cols, src).returning(EffectRow.id))  # no SAVEPOINT: pysqlite would commit it early
+                if res.scalar_one_or_none() is None:
                     return ("lease_lost", None, None)
                 self._consume(s, principal, tool, key, gates)  # raises _NoApproval: the reservation above rolls back too
                 return ("new", eid, None)

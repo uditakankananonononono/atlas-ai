@@ -1,0 +1,78 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/claire-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-ai
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, platformdirs-4.12.4, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+tests/modules/test_m21_runtime_postgres_crash.py::test_postgres_crash_after_effect_before_receipt_no_duplicate[False] ACTUAL_PG_VERSION: PostgreSQL 16.2 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 10.2.1 20210130 (Red Hat 10.2.1-11), 64-bit
+MIGRATION_TARGET: 20261008_m21_runtime_revoke; create_all=False
+FAILED
+tests/modules/test_m21_runtime_postgres_crash.py::test_postgres_crash_after_effect_before_receipt_no_duplicate[True] FAILED
+
+=================================== FAILURES ===================================
+_____ test_postgres_crash_after_effect_before_receipt_no_duplicate[False] ______
+
+migrated_pg = ('postgresql+psycopg://postgres:@/postgres?host=/tmp/pytest-of-sandbox/pytest-7/claire-pg0/data', Engine(postgresql+psycopg://postgres:***@/postgres?host=%2Ftmp%2Fpytest-of-sandbox%2Fpytest-7%2Fclaire-pg0%2Fdata))
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-7/test_postgres_crash_after_effe0')
+reconcile = False
+
+    @pytest.mark.parametrize("reconcile", [False, True])
+    def test_postgres_crash_after_effect_before_receipt_no_duplicate(migrated_pg, tmp_path, reconcile):
+        url, _ = migrated_pg
+        artifact = tmp_path / "scratch-effect.txt"
+        now = datetime(2026,10,9,tzinfo=timezone.utc)
+        producer = GoalStore(url, clock=lambda:now)
+        gid = producer.create("crash-tenant", "actor", "write scratch artifact",
+                              [{"kind":"tool_receipt","tool":"record_artifact","min_count":1}], 3)
+        try:
+            child = subprocess.run([sys.executable,"-c",CHILD,url,str(artifact)],
+                                   env={**os.environ,"PYTHONPATH":"backend"},capture_output=True,text=True,timeout=40)
+>           assert child.returncode == 73, child.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "<string>", line 27, in <module>
+E             AssertionError: crash point not reached
+E             
+E           assert 1 == 73
+E            +  where 1 = CompletedProcess(args=['/tmp/claire-venv/bin/python', '-c', '\nimport asyncio, os, sys\nfrom datetime import datetime, timezone\nfrom pydantic import BaseModel\nfrom app.modules.m21_claire.runtime.engine import Engine\nfrom app.modules.m21_claire.runtime.gates import GateEnforcer\nfrom app.modules.m21_claire.runtime.goals import GoalStore\nfrom app.modules.m21_claire.runtime.tools import ReadOnlyToolRegistry, Tool\nfrom app.modules.m21_claire.runtime.types import AgentDecision, ToolCall, ToolRisk\nfrom app.modules.m21_claire.runtime.worker import Worker\nurl, path = sys.argv[1:]\nclass Args(BaseModel): label: str\nclass Effect(Tool):\n    name, arguments_model, risk = "record_artifact", Args, ToolRisk.WRITE\n    spends_money, sends_to_person, idempotent = False, False, False\n    def run(self, args):\n        with open(path, "a") as file:\n            file.write(args.label+"\\n"); file.flush(); os.fsync(file.fileno())\n        os._exit(73)  # before execute can mark_effect or return its receipt\nclass Script:\n    async def decide(self, messages):\n        return AgentDecision(tool_call=ToolCall(name="record_artifact",arguments={"label":"committed"}))\nstore = GoalStore(url, clock=lambda:datetime(2026,10,9,tzinfo=timezone.utc))\nregistry = ReadOnlyToolRegistry(GateEnforcer(store), journal=store)\nregistry.register(Effect())\nasyncio.run(Worker(store,lambda claim:Engine(Script(),registry),"crashing-child").run_once())\nraise AssertionError("crash point not reached")\n', 'postgresql+psycopg://postgres:@/postgres?host=/tmp/pytest-of-sandbox/pytest-7/claire-pg0/data', '/tmp/pytest-of-sandbox/pytest-7/test_postgres_crash_after_effe0/scratch-effect.txt'], returncode=1, stdout='', stderr='Traceback (most recent call last):\n  File "<string>", line 27, in <module>\nAssertionError: crash point not reached\n').returncode
+
+tests/modules/test_m21_runtime_postgres_crash.py:59: AssertionError
+______ test_postgres_crash_after_effect_before_receipt_no_duplicate[True] ______
+
+migrated_pg = ('postgresql+psycopg://postgres:@/postgres?host=/tmp/pytest-of-sandbox/pytest-7/claire-pg0/data', Engine(postgresql+psycopg://postgres:***@/postgres?host=%2Ftmp%2Fpytest-of-sandbox%2Fpytest-7%2Fclaire-pg0%2Fdata))
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-7/test_postgres_crash_after_effe1')
+reconcile = True
+
+    @pytest.mark.parametrize("reconcile", [False, True])
+    def test_postgres_crash_after_effect_before_receipt_no_duplicate(migrated_pg, tmp_path, reconcile):
+        url, _ = migrated_pg
+        artifact = tmp_path / "scratch-effect.txt"
+        now = datetime(2026,10,9,tzinfo=timezone.utc)
+        producer = GoalStore(url, clock=lambda:now)
+        gid = producer.create("crash-tenant", "actor", "write scratch artifact",
+                              [{"kind":"tool_receipt","tool":"record_artifact","min_count":1}], 3)
+        try:
+            child = subprocess.run([sys.executable,"-c",CHILD,url,str(artifact)],
+                                   env={**os.environ,"PYTHONPATH":"backend"},capture_output=True,text=True,timeout=40)
+>           assert child.returncode == 73, child.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "<string>", line 27, in <module>
+E             AssertionError: crash point not reached
+E             
+E           assert 1 == 73
+E            +  where 1 = CompletedProcess(args=['/tmp/claire-venv/bin/python', '-c', '\nimport asyncio, os, sys\nfrom datetime import datetime, timezone\nfrom pydantic import BaseModel\nfrom app.modules.m21_claire.runtime.engine import Engine\nfrom app.modules.m21_claire.runtime.gates import GateEnforcer\nfrom app.modules.m21_claire.runtime.goals import GoalStore\nfrom app.modules.m21_claire.runtime.tools import ReadOnlyToolRegistry, Tool\nfrom app.modules.m21_claire.runtime.types import AgentDecision, ToolCall, ToolRisk\nfrom app.modules.m21_claire.runtime.worker import Worker\nurl, path = sys.argv[1:]\nclass Args(BaseModel): label: str\nclass Effect(Tool):\n    name, arguments_model, risk = "record_artifact", Args, ToolRisk.WRITE\n    spends_money, sends_to_person, idempotent = False, False, False\n    def run(self, args):\n        with open(path, "a") as file:\n            file.write(args.label+"\\n"); file.flush(); os.fsync(file.fileno())\n        os._exit(73)  # before execute can mark_effect or return its receipt\nclass Script:\n    async def decide(self, messages):\n        return AgentDecision(tool_call=ToolCall(name="record_artifact",arguments={"label":"committed"}))\nstore = GoalStore(url, clock=lambda:datetime(2026,10,9,tzinfo=timezone.utc))\nregistry = ReadOnlyToolRegistry(GateEnforcer(store), journal=store)\nregistry.register(Effect())\nasyncio.run(Worker(store,lambda claim:Engine(Script(),registry),"crashing-child").run_once())\nraise AssertionError("crash point not reached")\n', 'postgresql+psycopg://postgres:@/postgres?host=/tmp/pytest-of-sandbox/pytest-7/claire-pg0/data', '/tmp/pytest-of-sandbox/pytest-7/test_postgres_crash_after_effe1/scratch-effect.txt'], returncode=1, stdout='', stderr='Traceback (most recent call last):\n  File "<string>", line 27, in <module>\nAssertionError: crash point not reached\n').returncode
+
+tests/modules/test_m21_runtime_postgres_crash.py:59: AssertionError
+=============================== warnings summary ===============================
+../claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459
+  /tmp/claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+------------------ generated xml file: /tmp/claire-crash.xml -------------------
+=========================== short test summary info ============================
+FAILED tests/modules/test_m21_runtime_postgres_crash.py::test_postgres_crash_after_effect_before_receipt_no_duplicate[False]
+FAILED tests/modules/test_m21_runtime_postgres_crash.py::test_postgres_crash_after_effect_before_receipt_no_duplicate[True]
+======================== 2 failed, 1 warning in 13.69s =========================
