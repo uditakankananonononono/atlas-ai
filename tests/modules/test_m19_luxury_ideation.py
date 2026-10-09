@@ -74,3 +74,24 @@ def test_one_stray_sector_word_in_snippet_is_not_on_topic():
     assert r["label"] == "inconclusive"
     async def real(q): return [{"title": "Automotive dealer staffing analytics", "snippet": "service quality reviews and complaints analytics for car dealers", "url": "https://d"}]
     assert run(check_idea(idea, "automotive", real))["label"] in ("possible-prior-art", "done-before")
+
+
+def test_studio_no_longer_serves_fixed_templates():
+    from app.modules.m19_idea_incubator.luxury_venture import build_luxury_venture
+    a = build_luxury_venture(CAR); b = build_luxury_venture(HOTEL)
+    ia = {c["concept_id"] for c in a["concepts"]}; ib = {c["concept_id"] for c in b["concepts"]}
+    assert ia != ib and not ({"guest_or_owner_intelligence", "operations_quality", "provenance_storytelling"} & ia & ib - {"operations_quality"})
+    assert all(c["evidence"] for c in a["concepts"] + b["concepts"])
+
+def test_studio_refuses_when_no_lever_matches_evidence():
+    from app.modules.m19_idea_incubator.luxury_venture import build_luxury_venture
+    z = mk("Zed Co", "other", [("Quarterly planet alignment was unusual.", .9), ("Weather patterns varied widely.", .5)], [("x", "anything", .5)])
+    with pytest.raises(ValueError, match="no idea lever matched"): build_luxury_venture(z)
+
+def test_priorart_label_changes_differentiation_score():
+    from app.modules.m19_idea_incubator.luxury_venture import build_luxury_venture
+    cid = build_luxury_venture(CAR)["concepts"][0]["concept_id"]
+    base = build_luxury_venture(CAR)["concepts"]
+    hit = build_luxury_venture(CAR, priorart={cid: "done-before"})["concepts"]
+    d = lambda cs: {c["concept_id"]: c["scores"]["differentiation"] for c in cs}
+    assert d(hit)[cid] < d(base)[cid]
