@@ -524,8 +524,8 @@ def _install_extensions() -> None:
                       review_ttl_seconds: int = 3600, tenant_id: str = DEFAULT_USER_ID) -> dict[str, Any]:
         if effect not in {"allow", "deny", "review"}:
             raise ValueError("effect must be allow, deny, or review")
-        if review_ttl_seconds <= 0:
-            raise ValueError("review_ttl_seconds must be positive")
+        if type(review_ttl_seconds) is not int or review_ttl_seconds <= 0:
+            raise ValueError("review_ttl_seconds must be a positive integer")
         if not tenant_id.strip():
             raise ValueError("tenant_id is required")
         now = self._clock()

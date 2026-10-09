@@ -607,3 +607,10 @@ def test_direct_submit_refuses_invalid_ttl_without_persisting(service, ttl):
         submit(service, ttl_seconds=ttl)
     with service._sessions() as db:
         assert list(db.scalars(select(ApprovalRequestRow))) == []
+
+
+@pytest.mark.parametrize('ttl', [True, 1.5])
+def test_policy_review_ttl_requires_actual_integer(service, ttl):
+    with pytest.raises(ValueError, match='review_ttl_seconds'):
+        service.upsert_policy(policy_id='invalid', name='Fixture', action_pattern='*',
+                              effect='review', actor='fixture', review_ttl_seconds=ttl)
