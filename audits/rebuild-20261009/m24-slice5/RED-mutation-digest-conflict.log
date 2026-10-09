@@ -1,0 +1,36 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______________ test_changed_digest_same_identity_conflict[sqlite] ______________
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f36d2db8d40>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f36d331e480>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f36d1cea7b0>
+
+    def test_changed_digest_same_identity_conflict(env,monkeypatch):
+        ident=admit(env,monkeypatch)
+>       with pytest.raises(InboxRefused,match='changed digest'):admit(env,monkeypatch,event(status='canceled'))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:75: Failed
+_____________ test_changed_digest_same_identity_conflict[postgres] _____________
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f36d0fae420>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f36d0b227b0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f36d1b32a50>
+
+    def test_changed_digest_same_identity_conflict(env,monkeypatch):
+        ident=admit(env,monkeypatch)
+>       with pytest.raises(InboxRefused,match='changed digest'):admit(env,monkeypatch,event(status='canceled'))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:75: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_changed_digest_same_identity_conflict[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_changed_digest_same_identity_conflict[sqlite]
+FAILED tests/modules/test_m24_verified_inbox.py::test_changed_digest_same_identity_conflict[postgres]
+2 failed, 76 deselected, 1 warning in 1.32s

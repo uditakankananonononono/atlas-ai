@@ -1,0 +1,9 @@
+future-created 1 2 failed, 94 deselected, 1 warning in 1.21s
+local-customer 1 2 failed, 94 deselected, 1 warning in 1.28s
+local-subscription 1 2 failed, 94 deselected, 1 warning in 1.25s
+checkout-state 1 2 failed, 2 passed, 92 deselected, 1 warning in 2.93s
+checkout-result-id 1 2 failed, 94 deselected, 1 warning in 1.58s
+invoice-paid-status 1 2 failed, 94 deselected, 1 warning in 1.30s
+invoice-paid-amount 1 2 failed, 94 deselected, 1 warning in 1.28s
+invoice-owner 1 2 failed, 94 deselected, 1 warning in 1.31s
+deleted-canceled 1 2 failed, 94 deselected, 1 warning in 1.28s

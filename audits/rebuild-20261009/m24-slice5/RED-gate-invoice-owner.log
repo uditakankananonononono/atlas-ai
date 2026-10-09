@@ -1,0 +1,42 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__________ test_current_invoice_foreign_tenant_alone_refuses[sqlite] ___________
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f0a3d9aa0c0>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f0a3e066c90>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0a3d80a0f0>
+
+    def test_current_invoice_foreign_tenant_alone_refuses(env,monkeypatch):
+        from app.modules.m24_billing.repository import InvoiceRow
+        data=invoice_event(env)
+        with env[1].begin() as db:db.add(InvoiceRow(id='in_fixture',tenant_id='foreign',status='open',currency='usd',amount_due=100,amount_paid=0))
+        ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused,match='invoice tenant differs'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:376: Failed
+_________ test_current_invoice_foreign_tenant_alone_refuses[postgres] __________
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f0a3c393e00>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f0a3c7c9a60>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0a3d681610>
+
+    def test_current_invoice_foreign_tenant_alone_refuses(env,monkeypatch):
+        from app.modules.m24_billing.repository import InvoiceRow
+        data=invoice_event(env)
+        with env[1].begin() as db:db.add(InvoiceRow(id='in_fixture',tenant_id='foreign',status='open',currency='usd',amount_due=100,amount_paid=0))
+        ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused,match='invoice tenant differs'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:376: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_current_invoice_foreign_tenant_alone_refuses[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_current_invoice_foreign_tenant_alone_refuses[sqlite]
+FAILED tests/modules/test_m24_verified_inbox.py::test_current_invoice_foreign_tenant_alone_refuses[postgres]
+2 failed, 94 deselected, 1 warning in 1.31s

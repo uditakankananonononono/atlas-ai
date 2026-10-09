@@ -1,0 +1,80 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_unsigned_same_id_separate_quarantine_then_signed_applies[sqlite] _____
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f85d19d3e30>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f85d1c7ebd0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f85d141aba0>
+
+    def test_unsigned_same_id_separate_quarantine_then_signed_applies(env,monkeypatch):
+        data=event();out=Service(None,None,None,inbox=env[0]).ingest_event(BillingEventIn(**{k:data[k] for k in ('id','type','created','data')}),trusted_provider=True)
+        assert out.processed is False
+>       ident=admit(env,monkeypatch);assert env[0].apply(ident)['state']=='applied'
+              ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m24_verified_inbox.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_verified_inbox.py:38: in admit
+    def admit(env,monkeypatch,data=None):return env[0].admit(signed(env,monkeypatch,data))
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.inbox.InboxRepository object at 0x7f85d19d3e30>
+event = VerifiedEvent(account='acct_fixture', payload={'api_version': '2026-09-30.endive', 'created': 100, 'data': {'object': ...type': 'customer.subscription.updated'}, raw_digest='58f888b18696e27d3bccbc821a9383a016a23e9fb31eefa96c8a60fc3b6b002c')
+
+    def admit(self,event):
+        if not isinstance(event,VerifiedEvent):raise InboxRefused('signature verified event required')
+        p=event.payload;ident=identity(event.account,p['id'])
+        try:
+            with self.sessions.begin() as db:
+                row=db.get(InboxRow,ident)
+                if row is None:
+                    db.add(InboxRow(identity=ident,provider_account=event.account,environment='test',event_id=p['id'],event_type=p['type'],created=p['created'],digest=event.raw_digest,payload_digest=hashlib.sha256(json.dumps(p,sort_keys=True,separators=(',',':')).encode()).hexdigest(),payload=copy.deepcopy(p),state='pending',verified_at=datetime.now(timezone.utc)))
+>               elif row.digest!=event.raw_digest:raise InboxRefused('same event identity changed digest')
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               app.modules.m24_billing.inbox.InboxRefused: same event identity changed digest
+
+backend/app/modules/m24_billing/inbox.py:97: InboxRefused
+___ test_unsigned_same_id_separate_quarantine_then_signed_applies[postgres] ____
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7f85d0fbcbf0>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7f85d01ce3c0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f85d1261ca0>
+
+    def test_unsigned_same_id_separate_quarantine_then_signed_applies(env,monkeypatch):
+        data=event();out=Service(None,None,None,inbox=env[0]).ingest_event(BillingEventIn(**{k:data[k] for k in ('id','type','created','data')}),trusted_provider=True)
+        assert out.processed is False
+>       ident=admit(env,monkeypatch);assert env[0].apply(ident)['state']=='applied'
+              ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m24_verified_inbox.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_verified_inbox.py:38: in admit
+    def admit(env,monkeypatch,data=None):return env[0].admit(signed(env,monkeypatch,data))
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.inbox.InboxRepository object at 0x7f85d0fbcbf0>
+event = VerifiedEvent(account='acct_fixture', payload={'api_version': '2026-09-30.endive', 'created': 100, 'data': {'object': ...type': 'customer.subscription.updated'}, raw_digest='58f888b18696e27d3bccbc821a9383a016a23e9fb31eefa96c8a60fc3b6b002c')
+
+    def admit(self,event):
+        if not isinstance(event,VerifiedEvent):raise InboxRefused('signature verified event required')
+        p=event.payload;ident=identity(event.account,p['id'])
+        try:
+            with self.sessions.begin() as db:
+                row=db.get(InboxRow,ident)
+                if row is None:
+                    db.add(InboxRow(identity=ident,provider_account=event.account,environment='test',event_id=p['id'],event_type=p['type'],created=p['created'],digest=event.raw_digest,payload_digest=hashlib.sha256(json.dumps(p,sort_keys=True,separators=(',',':')).encode()).hexdigest(),payload=copy.deepcopy(p),state='pending',verified_at=datetime.now(timezone.utc)))
+>               elif row.digest!=event.raw_digest:raise InboxRefused('same event identity changed digest')
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               app.modules.m24_billing.inbox.InboxRefused: same event identity changed digest
+
+backend/app/modules/m24_billing/inbox.py:97: InboxRefused
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_unsigned_same_id_separate_quarantine_then_signed_applies[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_unsigned_same_id_separate_quarantine_then_signed_applies[sqlite]
+FAILED tests/modules/test_m24_verified_inbox.py::test_unsigned_same_id_separate_quarantine_then_signed_applies[postgres]
+2 failed, 76 deselected, 1 warning in 1.23s

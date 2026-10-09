@@ -1,0 +1,36 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_deleted_subscription_active_status_alone_refuses[sqlite] _________
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7fefde523f20>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7fefde416180>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fefde416090>
+
+    def test_deleted_subscription_active_status_alone_refuses(env,monkeypatch):
+        data=event(status='active');data['type']='customer.subscription.deleted';ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused,match='deleted subscription not canceled'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:385: Failed
+_______ test_deleted_subscription_active_status_alone_refuses[postgres] ________
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7fefde221040>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7fefdd6ce1b0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fefde258740>
+
+    def test_deleted_subscription_active_status_alone_refuses(env,monkeypatch):
+        data=event(status='active');data['type']='customer.subscription.deleted';ident=admit(env,monkeypatch,data)
+>       with pytest.raises(InboxRefused,match='deleted subscription not canceled'):env[0].apply(ident)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.inbox.InboxRefused'>
+
+tests/modules/test_m24_verified_inbox.py:385: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_deleted_subscription_active_status_alone_refuses[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_deleted_subscription_active_status_alone_refuses[sqlite]
+FAILED tests/modules/test_m24_verified_inbox.py::test_deleted_subscription_active_status_alone_refuses[postgres]
+2 failed, 94 deselected, 1 warning in 1.28s

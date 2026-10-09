@@ -1,0 +1,14 @@
+unsigned-admission 1 2 failed, 72 deselected, 1 warning in 1.29s
+digest-conflict 1 2 failed, 72 deselected, 1 warning in 1.32s
+payment-status 1 2 failed, 72 deselected, 1 warning in 1.42s
+deadline 1 2 failed, 72 deselected, 1 warning in 1.31s
+amount 1 2 failed, 72 deselected, 1 warning in 1.42s
+tenant 1 2 failed, 72 deselected, 1 warning in 1.49s
+customer 1 2 failed, 72 deselected, 1 warning in 1.32s
+stale 1 2 failed, 72 deselected, 1 warning in 1.36s
+equal-time 1 2 failed, 72 deselected, 1 warning in 1.37s
+test-event 1 2 failed, 72 deselected, 1 warning in 1.22s
+version 1 2 failed, 72 deselected, 1 warning in 1.20s
+account 1 2 failed, 72 deselected, 1 warning in 1.29s
+applied-marker 1 2 failed, 72 deselected, 1 warning in 1.29s
+rollback-atomic 1 2 failed, 72 deselected, 1 warning in 1.56s

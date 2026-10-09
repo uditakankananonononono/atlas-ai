@@ -1,0 +1,116 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_apply_transaction_failure_retains_pending_and_redelivery[sqlite] _____
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7ff23c9c9d90>, sessionmaker(class_='Session', bind=Engine(...b), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7ff23cb53f80>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff23ca0f3b0>
+
+    def test_apply_transaction_failure_retains_pending_and_redelivery(env,monkeypatch):
+        ident=admit(env,monkeypatch)
+        def fail(point):
+            if point=='before-apply-commit':raise RuntimeError('lost commit')
+>       with pytest.raises(RuntimeError):env[0].apply(ident,hook=fail)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m24_verified_inbox.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m24_billing/inbox.py:173: in apply
+    binding.version=row.created;binding.event_digest=row.digest;row.state='applied';row.failure=None
+    ^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/attributes.py:546: in __set__
+    self.impl.set(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/attributes.py:1311: in set
+    state._modified_event(dict_, self, old)
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/state.py:957: in _modified_event
+    session._autobegin_t()
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1944: in _autobegin_t
+    trans = SessionTransaction(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:945: in __init__
+    TransactionalContext._trans_ctx_check(session)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'sqlalchemy.engine.util.TransactionalContext'>
+subject = <sqlalchemy.orm.session.Session object at 0x7ff23c85fe60>
+
+    @classmethod
+    def _trans_ctx_check(cls, subject: _TConsSubject) -> None:
+        trans_context = subject._trans_context_manager
+        if trans_context and not trans_context._transaction_is_active():
+            rollback_exc = trans_context._rollback_exception
+>           raise exc.InvalidRequestError(
+                "Can't operate on closed transaction inside context "
+                "manager.  "
+                + (
+                    "The transaction was rolled back due to an "
+                    f"exception: {rollback_exc}.  "
+                    if rollback_exc is not None
+                    else ""
+                )
+                + "Please complete the context manager before "
+                "emitting further commands."
+            )
+E           sqlalchemy.exc.InvalidRequestError: Can't operate on closed transaction inside context manager.  Please complete the context manager before emitting further commands.
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/util.py:101: InvalidRequestError
+___ test_apply_transaction_failure_retains_pending_and_redelivery[postgres] ____
+
+env = (<app.modules.m24_billing.inbox.InboxRepository object at 0x7ff23c6ef170>, sessionmaker(class_='Session', bind=Engine(...g), autoflush=True, expire_on_commit=False), <app.modules.m24_billing.inbox.WebhookAdmission object at 0x7ff23c6b9af0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff23c85e840>
+
+    def test_apply_transaction_failure_retains_pending_and_redelivery(env,monkeypatch):
+        ident=admit(env,monkeypatch)
+        def fail(point):
+            if point=='before-apply-commit':raise RuntimeError('lost commit')
+>       with pytest.raises(RuntimeError):env[0].apply(ident,hook=fail)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m24_verified_inbox.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m24_billing/inbox.py:173: in apply
+    binding.version=row.created;binding.event_digest=row.digest;row.state='applied';row.failure=None
+    ^^^^^^^^^^^^^^^
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/attributes.py:546: in __set__
+    self.impl.set(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/attributes.py:1311: in set
+    state._modified_event(dict_, self, old)
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/state.py:957: in _modified_event
+    session._autobegin_t()
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1944: in _autobegin_t
+    trans = SessionTransaction(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:945: in __init__
+    TransactionalContext._trans_ctx_check(session)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'sqlalchemy.engine.util.TransactionalContext'>
+subject = <sqlalchemy.orm.session.Session object at 0x7ff23c85fad0>
+
+    @classmethod
+    def _trans_ctx_check(cls, subject: _TConsSubject) -> None:
+        trans_context = subject._trans_context_manager
+        if trans_context and not trans_context._transaction_is_active():
+            rollback_exc = trans_context._rollback_exception
+>           raise exc.InvalidRequestError(
+                "Can't operate on closed transaction inside context "
+                "manager.  "
+                + (
+                    "The transaction was rolled back due to an "
+                    f"exception: {rollback_exc}.  "
+                    if rollback_exc is not None
+                    else ""
+                )
+                + "Please complete the context manager before "
+                "emitting further commands."
+            )
+E           sqlalchemy.exc.InvalidRequestError: Can't operate on closed transaction inside context manager.  Please complete the context manager before emitting further commands.
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/util.py:101: InvalidRequestError
+=============================== warnings summary ===============================
+tests/modules/test_m24_verified_inbox.py::test_apply_transaction_failure_retains_pending_and_redelivery[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_verified_inbox.py::test_apply_transaction_failure_retains_pending_and_redelivery[sqlite]
+FAILED tests/modules/test_m24_verified_inbox.py::test_apply_transaction_failure_retains_pending_and_redelivery[postgres]
+2 failed, 76 deselected, 1 warning in 1.98s
