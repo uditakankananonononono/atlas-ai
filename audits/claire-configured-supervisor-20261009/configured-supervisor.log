@@ -1,0 +1,33 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/claire-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-ai
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, platformdirs-4.12.4, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 15 items
+
+tests/modules/test_m21_configured_supervisor_integration.py::test_authenticated_mount_through_configured_http_supervisor[success-completed] PASSED
+tests/modules/test_m21_configured_supervisor_integration.py::test_authenticated_mount_through_configured_http_supervisor[invalid-blocked] PASSED
+tests/modules/test_m21_configured_supervisor_integration.py::test_authenticated_mount_through_configured_http_supervisor[unavailable-blocked] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_database_retry_waits_full_lease_and_returns_safe_status PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_failure_budget_is_global_and_finite PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_job_limit_stops_and_unexpected_bug_stays_loud PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_disposal_failure_is_safe_terminal_status PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_cancellation_during_recovery_propagates PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits0] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits1] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits2] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits3] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits4] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits5] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_cancellation_inside_claim_propagates_without_db_failure_or_disposal PASSED
+
+=============================== warnings summary ===============================
+../claire-venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /tmp/claire-venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/configured-supervisor.xml --------------
+======================== 15 passed, 1 warning in 8.56s =========================
