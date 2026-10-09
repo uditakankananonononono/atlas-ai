@@ -9,13 +9,14 @@ from app.modules.m00_approval_center.service import Service,ApprovalEffectRow,Ap
 from app.modules.m24_billing.write_ahead import OperationRepository,OperationRow,DispatchRefused
 
 @pytest.fixture(params=['sqlite','postgres'])
-def env(tmp_path,request):
+def env(tmp_path,request,m24_postgres_schema):
     if request.param=='postgres':
         import pgserver
         server=pgserver.get_server(tmp_path/'postgres',cleanup_mode='stop')
         engine=create_engine(server.get_uri().replace('postgresql://','postgresql+psycopg://'))
     else:
         engine=create_engine(f'sqlite:///{tmp_path}/billing.db',connect_args={'check_same_thread':False})
+    m24_postgres_schema(engine)
     Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False)
     service=Service(session_factory=sessions)
     view=service.submit(module_id=24,action_type='create_subscription_checkout',payload={'tenant_id':'t1','plan':{'id':'pro'}},user_id='t1')

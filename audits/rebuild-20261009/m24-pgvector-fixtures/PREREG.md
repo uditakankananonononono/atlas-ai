@@ -1,0 +1,7 @@
+# Bounded fixture repair preregistration
+
+Base5c57fa95, after slice6 landed. Diagnosis exactCI fbb1fc78:189 M24 PostgreSQL fixture setup errors, shared Base.metadata contained MemoryEmbeddingRow but separate fresh pgserver DB lacked installedvector. Two known oldbilling failures stayfrozen, not repaired.
+
+Scope: testfixture initialization only. Add one shared pytest helper fixture that executes CREATE EXTENSION IF NOT EXISTS vector and verifiesinstalledextension in EACH fresh M24 PostgreSQL metadata fixture database, beforeBase.metadata.create_all. SQLite unchanged. Do not change productmodels, readiness, workflow, assertions, skip failures, removevectorfrommetadata or mockpgvector. Migrationfixtures already Alembicupgrade installsvector and are separatelychecked; no workflow-only provisioning. Stock installedpgserver0.1.4PG16.2 hasvector.control/vector.so; actualfreshDBavailability and CREATEEXTENSION verified0.6.2 beforechoosingapproach. Missingextension is hardfailure, notsilentpass/skip.
+
+Controls: forcevectorimport beforeexistingM24PGfixture RED, then GREENsame node; directfixtureextension/idempotentreinitialization/SQLitecontrol, fullM24affectednamed suiteswithvectorimport, then independentreview/landingdecision and freshcompletebackendCI run. Fullsuite success expected onlyexcluding2knownbillingfailures; do not relabelrawCIred asgreen. No production/provider/model/activation/effectchanges. Ownseparateboundedcommit.
