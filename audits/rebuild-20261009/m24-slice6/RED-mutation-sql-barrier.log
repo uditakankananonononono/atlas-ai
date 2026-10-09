@@ -1,0 +1,38 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_sql_cutover_barrier_alone_refuses_without_pending_charge[sqlite] _____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f2db77db3e0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f2db74e8140>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2db7343140>
+
+    def test_sql_cutover_barrier_alone_refuses_without_pending_charge(env,monkeypatch):
+        op=prepare(env);monkeypatch.setattr(wa,'require_dispatch_ready',lambda:None)
+        with env[1].begin() as db:db.add(wa.CutoverRow(id=1,protocol_epoch=0,state='locked'))
+>       with pytest.raises(wa.DispatchRefused,match='cutover locked'):env[2].claim(op['id'],'t1')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:309: Failed
+___ test_sql_cutover_barrier_alone_refuses_without_pending_charge[postgres] ____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f2db7309cd0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f2db5b36d80>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2db741fb60>
+
+    def test_sql_cutover_barrier_alone_refuses_without_pending_charge(env,monkeypatch):
+        op=prepare(env);monkeypatch.setattr(wa,'require_dispatch_ready',lambda:None)
+        with env[1].begin() as db:db.add(wa.CutoverRow(id=1,protocol_epoch=0,state='locked'))
+>       with pytest.raises(wa.DispatchRefused,match='cutover locked'):env[2].claim(op['id'],'t1')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:309: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_sql_cutover_barrier_alone_refuses_without_pending_charge[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_sql_cutover_barrier_alone_refuses_without_pending_charge[sqlite]
+FAILED tests/modules/test_m24_generation_budget.py::test_sql_cutover_barrier_alone_refuses_without_pending_charge[postgres]
+2 failed, 114 deselected, 1 warning in 1.45s

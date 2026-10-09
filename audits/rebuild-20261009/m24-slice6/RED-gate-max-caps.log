@@ -1,0 +1,100 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_consistent_cost_over_token_or_charge_caps_refuses_no_release[sqlite-11-10-52] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fef6c9bd6a0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fef6c553b60>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fef6c723650>
+inp = 11, out = 10, cost = 52
+
+    @pytest.mark.parametrize('inp,out,cost',[(11,10,52),(5,21,73),(11,21,85)])
+    def test_consistent_cost_over_token_or_charge_caps_refuses_no_release(env,monkeypatch,inp,out,cost):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+>       with pytest.raises(wa.DispatchRefused,match='exceeds'):env[2].settle(op['id'],'t1',fence,response(input_tokens=inp,output_tokens=out,micro_usd=cost))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:383: Failed
+_ test_consistent_cost_over_token_or_charge_caps_refuses_no_release[sqlite-5-21-73] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fef6c723e90>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fef6c48ff80>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fef6c59d040>
+inp = 5, out = 21, cost = 73
+
+    @pytest.mark.parametrize('inp,out,cost',[(11,10,52),(5,21,73),(11,21,85)])
+    def test_consistent_cost_over_token_or_charge_caps_refuses_no_release(env,monkeypatch,inp,out,cost):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+>       with pytest.raises(wa.DispatchRefused,match='exceeds'):env[2].settle(op['id'],'t1',fence,response(input_tokens=inp,output_tokens=out,micro_usd=cost))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:383: Failed
+_ test_consistent_cost_over_token_or_charge_caps_refuses_no_release[sqlite-11-21-85] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fef6c5204a0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fef6c56ef90>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fef6c520cb0>
+inp = 11, out = 21, cost = 85
+
+    @pytest.mark.parametrize('inp,out,cost',[(11,10,52),(5,21,73),(11,21,85)])
+    def test_consistent_cost_over_token_or_charge_caps_refuses_no_release(env,monkeypatch,inp,out,cost):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+>       with pytest.raises(wa.DispatchRefused,match='exceeds'):env[2].settle(op['id'],'t1',fence,response(input_tokens=inp,output_tokens=out,micro_usd=cost))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:383: Failed
+_ test_consistent_cost_over_token_or_charge_caps_refuses_no_release[postgres-11-10-52] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fef6c905df0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fef6c246690>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fef6c433110>
+inp = 11, out = 10, cost = 52
+
+    @pytest.mark.parametrize('inp,out,cost',[(11,10,52),(5,21,73),(11,21,85)])
+    def test_consistent_cost_over_token_or_charge_caps_refuses_no_release(env,monkeypatch,inp,out,cost):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+>       with pytest.raises(wa.DispatchRefused,match='exceeds'):env[2].settle(op['id'],'t1',fence,response(input_tokens=inp,output_tokens=out,micro_usd=cost))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:383: Failed
+_ test_consistent_cost_over_token_or_charge_caps_refuses_no_release[postgres-5-21-73] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fef6c8be540>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fef6c87d7f0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fef6c430500>
+inp = 5, out = 21, cost = 73
+
+    @pytest.mark.parametrize('inp,out,cost',[(11,10,52),(5,21,73),(11,21,85)])
+    def test_consistent_cost_over_token_or_charge_caps_refuses_no_release(env,monkeypatch,inp,out,cost):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+>       with pytest.raises(wa.DispatchRefused,match='exceeds'):env[2].settle(op['id'],'t1',fence,response(input_tokens=inp,output_tokens=out,micro_usd=cost))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:383: Failed
+_ test_consistent_cost_over_token_or_charge_caps_refuses_no_release[postgres-11-21-85] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fef6c8be420>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fef6ad608f0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fef6adb6630>
+inp = 11, out = 21, cost = 85
+
+    @pytest.mark.parametrize('inp,out,cost',[(11,10,52),(5,21,73),(11,21,85)])
+    def test_consistent_cost_over_token_or_charge_caps_refuses_no_release(env,monkeypatch,inp,out,cost):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+>       with pytest.raises(wa.DispatchRefused,match='exceeds'):env[2].settle(op['id'],'t1',fence,response(input_tokens=inp,output_tokens=out,micro_usd=cost))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:383: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_consistent_cost_over_token_or_charge_caps_refuses_no_release[postgres-11-10-52]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_consistent_cost_over_token_or_charge_caps_refuses_no_release[sqlite-11-10-52]
+FAILED tests/modules/test_m24_generation_budget.py::test_consistent_cost_over_token_or_charge_caps_refuses_no_release[sqlite-5-21-73]
+FAILED tests/modules/test_m24_generation_budget.py::test_consistent_cost_over_token_or_charge_caps_refuses_no_release[sqlite-11-21-85]
+FAILED tests/modules/test_m24_generation_budget.py::test_consistent_cost_over_token_or_charge_caps_refuses_no_release[postgres-11-10-52]
+FAILED tests/modules/test_m24_generation_budget.py::test_consistent_cost_over_token_or_charge_caps_refuses_no_release[postgres-5-21-73]
+FAILED tests/modules/test_m24_generation_budget.py::test_consistent_cost_over_token_or_charge_caps_refuses_no_release[postgres-11-21-85]
+6 failed, 110 deselected, 1 warning in 3.43s

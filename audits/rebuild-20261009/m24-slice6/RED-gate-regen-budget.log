@@ -1,0 +1,52 @@
+.F.F                                                                     [100%]
+=================================== FAILURES ===================================
+____ test_regeneration_cross_owner_or_budget_refuses_target[sqlite-budget] _____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f6fca94a4b0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f6fcad9ecc0>)
+different = 'budget'
+
+    @pytest.mark.parametrize('different',['tenant','budget'])
+    def test_regeneration_cross_owner_or_budget_refuses_target(env,different):
+        # Existing target identity is valid but isolated ownership field differs;
+        # target is not revalidated, so no other binding guard masks this predicate.
+        op=prepare(env)
+        with env[1].begin() as db:
+            db.add(BudgetRow(id='budget2',tenant_id='foreign' if different=='tenant' else 't1',account='fixture-account',price_schedule=PRICE,available_input=100,available_output=100,available_micro_usd=500,available_attempts=5))
+            row=db.get(GenerationRow,op['id']);row.state='outcome_unknown'
+            if different=='tenant':row.tenant_id='foreign'
+            else:row.budget_id='budget2'
+>       with pytest.raises(wa.DispatchRefused,match='target unavailable'):prepare(env,regenerates=op['id'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:421: Failed
+___ test_regeneration_cross_owner_or_budget_refuses_target[postgres-budget] ____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f6fca907bf0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f6fc978cda0>)
+different = 'budget'
+
+    @pytest.mark.parametrize('different',['tenant','budget'])
+    def test_regeneration_cross_owner_or_budget_refuses_target(env,different):
+        # Existing target identity is valid but isolated ownership field differs;
+        # target is not revalidated, so no other binding guard masks this predicate.
+        op=prepare(env)
+        with env[1].begin() as db:
+            db.add(BudgetRow(id='budget2',tenant_id='foreign' if different=='tenant' else 't1',account='fixture-account',price_schedule=PRICE,available_input=100,available_output=100,available_micro_usd=500,available_attempts=5))
+            row=db.get(GenerationRow,op['id']);row.state='outcome_unknown'
+            if different=='tenant':row.tenant_id='foreign'
+            else:row.budget_id='budget2'
+>       with pytest.raises(wa.DispatchRefused,match='target unavailable'):prepare(env,regenerates=op['id'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:421: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_regeneration_cross_owner_or_budget_refuses_target[postgres-tenant]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_regeneration_cross_owner_or_budget_refuses_target[sqlite-budget]
+FAILED tests/modules/test_m24_generation_budget.py::test_regeneration_cross_owner_or_budget_refuses_target[postgres-budget]
+2 failed, 2 passed, 112 deselected, 1 warning in 2.48s

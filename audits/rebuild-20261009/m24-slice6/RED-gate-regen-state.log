@@ -1,0 +1,70 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_regeneration_ineligible_target_state_refuses_new_reservation[sqlite-prepared] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fbdeec0c530>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fbdeebdb470>)
+state = 'prepared'
+
+    @pytest.mark.parametrize('state',['prepared','succeeded'])
+    def test_regeneration_ineligible_target_state_refuses_new_reservation(env,state):
+        op=prepare(env)
+        with env[1].begin() as db:db.get(GenerationRow,op['id']).state=state
+>       with pytest.raises(wa.DispatchRefused,match='target unavailable'):prepare(env,regenerates=op['id'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:407: Failed
+_ test_regeneration_ineligible_target_state_refuses_new_reservation[sqlite-succeeded] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fbdee7812e0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fbdee743530>)
+state = 'succeeded'
+
+    @pytest.mark.parametrize('state',['prepared','succeeded'])
+    def test_regeneration_ineligible_target_state_refuses_new_reservation(env,state):
+        op=prepare(env)
+        with env[1].begin() as db:db.get(GenerationRow,op['id']).state=state
+>       with pytest.raises(wa.DispatchRefused,match='target unavailable'):prepare(env,regenerates=op['id'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:407: Failed
+_ test_regeneration_ineligible_target_state_refuses_new_reservation[postgres-prepared] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fbdee713950>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fbded537bf0>)
+state = 'prepared'
+
+    @pytest.mark.parametrize('state',['prepared','succeeded'])
+    def test_regeneration_ineligible_target_state_refuses_new_reservation(env,state):
+        op=prepare(env)
+        with env[1].begin() as db:db.get(GenerationRow,op['id']).state=state
+>       with pytest.raises(wa.DispatchRefused,match='target unavailable'):prepare(env,regenerates=op['id'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:407: Failed
+_ test_regeneration_ineligible_target_state_refuses_new_reservation[postgres-succeeded] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fbdee7103e0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fbded591d90>)
+state = 'succeeded'
+
+    @pytest.mark.parametrize('state',['prepared','succeeded'])
+    def test_regeneration_ineligible_target_state_refuses_new_reservation(env,state):
+        op=prepare(env)
+        with env[1].begin() as db:db.get(GenerationRow,op['id']).state=state
+>       with pytest.raises(wa.DispatchRefused,match='target unavailable'):prepare(env,regenerates=op['id'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:407: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_regeneration_ineligible_target_state_refuses_new_reservation[postgres-prepared]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_regeneration_ineligible_target_state_refuses_new_reservation[sqlite-prepared]
+FAILED tests/modules/test_m24_generation_budget.py::test_regeneration_ineligible_target_state_refuses_new_reservation[sqlite-succeeded]
+FAILED tests/modules/test_m24_generation_budget.py::test_regeneration_ineligible_target_state_refuses_new_reservation[postgres-prepared]
+FAILED tests/modules/test_m24_generation_budget.py::test_regeneration_ineligible_target_state_refuses_new_reservation[postgres-succeeded]
+4 failed, 112 deselected, 1 warning in 2.43s

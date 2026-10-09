@@ -1,0 +1,42 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_foreign_output_version_digest_or_late_never_reaches_proposal[sqlite] ___
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fc799373e00>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fc799624ef0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc799371430>
+
+    def test_foreign_output_version_digest_or_late_never_reaches_proposal(env,monkeypatch):
+        from datetime import timedelta
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+        with env[1].begin() as db:db.get(GenerationRow,op['id']).lease_until=datetime.now(timezone.utc)-timedelta(seconds=2)
+        result=env[2].settle(op['id'],'t1',fence,response());assert result['state']=='succeeded_late'
+>       with pytest.raises(wa.DispatchRefused):env[2].description_for_proposal(op['id'],'t1',1,result['output']['digest'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:146: Failed
+_ test_foreign_output_version_digest_or_late_never_reaches_proposal[postgres] __
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fc799627ad0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fc79835ec30>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc79927ef30>
+
+    def test_foreign_output_version_digest_or_late_never_reaches_proposal(env,monkeypatch):
+        from datetime import timedelta
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+        with env[1].begin() as db:db.get(GenerationRow,op['id']).lease_until=datetime.now(timezone.utc)-timedelta(seconds=2)
+        result=env[2].settle(op['id'],'t1',fence,response());assert result['state']=='succeeded_late'
+>       with pytest.raises(wa.DispatchRefused):env[2].description_for_proposal(op['id'],'t1',1,result['output']['digest'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:146: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_foreign_output_version_digest_or_late_never_reaches_proposal[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_foreign_output_version_digest_or_late_never_reaches_proposal[sqlite]
+FAILED tests/modules/test_m24_generation_budget.py::test_foreign_output_version_digest_or_late_never_reaches_proposal[postgres]
+2 failed, 114 deselected, 1 warning in 1.49s

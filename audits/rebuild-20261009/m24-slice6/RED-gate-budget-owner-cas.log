@@ -1,0 +1,110 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_budget_owner_cas_isolated_change_between_validation_and_debit[sqlite-tenant_id-foreign] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fbf18f3bc80>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fbf18b662d0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fbf18e26fc0>
+field = 'tenant_id', value = 'foreign'
+
+    @pytest.mark.parametrize('field,value',[('tenant_id','foreign'),('account','foreign-account')])
+    def test_budget_owner_cas_isolated_change_between_validation_and_debit(env,monkeypatch,field,value):
+        from sqlalchemy.orm import Session
+        from sqlalchemy import update
+        original=Session.execute;fired=[]
+        def execute(db,statement,*args,**kwargs):
+            if not fired and getattr(statement,'is_update',False) and getattr(getattr(statement,'table',None),'name',None)=='m24_generation_budgets':
+                fired.append(True)
+                # Same-transaction predicate isolation, NOT a concurrent-writer proof.
+                # Change only the DB row after validation, before the original CAS.
+                original(db,update(BudgetRow).where(BudgetRow.id=='budget1').values(**{field:value}))
+            return original(db,statement,*args,**kwargs)
+        monkeypatch.setattr(Session,'execute',execute)
+>       with pytest.raises(wa.DispatchRefused,match='exhausted'):prepare(env)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:482: Failed
+_ test_budget_owner_cas_isolated_change_between_validation_and_debit[sqlite-account-foreign-account] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fbf18b65af0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fbf18d27c80>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fbf18b66e10>
+field = 'account', value = 'foreign-account'
+
+    @pytest.mark.parametrize('field,value',[('tenant_id','foreign'),('account','foreign-account')])
+    def test_budget_owner_cas_isolated_change_between_validation_and_debit(env,monkeypatch,field,value):
+        from sqlalchemy.orm import Session
+        from sqlalchemy import update
+        original=Session.execute;fired=[]
+        def execute(db,statement,*args,**kwargs):
+            if not fired and getattr(statement,'is_update',False) and getattr(getattr(statement,'table',None),'name',None)=='m24_generation_budgets':
+                fired.append(True)
+                # Same-transaction predicate isolation, NOT a concurrent-writer proof.
+                # Change only the DB row after validation, before the original CAS.
+                original(db,update(BudgetRow).where(BudgetRow.id=='budget1').values(**{field:value}))
+            return original(db,statement,*args,**kwargs)
+        monkeypatch.setattr(Session,'execute',execute)
+>       with pytest.raises(wa.DispatchRefused,match='exhausted'):prepare(env)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:482: Failed
+_ test_budget_owner_cas_isolated_change_between_validation_and_debit[postgres-tenant_id-foreign] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fbf18ae4f20>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fbf17b32840>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fbf18a61f70>
+field = 'tenant_id', value = 'foreign'
+
+    @pytest.mark.parametrize('field,value',[('tenant_id','foreign'),('account','foreign-account')])
+    def test_budget_owner_cas_isolated_change_between_validation_and_debit(env,monkeypatch,field,value):
+        from sqlalchemy.orm import Session
+        from sqlalchemy import update
+        original=Session.execute;fired=[]
+        def execute(db,statement,*args,**kwargs):
+            if not fired and getattr(statement,'is_update',False) and getattr(getattr(statement,'table',None),'name',None)=='m24_generation_budgets':
+                fired.append(True)
+                # Same-transaction predicate isolation, NOT a concurrent-writer proof.
+                # Change only the DB row after validation, before the original CAS.
+                original(db,update(BudgetRow).where(BudgetRow.id=='budget1').values(**{field:value}))
+            return original(db,statement,*args,**kwargs)
+        monkeypatch.setattr(Session,'execute',execute)
+>       with pytest.raises(wa.DispatchRefused,match='exhausted'):prepare(env)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:482: Failed
+_ test_budget_owner_cas_isolated_change_between_validation_and_debit[postgres-account-foreign-account] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fbf17741040>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fbf177758e0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fbf1771c740>
+field = 'account', value = 'foreign-account'
+
+    @pytest.mark.parametrize('field,value',[('tenant_id','foreign'),('account','foreign-account')])
+    def test_budget_owner_cas_isolated_change_between_validation_and_debit(env,monkeypatch,field,value):
+        from sqlalchemy.orm import Session
+        from sqlalchemy import update
+        original=Session.execute;fired=[]
+        def execute(db,statement,*args,**kwargs):
+            if not fired and getattr(statement,'is_update',False) and getattr(getattr(statement,'table',None),'name',None)=='m24_generation_budgets':
+                fired.append(True)
+                # Same-transaction predicate isolation, NOT a concurrent-writer proof.
+                # Change only the DB row after validation, before the original CAS.
+                original(db,update(BudgetRow).where(BudgetRow.id=='budget1').values(**{field:value}))
+            return original(db,statement,*args,**kwargs)
+        monkeypatch.setattr(Session,'execute',execute)
+>       with pytest.raises(wa.DispatchRefused,match='exhausted'):prepare(env)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:482: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_budget_owner_cas_isolated_change_between_validation_and_debit[postgres-tenant_id-foreign]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_budget_owner_cas_isolated_change_between_validation_and_debit[sqlite-tenant_id-foreign]
+FAILED tests/modules/test_m24_generation_budget.py::test_budget_owner_cas_isolated_change_between_validation_and_debit[sqlite-account-foreign-account]
+FAILED tests/modules/test_m24_generation_budget.py::test_budget_owner_cas_isolated_change_between_validation_and_debit[postgres-tenant_id-foreign]
+FAILED tests/modules/test_m24_generation_budget.py::test_budget_owner_cas_isolated_change_between_validation_and_debit[postgres-account-foreign-account]
+4 failed, 112 deselected, 1 warning in 2.41s

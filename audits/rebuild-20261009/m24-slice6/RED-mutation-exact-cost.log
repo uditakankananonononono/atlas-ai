@@ -1,0 +1,44 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_unverified_or_changed_usage_holds_reserve_no_output[sqlite-micro_usd-39] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f629636d880>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f629421ffb0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6293f3f350>
+field = 'micro_usd', value = 39
+
+    @pytest.mark.parametrize('field,value',[('usage_verified',False),('account','foreign'),('model_version','v2'),('micro_usd',39),('input_tokens',11),('text','')])
+    def test_unverified_or_changed_usage_holds_reserve_no_output(env,monkeypatch,field,value):
+>       op=prepare(env);ready(env,monkeypatch);mock=Mock(response(**{field:value}));assert dispatch(env,op,mock)['state']=='outcome_unknown'
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'succeeded' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + succeeded
+
+tests/modules/test_m24_generation_budget.py:124: AssertionError
+_ test_unverified_or_changed_usage_holds_reserve_no_output[postgres-micro_usd-39] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f6293c8ac00>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f6293f822a0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6293fb44d0>
+field = 'micro_usd', value = 39
+
+    @pytest.mark.parametrize('field,value',[('usage_verified',False),('account','foreign'),('model_version','v2'),('micro_usd',39),('input_tokens',11),('text','')])
+    def test_unverified_or_changed_usage_holds_reserve_no_output(env,monkeypatch,field,value):
+>       op=prepare(env);ready(env,monkeypatch);mock=Mock(response(**{field:value}));assert dispatch(env,op,mock)['state']=='outcome_unknown'
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'succeeded' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + succeeded
+
+tests/modules/test_m24_generation_budget.py:124: AssertionError
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_unverified_or_changed_usage_holds_reserve_no_output[postgres-micro_usd-39]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_unverified_or_changed_usage_holds_reserve_no_output[sqlite-micro_usd-39]
+FAILED tests/modules/test_m24_generation_budget.py::test_unverified_or_changed_usage_holds_reserve_no_output[postgres-micro_usd-39]
+2 failed, 114 deselected, 1 warning in 1.81s
