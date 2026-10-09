@@ -176,6 +176,8 @@ class Service:
         """
         if module_id not in BY_ID:
             raise ValueError(f"unknown module id: {module_id}")
+        if ttl_seconds is not None and (type(ttl_seconds) is not int or ttl_seconds <= 0):
+            raise ValueError("ttl_seconds must be a positive integer or None")
         now = self._clock()
         expires_at = now + timedelta(seconds=ttl_seconds) if ttl_seconds else None
         row = ApprovalRequestRow(

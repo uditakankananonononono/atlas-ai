@@ -597,3 +597,13 @@ def test_list_limit_negative_does_not_return_entire_sqlite_queue(client, service
     submit(service)
     response = client.get('/approval-center/requests?limit=-1')
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize('ttl', [0, -1, True, 1.5])
+def test_direct_submit_refuses_invalid_ttl_without_persisting(service, ttl):
+    from sqlalchemy import select
+    from app.modules.m00_approval_center.service import ApprovalRequestRow
+    with pytest.raises(ValueError, match='ttl_seconds'):
+        submit(service, ttl_seconds=ttl)
+    with service._sessions() as db:
+        assert list(db.scalars(select(ApprovalRequestRow))) == []
