@@ -644,3 +644,312 @@ def test_keyed_gate_unrepresentable_policy_ttl_is_validation_error(service, monk
     with pytest.raises(ValueError, match='ttl'):
         service.gate(module_id=5, action_type='send_email', payload={}, user_id='local',
                      idempotency_key='huge-ttl')
+
+
+def test_allow_policy_does_not_authorize_unknown_module(service):
+    service.upsert_policy(policy_id='allow-all', name='Fixture', action_pattern='*',
+                          effect='allow', actor='fixture', tenant_id='udita')
+    with pytest.raises(ValueError, match='unknown module'):
+        service.gate(module_id=999999, action_type='send_email', payload={}, user_id='udita')
+
+
+@pytest.mark.parametrize('module', [999999, True, 1.0])
+def test_policy_refuses_unknown_or_noninteger_module(service, module):
+    with pytest.raises(ValueError, match='module'):
+        service.upsert_policy(policy_id='invalid', name='Fixture', action_pattern='*',
+                              effect='allow', actor='fixture', module_id=module)
+
+
+@pytest.mark.parametrize('field,value', [('action_type', ''), ('action_type', '   '),
+                                         ('user_id', ''), ('user_id', '   ')])
+def test_submit_refuses_empty_action_or_owner(service, field, value):
+    with pytest.raises(ValueError, match='action_type|user_id'):
+        submit(service, **{field: value})
+
+
+@pytest.mark.parametrize('field', ['policy_id', 'name', 'action_pattern', 'actor'])
+def test_policy_refuses_empty_identifiers(service, field):
+    kwargs = dict(policy_id='fixture', name='Fixture', action_pattern='*', effect='review', actor='fixture')
+    kwargs[field] = '   '
+    with pytest.raises(ValueError, match=field):
+        service.upsert_policy(**kwargs)
+
+
+@pytest.mark.parametrize('context', [[], 'invalid', 1])
+def test_gate_refuses_nonobject_context_before_allow(service, context):
+    service.upsert_policy(policy_id='allow', name='Fixture', action_pattern='*',
+                          effect='allow', actor='fixture', tenant_id='udita')
+    with pytest.raises(ValueError, match='context'):
+        service.gate(module_id=5, action_type='send_email', payload={}, user_id='udita', context=context)
+
+
+@pytest.mark.parametrize('payload', [[], 'invalid', None])
+def test_gate_refuses_nonobject_payload_before_allow(service, payload):
+    service.upsert_policy(policy_id='allow', name='Fixture', action_pattern='*',
+                          effect='allow', actor='fixture', tenant_id='udita')
+    with pytest.raises(ValueError, match='payload'):
+        service.gate(module_id=5, action_type='send_email', payload=payload, user_id='udita')
+
+
+@pytest.mark.parametrize('field', ['action_type', 'user_id'])
+def test_gate_refuses_empty_action_or_owner_before_allow(service, monkeypatch, field):
+    kwargs = dict(module_id=5, action_type='send_email', payload={}, user_id='udita')
+    kwargs[field] = '   '
+    monkeypatch.setattr(service, 'evaluate_policy', lambda **kwargs: ('allow', {'id': 'fixture'}))
+    with pytest.raises(ValueError, match=field):
+        service.gate(**kwargs)
+
+
+@pytest.mark.parametrize('module', [True, 1.0])
+def test_submit_refuses_noninteger_catalog_identity(service, module):
+    with pytest.raises(ValueError, match='module'):
+        submit(service, module_id=module)
+
+
+@pytest.mark.parametrize('payload', [[], None, 'invalid'])
+def test_submit_refuses_nonobject_payload(service, payload):
+    with pytest.raises(ValueError, match='payload'):
+        submit(service, payload=payload)
+
+
+@pytest.mark.parametrize('conditions', [[], 'invalid', 1])
+def test_policy_refuses_nonobject_conditions(service, conditions):
+    with pytest.raises(ValueError, match='conditions'):
+        service.upsert_policy(policy_id='fixture', name='Fixture', action_pattern='*',
+                              effect='review', actor='fixture', conditions=conditions)
+
+
+@pytest.mark.parametrize('actor', ['', '   ', None])
+def test_decide_refuses_empty_actor_without_changing_pending(service, actor):
+    view = submit(service)
+    with pytest.raises(ValueError, match='decided_by'):
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by=actor)
+    assert service.get(view['id'])['status'] == ApprovalStatus.PENDING
+    assert [e['event'] for e in service.audit(view['id'])] == ['created']
+
+
+@pytest.mark.parametrize('key', [1, '', '  '])
+def test_policy_refuses_nonstring_or_empty_condition_keys(service, key):
+    with pytest.raises(ValueError, match='condition keys'):
+        service.upsert_policy(policy_id='fixture', name='Fixture', action_pattern='*',
+                              effect='review', actor='fixture', conditions={key: 'value'})
+
+
+@pytest.mark.parametrize('field', ['actor', 'effect_id'])
+def test_consume_refuses_empty_identity_before_permit(service, field):
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    kwargs = dict(module_id=view['module_id'], action_type=view['action_type'], payload=view['payload'],
+                  user_id=view['user_id'], effect_id='fixture', actor='worker')
+    kwargs[field] = '   '
+    with pytest.raises(ValueError, match=field):
+        service.consume_effect(view['id'], **kwargs)
+    assert [e['event'] for e in service.audit(view['id'])] == ['created', 'approved']
+
+
+def test_submit_nonserializable_payload_does_not_persist_partial_proposal(service):
+    from sqlalchemy import select
+    from app.modules.m00_approval_center.service import ApprovalRequestRow, ApprovalEventRow
+    with pytest.raises(ValueError, match="payload") :
+        submit(service, payload={'not_json': object()})
+    with service._sessions() as db:
+        assert list(db.scalars(select(ApprovalRequestRow))) == []
+        assert list(db.scalars(select(ApprovalEventRow))) == []
+
+
+@pytest.mark.parametrize('field,value', [('action_type', 'a'*101), ('user_id', 'u'*121)])
+def test_submit_rejects_identity_exceeding_http_contract(service, field, value):
+    with pytest.raises(ValueError, match=field):
+        submit(service, **{field: value})
+
+
+@pytest.mark.parametrize('field,value', [('action_type', 'a'*101), ('user_id', 'u'*121)])
+def test_gate_refuses_overlong_identity_before_allow(service, monkeypatch, field, value):
+    monkeypatch.setattr(service, 'evaluate_policy', lambda **kwargs: ('allow', {'id': 'fixture'}))
+    kwargs = dict(module_id=5, action_type='send_email', payload={}, user_id='udita')
+    kwargs[field] = value
+    with pytest.raises(ValueError, match=field):
+        service.gate(**kwargs)
+
+
+@pytest.mark.parametrize('field,value', [('effect_id', 'e'*201), ('actor', 'a'*121)])
+def test_consume_refuses_overlong_identity(service, field, value):
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    kwargs = dict(module_id=view['module_id'], action_type=view['action_type'], payload=view['payload'],
+                  user_id=view['user_id'], effect_id='fixture', actor='worker')
+    kwargs[field] = value
+    with pytest.raises(ValueError, match=field):
+        service.consume_effect(view['id'], **kwargs)
+
+
+def test_existing_permit_replay_does_not_accept_changed_request(service):
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    kwargs = dict(module_id=view['module_id'], action_type=view['action_type'], payload=view['payload'],
+                  user_id=view['user_id'], effect_id='fixture', actor='worker')
+    service.consume_effect(view['id'], **kwargs)
+    kwargs['payload'] = {'changed': True}
+    with pytest.raises(ApprovalConflictError):
+        service.consume_effect(view['id'], **kwargs)
+
+
+def test_direct_identity_valid_length_boundaries(service):
+    view = submit(service, action_type='a'*100, user_id='u'*120)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='a'*120)
+    assert service.consume_effect(view['id'], module_id=view['module_id'], action_type=view['action_type'],
+                                  payload=view['payload'], user_id=view['user_id'], effect_id='e'*200,
+                                  actor='a'*120)['allowed']
+
+
+def test_decision_actor_rejects_overlong_identity(service):
+    view = submit(service)
+    with pytest.raises(ValueError, match='decided_by'):
+        service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='a'*121)
+
+
+@pytest.mark.parametrize('field,ceiling', [('policy_id',120), ('name',200), ('action_pattern',200), ('actor',120)])
+def test_policy_rejects_overlong_identifier(service, field, ceiling):
+    kwargs = dict(policy_id='fixture', name='Fixture', action_pattern='*', effect='review', actor='fixture')
+    kwargs[field] = 'a'*(ceiling+1)
+    with pytest.raises(ValueError, match=field):
+        service.upsert_policy(**kwargs)
+
+
+def test_valid_policy_nested_conditions_and_wildcards_remain_supported(service):
+    service.upsert_policy(policy_id='fixture', name='Fixture', action_pattern='send_*', effect='allow',
+                          actor='fixture', conditions={'recipient.role': ['colleague', 'friend']}, tenant_id='udita')
+    assert service.evaluate_policy(module_id=5, action_type='send_email',
+                                   context={'recipient': {'role': 'friend'}}, tenant_id='udita')[0] == 'allow'
+    assert service.evaluate_policy(module_id=5, action_type='send_email',
+                                   context={'recipient': {'role': 'stranger'}}, tenant_id='udita')[0] == 'review'
+
+
+@pytest.mark.parametrize('tenant', [None, 1, 't'*121])
+def test_policy_refuses_invalid_tenant_identity(service, tenant):
+    with pytest.raises(ValueError, match='tenant_id'):
+        service.upsert_policy(policy_id='fixture', name='Fixture', action_pattern='*', effect='review',
+                              actor='fixture', tenant_id=tenant)
+
+
+def test_filtered_lists_do_not_cross_owner_boundary(service):
+    own = submit(service, user_id='owner-a')
+    submit(service, user_id='owner-b')
+    assert [row['id'] for row in service.list(user_id='owner-a')] == [own['id']]
+
+
+@pytest.mark.parametrize('field,value', [('module_id', 6), ('action_type', 'publish'), ('user_id', 'other')])
+def test_permit_hash_refuses_changed_request_identity(service, field, value):
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    kwargs = dict(module_id=view['module_id'], action_type=view['action_type'], payload=view['payload'],
+                  user_id=view['user_id'], effect_id='fixture', actor='worker')
+    kwargs[field] = value
+    with pytest.raises(ApprovalConflictError, match='does not match'):
+        service.consume_effect(view['id'], **kwargs)
+
+
+def test_gate_refuses_key_exceeding_http_and_column_bound(service):
+    with pytest.raises(ValueError, match='idempotency_key'):
+        service.gate(module_id=5, action_type='send_email', payload={}, user_id='udita', idempotency_key='k'*201)
+
+
+@pytest.mark.parametrize('field,value', [('priority', True), ('priority', 1.5), ('enabled', 'false'), ('enabled', 1)])
+def test_policy_refuses_wrong_priority_or_enabled_type(service, field, value):
+    kwargs = dict(policy_id='fixture', name='Fixture', action_pattern='*', effect='review', actor='fixture')
+    kwargs[field] = value
+    with pytest.raises(ValueError, match=field):
+        service.upsert_policy(**kwargs)
+
+
+def test_direct_decision_refuses_nonenum_with_validation_error(service):
+    view = submit(service)
+    with pytest.raises(ValueError, match='decision'):
+        service.decide(view['id'], 'approved', decided_by='udita')
+
+
+@pytest.mark.parametrize('number', [float('nan'), float('inf'), float('-inf')])
+def test_gate_refuses_nonfinite_json_payload(service, number):
+    with pytest.raises(ValueError):
+        service.gate(module_id=5, action_type='send_email', payload={'number': number}, user_id='udita')
+
+
+@pytest.mark.parametrize('number', [float('nan'), float('inf'), float('-inf')])
+def test_submit_refuses_nonfinite_payload_before_storage(service, number):
+    with pytest.raises(ValueError):
+        submit(service, payload={'number': number})
+
+
+def test_allow_gate_refuses_nonfinite_payload(service):
+    service.upsert_policy(policy_id='allow', name='Fixture', action_pattern='*', effect='allow',
+                          actor='fixture', tenant_id='udita')
+    with pytest.raises(ValueError, match='payload'):
+        service.gate(module_id=5, action_type='send_email', payload={'number': float('nan')}, user_id='udita')
+
+
+def test_policy_max_identifiers_and_strict_valid_types(service):
+    policy = service.upsert_policy(policy_id='p'*120, name='n'*200, action_pattern='a'*200,
+                                   effect='review', actor='a'*120, tenant_id='t'*120,
+                                   priority=-1, enabled=False)
+    assert policy['priority'] == -1 and policy['enabled'] is False
+
+
+def test_policy_creation_race_error_contract(service, monkeypatch):
+    from sqlalchemy.orm import Session
+    from sqlalchemy.exc import IntegrityError
+    from app.modules.m00_approval_center.service import ApprovalPolicyRow
+    original = Session.flush
+    entered = []
+    kwargs = dict(policy_id='race', name='Fixture', action_pattern='*', effect='review', actor='fixture')
+    def compete(db, *args, **kw):
+        if not entered and any(isinstance(row, ApprovalPolicyRow) for row in db.new):
+            entered.append(True)
+            service.upsert_policy(**kwargs)
+        return original(db, *args, **kw)
+    monkeypatch.setattr(Session, 'flush', compete)
+    with pytest.raises(IntegrityError):
+        service.upsert_policy(**kwargs)
+    assert len(service.list_policies()) == 1
+
+
+def test_policy_refuses_nonfinite_condition_value(service):
+    with pytest.raises(ValueError, match='conditions'):
+        service.upsert_policy(policy_id='fixture', name='Fixture', action_pattern='*', effect='review',
+                              actor='fixture', conditions={'quantity': float('nan')})
+
+
+
+
+
+
+def test_policy_http_unknown_module_maps_to_validation_response(client, service):
+    client.app.dependency_overrides[require_admin] = lambda: TenantContext('local', 'admin', frozenset({'atlas-admin'}))
+    response = client.put('/approval-center/policies/invalid', json={
+        'id': 'invalid', 'name': 'Fixture', 'action_pattern': '*', 'effect': 'review', 'module_id': 999999})
+    assert response.status_code == 422
+
+
+def test_callback_exception_does_not_undo_committed_decision(service):
+    view = submit(service)
+    def fail(view):
+        raise RuntimeError('fixture callback failure')
+    service.register_callback(view['id'], fail)
+    assert service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')['status'] == ApprovalStatus.APPROVED
+    assert [event['event'] for event in service.audit(view['id'])] == ['created', 'approved']
+
+
+def test_consume_http_whitespace_effect_maps_to_422(client, service):
+    from app.auth.context import require_tenant
+    client.app.dependency_overrides[require_tenant] = lambda: TenantContext('udita', 'udita')
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    response = client.post(f"/approval-center/requests/{view['id']}/consume", json={
+        'module_id': view['module_id'], 'action_type': view['action_type'],
+        'payload': view['payload'], 'user_id': view['user_id'], 'effect_id': '   '})
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize('value', ['false', 1])
+def test_policy_list_requires_actual_enabled_only_boolean(service, value):
+    with pytest.raises(ValueError, match='enabled_only'):
+        service.list_policies(enabled_only=value)
