@@ -1,0 +1,6 @@
+Base d13e4148fe8c947c4d28351daef71eac4a57cdd8. Tests-only mounted integration slice.
+Python 3.12.14. Command: python -m pytest tests/modules/test_m21_claire_configured_integration.py tests/modules/test_m21_claire_worker_configuration.py tests/modules/test_m21_claire_model_adapter.py tests/modules/test_m21_claire_runtime.py tests/modules/test_m21_runtime_model_timeout.py -q --junitxml=/tmp/claire-integration.xml
+92 passed = prior 89 plus 3 configured integration cases, not additive across repeats.
+Cases: success, malformed JSON, HTTP 503. Production verifier path uses test-generated RS256 identity + test JWKS keys via oidc_auth_headers, no require_tenant dependency override. This is mounted verifier-path evidence, NOT a live identity-provider canary.
+Goal queued through mounted app, consumed by actual configured factory, HTTP exchanged with synthetic loopback model server using selected model, receipt/verdict or safe blocker persisted, stores closed and reopened, cross-tenant/cross-actor reads denied.
+Synthetic server is NOT a real model. SQLite is NOT PostgreSQL. No worker daemon, supervised deployment, process kill, migration or real provider/model canary. No production code changed. Acceptance A still NOT met.
