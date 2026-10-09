@@ -162,11 +162,14 @@ def upsert_policy(policy_id: str, body: schemas.PolicyUpsert,
                   admin: TenantContext = Depends(require_admin)) -> dict:
     if policy_id != body.id:
         raise HTTPException(status_code=422, detail="path policy id must match body id")
-    return service.upsert_policy(policy_id=body.id, name=body.name,
-        action_pattern=body.action_pattern, effect=body.effect, actor=admin.actor_id,
-        module_id=body.module_id, priority=body.priority, enabled=body.enabled,
-        conditions=body.conditions, review_ttl_seconds=body.review_ttl_seconds,
-        tenant_id=admin.tenant_id)
+    try:
+        return service.upsert_policy(policy_id=body.id, name=body.name,
+            action_pattern=body.action_pattern, effect=body.effect, actor=admin.actor_id,
+            module_id=body.module_id, priority=body.priority, enabled=body.enabled,
+            conditions=body.conditions, review_ttl_seconds=body.review_ttl_seconds,
+            tenant_id=admin.tenant_id)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
 
 
 @router.get("/policies", response_model=list[schemas.PolicyView])
@@ -204,6 +207,8 @@ def consume_effect(approval_id: str, body: schemas.EffectConsume,
     except ApprovalConflictError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
 
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
 
 def _owned(service: Service, approval_id: str, tenant: TenantContext) -> None:
     if service.get(approval_id)["user_id"] != tenant.tenant_id:

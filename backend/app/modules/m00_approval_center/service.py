@@ -174,7 +174,18 @@ class Service:
         Raises ValueError for an unknown module id so a misrouted gated
         action fails loudly instead of sitting in the queue forever.
         """
-        if module_id not in BY_ID:
+        if not isinstance(action_type, str) or not action_type.strip() or len(action_type) > 100:
+            raise ValueError("action_type must be nonempty and at most 100 characters")
+        if not isinstance(user_id, str) or not user_id.strip() or len(user_id) > 120:
+            raise ValueError("user_id must be nonempty and at most 120 characters")
+        if not isinstance(payload, dict):
+            raise ValueError("payload must be an object")
+        # Validate standards-compliant JSON before opening the write transaction.
+        try:
+            json.dumps(payload, allow_nan=False)
+        except (TypeError, ValueError, RecursionError):
+            raise ValueError("payload must contain finite JSON values") from None
+        if type(module_id) is not int or module_id not in BY_ID:
             raise ValueError(f"unknown module id: {module_id}")
         if ttl_seconds is not None and (type(ttl_seconds) is not int or ttl_seconds <= 0):
             raise ValueError("ttl_seconds must be a positive integer or None")
@@ -199,6 +210,7 @@ class Service:
         view = _view(row)
         self._broadcaster.publish({"type": "approval_request", "approval": _jsonable(view)})
         return view
+
 
     def get(self, approval_id: str) -> dict[str, Any]:
         """Return one request, applying expiry lazily. Raises ApprovalNotFoundError."""
@@ -248,7 +260,9 @@ class Service:
         decision that is not approved/denied, and ApprovalConflictError
         when the request is already decided or expired.
         """
-        if decision not in {ApprovalStatus.APPROVED, ApprovalStatus.DENIED}:
+        if not isinstance(decided_by, str) or not decided_by.strip() or len(decided_by) > 120:
+            raise ValueError("decided_by must be nonempty and at most 120 characters")
+        if not isinstance(decision, ApprovalStatus) or decision not in {ApprovalStatus.APPROVED, ApprovalStatus.DENIED}:
             raise ValueError("decision must be approved or denied")
         now = self._clock()
         expired = False
@@ -278,6 +292,7 @@ class Service:
         self._broadcaster.publish({"type": "approval_decision", "approval": _jsonable(view)})
         self._fire_callbacks(approval_id, view)
         return view
+
 
     def expire_overdue(self) -> list[str]:
         """Sweep every pending request past its deadline into expired.
@@ -486,7 +501,8 @@ class ApprovalEffectRow(Base):
 
 
 def _canonical(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+
 
 
 def _request_hash(*, module_id: int, action_type: str, payload: dict[str, Any], user_id: str) -> str:
@@ -525,12 +541,31 @@ def _install_extensions() -> None:
                       priority: int = 0, enabled: bool = True,
                       conditions: dict[str, Any] | None = None,
                       review_ttl_seconds: int = 3600, tenant_id: str = DEFAULT_USER_ID) -> dict[str, Any]:
+        if type(priority) is not int:
+            raise ValueError("priority must be an integer")
+        if type(enabled) is not bool:
+            raise ValueError("enabled must be a boolean")
+        if conditions is not None and not isinstance(conditions, dict):
+            raise ValueError("conditions must be an object or None")
+        try:
+            json.dumps(conditions, allow_nan=False)
+        except (TypeError, ValueError, RecursionError):
+            raise ValueError("conditions must contain finite JSON values") from None
+        if conditions is not None and any(not isinstance(key, str) or not key.strip() for key in conditions):
+            raise ValueError("condition keys must be nonempty strings")
+        for field, value in (("policy_id", policy_id), ("name", name),
+                             ("action_pattern", action_pattern), ("actor", actor)):
+            ceiling = 200 if field in {"name", "action_pattern"} else 120
+            if not isinstance(value, str) or not value.strip() or len(value) > ceiling:
+                raise ValueError(f"{field} must be nonempty and at most {ceiling} characters")
+        if module_id is not None and (type(module_id) is not int or module_id not in BY_ID):
+            raise ValueError(f"unknown policy module id: {module_id}")
         if effect not in {"allow", "deny", "review"}:
             raise ValueError("effect must be allow, deny, or review")
         if type(review_ttl_seconds) is not int or review_ttl_seconds <= 0:
             raise ValueError("review_ttl_seconds must be a positive integer")
-        if not tenant_id.strip():
-            raise ValueError("tenant_id is required")
+        if not isinstance(tenant_id, str) or not tenant_id.strip() or len(tenant_id) > 120:
+            raise ValueError("tenant_id must be nonempty and at most 120 characters")
         now = self._clock()
         with self._sessions.begin() as db:
             row = db.get(ApprovalPolicyRow, (tenant_id, policy_id))
@@ -546,15 +581,19 @@ def _install_extensions() -> None:
             db.flush()
             return _policy_view(row)
 
+
     def list_policies(self: Service, *, enabled_only: bool = False,
                       tenant_id: str = DEFAULT_USER_ID) -> list[dict[str, Any]]:
-        if not tenant_id.strip():
-            raise ValueError("tenant_id is required")
+        if type(enabled_only) is not bool:
+            raise ValueError("enabled_only must be a boolean")
+        if not isinstance(tenant_id, str) or not tenant_id.strip() or len(tenant_id) > 120:
+            raise ValueError("tenant_id must be nonempty and at most 120 characters")
         with self._sessions() as db:
             stmt = select(ApprovalPolicyRow).where(ApprovalPolicyRow.tenant_id == tenant_id).order_by(ApprovalPolicyRow.priority.desc(), ApprovalPolicyRow.id)
             if enabled_only:
                 stmt = stmt.where(ApprovalPolicyRow.enabled.is_(True))
             return [_policy_view(row) for row in db.scalars(stmt)]
+
 
     def evaluate_policy(self: Service, *, module_id: int, action_type: str,
                         context: dict[str, Any] | None = None,
@@ -574,6 +613,22 @@ def _install_extensions() -> None:
     def gate(self: Service, *, module_id: int, action_type: str, payload: dict[str, Any],
              user_id: str = DEFAULT_USER_ID, context: dict[str, Any] | None = None,
              idempotency_key: str | None = None) -> dict[str, Any]:
+        if idempotency_key is not None and (not isinstance(idempotency_key, str) or len(idempotency_key) > 200):
+            raise ValueError("idempotency_key must be a string of at most 200 characters or None")
+        if not isinstance(action_type, str) or not action_type.strip() or len(action_type) > 100:
+            raise ValueError("action_type must be nonempty and at most 100 characters")
+        if not isinstance(user_id, str) or not user_id.strip() or len(user_id) > 120:
+            raise ValueError("user_id must be nonempty and at most 120 characters")
+        if not isinstance(payload, dict):
+            raise ValueError("payload must be an object")
+        try:
+            json.dumps(payload, allow_nan=False)
+        except (TypeError, ValueError, RecursionError):
+            raise ValueError("payload must contain finite JSON values") from None
+        if context is not None and not isinstance(context, dict):
+            raise ValueError("context must be an object or None")
+        if type(module_id) is not int or module_id not in BY_ID:
+            raise ValueError(f"unknown module id: {module_id}")
         effect, policy = self.evaluate_policy(module_id=module_id, action_type=action_type, context=context, tenant_id=user_id)
         if effect == "allow":
             return {"decision": "allow", "allowed": True, "reason": "allowed by policy",
@@ -630,10 +685,15 @@ def _install_extensions() -> None:
         return {"decision": "review", "allowed": False, "reason": "human review required",
                 "policy_id": policy["id"] if policy else None, "approval": approval}
 
+
     def consume_effect(self: Service, approval_id: str, *, module_id: int, action_type: str,
                        payload: dict[str, Any], user_id: str, effect_id: str,
                        actor: str) -> dict[str, Any]:
         """Atomically issue a one-shot permit bound to the exact reviewed request."""
+        for field, value in (("actor", actor), ("effect_id", effect_id)):
+            ceiling = 120 if field == "actor" else 200
+            if not isinstance(value, str) or not value.strip() or len(value) > ceiling:
+                raise ValueError(f"{field} must be nonempty and at most {ceiling} characters")
         digest = _request_hash(module_id=module_id, action_type=action_type, payload=payload, user_id=user_id)
         now = self._clock()
         from sqlalchemy.exc import IntegrityError
@@ -677,6 +737,7 @@ def _install_extensions() -> None:
                     raise ApprovalConflictError("effect id has already been used") from None
             raise
         return {"approval_id": approval_id, "effect_id": effect_id, "allowed": True, "consumed_at": now}
+
 
     Service.upsert_policy = upsert_policy
     Service.list_policies = list_policies
