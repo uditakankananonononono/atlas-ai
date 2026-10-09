@@ -30,6 +30,8 @@ class Service:
    verified=verify_commitment_preview(view["payload"]["commitment_preview"],plan.model_dump(),checkout_supported=True)
    if verified["preview_sha256"]!=view["payload"].get("commitment_preview_sha256") or int(Decimal(verified["exact_charge"])*100)!=view["payload"].get("expected_charge_cents"):raise ValueError("approved commitment no longer matches checkout")
   if plan.monthly_price_usd<=0:raise ValueError("free plan does not need checkout")
+  from .write_ahead import require_dispatch_ready
+  require_dispatch_ready()
   result=await self.stripe.create_checkout(plan,view["payload"]["success_url"],view["payload"]["cancel_url"],tenant_id,approval_id)
   self.repo.record_execution(approval_id,result);return result
  def propose_cancel(self,tenant_id,data:CancelIn):
@@ -39,6 +41,8 @@ class Service:
  async def execute_approved(self,approval_id,tenant_id):
   view=self.repo.approval(approval_id)
   if not view or view["status"]!="approved" or view["payload"].get("tenant_id")!=tenant_id:raise PermissionError("approved tenant-bound billing action required")
+  from .write_ahead import require_dispatch_ready
+  require_dispatch_ready()
   action=view["payload"].get("effect")
   if action=="cancel_subscription":result=await self.stripe.cancel_subscription(view["payload"]["subscription_id"],approval_id)
   elif action=="create_draft_invoice":result=await self.stripe.create_invoice(view["payload"]["customer_id"],view["payload"]["description"],view["payload"]["amount_cents"],view["payload"]["currency"],approval_id)

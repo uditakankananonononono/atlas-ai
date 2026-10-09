@@ -1,0 +1,44 @@
+..........................................FF............................ [ 24%]
+........................................................................ [ 49%]
+........................................................................ [ 73%]
+........................................................................ [ 98%]
+.....                                                                    [100%]
+=================================== FAILURES ===================================
+______ test_expired_approval_reservation_refuses_without_new_rows[sqlite] ______
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f37a823eed0>, {'action_type': 'create_subscription_chec...lush=True, expire_on_commit=False), <app.modules.m24_billing.write_ahead.OperationRepository object at 0x7f37a81da060>)
+
+    def test_expired_approval_reservation_refuses_without_new_rows(env):
+        from sqlalchemy import update
+        from datetime import timedelta
+        from app.modules.m00_approval_center.service import ApprovalRequestRow
+        with env[2].begin() as db:db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==env[1]['id']).values(expires_at=datetime.now(timezone.utc)-timedelta(seconds=1)))
+>       with pytest.raises(ApprovalConflictError):prepare(env)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m00_approval_center.service.ApprovalConflictError'>
+
+tests/modules/test_m24_write_ahead_repository.py:217: Failed
+_____ test_expired_approval_reservation_refuses_without_new_rows[postgres] _____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f37aadccce0>, {'action_type': 'create_subscription_chec...lush=True, expire_on_commit=False), <app.modules.m24_billing.write_ahead.OperationRepository object at 0x7f37a81db6e0>)
+
+    def test_expired_approval_reservation_refuses_without_new_rows(env):
+        from sqlalchemy import update
+        from datetime import timedelta
+        from app.modules.m00_approval_center.service import ApprovalRequestRow
+        with env[2].begin() as db:db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==env[1]['id']).values(expires_at=datetime.now(timezone.utc)-timedelta(seconds=1)))
+>       with pytest.raises(ApprovalConflictError):prepare(env)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m00_approval_center.service.ApprovalConflictError'>
+
+tests/modules/test_m24_write_ahead_repository.py:217: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_write_ahead_repository.py::test_prepare_durable_intent_and_permit_reopen_exact_replay[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_write_ahead_repository.py::test_expired_approval_reservation_refuses_without_new_rows[sqlite]
+FAILED tests/modules/test_m24_write_ahead_repository.py::test_expired_approval_reservation_refuses_without_new_rows[postgres]
+2 failed, 291 passed, 1 warning in 80.61s (0:01:20)

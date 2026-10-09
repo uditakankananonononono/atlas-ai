@@ -1,0 +1,11 @@
+........................................................................ [ 25%]
+........................................................................ [ 50%]
+........................................................................ [ 75%]
+........................................................................ [100%]
+=============================== warnings summary ===============================
+tests/modules/test_m24_write_ahead_repository.py::test_prepare_durable_intent_and_permit_reopen_exact_replay[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+288 passed, 1 warning in 63.88s (0:01:03)

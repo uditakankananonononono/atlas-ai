@@ -1,0 +1,84 @@
+.......F.F...F.......................................................... [ 25%]
+........................................................................ [ 51%]
+........................................................................ [ 76%]
+..................................................................       [100%]
+=================================== FAILURES ===================================
+__ test_preview_bound_proposal_and_execution_revalidate_exact_approved_charge __
+
+    def test_preview_bound_proposal_and_execution_revalidate_exact_approved_charge():
+     repo=Repo();s=Service(A(),repo,Stripe());p=s.propose_previewed_checkout('tenant',PreviewedCheckoutIn(success_url='https://ok',cancel_url='https://cancel',commitment_preview=preview()))
+     assert p.payload['commitment_preview_sha256']==preview()['preview_sha256'] and p.payload['expected_charge_cents']==2900
+>    repo.item={'status':'approved','payload':p.payload};assert asyncio.run(s.execute_checkout(p.approval_id,'tenant'))['id']=='cs_test'
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m24_preview_bound_checkout.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/service.py:26: in execute_checkout
+    require_dispatch_ready()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def require_dispatch_ready():
+        """No ready adapter/cutover verifier in slice1. Env flags cannot authorize dispatch."""
+>       raise DispatchRefused('M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required')
+E       app.modules.m24_billing.write_ahead.DispatchRefused: M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required
+
+backend/app/modules/m24_billing/write_ahead.py:174: DispatchRefused
+________________ test_unknown_checkout_is_tenant_bound_refusal _________________
+
+    @pytest.mark.asyncio
+    async def test_unknown_checkout_is_tenant_bound_refusal():
+        class Repo:
+            def approval(self, aid): return None
+        with pytest.raises(PermissionError, match='tenant-bound'):
+>           await Service(None, Repo(), None).execute_checkout('missing', 'tenant-a')
+
+tests/modules/test_m24_residual_reimplementation.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m24_billing/service.py:26: in execute_checkout
+    require_dispatch_ready()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def require_dispatch_ready():
+        """No ready adapter/cutover verifier in slice1. Env flags cannot authorize dispatch."""
+>       raise DispatchRefused('M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required')
+E       app.modules.m24_billing.write_ahead.DispatchRefused: M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required
+
+backend/app/modules/m24_billing/write_ahead.py:174: DispatchRefused
+___________________ test_unknown_checkout_route_maps_to_409 ____________________
+
+    @pytest.mark.asyncio
+    async def test_unknown_checkout_route_maps_to_409():
+        from types import SimpleNamespace
+        from fastapi import HTTPException
+        from app.modules.m24_billing.routes import execute
+        class Repo:
+            def approval(self, aid): return None
+        with pytest.raises(HTTPException) as error:
+            await execute('unknown', SimpleNamespace(tenant_id='tenant-a'), Service(None,Repo(),None))
+        assert error.value.status_code == 409
+>       assert 'tenant-bound' in error.value.detail
+E       AssertionError: assert 'tenant-bound' in 'M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required'
+E        +  where 'M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required' = HTTPException(status_code=409, detail='M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required').detail
+E        +    where HTTPException(status_code=409, detail='M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required') = <ExceptionInfo HTTPException(status_code=409, detail='M24 dispatch disabled: checked credential/egress cutover and TEST adapter readiness required') tblen=2>.value
+
+tests/modules/test_m24_residual_reimplementation.py:78: AssertionError
+=============================== warnings summary ===============================
+tests/modules/test_m24_write_ahead_repository.py::test_prepare_durable_intent_and_permit_reopen_exact_replay[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_preview_bound_checkout.py::test_preview_bound_proposal_and_execution_revalidate_exact_approved_charge
+FAILED tests/modules/test_m24_residual_reimplementation.py::test_unknown_checkout_is_tenant_bound_refusal
+FAILED tests/modules/test_m24_residual_reimplementation.py::test_unknown_checkout_route_maps_to_409
+3 failed, 279 passed, 1 warning in 56.61s
