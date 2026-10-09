@@ -234,3 +234,58 @@ def test_populated_cancellation_snapshot_downgrade_refuses(tmp_path,database):
     result=migrate('downgrade','20261009_m24_reconciliation');assert result.returncode!=0 and 'destructive downgrade refused' in result.stderr
     engine.dispose()
     if database=='postgres':pg.cleanup()
+
+
+@pytest.mark.parametrize('field,value',[('status','paused'),('cancel_at_period_end',True)])
+def test_local_before_state_drift_alone_refuses_without_permit(env,field,value):
+    with env[1].begin() as db:setattr(db.get(TenantBillingRow,'t1'),field,value)
+    with pytest.raises(wa.DispatchRefused,match='before state drift'):prepare(env)
+    with env[1]() as db:
+        assert db.scalar(select(ApprovalEffectRow)) is None
+        assert db.scalar(select(wa.OperationRow)) is None
+
+
+@pytest.mark.parametrize('field,value',[
+    ('object','invoice'),('id','sub_other'),('customer','cus_other'),('livemode',True),
+    ('status','paused'),('cancel_at_period_end',True),('metadata',{'atlas_tenant_id':'foreign'}),
+])
+def test_provider_before_field_drift_alone_refuses(env,field,value):
+    from app.modules.m24_billing.cancellation import validate_before
+    op=prepare(env);snap=env[2].snapshot(op['id'],'t1')
+    raw={'id':'sub_fixture','object':'subscription','customer':'cus_fixture','status':'active',
+        'cancel_at_period_end':False,'livemode':False,'metadata':{'atlas_tenant_id':'t1'}}
+    validate_before(raw,snap)
+    raw[field]=value
+    with pytest.raises(wa.DispatchRefused,match='provider subscription'):validate_before(raw,snap)
+    assert env[2].get(op['id'],'t1')['state']=='prepared'
+
+
+@pytest.mark.parametrize('field,value',[('status','paused'),('metadata',{'atlas_tenant_id':'foreign'})])
+def test_second_provider_read_drift_zero_delete_safe_failure(env,monkeypatch,field,value):
+    op=prepare(env);ready(env,monkeypatch);mock=Mock()
+    def drift(request):
+        response=mock(request);body=response.json()
+        if mock.calls==['GET','GET']:body[field]=value
+        return httpx.Response(200,json=body)
+    assert dispatch(env,op,drift)['state']=='failed_before_dispatch'
+    assert mock.calls==['GET','GET'] and mock.effects==0
+
+
+@pytest.mark.parametrize('state',[
+    'prepared','dispatching','outcome_unknown','succeeded','succeeded_late',
+    'failed_before_dispatch','closed_unknown','cancelled_before_dispatch',
+])
+def test_customer_fence_all_cancel_states_except_unsent_terminal(env,state):
+    op=prepare(env)
+    # Isolate the invoice fence state predicate, not a claim that all transitions
+    # can be produced by the cancellation dispatcher or released automatically.
+    with env[1].begin() as db:db.get(wa.OperationRow,op['id']).state=state
+    invoice=env[0].submit(module_id=24,action_type='issue_invoice',user_id='t1',payload={
+        'tenant_id':'t1','provider':'stripe','effect':'create_draft_invoice','customer_id':'cus_fixture',
+        'description':'draft','amount_cents':1234,'currency':'usd'})
+    env[0].decide(invoice['id'],ApprovalStatus.APPROVED,'owner')
+    repo=InvoiceRepository(env[0])
+    def prepare_invoice():return repo.prepare(invoice['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker')
+    if state=='cancelled_before_dispatch':assert prepare_invoice()['state']=='prepared'
+    else:
+        with pytest.raises(wa.DispatchRefused,match='cancellation fence'):prepare_invoice()

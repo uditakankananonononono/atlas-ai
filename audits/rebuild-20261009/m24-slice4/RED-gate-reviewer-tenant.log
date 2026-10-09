@@ -1,0 +1,44 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_require_reviewer_helper_foreign_tenant_alone_refuses[sqlite] _______
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f4502cd3cb0>, sessionmaker(class_='Session', bind=Engin...tch_not_after': None, ...}, <app.modules.m24_billing.reconciliation.ReconciliationRepository object at 0x7f4502d748c0>)
+
+    def test_require_reviewer_helper_foreign_tenant_alone_refuses(env):
+        from app.modules.m24_billing.reconciliation import require_reviewer
+        with env[1]() as db:
+            op=db.get(wa.OperationRow,env[3]['id'])
+            assert require_reviewer(db,op,principal()) is not None
+            # Direct helper invocation isolates its defense-in-depth tenant check;
+            # public accept/close enforce the same tenant boundary earlier.
+>           with pytest.raises(PermissionError,match='approver principal required'):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'PermissionError'>
+
+tests/modules/test_m24_reconciliation.py:235: Failed
+_____ test_require_reviewer_helper_foreign_tenant_alone_refuses[postgres] ______
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f4502753da0>, sessionmaker(class_='Session', bind=Engin...tch_not_after': None, ...}, <app.modules.m24_billing.reconciliation.ReconciliationRepository object at 0x7f45015d3f50>)
+
+    def test_require_reviewer_helper_foreign_tenant_alone_refuses(env):
+        from app.modules.m24_billing.reconciliation import require_reviewer
+        with env[1]() as db:
+            op=db.get(wa.OperationRow,env[3]['id'])
+            assert require_reviewer(db,op,principal()) is not None
+            # Direct helper invocation isolates its defense-in-depth tenant check;
+            # public accept/close enforce the same tenant boundary earlier.
+>           with pytest.raises(PermissionError,match='approver principal required'):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'PermissionError'>
+
+tests/modules/test_m24_reconciliation.py:235: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_reconciliation.py::test_require_reviewer_helper_foreign_tenant_alone_refuses[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_reconciliation.py::test_require_reviewer_helper_foreign_tenant_alone_refuses[sqlite]
+FAILED tests/modules/test_m24_reconciliation.py::test_require_reviewer_helper_foreign_tenant_alone_refuses[postgres]
+2 failed, 38 deselected, 1 warning in 2.11s
