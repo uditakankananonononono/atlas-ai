@@ -546,6 +546,31 @@ def _request_hash(*, module_id: int, action_type: str, payload: dict[str, Any], 
     return hashlib.sha256(_canonical(body).encode()).hexdigest()
 
 
+def _validate_condition_json_keys(value: Any) -> None:
+    """Reject keys JSON storage would silently convert to strings."""
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if not isinstance(key, str):
+                raise ValueError("conditions must have string object keys")
+            _validate_condition_json_keys(child)
+    elif isinstance(value, (list, tuple)):
+        for child in value:
+            _validate_condition_json_keys(child)
+
+
+def _condition_value_equal(current: Any, wanted: Any) -> bool:
+    """JSON booleans are not numbers, including inside objects and arrays."""
+    if isinstance(current, bool) or isinstance(wanted, bool):
+        return type(current) is type(wanted) and current == wanted
+    if isinstance(current, dict) and isinstance(wanted, dict):
+        return current.keys() == wanted.keys() and all(
+            _condition_value_equal(current[key], wanted[key]) for key in current)
+    if isinstance(current, list) and isinstance(wanted, list):
+        return len(current) == len(wanted) and all(
+            _condition_value_equal(a, b) for a, b in zip(current, wanted))
+    return current == wanted
+
+
 def _condition_matches(conditions: dict[str, Any], context: dict[str, Any]) -> bool:
     """Exact values and value lists; dotted keys address nested context."""
     for dotted, wanted in conditions.items():
@@ -555,11 +580,12 @@ def _condition_matches(conditions: dict[str, Any], context: dict[str, Any]) -> b
                 return False
             current = current[part]
         if isinstance(wanted, list):
-            if current not in wanted:
+            if not any(_condition_value_equal(current, candidate) for candidate in wanted):
                 return False
-        elif current != wanted:
+        elif not _condition_value_equal(current, wanted):
             return False
     return True
+
 
 
 def _policy_view(row: ApprovalPolicyRow) -> dict[str, Any]:
@@ -589,6 +615,10 @@ def _install_extensions() -> None:
             raise ValueError("conditions must contain finite JSON values") from None
         if conditions is not None and any(not isinstance(key, str) or not key.strip() for key in conditions):
             raise ValueError("condition keys must be nonempty strings")
+        try:
+            _validate_condition_json_keys(conditions)
+        except RecursionError:
+            raise ValueError("conditions must contain finite JSON values") from None
         for field, value in (("policy_id", policy_id), ("name", name),
                              ("action_pattern", action_pattern), ("actor", actor)):
             ceiling = 200 if field in {"name", "action_pattern"} else 120
@@ -616,6 +646,7 @@ def _install_extensions() -> None:
             db.add(ApprovalEventRow(approval_id=f"policy:{policy_id}", event=event, actor=actor, at=now))
             db.flush()
             return _policy_view(row)
+
 
 
     def list_policies(self: Service, *, enabled_only: bool = False,
