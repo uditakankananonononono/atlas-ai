@@ -1,0 +1,100 @@
+........................................................................ [ 12%]
+........................................................................ [ 24%]
+........................................................................ [ 36%]
+.............................................F.......................... [ 48%]
+........................................................................ [ 60%]
+........................................................................ [ 72%]
+........................................................................ [ 84%]
+........................................................................ [ 96%]
+........................                                                 [100%]
+=================================== FAILURES ===================================
+____________ test_real_m13_chromium_dom_artifacts_tenant_isolation _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-sandbox/pytest-0/test_real_m13_chromium_dom_art0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd4d82caf60>
+
+    @pytest.mark.asyncio
+    async def test_real_m13_chromium_dom_artifacts_tenant_isolation(tmp_path, monkeypatch):
+        def fixture_dns(host, port):
+            if host == 'a16-fixture.test':
+                return {'93.184.216.34'}
+            raise AssertionError('fixture attempted unexpected DNS')
+        monkeypatch.setattr(security, '_resolve', fixture_dns)
+        root = tmp_path / 'artifacts'
+        sessions = PlaywrightSessions(str(root), allowed_hosts={'a16-fixture.test'}, max_sessions=2)
+        engine = create_engine(f'sqlite:///{tmp_path / "audit.sqlite"}')
+        Base.metadata.create_all(engine)
+        store = SQLStore(sessionmaker(bind=engine, expire_on_commit=False))
+        service = Service(sessions, None, store, artifact_root=str(root), allowed_hosts={'a16-fixture.test'})
+        seen = []
+        try:
+            page_a = await sessions.page('tenant-a', 'same-session')
+            page_b = await sessions.page('tenant-b', 'same-session')
+            for page in (page_a, page_b):
+                async def intercepted(route):
+                    await sessions._guard_route(FixtureRoute(route, seen))
+                await page.context.route('**/*', intercepted)
+            result = await service.navigate('tenant-a', 'same-session', 'https://a16-fixture.test/form')
+            assert result == {'status':'ok', 'url':'https://a16-fixture.test/form', 'http_status':200}
+            await service.navigate('tenant-b', 'same-session', 'https://a16-fixture.test/form')
+            assert page_a.context is not page_b.context
+            await page_a.context.add_cookies([{'name':'fixture', 'value':'tenant-a', 'url':'https://a16-fixture.test'}])
+            assert any(c['value'] == 'tenant-a' for c in await page_a.context.cookies())
+            assert await page_b.context.cookies() == []
+            mapping = await service.fill('tenant-a', 'same-session', [FieldDescriptor('#email', label='Email', name='email', input_type='email')], {'email':'fixture@example.test'})
+            assert mapping == {'#email':'fixture@example.test'}
+            assert await service.read_values('tenant-a', 'same-session', ['#email']) == mapping
+            assert await page_b.locator('#email').input_value() == ''
+            assert 'A16 browser consumer fixture' in await service.extract('tenant-a', 'same-session')
+>           shot = await service.screenshot('tenant-a', 'same-session')
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m13_real_chromium_consumer.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/modules/m13_browser_agent/service.py:58: in screenshot
+    png = await page.screenshot(full_page=True, mask=mask)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../atlas-ci-repro-venv/lib/python3.12/site-packages/playwright/async_api/_generated.py:10883: in screenshot
+    await self._impl_obj.screenshot(
+../atlas-ci-repro-venv/lib/python3.12/site-packages/playwright/_impl/_page.py:830: in screenshot
+    encoded_binary = await self._channel.send(
+../atlas-ci-repro-venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x7fd4d8295010>
+cb = <function Channel.send.<locals>.<lambda> at 0x7fd4d9f0f240>
+is_internal = False, title = None
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        parsed_st = _attach_api_call_information(
+            getattr(task, "__pw_stack__", None) or _capture_stack_trace(),
+            is_internal,
+            title,
+        )
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.Error: Page.screenshot: Protocol error (Page.captureScreenshot): Unable to capture screenshot
+E           Call log:
+E             - taking page screenshot
+E             - waiting for fonts to load...
+E             - fonts loaded
+
+../atlas-ci-repro-venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:632: Error
+=============================== warnings summary ===============================
+tests/modules/test_m13_pairing_cas_reimplementation.py::test_real_postgres_eight_consumers_one_device
+  /tmp/atlas-ci-repro-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m13_real_chromium_consumer.py::test_real_m13_chromium_dom_artifacts_tenant_isolation
+1 failed, 599 passed, 1 warning in 36.05s
