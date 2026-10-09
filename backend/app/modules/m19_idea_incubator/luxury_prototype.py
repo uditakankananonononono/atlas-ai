@@ -3,8 +3,8 @@
 For each supported lever this writes a stdlib-only Python component and its
 unittest file into a directory, then RUNS the tests in a subprocess and returns
 the real exit code and counts. It makes no network calls and never contacts a
-brand. Supported levers: provenance, scarcity_access, ownership_care,
-personalization. Other levers return an explicit unsupported entry, not a stub.
+brand. All eight ideation levers have a component. A lever without one is listed as
+unsupported, not stubbed.
 Limit: these are working reference components with synthetic fixtures, not a
 production integration with any brand's systems.
 """
@@ -187,6 +187,9 @@ class T(unittest.TestCase):
         with self.assertRaises(PermissionError): p.remember("b", "k", "v")
 if __name__ == "__main__": unittest.main()
 ''')
+
+from .luxury_prototype_more import MORE
+COMPONENTS.update(MORE)
 
 _SAFE = re.compile(r"^[a-z_]+$")
 
