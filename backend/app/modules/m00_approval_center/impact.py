@@ -23,6 +23,7 @@ import hashlib
 import json
 import threading
 from datetime import datetime
+from dataclasses import dataclass
 from typing import Any, Callable
 
 from sqlalchemy import JSON, DateTime, String, select, update, or_
@@ -40,6 +41,41 @@ from app.modules.m00_approval_center.service import (
 )
 
 StateProbe = Callable[[dict[str, Any]], dict[str, Any]]
+
+
+M10_REPLY = (10, "send_email_reply")
+
+
+@dataclass(frozen=True)
+class ApprovalProbeContext:
+    approval_id: str
+    tenant_id: str
+    module_id: int
+    action_type: str
+    payload_hash: str
+
+    def binding(self) -> dict[str, Any]:
+        return {"approval_id": self.approval_id, "tenant_id": self.tenant_id,
+                "module_id": self.module_id, "action_type": self.action_type,
+                "payload_hash": self.payload_hash, "version": 1}
+
+
+def requires_bound_snapshot(view: dict[str, Any]) -> bool:
+    return (view["module_id"], view["action_type"]) == M10_REPLY
+
+
+def approval_context(view: dict[str, Any]) -> ApprovalProbeContext:
+    from .service import _request_hash
+    return ApprovalProbeContext(view["id"], view["user_id"], view["module_id"],
+                                view["action_type"], _request_hash(module_id=view["module_id"],
+                                action_type=view["action_type"], payload=view["payload"], user_id=view["user_id"]))
+
+
+def validate_bound_snapshot(view: dict[str, Any], reviewed: Any) -> None:
+    if not requires_bound_snapshot(view):
+        return
+    if reviewed is None or reviewed.probe != "10:send_email_reply" or reviewed.state.get("$approval_binding") != approval_context(view).binding():
+        raise ApprovalConflictError("M10 requires a trusted bound review snapshot; legacy or explicit state needs fresh review")
 
 
 class ApprovalReviewStateRow(Base):
@@ -140,7 +176,13 @@ def _read_probe(registry: ProbeRegistry, view: dict[str, Any]) -> tuple[str, dic
     if found is None:
         return None
     name, probe = found
-    state = probe(copy.deepcopy(view["payload"]))
+    if requires_bound_snapshot(view):
+        from app.modules.m10_email_assistant.drift_probe import SendReplyProbe
+        if not isinstance(probe, SendReplyProbe):
+            raise ApprovalConflictError("M10 requires its trusted bound probe")
+        state = probe.read_bound(copy.deepcopy(view["payload"]), approval_context(view))
+    else:
+        state = probe(copy.deepcopy(view["payload"]))
     if not isinstance(state, dict):
         raise TypeError(f"state probe {name} must return a dict")
     try:
@@ -157,6 +199,8 @@ def capture_review_state(service: Service, approval_id: str, *, registry: ProbeR
     view = service.get(approval_id)
     if _status(view) != "pending":
         raise ApprovalConflictError(f"approval is {_status(view)}; review state is frozen")
+    if requires_bound_snapshot(view) and state is not None:
+        raise ApprovalConflictError("M10 snapshot cannot use client-supplied explicit state")
     probe_name = "explicit"
     if state is None:
         read = _read_probe(registry, view)
@@ -194,10 +238,19 @@ def impact_preview(service: Service, approval_id: str, *, registry: ProbeRegistr
     view = service.get(approval_id)
     with service._sessions() as db:
         reviewed = db.get(ApprovalReviewStateRow, approval_id)
+        if requires_bound_snapshot(view) and reviewed is not None:
+            validate_bound_snapshot(view, reviewed)
         reviewed = None if reviewed is None else {
             "state": reviewed.state, "state_hash": reviewed.state_hash,
             "probe": reviewed.probe, "captured_at": _aware(reviewed.captured_at)}
-    read = _read_probe(registry, view)
+    try:
+        read = _read_probe(registry, view)
+    except StateDriftError:
+        raise
+    except ApprovalConflictError as error:
+        if reviewed is not None:
+            raise StateDriftError(approval_id, [{"path": "$binding_or_baseline", "change": "invalid"}]) from error
+        raise
     current = None if read is None else {"probe": read[0], "state": read[1], "state_hash": state_hash(read[1])}
     if reviewed is None:
         drift, verdict = [], "no_review_snapshot"
@@ -220,7 +273,7 @@ def impact_preview(service: Service, approval_id: str, *, registry: ProbeRegistr
         "module_id": view["module_id"], "action_type": view["action_type"],
         "effect": view["payload"], "reviewed": reviewed, "current": current,
         "drift": drift, "verdict": verdict,
-        "safe_to_consume": _status(view) == "approved" and verdict in {"unchanged", "no_review_snapshot"},
+        "safe_to_consume": _status(view) == "approved" and (verdict == "unchanged" if requires_bound_snapshot(view) else verdict in {"unchanged", "no_review_snapshot"}),
         "checked_at": service._clock(),
     }
 
@@ -241,6 +294,8 @@ def consume_effect_checked(service: Service, approval_id: str, *, module_id: int
         raise StateDriftError(approval_id, preview["drift"])
     if preview["verdict"] == "no_probe":
         raise ApprovalConflictError("review snapshot exists but no state probe is registered; cannot verify state")
+    if (module_id, action_type) == M10_REPLY and preview["verdict"] != "unchanged":
+        raise ApprovalConflictError("M10 requires a trusted bound review snapshot and unchanged valid state")
     permit = service.consume_effect(approval_id, module_id=module_id, action_type=action_type,
                                     payload=payload, user_id=user_id, effect_id=effect_id, actor=actor)
     return {**permit, "state_verdict": preview["verdict"],

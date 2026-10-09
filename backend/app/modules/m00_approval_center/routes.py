@@ -242,3 +242,5 @@ def preview_impact(approval_id: str, service: Service = Depends(get_service),
         return impact_preview(service, approval_id)
     except ApprovalNotFoundError as error:
         raise _not_found(error) from error
+    except ApprovalConflictError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error

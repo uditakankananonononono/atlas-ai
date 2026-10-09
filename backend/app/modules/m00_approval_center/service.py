@@ -279,6 +279,9 @@ class Service:
             row = self._fetch(db, approval_id)
             expired = self._expire_if_overdue(db, row, now)
             if not expired:
+                if decision == ApprovalStatus.APPROVED:
+                    from .impact import ApprovalReviewStateRow, validate_bound_snapshot
+                    validate_bound_snapshot(_view(row), db.get(ApprovalReviewStateRow, approval_id))
                 if row.status != ApprovalStatus.PENDING.value:
                     raise ApprovalConflictError(f"approval already {row.status}")
                 from sqlalchemy import update, or_
@@ -772,6 +775,8 @@ def _install_extensions() -> None:
         try:
             with self._sessions.begin() as db:
                 row = self._fetch(db, approval_id)
+                from .impact import ApprovalReviewStateRow, validate_bound_snapshot
+                validate_bound_snapshot(_view(row), db.get(ApprovalReviewStateRow, approval_id))
                 expired = self._expire_if_overdue(db, row, now)
                 if not expired:
                     existing = db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id == approval_id))
