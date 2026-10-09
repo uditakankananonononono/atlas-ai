@@ -1,0 +1,7 @@
+Base fe7e987c24bfe8429b8ca05ba15159b7d145a635. Tests-only.
+Own first run 2 external-kill tests passed; combined rerun 6 passed (2 new + 4 prior subprocess cases), not additive.
+Python 3.12.14, migrated ephemeral PostgreSQL 16.2.
+First command: python -m pytest tests/modules/test_m21_runtime_external_kill.py -v -s --junitxml=/tmp/claire-kill.xml
+Rerun: python -m pytest tests/modules/test_m21_runtime_external_kill.py tests/modules/test_m21_runtime_subprocess_recovery.py -v -s --junitxml=/tmp/claire-kill-rerun.xml
+Parent waits for scratch ready barrier then sends os.kill(child.pid,SIGKILL), asserts -SIGKILL. Cases: before claim (goal remains queued, no claim/dispatch) and after durable mark_effect committed but before receipt returned/goal settlement (real DB state read by parent). Resumed subprocess has distinct PID, uses wall clock 4-second expiry for the committed case, dispatch counter exactly one; committed effect replayed, queued effect dispatched once. Prior 2-second lease cases reran successfully once; not proof against load-related flakiness.
+No product code changes. Barrier wrapper around mark_effect after underlying commit, scripted model/scratch signed artifact. No death during DB transaction, generation, transport, PG/server restart or power-loss durability proof. No outbox exists in this Claire runtime; settlement writes goal report/verdict only, so outbox recovery remains missing implementation, not tested. No production reconciliation authenticity feature, deployment or learned model. Acceptance A NOT met.
