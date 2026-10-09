@@ -1,0 +1,12 @@
+reviewer-tenant 1 2 failed, 38 deselected, 1 warning in 2.11s
+local-status 1 2 failed, 2 passed, 64 deselected, 1 warning in 2.22s
+local-period-end 1 2 failed, 2 passed, 64 deselected, 1 warning in 2.22s
+provider-status 1 2 failed, 66 deselected, 1 warning in 1.87s
+provider-period-end 1 2 failed, 66 deselected, 1 warning in 1.30s
+provider-object 1 2 failed, 66 deselected, 1 warning in 1.44s
+provider-id 1 2 failed, 12 passed, 54 deselected, 1 warning in 6.70s
+provider-customer 1 2 failed, 66 deselected, 1 warning in 1.47s
+provider-livemode 1 2 failed, 66 deselected, 1 warning in 1.45s
+provider-tenant 1 2 failed, 66 deselected, 1 warning in 1.35s
+invoice-terminal 1 4 failed, 36 deselected, 1 warning in 2.59s
+failed-cancel-fence 1 2 failed, 66 deselected, 1 warning in 1.34s

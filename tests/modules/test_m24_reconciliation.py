@@ -223,3 +223,48 @@ with open(os.environ['ANSWER'],'w') as f:json.dump({'pid':os.getpid(),'result':r
         assert env[2].get(env[3]['id'],'t1')['state']=='succeeded' and calls==['GET']
     finally:
         if child.poll() is None:child.kill();child.wait(5)
+
+
+def test_require_reviewer_helper_foreign_tenant_alone_refuses(env):
+    from app.modules.m24_billing.reconciliation import require_reviewer
+    with env[1]() as db:
+        op=db.get(wa.OperationRow,env[3]['id'])
+        assert require_reviewer(db,op,principal()) is not None
+        # Direct helper invocation isolates its defense-in-depth tenant check;
+        # public accept/close enforce the same tenant boundary earlier.
+        with pytest.raises(PermissionError,match='approver principal required'):
+            require_reviewer(db,op,principal(tenant='foreign'))
+
+
+@pytest.mark.parametrize('terminal',['closed_unknown','cancelled_before_dispatch'])
+def test_invoice_parent_terminal_alone_blocks_valid_positive_evidence(env,monkeypatch,terminal):
+    from app.modules.m24_billing.invoice_dispatcher import InvoiceRepository,InvoiceStepRow
+    from app.modules.m24_billing.repository import TenantBillingRow
+    svc,sessions,_,_,rr=env
+    with sessions.begin() as db:db.add(TenantBillingRow(tenant_id='t1',customer_id='cus_fixture'))
+    a=svc.submit(module_id=24,action_type='issue_invoice',user_id='t1',payload={
+        'tenant_id':'t1','provider':'stripe','effect':'create_draft_invoice','customer_id':'cus_fixture',
+        'description':'draft','amount_cents':100,'currency':'usd'})
+    svc.decide(a['id'],ApprovalStatus.APPROVED,'original-owner')
+    repo=InvoiceRepository(svc);op=repo.prepare(a['id'],'t1',provider_account='test-account',environment='test',api_version=API_VERSION,actor='worker')
+    monkeypatch.setattr(wa,'require_dispatch_ready',lambda:None)
+    with sessions.begin() as db:db.add(wa.CutoverRow(id=1,protocol_epoch=2,state='verified-active',verification_digest='fixture-only',verified_at=datetime.now(timezone.utc)))
+    fence=repo.claim_step(op['id'],'t1','draft-invoice');repo.step_outcome(op['id'],'t1','draft-invoice',fence,state='outcome_unknown')
+    body={'id':'in_fixture','object':'invoice','customer':'cus_fixture','currency':'usd','status':'draft','auto_advance':False,'total':0,'livemode':False,
+        'metadata':{'atlas_operation_id':op['id'],'atlas_operation_step':'draft-invoice','atlas_approval_id':a['id']}}
+    calls=[]
+    def handler(request):calls.append(request.method);return httpx.Response(200,json=body)
+    adapter=PositiveLookupAdapter('sk_test_fixture','test-account',httpx.MockTransport(handler))
+    evidence=asyncio.run(rr.lookup_positive(op['id'],'t1','draft-invoice','in_fixture',adapter))
+    if terminal=='closed_unknown':assert rr.cancel_unsent_or_close_unknown(op['id'],principal())['state']==terminal
+    else:
+        # Predicate-isolation fixture: retain uncertain step and valid evidence,
+        # change only the parent terminal state. Not a legal-transition claim.
+        with sessions.begin() as db:db.get(wa.OperationRow,op['id']).state=terminal
+    with pytest.raises(wa.DispatchRefused,match='invoice evidence target not uncertain'):
+        rr.accept_positive(op['id'],evidence['evidence_id'],principal())
+    with sessions() as db:
+        assert db.get(wa.OperationRow,op['id']).state==terminal
+        assert db.get(InvoiceStepRow,op['id']+':draft-invoice').state=='outcome_unknown'
+        assert db.get(LookupEvidenceRow,evidence['evidence_id']).accepted_at is None
+    assert calls==['GET']
