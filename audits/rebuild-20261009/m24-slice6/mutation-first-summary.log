@@ -1,0 +1,14 @@
+balance-cas 1 2 failed, 68 deselected, 1 warning in 1.88s
+input-cas 1 2 failed, 68 deselected, 1 warning in 1.73s
+output-cas 1 2 failed, 68 deselected, 1 warning in 1.99s
+attempt-cas 1 2 failed, 68 deselected, 1 warning in 1.87s
+atomic-reserve 1 2 failed, 68 deselected, 1 warning in 1.32s
+charged-pending 1 2 failed, 68 deselected, 1 warning in 1.30s
+model-response-account 1 2 failed, 68 deselected, 1 warning in 1.33s
+usage-verification 1 2 failed, 68 deselected, 1 warning in 1.34s
+exact-cost 1 2 failed, 68 deselected, 1 warning in 1.33s
+readback 1 2 failed, 68 deselected, 1 warning in 1.44s
+settlement-atomic 1 2 failed, 68 deselected, 1 warning in 1.35s
+immutable-reserve 1 2 failed, 68 deselected, 1 warning in 1.36s
+sql-barrier 1 2 failed, 68 deselected, 1 warning in 1.36s
+durable-only 1 2 failed, 68 deselected, 1 warning in 1.88s

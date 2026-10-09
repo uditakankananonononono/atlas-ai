@@ -1,0 +1,46 @@
+.F.F                                                                     [100%]
+=================================== FAILURES ===================================
+__ test_generation_binding_hash_or_exact_permit_alone_refuses[sqlite-permit] ___
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fe46dcb8440>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fe46dc8e930>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe46dcba180>
+different = 'permit'
+
+    @pytest.mark.parametrize('different',['binding_hash','permit'])
+    def test_generation_binding_hash_or_exact_permit_alone_refuses(env,monkeypatch,different):
+        op=prepare(env);ready(env,monkeypatch)
+        with env[1].begin() as db:
+            if different=='binding_hash':db.get(GenerationRow,op['id']).binding_hash='0'*64
+            else:db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id==op['approval_id'])).effect_id='wrong-permit-id'
+>       with pytest.raises(wa.DispatchRefused,match='binding differs|permit differs'):env[2].claim(op['id'],'t1')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:447: Failed
+_ test_generation_binding_hash_or_exact_permit_alone_refuses[postgres-permit] __
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fe46dbf3590>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fe46cbb83b0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe46d8add60>
+different = 'permit'
+
+    @pytest.mark.parametrize('different',['binding_hash','permit'])
+    def test_generation_binding_hash_or_exact_permit_alone_refuses(env,monkeypatch,different):
+        op=prepare(env);ready(env,monkeypatch)
+        with env[1].begin() as db:
+            if different=='binding_hash':db.get(GenerationRow,op['id']).binding_hash='0'*64
+            else:db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id==op['approval_id'])).effect_id='wrong-permit-id'
+>       with pytest.raises(wa.DispatchRefused,match='binding differs|permit differs'):env[2].claim(op['id'],'t1')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:447: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_generation_binding_hash_or_exact_permit_alone_refuses[postgres-binding_hash]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_generation_binding_hash_or_exact_permit_alone_refuses[sqlite-permit]
+FAILED tests/modules/test_m24_generation_budget.py::test_generation_binding_hash_or_exact_permit_alone_refuses[postgres-permit]
+2 failed, 2 passed, 112 deselected, 1 warning in 2.38s

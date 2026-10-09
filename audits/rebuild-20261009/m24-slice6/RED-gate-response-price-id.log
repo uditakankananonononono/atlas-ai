@@ -1,0 +1,36 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____________ test_response_price_schedule_id_alone_refuses[sqlite] _____________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f643a099670>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f6439ebaab0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6439e3ef60>
+
+    def test_response_price_schedule_id_alone_refuses(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+>       with pytest.raises(wa.DispatchRefused,match='response authority'):env[2].settle(op['id'],'t1',fence,response(price_schedule_id='different'))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:427: Failed
+___________ test_response_price_schedule_id_alone_refuses[postgres] ____________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f643a30b350>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f643a16d070>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6439d79010>
+
+    def test_response_price_schedule_id_alone_refuses(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+>       with pytest.raises(wa.DispatchRefused,match='response authority'):env[2].settle(op['id'],'t1',fence,response(price_schedule_id='different'))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:427: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_response_price_schedule_id_alone_refuses[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_response_price_schedule_id_alone_refuses[sqlite]
+FAILED tests/modules/test_m24_generation_budget.py::test_response_price_schedule_id_alone_refuses[postgres]
+2 failed, 114 deselected, 1 warning in 1.71s
