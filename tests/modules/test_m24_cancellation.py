@@ -14,12 +14,12 @@ from app.modules.m24_billing.cancellation import CancellationRepository,Cancella
 from app.modules.m24_billing.invoice_dispatcher import InvoiceRepository,InvoiceStepRow
 
 @pytest.fixture(params=['sqlite','postgres'])
-def env(tmp_path,request):
+def env(tmp_path,request,m24_postgres_schema):
     if request.param=='postgres':
         import pgserver
         pg=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop');uri=pg.get_uri().replace('postgresql://','postgresql+psycopg://')
     else:uri=f'sqlite:///{tmp_path}/cancel.db'
-    engine=create_engine(uri);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False);svc=Service(session_factory=sessions)
+    engine=create_engine(uri);m24_postgres_schema(engine);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False);svc=Service(session_factory=sessions)
     with sessions.begin() as db:db.add(TenantBillingRow(tenant_id='t1',customer_id='cus_fixture',subscription_id='sub_fixture',status='active',cancel_at_period_end=False))
     payload={'tenant_id':'t1','provider':'stripe','effect':'cancel_subscription','customer_id':'cus_fixture','subscription_id':'sub_fixture',
         'before_state':{'customer_id':'cus_fixture','subscription_id':'sub_fixture','status':'active','cancel_at_period_end':False},'cancellation_terms':copy.deepcopy(TERMS)}

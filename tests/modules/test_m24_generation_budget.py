@@ -13,12 +13,12 @@ from app.modules.m24_billing.generation import BudgetRow,GenerationRow,BudgetAtt
 PRICE={'id':'fixture-usd-v1','currency':'USD','input_micro_usd_per_token':2,'output_micro_usd_per_token':3}
 
 @pytest.fixture(params=['sqlite','postgres'])
-def env(tmp_path,request):
+def env(tmp_path,request,m24_postgres_schema):
     if request.param=='postgres':
         import pgserver
         pg=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop');uri=pg.get_uri().replace('postgresql://','postgresql+psycopg://')
     else:uri=f'sqlite:///{tmp_path}/generation.db'
-    engine=create_engine(uri);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False);svc=Service(session_factory=sessions)
+    engine=create_engine(uri);m24_postgres_schema(engine);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False);svc=Service(session_factory=sessions)
     with sessions.begin() as db:db.add(BudgetRow(id='budget1',tenant_id='t1',account='fixture-account',price_schedule=copy.deepcopy(PRICE),available_input=100,available_output=100,available_micro_usd=500,available_attempts=5))
     yield svc,sessions,GenerationRepository(svc)
     engine.dispose()
