@@ -17,6 +17,7 @@ re-reviews. Nothing here performs the effect.
 """
 from __future__ import annotations
 
+import copy
 import fnmatch
 import hashlib
 import json
@@ -24,15 +25,18 @@ import threading
 from datetime import datetime
 from typing import Any, Callable
 
-from sqlalchemy import JSON, DateTime, String, select
+from sqlalchemy import JSON, DateTime, String, select, update, or_
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
+from app.modules.catalog import BY_ID
 from app.modules.m00_approval_center.service import (
     ApprovalConflictError,
     ApprovalEventRow,
+    ApprovalRequestRow,
     Service,
     _aware,
+    _validate_payload_keys,
 )
 
 StateProbe = Callable[[dict[str, Any]], dict[str, Any]]
@@ -100,6 +104,14 @@ class ProbeRegistry:
         self._lock = threading.Lock()
 
     def register(self, action_pattern: str, probe: StateProbe, *, module_id: int | None = None) -> None:
+        if module_id is not None and (type(module_id) is not int or module_id not in BY_ID):
+            raise ValueError("module_id must be a known catalog integer or None")
+        if not isinstance(action_pattern, str) or not action_pattern.strip():
+            raise ValueError("action_pattern must be nonempty")
+        if len(f"{module_id if module_id is not None else '*'}:{action_pattern}") > 200:
+            raise ValueError("probe name exceeds 200 characters")
+        if not callable(probe):
+            raise ValueError("probe must be callable")
         with self._lock:
             self._probes.append((action_pattern, module_id, probe))
 
@@ -128,9 +140,14 @@ def _read_probe(registry: ProbeRegistry, view: dict[str, Any]) -> tuple[str, dic
     if found is None:
         return None
     name, probe = found
-    state = probe(dict(view["payload"]))
+    state = probe(copy.deepcopy(view["payload"]))
     if not isinstance(state, dict):
         raise TypeError(f"state probe {name} must return a dict")
+    try:
+        _validate_payload_keys(state)
+        state = json.loads(json.dumps(state, allow_nan=False))
+    except (TypeError, ValueError, RecursionError):
+        raise ValueError("live state must contain finite JSON values") from None
     return name, state
 
 
@@ -146,9 +163,24 @@ def capture_review_state(service: Service, approval_id: str, *, registry: ProbeR
         if read is None:
             raise LookupError(f"no state probe registered for module {view['module_id']} action {view['action_type']!r}")
         probe_name, state = read
+    if not isinstance(state, dict):
+        raise ValueError("review state must be an object")
+    try:
+        _validate_payload_keys(state)
+        state = json.loads(json.dumps(state, allow_nan=False))
+    except (TypeError, ValueError, RecursionError):
+        raise ValueError("review state must contain finite JSON values") from None
     now = service._clock()
     digest = state_hash(state)
     with service._sessions.begin() as db:
+        # Serialize against decision CAS and recheck after slow probe execution.
+        pending = db.execute(update(ApprovalRequestRow).where(
+            ApprovalRequestRow.id == approval_id,
+            ApprovalRequestRow.status == "pending",
+            or_(ApprovalRequestRow.expires_at.is_(None), ApprovalRequestRow.expires_at > now),
+        ).values(status="pending"), execution_options={"synchronize_session": False})
+        if pending.rowcount != 1:
+            raise ApprovalConflictError("approval review state is frozen or expired")
         row = db.get(ApprovalReviewStateRow, approval_id)
         if row is None:
             row = ApprovalReviewStateRow(approval_id=approval_id)
@@ -173,7 +205,16 @@ def impact_preview(service: Service, approval_id: str, *, registry: ProbeRegistr
         drift, verdict = [], "no_probe"
     else:
         drift = diff(reviewed["state"], current["state"])
-        verdict = "drifted" if drift else "unchanged"
+        # Flattened paths can collide (literal dotted/bracket keys versus
+        # nested objects/lists). Exact state hash still detects structure drift.
+        changed = reviewed["state_hash"] != current["state_hash"]
+        if reviewed["probe"] != "explicit" and reviewed["probe"] != current["probe"]:
+            drift.append({"path": "$probe", "change": "changed",
+                          "before": reviewed["probe"], "after": current["probe"]})
+        if changed and not drift:
+            drift = [{"path": "$", "change": "changed_structure",
+                      "before_hash": reviewed["state_hash"], "after_hash": current["state_hash"]}]
+        verdict = "drifted" if drift or changed else "unchanged"
     return {
         "approval_id": approval_id, "status": _status(view),
         "module_id": view["module_id"], "action_type": view["action_type"],

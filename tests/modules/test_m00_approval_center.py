@@ -953,3 +953,123 @@ def test_consume_http_whitespace_effect_maps_to_422(client, service):
 def test_policy_list_requires_actual_enabled_only_boolean(service, value):
     with pytest.raises(ValueError, match='enabled_only'):
         service.list_policies(enabled_only=value)
+
+
+def test_submit_refuses_colliding_json_keys(service):
+    with pytest.raises(ValueError, match='payload'):
+        submit(service, payload={1: 'first', '1': 'second'})
+
+
+def test_submit_refuses_nested_nonstring_keys(service):
+    with pytest.raises(ValueError, match='payload'):
+        submit(service, payload={'nested': [{1: 'value'}]})
+
+
+def test_review_gate_refuses_nonstring_json_payload_keys(service):
+    with pytest.raises(ValueError, match='payload'):
+        service.gate(module_id=5, action_type='send_email', payload={1: 'value'}, user_id='udita')
+
+
+def test_mutating_returned_request_payload_does_not_change_durable_approval(service):
+    view = submit(service, payload={'nested': {'recipient': 'original@test'}})
+    view['payload']['nested']['recipient'] = 'changed@test'
+    assert service.get(view['id'])['payload']['nested']['recipient'] == 'original@test'
+
+
+def test_request_broadcast_payload_is_not_mutated_by_returned_view(service):
+    subscriber = service.broadcaster.subscribe()
+    view = submit(service, payload={'nested': {'recipient': 'original@test'}})
+    view['payload']['nested']['recipient'] = 'changed@test'
+    assert subscriber.get_nowait()['approval']['payload']['nested']['recipient'] == 'original@test'
+
+
+def test_broadcast_subscribers_do_not_share_mutable_approval_payload():
+    broadcaster = ApprovalBroadcaster()
+    first = broadcaster.subscribe()
+    second = broadcaster.subscribe()
+    broadcaster.publish({'approval': {'payload': {'recipient': 'original@test'}}})
+    first.get_nowait()['approval']['payload']['recipient'] = 'changed@test'
+    assert second.get_nowait()['approval']['payload']['recipient'] == 'original@test'
+
+
+@pytest.mark.parametrize('size', [0, -1, True, 1.5])
+def test_broadcaster_queue_size_must_be_positive_integer(size):
+    with pytest.raises(ValueError, match='max_queue_size'):
+        ApprovalBroadcaster(max_queue_size=size)
+
+
+def test_callback_cannot_mutate_next_callback_or_returned_decision(service):
+    view = submit(service, payload={'nested': {'recipient': 'original@test'}})
+    calls = []
+    def mutate(result):
+        result['payload']['nested']['recipient'] = 'changed@test'
+    service.register_callback(view['id'], mutate)
+    service.register_callback(view['id'], calls.append)
+    decided = service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    assert calls[0]['payload']['nested']['recipient'] == 'original@test'
+    assert decided['payload']['nested']['recipient'] == 'original@test'
+
+
+def test_full_subscriber_queue_does_not_block_other_subscriber():
+    broadcaster = ApprovalBroadcaster(max_queue_size=1)
+    full = broadcaster.subscribe()
+    fresh = broadcaster.subscribe()
+    broadcaster.publish({'value': 1})
+    fresh.get_nowait()
+    broadcaster.publish({'value': 2})
+    assert full.get_nowait()['value'] == 1
+    assert fresh.get_nowait()['value'] == 2
+
+
+@pytest.mark.parametrize('field,value', [('timeout_seconds', float('nan')),
+                                        ('timeout_seconds', float('inf')),
+                                        ('poll_interval_seconds', 0), ('poll_interval_seconds', -1)])
+def test_wait_refuses_invalid_parameters_even_for_terminal_request(service, field, value):
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    with pytest.raises(ValueError, match=field):
+        service.wait_for_decision(view['id'], **{field: value})
+
+
+def test_pending_nan_wait_is_rejected_before_poll_loop(tmp_path):
+    import subprocess
+    import sys
+    import os
+    script = '''
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.core.database import Base
+from app.modules.m00_approval_center.service import Service
+import sys
+engine=create_engine('sqlite:///'+sys.argv[1])
+Base.metadata.create_all(engine)
+s=Service(session_factory=sessionmaker(bind=engine,expire_on_commit=False))
+a=s.submit(module_id=5,action_type='send_email',payload={},user_id='fixture')
+try:s.wait_for_decision(a['id'],timeout_seconds=float('nan'),poll_interval_seconds=.01)
+except ValueError:sys.exit(0)
+sys.exit(2)
+'''
+    result = subprocess.run([sys.executable, '-c', script, str(tmp_path/'wait.db')],
+                            env={**os.environ, 'PYTHONPATH': 'backend'}, capture_output=True, timeout=3)
+    assert result.returncode == 0, result.stderr.decode()
+
+
+def test_wait_timeout_does_not_sleep_past_remaining_deadline(service):
+    view = submit(service)
+    started = time.monotonic()
+    with pytest.raises(TimeoutError):
+        service.wait_for_decision(view['id'], timeout_seconds=.1, poll_interval_seconds=1)
+    assert time.monotonic()-started < .5
+
+
+def test_wait_rejects_unrepresentable_integer_timeout_cleanly(service):
+    view = submit(service)
+    service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
+    with pytest.raises(ValueError, match='timeout_seconds'):
+        service.wait_for_decision(view['id'], timeout_seconds=10**1000)
+
+
+def test_register_callback_requires_callable(service):
+    view = submit(service)
+    with pytest.raises(ValueError, match='callback'):
+        service.register_callback(view['id'], 'not callable')

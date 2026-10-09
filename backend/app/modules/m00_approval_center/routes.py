@@ -230,6 +230,8 @@ def capture_review(approval_id: str, body: schemas.ReviewStateCapture | None = N
     except LookupError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
 
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
 
 @router.get("/requests/{approval_id}/impact-preview")
 def preview_impact(approval_id: str, service: Service = Depends(get_service),
