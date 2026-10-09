@@ -189,7 +189,14 @@ class SendReplyProbe:
         self.sessions = session_factory
 
     def __call__(self, payload: dict[str, Any]) -> dict[str, Any]:
-        tenant_id = str(payload.get("tenant_id") or "").strip()
+        from app.modules.m00_approval_center.service import ApprovalConflictError
+        raise ApprovalConflictError("M10 probe requires persisted approval authority")
+
+    def read_bound(self, payload: dict[str, Any], context: Any) -> dict[str, Any]:
+        from app.modules.m00_approval_center.service import ApprovalConflictError
+        tenant_id = context.tenant_id
+        if payload.get("tenant_id") != tenant_id:
+            raise ApprovalConflictError("M10 payload tenant does not match approval owner")
         thread_id, target, draft_id = payload.get("thread_id"), payload.get("gmail_id"), payload.get("draft_id")
         if not tenant_id or not target or not payload.get("message_id"):
             raise ProbeUnavailable("reply payload lacks tenant_id/message_id/gmail_id; cannot read live state")
@@ -204,14 +211,33 @@ class SendReplyProbe:
                 EmailDraftRow.tenant_id == tenant_id, EmailDraftRow.id == draft_id)).first()
             if account is None:
                 raise ProbeUnavailable("Gmail account for this message is no longer connected")
-            if draft is not None:
-                db.expunge(draft)
+            if draft is not None and any(payload.get(key) != getattr(draft, key) for key in ("to", "subject", "body")):
+                from app.modules.m00_approval_center.impact import StateDriftError
+                changes = [{"path": "draft.body_sha256" if key == "body" else "draft." + key,
+                            "change": "changed"} for key in ("to", "subject", "body") if payload.get(key) != getattr(draft, key)]
+                raise StateDriftError(context.approval_id, changes)
+            if (draft is None or draft.message_id != message.id or draft.approval_id != context.approval_id
+                    or draft.account_id != account.id or payload.get("account_id") != account.id
+                    or payload.get("gmail_id") != message.gmail_id or payload.get("thread_id") != message.thread_id
+                    or any(payload.get(key) != getattr(draft, key) for key in ("to", "subject", "body"))):
+                raise ApprovalConflictError("M10 approval, account, message, draft or effect binding mismatch")
+            if draft.status != "pending_approval":
+                raise ApprovalConflictError("M10 draft is not pending approval")
+            db.expunge(draft)
             db.expunge(account)
         if not thread_id:
             thread = {"id": None, "messages": [], "missing": True}
         else:
             thread = self.reader.get_thread(self.tokens.access_token(tenant_id, account), thread_id)
-        return reply_state(thread, target_gmail_id=target, owner_email=account.email_address, draft=draft)
+        if thread.get("id") != thread_id:
+            raise ApprovalConflictError("M10 returned thread identity mismatch")
+        state = reply_state(thread, target_gmail_id=target, owner_email=account.email_address, draft=draft)
+        if not state["reply_target"]["present"] or state["reply_target"]["trashed"] or state["thread"]["owner_replied_after_target"]:
+            from app.modules.m00_approval_center.impact import StateDriftError
+            raise StateDriftError(context.approval_id, [{"path": "thread.owner_replied_after_target" if state["thread"]["owner_replied_after_target"] else "reply_target.valid",
+                                                       "change": "invalid", "after": True if state["thread"]["owner_replied_after_target"] else False}])
+        state["$approval_binding"] = context.binding()
+        return state
 
 
 _REGISTERED = False
