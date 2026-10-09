@@ -15,9 +15,14 @@ from tests.modules.test_m21_runtime_postgres_seam import migrated_pg
 from tests.modules.test_m21_runtime_subprocess_recovery import PROCESS
 
 # Reuse the reviewed scratch tool/receipt protocol, extending test-process barriers.
-KILL_PROCESS = PROCESS.replace('import asyncio, hashlib, hmac, json, os, sys','import asyncio, hashlib, hmac, json, os, sys, time')
-KILL_PROCESS = KILL_PROCESS.replace("if phase=='crash':os._exit(73)", "if phase=='crash' and point in ('before','after'):os._exit(73)")
-KILL_PROCESS = KILL_PROCESS.replace('store=GoalStore(url,lease_seconds=2)', '''
+def replace_once(script, anchor, replacement):
+    if script.count(anchor) != 1:
+        raise AssertionError("subprocess barrier anchor must occur exactly once")
+    return script.replace(anchor, replacement, 1)
+
+KILL_PROCESS = replace_once(PROCESS, 'import asyncio, hashlib, hmac, json, os, sys','import asyncio, hashlib, hmac, json, os, sys, time')
+KILL_PROCESS = replace_once(KILL_PROCESS, "if phase=='crash':os._exit(73)", "if phase=='crash' and point in ('before','after'):os._exit(73)")
+KILL_PROCESS = replace_once(KILL_PROCESS, 'store=GoalStore(url,lease_seconds=2)', '''
 store=GoalStore(url,lease_seconds=4)
 def barrier():
     with open(root/'ready','w') as f:
@@ -32,7 +37,8 @@ if phase=='crash' and point=='journal-committed':
         return result
     store.mark_effect=marked
 ''')
-KILL_PROCESS = KILL_PROCESS.replace('call_timeout=.5','call_timeout=1').replace('model_timeout_seconds=.5','model_timeout_seconds=1')
+KILL_PROCESS = replace_once(KILL_PROCESS, 'call_timeout=.5','call_timeout=1')
+KILL_PROCESS = replace_once(KILL_PROCESS, 'model_timeout_seconds=.5','model_timeout_seconds=1')
 
 
 @pytest.mark.parametrize('point',['before-claim','journal-committed'])
