@@ -69,3 +69,11 @@ def test_cancellation_during_recovery_propagates(monkeypatch):
 def test_bad_limits(limits):
     worker,_=wrapper([])
     with pytest.raises(ConfigurationError):asyncio.run(supervise_read_only(worker,**limits))
+
+
+def test_cancellation_inside_claim_propagates_without_db_failure_or_disposal():
+    worker,disposed=wrapper([asyncio.CancelledError()])
+    with pytest.raises(asyncio.CancelledError):asyncio.run(supervise_read_only(worker))
+    assert worker.worker.calls==1 and disposed==[]
+    # No SupervisionResult is returned, so no DB failure counter is reported;
+    # cancellation reaches the caller instead of becoming recovery status.
