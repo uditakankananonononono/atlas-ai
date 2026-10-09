@@ -2,10 +2,10 @@ FF                                                                       [100%]
 =================================== FAILURES ===================================
 __ test_each_insufficient_balance_refuses_no_permit[sqlite-available_output] ___
 
-self = <sqlalchemy.engine.base.Connection object at 0x7f725a13b050>
-dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f725a264200>
-context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f725a1631d0>
-statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f725a162c90>
+self = <sqlalchemy.engine.base.Connection object at 0x7f5d3b5468d0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f5d3b663500>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f5d3b572a50>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f5d3b572510>
 parameters = [(10, 20, 80, 1, 'budget1', 't1', ...)]
 
     def _exec_single_context(
@@ -132,11 +132,11 @@ parameters = [(10, 20, 80, 1, 'budget1', 't1', ...)]
 ../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f725a264200>
-cursor = <sqlite3.Cursor object at 0x7f725a1477c0>
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f5d3b663500>
+cursor = <sqlite3.Cursor object at 0x7f5d3b5621c0>
 statement = 'UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - ?), available_output=(m24...able_input >= ? AND m24_generation_budgets.available_micro_usd >= ? AND m24_generation_budgets.available_attempts >= ?'
 parameters = (10, 20, 80, 1, 'budget1', 't1', ...)
-context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f725a1631d0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f5d3b572a50>
 
     def do_execute(self, cursor, statement, parameters, context=None):
 >       cursor.execute(statement, parameters)
@@ -146,7 +146,7 @@ E       sqlite3.IntegrityError: CHECK constraint failed: available_input >= 0 AN
 
 The above exception was the direct cause of the following exception:
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f725a376f90>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f725ac7ee70>)
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f5d3bb04860>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f5d3c9a0080>)
 field = 'available_output'
 
     @pytest.mark.parametrize('field',['available_input','available_output','available_micro_usd','available_attempts'])
@@ -186,11 +186,11 @@ backend/app/modules/m24_billing/generation.py:118: in prepare
     self.dialect.do_execute(
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f725a264200>
-cursor = <sqlite3.Cursor object at 0x7f725a1477c0>
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f5d3b663500>
+cursor = <sqlite3.Cursor object at 0x7f5d3b5621c0>
 statement = 'UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - ?), available_output=(m24...able_input >= ? AND m24_generation_budgets.available_micro_usd >= ? AND m24_generation_budgets.available_attempts >= ?'
 parameters = (10, 20, 80, 1, 'budget1', 't1', ...)
-context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f725a1631d0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f5d3b572a50>
 
     def do_execute(self, cursor, statement, parameters, context=None):
 >       cursor.execute(statement, parameters)
@@ -202,10 +202,10 @@ E       (Background on this error at: https://sqlalche.me/e/21/gkpj)
 ../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: IntegrityError
 _ test_each_insufficient_balance_refuses_no_permit[postgres-available_output] __
 
-self = <sqlalchemy.engine.base.Connection object at 0x7f725922e270>
-dialect = <sqlalchemy.dialects.postgresql.psycopg.PGDialect_psycopg object at 0x7f725a1d18e0>
-context = <sqlalchemy.dialects.postgresql.psycopg.PGExecutionContext_psycopg object at 0x7f725922ee40>
-statement = <sqlalchemy.dialects.postgresql.psycopg.PGCompiler_psycopg object at 0x7f7259254350>
+self = <sqlalchemy.engine.base.Connection object at 0x7f5d3a881a60>
+dialect = <sqlalchemy.dialects.postgresql.psycopg.PGDialect_psycopg object at 0x7f5d3b5e0500>
+context = <sqlalchemy.dialects.postgresql.psycopg.PGExecutionContext_psycopg object at 0x7f5d3a883d40>
+statement = <sqlalchemy.dialects.postgresql.psycopg.PGCompiler_psycopg object at 0x7f5d3a883b30>
 parameters = [{'account_1': 'fixture-account', 'available_attempts_1': 1, 'available_attempts_2': 1, 'available_input_1': 10, ...}]
 
     def _exec_single_context(
@@ -335,7 +335,7 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     cursor.execute(statement, parameters)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = <psycopg.Cursor [closed] [IDLE] (database=postgres) at 0x7f7259496150>
+self = <psycopg.Cursor [closed] [IDLE] (database=postgres) at 0x7f5d3a58ef90>
 query = 'UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - %(available_input_1)s::IN... %(available_micro_usd_2)s::INTEGER AND m24_generation_budgets.available_attempts >= %(available_attempts_2)s::INTEGER'
 params = {'account_1': 'fixture-account', 'available_attempts_1': 1, 'available_attempts_2': 1, 'available_input_1': 10, ...}
 
@@ -364,7 +364,7 @@ E           DETAIL:  Failing row contains (budget1, t1, fixture-account, {"id": 
 
 The above exception was the direct cause of the following exception:
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f725ae8eb10>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f725951cce0>)
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f5d3b5de990>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f5d3abee5a0>)
 field = 'available_output'
 
     @pytest.mark.parametrize('field',['available_input','available_output','available_micro_usd','available_attempts'])
@@ -406,7 +406,7 @@ backend/app/modules/m24_billing/generation.py:118: in prepare
     cursor.execute(statement, parameters)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = <psycopg.Cursor [closed] [IDLE] (database=postgres) at 0x7f7259496150>
+self = <psycopg.Cursor [closed] [IDLE] (database=postgres) at 0x7f5d3a58ef90>
 query = 'UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - %(available_input_1)s::IN... %(available_micro_usd_2)s::INTEGER AND m24_generation_budgets.available_attempts >= %(available_attempts_2)s::INTEGER'
 params = {'account_1': 'fixture-account', 'available_attempts_1': 1, 'available_attempts_2': 1, 'available_input_1': 10, ...}
 
@@ -444,4 +444,4 @@ tests/modules/test_m24_generation_budget.py::test_each_insufficient_balance_refu
 =========================== short test summary info ============================
 FAILED tests/modules/test_m24_generation_budget.py::test_each_insufficient_balance_refuses_no_permit[sqlite-available_output]
 FAILED tests/modules/test_m24_generation_budget.py::test_each_insufficient_balance_refuses_no_permit[postgres-available_output]
-2 failed, 74 deselected, 1 warning in 2.23s
+2 failed, 114 deselected, 1 warning in 1.83s

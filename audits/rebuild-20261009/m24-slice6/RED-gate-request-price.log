@@ -1,0 +1,46 @@
+F.F.                                                                     [100%]
+=================================== FAILURES ===================================
+_____ test_request_matches_budget_price_and_account_directly[sqlite-price] _____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7faa80ee3380>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7faa81472030>)
+different = 'price'
+
+    @pytest.mark.parametrize('different',['price','account'])
+    def test_request_matches_budget_price_and_account_directly(env,different):
+        from app.modules.m24_billing.generation import validate_request
+        with env[1]() as db:
+            budget=db.get(BudgetRow,'budget1');p=payload()
+            if different=='price':p['price_schedule']={**PRICE,'id':'other-valid-schedule'}
+            else:p['account']='other-account'
+>           with pytest.raises(wa.DispatchRefused):validate_request(p,'t1',budget)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:438: Failed
+____ test_request_matches_budget_price_and_account_directly[postgres-price] ____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7faa809320f0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7faa7f95f0b0>)
+different = 'price'
+
+    @pytest.mark.parametrize('different',['price','account'])
+    def test_request_matches_budget_price_and_account_directly(env,different):
+        from app.modules.m24_billing.generation import validate_request
+        with env[1]() as db:
+            budget=db.get(BudgetRow,'budget1');p=payload()
+            if different=='price':p['price_schedule']={**PRICE,'id':'other-valid-schedule'}
+            else:p['account']='other-account'
+>           with pytest.raises(wa.DispatchRefused):validate_request(p,'t1',budget)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:438: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_request_matches_budget_price_and_account_directly[postgres-price]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_request_matches_budget_price_and_account_directly[sqlite-price]
+FAILED tests/modules/test_m24_generation_budget.py::test_request_matches_budget_price_and_account_directly[postgres-price]
+2 failed, 2 passed, 112 deselected, 1 warning in 2.52s

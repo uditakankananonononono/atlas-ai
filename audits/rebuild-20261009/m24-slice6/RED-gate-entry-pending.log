@@ -1,0 +1,38 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____________ test_before_entry_pending_charge_alone_refuses[sqlite] ____________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f96ed4515b0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f96ed49bcb0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f96ed453980>
+
+    def test_before_entry_pending_charge_alone_refuses(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+        with env[1].begin() as db:db.get(BudgetAttemptRow,op['id']).state='reserved'
+>       with pytest.raises(wa.DispatchRefused,match='pending charge missing'):env[2].before_entry(op['id'],'t1',fence)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:454: Failed
+___________ test_before_entry_pending_charge_alone_refuses[postgres] ___________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f96ed91a660>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f96ebf03b60>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f96ed35c590>
+
+    def test_before_entry_pending_charge_alone_refuses(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+        with env[1].begin() as db:db.get(BudgetAttemptRow,op['id']).state='reserved'
+>       with pytest.raises(wa.DispatchRefused,match='pending charge missing'):env[2].before_entry(op['id'],'t1',fence)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:454: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_before_entry_pending_charge_alone_refuses[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_before_entry_pending_charge_alone_refuses[sqlite]
+FAILED tests/modules/test_m24_generation_budget.py::test_before_entry_pending_charge_alone_refuses[postgres]
+2 failed, 114 deselected, 1 warning in 1.61s

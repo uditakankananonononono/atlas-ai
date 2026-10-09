@@ -2,8 +2,8 @@ FF                                                                       [100%]
 =================================== FAILURES ===================================
 _____ test_output_commit_failure_rolls_back_settlement_and_output[sqlite] ______
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f6034868080>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f60348194c0>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6034545a00>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f072854ffb0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f0728787ce0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f072854d220>
 
     def test_output_commit_failure_rolls_back_settlement_and_output(env,monkeypatch):
         op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
@@ -13,15 +13,15 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6034545a00>
         with env[1]() as db:
 >           assert db.get(GenerationRow,op['id']).output is None
 E           AssertionError: assert {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} is None
-E            +  where {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} = <app.modules.m24_billing.generation.GenerationRow object at 0x7f60344b5130>.output
-E            +    where <app.modules.m24_billing.generation.GenerationRow object at 0x7f60344b5130> = get(GenerationRow, '613a9a92-f6de-4643-a753-cbf7178e598c')
-E            +      where get = <sqlalchemy.orm.session.Session object at 0x7f6034454800>.get
+E            +  where {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} = <app.modules.m24_billing.generation.GenerationRow object at 0x7f07284c13d0>.output
+E            +    where <app.modules.m24_billing.generation.GenerationRow object at 0x7f07284c13d0> = get(GenerationRow, '6fab537e-74bf-4433-abd9-c894f5902206')
+E            +      where get = <sqlalchemy.orm.session.Session object at 0x7f0728458b00>.get
 
 tests/modules/test_m24_generation_budget.py:137: AssertionError
 ____ test_output_commit_failure_rolls_back_settlement_and_output[postgres] _____
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f60358a3e30>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f603312ba10>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6034596030>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f072858e360>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f0728322e70>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f072842d940>
 
     def test_output_commit_failure_rolls_back_settlement_and_output(env,monkeypatch):
         op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
@@ -31,9 +31,9 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6034596030>
         with env[1]() as db:
 >           assert db.get(GenerationRow,op['id']).output is None
 E           AssertionError: assert {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} is None
-E            +  where {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} = <app.modules.m24_billing.generation.GenerationRow object at 0x7f6032d03080>.output
-E            +    where <app.modules.m24_billing.generation.GenerationRow object at 0x7f6032d03080> = get(GenerationRow, 'cb2ec89c-46d1-4cc6-9912-9d3b787c8553')
-E            +      where get = <sqlalchemy.orm.session.Session object at 0x7f60348a3920>.get
+E            +  where {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} = <app.modules.m24_billing.generation.GenerationRow object at 0x7f0726d035f0>.output
+E            +    where <app.modules.m24_billing.generation.GenerationRow object at 0x7f0726d035f0> = get(GenerationRow, '55eb6ee4-19bb-4d37-af1b-24246b169527')
+E            +      where get = <sqlalchemy.orm.session.Session object at 0x7f07271d3290>.get
 
 tests/modules/test_m24_generation_budget.py:137: AssertionError
 =============================== warnings summary ===============================
@@ -45,4 +45,4 @@ tests/modules/test_m24_generation_budget.py::test_output_commit_failure_rolls_ba
 =========================== short test summary info ============================
 FAILED tests/modules/test_m24_generation_budget.py::test_output_commit_failure_rolls_back_settlement_and_output[sqlite]
 FAILED tests/modules/test_m24_generation_budget.py::test_output_commit_failure_rolls_back_settlement_and_output[postgres]
-2 failed, 74 deselected, 1 warning in 1.60s
+2 failed, 114 deselected, 1 warning in 1.47s

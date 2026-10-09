@@ -2,8 +2,8 @@ FF                                                                       [100%]
 =================================== FAILURES ===================================
 _ test_unverified_or_changed_usage_holds_reserve_no_output[sqlite-usage_verified-False] _
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f86219f66f0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f862176c6e0>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f8621751850>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f0097dcda00>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f0097c721e0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0097901be0>
 field = 'usage_verified', value = False
 
     @pytest.mark.parametrize('field,value',[('usage_verified',False),('account','foreign'),('model_version','v2'),('micro_usd',39),('input_tokens',11),('text','')])
@@ -18,8 +18,8 @@ E         + succeeded
 tests/modules/test_m24_generation_budget.py:124: AssertionError
 _ test_unverified_or_changed_usage_holds_reserve_no_output[postgres-usage_verified-False] _
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f86216c4620>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f86215252b0>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f86217a1850>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f0097783140>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f00977b2360>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0097947b90>
 field = 'usage_verified', value = False
 
     @pytest.mark.parametrize('field,value',[('usage_verified',False),('account','foreign'),('model_version','v2'),('micro_usd',39),('input_tokens',11),('text','')])
@@ -41,4 +41,4 @@ tests/modules/test_m24_generation_budget.py::test_unverified_or_changed_usage_ho
 =========================== short test summary info ============================
 FAILED tests/modules/test_m24_generation_budget.py::test_unverified_or_changed_usage_holds_reserve_no_output[sqlite-usage_verified-False]
 FAILED tests/modules/test_m24_generation_budget.py::test_unverified_or_changed_usage_holds_reserve_no_output[postgres-usage_verified-False]
-2 failed, 74 deselected, 1 warning in 1.32s
+2 failed, 114 deselected, 1 warning in 1.59s

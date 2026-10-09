@@ -375,3 +375,112 @@ def test_changed_approval_inputs_refuse_replay_before_model(env):
         row=db.get(ApprovalRequestRow,a['id']);p=copy.deepcopy(row.payload);p['inputs']='Changed';row.payload=p
     with pytest.raises(wa.DispatchRefused,match='approval differs'):env[2].prepare(a['id'],'t1')
     with env[1]() as db:assert db.get(BudgetRow,'budget1').available_micro_usd==420
+
+
+@pytest.mark.parametrize('inp,out,cost',[(11,10,52),(5,21,73),(11,21,85)])
+def test_consistent_cost_over_token_or_charge_caps_refuses_no_release(env,monkeypatch,inp,out,cost):
+    op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+    with pytest.raises(wa.DispatchRefused,match='exceeds'):env[2].settle(op['id'],'t1',fence,response(input_tokens=inp,output_tokens=out,micro_usd=cost))
+    with env[1]() as db:
+        assert db.get(GenerationRow,op['id']).output is None
+        assert db.get(BudgetRow,'budget1').available_micro_usd==420
+        assert db.get(BudgetAttemptRow,op['id']).state=='charged-pending'
+
+
+@pytest.mark.parametrize('method',['settle','before_entry','unknown'])
+def test_wrong_fence_alone_refuses_all_three_boundaries(env,monkeypatch,method):
+    op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+    args=(op['id'],'t1','wrong-fence')
+    with pytest.raises(wa.DispatchRefused):
+        if method=='settle':env[2].settle(*args,response())
+        else:getattr(env[2],method)(*args)
+    with env[1]() as db:
+        row=db.get(GenerationRow,op['id']);assert row.state=='dispatching' and row.fence==fence and row.output is None
+        assert db.get(BudgetAttemptRow,op['id']).state=='charged-pending'
+        assert db.get(BudgetRow,'budget1').available_micro_usd==420
+
+
+@pytest.mark.parametrize('state',['prepared','succeeded'])
+def test_regeneration_ineligible_target_state_refuses_new_reservation(env,state):
+    op=prepare(env)
+    with env[1].begin() as db:db.get(GenerationRow,op['id']).state=state
+    with pytest.raises(wa.DispatchRefused,match='target unavailable'):prepare(env,regenerates=op['id'])
+    with env[1]() as db:assert len(db.scalars(select(BudgetAttemptRow)).all())==1 and db.get(BudgetRow,'budget1').available_micro_usd==420
+
+
+@pytest.mark.parametrize('different',['tenant','budget'])
+def test_regeneration_cross_owner_or_budget_refuses_target(env,different):
+    # Existing target identity is valid but isolated ownership field differs;
+    # target is not revalidated, so no other binding guard masks this predicate.
+    op=prepare(env)
+    with env[1].begin() as db:
+        db.add(BudgetRow(id='budget2',tenant_id='foreign' if different=='tenant' else 't1',account='fixture-account',price_schedule=PRICE,available_input=100,available_output=100,available_micro_usd=500,available_attempts=5))
+        row=db.get(GenerationRow,op['id']);row.state='outcome_unknown'
+        if different=='tenant':row.tenant_id='foreign'
+        else:row.budget_id='budget2'
+    with pytest.raises(wa.DispatchRefused,match='target unavailable'):prepare(env,regenerates=op['id'])
+    with env[1]() as db:assert len(db.scalars(select(BudgetAttemptRow)).all())==1 and db.get(BudgetRow,'budget1').available_micro_usd==420
+
+
+def test_response_price_schedule_id_alone_refuses(env,monkeypatch):
+    op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+    with pytest.raises(wa.DispatchRefused,match='response authority'):env[2].settle(op['id'],'t1',fence,response(price_schedule_id='different'))
+    with env[1]() as db:assert db.get(BudgetRow,'budget1').available_micro_usd==420 and db.get(GenerationRow,op['id']).output is None
+
+
+@pytest.mark.parametrize('different',['price','account'])
+def test_request_matches_budget_price_and_account_directly(env,different):
+    from app.modules.m24_billing.generation import validate_request
+    with env[1]() as db:
+        budget=db.get(BudgetRow,'budget1');p=payload()
+        if different=='price':p['price_schedule']={**PRICE,'id':'other-valid-schedule'}
+        else:p['account']='other-account'
+        with pytest.raises(wa.DispatchRefused):validate_request(p,'t1',budget)
+
+
+@pytest.mark.parametrize('different',['binding_hash','permit'])
+def test_generation_binding_hash_or_exact_permit_alone_refuses(env,monkeypatch,different):
+    op=prepare(env);ready(env,monkeypatch)
+    with env[1].begin() as db:
+        if different=='binding_hash':db.get(GenerationRow,op['id']).binding_hash='0'*64
+        else:db.scalar(select(ApprovalEffectRow).where(ApprovalEffectRow.approval_id==op['approval_id'])).effect_id='wrong-permit-id'
+    with pytest.raises(wa.DispatchRefused,match='binding differs|permit differs'):env[2].claim(op['id'],'t1')
+    with env[1]() as db:assert db.get(BudgetAttemptRow,op['id']).state=='reserved' and db.get(GenerationRow,op['id']).state=='prepared'
+
+
+def test_before_entry_pending_charge_alone_refuses(env,monkeypatch):
+    op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+    with env[1].begin() as db:db.get(BudgetAttemptRow,op['id']).state='reserved'
+    with pytest.raises(wa.DispatchRefused,match='pending charge missing'):env[2].before_entry(op['id'],'t1',fence)
+    with env[1]() as db:assert db.get(GenerationRow,op['id']).state=='dispatching' and db.get(BudgetRow,'budget1').available_micro_usd==420
+
+
+@pytest.mark.parametrize('different',['stored-digest','usage-digest'])
+def test_proposal_digest_checks_independent_tampered_row(env,monkeypatch,different):
+    op=prepare(env);ready(env,monkeypatch);result=dispatch(env,op,Mock());expected=result['output']['digest']
+    with env[1].begin() as db:
+        row=db.get(GenerationRow,op['id']);output=copy.deepcopy(row.output)
+        if different=='stored-digest':output['digest']='0'*64
+        else:output['usage']['output_tokens']=9
+        row.output=output
+    with pytest.raises(wa.DispatchRefused,match='output version'):env[2].description_for_proposal(op['id'],'t1',1,expected)
+
+
+@pytest.mark.parametrize('field,value',[('tenant_id','foreign'),('account','foreign-account')])
+def test_budget_owner_cas_isolated_change_between_validation_and_debit(env,monkeypatch,field,value):
+    from sqlalchemy.orm import Session
+    from sqlalchemy import update
+    original=Session.execute;fired=[]
+    def execute(db,statement,*args,**kwargs):
+        if not fired and getattr(statement,'is_update',False) and getattr(getattr(statement,'table',None),'name',None)=='m24_generation_budgets':
+            fired.append(True)
+            # Same-transaction predicate isolation, NOT a concurrent-writer proof.
+            # Change only the DB row after validation, before the original CAS.
+            original(db,update(BudgetRow).where(BudgetRow.id=='budget1').values(**{field:value}))
+        return original(db,statement,*args,**kwargs)
+    monkeypatch.setattr(Session,'execute',execute)
+    with pytest.raises(wa.DispatchRefused,match='exhausted'):prepare(env)
+    assert fired
+    with env[1]() as db:
+        assert db.get(BudgetRow,'budget1').tenant_id=='t1' and db.get(BudgetRow,'budget1').account=='fixture-account'
+        assert db.get(BudgetRow,'budget1').available_micro_usd==500 and db.scalar(select(ApprovalEffectRow)) is None
