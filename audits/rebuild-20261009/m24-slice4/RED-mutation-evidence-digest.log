@@ -1,0 +1,18 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_evidence_digest_alone_corrupt_refuses_even_valid_receipt[sqlite] _____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f7078704440>, sessionmaker(class_='Session', bind=Engin...tch_not_after': None, ...}, <app.modules.m24_billing.reconciliation.ReconciliationRepository object at 0x7f70776a14c0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f70776ca060>
+
+    def test_evidence_digest_alone_corrupt_refuses_even_valid_receipt(env,monkeypatch):
+        evidence,_=lookup(env,monkeypatch)
+        with env[1].begin() as db:db.get(LookupEvidenceRow,evidence['evidence_id']).evidence_digest='0'*64
+>       with pytest.raises(wa.DispatchRefused,match='evidence binding'):env[4].accept_positive(env[3]['id'],evidence['evidence_id'],principal())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_reconciliation.py:186: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_reconciliation.py::test_evidence_digest_alone_corrupt_refuses_even_valid_receipt[sqlite]
+1 failed in 0.36s

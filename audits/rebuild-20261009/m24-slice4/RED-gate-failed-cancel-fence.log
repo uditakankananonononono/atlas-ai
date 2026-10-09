@@ -1,0 +1,66 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_customer_fence_all_cancel_states_except_unsent_terminal[sqlite-failed_before_dispatch] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fc49e0e7320>, sessionmaker(class_='Session', bind=Engin...created_at': datetime.datetime(2026, 10, 9, 13, 54, 38, 81967, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+state = 'failed_before_dispatch'
+
+    @pytest.mark.parametrize('state',[
+        'prepared','dispatching','outcome_unknown','succeeded','succeeded_late',
+        'failed_before_dispatch','closed_unknown','cancelled_before_dispatch',
+    ])
+    def test_customer_fence_all_cancel_states_except_unsent_terminal(env,state):
+        op=prepare(env)
+        # Isolate the invoice fence state predicate, not a claim that all transitions
+        # can be produced by the cancellation dispatcher or released automatically.
+        with env[1].begin() as db:db.get(wa.OperationRow,op['id']).state=state
+        invoice=env[0].submit(module_id=24,action_type='issue_invoice',user_id='t1',payload={
+            'tenant_id':'t1','provider':'stripe','effect':'create_draft_invoice','customer_id':'cus_fixture',
+            'description':'draft','amount_cents':1234,'currency':'usd'})
+        env[0].decide(invoice['id'],ApprovalStatus.APPROVED,'owner')
+        repo=InvoiceRepository(env[0])
+        def prepare_invoice():return repo.prepare(invoice['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker')
+        if state=='cancelled_before_dispatch':assert prepare_invoice()['state']=='prepared'
+        else:
+>           with pytest.raises(wa.DispatchRefused,match='cancellation fence'):prepare_invoice()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_cancellation.py:291: Failed
+_ test_customer_fence_all_cancel_states_except_unsent_terminal[postgres-failed_before_dispatch] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fc49df15f10>, sessionmaker(class_='Session', bind=Engin...reated_at': datetime.datetime(2026, 10, 9, 13, 54, 38, 954477, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+state = 'failed_before_dispatch'
+
+    @pytest.mark.parametrize('state',[
+        'prepared','dispatching','outcome_unknown','succeeded','succeeded_late',
+        'failed_before_dispatch','closed_unknown','cancelled_before_dispatch',
+    ])
+    def test_customer_fence_all_cancel_states_except_unsent_terminal(env,state):
+        op=prepare(env)
+        # Isolate the invoice fence state predicate, not a claim that all transitions
+        # can be produced by the cancellation dispatcher or released automatically.
+        with env[1].begin() as db:db.get(wa.OperationRow,op['id']).state=state
+        invoice=env[0].submit(module_id=24,action_type='issue_invoice',user_id='t1',payload={
+            'tenant_id':'t1','provider':'stripe','effect':'create_draft_invoice','customer_id':'cus_fixture',
+            'description':'draft','amount_cents':1234,'currency':'usd'})
+        env[0].decide(invoice['id'],ApprovalStatus.APPROVED,'owner')
+        repo=InvoiceRepository(env[0])
+        def prepare_invoice():return repo.prepare(invoice['id'],'t1',provider_account='test-account',environment='test',api_version='2026-09-30.endive',actor='worker')
+        if state=='cancelled_before_dispatch':assert prepare_invoice()['state']=='prepared'
+        else:
+>           with pytest.raises(wa.DispatchRefused,match='cancellation fence'):prepare_invoice()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_cancellation.py:291: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_cancellation.py::test_customer_fence_all_cancel_states_except_unsent_terminal[postgres-failed_before_dispatch]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_cancellation.py::test_customer_fence_all_cancel_states_except_unsent_terminal[sqlite-failed_before_dispatch]
+FAILED tests/modules/test_m24_cancellation.py::test_customer_fence_all_cancel_states_except_unsent_terminal[postgres-failed_before_dispatch]
+2 failed, 66 deselected, 1 warning in 1.34s

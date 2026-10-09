@@ -1,0 +1,54 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_provider_before_field_drift_alone_refuses[sqlite-metadata-value6] ____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f66fbfd3d70>, sessionmaker(class_='Session', bind=Engin...reated_at': datetime.datetime(2026, 10, 9, 13, 54, 29, 879707, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+field = 'metadata', value = {'atlas_tenant_id': 'foreign'}
+
+    @pytest.mark.parametrize('field,value',[
+        ('object','invoice'),('id','sub_other'),('customer','cus_other'),('livemode',True),
+        ('status','paused'),('cancel_at_period_end',True),('metadata',{'atlas_tenant_id':'foreign'}),
+    ])
+    def test_provider_before_field_drift_alone_refuses(env,field,value):
+        from app.modules.m24_billing.cancellation import validate_before
+        op=prepare(env);snap=env[2].snapshot(op['id'],'t1')
+        raw={'id':'sub_fixture','object':'subscription','customer':'cus_fixture','status':'active',
+            'cancel_at_period_end':False,'livemode':False,'metadata':{'atlas_tenant_id':'t1'}}
+        validate_before(raw,snap)
+        raw[field]=value
+>       with pytest.raises(wa.DispatchRefused,match='provider subscription'):validate_before(raw,snap)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_cancellation.py:259: Failed
+___ test_provider_before_field_drift_alone_refuses[postgres-metadata-value6] ___
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f66fbfd3d40>, sessionmaker(class_='Session', bind=Engin...reated_at': datetime.datetime(2026, 10, 9, 13, 54, 30, 817295, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+field = 'metadata', value = {'atlas_tenant_id': 'foreign'}
+
+    @pytest.mark.parametrize('field,value',[
+        ('object','invoice'),('id','sub_other'),('customer','cus_other'),('livemode',True),
+        ('status','paused'),('cancel_at_period_end',True),('metadata',{'atlas_tenant_id':'foreign'}),
+    ])
+    def test_provider_before_field_drift_alone_refuses(env,field,value):
+        from app.modules.m24_billing.cancellation import validate_before
+        op=prepare(env);snap=env[2].snapshot(op['id'],'t1')
+        raw={'id':'sub_fixture','object':'subscription','customer':'cus_fixture','status':'active',
+            'cancel_at_period_end':False,'livemode':False,'metadata':{'atlas_tenant_id':'t1'}}
+        validate_before(raw,snap)
+        raw[field]=value
+>       with pytest.raises(wa.DispatchRefused,match='provider subscription'):validate_before(raw,snap)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_cancellation.py:259: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_cancellation.py::test_provider_before_field_drift_alone_refuses[postgres-metadata-value6]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_cancellation.py::test_provider_before_field_drift_alone_refuses[sqlite-metadata-value6]
+FAILED tests/modules/test_m24_cancellation.py::test_provider_before_field_drift_alone_refuses[postgres-metadata-value6]
+2 failed, 66 deselected, 1 warning in 1.35s

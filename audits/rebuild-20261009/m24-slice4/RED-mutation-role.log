@@ -1,0 +1,22 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_wrong_principal_or_missing_designation_refuse[sqlite-missing-role] ____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7ff767862300>, sessionmaker(class_='Session', bind=Engin...tch_not_after': None, ...}, <app.modules.m24_billing.reconciliation.ReconciliationRepository object at 0x7ff766537c50>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff7666f20f0>
+bad = 'missing-role'
+
+    @pytest.mark.parametrize('bad',['other-reviewer','missing-role','foreign-tenant','missing-designation'])
+    def test_wrong_principal_or_missing_designation_refuse(env,monkeypatch,bad):
+        evidence,calls=lookup(env,monkeypatch)
+        if bad=='missing-designation':
+            with env[1].begin() as db:db.get(ApprovalRequestRow,env[3]['approval_id']).approved_by=None
+        who=principal(actor='other') if bad=='other-reviewer' else principal(roles=()) if bad=='missing-role' else principal(tenant='foreign') if bad=='foreign-tenant' else principal()
+>       with pytest.raises((PermissionError,KeyError)):env[4].accept_positive(env[3]['id'],evidence['evidence_id'],who)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE any of (<class 'PermissionError'>, <class 'KeyError'>)
+
+tests/modules/test_m24_reconciliation.py:63: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_reconciliation.py::test_wrong_principal_or_missing_designation_refuse[sqlite-missing-role]
+1 failed in 0.39s
