@@ -12,6 +12,8 @@ database and clock.
 """
 from __future__ import annotations
 
+import copy
+import math
 import queue
 import threading
 import time
@@ -101,6 +103,8 @@ class ApprovalBroadcaster:
     """
 
     def __init__(self, max_queue_size: int = 1000) -> None:
+        if type(max_queue_size) is not int or max_queue_size <= 0:
+            raise ValueError("max_queue_size must be a positive integer")
         self._max_queue_size = max_queue_size
         self._subscribers: set[queue.Queue] = set()
         self._lock = threading.Lock()
@@ -123,9 +127,10 @@ class ApprovalBroadcaster:
             subscribers = list(self._subscribers)
         for subscriber in subscribers:
             try:
-                subscriber.put_nowait(event)
+                subscriber.put_nowait(copy.deepcopy(event))
             except queue.Full:
                 continue
+
 
 
 class Service:
@@ -180,6 +185,10 @@ class Service:
             raise ValueError("user_id must be nonempty and at most 120 characters")
         if not isinstance(payload, dict):
             raise ValueError("payload must be an object")
+        try:
+            _validate_payload_keys(payload)
+        except RecursionError:
+            raise ValueError("payload nesting exceeds validation limit") from None
         # Validate standards-compliant JSON before opening the write transaction.
         try:
             json.dumps(payload, allow_nan=False)
@@ -338,8 +347,11 @@ class Service:
         execute it. Callback exceptions never corrupt the recorded state.
         Cross-process callbacks need Redis Streams; see INTEGRATION.md.
         """
+        if not callable(callback):
+            raise ValueError("callback must be callable")
         with self._callback_lock:
             self._callbacks.setdefault(approval_id, []).append(callback)
+
 
     def wait_for_decision(
         self,
@@ -354,6 +366,15 @@ class Service:
         ApprovalNotFoundError for a missing id and TimeoutError if no
         resolution arrives within timeout_seconds.
         """
+        for field, value in (("timeout_seconds", timeout_seconds),
+                             ("poll_interval_seconds", poll_interval_seconds)):
+            try:
+                valid = (not isinstance(value, bool) and isinstance(value, (int, float))
+                         and math.isfinite(value) and value > 0)
+            except OverflowError:
+                valid = False
+            if not valid:
+                raise ValueError(f"{field} must be finite and positive")
         deadline = time.monotonic() + timeout_seconds
         while True:
             view = self.get(approval_id)
@@ -361,7 +382,8 @@ class Service:
                 return view
             if time.monotonic() >= deadline:
                 raise TimeoutError(f"no decision for approval {approval_id} within {timeout_seconds}s")
-            time.sleep(poll_interval_seconds)
+            time.sleep(min(poll_interval_seconds, max(0.0, deadline-time.monotonic())))
+
 
     def _fetch(self, db: Session, approval_id: str) -> ApprovalRequestRow:
         row = db.get(ApprovalRequestRow, approval_id)
@@ -397,19 +419,21 @@ class Service:
             callbacks = self._callbacks.pop(approval_id, [])
         for callback in callbacks:
             try:
-                callback(view)
+                callback(copy.deepcopy(view))
             except Exception:
                 continue
 
 
+
 def _jsonable(view: dict[str, Any]) -> dict[str, Any]:
     """Convert a view dict into JSON-serializable form for event payloads."""
-    result = dict(view)
+    result = copy.deepcopy(view)
     result["status"] = view["status"].value if isinstance(view["status"], ApprovalStatus) else view["status"]
     for key in ("created_at", "expires_at", "decided_at"):
         if isinstance(result.get(key), datetime):
             result[key] = result[key].isoformat()
     return result
+
 
 
 _default_service: Service | None = None
@@ -498,6 +522,18 @@ class ApprovalEffectRow(Base):
     request_hash: Mapped[str] = mapped_column(String(64))
     actor: Mapped[str] = mapped_column(String(120))
     consumed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+def _validate_payload_keys(value: Any) -> None:
+    """Refuse JSON key coercion before storing an approval request."""
+    if isinstance(value, dict):
+        if any(not isinstance(key, str) for key in value):
+            raise ValueError("payload object keys must be strings")
+        for item in value.values():
+            _validate_payload_keys(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _validate_payload_keys(item)
 
 
 def _canonical(value: Any) -> str:
@@ -629,6 +665,10 @@ def _install_extensions() -> None:
             raise ValueError("context must be an object or None")
         if type(module_id) is not int or module_id not in BY_ID:
             raise ValueError(f"unknown module id: {module_id}")
+        try:
+            _validate_payload_keys(payload)
+        except RecursionError:
+            raise ValueError("payload nesting exceeds validation limit") from None
         effect, policy = self.evaluate_policy(module_id=module_id, action_type=action_type, context=context, tenant_id=user_id)
         if effect == "allow":
             return {"decision": "allow", "allowed": True, "reason": "allowed by policy",
@@ -684,6 +724,7 @@ def _install_extensions() -> None:
                                    ttl_seconds=policy["review_ttl_seconds"] if policy else None)
         return {"decision": "review", "allowed": False, "reason": "human review required",
                 "policy_id": policy["id"] if policy else None, "approval": approval}
+
 
 
     def consume_effect(self: Service, approval_id: str, *, module_id: int, action_type: str,
