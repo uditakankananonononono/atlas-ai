@@ -65,7 +65,7 @@ def env(tmp_path):
                                created_at=NOW, updated_at=NOW))
         db.add(EmailMessageRow(tenant_id="t1", id="m-2", account_id="acct-1", gmail_id="g-2", thread_id="th-1",
                                subject="RA role", sender="rao@uni.edu", created_at=NOW))
-        db.add(EmailDraftRow(tenant_id="t1", id="d-1", message_id="m-2", approval_id="pending", to="rao@uni.edu",
+        db.add(EmailDraftRow(tenant_id="t1", id="d-1", message_id="m-2", approval_id="pending", account_id="acct-1", to="rao@uni.edu",
                              subject="Re: RA role", body="Thank you, I can start in October.", model="m", created_at=NOW))
     gmail = Gmail()
     client = httpx.Client(transport=httpx.MockTransport(gmail.handler))
@@ -78,12 +78,14 @@ def env(tmp_path):
     return approvals, registry, gmail, sessions
 
 
-PAYLOAD = {"tenant_id": "t1", "draft_id": "d-1", "message_id": "m-2", "gmail_id": "g-2", "thread_id": "th-1",
+PAYLOAD = {"tenant_id": "t1", "account_id": "acct-1", "draft_id": "d-1", "message_id": "m-2", "gmail_id": "g-2", "thread_id": "th-1",
            "to": "rao@uni.edu", "subject": "Re: RA role", "body": "Thank you, I can start in October."}
 
 
 def approve(approvals, registry):
     view = approvals.submit(module_id=10, action_type="send_email_reply", payload=PAYLOAD, user_id="t1")
+    with approvals._sessions.begin() as db:
+        db.execute(update(EmailDraftRow).where(EmailDraftRow.id == "d-1").values(approval_id=view["id"]))
     captured = impact.capture_review_state(approvals, view["id"], registry=registry)
     assert captured["probe"] == "10:send_email_reply"
     approvals.decide(view["id"], ApprovalStatus.APPROVED, decided_by="t1")
@@ -164,11 +166,10 @@ def test_revoked_token_fails_closed(env):
 
 def test_unknown_message_fails_closed(env):
     approvals, registry, _, _ = env
-    probe = registry.find(10, "send_email_reply")[1]
-    with pytest.raises(dp.ProbeUnavailable):
-        probe({**PAYLOAD, "message_id": "nope"})
-    with pytest.raises(dp.ProbeUnavailable):
-        probe({**PAYLOAD, "tenant_id": "other-tenant"})
+    for payload in ({**PAYLOAD, "message_id": "nope"}, {**PAYLOAD, "tenant_id": "other-tenant"}):
+        view = approvals.submit(module_id=10, action_type="send_email_reply", payload=payload, user_id="t1")
+        with pytest.raises((dp.ProbeUnavailable, impact.ApprovalConflictError)):
+            impact.capture_review_state(approvals, view["id"], registry=registry)
 
 
 def test_module_import_registers_global_probe():

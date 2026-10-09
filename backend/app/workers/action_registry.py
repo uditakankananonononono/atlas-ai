@@ -16,3 +16,22 @@ def execute_registered(module_id: int, action_type: str, payload: dict[str, Any]
     result=executor(payload)
     if not isinstance(result,dict): raise TypeError("approved-action executor must return a mapping")
     return result
+
+
+# M10 has no production conditional adapter until provider support is verified.
+_CONDITIONAL_EXECUTORS: dict[tuple[int, str], Any] = {}
+
+
+def register_conditional_executor(module_id: int, action_type: str, adapter: Any) -> None:
+    key = (module_id, action_type)
+    if key in _CONDITIONAL_EXECUTORS or not callable(getattr(adapter, "dispatch_if_current", None)):
+        raise ValueError("conditional adapter must implement dispatch_if_current and register once")
+    _CONDITIONAL_EXECUTORS[key] = adapter
+
+
+def require_conditional_executor(module_id: int, action_type: str) -> Any:
+    from app.modules.m00_approval_center.service import ApprovalConflictError
+    adapter = _CONDITIONAL_EXECUTORS.get((module_id, action_type))
+    if adapter is None:
+        raise ApprovalConflictError("conditional dispatch unavailable; M10 dispatch refused, no risk acceptance configured")
+    return adapter
