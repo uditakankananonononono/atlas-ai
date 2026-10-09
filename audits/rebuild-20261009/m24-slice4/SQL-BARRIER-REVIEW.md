@@ -1,0 +1,5 @@
+# Standalone invoice SQL cutover barrier gap control
+
+Base landed17118b69e1f93b3dc8fb6eecbfc3d1829c7347e7. Tests-only: no productcode/schema/activationchange. Isolates previously surviving mutation by monkeypatching unconditional in-process readiness only, inserting epoch0lockedrow, invoking claim_step directly. Does not invoke before_step_entry/finalrecheck, so those cannot mask SQLpredicate.
+
+SQLite+PG16.2:2PASS76deselected1warning1.43s. Exactargv PYTHONPATH=backend /tmp/atlas-memo3-venv/bin/python -m pytest -q tests/modules/test_m24_invoice_dispatcher.py -k sql_cutover_update_barrier. Checks DispatchRefusedcutoverlocked,stateprepared,noattemptrow. Mutation replaces sole `InvoiceStepRow.fence.is_(None),barrier).values(` with `InvoiceStepRow.fence.is_(None)).values(`:2FAIL76deselected1warning1.31s,DIDNOTRAISEDispatchRefused. Originalproductbytesrestored, no productdiff. Logs retained. This control proves inactive DB barrier requirement independent of other runtimeguards, not checked activation/providerready/accountcredentials. No providerI/O/fullsuite/restart/powerlossclaim. Standalone exacttipgate needed to close survivor.

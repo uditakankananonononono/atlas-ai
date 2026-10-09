@@ -385,3 +385,16 @@ def test_invoice_finish_rejects_fabricated_final_raw(env,monkeypatch):
     asyncio.run(dispatcher._step(op['id'],'t1','draft-invoice'));env[0].prepare_item(op['id'],'t1');asyncio.run(dispatcher._step(op['id'],'t1','invoice-item'))
     with pytest.raises(ValueError):env[0].finish(op['id'],'t1','in_fixture','ii_fixture',{'id':'in_fixture','total':1234})
     assert env[0].get(op['id'],'t1')['state']=='prepared'
+
+
+def test_sql_cutover_update_barrier_alone_refuses_locked_row(env,monkeypatch):
+    """Isolate SQL barrier: bypass in-process readiness, never call entry/final guards."""
+    op=prepare(env)
+    monkeypatch.setattr(wa,'require_dispatch_ready',lambda:None)
+    with env[1].begin() as db:
+        db.add(wa.CutoverRow(id=1,protocol_epoch=0,state='locked',verification_digest=None,verified_at=None))
+    with pytest.raises(wa.DispatchRefused,match='cutover locked'):
+        env[0].claim_step(op['id'],'t1','draft-invoice')
+    assert env[0].step(op['id'],'t1','draft-invoice')['step']['state']=='prepared'
+    with env[1]() as db:
+        assert db.scalar(select(InvoiceStepAttemptRow)) is None
