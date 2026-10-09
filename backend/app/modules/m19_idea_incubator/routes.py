@@ -250,3 +250,6 @@ class DigestIn(BaseModel):
  pack:dict
 @router.post('/luxury-venture-studio/tools/digest')
 def luxury_digest(data:DigestIn):return digest(data.pack)
+
+from .ranking_router import router as ranking_router
+router.include_router(ranking_router)
