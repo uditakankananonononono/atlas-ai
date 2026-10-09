@@ -1,0 +1,56 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_adapter_binding_and_readback_mismatch_zero_model[sqlite] _________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f1b1b1dba70>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f1b1ad43fe0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1b1ad41a60>
+
+    def test_adapter_binding_and_readback_mismatch_zero_model(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);mock=Mock();mock.account='foreign'
+        with pytest.raises(wa.DispatchRefused,match='adapter binding'):dispatch(env,op,mock)
+        assert mock.calls==0
+        mock.account='fixture-account';original=env[2].get;reads=[]
+        def get(*a):
+            result=original(*a);reads.append(1)
+            if len(reads)==2:result['fence']='foreign'
+            return result
+        monkeypatch.setattr(env[2],'get',get)
+>       assert dispatch(env,op,mock)['state']=='outcome_unknown' and mock.calls==0
+E       AssertionError: assert ('succeeded' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + succeeded)
+
+tests/modules/test_m24_generation_budget.py:240: AssertionError
+_______ test_adapter_binding_and_readback_mismatch_zero_model[postgres] ________
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f1b1ad17dd0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f1b1ab16b10>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1b1ad8d220>
+
+    def test_adapter_binding_and_readback_mismatch_zero_model(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);mock=Mock();mock.account='foreign'
+        with pytest.raises(wa.DispatchRefused,match='adapter binding'):dispatch(env,op,mock)
+        assert mock.calls==0
+        mock.account='fixture-account';original=env[2].get;reads=[]
+        def get(*a):
+            result=original(*a);reads.append(1)
+            if len(reads)==2:result['fence']='foreign'
+            return result
+        monkeypatch.setattr(env[2],'get',get)
+>       assert dispatch(env,op,mock)['state']=='outcome_unknown' and mock.calls==0
+E       AssertionError: assert ('succeeded' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + succeeded)
+
+tests/modules/test_m24_generation_budget.py:240: AssertionError
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_adapter_binding_and_readback_mismatch_zero_model[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_adapter_binding_and_readback_mismatch_zero_model[sqlite]
+FAILED tests/modules/test_m24_generation_budget.py::test_adapter_binding_and_readback_mismatch_zero_model[postgres]
+2 failed, 74 deselected, 1 warning in 1.43s

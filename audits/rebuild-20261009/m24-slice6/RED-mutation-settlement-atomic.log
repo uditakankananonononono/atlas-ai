@@ -1,0 +1,48 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____ test_output_commit_failure_rolls_back_settlement_and_output[sqlite] ______
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f6034868080>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f60348194c0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6034545a00>
+
+    def test_output_commit_failure_rolls_back_settlement_and_output(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+        def fail(point):
+            if point=='before-output-commit':raise RuntimeError('output commit refused')
+        with pytest.raises(RuntimeError):env[2].settle(op['id'],'t1',fence,response(),hook=fail)
+        with env[1]() as db:
+>           assert db.get(GenerationRow,op['id']).output is None
+E           AssertionError: assert {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} is None
+E            +  where {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} = <app.modules.m24_billing.generation.GenerationRow object at 0x7f60344b5130>.output
+E            +    where <app.modules.m24_billing.generation.GenerationRow object at 0x7f60344b5130> = get(GenerationRow, '613a9a92-f6de-4643-a753-cbf7178e598c')
+E            +      where get = <sqlalchemy.orm.session.Session object at 0x7f6034454800>.get
+
+tests/modules/test_m24_generation_budget.py:137: AssertionError
+____ test_output_commit_failure_rolls_back_settlement_and_output[postgres] _____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f60358a3e30>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f603312ba10>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6034596030>
+
+    def test_output_commit_failure_rolls_back_settlement_and_output(env,monkeypatch):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+        def fail(point):
+            if point=='before-output-commit':raise RuntimeError('output commit refused')
+        with pytest.raises(RuntimeError):env[2].settle(op['id'],'t1',fence,response(),hook=fail)
+        with env[1]() as db:
+>           assert db.get(GenerationRow,op['id']).output is None
+E           AssertionError: assert {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} is None
+E            +  where {'digest': 'ded420fd27bb008ca145186b7e3464eaaf398d8a5a565d1c68bece7782054386', 'text': 'Reviewed draft description', 'usage': {'account': 'fixture-account', 'input_tokens': 5, 'micro_usd': 40, 'model': 'fixture-model', ...}, 'version': 1} = <app.modules.m24_billing.generation.GenerationRow object at 0x7f6032d03080>.output
+E            +    where <app.modules.m24_billing.generation.GenerationRow object at 0x7f6032d03080> = get(GenerationRow, 'cb2ec89c-46d1-4cc6-9912-9d3b787c8553')
+E            +      where get = <sqlalchemy.orm.session.Session object at 0x7f60348a3920>.get
+
+tests/modules/test_m24_generation_budget.py:137: AssertionError
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_output_commit_failure_rolls_back_settlement_and_output[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_output_commit_failure_rolls_back_settlement_and_output[sqlite]
+FAILED tests/modules/test_m24_generation_budget.py::test_output_commit_failure_rolls_back_settlement_and_output[postgres]
+2 failed, 74 deselected, 1 warning in 1.60s
