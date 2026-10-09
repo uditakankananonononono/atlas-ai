@@ -49,6 +49,14 @@ class Service:
    "before_state":{"customer_id":row.customer_id,"subscription_id":row.subscription_id,"status":row.status,"cancel_at_period_end":row.cancel_at_period_end},"cancellation_terms":dict(TERMS)};req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="cancel_subscription",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
  def propose_invoice(self,tenant_id,data:InvoiceIn):
   payload={"tenant_id":tenant_id,**data.model_dump(),"provider":"stripe","effect":"create_draft_invoice"};req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="issue_invoice",payload=payload));return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
+ def propose_invoice_from_generation(self,tenant_id,data:InvoiceIn,generation_repo,generation_id,output_version,output_digest):
+  # Read only the committed exact output; never invoke a model or execute money.
+  description=generation_repo.description_for_proposal(generation_id,tenant_id,output_version,output_digest)
+  if data.description!=description:raise ValueError("invoice description differs from committed generation")
+  payload={"tenant_id":tenant_id,**data.model_dump(),"provider":"stripe","effect":"create_draft_invoice",
+   "generation":{"id":generation_id,"version":output_version,"digest":output_digest}}
+  req=self.approvals.put(ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type="issue_invoice",payload=payload))
+  return ApprovalProposal(approval_id=req.id,action_type=req.action_type,payload=payload)
  async def execute_approved(self,approval_id,tenant_id):
   view=self.repo.approval(approval_id)
   if not view or view["status"]!="approved" or view["payload"].get("tenant_id")!=tenant_id:raise PermissionError("approved tenant-bound billing action required")

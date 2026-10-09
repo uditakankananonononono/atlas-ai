@@ -38,3 +38,4 @@ import app.modules.m24_billing.reconciliation as _model_m24_reconciliation  # no
 import app.modules.m24_billing.cancellation as _model_m24_cancellation  # noqa: F401
 
 import app.modules.m24_billing.inbox as _model_m24_inbox  # noqa: F401
+import app.modules.m24_billing.generation as _model_m24_generation  # noqa: F401

@@ -1,0 +1,447 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_each_insufficient_balance_refuses_no_permit[sqlite-available_output] ___
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f725a13b050>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f725a264200>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f725a1631d0>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x7f725a162c90>
+parameters = [(10, 20, 80, 1, 'budget1', 't1', ...)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f725a264200>
+cursor = <sqlite3.Cursor object at 0x7f725a1477c0>
+statement = 'UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - ?), available_output=(m24...able_input >= ? AND m24_generation_budgets.available_micro_usd >= ? AND m24_generation_budgets.available_attempts >= ?'
+parameters = (10, 20, 80, 1, 'budget1', 't1', ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f725a1631d0>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.IntegrityError: CHECK constraint failed: available_input >= 0 AND available_output >= 0 AND available_micro_usd >= 0 AND available_attempts >= 0
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: IntegrityError
+
+The above exception was the direct cause of the following exception:
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f725a376f90>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f725ac7ee70>)
+field = 'available_output'
+
+    @pytest.mark.parametrize('field',['available_input','available_output','available_micro_usd','available_attempts'])
+    def test_each_insufficient_balance_refuses_no_permit(env,field):
+        with env[1].begin() as db:setattr(db.get(BudgetRow,'budget1'),field,0)
+>       with pytest.raises(wa.DispatchRefused,match='exhausted'):prepare(env)
+                                                                 ^^^^^^^^^^^^
+
+tests/modules/test_m24_generation_budget.py:217: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_generation_budget.py:35: in prepare
+    def prepare(env,**changes):return env[2].prepare(approved(env,**changes)['id'],'t1')
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/generation.py:118: in prepare
+    changed=db.execute(update(BudgetRow).where(BudgetRow.id==budget.id,BudgetRow.tenant_id==tenant_id,BudgetRow.account==p['account'],
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2473: in execute
+    return self._execute_internal(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2363: in _execute_internal
+    compile_state_cls.orm_execute_statement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:1693: in orm_execute_statement
+    return super().orm_execute_statement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:316: in orm_execute_statement
+    result = conn.execute(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1451: in execute
+    return meth(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1671: in _execute_clauseelement
+    ret = self._execute_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1825: in _execute_context
+    return self._exec_single_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1965: in _exec_single_context
+    self._handle_dbapi_exception(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x7f725a264200>
+cursor = <sqlite3.Cursor object at 0x7f725a1477c0>
+statement = 'UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - ?), available_output=(m24...able_input >= ? AND m24_generation_budgets.available_micro_usd >= ? AND m24_generation_budgets.available_attempts >= ?'
+parameters = (10, 20, 80, 1, 'budget1', 't1', ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x7f725a1631d0>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) CHECK constraint failed: available_input >= 0 AND available_output >= 0 AND available_micro_usd >= 0 AND available_attempts >= 0
+E       [SQL: UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - ?), available_output=(m24_generation_budgets.available_output - ?), available_micro_usd=(m24_generation_budgets.available_micro_usd - ?), available_attempts=(m24_generation_budgets.available_attempts - ?) WHERE m24_generation_budgets.id = ? AND m24_generation_budgets.tenant_id = ? AND m24_generation_budgets.account = ? AND m24_generation_budgets.available_input >= ? AND m24_generation_budgets.available_micro_usd >= ? AND m24_generation_budgets.available_attempts >= ?]
+E       [parameters: (10, 20, 80, 1, 'budget1', 't1', 'fixture-account', 10, 80, 1)]
+E       (Background on this error at: https://sqlalche.me/e/21/gkpj)
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: IntegrityError
+_ test_each_insufficient_balance_refuses_no_permit[postgres-available_output] __
+
+self = <sqlalchemy.engine.base.Connection object at 0x7f725922e270>
+dialect = <sqlalchemy.dialects.postgresql.psycopg.PGDialect_psycopg object at 0x7f725a1d18e0>
+context = <sqlalchemy.dialects.postgresql.psycopg.PGExecutionContext_psycopg object at 0x7f725922ee40>
+statement = <sqlalchemy.dialects.postgresql.psycopg.PGCompiler_psycopg object at 0x7f7259254350>
+parameters = [{'account_1': 'fixture-account', 'available_attempts_1': 1, 'available_attempts_2': 1, 'available_input_1': 10, ...}]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Unpack[TupleAny]]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        evt_handled: bool = False
+        try:
+            if self._has_events or self.engine._has_events:
+                for fn in self.dispatch.before_cursor_execute:
+                    str_statement, effective_parameters = fn(
+                        self,
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                        context.executemany,
+                    )
+    
+            if self._echo:
+                self._log_info(str_statement)
+    
+                stats = context._get_cache_stats()
+    
+                if not self.engine.hide_parameters:
+                    self._log_info(
+                        "[%s] %r",
+                        stats,
+                        sql_util._repr_params(
+                            effective_parameters,
+                            batches=10,
+                            ismulti=context.executemany,
+                        ),
+                    )
+                else:
+                    self._log_info(
+                        "[%s] [SQL parameters hidden due to "
+                        "hide_parameters=True]",
+                        stats,
+                    )
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: in do_execute
+    cursor.execute(statement, parameters)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Cursor [closed] [IDLE] (database=postgres) at 0x7f7259496150>
+query = 'UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - %(available_input_1)s::IN... %(available_micro_usd_2)s::INTEGER AND m24_generation_budgets.available_attempts >= %(available_attempts_2)s::INTEGER'
+params = {'account_1': 'fixture-account', 'available_attempts_1': 1, 'available_attempts_2': 1, 'available_input_1': 10, ...}
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool | None = None,
+    ) -> Self:
+        """
+        Execute a query or command to the database.
+        """
+        try:
+            with self._conn.lock:
+                self._conn.wait(
+                    self._execute_gen(query, params, prepare=prepare, binary=binary)
+                )
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           psycopg.errors.CheckViolation: new row for relation "m24_generation_budgets" violates check constraint "m24_generation_budgets_check"
+E           DETAIL:  Failing row contains (budget1, t1, fixture-account, {"id": "fixture-usd-v1", "currency": "USD", "input_micro_usd_per..., 90, -20, 420, 4).
+
+../atlas-memo3-venv/lib/python3.12/site-packages/psycopg/cursor.py:117: CheckViolation
+
+The above exception was the direct cause of the following exception:
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f725ae8eb10>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f725951cce0>)
+field = 'available_output'
+
+    @pytest.mark.parametrize('field',['available_input','available_output','available_micro_usd','available_attempts'])
+    def test_each_insufficient_balance_refuses_no_permit(env,field):
+        with env[1].begin() as db:setattr(db.get(BudgetRow,'budget1'),field,0)
+>       with pytest.raises(wa.DispatchRefused,match='exhausted'):prepare(env)
+                                                                 ^^^^^^^^^^^^
+
+tests/modules/test_m24_generation_budget.py:217: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/modules/test_m24_generation_budget.py:35: in prepare
+    def prepare(env,**changes):return env[2].prepare(approved(env,**changes)['id'],'t1')
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m24_billing/generation.py:118: in prepare
+    changed=db.execute(update(BudgetRow).where(BudgetRow.id==budget.id,BudgetRow.tenant_id==tenant_id,BudgetRow.account==p['account'],
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2473: in execute
+    return self._execute_internal(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2363: in _execute_internal
+    compile_state_cls.orm_execute_statement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/bulk_persistence.py:1693: in orm_execute_statement
+    return super().orm_execute_statement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:316: in orm_execute_statement
+    result = conn.execute(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1451: in execute
+    return meth(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:533: in _execute_on_connection
+    return connection._execute_clauseelement(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1671: in _execute_clauseelement
+    ret = self._execute_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1825: in _execute_context
+    return self._exec_single_context(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1965: in _exec_single_context
+    self._handle_dbapi_exception(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1946: in _exec_single_context
+    self.dialect.do_execute(
+../atlas-memo3-venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:1192: in do_execute
+    cursor.execute(statement, parameters)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Cursor [closed] [IDLE] (database=postgres) at 0x7f7259496150>
+query = 'UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - %(available_input_1)s::IN... %(available_micro_usd_2)s::INTEGER AND m24_generation_budgets.available_attempts >= %(available_attempts_2)s::INTEGER'
+params = {'account_1': 'fixture-account', 'available_attempts_1': 1, 'available_attempts_2': 1, 'available_input_1': 10, ...}
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool | None = None,
+    ) -> Self:
+        """
+        Execute a query or command to the database.
+        """
+        try:
+            with self._conn.lock:
+                self._conn.wait(
+                    self._execute_gen(query, params, prepare=prepare, binary=binary)
+                )
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           sqlalchemy.exc.IntegrityError: (psycopg.errors.CheckViolation) new row for relation "m24_generation_budgets" violates check constraint "m24_generation_budgets_check"
+E           DETAIL:  Failing row contains (budget1, t1, fixture-account, {"id": "fixture-usd-v1", "currency": "USD", "input_micro_usd_per..., 90, -20, 420, 4).
+E           [SQL: UPDATE m24_generation_budgets SET available_input=(m24_generation_budgets.available_input - %(available_input_1)s::INTEGER), available_output=(m24_generation_budgets.available_output - %(available_output_1)s::INTEGER), available_micro_usd=(m24_generation_budgets.available_micro_usd - %(available_micro_usd_1)s::INTEGER), available_attempts=(m24_generation_budgets.available_attempts - %(available_attempts_1)s::INTEGER) WHERE m24_generation_budgets.id = %(id_1)s::VARCHAR AND m24_generation_budgets.tenant_id = %(tenant_id_1)s::VARCHAR AND m24_generation_budgets.account = %(account_1)s::VARCHAR AND m24_generation_budgets.available_input >= %(available_input_2)s::INTEGER AND m24_generation_budgets.available_micro_usd >= %(available_micro_usd_2)s::INTEGER AND m24_generation_budgets.available_attempts >= %(available_attempts_2)s::INTEGER]
+E           [parameters: {'available_input_1': 10, 'available_output_1': 20, 'available_micro_usd_1': 80, 'available_attempts_1': 1, 'id_1': 'budget1', 'tenant_id_1': 't1', 'account_1': 'fixture-account', 'available_input_2': 10, 'available_micro_usd_2': 80, 'available_attempts_2': 1}]
+E           (Background on this error at: https://sqlalche.me/e/21/gkpj)
+
+../atlas-memo3-venv/lib/python3.12/site-packages/psycopg/cursor.py:117: IntegrityError
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_each_insufficient_balance_refuses_no_permit[postgres-available_output]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_each_insufficient_balance_refuses_no_permit[sqlite-available_output]
+FAILED tests/modules/test_m24_generation_budget.py::test_each_insufficient_balance_refuses_no_permit[postgres-available_output]
+2 failed, 74 deselected, 1 warning in 2.23s

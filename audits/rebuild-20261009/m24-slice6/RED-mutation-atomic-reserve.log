@@ -1,0 +1,46 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_after_balance_update_failure_rolls_back_permit_reserve_generation[sqlite] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fc3a5d1db50>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fc3a5d1dfd0>)
+
+    def test_after_balance_update_failure_rolls_back_permit_reserve_generation(env):
+        a=approved(env)
+        def fail(point):
+            if point=='after-balance-update':raise RuntimeError('storage failure')
+        with pytest.raises(RuntimeError):env[2].prepare(a['id'],'t1',hook=fail)
+        with env[1]() as db:
+>           assert db.get(BudgetRow,'budget1').available_micro_usd==500
+E           AssertionError: assert 420 == 500
+E            +  where 420 = <app.modules.m24_billing.generation.BudgetRow object at 0x7fc3a5a4ebd0>.available_micro_usd
+E            +    where <app.modules.m24_billing.generation.BudgetRow object at 0x7fc3a5a4ebd0> = get(BudgetRow, 'budget1')
+E            +      where get = <sqlalchemy.orm.session.Session object at 0x7fc3a6010b90>.get
+
+tests/modules/test_m24_generation_budget.py:75: AssertionError
+_ test_after_balance_update_failure_rolls_back_permit_reserve_generation[postgres] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fc3a5aae240>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fc3a4b0fc80>)
+
+    def test_after_balance_update_failure_rolls_back_permit_reserve_generation(env):
+        a=approved(env)
+        def fail(point):
+            if point=='after-balance-update':raise RuntimeError('storage failure')
+        with pytest.raises(RuntimeError):env[2].prepare(a['id'],'t1',hook=fail)
+        with env[1]() as db:
+>           assert db.get(BudgetRow,'budget1').available_micro_usd==500
+E           AssertionError: assert 420 == 500
+E            +  where 420 = <app.modules.m24_billing.generation.BudgetRow object at 0x7fc3a479caa0>.available_micro_usd
+E            +    where <app.modules.m24_billing.generation.BudgetRow object at 0x7fc3a479caa0> = get(BudgetRow, 'budget1')
+E            +      where get = <sqlalchemy.orm.session.Session object at 0x7fc3a473cc80>.get
+
+tests/modules/test_m24_generation_budget.py:75: AssertionError
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_after_balance_update_failure_rolls_back_permit_reserve_generation[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_after_balance_update_failure_rolls_back_permit_reserve_generation[sqlite]
+FAILED tests/modules/test_m24_generation_budget.py::test_after_balance_update_failure_rolls_back_permit_reserve_generation[postgres]
+2 failed, 74 deselected, 1 warning in 1.28s
