@@ -1,0 +1,83 @@
+Show more
+Packet 1 audit: luxury_outreach.py and luxury_ideation.py
+Overall verdict: neither module establishes everything its surrounding product claims. The outreach module has a meaningful approval-consumption path, but its one-shot guarantee depends on external service semantics and has a check-then-act gap. The ideation module is functioning heuristic software, not evidence of sophisticated or independently validated idea generation.
+The classifications below cover every class and function defined in the supplied files, including private helpers.
+1. luxury_outreach.py
+Public/private symbol
+Verdict
+Specific reason
+OutreachRefused
+REAL
+A proper RuntimeError subclass used to distinguish refusal paths. It provides no additional behavior, but that is not its purpose.
+Sender
+REAL
+A valid Protocol defining the expected callable interface. It does not enforce that a real adapter actually sends anything or returns a valid receipt.
+refuse_sender()
+REAL
+Always raises OutreachRefused, so the default adapter cannot send. This guarantee applies only when callers retain the default; the constructor accepts an arbitrary injected sender.
+_payload()
+PARTIAL
+Checks for required keys and status == "pending_approval", then copies selected fields. It does not validate field types, nonempty values, recipient identity, evidence-reference validity, or whether the preview was genuinely validated.
+LuxuryOutreachQueue.__init__()
+REAL
+Stores the service and sender and creates a thread lock. The lock protects only calls using this particular queue instance; it is not a process-wide or distributed lock.
+LuxuryOutreachQueue.service
+REAL
+Returns the injected service or calls default_service(). Whether the default is persistent, correctly tenant-scoped, or safe under concurrent use cannot be verified here.
+LuxuryOutreachQueue.enqueue()
+PARTIAL
+Submits the payload to the external approval service and returns its ID and status. The docstring claims it always creates a pending approval, but this file neither forces that status nor verifies the returned status.
+LuxuryOutreachQueue.send()
+PARTIAL
+Validates the message's shape and delegates under a lock. It does not independently prove that the message equals the approved payload; that responsibility is delegated to consume_effect().
+LuxuryOutreachQueue._send_locked()
+PARTIAL
+Attempts to reject previously consumed approvals, consumes an effect, then calls the sender. The audit pre-check is not atomic with consumption, and the broad exception handler can suppress audit failures. The external service's actual guarantees are unavailable.
+2. luxury_ideation.py
+Public/private symbol
+Verdict
+Specific reason
+tokens()
+REAL
+Lowercases text and extracts regex-matched tokens into a set. Punctuation and tokenization behavior are limited by the regex; single-character words and digits are excluded.
+_match()
+PARTIAL
+Matches signal and linked-source finding vocabulary against predefined lever keywords. It does not semantically understand evidence, verify the truth of claims, or distinguish supportive from contradictory evidence.
+_readiness()
+PARTIAL
+Averages readiness across capabilities whose descriptions contain required vocabulary. It ignores capability specificity, relevance, duplication, and missing-data uncertainty; no matches are silently scored as zero.
+generate_ideas()
+PARTIAL
+Produces evidence-linked templates, combinations, heuristic rankings, and coverage reporting. It does not establish novelty, commercial viability, brand fit, or causal support for its recommendations.
+Top 5 concrete weaknesses
+1. The one-shot guarantee is not established end to end.
+_send_locked() first scans self.service.audit(approval_id) for effect_consumed, then separately calls consume_effect(). These are two distinct operations. Multiple queue instances can race through the audit check. The external service might correctly serialize consumption, but that alone does not prove that only one adapter invocation occurs.
+2. Audit failures are silently ignored.
+Python
+Run
+except Exception:
+pass  # unknown id: consume_effect below refuses
+This catches every exception from the audit call, not just an unknown approval ID. A database outage, authorization failure, or corrupted audit record is treated like a harmless lookup failure. The subsequent consumption call might reject it, but that depends on the unseen service.
+3. Consumption before sending creates an ambiguous failure state.
+Python
+Run
+receipt = self._sender(payload)
+return {"approval_id": approval_id, "sent": True, "adapter_receipt": receipt}
+If the adapter sends successfully but crashes before returning, the caller receives an exception despite a potentially completed delivery. Retrying is blocked by consumption, but the caller has no reliable reconciliation mechanism. Conversely, a failed adapter attempt permanently consumes the permit. This provides at-most-once attempt intent, not guaranteed delivery or exactly-once delivery.
+4. The ideation score rewards keyword density, not evidence quality.
+Python
+Run
+strength = sum(e["importance"] * len(e["matched_terms"]) for e in ev)
+A signal containing several overlapping keywords can outrank a more important, better-supported signal. There is no normalization for signal length, source independence, duplicated evidence, or contradictory findings. Combining levers also adds a fixed 15% bonus without demonstrating that the combination is useful.
+5. Readiness and evidence traceability are weaker than their names suggest.
+_readiness() selects capabilities through lexical overlap in c.description, then averages their readiness scores. A capability can qualify because of incidental wording. Meanwhile, _match() includes source findings in keyword matching but returns only the original signal statement as the evidence quote. The resulting idea can appear source-informed without exposing the precise source passage that triggered the match.
+Bottom line
+Outreach: There is real approval-service integration and a real refusal-by-default adapter. The strongest safety claims remain unverified, particularly cross-process single-use behavior, tenant isolation, exact-payload binding, and adapter delivery semantics.
+Ideation: The code genuinely generates ranked outputs from supplied data. Calling it evidence-driven is defensible only in the narrow sense of lexical traceability. Its scores are deterministic heuristics, not validated measures of idea quality.
+Audit boundary: The approval service, VentureBrief schema, and tests were not supplied. No claim here that depends on their unseen implementations should be interpreted as verified.
+Do you like this personality?
+ChatGPT can make mistakes. Check important info.
+Writing code? Meet Codex in the desktop app
+Pair with Codex in your terminal or IDE, free for a limited time in your ChatGPT plan.
+Install Codex
+Think
