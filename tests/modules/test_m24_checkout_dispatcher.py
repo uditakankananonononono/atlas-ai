@@ -417,3 +417,52 @@ def test_invalid_bounded_result_cannot_silently_mark_success(env,monkeypatch):
     op=prepare(env);mock_ready(env,monkeypatch);fence=env[0].claim(op['id'],'t1',protocol_epoch=2)
     with pytest.raises(ValueError):env[0].outcome(op['id'],'t1',fence,state='succeeded',result={'id':'cs_test_fake','secret':'unexpected'})
     assert env[0].get(op['id'],'t1')['state']=='dispatching'
+
+@pytest.mark.parametrize('difference',['fence','state'])
+def test_claim_readback_difference_never_enters_adapter(env,monkeypatch,difference):
+    op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe();original=env[0].get
+    def changed(*a,**kw):
+        result=original(*a,**kw)
+        if result['state']=='dispatching':result[difference]='wrong-fence' if difference=='fence' else 'prepared'
+        return result
+    monkeypatch.setattr(env[0],'get',changed)
+    with pytest.raises(wa.DispatchRefused,match='readback'):dispatch(env,op,mock)
+    assert mock.calls==[]
+
+
+def test_lease_expires_between_claim_and_entry_zero_network(env,monkeypatch):
+    op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe();original=env[0].claim
+    def elapsed(*a,**kw):
+        fence=original(*a,**kw)
+        with env[2].begin() as db:db.execute(update(wa.OperationRow).where(wa.OperationRow.id==op['id']).values(lease_until=datetime.now(timezone.utc)-timedelta(seconds=2)))
+        return fence
+    monkeypatch.setattr(env[0],'claim',elapsed)
+    assert dispatch(env,op,mock)['state']=='failed_before_dispatch' and mock.calls==[]
+
+
+@pytest.mark.parametrize('stage',['claim','entry'])
+def test_commitment_deadline_elapsed_refused_at_both_boundaries(env,monkeypatch,stage):
+    from app.modules.m24_billing.precommit import preview_commitment
+    from datetime import timedelta
+    repo,svc,sessions,a=env;future=datetime.now(timezone.utc)+timedelta(hours=1)
+    preview=preview_commitment(plan=PLANS['pro'].model_dump(),cancellation_policy='Cancel before renewal',cancellation_deadline=future)
+    with sessions.begin() as db:
+        row=db.get(ApprovalRequestRow,a['id']);row.payload={**row.payload,'commitment_preview':preview,'commitment_preview_sha256':preview['preview_sha256'],'expected_charge_cents':2900}
+    op=prepare(env);mock_ready(env,monkeypatch)
+    if stage=='entry':fence=repo.claim(op['id'],'t1',protocol_epoch=2)
+    # Advance only repository DB-clock fixture, beyond commitment but within lease.
+    original=repo._now
+    monkeypatch.setattr(repo,'_now',lambda db:future+timedelta(seconds=1))
+    if stage=='entry':
+        with sessions.begin() as db:db.execute(update(wa.OperationRow).where(wa.OperationRow.id==op['id']).values(lease_until=future+timedelta(seconds=30),dispatch_not_after=future+timedelta(seconds=30)))
+        with pytest.raises(wa.DispatchRefused,match='commitment'):repo.before_entry(op['id'],'t1',fence)
+    else:
+        with pytest.raises(wa.DispatchRefused,match='commitment'):repo.claim(op['id'],'t1',protocol_epoch=2)
+        with sessions() as db:assert db.scalar(select(wa.AttemptRow)) is None
+
+
+def test_uncertain_cannot_become_failed_before_dispatch(env,monkeypatch):
+    op=prepare(env);mock_ready(env,monkeypatch);fence=env[0].claim(op['id'],'t1',protocol_epoch=2)
+    env[0].outcome(op['id'],'t1',fence,state='outcome_unknown',failure='uncertain')
+    with pytest.raises(wa.DispatchRefused,match='uncertain'):env[0].outcome(op['id'],'t1',fence,state='failed_before_dispatch')
+    assert env[0].get(op['id'],'t1')['state']=='outcome_unknown'

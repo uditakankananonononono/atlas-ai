@@ -1,0 +1,24 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_lease_expires_between_claim_and_entry_zero_network[sqlite] ________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f98c1a0f3e0>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 12, 27, 41, 928850, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f98c1a047d0>
+
+    def test_lease_expires_between_claim_and_entry_zero_network(env,monkeypatch):
+        op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe();original=env[0].claim
+        def elapsed(*a,**kw):
+            fence=original(*a,**kw)
+            with env[2].begin() as db:db.execute(update(wa.OperationRow).where(wa.OperationRow.id==op['id']).values(lease_until=datetime.now(timezone.utc)-timedelta(seconds=2)))
+            return fence
+        monkeypatch.setattr(env[0],'claim',elapsed)
+>       assert dispatch(env,op,mock)['state']=='failed_before_dispatch' and mock.calls==[]
+E       AssertionError: assert ('succeeded_late' == 'failed_before_dispatch'
+E         
+E         - failed_before_dispatch
+E         + succeeded_late)
+
+tests/modules/test_m24_checkout_dispatcher.py:440: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_lease_expires_between_claim_and_entry_zero_network[sqlite]
+1 failed in 0.35s

@@ -1,0 +1,24 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_claim_readback_difference_never_enters_adapter[sqlite-fence] _______
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7fc1527f3500>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 12, 27, 39, 807352, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc1527c8ad0>
+difference = 'fence'
+
+    @pytest.mark.parametrize('difference',['fence','state'])
+    def test_claim_readback_difference_never_enters_adapter(env,monkeypatch,difference):
+        op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe();original=env[0].get
+        def changed(*a,**kw):
+            result=original(*a,**kw)
+            if result['state']=='dispatching':result[difference]='wrong-fence' if difference=='fence' else 'prepared'
+            return result
+        monkeypatch.setattr(env[0],'get',changed)
+>       with pytest.raises(wa.DispatchRefused,match='readback'):dispatch(env,op,mock)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_checkout_dispatcher.py:429: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_claim_readback_difference_never_enters_adapter[sqlite-fence]
+1 failed in 0.34s
