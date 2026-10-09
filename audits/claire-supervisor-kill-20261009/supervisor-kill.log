@@ -1,0 +1,33 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/claire-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-ai
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, platformdirs-4.12.4, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 13 items
+
+tests/modules/test_m21_runtime_supervisor_kill.py::test_supervisor_sigkill_after_journal_then_fresh_supervisor_replay ACTUAL_PG_VERSION: PostgreSQL 16.2 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 10.2.1 20210130 (Red Hat 10.2.1-11), 64-bit
+MIGRATION_TARGET: 20261008_m21_runtime_revoke; create_all=False
+PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_database_retry_waits_full_lease_and_returns_safe_status PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_failure_budget_is_global_and_finite PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_job_limit_stops_and_unexpected_bug_stays_loud PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_disposal_failure_is_safe_terminal_status PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_cancellation_during_recovery_propagates PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits0] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits1] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits2] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits3] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits4] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_bad_limits[limits5] PASSED
+tests/modules/test_m21_runtime_supervisor.py::test_cancellation_inside_claim_propagates_without_db_failure_or_disposal PASSED
+
+=============================== warnings summary ===============================
+../claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459
+  /tmp/claire-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+----------------- generated xml file: /tmp/supervisor-kill.xml -----------------
+======================== 13 passed, 1 warning in 17.78s ========================

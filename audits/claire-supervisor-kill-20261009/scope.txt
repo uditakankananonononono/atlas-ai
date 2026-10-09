@@ -1,0 +1,4 @@
+Base3406a5a93fb9e581819a79fe1b501cee39f86350. Tests-only. 13 passed =1 new supervisor-process kill +12 existing logic protections.
+Command: python -m pytest tests/modules/test_m21_runtime_supervisor_kill.py tests/modules/test_m21_runtime_supervisor.py -v -s --junitxml=/tmp/supervisor-kill.xml
+Actual migrated PG16.2; supervise_read_only drives existing Worker inside both child processes. Parent SIGKILL after journal committed/pre-goal report, asserts -SIGKILL. Real4s lease expiry, distinct supervisor PID resumes, attempt2 completed/replayed receipt, exactly one effect. Fail-loud script replacement.
+Manual launcher/test starts replacement supervisor process; NOT OS-respawn implementation. Uses injected wrapper/gated scratch tool + scripted model, not production configured-model factory. No DB failure-retry in this kill test, no learned model/service installation/deployment/full suite/outbox/product-authenticity/acceptanceA claim. AcceptanceA NOT met.
