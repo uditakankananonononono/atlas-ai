@@ -2,8 +2,8 @@ FF                                                                       [100%]
 =================================== FAILURES ===================================
 _ test_uncertain_charge_never_refunded_new_regeneration_reserves_separately[sqlite] _
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7effa47e3da0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7effa04d6a80>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7effa051dcd0>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f3e443b1670>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f3e4407a120>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3e44039af0>
 
     def test_uncertain_charge_never_refunded_new_regeneration_reserves_separately(env,monkeypatch):
         op=prepare(env);ready(env,monkeypatch);mock=Mock(fail=True)
@@ -12,13 +12,13 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7effa051dcd0>
 E       AssertionError: assert ('outcome_unknown' == 'outcome_unknown'
 E         
 E           outcome_unknown and 0 == 1)
-E        +  where 0 = <test_m24_generation_budget.Mock object at 0x7effa0426ea0>.calls
+E        +  where 0 = <test_m24_generation_budget.Mock object at 0x7f3e4406bda0>.calls
 
 tests/modules/test_m24_generation_budget.py:111: AssertionError
 _ test_uncertain_charge_never_refunded_new_regeneration_reserves_separately[postgres] _
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7effa03903e0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7eff9ef2b320>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7effa03ee630>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f3e44019280>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f3e444b0170>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3e44116e10>
 
     def test_uncertain_charge_never_refunded_new_regeneration_reserves_separately(env,monkeypatch):
         op=prepare(env);ready(env,monkeypatch);mock=Mock(fail=True)
@@ -27,7 +27,7 @@ monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7effa03ee630>
 E       AssertionError: assert ('outcome_unknown' == 'outcome_unknown'
 E         
 E           outcome_unknown and 0 == 1)
-E        +  where 0 = <test_m24_generation_budget.Mock object at 0x7effa0816ba0>.calls
+E        +  where 0 = <test_m24_generation_budget.Mock object at 0x7f3e42ff7e60>.calls
 
 tests/modules/test_m24_generation_budget.py:111: AssertionError
 =============================== warnings summary ===============================
@@ -39,4 +39,4 @@ tests/modules/test_m24_generation_budget.py::test_uncertain_charge_never_refunde
 =========================== short test summary info ============================
 FAILED tests/modules/test_m24_generation_budget.py::test_uncertain_charge_never_refunded_new_regeneration_reserves_separately[sqlite]
 FAILED tests/modules/test_m24_generation_budget.py::test_uncertain_charge_never_refunded_new_regeneration_reserves_separately[postgres]
-2 failed, 74 deselected, 1 warning in 1.42s
+2 failed, 114 deselected, 1 warning in 2.04s

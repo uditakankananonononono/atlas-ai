@@ -2,8 +2,8 @@ FF                                                                       [100%]
 =================================== FAILURES ===================================
 ____ test_sql_cutover_barrier_alone_refuses_without_pending_charge[sqlite] _____
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f6d019eff80>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f6d015332c0>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6d0154d520>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f2db77db3e0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f2db74e8140>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2db7343140>
 
     def test_sql_cutover_barrier_alone_refuses_without_pending_charge(env,monkeypatch):
         op=prepare(env);monkeypatch.setattr(wa,'require_dispatch_ready',lambda:None)
@@ -15,8 +15,8 @@ E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.Dispat
 tests/modules/test_m24_generation_budget.py:309: Failed
 ___ test_sql_cutover_barrier_alone_refuses_without_pending_charge[postgres] ____
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f6d0154ff50>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f6d001351f0>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6d015a0d10>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f2db7309cd0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f2db5b36d80>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f2db741fb60>
 
     def test_sql_cutover_barrier_alone_refuses_without_pending_charge(env,monkeypatch):
         op=prepare(env);monkeypatch.setattr(wa,'require_dispatch_ready',lambda:None)
@@ -35,4 +35,4 @@ tests/modules/test_m24_generation_budget.py::test_sql_cutover_barrier_alone_refu
 =========================== short test summary info ============================
 FAILED tests/modules/test_m24_generation_budget.py::test_sql_cutover_barrier_alone_refuses_without_pending_charge[sqlite]
 FAILED tests/modules/test_m24_generation_budget.py::test_sql_cutover_barrier_alone_refuses_without_pending_charge[postgres]
-2 failed, 74 deselected, 1 warning in 1.40s
+2 failed, 114 deselected, 1 warning in 1.45s

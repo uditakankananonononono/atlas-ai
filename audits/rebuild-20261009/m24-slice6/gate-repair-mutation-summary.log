@@ -1,0 +1,16 @@
+max-caps 1 6 failed, 110 deselected, 1 warning in 3.43s
+settle-fence 1 2 failed, 114 deselected, 1 warning in 1.37s
+entry-fence 1 2 failed, 114 deselected, 1 warning in 2.06s
+unknown-fence 1 2 failed, 114 deselected, 1 warning in 1.39s
+regen-state 1 4 failed, 112 deselected, 1 warning in 2.43s
+regen-budget 1 2 failed, 2 passed, 112 deselected, 1 warning in 2.48s
+regen-tenant 1 2 failed, 114 deselected, 1 warning in 1.55s
+response-price-id 1 2 failed, 114 deselected, 1 warning in 1.71s
+request-price 1 2 failed, 2 passed, 112 deselected, 1 warning in 2.52s
+request-account 1 2 failed, 2 passed, 112 deselected, 1 warning in 2.35s
+binding-hash 1 2 failed, 2 passed, 112 deselected, 1 warning in 2.37s
+permit-id 1 2 failed, 2 passed, 112 deselected, 1 warning in 2.38s
+entry-pending 1 2 failed, 114 deselected, 1 warning in 1.61s
+stored-digest 1 2 failed, 114 deselected, 1 warning in 1.37s
+usage-digest 1 2 failed, 114 deselected, 1 warning in 1.45s
+budget-owner-cas 1 4 failed, 112 deselected, 1 warning in 2.41s

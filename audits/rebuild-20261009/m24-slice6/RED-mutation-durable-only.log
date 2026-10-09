@@ -2,8 +2,8 @@ FF                                                                       [100%]
 =================================== FAILURES ===================================
 __ test_foreign_output_version_digest_or_late_never_reaches_proposal[sqlite] ___
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f06d873ac90>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f06d863bec0>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f06d8639880>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fc799373e00>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fc799624ef0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc799371430>
 
     def test_foreign_output_version_digest_or_late_never_reaches_proposal(env,monkeypatch):
         from datetime import timedelta
@@ -17,8 +17,8 @@ E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.Dispat
 tests/modules/test_m24_generation_budget.py:146: Failed
 _ test_foreign_output_version_digest_or_late_never_reaches_proposal[postgres] __
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f06d8910140>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f06d833c320>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f06d8715e80>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fc799627ad0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fc79835ec30>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc79927ef30>
 
     def test_foreign_output_version_digest_or_late_never_reaches_proposal(env,monkeypatch):
         from datetime import timedelta
@@ -39,4 +39,4 @@ tests/modules/test_m24_generation_budget.py::test_foreign_output_version_digest_
 =========================== short test summary info ============================
 FAILED tests/modules/test_m24_generation_budget.py::test_foreign_output_version_digest_or_late_never_reaches_proposal[sqlite]
 FAILED tests/modules/test_m24_generation_budget.py::test_foreign_output_version_digest_or_late_never_reaches_proposal[postgres]
-2 failed, 74 deselected, 1 warning in 1.39s
+2 failed, 114 deselected, 1 warning in 1.49s

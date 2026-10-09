@@ -2,8 +2,8 @@ FF                                                                       [100%]
 =================================== FAILURES ===================================
 ________ test_adapter_binding_and_readback_mismatch_zero_model[sqlite] _________
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f1b1b1dba70>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f1b1ad43fe0>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1b1ad41a60>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fcd2cf3ae70>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fcd2de04dd0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fcd2ce574a0>
 
     def test_adapter_binding_and_readback_mismatch_zero_model(env,monkeypatch):
         op=prepare(env);ready(env,monkeypatch);mock=Mock();mock.account='foreign'
@@ -24,8 +24,8 @@ E         + succeeded)
 tests/modules/test_m24_generation_budget.py:240: AssertionError
 _______ test_adapter_binding_and_readback_mismatch_zero_model[postgres] ________
 
-env = (<app.modules.m00_approval_center.service.Service object at 0x7f1b1ad17dd0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f1b1ab16b10>)
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1b1ad8d220>
+env = (<app.modules.m00_approval_center.service.Service object at 0x7fcd2cdf7710>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7fcd2bd29070>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fcd2cec8080>
 
     def test_adapter_binding_and_readback_mismatch_zero_model(env,monkeypatch):
         op=prepare(env);ready(env,monkeypatch);mock=Mock();mock.account='foreign'
@@ -53,4 +53,4 @@ tests/modules/test_m24_generation_budget.py::test_adapter_binding_and_readback_m
 =========================== short test summary info ============================
 FAILED tests/modules/test_m24_generation_budget.py::test_adapter_binding_and_readback_mismatch_zero_model[sqlite]
 FAILED tests/modules/test_m24_generation_budget.py::test_adapter_binding_and_readback_mismatch_zero_model[postgres]
-2 failed, 74 deselected, 1 warning in 1.43s
+2 failed, 114 deselected, 1 warning in 1.40s

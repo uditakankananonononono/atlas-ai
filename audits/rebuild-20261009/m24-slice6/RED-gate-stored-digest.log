@@ -1,0 +1,50 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_proposal_digest_checks_independent_tampered_row[sqlite-stored-digest] __
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7ff00c87a000>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7ff00cab28a0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff00c878980>
+different = 'stored-digest'
+
+    @pytest.mark.parametrize('different',['stored-digest','usage-digest'])
+    def test_proposal_digest_checks_independent_tampered_row(env,monkeypatch,different):
+        op=prepare(env);ready(env,monkeypatch);result=dispatch(env,op,Mock());expected=result['output']['digest']
+        with env[1].begin() as db:
+            row=db.get(GenerationRow,op['id']);output=copy.deepcopy(row.output)
+            if different=='stored-digest':output['digest']='0'*64
+            else:output['usage']['output_tokens']=9
+            row.output=output
+>       with pytest.raises(wa.DispatchRefused,match='output version'):env[2].description_for_proposal(op['id'],'t1',1,expected)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:466: Failed
+_ test_proposal_digest_checks_independent_tampered_row[postgres-stored-digest] _
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7ff00c8b94f0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7ff00b7c72c0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff00c923da0>
+different = 'stored-digest'
+
+    @pytest.mark.parametrize('different',['stored-digest','usage-digest'])
+    def test_proposal_digest_checks_independent_tampered_row(env,monkeypatch,different):
+        op=prepare(env);ready(env,monkeypatch);result=dispatch(env,op,Mock());expected=result['output']['digest']
+        with env[1].begin() as db:
+            row=db.get(GenerationRow,op['id']);output=copy.deepcopy(row.output)
+            if different=='stored-digest':output['digest']='0'*64
+            else:output['usage']['output_tokens']=9
+            row.output=output
+>       with pytest.raises(wa.DispatchRefused,match='output version'):env[2].description_for_proposal(op['id'],'t1',1,expected)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:466: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_proposal_digest_checks_independent_tampered_row[postgres-stored-digest]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_proposal_digest_checks_independent_tampered_row[sqlite-stored-digest]
+FAILED tests/modules/test_m24_generation_budget.py::test_proposal_digest_checks_independent_tampered_row[postgres-stored-digest]
+2 failed, 114 deselected, 1 warning in 1.37s

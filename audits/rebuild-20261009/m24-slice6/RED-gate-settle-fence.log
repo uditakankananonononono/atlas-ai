@@ -1,0 +1,42 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_wrong_fence_alone_refuses_all_three_boundaries[sqlite-settle] ______
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f0749975af0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f0749647170>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f0749601a30>
+method = 'settle'
+
+    @pytest.mark.parametrize('method',['settle','before_entry','unknown'])
+    def test_wrong_fence_alone_refuses_all_three_boundaries(env,monkeypatch,method):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+        args=(op['id'],'t1','wrong-fence')
+>       with pytest.raises(wa.DispatchRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:394: Failed
+_____ test_wrong_fence_alone_refuses_all_three_boundaries[postgres-settle] _____
+
+env = (<app.modules.m00_approval_center.service.Service object at 0x7f0749451bb0>, sessionmaker(class_='Session', bind=Engin...lush=True, expire_on_commit=False), <app.modules.m24_billing.generation.GenerationRepository object at 0x7f074940d520>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f07496def60>
+method = 'settle'
+
+    @pytest.mark.parametrize('method',['settle','before_entry','unknown'])
+    def test_wrong_fence_alone_refuses_all_three_boundaries(env,monkeypatch,method):
+        op=prepare(env);ready(env,monkeypatch);fence=env[2].claim(op['id'],'t1')
+        args=(op['id'],'t1','wrong-fence')
+>       with pytest.raises(wa.DispatchRefused):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_generation_budget.py:394: Failed
+=============================== warnings summary ===============================
+tests/modules/test_m24_generation_budget.py::test_wrong_fence_alone_refuses_all_three_boundaries[postgres-settle]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_generation_budget.py::test_wrong_fence_alone_refuses_all_three_boundaries[sqlite-settle]
+FAILED tests/modules/test_m24_generation_budget.py::test_wrong_fence_alone_refuses_all_three_boundaries[postgres-settle]
+2 failed, 114 deselected, 1 warning in 1.37s
