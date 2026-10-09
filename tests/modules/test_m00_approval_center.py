@@ -518,3 +518,29 @@ def test_expiry_composition_permit_exactness(service, case):
             service.consume_effect(other['id'], effect_id='used', **kwargs)
         assert [e['event'] for e in service.audit(other['id'])] == ['created', 'approved']
     assert [e['event'] for e in service.audit(view['id'])] == ['created', 'approved', 'effect_consumed']
+
+
+@pytest.mark.parametrize('same_payload', [True, False])
+def test_gate_insert_race_retains_only_committed_winner(service, monkeypatch, same_payload):
+    from sqlalchemy import select
+    from sqlalchemy.orm import Session
+    from app.modules.m00_approval_center.service import ApprovalIdempotencyRow, ApprovalRequestRow
+    flush = Session.flush
+    winners = []
+    args = dict(module_id=5, action_type='send_email', user_id='udita', idempotency_key='race')
+
+    def compete(db, *a, **kw):
+        if not winners and any(isinstance(row, ApprovalIdempotencyRow) for row in db.new):
+            winners.append(None)
+            winners[0] = service.gate(payload={'to': 'winner@test'}, **args)
+        return flush(db, *a, **kw)
+
+    monkeypatch.setattr(Session, 'flush', compete)
+    if same_payload:
+        result = service.gate(payload={'to': 'winner@test'}, **args)
+        assert result['approval']['id'] == winners[0]['approval']['id']
+    else:
+        with pytest.raises(ApprovalConflictError, match='another request'):
+            service.gate(payload={'to': 'loser@test'}, **args)
+    with service._sessions() as db:
+        assert [row.id for row in db.scalars(select(ApprovalRequestRow))] == [winners[0]['approval']['id']]
