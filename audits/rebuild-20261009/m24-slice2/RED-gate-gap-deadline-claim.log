@@ -1,0 +1,93 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ test_commitment_deadline_elapsed_refused_at_both_boundaries[sqlite-claim] ___
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7fc34af09520>, <app.modules.m00_approval_...created_at': datetime.datetime(2026, 10, 9, 12, 27, 44, 38307, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc3485e8b60>
+stage = 'claim'
+
+    @pytest.mark.parametrize('stage',['claim','entry'])
+    def test_commitment_deadline_elapsed_refused_at_both_boundaries(env,monkeypatch,stage):
+        from app.modules.m24_billing.precommit import preview_commitment
+        from datetime import timedelta
+        repo,svc,sessions,a=env;future=datetime.now(timezone.utc)+timedelta(hours=1)
+        preview=preview_commitment(plan=PLANS['pro'].model_dump(),cancellation_policy='Cancel before renewal',cancellation_deadline=future)
+        with sessions.begin() as db:
+            row=db.get(ApprovalRequestRow,a['id']);row.payload={**row.payload,'commitment_preview':preview,'commitment_preview_sha256':preview['preview_sha256'],'expected_charge_cents':2900}
+        op=prepare(env);mock_ready(env,monkeypatch)
+        if stage=='entry':fence=repo.claim(op['id'],'t1',protocol_epoch=2)
+        # Advance only repository DB-clock fixture, beyond commitment but within lease.
+        original=repo._now
+        monkeypatch.setattr(repo,'_now',lambda db:future+timedelta(seconds=1))
+        if stage=='entry':
+            with sessions.begin() as db:db.execute(update(wa.OperationRow).where(wa.OperationRow.id==op['id']).values(lease_until=future+timedelta(seconds=30),dispatch_not_after=future+timedelta(seconds=30)))
+            with pytest.raises(wa.DispatchRefused,match='commitment'):repo.before_entry(op['id'],'t1',fence)
+        else:
+>           with pytest.raises(wa.DispatchRefused,match='commitment'):repo.claim(op['id'],'t1',protocol_epoch=2)
+                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_m24_checkout_dispatcher.py:460: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7fc34af09520>
+operation_id = 'cb4f9dbe-ce41-4ce3-8735-a4ce0da58216', tenant_id = 't1'
+
+    def claim(self,operation_id,tenant_id,*,protocol_epoch,lease_seconds=60):
+        if type(protocol_epoch) is not int or protocol_epoch!=2:raise wa.DispatchRefused('old protocol refused')
+        if type(lease_seconds) is not int or not 1<=lease_seconds<=60:raise ValueError('checkout lease must be 1-60 seconds')
+        wa.require_dispatch_ready() # No activation implementation, even forged rows refuse in production.
+        fence=str(uuid4())
+        with self.sessions.begin() as db:
+            # Lock approval then operation, matching preparation lock order.
+            op=db.get(wa.OperationRow,operation_id)
+            if op is None or op.tenant_id!=tenant_id:raise KeyError(operation_id)
+            db.execute(update(ApprovalRequestRow).where(ApprovalRequestRow.id==op.approval_id).values(status=ApprovalRequestRow.status))
+            db.refresh(op)
+            self._validated(db,op);now=self._now(db);cutoff=self._authority(db,op,now)
+            barrier=db.get(wa.CutoverRow,1)
+            if barrier is None or barrier.protocol_epoch!=2 or barrier.state!='verified-active' or not barrier.verification_digest or not barrier.verified_at:
+                raise wa.DispatchRefused('checkout cutover locked')
+            # Never refresh first-attempt age. No unknown/dispatching takeover, even a young key.
+            first=_aware(op.first_attempt_at) if op.first_attempt_at else now
+            bound=first+timedelta(hours=12)
+            if cutoff:bound=min(bound,cutoff)
+            if op.dispatch_not_after:bound=min(bound,_aware(op.dispatch_not_after))
+>           if now>=bound:raise wa.DispatchRefused('checkout dispatch bound elapsed')
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           app.modules.m24_billing.write_ahead.DispatchRefused: checkout dispatch bound elapsed
+
+backend/app/modules/m24_billing/checkout_dispatcher.py:150: DispatchRefused
+
+During handling of the above exception, another exception occurred:
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7fc34af09520>, <app.modules.m00_approval_...created_at': datetime.datetime(2026, 10, 9, 12, 27, 44, 38307, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc3485e8b60>
+stage = 'claim'
+
+    @pytest.mark.parametrize('stage',['claim','entry'])
+    def test_commitment_deadline_elapsed_refused_at_both_boundaries(env,monkeypatch,stage):
+        from app.modules.m24_billing.precommit import preview_commitment
+        from datetime import timedelta
+        repo,svc,sessions,a=env;future=datetime.now(timezone.utc)+timedelta(hours=1)
+        preview=preview_commitment(plan=PLANS['pro'].model_dump(),cancellation_policy='Cancel before renewal',cancellation_deadline=future)
+        with sessions.begin() as db:
+            row=db.get(ApprovalRequestRow,a['id']);row.payload={**row.payload,'commitment_preview':preview,'commitment_preview_sha256':preview['preview_sha256'],'expected_charge_cents':2900}
+        op=prepare(env);mock_ready(env,monkeypatch)
+        if stage=='entry':fence=repo.claim(op['id'],'t1',protocol_epoch=2)
+        # Advance only repository DB-clock fixture, beyond commitment but within lease.
+        original=repo._now
+        monkeypatch.setattr(repo,'_now',lambda db:future+timedelta(seconds=1))
+        if stage=='entry':
+            with sessions.begin() as db:db.execute(update(wa.OperationRow).where(wa.OperationRow.id==op['id']).values(lease_until=future+timedelta(seconds=30),dispatch_not_after=future+timedelta(seconds=30)))
+            with pytest.raises(wa.DispatchRefused,match='commitment'):repo.before_entry(op['id'],'t1',fence)
+        else:
+>           with pytest.raises(wa.DispatchRefused,match='commitment'):repo.claim(op['id'],'t1',protocol_epoch=2)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Regex pattern did not match.
+E            Regex: 'commitment'
+E            Input: 'checkout dispatch bound elapsed'
+
+tests/modules/test_m24_checkout_dispatcher.py:460: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_commitment_deadline_elapsed_refused_at_both_boundaries[sqlite-claim]
+1 failed in 0.38s

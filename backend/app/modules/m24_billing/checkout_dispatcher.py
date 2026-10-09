@@ -179,6 +179,7 @@ class CheckoutRepository(wa.OperationRepository):
             if op is None or op.tenant_id!=tenant_id:raise KeyError(operation_id)
             if op.fence!=fence:raise wa.DispatchRefused('checkout stale fence')
             if op.state not in {'dispatching','outcome_unknown'}:raise wa.DispatchRefused('checkout outcome already held or recorded')
+            if state=='failed_before_dispatch' and op.state!='dispatching':raise wa.DispatchRefused('uncertain checkout cannot become pre-entry safe')
             now=self._now(db)
             if result is not None:
                 self._validated(db,op)
