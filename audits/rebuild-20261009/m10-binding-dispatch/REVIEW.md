@@ -42,3 +42,7 @@ Historical builder original-barrier1FAIL/12, reviewer3FAIL/12 (trials0,3,9), eac
 - Conditional adapter interface alone is not external atomicity. Review whether default refusal plus the adapter seam closes memo2 at containment scope; provider implementation remains unavailable.
 - Typed errors/wire metadata/audit widths/PK/outbox/outcome ledger are not broadly repaired here. Returned-thread identity checking is required resource binding, not the whole memo7 taxonomy.
 - Handle retained Chromium nondeterminism explicitly in review; never call the aggregate all-green.
+
+## Final collection verification
+
+Fresh pytest collection reports11185tests. Set reconciliation against the original11179IDs confirms zero removed and exactly six added. All six added nodes are included in the46PASS targeted receipt. acceptance-manifest.json enumerates every new binding test parameter, all existing M10 drift nodes, and the exact six-node delta. Diagnostic harness relocation removes no node from the original full aggregate; it was never in that scope. No whole-final-suite all-green claim follows.
