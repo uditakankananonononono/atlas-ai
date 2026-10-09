@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_real_readiness_still_refuses_forged_row_zero_calls[sqlite] ________
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7f5fc3ccc1a0>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 12, 16, 46, 736341, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+
+    def test_real_readiness_still_refuses_forged_row_zero_calls(env):
+        op=prepare(env);mock=MockStripe()
+        with env[2].begin() as db:db.add(wa.CutoverRow(id=1,protocol_epoch=2,state='verified-active',verification_digest='forged',verified_at=datetime.now(timezone.utc)))
+>       with pytest.raises(wa.DispatchRefused):dispatch(env,op,mock)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'app.modules.m24_billing.write_ahead.DispatchRefused'>
+
+tests/modules/test_m24_checkout_dispatcher.py:105: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_real_readiness_still_refuses_forged_row_zero_calls[sqlite]
+1 failed in 0.35s

@@ -68,3 +68,13 @@ def commitment_checkout_proposal(data:PreviewedCheckoutIn,t:TenantContext=Depend
  try:return s.propose_previewed_checkout(t.tenant_id,data)
  except KeyError as error:raise HTTPException(404,str(error)) from error
  except ValueError as error:raise HTTPException(422,str(error)) from error
+
+@router.get('/checkout-operations/{operation_id}')
+def checkout_operation(operation_id:str,t:TenantContext=Depends(require_tenant)):
+ # Durable status is readable while cutover remains locked; no provider lookup/dispatch.
+ from app.modules.m00_approval_center.service import default_service
+ from .checkout_dispatcher import CheckoutRepository
+ try:
+  operation=CheckoutRepository(default_service()).get(operation_id,t.tenant_id)
+  return {k:operation[k] for k in ('id','state','result','failure','first_attempt_at','dispatch_not_after')}
+ except KeyError:raise HTTPException(404,'checkout operation not found')

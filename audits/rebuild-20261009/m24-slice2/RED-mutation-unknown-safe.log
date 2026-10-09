@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_post_entry_failures_stay_unknown_no_replay_even_pruned[sqlite-timeout] __
+
+env = (<app.modules.m24_billing.checkout_dispatcher.CheckoutRepository object at 0x7fd38900aba0>, <app.modules.m00_approval_...reated_at': datetime.datetime(2026, 10, 9, 12, 16, 56, 236508, tzinfo=datetime.timezone.utc), 'decided_at': None, ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd388cf3380>
+kind = 'timeout'
+
+    @pytest.mark.parametrize('kind',['http500','malformed','timeout'])
+    def test_post_entry_failures_stay_unknown_no_replay_even_pruned(env,monkeypatch,kind):
+        op=prepare(env);mock_ready(env,monkeypatch);mock=MockStripe(status=500 if kind=='http500' else 200,malformed=kind=='malformed',prune=True)
+        def handler(request):
+            response=mock(request)
+            if kind=='timeout':raise httpx.ReadTimeout('fixture',request=request)
+            return response
+        result=dispatch(env,op,handler)
+>       assert result['state']=='outcome_unknown'
+E       AssertionError: assert 'failed_before_dispatch' == 'outcome_unknown'
+E         
+E         - outcome_unknown
+E         + failed_before_dispatch
+
+tests/modules/test_m24_checkout_dispatcher.py:126: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m24_checkout_dispatcher.py::test_post_entry_failures_stay_unknown_no_replay_even_pruned[sqlite-timeout]
+1 failed in 0.73s

@@ -125,11 +125,16 @@ class OperationRepository:
                     environment=environment,api_version=api_version,provider_key=provider_key or approval_id,
                     protocol_epoch=2,state='prepared',created_at=now)
                 db.add(operation)
+                db.flush()  # Intent INSERT precedes dependent snapshot, still inside one transaction.
+                self._add_snapshot(db,operation,approval)
                 db.add(OperationEventRow(operation_id=operation.id,event='prepared',actor=actor,at=now))
                 db.flush();result=_out(operation)
             return result  # committed; if acknowledgment failed caller must read back, never invoke provider here
         except IntegrityError:
             raise ApprovalConflictError('operation reservation conflict') from None
+
+    def _add_snapshot(self,db,operation,approval):
+        """Domain snapshot hook runs inside the permit+intent transaction."""
 
     def get(self,operation_id,tenant_id):
         with self.sessions() as db:

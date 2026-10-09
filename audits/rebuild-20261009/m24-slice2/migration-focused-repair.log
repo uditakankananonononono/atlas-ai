@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /tmp/atlas-memo3-venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/atlas-m24-design
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, platformdirs-4.12.4, langsmith-0.14.5, anyio-4.15.1
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 64 items / 60 deselected / 4 selected
+
+tests/modules/test_m24_checkout_dispatcher.py::test_12h_first_attempt_bound_never_refreshes[sqlite] PASSED [ 25%]
+tests/modules/test_m24_checkout_dispatcher.py::test_12h_first_attempt_bound_never_refreshes[postgres] PASSED [ 50%]
+tests/modules/test_m24_checkout_dispatcher.py::test_populated_checkout_migration_no_backfill_and_downgrade_refusal[sqlite] PASSED [ 75%]
+tests/modules/test_m24_checkout_dispatcher.py::test_populated_checkout_migration_no_backfill_and_downgrade_refusal[postgres] PASSED [100%]
+
+=============================== warnings summary ===============================
+tests/modules/test_m24_checkout_dispatcher.py::test_12h_first_attempt_bound_never_refreshes[postgres]
+  /tmp/atlas-memo3-venv/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to /tmp/runtime-1001
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============ 4 passed, 60 deselected, 1 warning in 62.01s (0:01:02) ============

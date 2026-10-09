@@ -1,0 +1,16 @@
+
+==================================== ERRORS ====================================
+________ ERROR collecting tests/modules/test_m24_checkout_dispatcher.py ________
+ImportError while importing test module '/tmp/atlas-m24-design/tests/modules/test_m24_checkout_dispatcher.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/sandbox/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/modules/test_m24_checkout_dispatcher.py:3: in <module>
+    from app.modules.m24_billing.checkout_dispatcher import CheckoutDispatcher, CheckoutRepository
+E   ModuleNotFoundError: No module named 'app.modules.m24_billing.checkout_dispatcher'
+=========================== short test summary info ============================
+ERROR tests/modules/test_m24_checkout_dispatcher.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.27s
