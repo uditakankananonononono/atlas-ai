@@ -15,12 +15,12 @@ from app.modules.m24_billing.invoice_dispatcher import InvoiceStepRow
 from app.modules.m24_billing.repository import TenantBillingRow
 
 @pytest.fixture(params=['sqlite','postgres'])
-def env(tmp_path,request):
+def env(tmp_path,request,m24_postgres_schema):
     if request.param=='postgres':
         import pgserver
         pg=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop');uri=pg.get_uri().replace('postgresql://','postgresql+psycopg://')
     else:uri=f'sqlite:///{tmp_path}/invoice.db'
-    engine=create_engine(uri);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False);svc=Service(session_factory=sessions)
+    engine=create_engine(uri);m24_postgres_schema(engine);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False);svc=Service(session_factory=sessions)
     with sessions.begin() as db:db.add(TenantBillingRow(tenant_id='t1',customer_id='cus_fixture'))
     a=svc.submit(module_id=24,action_type='issue_invoice',user_id='t1',payload={'tenant_id':'t1','provider':'stripe','effect':'create_draft_invoice','customer_id':'cus_fixture','description':'Reviewed draft','amount_cents':1234,'currency':'usd'})
     svc.decide(a['id'],ApprovalStatus.APPROVED,'owner')

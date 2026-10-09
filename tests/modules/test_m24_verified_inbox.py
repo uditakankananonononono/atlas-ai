@@ -12,12 +12,12 @@ from app.modules.m24_billing.schemas import BillingEventIn
 from app.modules.m24_billing.service import Service
 
 @pytest.fixture(params=['sqlite','postgres'])
-def env(tmp_path,request):
+def env(tmp_path,request,m24_postgres_schema):
     if request.param=='postgres':
         import pgserver
         pg=pgserver.get_server(tmp_path/'pg',cleanup_mode='stop');uri=pg.get_uri().replace('postgresql://','postgresql+psycopg://')
     else:uri=f'sqlite:///{tmp_path}/inbox.db'
-    engine=create_engine(uri);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False)
+    engine=create_engine(uri);m24_postgres_schema(engine);Base.metadata.create_all(engine);sessions=sessionmaker(bind=engine,expire_on_commit=False)
     with sessions.begin() as db:
         db.add(TenantBillingRow(tenant_id='t1',customer_id='cus_fixture',subscription_id='sub_fixture',status='active'))
         db.add(ResourceBindingRow(identity=identity('acct_fixture','sub_fixture'),provider_account='acct_fixture',environment='test',resource_id='sub_fixture',tenant_id='t1',customer_id='cus_fixture',version=0))
