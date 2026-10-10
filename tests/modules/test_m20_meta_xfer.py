@@ -127,3 +127,69 @@ def test_evidence_identity_fails_and_success_persistence_rollback(tmp_path,monke
  monkeypatch.setattr(fresh.repo,'_before_commit',fail)
  with pytest.raises(RuntimeError):fresh.learn(grouped_episode('other','p2'))
  assert fresh.patterns==before==learner(tmp_path).patterns
+
+def test_previous_group_not_first_group_with_three_group_chain(tmp_path):
+ l=learner(tmp_path);l.learn(grouped_episode())
+ d={'domain':'new','problem':{'objective':'dependency_safe_setup_continuity','tasks':['a','b','c','d','e'],'dependencies':[['a','b'],['b','e']],'groups':{'a':'red','b':'blue','c':'red','d':'green','e':'blue'}}}
+ assert l.transfer(d)['plan']==['a','c','b','e','d']
+
+def test_abstraction_mismatch_both_directions_abstains(tmp_path):
+ l=learner(tmp_path);l.learn(episode());assert l.transfer(grouped_target())['status']=='abstained'
+ grouped=learner(tmp_path,'b');grouped.learn(grouped_episode());assert grouped.transfer(target())['status']=='abstained'
+
+@pytest.mark.parametrize('outcome',['maybe',None])
+def test_unknown_missing_outcome_and_provenance_refuse(tmp_path,outcome):
+ l=learner(tmp_path);e=episode();e['outcome']=outcome
+ with pytest.raises(ValueError):l.learn(e)
+ e=episode();e.pop('provenance')
+ with pytest.raises(ValueError):l.learn(e)
+
+def test_pattern_record_limit_exact128(tmp_path):
+ l=learner(tmp_path)
+ for i in range(128):l.learn(episode(ident=f'e{i:03}'))
+ assert len(l.patterns)==128
+ with pytest.raises(ValueError,match='pattern limit'):l.learn(episode(ident='overflow'))
+
+def test_task_edge_and_label_limits_are_independent(tmp_path):
+ l=learner(tmp_path)
+ e=episode();tasks=[f't{i:02}'for i in range(64)];e['problem']['tasks']=tasks;e['problem']['dependencies']=[[tasks[0],tasks[1]]];e['executed_order']=tasks
+ assert l.learn(e)['status']=='abstracted'
+ e=episode(ident='65');e['problem']['tasks']=[f't{i:02}'for i in range(65)];e['problem']['dependencies']=[['t00','t01']];e['executed_order']=e['problem']['tasks']
+ with pytest.raises(ValueError):l.learn(e)
+ tasks=[f't{i:02}'for i in range(24)];edges=[[tasks[i],tasks[j]]for i in range(24)for j in range(i+1,24)]
+ e=episode(ident='256');e['problem']={'objective':'precedence_safe_completion','tasks':tasks,'dependencies':edges[:256]};e['executed_order']=tasks
+ assert l.learn(e)['status']=='abstracted'
+ e['episode_id']='257';e['problem']['dependencies']=edges[:257]
+ with pytest.raises(ValueError):l.learn(e)
+ e=episode(ident='long');e['problem']['tasks']=['a'*120,'b'];e['problem']['dependencies']=[['a'*120,'b']];e['executed_order']=['a'*120,'b'];e['domain']='d'*240
+ assert l.learn(e)['status']=='abstracted'
+ e['episode_id']='longer';e['domain']='d'*241
+ with pytest.raises(ValueError):l.learn(e)
+ e=episode();e['problem']['tasks']=['a'*121,'b'];e['problem']['dependencies']=[['a'*121,'b']];e['executed_order']=['a'*121,'b']
+ with pytest.raises(ValueError):l.learn(e)
+
+def test_duplicate_task_and_dependency_refusal(tmp_path):
+ l=learner(tmp_path);e=episode();e['problem']['tasks'].append('wash');e['executed_order'].append('wash')
+ with pytest.raises(ValueError):l.learn(e)
+ e=episode();e['problem']['dependencies'].append(['wash','cut'])
+ with pytest.raises(ValueError):l.learn(e)
+
+def test_first_source_by_id_and_complete_mapping_trace(tmp_path):
+ l=learner(tmp_path);later=grouped_episode(ident='z');later['executed_order']=['a','b','c','d'];l.learn(later)
+ first=grouped_episode(ident='a');l.learn(first);r=l.transfer(grouped_target())
+ assert r['source_episode_ids']==['a']and r['plan']==['alpha','gamma','omega','beta']
+ assert r['mapping']['source_dependencies']==first['problem']['dependencies']
+
+def test_mounted_stale_invalid_and_bind_type_refusals(tmp_path,monkeypatch,oidc_auth_headers):
+ from app.main import app
+ from fastapi.testclient import TestClient
+ from app.modules.m20_general_cognitive_worker import meta_transfer_routes as routes
+ try:routes.bind_learner(object())
+ except Exception as exc:assert isinstance(exc,ValueError)
+ else:pytest.fail('invalid learner accepted')
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setattr(routes,'_learners',{})
+ a,b=learner(tmp_path),learner(tmp_path);a.learn(episode());routes.bind_learner(b)
+ c=TestClient(app);headers=oidc_auth_headers('a','owner');path='/api/v1/api/modules/20/meta-transfer/learn'
+ assert c.post(path,headers=headers,json=episode(ident='e2')).status_code==409
+ bad=episode();bad['outcome']='maybe'
+ assert c.post(path,headers=headers,json=bad).status_code==422
