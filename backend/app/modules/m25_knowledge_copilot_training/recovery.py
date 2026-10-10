@@ -30,6 +30,7 @@ import re
 import stat
 from dataclasses import dataclass, field
 from pathlib import Path
+from datetime import datetime
 
 from pydantic import ValidationError
 
@@ -166,6 +167,7 @@ def rehydrate(pipeline: LocalKnowledgePipeline, *, source_ids: list[str] | None 
         sources=[RecoveredSource(rec.source.source_id, len(rec.versions), len(chunks))
                  for rec, chunks, _edges in pending],
         residue=sorted(residue),
+        created_at_restamped=any(not v.metadata_known for rec,_,_ in pending for v in rec.versions),
     )
 
 
@@ -210,7 +212,7 @@ def _verify_source(pipeline: LocalKnowledgePipeline, source_id: str, stamp, resi
                             source_id=source_id, check='manifest-schema')
     try:
         disk_versions = LocalKnowledgePipeline._validate_disk_manifest(disk)
-        if any(set(x)!={'number','hash'} for x in disk_versions):raise KnowledgeError('version schema extra keys')
+
     except KnowledgeError as exc:
         raise RecoveryError(str(exc), source_id=source_id, check='manifest-schema') from exc
 
@@ -289,9 +291,18 @@ def _verify_source(pipeline: LocalKnowledgePipeline, source_id: str, stamp, resi
         if not isinstance(stored_segments, list) or not all(isinstance(s, dict) for s in stored_segments):
             raise RecoveryError(f'on-disk segments for version {number} fail schema shape',
                                 source_id=source_id, check='segments-schema')
-        segments, mime = _rederive_segments(pipeline, raw, source.kind, number, stored_segments, source_id)
-        # created_at is not persisted; restamped with the recovery clock.
-        versions.append(Version(number, recorded_hash, segments, stamp, mime))
+        known='metadata_version' in entry
+        if known:
+            mime=entry['mime_type']
+            try:segments=pipeline._extract(raw,mime,source.kind)
+            except (KnowledgeError,AdapterUnavailable) as exc:raise RecoveryError('recorded MIME extraction refused; original transcriber may be required',source_id=source_id,check='segments-provenance') from exc
+            if [x.model_dump(mode='json') for x in segments]!=stored_segments:
+                raise RecoveryError('recorded MIME segments mismatch',source_id=source_id,check='segments-provenance')
+            created=datetime.fromisoformat(entry['created_at'])
+        else:
+            segments,mime=_rederive_segments(pipeline,raw,source.kind,number,stored_segments,source_id)
+            created=stamp
+        versions.append(Version(number,recorded_hash,segments,created,mime,metadata_known=known))
 
     # Residue: entries inside the source directory that no live manifest
     # records (orphaned version or tmp dirs from crashed ingests, untracked

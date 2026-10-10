@@ -31,7 +31,7 @@ class UnavailableTranscriber:
 
 @dataclass
 class Version:
-    number:int; content_hash:str; segments:list[Segment]; created_at:datetime; mime_type:str
+    number:int; content_hash:str; segments:list[Segment]; created_at:datetime; mime_type:str; metadata_known:bool=True
 @dataclass
 class Record:
     source:SourceRegistration; tenant_id:str; versions:list[Version]=field(default_factory=list)
@@ -98,6 +98,16 @@ class LocalKnowledgePipeline:
         for i,entry in enumerate(versions,1):
             number=entry.get('number') if isinstance(entry,dict) else None
             digest=entry.get('hash') if isinstance(entry,dict) else None
+            keys=set(entry)
+            if keys not in ({'number','hash'},{'number','hash','metadata_version','created_at','mime_type'}):raise bad
+            if 'metadata_version' in entry:
+                if type(entry['metadata_version']) is not int or entry['metadata_version']!=1:raise bad
+                if entry['mime_type'] not in LocalKnowledgePipeline.SUPPORTED:raise bad
+                try:
+                    if type(entry['created_at']) is not str:raise bad
+                    stamp=datetime.fromisoformat(entry['created_at'])
+                    if stamp.tzinfo is None or stamp.utcoffset() is None or stamp.astimezone(timezone.utc).isoformat()!=entry['created_at']:raise bad
+                except (ValueError,OverflowError):raise bad
             if not isinstance(number,int) or isinstance(number,bool): raise bad
             if number!=i: raise bad
             if not isinstance(digest,str) or len(digest)!=64 or any(c not in hexdigits for c in digest): raise bad
@@ -140,7 +150,7 @@ class LocalKnowledgePipeline:
             # a writable base.
             if len(dv)!=len(mem_versions): raise KnowledgeError('on-disk manifest version count diverges from loaded state; refusing to overwrite prior state')
             for i,entry in enumerate(dv):
-                if entry['number']!=mem_versions[i].number or entry['hash']!=mem_versions[i].content_hash:
+                if entry!=self._version_metadata(mem_versions[i]):
                     raise KnowledgeError('on-disk manifest diverges from loaded version state; refusing to overwrite prior state')
             # Manifest-vs-bytes: every version the on-disk manifest records
             # must still have source.bin bytes hashing to the recorded
@@ -195,7 +205,9 @@ class LocalKnowledgePipeline:
         # All validation and extraction happen BEFORE any state mutation or
         # write, so a failed ingest leaves no registered record behind.
         segments=self._extract(raw,request.mime_type,request.source.kind)
-        version=Version((len(prior.versions) if prior else 0)+1,digest,segments,self.clock(),request.mime_type)
+        stamp=self.clock()
+        if not isinstance(stamp,datetime) or stamp.tzinfo is None or stamp.utcoffset() is None:raise KnowledgeError('ingest clock must be timezone aware')
+        version=Version((len(prior.versions) if prior else 0)+1,digest,segments,stamp.astimezone(timezone.utc),request.mime_type)
         new_chunks=self._chunk(prior or Record(request.source,self.tenant_id),version)
         # Registration is durable before any version file is written: a later
         # failure leaves a truthful registered record with no new version,
@@ -403,7 +415,7 @@ class LocalKnowledgePipeline:
                 neg=lambda x:bool(re.search(r'\b(no|not|never|false|cannot)\b',x.lower()))
                 if a['source_id']!=b['source_id'] and neg(a['text'])!=neg(b['text']):
                     ra=self.records[a['source_id']].versions[a['version']-1]; rb=self.records[b['source_id']].versions[b['version']-1]
-                    conflicts.append({'subject':subject,'a':a,'b':b,'fresher':'a' if ra.created_at>=rb.created_at else 'b','status':'conflict_requires_review'})
+                    conflicts.append({'subject':subject,'a':a,'b':b,'fresher':('a' if ra.created_at>=rb.created_at else 'b') if ra.metadata_known and rb.metadata_known else 'unknown','status':'conflict_requires_review'})
         return conflicts
     def export(self)->dict:
         return {'tenant_id':self.tenant_id,'sources':[{**r.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash,'segments':[s.model_dump(mode='json') for s in v.segments]} for v in r.versions]} for r in self.records.values()],'provenance_edges':self.edges}
@@ -552,7 +564,7 @@ class LocalKnowledgePipeline:
         # bounded regular-file reader and require the exact expected claims.
         # This is a point-in-time check, not a concurrent-writer transaction
         # or crash recovery guarantee. Failure keeps potentially referenced bytes.
-        expected=[{'number':v.number,'hash':v.content_hash} for v in rec.versions]
+        expected=[self._version_metadata(v) for v in rec.versions]
         try:
             self._persist_manifest(rec)
             raw=self._read_bounded_file(
@@ -564,13 +576,21 @@ class LocalKnowledgePipeline:
         except BaseException:
             return False
 
+    @staticmethod
+    def _version_metadata(v):
+        row={'number':v.number,'hash':v.content_hash}
+        if v.metadata_known:
+            if v.created_at.tzinfo is None or v.created_at.utcoffset() is None:raise KnowledgeError('version timestamp must be timezone aware')
+            row.update(metadata_version=1,created_at=v.created_at.astimezone(timezone.utc).isoformat(),mime_type=v.mime_type)
+        return row
+
     def _persist_manifest(self,rec:Record):
         p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
         import os as _os, uuid as _uuid
         tmp=p/f'manifest.json.tmp-{_uuid.uuid4().hex}'
         # O_EXCL|O_NOFOLLOW: never write through a preexisting link or file,
         # uuid or not; a collision fails instead of truncating anything.
-        blob=json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash} for v in rec.versions]},sort_keys=True).encode('utf-8')
+        blob=json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[self._version_metadata(v) for v in rec.versions]},sort_keys=True).encode('utf-8')
         # Write/read contract: the writer is bound by the same
         # MANIFEST_MAX_BYTES the bounded reader enforces, so this pipeline
         # never persists a manifest it would later refuse. The check runs
