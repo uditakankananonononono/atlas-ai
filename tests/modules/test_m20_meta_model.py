@@ -174,3 +174,9 @@ def test_exact_reasons_zero_joint_and_shapes(tmp_path):
 def test_prior_range_refuses_before_sum_guard(tmp_path,prior):
  r=registry(tmp_path);h=hypotheses();h['a']['prior']=prior
  with pytest.raises(ValueError,match=r'prior\[0,1\] required'):r.configure(h,partition_source='fixture',conditional_independence=True)
+
+@pytest.mark.parametrize('value',[[{},{}],({},{})])
+def test_two_item_nondict_hypotheses_refuse_without_attributeerror(tmp_path,value):
+ r=registry(tmp_path)
+ with pytest.raises(ValueError):r.configure(value,partition_source='fixture',conditional_independence=True)
+ assert r.state is None
