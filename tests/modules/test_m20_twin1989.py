@@ -70,3 +70,33 @@ def test_production_routes_authenticated_tenant_no_cross_read(monkeypatch,oidc_a
  assert update.status_code==200 and update.json()['state']==pytest.approx(37/6)
  assert c.get(path+'/asset',headers=oidc_auth_headers('b','owner')).status_code==503
  assert c.post(path+'/asset/assimilate',headers=h,json={'timestamp':2,'observation':9}).status_code==422
+
+def test_multiple_observations_match_independent_scalar_filter():
+ r=TwinRegistry('a');r.create('m',state=2,variance=3,timestamp=0,transition=.8,control_gain=1.2,process_noise=.4,measurement_noise=.7)
+ state,variance,time=2.,3.,0.
+ for timestamp,observation,control in [(1,3,.5),(3,0,-1),(4,5,2),(7,-2,0)]:
+  pred=.8*state+1.2*control;p=.8**2*variance+.4*(timestamp-time);k=p/(p+.7)
+  state=pred+k*(observation-pred);variance=(1-k)*p;time=timestamp
+  actual=r.assimilate('m',timestamp=timestamp,observation=observation,control=control)
+  assert actual['state']==pytest.approx(state)and actual['variance']==pytest.approx(variance)
+  assert actual['history'][-1]['innovation']==pytest.approx(observation-pred)
+
+def test_zero_uncertainty_then_process_noise_and_model_history_bounds():
+ r=TwinRegistry('a');r.create('m',state=2,variance=0,timestamp=0,process_noise=0,measurement_noise=1)
+ updated=r.assimilate('m',timestamp=1,observation=10)
+ assert updated['state']==2 and updated['variance']==0 and updated['history'][-1]['gain']==0
+ for t in range(2,1001):r.assimilate('m',timestamp=t,observation=2)
+ before=r.get('m')
+ with pytest.raises(ValueError,match='history limit'):r.assimilate('m',timestamp=1001,observation=2)
+ assert r.get('m')==before
+ for i in range(127):create(r,str(i))
+ with pytest.raises(ValueError,match='model limit'):create(r,'overflow')
+
+def test_atomic_timestamp_race_only_one_observation_commits():
+ from concurrent.futures import ThreadPoolExecutor
+ r=TwinRegistry('a');create(r)
+ def update(value):
+  try:r.assimilate('asset',timestamp=1,observation=value);return 'committed'
+  except ValueError:return 'refused'
+ with ThreadPoolExecutor(max_workers=2)as pool:out=list(pool.map(update,[2,3]))
+ assert sorted(out)==['committed','refused'] and len(r.get('asset')['history'])==1

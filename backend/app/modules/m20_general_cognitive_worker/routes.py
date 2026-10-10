@@ -1657,3 +1657,5 @@ from .genetic_programming_routes import router as genetic_programming_router
 router.include_router(genetic_programming_router)
 from .artificial_life_routes import router as artificial_life_router
 router.include_router(artificial_life_router)
+from .digital_twin_routes import router as digital_twin_router
+router.include_router(digital_twin_router)
