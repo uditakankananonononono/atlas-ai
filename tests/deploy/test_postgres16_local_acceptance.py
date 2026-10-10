@@ -63,6 +63,10 @@ def test_acceptance_service_is_driven_by_existing_migration_runner():
     # Same DSN wiring as the application (psycopg driver, service host, atlas db).
     assert svc['environment']['ATLAS_ENV'] == 'production'
     assert svc['environment']['ATLAS_DATABASE_URL'] == EXPECTED_URL
+    # The image sets PYTHONPATH=/app/backend only; migration scripts import the
+    # in-repo migrations package (migrations/gcw_schema_20260922.py), so the
+    # check needs /app importable too.
+    assert svc['environment']['PYTHONPATH'] == '/app/backend:/app'
     # Ordering: Postgres 16 healthy, then the EXISTING alembic migration runner
     # completes, then acceptance runs. Anything weaker fails here.
     assert svc['depends_on'] == {
