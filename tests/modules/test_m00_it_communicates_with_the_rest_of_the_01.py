@@ -602,3 +602,41 @@ def test_missing_created_event_inside_transaction_prevents_commit(setup):
         assert rows(engine) == ([], [], [])
     finally:
         event.remove(engine, "after_cursor_execute", remove_creation)
+
+
+@pytest.mark.parametrize("version", [0, 2, -1, True, "1", None])
+def test_envelope_non_one_version_is_refused_before_submission(version):
+    envelope = request().as_envelope()
+    envelope["version"] = version
+    with pytest.raises(EnvelopeError):
+        Submission.decode({"envelope": json.dumps(envelope)})
+
+
+@pytest.mark.asyncio
+async def test_bad_version_retries_then_deadletters_without_request_or_event(setup):
+    channel, redis, _, engine = setup
+    binding = channel.binding("tenant-a")
+    envelope = request().as_envelope()
+    envelope["version"] = 2
+    mid = await redis.xadd(binding.stream, {"envelope": json.dumps(envelope)})
+    first = await channel.poll("tenant-a", "worker")
+    assert first == [{"message_id": mid, "outcome": "retry", "reason": "invalid_envelope"}]
+    assert rows(engine) == ([], [], []) and not redis.acks
+    second = await channel.recover("tenant-a", "replacement")
+    assert second["results"][0]["outcome"] == "retry"
+    assert rows(engine) == ([], [], []) and not redis.acks
+    third = await channel.recover("tenant-a", "replacement")
+    assert third["results"] == [{"message_id": mid, "outcome": "deadlettered", "reason": "invalid_envelope"}]
+    assert rows(engine) == ([], [], [])
+    dead, = redis.entries[binding.dlq]
+    assert dead[1] == {"message_id": mid, "reason": "invalid_envelope"}
+    assert redis.acks == [(binding.stream, mid)]
+
+
+def test_duplicate_tenant_is_refused_with_distinct_principals(setup):
+    _, redis, service, _ = setup
+    with pytest.raises(ValueError, match="unique trusted bindings"):
+        StreamsSubmissions(redis, service, [
+            TrustedStreamBinding("same-tenant", "different-producer-a"),
+            TrustedStreamBinding("same-tenant", "different-producer-b"),
+        ])
