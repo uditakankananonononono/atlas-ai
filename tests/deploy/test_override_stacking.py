@@ -50,7 +50,7 @@ def test_real_compose_pair_contract(pair):
 @pytest.mark.parametrize('pair',PAIRS)
 def test_swapped_order_is_rejected(pair):
  from scripts.compose_stack_contract import validate
- with pytest.raises(ValueError,match='ordered recipe'):validate(pair,list(reversed(PAIRS[pair])),render(pair),ROOT)
+ with pytest.raises(ValueError,match='ordered recipe'):validate(pair,list(reversed(PAIRS[pair])),render(pair,order=list(reversed(PAIRS[pair]))),ROOT)
 @pytest.mark.parametrize('pair',PAIRS)
 @pytest.mark.parametrize('mutation',['command','entrypoint','network','loopback'])
 def test_contract_rejects_model_drift(pair,mutation):
@@ -97,3 +97,19 @@ def test_api_startup_passes_json_log_config_with_trace_probe(monkeypatch):
  assert calls[0]['auth_dependency'] and calls[0]['tracer']=='tracer'
  assert calls[1]==('middleware',{'tracer':'tracer'})
  assert calls[2][1]['log_config']['formatters']['atlas_json']['()']=='app.platform.observability.CloudJsonFormatter'
+
+def test_original_compose_sources_match_read_receipts():
+ import hashlib
+ pins=json.loads((ROOT/'deploy/local/stacking/read-receipts.json').read_text())
+ files={'docker-compose.yml','deploy/local/docker-compose.yml',*[str(p.relative_to(ROOT)) for p in (ROOT/'deploy/local').glob('docker-compose.*.yml')]}
+ assert set(pins)==files
+ for path,digest in pins.items():assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest()==digest
+
+@pytest.mark.parametrize('pair',PAIRS)
+def test_actual_order_swap_detected_or_declared_equivalent(pair):
+ from scripts.compose_stack_contract import normalized
+ normal=render(pair);swapped=render(pair,order=list(reversed(PAIRS[pair])))
+ if pair in ('grafana+otel','otel+loki'):
+  # Grafana/OTEL disjoint; final combined command normalizes OTEL/Loki.
+  assert normalized(normal,ROOT)==normalized(swapped,ROOT)
+ else:assert normal['services']['api']['command']!=swapped['services']['api']['command']

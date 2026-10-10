@@ -1,0 +1,12 @@
+{
+  "docker-compose.yml": "0f2ce0c1fe948a3287219b52e135b6dd9c7bf4794afe286ddb402ce50e151df1",
+  "deploy/local/docker-compose.yml": "c034a179d0e5e1d9e092aaca3d2e2ea35a1bb42d3d16aa02f21043883810fa5e",
+  "deploy/local/docker-compose.grafana.yml": "feb07043d9673c206007f8d0bbd4c8bc6196bb287052a2d82fba42d1f3c4509b",
+  "deploy/local/docker-compose.loki.yml": "06f207a7a090cc2d63686133c41c7e0854ce7d809edf485aaddba39bdc91fd2f",
+  "deploy/local/docker-compose.mtls.yml": "1c44c3e9b60c3315b9389e113090e1ae7997283b5214432904f0857ee2182d43",
+  "deploy/local/docker-compose.ollama-small.yml": "541f4e52e8308652f08401ce5dd6b97e4149b6a0fd0de057d2f24d3ff3fc2319",
+  "deploy/local/docker-compose.otel.yml": "9d8bf8bc581be9e76daba74a31a20a7e8de504ba3248137defc0a3f7f7302542",
+  "deploy/local/docker-compose.postgres16.yml": "a9f36fc252f11ddf8d006b26d80c657f6d877e082886a4a9564042cfa7ec5b43",
+  "deploy/local/docker-compose.rabbitmq.yml": "aab74a293ee6bf8586ee1459cd40ff87ebefabcd14ed8b829a57f39c6a2ed51a",
+  "deploy/local/docker-compose.vault.yml": "424160594e1c26f0dfb883ef9b3c2587882880ba0d57571fd30b034aafd24bff"
+}

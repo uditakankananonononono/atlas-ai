@@ -1,0 +1,2406 @@
+{
+  "grafana+otel": {
+    "configs": {
+      "grafana-dashboards-provider": {
+        "content": "apiVersion: 1\nproviders:\n  - name: atlas-local\n    type: file\n    updateIntervalSeconds: 30\n    options:\n      path: /var/lib/grafana/dashboards\n      foldersFromFilesStructure: false\n",
+        "name": "atlas-local_grafana-dashboards-provider"
+      },
+      "grafana-datasources": {
+        "content": "apiVersion: 1\ndatasources:\n  - name: Atlas Prometheus (local)\n    uid: atlas-prometheus\n    type: prometheus\n    access: proxy\n    url: http://prometheus:9090\n    isDefault: true\n",
+        "name": "atlas-local_grafana-datasources"
+      },
+      "prometheus-local-config": {
+        "content": "global:\n  scrape_interval: 15s\n  evaluation_interval: 15s\nscrape_configs:\n  - job_name: atlas-api\n    metrics_path: /metrics\n    static_configs:\n      - targets: [\"api:8080\"]\n  - job_name: prometheus\n    static_configs:\n      - targets: [\"localhost:9090\"]\n",
+        "name": "atlas-local_prometheus-local-config"
+      }
+    },
+    "name": "atlas-local",
+    "networks": {
+      "default": {
+        "ipam": {},
+        "name": "atlas-local_default"
+      }
+    },
+    "services": {
+      "api": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "-m",
+          "app.platform.telemetry_bootstrap",
+          "api"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "otel-collector": {
+            "condition": "service_started",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_OTEL_COLLECTOR_ENDPOINT": "otel-collector:4317",
+          "ATLAS_OTEL_PROBE": "1",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "parse-only",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+        },
+        "healthcheck": {
+          "interval": "15s",
+          "retries": 8,
+          "test": [
+            "CMD",
+            "python",
+            "-c",
+            "import urllib.request; urllib.request.urlopen('http://localhost:8080/ready', timeout=3)"
+          ],
+          "timeout": "5s"
+        },
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "8000",
+            "target": 8080
+          }
+        ],
+        "restart": "unless-stopped"
+      },
+      "grafana": {
+        "command": null,
+        "configs": [
+          {
+            "source": "grafana-datasources",
+            "target": "/etc/grafana/provisioning/datasources/atlas-prometheus.yaml"
+          },
+          {
+            "source": "grafana-dashboards-provider",
+            "target": "/etc/grafana/provisioning/dashboards/atlas-local.yaml"
+          }
+        ],
+        "depends_on": {
+          "prometheus": {
+            "condition": "service_started",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "environment": {
+          "GF_AUTH_ANONYMOUS_ENABLED": "false",
+          "GF_SECURITY_ADMIN_PASSWORD": "admin",
+          "GF_SECURITY_ADMIN_USER": "admin",
+          "GF_USERS_ALLOW_SIGN_UP": "false"
+        },
+        "image": "grafana/grafana-oss:11.2.2@sha256:d5133220d770aba5cb655147b619fa8770b90f41d8489a821d33b1cd34d16f89",
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "3000",
+            "target": 3000
+          }
+        ],
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-grafana",
+            "target": "/var/lib/grafana",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/grafana/dashboard.json",
+            "target": "/var/lib/grafana/dashboards/atlas-operations.json",
+            "type": "bind"
+          }
+        ]
+      },
+      "jaeger": {
+        "command": null,
+        "entrypoint": null,
+        "environment": {
+          "COLLECTOR_OTLP_ENABLED": "true"
+        },
+        "image": "jaegertracing/all-in-one:1.62.0@sha256:836e9b69c88afbedf7683ea7162e179de63b1f981662e83f5ebb68badadc710f",
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "16686",
+            "target": 16686
+          }
+        ],
+        "restart": "unless-stopped"
+      },
+      "migrate": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "scripts/migrate.py"
+        ],
+        "depends_on": {
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "parse-only",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "no"
+      },
+      "otel-collector": {
+        "command": [
+          "--config=/etc/otelcol/config.yaml"
+        ],
+        "depends_on": {
+          "jaeger": {
+            "condition": "service_started",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "image": "otel/opentelemetry-collector-contrib:0.111.0@sha256:a2a52e43c1a80aa94120ad78c2db68780eb90e6d11c8db5b3ce2f6a0cc6b5029",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/otel/jaeger-local.yaml",
+            "target": "/etc/otelcol/config.yaml",
+            "type": "bind"
+          }
+        ]
+      },
+      "postgres": {
+        "command": null,
+        "entrypoint": null,
+        "environment": {
+          "POSTGRES_DB": "atlas",
+          "POSTGRES_PASSWORD": "parse-only",
+          "POSTGRES_USER": "atlas"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "pg_isready -U atlas -d atlas"
+          ],
+          "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg16",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-postgres",
+            "target": "/var/lib/postgresql/data",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "prometheus": {
+        "command": null,
+        "configs": [
+          {
+            "source": "prometheus-local-config",
+            "target": "/etc/prometheus/prometheus.yml"
+          }
+        ],
+        "depends_on": {
+          "api": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "image": "prom/prometheus:v2.54.1@sha256:f6639335d34a77d9d9db382b92eeb7fc00934be8eae81dbc03b31cfe90411a94",
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "9090",
+            "target": 9090
+          }
+        ],
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-prometheus",
+            "target": "/prometheus",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "redis": {
+        "command": [
+          "redis-server",
+          "--appendonly",
+          "yes",
+          "--requirepass",
+          "parse-only"
+        ],
+        "entrypoint": null,
+        "environment": {
+          "REDIS_PASSWORD": "parse-only"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG"
+          ],
+          "timeout": "3s"
+        },
+        "image": "redis:7-alpine",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-redis",
+            "target": "/data",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "worker": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "-m",
+          "app.platform.telemetry_bootstrap",
+          "worker"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "otel-collector": {
+            "condition": "service_started",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_OTEL_COLLECTOR_ENDPOINT": "otel-collector:4317",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "parse-only",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped"
+      }
+    },
+    "volumes": {
+      "atlas-grafana": {
+        "name": "atlas-local_atlas-grafana"
+      },
+      "atlas-postgres": {
+        "name": "atlas-local_atlas-postgres"
+      },
+      "atlas-prometheus": {
+        "name": "atlas-local_atlas-prometheus"
+      },
+      "atlas-redis": {
+        "name": "atlas-local_atlas-redis"
+      }
+    },
+    "x-runtime": {
+      "build": {
+        "context": "../.."
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      },
+      "environment": {
+        "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+        "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+        "ATLAS_ENV": "production",
+        "ATLAS_OIDC_AUDIENCE": "parse-only",
+        "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+        "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+        "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+        "ATLAS_SECRET_PROVIDER": "platform-environment",
+        "ATLAS_TOKEN_KEY": "parse-only",
+        "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+      },
+      "restart": "unless-stopped"
+    }
+  },
+  "mtls+vault": {
+    "name": "atlas-local",
+    "networks": {
+      "default": {
+        "ipam": {},
+        "name": "atlas-local_default"
+      }
+    },
+    "services": {
+      "api": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "sh",
+          "-ec",
+          "python /app/deploy/mtls/local_ca.py check --root /mtls/pki --role api && exec uvicorn app.main:app --host 0.0.0.0 --port 8080 --ssl-keyfile /mtls/pki/api/key.pem --ssl-certfile /mtls/pki/api/cert.pem --ssl-ca-certs /mtls/pki/api/ca.pem --ssl-cert-reqs 2"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "mtls-init": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas?sslmode=verify-full&sslrootcert=/mtls/pki/api/ca.pem&sslcert=/mtls/pki/api/cert.pem&sslkey=/mtls/pki/api/key.pem",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_MTLS_DIR": "/mtls/pki/api",
+          "ATLAS_MTLS_ENABLED": "1",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "rediss://:parse-only@redis:6379/0?ssl_cert_reqs=required&ssl_check_hostname=true&ssl_ca_certs=/mtls/pki/api/ca.pem&ssl_certfile=/mtls/pki/api/cert.pem&ssl_keyfile=/mtls/pki/api/key.pem",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "healthcheck": {
+          "interval": "15s",
+          "retries": 8,
+          "test": [
+            "CMD",
+            "python",
+            "-c",
+            "import ssl,urllib.request; c=ssl.create_default_context(cafile='/mtls/pki/api/ca.pem'); c.load_cert_chain('/mtls/pki/api/cert.pem','/mtls/pki/api/key.pem'); urllib.request.urlopen('https://api:8080/ready',context=c,timeout=3)"
+          ],
+          "timeout": "5s"
+        },
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "8000",
+            "target": 8080
+          }
+        ],
+        "restart": "unless-stopped",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "read_only": true,
+            "source": "atlas-mtls",
+            "target": "/mtls",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/mtls/local_ca.py",
+            "target": "/app/deploy/mtls/local_ca.py",
+            "type": "bind"
+          }
+        ]
+      },
+      "migrate": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "sh",
+          "-ec",
+          "python /app/deploy/mtls/local_ca.py check --root /mtls/pki --role migrate && python scripts/migrate.py"
+        ],
+        "depends_on": {
+          "mtls-init": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas?sslmode=verify-full&sslrootcert=/mtls/pki/migrate/ca.pem&sslcert=/mtls/pki/migrate/cert.pem&sslkey=/mtls/pki/migrate/key.pem",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_MTLS_DIR": "/mtls/pki/migrate",
+          "ATLAS_MTLS_ENABLED": "1",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "rediss://:parse-only@redis:6379/0?ssl_cert_reqs=required&ssl_check_hostname=true&ssl_ca_certs=/mtls/pki/migrate/ca.pem&ssl_certfile=/mtls/pki/migrate/cert.pem&ssl_keyfile=/mtls/pki/migrate/key.pem",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "no",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "read_only": true,
+            "source": "atlas-mtls",
+            "target": "/mtls",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/mtls/local_ca.py",
+            "target": "/app/deploy/mtls/local_ca.py",
+            "type": "bind"
+          }
+        ]
+      },
+      "mtls-init": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "/app/deploy/mtls/local_ca.py",
+          "init",
+          "--root",
+          "/mtls/pki",
+          "--container-owners"
+        ],
+        "entrypoint": null,
+        "networks": {
+          "default": null
+        },
+        "restart": "no",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "atlas-mtls",
+            "target": "/mtls",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/mtls/local_ca.py",
+            "target": "/app/deploy/mtls/local_ca.py",
+            "type": "bind"
+          }
+        ]
+      },
+      "postgres": {
+        "command": [
+          "mkdir -p /run/atlas-postgres; cp /mtls/pki/postgres/* /run/atlas-postgres/; chown -R postgres:postgres /run/atlas-postgres; chmod 600 /run/atlas-postgres/key.pem; exec docker-entrypoint.sh postgres -c ssl=on -c ssl_cert_file=/run/atlas-postgres/cert.pem -c ssl_key_file=/run/atlas-postgres/key.pem -c ssl_ca_file=/run/atlas-postgres/ca.pem -c hba_file=/run/atlas-postgres/pg_hba.conf"
+        ],
+        "depends_on": {
+          "mtls-init": {
+            "condition": "service_completed_successfully",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "sh",
+          "-ec"
+        ],
+        "environment": {
+          "POSTGRES_DB": "atlas",
+          "POSTGRES_PASSWORD": "parse-only",
+          "POSTGRES_USER": "atlas"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "pg_isready -U atlas -d atlas"
+          ],
+          "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg16",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "atlas-postgres",
+            "target": "/var/lib/postgresql/data",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "read_only": true,
+            "source": "atlas-mtls",
+            "target": "/mtls",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "redis": {
+        "command": [
+          "mkdir -p /run/atlas-redis; cp /mtls/pki/redis/* /run/atlas-redis/; chown -R redis:redis /run/atlas-redis; chmod 600 /run/atlas-redis/key.pem; exec docker-entrypoint.sh redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD}\" --port 0 --tls-port 6379 --tls-cert-file /run/atlas-redis/cert.pem --tls-key-file /run/atlas-redis/key.pem --tls-ca-cert-file /run/atlas-redis/ca.pem --tls-auth-clients yes"
+        ],
+        "depends_on": {
+          "mtls-init": {
+            "condition": "service_completed_successfully",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "sh",
+          "-ec"
+        ],
+        "environment": {
+          "REDIS_PASSWORD": "parse-only"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "redis-cli --tls --cacert /run/atlas-redis/ca.pem --cert /run/atlas-redis/cert.pem --key /run/atlas-redis/key.pem -h redis -a \"$${REDIS_PASSWORD}\" ping | grep PONG"
+          ],
+          "timeout": "3s"
+        },
+        "image": "redis:7-alpine",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "atlas-redis",
+            "target": "/data",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "read_only": true,
+            "source": "atlas-mtls",
+            "target": "/mtls",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "vault-dev": {
+        "cap_add": [
+          "IPC_LOCK"
+        ],
+        "command": [
+          "server",
+          "-dev",
+          "-dev-listen-address=0.0.0.0:8200"
+        ],
+        "entrypoint": null,
+        "environment": {
+          "VAULT_ADDR": "http://127.0.0.1:8200",
+          "VAULT_DEV_ROOT_TOKEN_ID": "PUBLIC-DEMO-ONLY-vault-token"
+        },
+        "healthcheck": {
+          "interval": "3s",
+          "retries": 20,
+          "test": [
+            "CMD",
+            "vault",
+            "status"
+          ],
+          "timeout": "3s"
+        },
+        "image": "hashicorp/vault:1.18.3@sha256:8f1ba670da547c6af67be55609bd285c3ee3d8b73f88021adbfc43c82ca409e8",
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "18201",
+            "target": 8200
+          }
+        ],
+        "volumes": [
+          {
+            "source": "vault-dev-local",
+            "target": "/vault/file",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "worker": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "sh",
+          "-ec",
+          "python /app/deploy/mtls/local_ca.py check --root /mtls/pki --role worker && exec python -m app.workers.celery_tls_config"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "mtls-init": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas?sslmode=verify-full&sslrootcert=/mtls/pki/worker/ca.pem&sslcert=/mtls/pki/worker/cert.pem&sslkey=/mtls/pki/worker/key.pem",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_MTLS_DIR": "/mtls/pki/worker",
+          "ATLAS_MTLS_ENABLED": "1",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "rediss://:parse-only@redis:6379/0?ssl_cert_reqs=required&ssl_check_hostname=true&ssl_ca_certs=/mtls/pki/worker/ca.pem&ssl_certfile=/mtls/pki/worker/cert.pem&ssl_keyfile=/mtls/pki/worker/key.pem",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "read_only": true,
+            "source": "atlas-mtls",
+            "target": "/mtls",
+            "type": "volume",
+            "volume": {}
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/mtls/local_ca.py",
+            "target": "/app/deploy/mtls/local_ca.py",
+            "type": "bind"
+          }
+        ]
+      }
+    },
+    "volumes": {
+      "atlas-mtls": {
+        "name": "atlas-local_atlas-mtls"
+      },
+      "atlas-postgres": {
+        "name": "atlas-local_atlas-postgres"
+      },
+      "atlas-redis": {
+        "name": "atlas-local_atlas-redis"
+      },
+      "vault-dev-local": {
+        "name": "atlas-local_vault-dev-local"
+      },
+      "vault-fallback-dev": {
+        "name": "atlas-local_vault-fallback-dev"
+      }
+    },
+    "x-client-tls": {
+      "ATLAS_MTLS_ENABLED": "1"
+    },
+    "x-runtime": {
+      "build": {
+        "context": "../.."
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      },
+      "environment": {
+        "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+        "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+        "ATLAS_ENV": "production",
+        "ATLAS_OIDC_AUDIENCE": "parse-only",
+        "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+        "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+        "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+        "ATLAS_SECRET_PROVIDER": "platform-environment",
+        "ATLAS_TOKEN_KEY": "parse-only",
+        "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+      },
+      "restart": "unless-stopped"
+    },
+    "x-vault-bootstrap": {
+      "entrypoint": [
+        "python",
+        "-m",
+        "app.platform.vault_dev_adapter",
+        "--volume",
+        "/vault-fallback-dev",
+        "--"
+      ],
+      "env_file": [
+        "./dev-public-placeholder.env"
+      ],
+      "environment": {
+        "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+        "ATLAS_DEV_NO_AUTH": "0",
+        "ATLAS_ENV": "production",
+        "ATLAS_TOKEN_KEY": "",
+        "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+        "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+        "ATLAS_VAULT_FALLBACK_KEY": "parse-only"
+      },
+      "volumes": [
+        "vault-fallback-dev:/vault-fallback-dev"
+      ]
+    }
+  },
+  "otel+loki": {
+    "configs": {
+      "atlas-loki-local": {
+        "content": "auth_enabled: false\nserver:\n  http_listen_port: 3100\ncommon:\n  path_prefix: /loki\n  replication_factor: 1\n  ring:\n    kvstore:\n      store: inmemory\n  storage:\n    filesystem:\n      chunks_directory: /loki/chunks\n      rules_directory: /loki/rules\nschema_config:\n  configs:\n    - from: \"2024-01-01\"\n      store: tsdb\n      object_store: filesystem\n      schema: v13\n      index:\n        prefix: index_\n        period: 24h\nlimits_config:\n  retention_period: 72h\ncompactor:\n  working_directory: /loki/compactor\n  retention_enabled: true\n  delete_request_store: filesystem\nanalytics:\n  reporting_enabled: false\n",
+        "name": "atlas-local_atlas-loki-local"
+      }
+    },
+    "name": "atlas-local",
+    "networks": {
+      "atlas-log-host": {
+        "ipam": {},
+        "name": "atlas-local_atlas-log-host"
+      },
+      "atlas-log-sink": {
+        "internal": true,
+        "ipam": {},
+        "name": "atlas-local_atlas-log-sink"
+      },
+      "default": {
+        "ipam": {},
+        "name": "atlas-local_default"
+      }
+    },
+    "services": {
+      "api": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "-m",
+          "app.platform.stacked_observability_bootstrap",
+          "api"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "otel-collector": {
+            "condition": "service_started",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_OTEL_COLLECTOR_ENDPOINT": "otel-collector:4317",
+          "ATLAS_OTEL_PROBE": "1",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "parse-only",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+        },
+        "healthcheck": {
+          "interval": "15s",
+          "retries": 8,
+          "test": [
+            "CMD",
+            "python",
+            "-c",
+            "import urllib.request; urllib.request.urlopen('http://localhost:8080/ready', timeout=3)"
+          ],
+          "timeout": "5s"
+        },
+        "logging": {
+          "driver": "json-file",
+          "options": {
+            "max-file": "3",
+            "max-size": "10m"
+          }
+        },
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "8000",
+            "target": 8080
+          }
+        ],
+        "restart": "unless-stopped"
+      },
+      "jaeger": {
+        "command": null,
+        "entrypoint": null,
+        "environment": {
+          "COLLECTOR_OTLP_ENABLED": "true"
+        },
+        "image": "jaegertracing/all-in-one:1.62.0@sha256:836e9b69c88afbedf7683ea7162e179de63b1f981662e83f5ebb68badadc710f",
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "16686",
+            "target": 16686
+          }
+        ],
+        "restart": "unless-stopped"
+      },
+      "loki": {
+        "command": [
+          "-config.file=/etc/loki/local.yaml"
+        ],
+        "configs": [
+          {
+            "source": "atlas-loki-local",
+            "target": "/etc/loki/local.yaml"
+          }
+        ],
+        "entrypoint": null,
+        "image": "grafana/loki:3.5.0@sha256:4c431d2e6b9b38718694b31c5d56be7c80dc69c513215fde1aeb5b02cd4e2665",
+        "networks": {
+          "atlas-log-host": null,
+          "atlas-log-sink": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "3100",
+            "target": 3100
+          }
+        ],
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-loki",
+            "target": "/loki",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "migrate": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "scripts/migrate.py"
+        ],
+        "depends_on": {
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "parse-only",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "no"
+      },
+      "otel-collector": {
+        "command": [
+          "--config=/etc/otelcol/config.yaml"
+        ],
+        "depends_on": {
+          "jaeger": {
+            "condition": "service_started",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "image": "otel/opentelemetry-collector-contrib:0.111.0@sha256:a2a52e43c1a80aa94120ad78c2db68780eb90e6d11c8db5b3ce2f6a0cc6b5029",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/otel/jaeger-local.yaml",
+            "target": "/etc/otelcol/config.yaml",
+            "type": "bind"
+          }
+        ]
+      },
+      "postgres": {
+        "command": null,
+        "entrypoint": null,
+        "environment": {
+          "POSTGRES_DB": "atlas",
+          "POSTGRES_PASSWORD": "parse-only",
+          "POSTGRES_USER": "atlas"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "pg_isready -U atlas -d atlas"
+          ],
+          "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg16",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-postgres",
+            "target": "/var/lib/postgresql/data",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "promtail": {
+        "command": [
+          "-config.file=/etc/promtail/local.yaml"
+        ],
+        "depends_on": {
+          "loki": {
+            "condition": "service_started",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "image": "grafana/promtail:3.5.0@sha256:507dfecd2f0949475d071c124bea1c26fc4f8c1cff0372eee57478d5b1c5fbff",
+        "networks": {
+          "atlas-log-sink": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/loki/promtail-local.yaml",
+            "target": "/etc/promtail/local.yaml",
+            "type": "bind"
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "/tmp/api-parse-only",
+            "target": "/logs/api",
+            "type": "bind"
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "/tmp/worker-parse-only",
+            "target": "/logs/worker",
+            "type": "bind"
+          },
+          {
+            "source": "atlas-promtail-positions",
+            "target": "/positions",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "redis": {
+        "command": [
+          "redis-server",
+          "--appendonly",
+          "yes",
+          "--requirepass",
+          "parse-only"
+        ],
+        "entrypoint": null,
+        "environment": {
+          "REDIS_PASSWORD": "parse-only"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG"
+          ],
+          "timeout": "3s"
+        },
+        "image": "redis:7-alpine",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-redis",
+            "target": "/data",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "worker": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "-m",
+          "app.platform.stacked_observability_bootstrap",
+          "worker"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "otel-collector": {
+            "condition": "service_started",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_OTEL_COLLECTOR_ENDPOINT": "otel-collector:4317",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "parse-only",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+        },
+        "logging": {
+          "driver": "json-file",
+          "options": {
+            "max-file": "3",
+            "max-size": "10m"
+          }
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped"
+      }
+    },
+    "volumes": {
+      "atlas-loki": {
+        "name": "atlas-local_atlas-loki"
+      },
+      "atlas-postgres": {
+        "name": "atlas-local_atlas-postgres"
+      },
+      "atlas-promtail-positions": {
+        "name": "atlas-local_atlas-promtail-positions"
+      },
+      "atlas-redis": {
+        "name": "atlas-local_atlas-redis"
+      }
+    },
+    "x-runtime": {
+      "build": {
+        "context": "../.."
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      },
+      "environment": {
+        "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+        "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+        "ATLAS_ENV": "production",
+        "ATLAS_OIDC_AUDIENCE": "parse-only",
+        "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+        "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+        "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+        "ATLAS_SECRET_PROVIDER": "platform-environment",
+        "ATLAS_TOKEN_KEY": "parse-only",
+        "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+      },
+      "restart": "unless-stopped"
+    }
+  },
+  "rabbitmq+vault": {
+    "name": "atlas-local",
+    "networks": {
+      "default": {
+        "ipam": {},
+        "name": "atlas-local_default"
+      }
+    },
+    "services": {
+      "api": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "deploy/local/Dockerfile.rabbitmq"
+        },
+        "command": [
+          "sh",
+          "-c",
+          "export CELERY_BROKER_URL=\"$$(python -m app.workers.celery_broker_config --print-url)\" && exec uvicorn app.main:app --host 0.0.0.0 --port 8080"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "rabbitmq": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_RABBITMQ_HOST": "rabbitmq",
+          "ATLAS_RABBITMQ_PASSWORD": "parse-only",
+          "ATLAS_RABBITMQ_USER": "atlas",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "CELERY_CONFIG_MODULE": "app.workers.celery_broker_config",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "healthcheck": {
+          "interval": "15s",
+          "retries": 8,
+          "test": [
+            "CMD",
+            "python",
+            "-c",
+            "import urllib.request; urllib.request.urlopen('http://localhost:8080/ready', timeout=3)"
+          ],
+          "timeout": "5s"
+        },
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "8000",
+            "target": 8080
+          }
+        ],
+        "restart": "unless-stopped",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "migrate": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "scripts/migrate.py"
+        ],
+        "depends_on": {
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "no",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "postgres": {
+        "command": null,
+        "entrypoint": null,
+        "environment": {
+          "POSTGRES_DB": "atlas",
+          "POSTGRES_PASSWORD": "parse-only",
+          "POSTGRES_USER": "atlas"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "pg_isready -U atlas -d atlas"
+          ],
+          "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg16",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-postgres",
+            "target": "/var/lib/postgresql/data",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "rabbitmq": {
+        "command": null,
+        "entrypoint": null,
+        "environment": {
+          "RABBITMQ_DEFAULT_PASS": "parse-only",
+          "RABBITMQ_DEFAULT_USER": "atlas"
+        },
+        "healthcheck": {
+          "interval": "10s",
+          "retries": 12,
+          "test": [
+            "CMD",
+            "rabbitmq-diagnostics",
+            "-q",
+            "check_port_listener",
+            "5672"
+          ],
+          "timeout": "10s"
+        },
+        "image": "rabbitmq:3.13-alpine@sha256:d7af1c87c5f1eda13fcfca06db452bf3aeab6619fc3358b68535c0c02c4e52bc",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-rabbitmq",
+            "target": "/var/lib/rabbitmq",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "redis": {
+        "command": [
+          "redis-server",
+          "--appendonly",
+          "yes",
+          "--requirepass",
+          "parse-only"
+        ],
+        "entrypoint": null,
+        "environment": {
+          "REDIS_PASSWORD": "parse-only"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG"
+          ],
+          "timeout": "3s"
+        },
+        "image": "redis:7-alpine",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-redis",
+            "target": "/data",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "vault-dev": {
+        "cap_add": [
+          "IPC_LOCK"
+        ],
+        "command": [
+          "server",
+          "-dev",
+          "-dev-listen-address=0.0.0.0:8200"
+        ],
+        "entrypoint": null,
+        "environment": {
+          "VAULT_ADDR": "http://127.0.0.1:8200",
+          "VAULT_DEV_ROOT_TOKEN_ID": "PUBLIC-DEMO-ONLY-vault-token"
+        },
+        "healthcheck": {
+          "interval": "3s",
+          "retries": 20,
+          "test": [
+            "CMD",
+            "vault",
+            "status"
+          ],
+          "timeout": "3s"
+        },
+        "image": "hashicorp/vault:1.18.3@sha256:8f1ba670da547c6af67be55609bd285c3ee3d8b73f88021adbfc43c82ca409e8",
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "18201",
+            "target": 8200
+          }
+        ],
+        "volumes": [
+          {
+            "source": "vault-dev-local",
+            "target": "/vault/file",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "worker": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "deploy/local/Dockerfile.rabbitmq"
+        },
+        "command": [
+          "sh",
+          "-c",
+          "export CELERY_BROKER_URL=\"$$(python -m app.workers.celery_broker_config --print-url)\" && exec celery -A app.workers.celery_app:celery_app worker --loglevel=INFO"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "rabbitmq": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_RABBITMQ_HOST": "rabbitmq",
+          "ATLAS_RABBITMQ_PASSWORD": "parse-only",
+          "ATLAS_RABBITMQ_USER": "atlas",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "CELERY_CONFIG_MODULE": "app.workers.celery_broker_config",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      }
+    },
+    "volumes": {
+      "atlas-postgres": {
+        "name": "atlas-local_atlas-postgres"
+      },
+      "atlas-rabbitmq": {
+        "name": "atlas-local_atlas-rabbitmq"
+      },
+      "atlas-redis": {
+        "name": "atlas-local_atlas-redis"
+      },
+      "vault-dev-local": {
+        "name": "atlas-local_vault-dev-local"
+      },
+      "vault-fallback-dev": {
+        "name": "atlas-local_vault-fallback-dev"
+      }
+    },
+    "x-runtime": {
+      "build": {
+        "context": "../.."
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      },
+      "environment": {
+        "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+        "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+        "ATLAS_ENV": "production",
+        "ATLAS_OIDC_AUDIENCE": "parse-only",
+        "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+        "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+        "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+        "ATLAS_SECRET_PROVIDER": "platform-environment",
+        "ATLAS_TOKEN_KEY": "parse-only",
+        "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+      },
+      "restart": "unless-stopped"
+    },
+    "x-vault-bootstrap": {
+      "entrypoint": [
+        "python",
+        "-m",
+        "app.platform.vault_dev_adapter",
+        "--volume",
+        "/vault-fallback-dev",
+        "--"
+      ],
+      "env_file": [
+        "./dev-public-placeholder.env"
+      ],
+      "environment": {
+        "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+        "ATLAS_DEV_NO_AUTH": "0",
+        "ATLAS_ENV": "production",
+        "ATLAS_TOKEN_KEY": "",
+        "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+        "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+        "ATLAS_VAULT_FALLBACK_KEY": "parse-only"
+      },
+      "volumes": [
+        "vault-fallback-dev:/vault-fallback-dev"
+      ]
+    }
+  },
+  "vault+loki": {
+    "configs": {
+      "atlas-loki-local": {
+        "content": "auth_enabled: false\nserver:\n  http_listen_port: 3100\ncommon:\n  path_prefix: /loki\n  replication_factor: 1\n  ring:\n    kvstore:\n      store: inmemory\n  storage:\n    filesystem:\n      chunks_directory: /loki/chunks\n      rules_directory: /loki/rules\nschema_config:\n  configs:\n    - from: \"2024-01-01\"\n      store: tsdb\n      object_store: filesystem\n      schema: v13\n      index:\n        prefix: index_\n        period: 24h\nlimits_config:\n  retention_period: 72h\ncompactor:\n  working_directory: /loki/compactor\n  retention_enabled: true\n  delete_request_store: filesystem\nanalytics:\n  reporting_enabled: false\n",
+        "name": "atlas-local_atlas-loki-local"
+      }
+    },
+    "name": "atlas-local",
+    "networks": {
+      "atlas-log-host": {
+        "ipam": {},
+        "name": "atlas-local_atlas-log-host"
+      },
+      "atlas-log-sink": {
+        "internal": true,
+        "ipam": {},
+        "name": "atlas-local_atlas-log-sink"
+      },
+      "default": {
+        "ipam": {},
+        "name": "atlas-local_default"
+      }
+    },
+    "services": {
+      "api": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "-m",
+          "app.platform.logging_bootstrap",
+          "api"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "healthcheck": {
+          "interval": "15s",
+          "retries": 8,
+          "test": [
+            "CMD",
+            "python",
+            "-c",
+            "import urllib.request; urllib.request.urlopen('http://localhost:8080/ready', timeout=3)"
+          ],
+          "timeout": "5s"
+        },
+        "logging": {
+          "driver": "json-file",
+          "options": {
+            "max-file": "3",
+            "max-size": "10m"
+          }
+        },
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "8000",
+            "target": 8080
+          }
+        ],
+        "restart": "unless-stopped",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "loki": {
+        "command": [
+          "-config.file=/etc/loki/local.yaml"
+        ],
+        "configs": [
+          {
+            "source": "atlas-loki-local",
+            "target": "/etc/loki/local.yaml"
+          }
+        ],
+        "entrypoint": null,
+        "image": "grafana/loki:3.5.0@sha256:4c431d2e6b9b38718694b31c5d56be7c80dc69c513215fde1aeb5b02cd4e2665",
+        "networks": {
+          "atlas-log-host": null,
+          "atlas-log-sink": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "3100",
+            "target": 3100
+          }
+        ],
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-loki",
+            "target": "/loki",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "migrate": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "scripts/migrate.py"
+        ],
+        "depends_on": {
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "no",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "postgres": {
+        "command": null,
+        "entrypoint": null,
+        "environment": {
+          "POSTGRES_DB": "atlas",
+          "POSTGRES_PASSWORD": "parse-only",
+          "POSTGRES_USER": "atlas"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "pg_isready -U atlas -d atlas"
+          ],
+          "timeout": "3s"
+        },
+        "image": "pgvector/pgvector:pg16",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-postgres",
+            "target": "/var/lib/postgresql/data",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "promtail": {
+        "command": [
+          "-config.file=/etc/promtail/local.yaml"
+        ],
+        "depends_on": {
+          "loki": {
+            "condition": "service_started",
+            "required": true
+          }
+        },
+        "entrypoint": null,
+        "image": "grafana/promtail:3.5.0@sha256:507dfecd2f0949475d071c124bea1c26fc4f8c1cff0372eee57478d5b1c5fbff",
+        "networks": {
+          "atlas-log-sink": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "${REPOSITORY_ROOT}/deploy/loki/promtail-local.yaml",
+            "target": "/etc/promtail/local.yaml",
+            "type": "bind"
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "/tmp/api-parse-only",
+            "target": "/logs/api",
+            "type": "bind"
+          },
+          {
+            "bind": {
+              "create_host_path": true
+            },
+            "read_only": true,
+            "source": "/tmp/worker-parse-only",
+            "target": "/logs/worker",
+            "type": "bind"
+          },
+          {
+            "source": "atlas-promtail-positions",
+            "target": "/positions",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "redis": {
+        "command": [
+          "redis-server",
+          "--appendonly",
+          "yes",
+          "--requirepass",
+          "parse-only"
+        ],
+        "entrypoint": null,
+        "environment": {
+          "REDIS_PASSWORD": "parse-only"
+        },
+        "healthcheck": {
+          "interval": "5s",
+          "retries": 20,
+          "test": [
+            "CMD-SHELL",
+            "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG"
+          ],
+          "timeout": "3s"
+        },
+        "image": "redis:7-alpine",
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "volumes": [
+          {
+            "source": "atlas-redis",
+            "target": "/data",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "vault-dev": {
+        "cap_add": [
+          "IPC_LOCK"
+        ],
+        "command": [
+          "server",
+          "-dev",
+          "-dev-listen-address=0.0.0.0:8200"
+        ],
+        "entrypoint": null,
+        "environment": {
+          "VAULT_ADDR": "http://127.0.0.1:8200",
+          "VAULT_DEV_ROOT_TOKEN_ID": "PUBLIC-DEMO-ONLY-vault-token"
+        },
+        "healthcheck": {
+          "interval": "3s",
+          "retries": 20,
+          "test": [
+            "CMD",
+            "vault",
+            "status"
+          ],
+          "timeout": "3s"
+        },
+        "image": "hashicorp/vault:1.18.3@sha256:8f1ba670da547c6af67be55609bd285c3ee3d8b73f88021adbfc43c82ca409e8",
+        "networks": {
+          "default": null
+        },
+        "ports": [
+          {
+            "host_ip": "127.0.0.1",
+            "mode": "ingress",
+            "protocol": "tcp",
+            "published": "18201",
+            "target": 8200
+          }
+        ],
+        "volumes": [
+          {
+            "source": "vault-dev-local",
+            "target": "/vault/file",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      },
+      "worker": {
+        "build": {
+          "context": "${REPOSITORY_ROOT}",
+          "dockerfile": "Dockerfile"
+        },
+        "command": [
+          "python",
+          "-m",
+          "app.platform.logging_bootstrap",
+          "worker"
+        ],
+        "depends_on": {
+          "migrate": {
+            "condition": "service_completed_successfully",
+            "required": true
+          },
+          "postgres": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "redis": {
+            "condition": "service_healthy",
+            "required": true
+          },
+          "vault-dev": {
+            "condition": "service_healthy",
+            "required": true
+          }
+        },
+        "entrypoint": [
+          "python",
+          "-m",
+          "app.platform.vault_dev_adapter",
+          "--volume",
+          "/vault-fallback-dev",
+          "--"
+        ],
+        "environment": {
+          "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+          "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+          "ATLAS_DEV_NO_AUTH": "0",
+          "ATLAS_ENV": "production",
+          "ATLAS_OIDC_AUDIENCE": "parse-only",
+          "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+          "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+          "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+          "ATLAS_SECRET_PROVIDER": "platform-environment",
+          "ATLAS_TOKEN_KEY": "",
+          "ATLAS_TRUST_PLATFORM_SECRETS": "1",
+          "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+          "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+          "ATLAS_VAULT_FALLBACK_KEY": "parse-only",
+          "POSTGRES_PASSWORD": "PUBLIC-DEMO-ONLY-postgres",
+          "REDIS_PASSWORD": "PUBLIC-DEMO-ONLY-redis"
+        },
+        "logging": {
+          "driver": "json-file",
+          "options": {
+            "max-file": "3",
+            "max-size": "10m"
+          }
+        },
+        "networks": {
+          "default": null
+        },
+        "restart": "unless-stopped",
+        "user": "0:0",
+        "volumes": [
+          {
+            "source": "vault-fallback-dev",
+            "target": "/vault-fallback-dev",
+            "type": "volume",
+            "volume": {}
+          }
+        ]
+      }
+    },
+    "volumes": {
+      "atlas-loki": {
+        "name": "atlas-local_atlas-loki"
+      },
+      "atlas-postgres": {
+        "name": "atlas-local_atlas-postgres"
+      },
+      "atlas-promtail-positions": {
+        "name": "atlas-local_atlas-promtail-positions"
+      },
+      "atlas-redis": {
+        "name": "atlas-local_atlas-redis"
+      },
+      "vault-dev-local": {
+        "name": "atlas-local_vault-dev-local"
+      },
+      "vault-fallback-dev": {
+        "name": "atlas-local_vault-fallback-dev"
+      }
+    },
+    "x-runtime": {
+      "build": {
+        "context": "../.."
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      },
+      "environment": {
+        "ATLAS_API_KEY_ENCRYPTION_KEY": "parse-only",
+        "ATLAS_DATABASE_URL": "postgresql+psycopg://atlas:parse-only@postgres:5432/atlas",
+        "ATLAS_ENV": "production",
+        "ATLAS_OIDC_AUDIENCE": "parse-only",
+        "ATLAS_OIDC_ISSUER": "https://issuer.invalid",
+        "ATLAS_OIDC_TENANT_CLAIM": "atlas_tenant",
+        "ATLAS_REDIS_URL": "redis://:parse-only@redis:6379/0",
+        "ATLAS_SECRET_PROVIDER": "platform-environment",
+        "ATLAS_TOKEN_KEY": "parse-only",
+        "ATLAS_TRUST_PLATFORM_SECRETS": "1"
+      },
+      "restart": "unless-stopped"
+    },
+    "x-vault-bootstrap": {
+      "entrypoint": [
+        "python",
+        "-m",
+        "app.platform.vault_dev_adapter",
+        "--volume",
+        "/vault-fallback-dev",
+        "--"
+      ],
+      "env_file": [
+        "./dev-public-placeholder.env"
+      ],
+      "environment": {
+        "ATLAS_API_KEY_ENCRYPTION_KEY": "",
+        "ATLAS_DEV_NO_AUTH": "0",
+        "ATLAS_ENV": "production",
+        "ATLAS_TOKEN_KEY": "",
+        "ATLAS_VAULT_DEV_TOKEN": "PUBLIC-DEMO-ONLY-vault-token",
+        "ATLAS_VAULT_DEV_URL": "http://vault-dev:8200",
+        "ATLAS_VAULT_FALLBACK_KEY": "parse-only"
+      },
+      "volumes": [
+        "vault-fallback-dev:/vault-fallback-dev"
+      ]
+    }
+  }
+}

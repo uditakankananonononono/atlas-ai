@@ -1,0 +1,4 @@
+# X-STACK final layer, required after the ordered pair. Config-only tested; no service acceptance.
+services:
+  api:
+    ports: !override ["127.0.0.1:8000:8080"]
