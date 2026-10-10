@@ -20,3 +20,15 @@ checked. This is neither a strict wire-transfer nor peak-memory bound. Body
 retention stops on excess and limits parsing; underlying transport remains its
 own reviewed resource boundary. Legacy catalog public metadata is unchanged.
 No API authorization modernization or source-fetch permission is inferred.
+
+## Independent scoped verdict
+At a59442cb, verifier MockTransport probes confirm robots-first/failure refusal,
+strict invalid-UTF8 robots, exact limit/limit+1, lying Content-Length refusal,
+non-200robots, no-follow page301, Disallow, nonHTML, limit validation/BOM handling.
+Page decode uses UTF8 errors=replace for title scrape; only robots decode strict.
+Wire/decompressor bound NOT claimed; decompression behavior untested, liveHTTP
+never run. Helper freshness/cost/vector and route canary independently SUITE-ONLY,
+not adversarially probed. Legacy36/39/52/auth unchanged.
+Builder final terminal351PASS33.37s, noSKIP; independent reports350PASS1SKIP1warning
+across *m23* files. Exact skipped node/collection command pending reconciliation,
+not silently counted as independent pass. Preserve both environment receipts.
