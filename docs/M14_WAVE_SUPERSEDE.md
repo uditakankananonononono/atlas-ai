@@ -24,3 +24,11 @@ Mutation probes remove role receipt, cumulative admission, initially-ready restr
 No deployment. No browser UI, full DAG dispatch, abandonment inference, refund, automatic retry, M20 restoration, H approval or frozen AWS import6 changes. Independent audit remains required before landing.
 
 An additional combined M00+other-M14 run also hit the execution cap before completing despite those groups passing separately. It is an incomplete attempt, not a failure-free combined-suite receipt. Keep test processes scoped by module/group for bounded execution.
+
+## Audit follow-up
+
+Requester and approver may be the same authenticated tenant atlas-admin. No separation of duties is claimed. The historical static continuation-prep source guard scans sandbox_wave.py only, not the new wave_supersede.py; its limits are unchanged.
+
+Added a deterministic real PostgreSQL race at the exact old-worker current() read/publication boundary. A worker holds the row lock after reading current version; an apply thread reaches SELECT FOR UPDATE and pg_blocking_pids proves it is blocked. Publication completes, then apply fails because its previously reviewed unknown evidence changed. Removing the finalize lock lets apply commit at that boundary; removing both lock and CAS lets the old worker overwrite superseded, which the test detects. A separate real PostgreSQL zero-row UPDATE probe proves a zero CAS rowcount aborts all task/artifact/result publication. Three independent mutants (lock, CAS, both) fail their selected acceptance tests. The older task-start race remains but was insufficient to prove these guards alone.
+
+Added the pre-approved sibling-wave probe: claim refused before and after supersede, while the selected new wave claims. Removing the selected-new-wave check fails it. Supersede suite now25PASS35.49s, up from22; total M14 split coverage996PASS1strictXFAIL across997nodes. Other affected-suite reruns and fresh bundle receipts accompany this revision. Independent audit confirmation is still pending, no push.
