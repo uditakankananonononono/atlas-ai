@@ -29,7 +29,7 @@ def test_additive_override_activates_both_bootstrap_startup_paths():
 def test_local_loki_storage_schema_retention_and_loopback_only_exposure():
     compose, _, _ = configurations()
     loki = compose["services"]["loki"]
-    assert loki["image"] == "grafana/loki:3.5.0"
+    assert loki["image"] == "grafana/loki:3.5.0@sha256:4c431d2e6b9b38718694b31c5d56be7c80dc69c513215fde1aeb5b02cd4e2665"
     assert loki["ports"] == ["127.0.0.1:3100:3100"]
     assert "atlas-loki:/loki" in loki["volumes"]
     config = yaml.safe_load(compose["configs"]["atlas-loki-local"]["content"])
@@ -49,7 +49,7 @@ def test_local_loki_storage_schema_retention_and_loopback_only_exposure():
 def test_promtail_reads_only_explicit_app_container_log_directories_no_socket():
     compose, promtail, _ = configurations()
     collector = compose["services"]["promtail"]
-    assert collector["image"] == "grafana/promtail:3.5.0"
+    assert collector["image"] == "grafana/promtail:3.5.0@sha256:507dfecd2f0949475d071c124bea1c26fc4f8c1cff0372eee57478d5b1c5fbff"
     mounts = collector["volumes"]
     assert "${ATLAS_API_DOCKER_LOG_DIR:?set API container log directory}:/logs/api:ro" in mounts
     assert "${ATLAS_WORKER_DOCKER_LOG_DIR:?set worker container log directory}:/logs/worker:ro" in mounts
