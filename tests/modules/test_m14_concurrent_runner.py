@@ -161,3 +161,45 @@ def test_invalid_reservation_prevents_entire_wave_dispatch():
 def test_plan_schema_500_limit_remains():
     from pydantic import ValidationError
     with pytest.raises(ValidationError):plan(*(task(str(i)) for i in range(501)))
+
+
+def test_multi_child_cancellation_drains_all_started_tasks():
+    async def scenario():
+        entered=set();closed=set();all_started=asyncio.Event()
+        async def execute(t):
+            entered.add(t.id)
+            if len(entered)==3:all_started.set()
+            try:await asyncio.sleep(100)
+            finally:closed.add(t.id)
+        runner,ledger=make(execute,parallel=3,bound=lambda t:TaskReservation(0,10))
+        job=asyncio.create_task(runner.run(plan(task('a'),task('b'),task('c'))))
+        await all_started.wait();job.cancel()
+        with pytest.raises(asyncio.CancelledError):await job
+        assert closed==entered=={'a','b','c'} and not runner._running
+        assert ledger.status().agent_calls_used==3
+    asyncio.run(scenario())
+
+
+def test_reservation_callback_exception_before_dispatch_resets_runner():
+    async def scenario():
+        seen=[]
+        async def execute(t):seen.append(t.id);return TaskOutput(True)
+        def bound(t):
+            if t.id=='b':raise LookupError('private callback diagnostic')
+            return TaskReservation(0,1)
+        runner,ledger=make(execute,bound=bound)
+        with pytest.raises(LookupError):await runner.run(plan(task('a'),task('b')))
+        assert not seen and ledger.status().agent_calls_used==0 and not runner._running
+    asyncio.run(scenario())
+
+
+def test_runtime_exhaustion_prevents_retry_dispatch():
+    async def scenario():
+        seen=[]
+        async def execute(t):seen.append(t.id);return TaskOutput(False)
+        runner,ledger=make(execute,runtime=1,attempts=2)
+        report=await runner.run(plan(task('a')))
+        assert seen==['a'] and report.stopped_reason=='budget_exhausted'
+        assert ledger.status().runtime_seconds_used==1 and ledger.status().agent_calls_used==1
+        assert report.plan.tasks[0].attempt==1
+    asyncio.run(scenario())
