@@ -1,0 +1,36 @@
+# Read only explicitly bound API/worker Docker json-file logs. Docker envelope
+# is unwrapped, then JSON fields are extracted for low-cardinality sink labels.
+# Original producer JSON line remains the Loki line: no output/drop rewrite.
+# trace_id/message/logger are deliberately NOT labels (cardinality/private text).
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+positions:
+  filename: /positions/positions.yaml
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+scrape_configs:
+  - job_name: atlas-api-json
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: atlas-local-json
+          component: api
+          __path__: /logs/api/*-json.log
+    pipeline_stages:
+      - docker: {}
+      - json:
+          expressions: {severity: severity, logger: logger, service: service}
+      - labels: {severity: null, service: null}
+  - job_name: atlas-worker-json
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: atlas-local-json
+          component: worker
+          __path__: /logs/worker/*-json.log
+    pipeline_stages:
+      - docker: {}
+      - json:
+          expressions: {severity: severity, logger: logger, service: service}
+      - labels: {severity: null, service: null}
