@@ -62,20 +62,21 @@ created_at filter-only. Newest scan window selected BEFORE scoring, not global
 top-k. limit<=scan_cap. Legacy route unchanged.
 
 ## Additive no-total cursor window candidate
-New /decisions/cursor and retrieve_cursor use one SELECT LIMIT scan_cap+1,
-NO COUNT(*) or separate count. Probe row determines has_more but is not scored
+After journal initialization, each cursor retrieval issues one SELECT LIMIT scan_cap+1 with no COUNT. HTTP store dependency may also inspect/create schema; unchanged exact-count endpoint still uses COUNT. Probe row determines has_more but is not scored
 or consumed by next_before_id, including zero-hit pages. matched_total and
 omitted_by_scan_cap are null/unknown_not_counted, never invented0. At most2001
 Python rows, up to2000scored; no DB CPU bound because filters may examine more
 rows. Existing exactcount route unchanged. No migration/index claim; time/cursor
-validation beforequery, tenant+actor predicates. Concurrent inserts/deletes can
+Retrieval helper validates time/cursor bounds before its SELECT. HTTP store dependency initializes/checks journal schema before route-level bounds rejection. Tenant+actor predicates. Concurrent inserts/deletes can
 change page contents/has_more. Cursor points to consumed oldestID, not lexical
-hits. Limit before scoring, no global top-k. SQLite and isolated localPG canaries
+hits. scan_cap selects newest window before scoring; hit limit applies after lexical scoring. No global top-k. SQLite and isolated localPG canaries
 separately reported; no deployedload/backup/transaction-snapshot paging claim.
 
 Cursor candidate builder evidence: new14PASS including real localPostgreSQL16.2
 LIMIT/noCOUNT probe and productionOIDC TestClient 401/tenantisolation/422canary.
-Whole277PASS3FAIL, exact02a75fbd cleanCWDbase263PASS3FAIL sameM21claire nodes
+All tests selected by tests/modules/test_m21*.py: candidate 277 PASS 3 FAIL; exact 02a75fbd base 263 PASS 3 FAIL; no skips; identical 3 failing nodes. Not repository-wide suite. SameM21claire nodes
 missingm00_approval_events. Base-present fixture issue, cause isolation beyond
 missingtable not yet performed; no regression or wholegreen claim. Legacy prior
 266PASS depended on environment state and doesn't erase these failure receipts.
+
+matched_total and omitted_by_scan_cap unknown; omitted_by_limit counts positive matches omitted within scored window.
