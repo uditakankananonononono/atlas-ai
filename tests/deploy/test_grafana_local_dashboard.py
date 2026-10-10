@@ -98,9 +98,10 @@ def test_every_dashboard_metric_is_emitted_by_the_local_app():
     local_tokens = ("http_server_", "atlas_")
     for panel in dashboard["panels"]:
         expr = panel["targets"][0]["expr"]
-        names = {token for token in IDENT.findall(expr) if token.startswith(local_tokens)}
-        assert names, f"panel {panel['title']!r} references no local app metric"
-        for name in names:
+        local_names = {token for token in IDENT.findall(expr) if token.startswith(local_tokens)}
+        process_names = {token for token in IDENT.findall(expr) if token.startswith("process_")}
+        assert local_names or process_names, f"panel {panel['title']!r} references no local app metric"
+        for name in local_names:
             base = name
             for suffix in ("_count", "_sum", "_bucket", "_total"):
                 if base.endswith(suffix):
@@ -109,9 +110,12 @@ def test_every_dashboard_metric_is_emitted_by_the_local_app():
             assert f"'{base}'" in metrics_source or f'"{base}"' in metrics_source, (
                 f"panel {panel['title']!r} queries {name!r} but {base!r} is not defined in app metrics"
             )
-        process_names = {token for token in IDENT.findall(expr) if token.startswith("process_")}
         for name in process_names:
-            assert "ProcessCollector" in metrics_source, f"panel {panel['title']!r} needs {name!r} from ProcessCollector"
+            # Process panels are exempt from the app-metric-name assert above; their
+            # series come from the ProcessCollector registered at metrics.py:12.
+            assert "ProcessCollector(registry=REGISTRY)" in metrics_source, (
+                f"panel {panel['title']!r} needs {name!r}; ProcessCollector must be registered in app metrics"
+            )
 
 
 def test_local_only_access_and_no_plaintext_credentials():
