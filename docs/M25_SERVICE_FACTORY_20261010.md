@@ -39,3 +39,10 @@ workspace may remain invisible until restart or ingest validation. Mixing legacy
 factory bypasses policy; caller deployment must use this factory throughout.
 Expiry checked on warmrequests. Root permission/topology changes after factory
 creation remain filesystem/operator risk. No background monitoring or deletion.
+
+ATLAS_M25_DURABLE_ROOT must be the CANONICAL absolute path: factory normalizes
+it, but warm route compares normalized root to raw env string, so a valid alias
+can pass first request and return503 next request. Fail-closed, not alias support.
+Independent PASS-WITH-NOTES: original156/base141,15canaries/7mutationkills;
+normalized-root repair adds1canary, builder157PASS. All sixendpointnarrowings
+probed independently. No productionmount/crash/distributedacceptance implied.
