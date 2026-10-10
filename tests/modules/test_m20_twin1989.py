@@ -100,3 +100,62 @@ def test_atomic_timestamp_race_only_one_observation_commits():
   except ValueError:return 'refused'
  with ThreadPoolExecutor(max_workers=2)as pool:out=list(pool.map(update,[2,3]))
  assert sorted(out)==['committed','refused'] and len(r.get('asset')['history'])==1
+
+def test_lock_serializes_observation_while_first_prediction_is_blocked(monkeypatch):
+ import threading
+ from concurrent.futures import ThreadPoolExecutor
+ r=TwinRegistry('a');create(r);entered=threading.Event();release=threading.Event();second_started=threading.Event();concurrent=threading.Event()
+ original=r._prediction;count=0;guard=threading.Lock()
+ def blocked(*args):
+  nonlocal count
+  with guard:count+=1;index=count
+  if index==1:
+   entered.set();assert release.wait(5)
+  else:concurrent.set()
+  return original(*args)
+ monkeypatch.setattr(r,'_prediction',blocked)
+ def update(value):
+  if value==3:second_started.set()
+  try:r.assimilate('asset',timestamp=1,observation=value);return 'committed'
+  except ValueError:return 'refused'
+ with ThreadPoolExecutor(max_workers=2)as pool:
+  first=pool.submit(update,2);assert entered.wait(5)
+  second=pool.submit(update,3);assert second_started.wait(5)
+  try:assert not concurrent.wait(.2)
+  finally:release.set()
+  assert sorted([first.result(),second.result()])==['committed','refused']
+ assert len(r.get('asset')['history'])==1
+
+def test_forecast_default_control_hand_value_and_not_committed():
+ r=TwinRegistry('a');create(r);before=r.get('asset')
+ default=r.forecast('asset',timestamp=2)
+ assert default==r.forecast('asset',timestamp=2,control=0)
+ assert default['state']==0 and default['variance']==5 and default['committed'] is False
+ assert r.get('asset')==before
+
+def test_registry_and_model_identity_boundaries():
+ from app.modules.m20_general_cognitive_worker.digital_twin_routes import bind_registry
+ with pytest.raises(ValueError):bind_registry(object())
+ for tenant in ('','  ',1):
+  with pytest.raises(ValueError):TwinRegistry(tenant)
+ r=TwinRegistry('a');assert create(r,'a'*120)['name']=='a'*120
+ for name in ('a'*121,'','  '):
+  with pytest.raises(ValueError):create(r,name)
+
+def test_forecast_and_error_routes_actual_tenant_and_state(monkeypatch,oidc_auth_headers):
+ from app.main import app
+ from fastapi.testclient import TestClient
+ from app.modules.m20_general_cognitive_worker import digital_twin_routes as routes
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setattr(routes,'_registries',{})
+ store=TwinRegistry('a');create(store);routes.bind_registry(store)
+ c=TestClient(app);path='/api/v1/api/modules/20/digital-twins';headers=oidc_auth_headers('a','owner')
+ before=c.get(path+'/asset',headers=headers).json()
+ response=c.post(path+'/asset/forecast',headers=headers,json={'timestamp':2})
+ assert response.status_code==200 and response.json()['state']==0 and response.json()['variance']==5
+ assert response.json()['committed'] is False
+ assert c.get(path+'/asset',headers=headers).json()==before
+ assert c.post(path+'/asset/forecast',headers=oidc_auth_headers('b','owner'),json={'timestamp':2}).status_code==503
+ assert c.get(path+'/missing',headers=headers).status_code==404
+ assert c.post(path+'/missing/assimilate',headers=headers,json={'timestamp':1,'observation':1}).status_code==404
+ assert c.post(path+'/asset/forecast',headers=headers,json={'timestamp':2,'extra':1}).status_code==422
+ assert c.post(path,headers=headers,json={'name':'new','state':0,'variance':1,'timestamp':0,'extra':1}).status_code==422
