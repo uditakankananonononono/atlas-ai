@@ -96,3 +96,28 @@ def test_ga01_result_bytes_preserved_against_versioned_reference():
  d={'weights':[1.,2.,3.,4.],'population':[[0,0,0,0],[1,0,1,0],[0,1,0,1],[1,1,0,0]],'generations':12,'mutation_rate':.2,'crossover_rate':1.,'tournament_size':2,'elite_count':1}
  result=json.dumps(solve(d,17),sort_keys=True,separators=(',',':')).encode()
  assert hashlib.sha256(result).hexdigest()=='4f853851e86459b3ef2674e9486074eaa33a2a7a8de175b8026c006928feb8a9'
+
+def test_random_initialization_and_first_generation_share_one_advancing_rng():
+ # Independent draw-by-draw oracle for operators, not an output copied from solver.
+ d=request(population_size=5,generations=1,elite_count=1,tournament_size=3,mutation_rate=.4,crossover_rate=.7)
+ seed=37;rng=random.Random(seed);n=len(d['weights']);size=d['population_size']
+ initial=[[rng.randrange(2) for _ in range(n)] for _ in range(size)]
+ scores=[score(d,g) for g in initial]
+ elite=initial[max(range(size),key=lambda i:scores[i])]
+ expected=[]
+ for _ in range(size-1):
+  contests=[];parents=[]
+  for _ in range(2):
+   indices=[rng.randrange(size) for _ in range(d['tournament_size'])]
+   winner=max(indices,key=lambda i:scores[i])
+   contests.append([initial[i] for i in indices]);parents.append(initial[winner])
+  cut=rng.randrange(1,n) if rng.random()<d['crossover_rate'] else None
+  raw=parents[0] if cut is None else parents[0][:cut]+parents[1][cut:]
+  mutations=[i for i in range(n) if rng.random()<d['mutation_rate']]
+  genome=[1-v if i in mutations else v for i,v in enumerate(raw)]
+  expected.append({'parents':parents,'tournaments':contests,'crossover_point':cut,
+                   'mutated_positions':mutations,'genome':genome,'score':score(d,genome)})
+ actual=solve_quadratic(d,seed)
+ assert actual['generation_history'][0]['population']==initial
+ assert actual['generation_history'][1]['offspring']==expected
+ assert actual['generation_history'][1]['population']==[elite]+[x['genome'] for x in expected]
