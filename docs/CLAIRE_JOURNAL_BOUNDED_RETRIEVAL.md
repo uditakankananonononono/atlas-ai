@@ -60,3 +60,15 @@ NOT DB CPU cost bound. SQLite only; PostgreSQL/load unmeasured, no index/migrati
 Concurrent inserts/deletes can shift matched_total between pages. ID paging key,
 created_at filter-only. Newest scan window selected BEFORE scoring, not global
 top-k. limit<=scan_cap. Legacy route unchanged.
+
+## Additive no-total cursor window candidate
+New /decisions/cursor and retrieve_cursor use one SELECT LIMIT scan_cap+1,
+NO COUNT(*) or separate count. Probe row determines has_more but is not scored
+or consumed by next_before_id, including zero-hit pages. matched_total and
+omitted_by_scan_cap are null/unknown_not_counted, never invented0. At most2001
+Python rows, up to2000scored; no DB CPU bound because filters may examine more
+rows. Existing exactcount route unchanged. No migration/index claim; time/cursor
+validation beforequery, tenant+actor predicates. Concurrent inserts/deletes can
+change page contents/has_more. Cursor points to consumed oldestID, not lexical
+hits. Limit before scoring, no global top-k. SQLite and isolated localPG canaries
+separately reported; no deployedload/backup/transaction-snapshot paging claim.

@@ -180,3 +180,9 @@ Legal1260-1309 PARTIAL supplied review templates/unverified reference structure.
 `POST /api/modules/20/meta/premortem/register` adds a structured risk/control review beyond the legacy keyword premortem. It sorts caller-rated severity/occurrence/detection (integer1..10, higher worse) by their product, tracks owner/mitigation/test/evidence gaps and distinguishes a complete review packet from verified controls. It never invents a failure probability, verifies an evidence reference or approves a launch. The legacy premortem still uses fixed placeholder scores and keyword templates and is thin, not real backward causal analysis. The new register is request-scoped, not durable risk ownership, scheduled follow-up or live evidence verification. These remain unfinished.
 
 The risk register also has tenant-bound durable runtime routes: create/read/history/revise under `/api/modules/20/runtime/risk-registers`. SQL current-revision compare-and-update and history insertion commit together; stale revisions return409, other tenants cannot read/revise a register, and restart preserves earlier control gaps. The additive risk-table migration was tested on local SQLite only and was not run on production. History is append-only through this interface, not tamper-proof against database administrators. Ownership remains a supplied text label, not a verified assignee or a notification. Live evidence checks, scheduled follow-ups and PostgreSQL concurrent acceptance remain open.
+
+### M21 no-total cursor-window candidate
+Opt-in journal cursor endpoint avoids full-match COUNT, materializes at most
+scan_cap+1 rows and scores newest bounded window. Total/omission count explicitly
+unknown, probe row not consumed. No DB CPU/index/load or global top-k guarantee.
+Existing exact-count endpoint unchanged. Pending independent verdict.
