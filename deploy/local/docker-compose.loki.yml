@@ -1,0 +1,80 @@
+# Opt-in override: Docker Compose 2.23.1+ (configs.content) required.
+# Start the base stack first with deploy/local/docker-compose.yml alone; obtain
+# API/worker LogPath via local docker inspect and set the two directory variables.
+# Both variables are required during ALL override compose parsing, even if only
+# starting selected services. Then use both -f files to recreate api/worker and
+# start loki/promtail. Docker inspect is a planned operator action, not run here.
+# This is explicit host binding, not automatic discovery. After container recreation,
+# update those directories and recreate promtail. Rootless/Desktop/remote Docker
+# requires accessible daemon-host log directories; do not pretend workstation
+# paths point into a remote daemon. Never mount the Docker socket.
+# Loki is unauthenticated LOCAL ONLY, exposed on host loopback, not public ingress.
+# Promtail is a legacy OSS agent; this requested substitute has no support-lifetime
+# promise. Existing OTEL traces/metrics collector is unchanged. No cloud log sink.
+services:
+  api:
+    command: ["python", "-m", "app.platform.logging_bootstrap", "api"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+  worker:
+    command: ["python", "-m", "app.platform.logging_bootstrap", "worker"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+  loki:
+    image: grafana/loki:3.5.0
+    restart: unless-stopped
+    command: ["-config.file=/etc/loki/local.yaml"]
+    ports: ["127.0.0.1:3100:3100"]
+    configs:
+      - source: atlas-loki-local
+        target: /etc/loki/local.yaml
+    volumes: ["atlas-loki:/loki"]
+  promtail:
+    image: grafana/promtail:3.5.0
+    restart: unless-stopped
+    command: ["-config.file=/etc/promtail/local.yaml"]
+    depends_on: {loki: {condition: service_started}}
+    volumes:
+      # Relative paths resolve against the first compose file's deploy/local dir.
+      - "../loki/promtail-local.yaml:/etc/promtail/local.yaml:ro"
+      - "${ATLAS_API_DOCKER_LOG_DIR:?set API container log directory}:/logs/api:ro"
+      - "${ATLAS_WORKER_DOCKER_LOG_DIR:?set worker container log directory}:/logs/worker:ro"
+      - "atlas-promtail-positions:/positions"
+configs:
+  atlas-loki-local:
+    content: |
+      auth_enabled: false
+      server:
+        http_listen_port: 3100
+      common:
+        path_prefix: /loki
+        replication_factor: 1
+        ring:
+          kvstore:
+            store: inmemory
+        storage:
+          filesystem:
+            chunks_directory: /loki/chunks
+            rules_directory: /loki/rules
+      schema_config:
+        configs:
+          - from: "2024-01-01"
+            store: tsdb
+            object_store: filesystem
+            schema: v13
+            index:
+              prefix: index_
+              period: 24h
+      limits_config:
+        retention_period: 72h
+      compactor:
+        working_directory: /loki/compactor
+        retention_enabled: true
+        delete_request_store: filesystem
+      analytics:
+        reporting_enabled: false
+volumes:
+  atlas-loki: {}
+  atlas-promtail-positions: {}
