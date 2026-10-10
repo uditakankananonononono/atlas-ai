@@ -92,3 +92,7 @@ at base beaf700275a24829440a5e96c3919ed572061503:
 These are peer-observed old-head results relayed by the coordinator, not
 builder executions, not independently reproduced, and not PASS for this fix
 or rebased head. All builder tests remain NOT RUN. New head awaits peer re-audit.
+
+## Integration application receipt
+
+Applied proposalSHA0f87959928b55fdc718388e65a7f136adfc4ddd07495f7e40ec620dd4b333500 after parent authorization and independent audit, on current post-AST/migration/TOKEN base5921a269f6f9555f2d20d7da571605f7dfa08f41. Before application: wholeM02 19 right-reason failures /93PASS. After: wholeM02 112PASS, noFAIL/SKIP. Exact behavior changes: Docs/Sheets/retrieve malformed vector inputs map422; NaN/inf embedding/query rejection before persistence/ranking; cosine score and order corrected after complete batch validation. Existing evidence_completeness grounding error path remains500 and is NOT widened. No deployment, live provider/model-quality claim or competition prioritization change. Additive package and application land together, never19failingtests alone.
