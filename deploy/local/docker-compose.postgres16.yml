@@ -2,8 +2,7 @@
 # driven by the existing alembic migration runner (scripts/migrate.py ->
 # alembic upgrade head); same schema and app wiring as the base topology.
 #
-# What this substitute honestly cannot cover: Supabase-managed hosting,
-# backups, dashboards and Supabase API surface.
+# What this substitute honestly cannot cover: Supabase-managed hosting, backups, dashboards and Supabase API surface.
 #
 # UNVERIFIED: Docker Compose orchestration (build, dependency ordering and
 # one-shot acceptance run) - not exercised in audit; this override is
@@ -24,6 +23,10 @@ services:
     environment:
       ATLAS_ENV: production
       ATLAS_DATABASE_URL: postgresql+psycopg://atlas:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/atlas
+      # The image sets PYTHONPATH=/app/backend (Dockerfile ENV); migration
+      # scripts import the in-repo migrations package
+      # (migrations/gcw_schema_20260922.py), so /app must be importable too.
+      PYTHONPATH: /app/backend:/app
     # The runtime image copies only backend/scripts/migrations/alembic.ini, so
     # the acceptance check is mounted read-only from this directory.
     volumes: ["./acceptance/postgres16_check.py:/opt/atlas-acceptance/postgres16_check.py:ro"]
