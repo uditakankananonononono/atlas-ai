@@ -116,3 +116,61 @@ def test_batch_atomic_configuration_bounds_and_history_cap(tmp_path):
  state=deepcopy(r.state)
  with pytest.raises(ValueError):configure(r)
  assert r.state==state==registry(tmp_path).state
+
+@pytest.mark.parametrize('missing',[None,{'a':.8}])
+def test_one_missing_among_complete_evidence_abstains(tmp_path,missing):
+ r=registry(tmp_path);configure(r);r.ingest([evidence(1,.8,.2),{**evidence(2,.8,.2),'likelihoods':missing}])
+ assert r.compare()['status']=='abstained' and r.compare()['reason']=='missing_likelihoods' and r.compare()['posteriors'] is None
+
+@pytest.mark.parametrize('value',[1,'yes'])
+def test_independence_requires_literal_true(tmp_path,value):
+ r=registry(tmp_path)
+ with pytest.raises(ValueError):r.configure(hypotheses(),partition_source='fixture',conditional_independence=value)
+ assert r.state is None
+
+def test_hypothesis_count_and_prior_sum_exact_boundaries(tmp_path):
+ r=registry(tmp_path)
+ def many(n):return {str(i):{'prior':1/n,'assumptions':{}}for i in range(n)}
+ with pytest.raises(ValueError):r.configure(many(1),partition_source='fixture',conditional_independence=True)
+ assert r.configure(many(32),partition_source='fixture',conditional_independence=True)['version']==1
+ with pytest.raises(ValueError):r.configure(many(33),partition_source='fixture',conditional_independence=True)
+ for priors in [(1.5,-.5),(-.5,1.5)]:
+  h=hypotheses();h['a']['prior'],h['b']['prior']=priors
+  with pytest.raises(ValueError):r.configure(h,partition_source='fixture',conditional_independence=True)
+ h=hypotheses();h['b']['prior']+=5e-13
+ assert r.configure(h,partition_source='fixture',conditional_independence=True)['version']==2
+ h=hypotheses();h['b']['prior']+=5e-12
+ with pytest.raises(ValueError):r.configure(h,partition_source='fixture',conditional_independence=True)
+
+@pytest.mark.parametrize('gap,best',[(1e-13,None),(1e-9,'a')])
+def test_best_tie_tolerance_boundaries(tmp_path,gap,best):
+ r=registry(tmp_path);configure(r,.5+gap/2);r.ingest([evidence(1,.5,.5)])
+ assert r.compare()['current_best']==best
+
+@pytest.mark.parametrize('name',['',' ','x'*241])
+def test_hypothesis_name_validation(tmp_path,name):
+ r=registry(tmp_path);h=hypotheses();h[name]=h.pop('a')
+ with pytest.raises(ValueError):r.configure(h,partition_source='fixture',conditional_independence=True)
+
+def test_assumption_count_and_key_validation(tmp_path):
+ r=registry(tmp_path);h=hypotheses();h['a']['assumptions']={str(i):'value'for i in range(32)}
+ assert r.configure(h,partition_source='fixture',conditional_independence=True)['version']==1
+ h['a']['assumptions']['32']='value'
+ with pytest.raises(ValueError):r.configure(h,partition_source='fixture',conditional_independence=True)
+ for key in ['',1]:
+  h=hypotheses();h['a']['assumptions']={key:'value'}
+  with pytest.raises(ValueError):r.configure(h,partition_source='fixture',conditional_independence=True)
+
+def test_exact_reasons_zero_joint_and_shapes(tmp_path):
+ r=registry(tmp_path);assert r.compare()['reason']=='unconfigured'
+ for h in [[],{'a':None,'b':hypotheses()['b']}]:
+  with pytest.raises(ValueError):r.configure(h,partition_source='fixture',conditional_independence=True)
+ configure(r)
+ with pytest.raises(ValueError):r.ingest([{**evidence(1,.8,.2),'likelihoods':[]}])
+ r.ingest([evidence(1,.8,.2)]);assert r.compare()['reason'] is None
+ r.ingest([evidence(2,0,0)]);assert r.compare()['reason']=='zero_joint_evidence_probability'
+
+@pytest.mark.parametrize('prior',[1.5,-.5])
+def test_prior_range_refuses_before_sum_guard(tmp_path,prior):
+ r=registry(tmp_path);h=hypotheses();h['a']['prior']=prior
+ with pytest.raises(ValueError,match=r'prior\[0,1\] required'):r.configure(h,partition_source='fixture',conditional_independence=True)
