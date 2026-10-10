@@ -236,3 +236,107 @@ def test_approved_state_alone_never_role_receipt(env):
     with sessions.begin() as db:
         row=db.get(WaveSupersedeRow,p['id']);row.state='approved';row.approver_actor='admin'
     with pytest.raises(WaveConflict,match='role-bound'):service.apply(ADMIN,p['id'])
+
+@pytest.fixture
+def pg_env(tmp_path):
+    import pgserver,tempfile,shutil
+    from pathlib import Path
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from app.modules.m14_project_builder.sandbox_wave import SandboxWaveService
+    from app.modules.m14_project_builder.sql_repository import ProjectRow
+    from app.modules.m14_project_builder.schemas import ProjectPlan,ProjectTask,Budget
+    from app.modules.m00_approval_center.impact import ApprovalReviewStateRow
+    server=pgserver.get_server(tmp_path/'pg-race',cleanup_mode='stop')
+    engine=create_engine(server.get_uri().replace('postgresql://','postgresql+psycopg://'))
+    sessions=sessionmaker(engine,expire_on_commit=False)
+    for model in (WaveKeyVersionRow,WaveSupersedeRow,ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
+    root=Path(tempfile.mkdtemp(prefix='m14-fence-pg-',dir=Path.home()));root.chmod(0o700)
+    plan=ProjectPlan(goal='demo',tasks=[ProjectTask(id='a',title='write',objective='write result',agent_kind='coder'),ProjectTask(id='b',title='next',objective='dependent task',agent_kind='coder',dependencies=['a'])])
+    with sessions.begin() as db:db.add(ProjectRow(tenant_id='t',id='p',goal='demo',brief={},budget=Budget().model_dump(mode='json'),status='planned',revision=1,plan=plan.model_dump(mode='json')))
+    try:yield SandboxWaveService(sessions,str(root)),sessions,engine
+    finally:engine.dispose();shutil.rmtree(root)
+
+
+def test_finalize_read_publication_interleaving_pg_lock(pg_env,monkeypatch):
+    """Apply reaches the lock while current() has read but publication is paused."""
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event,current_thread
+    from sqlalchemy import event,text
+    import time
+    import app.modules.m14_project_builder.wave_supersede as module
+    svc,sessions,engine=pg_env;prior,_=approved(svc);new,_=approved(svc)
+    entered=Event();release=Event();apply_select=Event();pid=[];sid=[]
+    original=module.current
+    def barrier(db,row):
+        result=original(db,row)
+        if current_thread().name.startswith('finalize'):
+            entered.set();assert release.wait(15)
+        return result
+    monkeypatch.setattr(module,'current',barrier)
+    def before(conn,cursor,statement,parameters,context,executemany):
+        if current_thread().name.startswith('apply') and 'FOR UPDATE' in statement and 'm14_sandbox_waves' in statement:
+            pid.append(conn.connection.driver_connection.info.backend_pid);apply_select.set()
+    event.listen(engine,'before_cursor_execute',before)
+    try:
+        with ThreadPoolExecutor(1,thread_name_prefix='finalize') as final_pool,ThreadPoolExecutor(1,thread_name_prefix='apply') as apply_pool:
+            pending=final_pool.submit(lambda:asyncio.run(svc.execute('t','owner',prior)))
+            assert entered.wait(15)
+            service=WaveSupersedeService(svc);p=service.propose(ADMIN,prior,new);sid.append(p['id']);service.decide(ADMIN,p['id'],'approved')
+            applying=apply_pool.submit(service.apply,ADMIN,p['id'])
+            assert apply_select.wait(15)
+            blocked=False;deadline=time.monotonic()+5
+            with engine.connect() as observer:
+                while time.monotonic()<deadline:
+                    observer.rollback()
+                    blocked=bool(observer.execute(text('select cardinality(pg_blocking_pids(:pid)) > 0'),{'pid':pid[0]}).scalar())
+                    if blocked or applying.done():break
+                    time.sleep(.01)
+            if not blocked:
+                applying.result(timeout=20) # mutation allows commit between read/publication
+                release.set()
+                try:pending.result(timeout=20)
+                except WaveConflict:pass # CAS-only defense still rejects stale publication
+                with sessions() as db:
+                    assert db.get(SandboxWaveRow,prior).state=='superseded','old worker overwrote superseded after current() read'
+                    assert not db.scalar(select(SandboxWaveTaskRow).where(SandboxWaveTaskRow.wave_id==prior))
+                pytest.fail('supersede was not blocked at old worker read/publication boundary')
+            release.set();assert pending.result(timeout=20)['state']=='awaiting_review'
+            with pytest.raises(WaveConflict,match='evidence or version changed'):applying.result(timeout=20)
+        with sessions() as db:
+            assert db.get(SandboxWaveRow,prior).state=='awaiting_review'
+            assert db.get(WaveSupersedeRow,sid[0]).state=='approved'
+            assert not db.scalar(select(WaveKeyVersionRow))
+    finally:release.set();event.remove(engine,'before_cursor_execute',before)
+
+
+def test_finalize_zero_row_cas_refused_pg(pg_env):
+    """Real PG UPDATE affects zero rows; rowcount must abort all publication."""
+    from sqlalchemy import event
+    svc,sessions,engine=pg_env;prior,_=approved(svc);hit=[]
+    def zero(conn,cursor,statement,parameters,context,executemany):
+        if statement.startswith('UPDATE m14_sandbox_waves SET state=') and parameters.get('state')=='finalizing':
+            hit.append(True);statement=statement+' AND 1=0'
+        return statement,parameters
+    event.listen(engine,'before_cursor_execute',zero,retval=True)
+    try:
+        with pytest.raises(WaveConflict,match='publication fenced'):asyncio.run(svc.execute('t','owner',prior))
+        assert hit
+        with sessions() as db:
+            assert db.get(SandboxWaveRow,prior).state=='claimed'
+            assert db.get(SandboxWaveRow,prior).result is None
+            assert not db.scalar(select(SandboxWaveTaskRow)) and not db.scalar(select(SandboxWaveArtifactRow))
+    finally:event.remove(engine,'before_cursor_execute',zero)
+
+
+def test_preapproved_sibling_cannot_claim_before_or_after_supersede(env):
+    """Only the admin-selected new wave may claim the new key version.
+
+    Mutation evidence (auditor): removing the `version.new_wave_id!=row.id`
+    check in SandboxWaveService.claim lets the sibling claim after supersede.
+    """
+    svc,sessions,_=env;prior,new,_=pair(svc);sibling,_=approved(svc);service=WaveSupersedeService(svc)
+    with pytest.raises(WaveConflict):svc.claim('t','owner',sibling)
+    p=service.propose(ADMIN,prior,new);service.decide(ADMIN,p['id'],'approved');service.apply(ADMIN,p['id'])
+    with pytest.raises(WaveConflict):svc.claim('t','owner',sibling)
+    svc.claim('t','owner',new)
