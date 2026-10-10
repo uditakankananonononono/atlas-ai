@@ -1655,3 +1655,5 @@ from .differential_evolution_routes import router as differential_evolution_rout
 router.include_router(differential_evolution_router)
 from .genetic_programming_routes import router as genetic_programming_router
 router.include_router(genetic_programming_router)
+from .artificial_life_routes import router as artificial_life_router
+router.include_router(artificial_life_router)

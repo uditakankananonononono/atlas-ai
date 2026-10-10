@@ -66,3 +66,11 @@ def test_production_mounted_route(monkeypatch,oidc_auth_headers):
  r=c.post(path,headers=oidc_auth_headers('life','owner'),json=request())
  assert r.status_code==200 and r.json()==simulate(request())
  assert c.post(path,headers=oidc_auth_headers('life','owner'),json=request(steps=0)).status_code==422
+
+def test_size_step_upper_boundaries_and_independent_work_guard():
+ with pytest.raises(ValueError,match='steps'):simulate(request(width=3,height=3,steps=1001))
+ assert len(simulate(request(width=3,height=3,live_cells=[],steps=1000))['history'])==1001
+ with pytest.raises(ValueError,match='width'):simulate(request(width=129,steps=1))
+ assert simulate(request(width=128,steps=1))['width']==128
+ with pytest.raises(ValueError,match='product'):simulate(request(width=128,height=128,steps=12))
+ assert simulate(request(width=128,height=128,steps=11))['cell_evaluations']==128*128*11
