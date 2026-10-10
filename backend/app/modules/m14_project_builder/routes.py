@@ -349,3 +349,58 @@ def wave_continue_apply(id:str,ctx:TenantContext=Depends(require_tenant),svc=Dep
 @router.get('/wave-continuations/{id}')
 def wave_continue_get(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
     return _review_call(lambda:ReviewedContinuationService(svc).get(ctx,id,ContinuationRow))
+
+# Logical admission only. These endpoints never launch work or grant execution.
+from .builder_admission import BuilderAdmissionService, AdmissionRequest
+
+def get_admission_service():
+    from app.core.database import SessionLocal
+    return BuilderAdmissionService(SessionLocal)
+
+def _admission(call):
+    from .sandbox_wave import WaveForbidden,WaveConflict
+    try:return call()
+    except WaveForbidden as exc:raise HTTPException(403,str(exc)) from exc
+    except WaveConflict as exc:raise HTTPException(409,str(exc)) from exc
+
+class AdmissionDecisionIn(BaseModel):
+    model_config = {'extra':'forbid','strict':True}
+    decision:Literal['approved','denied']
+class AdmissionClaimIn(BaseModel):
+    model_config = {'extra':'forbid','strict':True}
+    worker_id:str=Field(min_length=1,max_length=120)
+class AdmissionCompleteIn(AdmissionClaimIn):
+    token:str=Field(min_length=36,max_length=36)
+    fence:int=Field(ge=1)
+    outcome:Literal['completed','failed']
+class AdmissionReconcileIn(BaseModel):
+    model_config = {'extra':'forbid','strict':True}
+    reason:str=Field(min_length=3,max_length=1000)
+
+@router.post('/builder-admission/batches',status_code=201)
+def admission_propose(body:AdmissionRequest,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.propose(ctx,body))
+@router.get('/builder-admission/status')
+def admission_status(ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.status(ctx))
+@router.get('/builder-admission/batches/{id}')
+def admission_get(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.get(ctx,id))
+@router.post('/builder-admission/batches/{id}/decision')
+def admission_decide(id:str,body:AdmissionDecisionIn,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.decide(ctx,id,body.decision))
+@router.post('/builder-admission/batches/{id}/reserve')
+def admission_reserve(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.reserve(ctx,id))
+@router.post('/builder-admission/slots/{id}/claim')
+def admission_claim(id:str,body:AdmissionClaimIn,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.claim(ctx,id,body.worker_id))
+@router.post('/builder-admission/slots/{id}/complete')
+def admission_complete(id:str,body:AdmissionCompleteIn,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.complete(ctx,id,body.token,body.fence,body.worker_id,body.outcome))
+@router.post('/builder-admission/slots/{id}/cancel')
+def admission_cancel(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.cancel(ctx,id))
+@router.post('/builder-admission/slots/{id}/reconcile')
+def admission_reconcile(id:str,body:AdmissionReconcileIn,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
+    return _admission(lambda:svc.reconcile(ctx,id,body.reason))
