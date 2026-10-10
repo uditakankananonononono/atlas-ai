@@ -7,6 +7,12 @@ The old cognitive route/pins remain unchanged as truthful historical/legacy
 reference behavior. The new route is `/api/v1/api/modules/20/genetic-algorithms/solve`
 and uses the same production auth dependency through Module20's mounted router.
 
+The objective is separable/linear: each bit can be optimized independently,
+so the optimum needs no search. Oracle tests demonstrate convergence on this
+problem only; they do not prove useful search ability on coupled objectives.
+GA02 must add a non-separable objective with exhaustive-oracle checks and random
+initialization before original row1986 closure is considered.
+
 The new algorithm evaluates a supplied weighted-bit-sum objective, chooses
 parents by tournament selection with replacement, uses one-point crossover,
 independent bit-flip mutation, and copies the highest-scoring elite genomes to

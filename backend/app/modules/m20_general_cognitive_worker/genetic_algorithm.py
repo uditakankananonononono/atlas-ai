@@ -1,6 +1,8 @@
 """Actual binary-genome genetic search over a supplied weighted-bit objective.
 
 Tournament selection, one-point crossover, independent bit mutation and elitism.
+The weighted-bit objective is separable/linear: its optimum needs no search.
+Oracle tests prove convergence only on that simple problem, not search ability.
 No convergence/global-optimum guarantee or claim of general cognition. Inputs
 and objective are supplied, not independently verified. No external effects.
 """

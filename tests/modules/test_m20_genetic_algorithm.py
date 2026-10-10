@@ -77,3 +77,24 @@ def test_catalog_separates_actual_algorithm_from_legacy_reference():
  assert row['status']=='reference_substitute_only' and row['original_capability_status']=='unverified'
  assert row['actual_implementation']['algorithm']=='binary_genetic_algorithm'
  assert row['actual_implementation']['route']=='/api/v1/api/modules/20/genetic-algorithms/solve'
+
+@pytest.mark.parametrize('elite_count',[2,3])
+def test_top_k_elites_preserved_unchanged_and_offspring_count(elite_count):
+ d=request(elite_count=elite_count,generations=4)
+ result=solve(d,seed=1)
+ for previous,current in zip(result['generation_history'],result['generation_history'][1:]):
+  ranked=sorted(range(len(previous['population'])),key=lambda i:previous['scores'][i],reverse=True)
+  expected=[previous['population'][i] for i in ranked[:elite_count]]
+  assert current['population'][:elite_count]==expected
+  assert len(current['offspring'])==len(d['population'])-elite_count
+
+def test_seed_changes_lineage_and_route_uses_supplied_seed(monkeypatch,oidc_auth_headers):
+ d=request();first=solve(d,seed=1);second=solve(d,seed=2)
+ assert first['generation_history']!=second['generation_history']
+ from fastapi.testclient import TestClient
+ from app.main import app
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app)
+ h=oidc_auth_headers('ga-seed','owner')
+ for seed,expected in ((1,first),(2,second)):
+  response=c.post('/api/v1/api/modules/20/genetic-algorithms/solve',headers=h,json={'data':d,'seed':seed})
+  assert response.status_code==200 and response.json()==expected
