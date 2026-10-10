@@ -8,10 +8,11 @@ class Model:
 def _persisted_m00_rows(db_file):
  """Read M00 request and created-event rows straight from the fixture's SQLite file."""
  from sqlalchemy import create_engine,select
+ from sqlalchemy.orm import Session
  from app.modules.m00_approval_center import service as m00
  engine=create_engine(f"sqlite:///{db_file}")
  try:
-  with engine.connect() as conn:
+  with Session(engine) as conn:
    requests=list(conn.execute(select(m00.ApprovalRequestRow)).scalars())
    events=list(conn.execute(select(m00.ApprovalEventRow)).scalars())
  finally:engine.dispose()
