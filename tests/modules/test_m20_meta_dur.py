@@ -122,3 +122,23 @@ def test_existing_calibration_write_failure_does_not_publish(tmp_path,monkeypatc
  assert a.claims[claim.id].resolved is False
  assert DurableCalibrationEngine.load(GCWRepository(r.engine,tenant_id='a')).claims[claim.id].resolved is False
  assert DurableCalibrationEngine.load(GCWRepository(r.engine,tenant_id='b')).claims=={}
+
+def test_update_cas_rejects_stale_loaded_writer_and_preserves_both_states(tmp_path):
+ from copy import deepcopy
+ initial=DurableWorldModels.load(repo(tmp_path));initial.register('m',{'x':'initial'})
+ a=DurableWorldModels.load(repo(tmp_path));b=DurableWorldModels.load(repo(tmp_path))
+ assert a._revision==b._revision==1
+ before=deepcopy(b.models);a.revise('m',{'x':'a committed'})
+ with pytest.raises(RuntimeError,match='^stale meta-state writer$'):b.revise('m',{'x':'b stale'})
+ assert b.models==before and b._revision==1
+ loaded=DurableWorldModels.load(repo(tmp_path))
+ assert loaded.models==a.models and loaded._revision==2
+ assert loaded.models['m'].assumptions=={'x':'a committed'}
+
+def test_unbound_durable_service_refuses_different_tenant_specifically(tmp_path,monkeypatch):
+ from app.modules.m20_general_cognitive_worker import routes
+ monkeypatch.setattr(routes,'_services',{})
+ r=repo(tmp_path);g=GCWRepository(r.engine,tenant_id='a');g.create_schema()
+ s=CognitiveWorkerService(meta_repository=r,calibration_repository=g,seed_judgment_skills=False)
+ with pytest.raises(ValueError,match='durable meta tenant'):routes.bind_service(s,tenant_id='b')
+ assert routes._services=={}
