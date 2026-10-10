@@ -22,9 +22,9 @@ Grounding (read from this base, not run):
   which in one transaction writes one `ApprovalRequestRow` (status "pending",
   module_id 21, action_type `claire:<operation>`) and one
   `ApprovalEventRow(approval_id=row.id, event="created", actor=None, at=now)`.
-- `m20_general_cognitive_worker/service.py` makes no `approvals.` calls, and
-  `intake`/`realize` write no approval rows, so the exact totals are the
-  peer's probe counts: 1 request/event in
+- For these three tests' inputs the fake `Model` plans a single read-risk
+  step, so `realize` submits no approvals and the exact totals are the peer's
+  probe counts: 1 request/event in
   `test_claire_is_sandboxed_bounded_and_transparent`, 2 in
   `test_claire_sends_and_spend_are_per_action_approval`, 11 in
   `test_claire_optional_pc_endpoint_has_full_owner_machine_capability_parity`.
@@ -35,8 +35,11 @@ and its approval_id matches a persisted request row created by the test
 (and the first test also asserts the event timestamp is present).
 
 Unresolved / deliberate non-assertions:
-- Exact totals assume no other in-test writer to the two M00 tables; grounded
-  by reading m20/m21 code paths but not verified by execution.
+- Exact 1/2/11 totals are scoped ONLY to these isolated read-only test
+  inputs. M20's `DeliberativeLoop` (legacy_service.py) can submit
+  `cognitive:step` approvals for risk-gated steps in general, so the totals
+  are not a general "no other writer" property of realize/intake; unverified
+  by execution.
 - The helper couples to the fixture's database filename
   "m00-approvals.sqlite3"; a conftest rename would fail these tests loudly.
 - `ApprovalEventRow.actor` is None for `created` rows in current M00 code but
