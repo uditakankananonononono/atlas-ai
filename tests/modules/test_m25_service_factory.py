@@ -170,3 +170,19 @@ def test_all_existing_endpoints_owner_narrowing(root,monkeypatch,oidc_auth_heade
         requests=[('GET','/export',None),('GET','/contradictions?subject=fact',None),('POST','/search',{'query':'fact','limit':1}),('POST','/claims/substantiate',[]),('DELETE','/sources/s1',None),('POST','/ingest',IngestRequest(source=src(),content='fact',mime_type='text/plain',actor_id='other').model_dump(mode='json'))]
         for method,path,data in requests:
             assert c.request(method,'/knowledge-copilot-training'+path,json=data,headers=headers).status_code==403
+
+
+def test_actual_http_constructor_dotdot_into_tmp_refuses(root,monkeypatch,oidc_auth_headers):
+    from app.modules.m25_knowledge_copilot_training import routes as r
+    # Explicit administrative test setup only, HTTP never has scratch bypass.
+    setup(root)
+    alias='/home/sandbox/../..'+str(root)
+    assert Path(alias).resolve()==root.resolve()
+    monkeypatch.setenv('ATLAS_DEV_NO_AUTH','0');monkeypatch.setenv('ATLAS_ENV','production')
+    monkeypatch.setattr(r,'_factory',None);monkeypatch.setenv('ATLAS_M25_DURABLE_ROOT',alias)
+    app=FastAPI();app.include_router(r.router)
+    with TestClient(app) as c:
+        out=c.get('/knowledge-copilot-training/export',headers=oidc_auth_headers('tenant','actor'))
+        assert out.status_code==503 and out.json()=={'detail':UNAVAILABLE}
+    assert r._factory is None
+    with pytest.raises(ServiceUnavailable):provision(alias,'another','actor',known_new=True)
