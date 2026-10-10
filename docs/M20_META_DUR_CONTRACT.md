@@ -17,6 +17,9 @@ beliefs or predictions. Each operator mutation is atomic; cross-operator and
 cross-calibration transactions are NOT promised. One snapshot per kind is
 simple, not a bounded large-scale journal. Direct writes to public inherited
 state mappings can bypass write-through; use the documented mutation methods.
+CuriosityEngine.random seeded RNG state is NOT persisted in the snapshot.
+A restart does not resume the prior sampling sequence; serendipity sampling
+sequences can change after restart. Only curiosity gap counts are durable.
 
 Alembic migration follows the actual current head20261010_m14_local_dispatch.
 DDL creates empty tenant/kind composite-key snapshots. No backfill, production
