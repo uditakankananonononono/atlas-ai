@@ -54,3 +54,26 @@ def test_crossover_and_mutation_are_actual_distinct_operators():
  off=solve(request(generations=1,crossover_rate=0,mutation_rate=0),2)
  for child in off['generation_history'][1]['offspring']:
   assert child['crossover_point'] is None and child['genome']==child['parents'][0]
+
+def test_full_mounted_route_auth_and_actual_result(monkeypatch,oidc_auth_headers):
+ from fastapi.testclient import TestClient
+ from app.main import app
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app)
+ path='/api/v1/api/modules/20/genetic-algorithms/solve'
+ assert c.post(path,json={'data':request()}).status_code==401
+ r=c.post(path,headers=oidc_auth_headers('tenant-ga','owner'),json={'data':request(),'seed':17})
+ assert r.status_code==200 and r.json()['best_score']==10
+ assert c.post(path,headers=oidc_auth_headers('tenant-ga','owner'),json={'data':request(mutation_rate=2)}).status_code==422
+
+def test_retained_lineage_bound_and_overflow_refused():
+ with pytest.raises(ValueError,match='product'):solve(request(weights=[1]*64,population=[[0]*64]*128,generations=1000))
+ with pytest.raises(ValueError,match='overflow'):solve(request(weights=[1e308]*4,population=[[1]*4,[0]*4]))
+ for seed in (-1,True,2**32):
+  with pytest.raises(ValueError):solve(request(),seed)
+
+def test_catalog_separates_actual_algorithm_from_legacy_reference():
+ from app.modules.m20_general_cognitive_worker.cognitive_routes_1960_2009 import methods
+ row=next(x for x in methods() if x['method']=='genetic_algorithms')
+ assert row['status']=='reference_substitute_only' and row['original_capability_status']=='unverified'
+ assert row['actual_implementation']['algorithm']=='binary_genetic_algorithm'
+ assert row['actual_implementation']['route']=='/api/v1/api/modules/20/genetic-algorithms/solve'

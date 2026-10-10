@@ -1642,3 +1642,6 @@ def assess_risk_register(request: RiskRegisterRequest, service: Any = Depends(ge
         return service.premortem.assess_register(goal=request.goal, risks=request.risks)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+
+from .genetic_algorithm_routes import router as genetic_algorithm_router
+router.include_router(genetic_algorithm_router)

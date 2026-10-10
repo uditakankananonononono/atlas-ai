@@ -33887,6 +33887,12 @@
         "original_capability_status": "unverified",
         "named_capability_executed": false,
         "source_number": 1977
+      },
+      "implementation_candidate": {
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/genetic_algorithm.py",
+        "test_path": "tests/modules/test_m20_genetic_algorithm.py",
+        "mounted_route": "/api/v1/api/modules/20/genetic-algorithms/solve",
+        "acceptance": "independent audit pending; binary-genome weighted-bit objective only; legacy scalar reference unchanged"
       }
     },
     {

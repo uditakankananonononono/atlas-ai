@@ -5,7 +5,12 @@ from .cognitive_1960_2009 import ROWS,run,capability_scope
 router=APIRouter(prefix="/cognitive-1960-2009",tags=["cognitive-1960-2009"])
 class Request(BaseModel):method:str=Field(min_length=1);data:dict[str,Any]=Field(default_factory=dict);seed:int=Field(0,ge=0)
 @router.get("/methods")
-def methods():return [{"method":m,"feature_row":r,**capability_scope(m)} for m,r in ROWS.items()]
+def methods():
+ rows=[{"method":m,"feature_row":r,**capability_scope(m)} for m,r in ROWS.items()]
+ for row in rows:
+  if row['method']=='genetic_algorithms':
+   row['actual_implementation']={'route':'/api/v1/api/modules/20/genetic-algorithms/solve','algorithm':'binary_genetic_algorithm','objective':'maximize_weighted_bit_sum','acceptance':'independent audit pending; legacy reference result unchanged'}
+ return rows
 @router.post("/analyze")
 def analyze(request:Request):
  try:return run(request.method,request.data,request.seed)
