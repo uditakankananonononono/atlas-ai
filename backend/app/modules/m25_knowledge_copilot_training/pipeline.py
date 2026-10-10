@@ -51,6 +51,17 @@ class LocalKnowledgePipeline:
         self.workspace=(self.root/tenant_id).resolve()
         if self.root not in self.workspace.parents: raise KnowledgeError('workspace escapes mounted boundary')
         self.workspace.mkdir(parents=True,exist_ok=True)
+    def restore_verified(self,*,source_ids=None,same_adapters_attested=False):
+        """Explicit startup restore. Deployment must attest original adapter identity.
+
+        Does not infer source consent authority or allow custom network adapters.
+        No default route auto-restore, migration, or permission grant.
+        """
+        from .recovery import rehydrate,RecoveryError
+        if same_adapters_attested is not True:
+            raise RecoveryError('original offline adapters must be explicitly attested',check='adapter-identity')
+        return rehydrate(self,source_ids=source_ids)
+
     def _contained(self,*parts:str)->Path:
         # Containment is checked BEFORE any write or state mutation; '..' and
         # '.' segments cannot escape the tenant workspace.
