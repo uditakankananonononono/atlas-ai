@@ -1,0 +1,26 @@
+# This text fixture is parsed as source, never imported or executed.
+raise RuntimeError('Target execution is forbidden')
+
+def test_module():
+    raise RuntimeError('Test body execution is forbidden')
+
+async def test_async_module():
+    pass
+
+class TestOuter:
+    def test_method(self):
+        pass
+    async def test_async_method(self):
+        pass
+    class TestInner:
+        def test_inner(self):
+            pass
+
+def helper():
+    def test_nested():
+        pass
+
+class Utility:
+    def helper(self):
+        def test_hidden(self):
+            pass
