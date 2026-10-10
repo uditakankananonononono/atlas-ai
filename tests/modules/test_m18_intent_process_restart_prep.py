@@ -1,4 +1,9 @@
-"""ATLAS-4: AUTHORED NOT RUN. Actual child interpreters, no external fetch.
+"""ATLAS-4: independently AUDITED, per the peer's independent auditor.
+
+Peer auditor reports 4 PASS with real child interpreters; a real source mutation
+of the pending guard kills both nominal cases. Builder authored these tests but
+did not run them. No execution by this builder or our side is claimed.
+Actual child interpreters, no external fetch.
 
 Phase faults model persisted restart boundaries, not power loss. Only the
 opt-in IntentBoundHostRateLimiter is covered; no global collector binding claim.

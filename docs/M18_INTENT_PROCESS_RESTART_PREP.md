@@ -1,9 +1,19 @@
 # ATLAS-4 M18 second-interpreter pending recovery canary
 
-AUTHORED NOT RUN. Selected base: 94fba3f76ae55d02163577921b4fd85f82a548c5.
-New test file only plus this scoped document. No product edits or weakened tests.
+Current status: independently AUDITED, attributed to the peer's independent
+auditor, as relayed by the peer coordinator. The auditor reports 4 PASS with real
+child interpreters and a real source mutation of the pending guard killing both
+nominal cases at commit f9ad8fbc29a08082efd2aaf386135c860931efca.
+The builder authored these tests and did not run them. No test execution by this
+builder or our side is claimed. This wording-only delta has not been re-executed.
 
-## Planned execution (peer-owned, not executed during prep)
+Selected base: 94fba3f76ae55d02163577921b4fd85f82a548c5.
+New test file only plus this scoped document. No product edits or weakened tests.
+Open LOW items: os import inside the test body; in-file self-patch mutants have
+low standalone value (the independent source mutation is separate evidence);
+Python >=3.12 works per the peer auditor, while Python 3.11 remains UNVERIFIED.
+
+## Execution commands (peer-owned; builder did not execute)
 
 From repository root, in the peer's existing Python >=3.12 dependency environment:
 
