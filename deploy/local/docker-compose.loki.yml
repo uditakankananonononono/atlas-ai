@@ -1,4 +1,7 @@
 # Opt-in override: Docker Compose 2.23.1+ (configs.content) required.
+# Google Cloud Logging sink, GCP alerting, log-based metrics. The bootstrap wires JSON logging at startup; it does NOT change existing services' default config, and no log pipeline is added to the collector.
+# Loki/Promtail use an internal-only Docker network; analytics disabled.
+# Digest pins refer to exact tag 3.5.0 only.
 # Start the base stack first with deploy/local/docker-compose.yml alone; obtain
 # API/worker LogPath via local docker inspect and set the two directory variables.
 # Both variables are required during ALL override compose parsing, even if only
@@ -23,6 +26,7 @@ services:
       driver: json-file
       options: {max-size: "10m", max-file: "3"}
   loki:
+    networks: [atlas-log-sink]
     image: grafana/loki:3.5.0@sha256:4c431d2e6b9b38718694b31c5d56be7c80dc69c513215fde1aeb5b02cd4e2665
     restart: unless-stopped
     command: ["-config.file=/etc/loki/local.yaml"]
@@ -32,6 +36,7 @@ services:
         target: /etc/loki/local.yaml
     volumes: ["atlas-loki:/loki"]
   promtail:
+    networks: [atlas-log-sink]
     image: grafana/promtail:3.5.0@sha256:507dfecd2f0949475d071c124bea1c26fc4f8c1cff0372eee57478d5b1c5fbff
     restart: unless-stopped
     command: ["-config.file=/etc/promtail/local.yaml"]
@@ -78,3 +83,6 @@ configs:
 volumes:
   atlas-loki: {}
   atlas-promtail-positions: {}
+networks:
+  atlas-log-sink:
+    internal: true
