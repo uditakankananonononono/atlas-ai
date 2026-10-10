@@ -1,9 +1,9 @@
-# ATLAS-5 - M25 metadata first-new-append restart canary (PREP, authored-not-run)
+# ATLAS-5 - M25 metadata first-new-append restart canary (audited and landed)
 
-Prep-only test canary. The builder authored it under PREP-NORUN constraints:
+The originating builder authored this under PREP-NORUN constraints:
 no pytest, no execution, no imports of product code, no network, no
 credentials, no pushes, no main writes, no product edits. The integrator
-executes and audits. Base pin: `94fba3f76ae55d02163577921b4fd85f82a548c5`.
+executed and the independent auditor verified 3/3 PASS with a real child interpreter. Landed at `8d418f0b8da69cd08648ced636865681fd212612`; not deployed. Base pin: `94fba3f76ae55d02163577921b4fd85f82a548c5`.
 
 ## What it pins (beyond `tests/modules/test_m25_version_metadata.py`)
 
@@ -38,15 +38,15 @@ process:
    (`manifest-schema`) in the second process WITHOUT publishing records or
    chunks, and without writing.
 
-## Mutation expectations (acceptance is the integrator's)
+## Mutation receipts (independently audited)
 
-- Promoting the legacy row to metadata-known at append -> named FAIL
+- Mutation A, executed: promoting the legacy row to metadata-known at append -> named FAIL
   ("legacy promotion").
-- Restamping the new row's `created_at` on restore -> named FAIL
+- Mutation B, executed: restamping the new row's `created_at` on restore -> named FAIL
   ("metadata pair").
-- Duplicate append / chunk duplication / restamped chunk time -> named FAIL
+- Mutation C, NOT RUN: duplicate append / chunk duplication / restamped chunk time -> planned named FAIL
   ("chunk identity").
-- Existing tests are preserved untouched; nothing here weakens them.
+- Existing tests are preserved untouched; nothing here weakens them. Some existing in-process M25 tests also fail under mutations A/B. The new value is the actual second-process proof, not exclusive mutation detection.
 
 ## Scope exclusions (per unit)
 
@@ -56,16 +56,16 @@ scope). No trusted-wall-clock claims. No historical reconstruction claims
 (legacy rows restamp per restore; only metadata-known rows preserve time).
 No deployment claims.
 
-## Planned commands (integrator executes; builder ran NONE)
+## Reproduction commands (repo root; pyproject sets pythonpath=backend)
 
     python -m pytest tests/modules/test_m25_metadata_process_restart_prep.py -v
     python -m pytest tests/modules/test_m25_version_metadata.py tests/modules/test_m25_verified_rehydration.py -v   # preservation check
 
-## Builder checks actually run (static only, reported separately)
+## Originating builder checks (historical static-only prep)
 
 - `python3 -m py_compile tests/modules/test_m25_metadata_process_restart_prep.py` -> OK.
 - AST parse of the test file and of the embedded `CHILD_SOURCE` literal -> OK.
-- No product code was imported, no test or subprocess was executed.
+- The originating prep builder imported no product code and ran no test/subprocess. Later integrator/auditor execution is recorded above.
 
 ## Function vs case counts
 
@@ -86,3 +86,6 @@ explicit-root, owner-pinned; constructs `LocalKnowledgePipeline` with
 `restore_verified(same_adapters_attested=True)`). The M21 ORM/Session lesson
 does not apply to M25 (no ORM); the factory's adapter pinning is mirrored by
 constructing pipelines with the same default adapters and attested restore.
+
+
+Landing check on current integrated main: new3casesPASS1.53s, wholeM25 162PASS6.63s (prior157 +2/run parity +3newcases), zero failures/skips. Independent original-base comparison157->160. No product edits.

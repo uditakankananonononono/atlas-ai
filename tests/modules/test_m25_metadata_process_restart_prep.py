@@ -1,7 +1,10 @@
-"""ATLAS-5 - M25 metadata first-new-append restart canary. AUTHORED-NOT-RUN.
+"""ATLAS-5 - M25 metadata second-process canary, audited and landed.
 
-Prep only (PREP-NORUN): this file is authored, never executed by the builder;
-the integrator runs and audits it. Planned commands live in
+Integrator and independent auditor ran the real child interpreter: 3 cases PASS.
+Mutations A (legacy promotion) and B (new-row restamping) fail these tests;
+some existing in-process M25 tests also fail under those mutations. The new
+value is second-process proof, not exclusive detection. Mutation C is unrun.
+Receipts and scope live in
 backend/app/modules/m25_knowledge_copilot_training/METADATA_RESTART_CANARY_PREP.md.
 
 What this pins beyond test_m25_version_metadata.py: the legacy-unknown /
@@ -14,8 +17,7 @@ as JSON for the parent to assert.
 
 Scope exclusions (per unit): no authenticity or signature claims for
 MIME-equivalent tamper, no trusted-wall-clock claims, no historical
-reconstruction claims, no deployment claims. Subprocess tests are authored,
-not run.
+reconstruction claims, no deployment claims. Subprocess tests were executed and independently audited; no deployment.
 """
 import json
 import subprocess
