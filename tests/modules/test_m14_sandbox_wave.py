@@ -183,7 +183,8 @@ def test_postgres_claim_rollback_and_cas_actual(tmp_path):
     # Only relevant tables: whole shared metadata includes pgvector unrelated to this unit.
     from app.modules.m00_approval_center.service import ApprovalEventRow
     from app.modules.m00_approval_center.impact import ApprovalReviewStateRow
-    for model in (ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
+    from app.modules.m14_project_builder.wave_supersede import WaveKeyVersionRow,WaveSupersedeRow
+    for model in (WaveKeyVersionRow,WaveSupersedeRow,ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
     root=Path(tempfile.mkdtemp(prefix='wave-pg-',dir=Path.home()));root.chmod(0o700)
     try:
         svc=SandboxWaveService(sessions,str(root))
