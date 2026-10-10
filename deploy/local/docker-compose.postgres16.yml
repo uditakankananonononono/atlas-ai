@@ -5,6 +5,10 @@
 # What this substitute honestly cannot cover: Supabase-managed hosting,
 # backups, dashboards and Supabase API surface.
 #
+# UNVERIFIED: Docker Compose orchestration (build, dependency ordering and
+# one-shot acceptance run) - not exercised in audit; this override is
+# verified statically only.
+#
 # Additive only: this override ADDS one one-shot acceptance service and
 # redefines nothing from deploy/local/docker-compose.yml.
 #
