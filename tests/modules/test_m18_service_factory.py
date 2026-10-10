@@ -80,6 +80,11 @@ def test_robots_and_refresh_shared_wal(root,monkeypatch):
     original=http.fetch;seen=[];_,work=paths(root,'t')
     def fetch(url,**kw):
         assert DispatchIntentWAL(work,'t').read()['pending'] is None
+        from app.modules.m18_side_hustle_scraper.lane_rate_limit_state import read_snapshot
+        from datetime import datetime,timezone
+        from urllib.parse import urlsplit
+        state=read_snapshot(next(work.glob('m18-pacing-*')),tenant_id='t',now=datetime.now(timezone.utc))
+        assert state.states[urlsplit(url).netloc].total_requests==1
         seen.append(url);return original(url,**kw)
     http.fetch=fetch
     monkeypatch.setenv('ATLAS_M18_PUBLIC_URLS','https://example.org/page')
