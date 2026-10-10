@@ -40,3 +40,12 @@ cleanup ignores OSError. Other unexpected non-StateError remains a scoped risk.
 Times use time.time(), not injectable clock. Individual source/query commits,
 not atomic whole-query transaction. Crash before outcome save/cooldown remains;
 flock only state writes, checksum not authentication, noM00authority inferred.
+
+## Cause isolation closed
+Independent review isolated the three missingm00_approval_events failures:
+database.py defaults to sqlite:///./atlas.db in current working directory.
+Tools hub test does not provision M00 tables, so clean CWD fails and populated
+atlas.db CWD passes. Present atf37156c7; candidate neither causes nor fixes it.
+Known NEW test-hermeticity defect, separate fix unit after feature landings:
+fixture provisions M00 tables or uses isolated temporary DB. Earlier state
+dependence is thus explained, not a product regression or unexplained flake.
