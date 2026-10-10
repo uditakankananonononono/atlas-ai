@@ -1,6 +1,8 @@
 """Opt-in, single-process serialized persistence binding for HostRateLimiter.
 
 Caller provisions a private directory and trusted tenant; bootstrap is explicit.
+Persistence failure latch is per-instance only. Restart can load previous valid
+state and lose the failed-save request timestamp; no restart-safe reconciliation.
 No default collector wiring. No replay/hostile-directory or distributed guarantees.
 Each record is persisted before returning to the caller. Use begin_request before
 external fetch: a crash after it preserves the request timestamp. A crash before
