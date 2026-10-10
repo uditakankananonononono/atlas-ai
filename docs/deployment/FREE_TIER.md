@@ -25,7 +25,7 @@
 
 1. Create Supabase, enable GitHub Auth, copy the transaction-pooler URL, project URL and anon key.
 2. Create Upstash Redis and copy its TLS `rediss://` URL.
-3. Deploy Render from `render.yaml`; enter secrets. The container startup validates configuration and runs `alembic upgrade head` before serving.
+3. Deploy Render from `render.yaml`; enter secrets, including `ATLAS_TOKEN_KEY` (any non-empty secret is accepted, 32+ random bytes is recommended but not enforced; it protects stored email and calendar tokens) and `ATLAS_API_KEY_ENCRYPTION_KEY` (a Fernet key, which is a different format: url-safe base64 of 32 random bytes). Generate both yourself, enter them only in Render, never commit values.
 4. Deploy Vercel with repository root and `vercel.json`; enter the three frontend variables from `.env.free-tier.example`.
 5. Add the final Vercel callback URL to Supabase Auth redirect allow-list and the Supabase callback URL to the GitHub OAuth app.
 6. Sign in with GitHub, load `/api/v1/modules`, create a low-risk record, restart Render, and verify it persists.
