@@ -329,3 +329,276 @@ async def test_no_new_messages_after_ack_and_replay_payload_isolated(setup):
     await channel.poll("tenant-a", "worker")
     assert await channel.poll("tenant-a", "worker") == []
     assert rows(engine)[0][0].payload == {"copy": "review me"}
+
+
+# Named guard pins: source literals were read before authoring these tests.
+# Source checks complement behavior tests; they do not execute Lua/Redis ACLs.
+def test_exact_hash_tag_names_and_same_slot_deadletter_keys(setup):
+    import hashlib
+    channel, _, _, _ = setup
+    binding = channel.binding("tenant-a")
+    slot = hashlib.sha256(b"tenant-a").hexdigest()
+    assert binding.stream == "atlas:m00:{" + slot + "}:submissions"
+    assert binding.dlq == "atlas:m00:{" + slot + "}:deadletters"
+    assert binding.stream.split("{")[1].split("}")[0] == binding.dlq.split("{")[1].split("}")[0]
+
+
+def test_duplicate_principal_and_unbound_tenant_guards(setup):
+    channel, redis, service, _ = setup
+    with pytest.raises(ValueError, match="unique trusted bindings"):
+        StreamsSubmissions(redis, service, [TrustedStreamBinding("a", "same"), TrustedStreamBinding("b", "same")])
+    with pytest.raises(ValueError, match="unbound trusted tenant"):
+        channel.binding("not-configured")
+
+
+def test_content_digest_binds_trusted_tenant_and_replay_checks_row_owner(setup):
+    import hashlib
+    from app.modules.m00_approval_center.it_communicates_with_the_rest_of_the_01 import _encode
+    channel, _, _, engine = setup
+    envelope = request().as_envelope()
+    approval_id = channel._persist("tenant-a", envelope)
+    with Session(engine) as db:
+        idem, = db.scalars(select(m00.ApprovalIdempotencyRow)).all()
+        expected = hashlib.sha256(_encode({"tenant_id": "tenant-a", "submission": envelope}).encode()).hexdigest()
+        assert idem.request_hash == expected
+        row = db.get(m00.ApprovalRequestRow, approval_id)
+        row.user_id = "tenant-b"
+        db.commit()
+    with pytest.raises(ReplayConflict):
+        channel._persist("tenant-a", envelope)
+
+
+@pytest.mark.parametrize("count", [0, 2])
+def test_replay_refuses_any_created_event_count_other_than_one(setup, count):
+    channel, _, _, engine = setup
+    envelope = request().as_envelope()
+    approval_id = channel._persist("tenant-a", envelope)
+    with Session(engine) as db:
+        event, = db.scalars(select(m00.ApprovalEventRow)).all()
+        if count == 0:
+            db.delete(event)
+        else:
+            db.add(m00.ApprovalEventRow(approval_id=approval_id, event="created", actor=None, at=event.at))
+        db.commit()
+    with pytest.raises(RuntimeError, match="creation evidence unavailable"):
+        channel._persist("tenant-a", envelope)
+
+
+def test_precommit_evidence_recheck_is_inside_real_transaction_literal():
+    import inspect
+    source = inspect.getsource(StreamsSubmissions._persist)
+    assert 'with self.service._sessions.begin() as db:' in source
+    assert 'db.flush()' in source
+    assert 'if existing(db) != row.id:' in source
+    assert source.index('db.flush()') < source.index('if existing(db) != row.id:') < source.index('approval_id = row.id')
+    assert source.index('if existing(db) != row.id:') < source.index('except IntegrityError:')
+
+
+def test_rest_ownership_query_guard_runs_before_payload_get(setup):
+    channel, _, service, engine = setup
+    from sqlalchemy import event
+    foreign = service.submit(module_id=6, action_type="schedule_post", payload={"private": "foreign"}, user_id="tenant-b")
+    calls = []
+    original = service.get
+    def observed(approval_id):
+        calls.append(approval_id)
+        return original(approval_id)
+    service.get = observed
+    statements = []
+    def observe(connection, cursor, statement, parameters, context, executemany):
+        statements.append(statement)
+    event.listen(engine, "before_cursor_execute", observe)
+    app = FastAPI()
+    app.include_router(create_status_router(service))
+    app.dependency_overrides[require_tenant] = lambda: TenantContext("tenant-a", "reader")
+    try:
+        with TestClient(app) as client:
+            missing = client.get("/approval-stream-status/requests/missing")
+            other = client.get("/approval-stream-status/requests/"+foreign["id"])
+        assert missing.status_code == other.status_code == 404
+        assert missing.json() == other.json()
+        assert calls == []
+        selects = [s for s in statements if s.lstrip().upper().startswith("SELECT")]
+        assert len(selects) == 2
+        assert all("m00_approval_requests.payload" not in s for s in selects)
+        assert all("m00_approval_requests.user_id =" in s for s in selects)
+    finally:
+        event.remove(engine, "before_cursor_execute", observe)
+
+
+@pytest.mark.parametrize("mode", ["missing-after-check", "foreign-after-check"])
+def test_rest_each_postcheck_guard_refuses_missing_or_changed_owner(setup, mode):
+    _, _, service, _ = setup
+    own = service.submit(module_id=6, action_type="schedule_post", payload={"private": "must-not-leak"}, user_id="tenant-a")
+    def changed(approval_id):
+        if mode == "missing-after-check":
+            raise m00.ApprovalNotFoundError(approval_id)
+        return {**own, "user_id": "tenant-b"}
+    service.get = changed
+    app = FastAPI()
+    app.include_router(create_status_router(service))
+    app.dependency_overrides[require_tenant] = lambda: TenantContext("tenant-a", "reader")
+    with TestClient(app, raise_server_exceptions=False) as client:
+        response = client.get("/approval-stream-status/requests/"+own["id"])
+    assert response.status_code == 404
+    assert response.json() == {"detail": "approval not found"}
+    assert "must-not-leak" not in response.text
+
+
+def test_deadletter_lua_exact_text_and_no_payload_field():
+    from app.modules.m00_approval_center.it_communicates_with_the_rest_of_the_01 import _DEADLETTER
+    assert _DEADLETTER == """
+local pending = redis.call('XPENDING', KEYS[1], ARGV[1], ARGV[2], ARGV[2], 1)
+if #pending == 0 then return 0 end
+redis.call('XADD', KEYS[2], 'MAXLEN', '=', ARGV[4], '*',
+           'message_id', ARGV[2], 'reason', ARGV[3])
+redis.call('XACK', KEYS[1], ARGV[1], ARGV[2])
+return 1
+"""
+    assert "payload" not in _DEADLETTER
+    assert _DEADLETTER.index("XADD") < _DEADLETTER.index("XACK")
+
+
+@pytest.mark.parametrize("ttl", [0, -1, 31536001])
+def test_ttl_outside_exact_bounds_refused(ttl):
+    with pytest.raises(EnvelopeError):
+        Submission("r", 6, "schedule_post", {}, ttl).as_envelope()
+
+
+@pytest.mark.parametrize("ttl", [1, 31536000])
+def test_ttl_exact_boundaries_accepted(ttl):
+    assert Submission("r", 6, "schedule_post", {}, ttl).as_envelope()["ttl_seconds"] == ttl
+
+
+@pytest.mark.parametrize("payload", [[], None, "text"])
+def test_payload_must_be_dict(payload):
+    with pytest.raises(EnvelopeError):
+        Submission("r", 6, "schedule_post", payload).as_envelope()
+
+
+def test_duplicate_key_unique_and_depth_limit():
+    from app.modules.m00_approval_center.it_communicates_with_the_rest_of_the_01 import _unique, _json_value
+    with pytest.raises(EnvelopeError):
+        _unique([("same", 1), ("same", 2)])
+    _json_value({}, depth=32)
+    with pytest.raises(EnvelopeError):
+        _json_value({}, depth=33)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("count", [0, -1, 101, True])
+async def test_batch_boundaries_invalid_never_read_transport(setup, count):
+    channel, redis, _, _ = setup
+    async def forbidden(**kwargs):
+        pytest.fail("invalid batch must not reach Redis")
+    redis.xreadgroup = forbidden
+    with pytest.raises(ValueError, match="invalid batch count"):
+        await channel.poll("tenant-a", "worker", count=count)
+
+
+@pytest.mark.asyncio
+async def test_batch_maximum_100_is_forwarded(setup):
+    channel, redis, _, _ = setup
+    from app.modules.m00_approval_center.it_communicates_with_the_rest_of_the_01 import MAX_BATCH
+    assert MAX_BATCH == 100
+    calls = []
+    async def observe(**kwargs):
+        calls.append(kwargs)
+        return []
+    redis.xreadgroup = observe
+    assert await channel.poll("tenant-a", "worker", count=100) == []
+    assert calls[0]["count"] == 100
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("message_id", ["bad", "1", "-1-0", "1-0x"])
+async def test_redis_entry_id_regex_precedes_pending_read(setup, message_id):
+    channel, redis, _, _ = setup
+    async def forbidden(**kwargs):
+        pytest.fail("invalid entry ID reached Redis")
+    redis.xpending_range = forbidden
+    with pytest.raises(ValueError, match="invalid Redis entry id"):
+        await channel._handle(channel.binding("tenant-a"), message_id, {})
+
+
+@pytest.mark.asyncio
+async def test_stream_name_bytes_decoded_and_unexpected_name_rejected(setup):
+    channel, redis, _, _ = setup
+    async def bytes_name(**kwargs):
+        return [(channel.binding("tenant-a").stream.encode(), [])]
+    redis.xreadgroup = bytes_name
+    assert await channel.poll("tenant-a", "worker") == []
+    async def wrong_name(**kwargs):
+        return [(b"foreign-stream", [])]
+    redis.xreadgroup = wrong_name
+    with pytest.raises(RuntimeError, match="unexpected stream"):
+        await channel.poll("tenant-a", "worker")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("pending", [[], [{}, {}]])
+async def test_pending_must_be_exactly_one(setup, pending):
+    channel, redis, _, engine = setup
+    async def result(**kwargs):
+        return pending
+    redis.xpending_range = result
+    value = await channel._handle(channel.binding("tenant-a"), "1-0", {})
+    assert value["outcome"] == "pending_unavailable"
+    assert rows(engine) == ([], [], []) and not redis.acks
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("attempts", [True, "3", 0, None])
+async def test_pending_attempts_must_be_positive_exact_integer(setup, attempts):
+    channel, redis, _, engine = setup
+    async def result(**kwargs):
+        return [{"times_delivered": attempts}]
+    redis.xpending_range = result
+    with pytest.raises(RuntimeError, match="pending delivery count unavailable"):
+        await channel._handle(channel.binding("tenant-a"), "1-0", {})
+    assert rows(engine) == ([], [], []) and not redis.acks
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("result_value", [0, 2])
+async def test_deadletter_result_only_one_is_success(setup, result_value):
+    channel, redis, _, _ = setup
+    async def pending(**kwargs):
+        return [{"times_delivered": MAX_ATTEMPTS}]
+    async def result(*args):
+        return result_value
+    redis.xpending_range = pending
+    redis.eval = result
+    value = await channel._handle(channel.binding("tenant-a"), "1-0", {})
+    assert value["outcome"] == "pending_unavailable" and not redis.acks
+
+
+def test_integrity_error_with_no_replay_winner_is_reraised(setup, monkeypatch):
+    from sqlalchemy import event
+    from sqlalchemy.exc import IntegrityError
+    channel, _, _, engine = setup
+    def inject(connection, cursor, statement, parameters, context, executemany):
+        if "INSERT INTO m00_approval_requests" in statement:
+            raise IntegrityError(statement, parameters, RuntimeError("synthetic no-winner constraint"))
+    event.listen(engine, "before_cursor_execute", inject)
+    try:
+        with pytest.raises(IntegrityError):
+            channel._persist("tenant-a", request().as_envelope())
+        assert rows(engine) == ([], [], [])
+    finally:
+        event.remove(engine, "before_cursor_execute", inject)
+
+
+def test_missing_created_event_inside_transaction_prevents_commit(setup):
+    from sqlalchemy import event
+    channel, _, _, engine = setup
+    def remove_creation(connection, cursor, statement, parameters, context, executemany):
+        if "INSERT INTO m00_approval_events" in statement:
+            connection.exec_driver_sql("DELETE FROM m00_approval_events")
+    event.listen(engine, "after_cursor_execute", remove_creation)
+    try:
+        with pytest.raises(RuntimeError, match="creation evidence unavailable"):
+            channel._persist("tenant-a", request().as_envelope())
+        assert rows(engine) == ([], [], [])
+    finally:
+        event.remove(engine, "after_cursor_execute", remove_creation)
