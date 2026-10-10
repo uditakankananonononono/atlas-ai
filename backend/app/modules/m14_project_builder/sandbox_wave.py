@@ -115,6 +115,8 @@ class SandboxWaveService:
                     if len(raw)>100000:raise WaveError('input exceeds100k')
             if total_bytes>2000000:raise WaveError('draft bytes exceed2MB')
             # One bounded ready wave only; never dispatch reviewed/failed task or a dependent.
+            from .reviewed_continuation import check_ready
+            check_ready(db,p)
             ready=_ready(project.plan)[:request.max_parallel]
             if not ready:raise WaveError('no ready task in plan')
             if len(ready)>project.budget.max_agent_calls or len(ready)*request.timeout_seconds>project.budget.max_runtime_seconds:raise WaveError('wave reservations exceed project budget')
@@ -169,12 +171,15 @@ class SandboxWaveService:
             attempts=list(db.scalars(select(SandboxWaveRow).where(SandboxWaveRow.tenant_id==tenant,SandboxWaveRow.project_id==row.project_id,SandboxWaveRow.claim_key.is_not(None))))
             for reservation,limit in (('reserved_calls','max_agent_calls'),('reserved_runtime_seconds','max_runtime_seconds'),('reserved_cost_usd','max_cost_usd')):
                 if sum(a.payload[reservation] for a in attempts)+row.payload[reservation]>p.budget[limit]:raise WaveConflict('cumulative wave reservations exceed project budget')
+            from .reviewed_continuation import check_ready,validate_continuation_claim
+            check_ready(db,p)
+            validate_continuation_claim(db,row,tenant,actor)
             claim_key=digest({'tenant':tenant,'project':row.project_id})
-            from .wave_supersede import WaveKeyVersionRow
-            version=db.scalar(select(WaveKeyVersionRow).where(WaveKeyVersionRow.project_key==claim_key).order_by(WaveKeyVersionRow.version.desc()).limit(1))
-            if version is not None:
-                if version.new_wave_id!=row.id:raise WaveConflict('project already attempted this wave unit')
-                claim_key=digest({'project_key':claim_key,'version':version.version})
+            from .wave_supersede import current
+            version,wid=current(db,row)
+            if version:
+                if wid!=row.id:raise WaveConflict('project already attempted this wave unit')
+                claim_key=digest({'project_key':claim_key,'version':version})
             if db.scalar(select(SandboxWaveRow.id).where(SandboxWaveRow.claim_key==claim_key)):raise WaveConflict('project already attempted this wave unit')
             changed=db.execute(update(SandboxWaveRow).where(SandboxWaveRow.id==wave_id,SandboxWaveRow.state=='awaiting_approval').values(state='claimed',claim_key=claim_key))
             if changed.rowcount!=1:raise WaveConflict('already claimed')

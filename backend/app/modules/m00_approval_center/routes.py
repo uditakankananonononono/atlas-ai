@@ -95,8 +95,8 @@ def decide_request(
         current = service.get(approval_id)
         if current["user_id"] != tenant.tenant_id:
             raise ApprovalNotFoundError(approval_id)
-        if current['action_type']=='wave_supersede':
-            raise HTTPException(403,'wave supersede decisions require the module admin endpoint')
+        if current['action_type'] in ('wave_supersede','review_project_sandbox_wave','continue_project_sandbox_wave'):
+            raise HTTPException(403,'wave transition decisions require the module authority endpoint')
         return service.decide(approval_id, ApprovalStatus(body.decision), tenant.actor_id)
     except ApprovalNotFoundError as error:
         raise _not_found(error) from error

@@ -1,3 +1,4 @@
+from app.modules.m14_project_builder.reviewed_continuation import ReviewRow,ContinuationRow,ContinuationKeyRow
 """Approval + durable claim + real namespace execution, never mock substitution."""
 import asyncio,base64,os,shutil,tempfile
 from datetime import timedelta
@@ -184,7 +185,7 @@ def test_postgres_claim_rollback_and_cas_actual(tmp_path):
     from app.modules.m00_approval_center.service import ApprovalEventRow
     from app.modules.m00_approval_center.impact import ApprovalReviewStateRow
     from app.modules.m14_project_builder.wave_supersede import WaveKeyVersionRow,WaveSupersedeRow
-    for model in (WaveKeyVersionRow,WaveSupersedeRow,ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
+    for model in (ReviewRow,ContinuationRow,ContinuationKeyRow,WaveKeyVersionRow,WaveSupersedeRow,ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
     root=Path(tempfile.mkdtemp(prefix='wave-pg-',dir=Path.home()));root.chmod(0o700)
     try:
         svc=SandboxWaveService(sessions,str(root))
