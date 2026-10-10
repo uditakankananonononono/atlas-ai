@@ -1,11 +1,24 @@
 # M14 attempted-wave continuation policy (PREP, authored, NOT RUN)
 
-Status: design and test prep only. AUTHORED-NOT-RUN. No product file is changed. Nothing here
-implements continuation, resume, retry or recovery. Base: 7d6098ff81b17478d0a975961f40904d5c69cb99
+Status: design and test prep, builder-authored. The builder (this task agent) did NOT run anything:
+its only checks were py_compile and ast.parse on the test file. Provenance of the later results:
+the PEER's independent auditor executed the tests on its own side with a real Bubblewrap environment
+present and reported 21 PASS + 1 strict XFAIL; whole M14 969 PASS / 1 XFAIL / 2 pre-existing
+environment FAIL, identical to base, plus the 21 new, zero regression (auditor's figures, relayed by
+the coordinator, not reproduced by the builder). Auditor mutation results: removing the project
+attempted-wave key was caught by 6 tests. Removing the wave-state guard was NOT independently pinned:
+all 21 still passed because both guards raise the same exception type (`WaveConflict`) and the
+original policy helper compared type only. Both guard messages are statically present in the source
+(a static test pins them); the state guard's removal was masked, not shown to be caught. The
+follow-up revision of the helper matches messages to pin each guard; that revision is itself
+AUTHORED-NOT-RUN by the builder until the auditor runs it.
+Nothing here implements continuation, resume, retry or recovery. No product file is changed.
+Base: 7d6098ff81b17478d0a975961f40904d5c69cb99
 (tree 2d41da684ce15b9c6e871cccd66992da9d06c4a4). Source read statically with `git show` at that
 exact commit: `backend/app/modules/m14_project_builder/sandbox_wave.py`,
 `docs/M14_SANDBOX_WAVE_20261010.md`, `tests/modules/test_m14_sandbox_wave.py`.
-Claims about runtime behavior below are read from code, not observed.
+Claims about runtime behavior below were read from code by the builder; the auditor's run is the
+only execution evidence.
 
 Question: when a run is interrupted mid-wave and a later process finds the permanent
 attempted-wave key, what exact continuation contract applies, and what is NOT resumed?
@@ -112,8 +125,9 @@ bars, each an owner decision, not an assumption:
 5. "Second process" in the authored tests is a second service instance over the same database,
    the same convention as the existing restart tests, not a separate OS process.
 6. The authored interruption injection uses a `BaseException` subclass raised inside a worker
-   thread and a SQLAlchemy `before_commit` listener on the sessionmaker. Neither has been
-   executed; both are assumptions about runtime behavior to verify.
+   thread and a SQLAlchemy `before_commit` listener on the sessionmaker. The builder never executed
+   either. The peer's auditor run (21 PASS + 1 strict XFAIL, real Bubblewrap present) exercised
+   them and they behaved as the tests assume; that confirmation belongs to the auditor.
 7. Plan-DAG readiness (`_ready`) treats `blocked` and `ready` tasks whose dependencies are all
    `completed` as ready; a sandbox wave never marks a task completed, so dependents remain
    permanently unready at this base.
@@ -121,5 +135,7 @@ bars, each an owner decision, not an assumption:
 ## Authored tests (NOT RUN)
 
 `tests/modules/test_m14_continuation_prep.py`. Static tests need no sandbox. Real-execution tests
-reuse the existing convention and skip when Bubblewrap namespaces are unavailable. Planned
-commands for the executing side are in the delivery manifest, not run here.
+reuse the existing convention and skip when Bubblewrap namespaces are unavailable. Policy
+assertions check the guard by exception message: "wave cannot be claimed" for the state guard and
+"project already attempted this wave unit" for the project key. Planned commands for the executing
+side are in the delivery manifest.

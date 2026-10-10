@@ -1,4 +1,11 @@
-"""AUTHORED, NOT RUN. M14 attempted-wave continuation policy (ATLAS-1 prep).
+"""M14 attempted-wave continuation policy (ATLAS-1 prep). Builder-authored, NOT RUN by the builder.
+
+Provenance: the builder only ran py_compile/ast.parse. The peer's independent auditor executed the
+first revision (21 PASS + 1 strict XFAIL, real Bubblewrap present) and mutation-tested it: removing
+the project attempted-wave key was caught by 6 tests; removing the wave-state guard was NOT pinned
+(both guards raise WaveConflict and the helper compared type only). This revision adds message
+matching so each guard is pinned separately; it has not been executed by anyone yet. No claim is
+made that the state guard's removal is caught until the auditor runs it.
 
 Contract under test: docs/M14_DAG_CONTINUATION_PREP.md at base 7d6098ff. Additive only: uses
 existing APIs, no product edits. Static tests read git-tracked text and import no product code.
@@ -160,11 +167,20 @@ def project_plan(sessions):
         return db.scalar(select(ProjectRow).where(ProjectRow.id == PROJECT)).plan
 
 
-def must_conflict(fn, label):
-    """Raise AssertionError (not pytest.fail) so mutation tests can catch a violated policy."""
+STATE_GUARD = "wave cannot be claimed"
+KEY_GUARD = "project already attempted this wave unit"
+
+
+def must_conflict(fn, label, message):
+    """Raise AssertionError (not pytest.fail) so mutation tests can catch a violated policy.
+
+    `message` pins WHICH WaveConflict guard fired (state guard vs project key), since both share a type.
+    """
     try:
         fn()
-    except sw.WaveConflict:
+    except sw.WaveConflict as exc:
+        if message not in str(exc):
+            raise AssertionError(f"policy violated ({label}): WaveConflict {str(exc)!r} lacks {message!r}") from exc
         return
     except Exception as exc:  # any other outcome also violates the contract
         raise AssertionError(f"policy violated ({label}): expected WaveConflict, got {type(exc).__name__}") from exc
@@ -181,15 +197,15 @@ def assert_second_process_policy(sessions, root, wid, plan_before, expected_key)
         raise AssertionError("policy violated (partial state read as complete): state=" + view["state"])
     if view["unknown_after_claim"] is not True or view["result"] is not None:
         raise AssertionError("policy violated: claimed wave must read unknown with no result")
-    must_conflict(lambda: fresh.claim(TENANT, ACTOR, wid), "claim on claimed wave")
-    must_conflict(lambda: asyncio.run(fresh.execute(TENANT, ACTOR, wid)), "execute on claimed wave")
+    must_conflict(lambda: fresh.claim(TENANT, ACTOR, wid), "claim on claimed wave", STATE_GUARD)
+    must_conflict(lambda: asyncio.run(fresh.execute(TENANT, ACTOR, wid)), "execute on claimed wave", STATE_GUARD)
     if dispatched:
         raise AssertionError("policy violated: second process dispatched a task")
     if fresh.artifacts(TENANT, ACTOR, wid) != []:
         raise AssertionError("policy violated: artifacts listed for an unfinished wave")
     before = facts(sessions, wid)
     wid2, aid2 = approved(fresh)
-    must_conflict(lambda: fresh.claim(TENANT, ACTOR, wid2), "fresh draft for attempted project")
+    must_conflict(lambda: fresh.claim(TENANT, ACTOR, wid2), "fresh draft for attempted project", KEY_GUARD)
     after2 = facts(sessions, wid2)
     if after2["state"] != "awaiting_approval" or after2["key"] is not None:
         raise AssertionError("policy violated: second draft changed state or key")
@@ -320,9 +336,9 @@ def test_completed_wave_is_also_closed_and_not_upgraded(env):
     assert result["result"]["independent_quality_verified"] is False
     assert {t["task_id"] for t in result["result"]["tasks"]} == {"a1", "a2"}  # c never dispatched
     fresh = sw.SandboxWaveService(sessions, str(root))
-    must_conflict(lambda: asyncio.run(fresh.execute(TENANT, ACTOR, wid)), "execute on awaiting_review")
+    must_conflict(lambda: asyncio.run(fresh.execute(TENANT, ACTOR, wid)), "execute on awaiting_review", STATE_GUARD)
     wid2, _ = approved(fresh)
-    must_conflict(lambda: fresh.claim(TENANT, ACTOR, wid2), "second wave for project")
+    must_conflict(lambda: fresh.claim(TENANT, ACTOR, wid2), "second wave for project", KEY_GUARD)
     assert facts(sessions, wid)["effects"] == 1
 
 
@@ -359,8 +375,8 @@ def test_injected_partial_task_row_on_claimed_wave_does_not_make_it_complete(env
     fresh = sw.SandboxWaveService(sessions, str(root))
     view = fresh.get(TENANT, ACTOR, wid)
     assert view["state"] == "claimed" and view["unknown_after_claim"] is True and view["result"] is None
-    must_conflict(lambda: asyncio.run(fresh.execute(TENANT, ACTOR, wid)), "execute with partial task row")
-    must_conflict(lambda: fresh.claim(TENANT, ACTOR, wid), "claim with partial task row")
+    must_conflict(lambda: asyncio.run(fresh.execute(TENANT, ACTOR, wid)), "execute with partial task row", STATE_GUARD)
+    must_conflict(lambda: fresh.claim(TENANT, ACTOR, wid), "claim with partial task row", STATE_GUARD)
     assert project_plan(sessions) == plan_before
 
 
