@@ -6,14 +6,20 @@ class A:
  def put(self,x):return x
 class R:
  def __init__(self):self.events=set();self.recorded=[]
+ def tenant_billing(self,tenant):
+  if tenant!='t':return None
+  from types import SimpleNamespace
+  return SimpleNamespace(subscription_id='sub_12345',customer_id='cus_12345',status='active',cancel_at_period_end=False)
  def approval(self,x):return {"status":"approved","payload":{"tenant_id":"t","plan":{"id":"pro"},"success_url":"https://ok","cancel_url":"https://no"}}
  def record_execution(self,a,r):self.recorded.append(a)
  def save_event(self,e):new=e.id not in self.events;self.events.add(e.id);return new
 class S:
- async def create_checkout(self,*x):return {"id":"cs_test","url":"https://checkout.stripe.test"}
+ async def create_checkout(self,*x):raise AssertionError('legacy direct provider call must not execute')
 def test_money_requires_proposal_and_approved_execution():
  r=R();s=Service(A(),r,S());p=s.propose_checkout("t",CheckoutIn(plan_id="pro",success_url="https://ok",cancel_url="https://no"));assert p.status=="pending"
- assert asyncio.run(s.execute_checkout(p.approval_id,"t"))["id"]=="cs_test"
+ from app.modules.m24_billing.write_ahead import DispatchRefused
+ with pytest.raises(DispatchRefused,match='dispatch disabled'):asyncio.run(s.execute_checkout(p.approval_id,"t"))
+ assert r.recorded==[]
 def test_webhook_idempotency():
  from app.modules.m24_billing.inbox import InboxRefused
  s=Service(A(),R(),S());e=BillingEventIn(id="evt_1",type="invoice.paid",created=1,data={})
@@ -35,6 +41,10 @@ def test_cancel_and_invoice_are_separate_tenant_bound_approval_actions():
  r=R();s=Service(A(),r,S())
  c=s.propose_cancel('t',CancelIn(subscription_id='sub_12345'));i=s.propose_invoice('t',InvoiceIn(customer_id='cus_12345',description='Atlas Team',amount_cents=9900))
  assert c.action_type=='cancel_subscription' and c.payload['subscription_id']=='sub_12345'
+ assert c.payload['tenant_id']==i.payload['tenant_id']=='t'
+ assert c.payload['customer_id']=='cus_12345' and c.payload['before_state']['status']=='active'
+ with pytest.raises(PermissionError,match='subscription mapping'):s.propose_cancel('other',CancelIn(subscription_id='sub_12345'))
+ with pytest.raises(PermissionError,match='subscription mapping'):s.propose_cancel('t',CancelIn(subscription_id='sub_other'))
  assert i.action_type=='issue_invoice' and i.payload['amount_cents']==9900 and i.payload['effect']=='create_draft_invoice'
 
 class LifecycleRepo(R):
