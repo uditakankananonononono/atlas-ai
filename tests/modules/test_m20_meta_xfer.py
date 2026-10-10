@@ -165,7 +165,7 @@ def test_task_edge_and_label_limits_are_independent(tmp_path):
  assert l.learn(e)['status']=='abstracted'
  e['episode_id']='longer';e['domain']='d'*241
  with pytest.raises(ValueError):l.learn(e)
- e=episode();e['problem']['tasks']=['a'*121,'b'];e['problem']['dependencies']=[['a'*121,'b']];e['executed_order']=['a'*121,'b']
+ e=episode(ident='task121');e['problem']['tasks']=['a'*121,'b'];e['problem']['dependencies']=[['a'*121,'b']];e['executed_order']=['a'*121,'b']
  with pytest.raises(ValueError):l.learn(e)
 
 def test_duplicate_task_and_dependency_refusal(tmp_path):
