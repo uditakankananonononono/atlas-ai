@@ -1649,3 +1649,5 @@ from .genetic_algorithm_routes import router as genetic_algorithm_router
 router.include_router(genetic_algorithm_router)
 from .propositional_routes import router as propositional_router
 router.include_router(propositional_router)
+from .particle_swarm_routes import router as particle_swarm_router
+router.include_router(particle_swarm_router)

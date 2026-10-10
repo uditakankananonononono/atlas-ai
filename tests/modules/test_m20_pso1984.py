@@ -76,3 +76,37 @@ def test_production_mounted_route_seed_and_validation(monkeypatch,oidc_auth_head
   r=c.post(path,headers=oidc_auth_headers('pso','owner'),json={'data':d,'seed':seed})
   assert r.status_code==200 and r.json()==solve(d,seed)
  assert c.post(path,headers=oidc_auth_headers('pso','owner'),json={'data':request(particles=1)}).status_code==422
+
+def test_every_update_draws_velocity_personal_social_memory_and_bounds():
+ d=request(particles=5,iterations=12,inertia=.7,cognitive=1.5,social=3.5)
+ rng=random.Random(8);r=solve(d,8)
+ for _ in range(5):
+  for lo,hi in d['bounds']:rng.uniform(lo,hi)
+  for lo,hi in d['bounds']:rng.uniform(-(hi-lo)*.1,(hi-lo)*.1)
+ cognitive_nonzero=False;boundary_hit=False
+ for prev,next_ in zip(r['history'],r['history'][1:]):
+  for i,(p,v)in enumerate(zip(prev['positions'],prev['velocities'])):
+   for j,(lo,hi)in enumerate(d['bounds']):
+    r1,r2=rng.random(),rng.random()
+    correction=1.5*r1*(prev['personal_best_positions'][i][j]-p[j])
+    cognitive_nonzero|=correction!=0
+    speed=.7*v[j]+correction+3.5*r2*(prev['global_best_position'][j]-p[j])
+    raw=p[j]+speed;clamped=max(lo,min(hi,raw));boundary_hit|=clamped!=raw
+    assert next_['positions'][i][j]==clamped
+    assert next_['velocities'][i][j]==(speed if clamped==raw else 0.)
+  expected_scores=[min(old,new)for old,new in zip(prev['personal_best_scores'],next_['scores'])]
+  assert next_['personal_best_scores']==expected_scores
+  for i,(old,new)in enumerate(zip(prev['personal_best_scores'],next_['scores'])):
+   assert next_['personal_best_positions'][i]==(next_['positions'][i]if new<old else prev['personal_best_positions'][i])
+  assert next_['global_best_score']==min(prev['global_best_score'],*expected_scores)
+ assert cognitive_nonzero and boundary_hit
+
+def test_seed_diversity_and_no_global_best_shortcut():
+ a=solve(request(particles=4,iterations=1),1);b=solve(request(particles=4,iterations=1),2)
+ assert a['history']!=b['history'] and a['best_score']>0
+ assert a['history'][0]['global_best_score']==min(a['history'][0]['scores'])
+ assert a['history'][-1]['global_best_score']==a['best_score']
+
+def test_exact_retained_bound_boundary_refuses_before_work():
+ with pytest.raises(ValueError,match='product'):
+  solve(request(bounds=[[-1,1]]*16,particles=128,iterations=48),1)
