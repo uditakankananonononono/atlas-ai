@@ -181,13 +181,13 @@ Legal1260-1309 PARTIAL supplied review templates/unverified reference structure.
 
 The risk register also has tenant-bound durable runtime routes: create/read/history/revise under `/api/modules/20/runtime/risk-registers`. SQL current-revision compare-and-update and history insertion commit together; stale revisions return409, other tenants cannot read/revise a register, and restart preserves earlier control gaps. The additive risk-table migration was tested on local SQLite only and was not run on production. History is append-only through this interface, not tamper-proof against database administrators. Ownership remains a supplied text label, not a verified assignee or a notification. Live evidence checks, scheduled follow-ups and PostgreSQL concurrent acceptance remain open.
 
-### M21 no-total cursor-window candidate
+### M21 no-total cursor window: SCOPED
 Opt-in journal cursor endpoint avoids full-match COUNT, materializes at most
 scan_cap+1 rows and scores newest bounded window. matched_total and omitted_by_scan_cap unknown; omitted_by_limit counts positive matches omitted within scored window. Probe row not consumed. No DB CPU/index/load or global top-k guarantee.
-Existing exact-count endpoint unchanged. Pending independent verdict.
+Existing exact-count endpoint unchanged. Independent SQLite and local PG16.2 probes verify retrieval mechanics. All tests selected by tests/modules/test_m21*.py before fixture repair: candidate277PASS3FAIL; exact02a75fbd base263PASS3FAIL, identical three nodes, no skips. Not repository-wide suite. scan_cap selects newest window before scoring; hit limit applies after lexical scoring.
 
 After journal initialization, each cursor retrieval issues one SELECT LIMIT scan_cap+1 with no COUNT. HTTP store dependency may also inspect/create schema; unchanged exact-count endpoint still uses COUNT. Retrieval helper validates time/cursor bounds before its SELECT. HTTP store dependency initializes/checks journal schema before route-level bounds rejection.
-### M18 dispatch-intent candidate (opt-in, pending independent verdict)
+### M18 dispatch intent: VERIFIED opt-in binding
 Separate WAL and dispatch binding deny pending intent on restart, no automatic
 clear/replay. Limits: conservative stuck-pending after crash; recovery-acknowledgment
 authority is caller/operator inspection (boolean, not authenticated role); two-file
@@ -199,9 +199,21 @@ See docs/M18_DISPATCH_INTENT_20261010.md. Existing limiter/collectors unchanged.
 M18 intent binding refuses bootstrap kwarg and requires separately preprovisioned
 stores. Mixing plain DurableHostRateLimiter on the same directory ignores/bypasses
 WAL; caller must use the intent binding for every dispatch.
-### M25 version metadata integration candidate
+### M25 version metadata: VERIFIED
 New version manifests preserve original UTC ingest timestamps and MIME through
 explicit verified restart restoration; legacy timestamps remain unknown and are
 never promoted. Old binaries cannot read new-format rows; no hostile-writer or
 trusted-clock authenticity claim. See docs/M25_VERSION_METADATA_20261010.md.
-Candidate status pending independent verdict, not deployed capacity acceptance.
+Independent141PASS0SKIP at36f0a84f; typed non-object refusal and metadata/legacy behavior verified. MIME-equivalent tampering may be undetected when extraction is identical. Not deployed capacity acceptance.
+
+M18 intent independent155PASS0SKIP; phase fault simulations, not real SIGKILL or
+power-loss proof. VERIFIED is the scoped opt-in protocol, not global enforcement.
+
+### M21 Claire fixture repair: SCOPED
+Three tests use real M00 temporary SQLite tables/service, no product changes.
+Fixture provides genuine M00 approval events (independently probed); the repaired
+tests assert approval status, not event persistence - event-loss coverage is a
+separate future unit. Independent combined test_m21*.py + test_m22*.py on cursor
+main:391PASS1SKIP (opt-in ATLAS_LIVE_REGISTRY). No repository-wide test claim.
+Other ApprovalStore tests not scanned. Optional next unit: request/event persistence
+assertions for the three repaired nodes, separate review gate.
