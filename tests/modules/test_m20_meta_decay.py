@@ -99,6 +99,7 @@ def test_mounted_routes_auth_errors_and_tenant(tmp_path,monkeypatch,oidc_auth_he
 def test_exact_sample_event_time_boundaries_and_false_alarm(tmp_path):
  m=model(tmp_path);rows=[{'history_id':str(i),'fact_class':'c','source':f'fixture:{i}','started_at':0.,'ended_at':10.,'changed':i<5}for i in range(40)]
  m.ingest(rows);r=m.forecast('c',horizon=10,as_of=10)
+ assert r['status']=='forecast'
  assert r['events']==5 and r['censored']==35 and r['exposure']==400
  assert r['stale_probability']==pytest.approx(1-(401/411)**6)
  assert m.forecast('c',horizon=10,as_of=9.999)['status']=='abstained'
