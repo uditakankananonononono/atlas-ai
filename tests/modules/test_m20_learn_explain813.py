@@ -61,4 +61,4 @@ def test_mounted_auth_tenant_and_bad_inputs(monkeypatch,oidc_auth_headers):
  assert c.post(path,json={'payload':payload()}).status_code==401
  r=c.post(path,headers=h,json={'payload':payload()});assert r.status_code==200 and r.json()['tenant_id']=='a' and r.json()['evaluation']['capability_executed'] is True
  assert c.post(path,headers=h,json={'payload':{'objective':'x','source':SRC}}).status_code==422
- assert c.post(path,headers=h,json={'payload':{**payload(),'resource_refs':[{'tenant_id':'b'}]}}).status_code==422
+ assert c.post(path,headers=h,json={'payload':{**payload(),'resource_refs':[{'tenant_id':'b'}]}}).status_code==403

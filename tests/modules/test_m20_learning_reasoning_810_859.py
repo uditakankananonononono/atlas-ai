@@ -10,8 +10,8 @@ def test_catalog_exact():assert [x['row_id'] for x in capabilities()]==list(rang
 def test_810_spaced_repetition_computes_due_and_lapse():assert L('spaced_repetition',items=[{'id':'x','quality':2,'evidence_id':'e1','reviewed_at':'2026-10-07T00:00:00+05:30'}])['schedule'][0]['lapse']
 def test_811_interleaving_mixes_skills():assert len(set(L('interleaving',practice_items=[{'id':'1','skill':'a','task':'sum'},{'id':'2','skill':'b','task':'subtract'}])['sequence']))==2
 def test_812_retrieval_is_closed_book_feedback_retry():assert L('retrieval_practice',recall_items=[{'id':'1','question':'2+2','accepted_answers':['4'],'skill':'addition'}])['recall']['unattempted_items'][0]['question']=='2+2'
-def test_813_elaborative_why_and_conditions():assert 'under what conditions' in L('elaborative_interrogation',claims=['x'])['prompts'][0]
-def test_814_self_explanation_checks_steps():assert 'Why is this step valid?' in L('self_explanation')['self_explanation_prompts']
+def test_813_elaborative_why_and_conditions():assert 'under what conditions' in L('elaborative_interrogation',claims=['x'],explanation_facts=[{'atom':'x','source':'fixture:x'}],explanation_rules=[{'id':'r','if':['x'],'then':'y','source':'fixture:r'}],explanation_target='y')['prompts'][0]
+def test_814_self_explanation_checks_steps():assert 'Why is this step valid?' in L('self_explanation',explanation_facts=[{'atom':'x','source':'fixture:x'}],explanation_rules=[{'id':'r','if':['x'],'then':'y','source':'fixture:r'}],explanation_target='y')['self_explanation_prompts']
 def test_815_dual_coding_requires_mapping_not_decoration():assert L('dual_coding')['representations']['decorative_visuals_rejected']
 def test_816_examples_mark_boundary_cases():assert L('concrete_examples',examples=[{'feature':'f','boundary_case':True}])['examples'][0]['boundary_case']
 def test_817_worked_example_requires_rationales_and_completion():assert L('worked_examples')['worked_example']['completion_problem_next']
