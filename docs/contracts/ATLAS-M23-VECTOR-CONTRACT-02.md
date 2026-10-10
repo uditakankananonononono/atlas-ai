@@ -58,3 +58,8 @@ proposed local interfaces, not assumed or adopted shared project APIs.
 
 No live HTTP, services, PostgreSQL, test execution, main writes or remote pushes
 are part of this preparation. The peer owns integration and independent verdict.
+
+## Integration status superseding historical preparation text
+Numeric/lexical endpoints are now bound and tested. Dimensions/vector length cap
+4096. Zero cosine rejects with422. No ranking/tie policy or semantic provider;
+legacy row52 unchanged rather than inventing metadata for old inputs.

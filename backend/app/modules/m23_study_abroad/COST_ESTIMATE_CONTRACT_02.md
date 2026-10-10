@@ -87,3 +87,9 @@ Functions do not mutate their input. No state, bindings or shared APIs added.
 
 Test file: `tests/modules/test_m23_cost_estimate_validation_02.py`.
 Historical preparation had no test execution. Integration now covers helper and additive route tests.
+
+## Integration status superseding historical preparation text
+Additive cost-estimate/award-summary endpoints map ValueError to422 and return
+unknown/estimate labels unchanged. Decimal strings, no currency rounding or FX,
+fractional/zero years retained as supplied scenario assumptions. Legacy rows36/39
+are not silently mapped because currency/aid timing were unspecified.
