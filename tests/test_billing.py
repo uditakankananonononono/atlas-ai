@@ -97,5 +97,8 @@ def test_checkout_refuses_pending_and_wrong_tenant_without_provider_call():
   def approval(self,x):return {'status':'pending','payload':{'tenant_id':'t','plan':{'id':'pro'}}}
  for repo,tenant in [(Pending(),'t'),(R(),'other')]:
   s=Service(A(),repo,S())
-  with pytest.raises(PermissionError,match='tenant-bound'):asyncio.run(s.execute_checkout('approval',tenant))
+  try:asyncio.run(s.execute_checkout('approval',tenant))
+  except Exception as exc:
+   assert isinstance(exc,PermissionError) and 'tenant-bound' in str(exc)
+  else:pytest.fail('unapproved or cross-tenant checkout unexpectedly executed')
   assert repo.recorded==[]
