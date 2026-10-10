@@ -123,3 +123,20 @@ def _stub_app_core() -> None:
 
 
 _stub_app_core()
+
+
+import pytest
+
+@pytest.fixture
+def isolated_m22_approvals(tmp_path,monkeypatch):
+    """Real Module0 with per-test SQLite, never CWD atlas.db or a fake gate."""
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from app.modules.m00_approval_center import service as m00
+    engine=create_engine(f'sqlite:///{tmp_path / "m22-approvals.sqlite3"}')
+    m00.ApprovalRequestRow.__table__.create(engine)
+    m00.ApprovalEventRow.__table__.create(engine)
+    service=m00.Service(session_factory=sessionmaker(bind=engine,expire_on_commit=False))
+    monkeypatch.setattr(m00,'_default_service',service)
+    yield service
+    engine.dispose()

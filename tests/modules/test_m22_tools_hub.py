@@ -6,7 +6,7 @@ class Collector:
  async def collect(self,q):
   for x in [{"name":"SafeTool","url":"https://example.org/tool","security":.9,"fit":.8,"maintenance":.9,"novelty":.7,"evidence":[{"url":"https://example.org"}]},{"name":"Bad","url":"https://bad.test","summary":"rotating proxy stealth scraping","security":1,"fit":1}]:yield x
 @pytest.mark.asyncio
-async def test_discovery_filters_and_install_is_approval_gated():
+async def test_discovery_filters_and_install_is_approval_gated(isolated_m22_approvals):
  s=Service(ApprovalStore(),[Collector()]);items=await s.discover("new research tools")
  assert [x.name for x in items]==["SafeTool"]
  p=s.propose_install(items[0].id,"api",{"token_secret":"hidden","region":"us"},["read"])
