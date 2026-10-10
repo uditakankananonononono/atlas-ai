@@ -72,3 +72,10 @@ validation beforequery, tenant+actor predicates. Concurrent inserts/deletes can
 change page contents/has_more. Cursor points to consumed oldestID, not lexical
 hits. Limit before scoring, no global top-k. SQLite and isolated localPG canaries
 separately reported; no deployedload/backup/transaction-snapshot paging claim.
+
+Cursor candidate builder evidence: new14PASS including real localPostgreSQL16.2
+LIMIT/noCOUNT probe and productionOIDC TestClient 401/tenantisolation/422canary.
+Whole277PASS3FAIL, exact02a75fbd cleanCWDbase263PASS3FAIL sameM21claire nodes
+missingm00_approval_events. Base-present fixture issue, cause isolation beyond
+missingtable not yet performed; no regression or wholegreen claim. Legacy prior
+266PASS depended on environment state and doesn't erase these failure receipts.
