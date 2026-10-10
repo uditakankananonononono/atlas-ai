@@ -3,7 +3,7 @@ from copy import deepcopy
 import math,random
 OPS=('add','sub','mul')
 def validate(tree,depth=0):
-    if depth>6 or not isinstance(tree,list)or not tree:raise ValueError('bounded expression tree required')
+    if depth>=6 or not isinstance(tree,list)or not tree:raise ValueError('bounded expression tree required')
     op=tree[0]
     if op=='x' and len(tree)==1:return
     if op=='const'and len(tree)==2 and type(tree[1])in(int,float)and math.isfinite(tree[1]):return
