@@ -38,8 +38,86 @@ REFERENCE_SUBSTITUTES={
  'second_order_cybernetics':'hand_written_gain_adjustment_simulation',
 }
 
+def capability_scope(method):
+ if method not in ROWS:raise ValueError(f"unsupported cognitive method {method}")
+ if method not in REFERENCE_SUBSTITUTES:return {}
+ return {"reference_operator":REFERENCE_SUBSTITUTES[method],
+         "named_capability_executed":False,"status":"reference_substitute_only",
+         "original_capability_status":"unverified",
+         "verification_boundary":"Supplied-data reference operator only; not verification of the original named capability."}
+
+def _validate_reference_input(method,data):
+ if not isinstance(data,dict):raise ValueError("data must be an object")
+ def finite(value):
+  if isinstance(value,float) and not math.isfinite(value):raise ValueError("inputs must be finite")
+  if isinstance(value,dict):
+   for v in value.values():finite(v)
+  elif isinstance(value,(list,tuple)):
+   for v in value:finite(v)
+ finite(data)
+ required={
+  "graph_of_thought":("nodes","edges","start","goal"),
+  "self_consistency":("answers",),"retrieval_augmented_generation":("query_embedding","documents"),
+  "vector_databases":("query","vectors"),"embeddings":("tokens",),
+  "semantic_search":("query_embedding","items"),
+  "sentiment_analysis":("texts",),"opinion_mining":("texts",),
+  "neuro_symbolic_ai":("probabilities","rules"),"hybrid_ai":("probabilities","rules"),
+  "genetic_programming":("candidate_coefficients","x","y"),
+  "digital_twins":("observed","simulated"),
+  "systems_science":("nodes","edges"),"complexity_science":("nodes","edges"),
+  "second_order_cybernetics":("target","state"),
+ }
+ keys=required.get(method,("population","target") if method in {"swarm_intelligence","evolutionary_computation","genetic_algorithms"} else ("state",))
+ for key in keys:
+  if key not in data or data[key] is None:raise ValueError(f"{key} required")
+ for key in ("top_k","dimensions","generations","steps"):
+  if key in data and (type(data[key]) is not int or not 1<=data[key]<=10000):raise ValueError(f"{key} must be an integer in [1,10000]")
+ if method in {"sentiment_analysis","opinion_mining","embeddings","self_consistency"}:
+  key={"embeddings":"tokens","self_consistency":"answers"}.get(method,"texts")
+  if not isinstance(data[key],list) or not data[key] or any(not isinstance(x,str) or not x.strip() for x in data[key]):raise ValueError(f"{key} requires non-empty strings")
+ if method in {"semantic_search","retrieval_augmented_generation"}:
+  key="items" if method=="semantic_search" else "documents"
+  q=_vec(data,"query_embedding");items=data[key]
+  if not isinstance(items,list) or not items:raise ValueError(f"{key} requires non-empty objects")
+  ids=[]
+  for x in items:
+   if not isinstance(x,dict) or not isinstance(x.get("id"),str) or not x["id"]:raise ValueError("item id required")
+   if len(_vec(x,"embedding"))!=len(q):raise ValueError("vectors must be aligned")
+   ids.append(x["id"])
+  if len(set(ids))!=len(ids):raise ValueError("duplicate item id")
+ if method=="vector_databases":
+  q=_vec(data,"query");vectors=data["vectors"]
+  if not isinstance(vectors,dict) or not vectors:raise ValueError("vectors mapping required")
+  for key,v in vectors.items():
+   if not isinstance(key,str) or not key or len(_vec({"vector":v},"vector"))!=len(q):raise ValueError("vectors must be non-empty and aligned")
+ if method in {"neuro_symbolic_ai","hybrid_ai"}:
+  probs=data["probabilities"];rules=data["rules"]
+  if not isinstance(probs,dict) or not probs or not isinstance(rules,list):raise ValueError("probabilities and rules required")
+  if any(not isinstance(k,str) or not k or isinstance(v,bool) or not isinstance(v,(int,float)) or not 0<=v<=1 for k,v in probs.items()):raise ValueError("supplied scores must be in [0,1]")
+  known=set(probs)
+  for r in rules:
+   if not isinstance(r,dict) or not isinstance(r.get("if"),list) or not r["if"] or any(x not in known for x in r["if"]) or not isinstance(r.get("then"),str) or not r["then"]:raise ValueError("rules require known antecedents and a conclusion")
+   known.add(r["then"])
+  if not 0<=_num(data,"threshold",.5)<=1:raise ValueError("threshold must be in [0,1]")
+ if method in {"systems_science","complexity_science"}:
+  nodes=data["nodes"];edges=data["edges"]
+  if not isinstance(nodes,list) or not nodes or any(not isinstance(x,str) or not x for x in nodes) or len(set(nodes))!=len(nodes):raise ValueError("unique nodes required")
+  if not isinstance(edges,list) or any(not isinstance(e,(list,tuple)) or len(e)!=2 or any(v not in nodes for v in e) for e in edges):raise ValueError("declared edge pairs required")
+ if method=="genetic_programming":
+  candidates=data["candidate_coefficients"]
+  if not isinstance(candidates,list) or not candidates:raise ValueError("non-empty candidate coefficients required")
+  for candidate in candidates:_vec({"coefficients":candidate},"coefficients")
+ if method=="graph_of_thought":
+  edges=data["edges"]
+  if not isinstance(edges,list):raise ValueError("edges required")
+  for e in edges:
+   if not isinstance(e,(list,tuple)) or len(e)!=3:raise ValueError("edge triples required")
+   _num({"cost":e[2]},"cost")
+ if "mutation_sigma" in data and _num(data,"mutation_sigma")<0:raise ValueError("mutation_sigma must be nonnegative")
+
 def run(method,data,seed=0):
  if method not in ROWS:raise ValueError(f"unsupported cognitive method {method}")
+ if method in REFERENCE_SUBSTITUTES:_validate_reference_input(method,data)
  rng=random.Random(seed); limits=["Reference-scale, deterministic decision support on supplied data; no external retrieval, execution, or claim of human cognition."]
  if method=="graph_of_thought":
   nodes=data.get("nodes");edges=data.get("edges");start=data.get("start");goal=data.get("goal")
@@ -239,9 +317,7 @@ def run(method,data,seed=0):
   out={"trajectory":traj,"observer_adjusted_gain":gain,"final_error":target-state};limits += ["Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness."]
  else:raise AssertionError(method)
  if method in REFERENCE_SUBSTITUTES:
-  out['reference_operator']=REFERENCE_SUBSTITUTES[method]
-  out['named_capability_executed']=False
-  out['status']='reference_substitute_only'
+  out.update(capability_scope(method))
   limits.append('Named cognitive/AI/life-science capability is not implemented by this reference substitute. Caller inputs are not independently verified; no generation, learned model or deployed integration demonstrated.')
  out["method_limits"]=limits
  return {"method":method,"feature_row":ROWS[method],"inputs":data,"seed":seed,"output":out}

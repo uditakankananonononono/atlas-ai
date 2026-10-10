@@ -6,10 +6,7 @@
   "counts": {
     "verified-pushed": 1696,
     "PARTIAL": 256,
-    "SCOPED": 54,
-    "removed": 4,
-    "thin": 0,
-    "missing": 0
+    "SCOPED": 54
   },
   "delta_from_schema_version_1": {
     "added": 9,
@@ -37,7 +34,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Decision Journaling + Retrieval (Most Powerful, Easiest)",
-      "description": "What it is: Every time you make a decision \u2014 \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" \u2014 you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
+      "description": "What it is: Every time you make a decision — \"I chose this competition over that one,\" \"this essay idea feels right,\" \"this tool is better\" — you log it with a one-line reason. How Claire uses it: Before Claire proposes an option, she retrieves similar past decisions from your journal and adapts her recommendation. Implementation: A SQLite table, a form, and a vector search over your notes. That's it. Real, buildable in a weekend. What it achieves: Claire starts making choices that resemble yours.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -51,7 +48,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Correction Loop (Reinforcement From You)",
-      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output \u2192 your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
+      "description": "What it is: Every time Claire produces output and you correct it, you save the pair: (original output → your correction). How Claire uses it: The next time she produces something similar, she retrieves your past corrections as few-shot examples before generating. Implementation: A corrections table and a retrieval step in Claire's prompt pipeline. What it achieves: Claire stops making the mistakes you've corrected. Over months, she converges on your taste.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -65,7 +62,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Voice Fine-Tuning (Style Transfer to You)",
-      "description": "What it is: You collect 50\u2013200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
+      "description": "What it is: You collect 50–200 samples of your own writing (emails, essays, notes) and fine-tune a small local model (Llama 3.1 8B, via LoRA on Ollama) to write in your voice. Implementation: Free. Runs on your PC if you have a GPU or rent a cheap one for a few hours. What it achieves: Claire writes like you, not like a generic assistant.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
@@ -79,7 +76,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Chain-of-Thought Capture",
-      "description": "What it is: When you solve a hard problem, you record your reasoning step by step \u2014 not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
+      "description": "What it is: When you solve a hard problem, you record your reasoning step by step — not just the answer. How Claire uses it: Faced with a similar problem, she retrieves your reasoning chain and uses it as a template. Implementation: A reasoning_chains table with embedded text. Retrieval at decision time. What it achieves: Claire reasons the way you reason, not just reaches the same conclusion.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -94,7 +91,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Preference Ranking",
-      "description": "What it is: Claire generates 3\u20135 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
+      "description": "What it is: Claire generates 3–5 options. You rank them. She learns your ranking function. Implementation: A lightweight preference model trained on your rankings. Real ML, free, runs locally. What it achieves: Claire generates options you'd actually pick, not generic ones.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "93c65c5c4e2bbdf91632d10a1433de8e114c87bc",
@@ -108,7 +105,7 @@
       "category_id": 0,
       "category": "Claire personalization additions",
       "requirement": "Behavioral Telemetry (What You Actually Do)",
-      "description": "What it is: Silently log your real actions \u2014 which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
+      "description": "What it is: Silently log your real actions — which links you click, which opportunities you apply to, which drafts you edit longest. How Claire uses it: Adjust her scoring and suggestions based on your revealed preferences, not your stated ones. Implementation: A browser extension or a small desktop logger you control. What it achieves: Claire learns you better than you know yourself.",
       "status": "verified-pushed",
       "evidence": {
         "commit": "42c9d2e8e032bce4537b14c01b53cab80630c78b",
@@ -157,7 +154,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -173,7 +170,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -183,7 +180,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Successful episode tool-role sequence retrieval with lexical domain filtering; no learned cross-domain task execution. Deduplicates source episodes and excludes failed outcomes.",
@@ -205,7 +202,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -221,7 +218,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -231,7 +228,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Observed confidence/outcome calibration curve and error only; no inferred knowledge boundary or predictive confidence adjustment.",
@@ -253,7 +250,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -263,7 +260,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Default outcome model unavailable; no risk-tier fixed success odds or alternative-history lesson. Optional injected estimates are unvalidated, not causal counterfactuals.",
@@ -285,7 +282,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -301,7 +298,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -317,7 +314,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -327,7 +324,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Self-reported challenge/skill threshold rubric and difficulty sort only; no measured flow induction or invented skill gain.",
@@ -349,7 +346,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -359,7 +356,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Setback marker classification and prewritten review templates, not generated grounded cognitive reframing.",
@@ -381,7 +378,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -391,7 +388,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Literal marker scan with mitigation review templates; no diagnosed bias, measured severity or corrected reasoning.",
@@ -413,7 +410,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -423,7 +420,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Skill/fact cache lookup and substring comparison to supplied text; no calibrated confidence or validated intuition.",
@@ -445,7 +442,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -455,7 +452,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Versioned supplied-assumption registry and signed supplied-weight score only; no posterior probability, truth assessment or actual best world model.",
@@ -477,7 +474,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -487,7 +484,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Literal value-conflict marker pruning only; cancels all transitive dependents without dropping prerequisite references. No semantic terminal-value reasoning or substitute goal generation.",
@@ -509,7 +506,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -525,7 +522,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -541,7 +538,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -557,7 +554,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -573,7 +570,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -583,7 +580,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Hand-written uncertainty/time-to-planning-depth policy, not learned cognitive planning-horizon adaptation.",
@@ -605,7 +602,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -621,7 +618,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -631,7 +628,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Five deterministic persona checklists over supplied metadata; no personality model or scored cognitive diversity.",
@@ -653,7 +650,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -663,7 +660,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Assumption review templates and evidence-count diagnostics; no generated defensible alternatives or residual confidence.",
@@ -685,7 +682,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -695,7 +692,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Lexical overlap selection of supplied facts and response skeleton; no strongest opposing argument generated or verified.",
@@ -717,7 +714,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test."
     },
@@ -733,7 +730,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -743,7 +740,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Observed fact age only; fitted obsolescence model and refresh scheduling unavailable, no invented decay/freshness odds.",
@@ -765,7 +762,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
         "test_path": "tests/modules/test_m20_metacognition.py",
         "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+        "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
       },
       "boundary": "Apply approval gates, truthfulness, legal-source and no-login-mass-scraping policies; implementation requires exact code, mounted route and focused passing test.",
       "historical_claim": {
@@ -775,7 +772,7 @@
           "implementation_path": "backend/app/modules/m20_general_cognitive_worker/metacognition.py",
           "test_path": "tests/modules/test_m20_metacognition.py",
           "route_test_path": "tests/modules/test_m20_metacognition_routes.py",
-          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil\u2019s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
+          "caveats": "Metacognition state is in-memory pending m20_meta_* durability. Persona and devil’s-advocate paths are deterministic rubrics; the row-20 slow path uses the existing executive loop. No hidden chain-of-thought capture or autonomous deployed-code rewriting."
         }
       },
       "current_scope": "Lexical missing-token frequency tracking and frequency-weighted budget policy; no measured expected learning value or autonomous investigation.",
@@ -33201,7 +33198,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_graph_shortest_path. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33214,6 +33211,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "graph_of_thought",
+        "reference_operator": "supplied_graph_shortest_path",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1951
       }
     },
     {
@@ -33228,7 +33232,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_answer_plurality. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33241,6 +33245,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "self_consistency",
+        "reference_operator": "supplied_answer_plurality",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1952
       }
     },
     {
@@ -33255,7 +33266,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_vector_context_selection_only. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33268,6 +33279,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "retrieval_augmented_generation",
+        "reference_operator": "supplied_vector_context_selection_only",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1953
       }
     },
     {
@@ -33282,7 +33300,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: in_memory_supplied_vector_scan. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33295,6 +33313,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "vector_databases",
+        "reference_operator": "in_memory_supplied_vector_scan",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1954
       }
     },
     {
@@ -33309,7 +33334,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: character_hash_vectors. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33322,6 +33347,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "embeddings",
+        "reference_operator": "character_hash_vectors",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1955
       }
     },
     {
@@ -33336,7 +33368,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_vector_cosine_ranking. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33349,6 +33381,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "semantic_search",
+        "reference_operator": "supplied_vector_cosine_ranking",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1956
       }
     },
     {
@@ -33487,7 +33526,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_rule_weight_score_propagation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33500,6 +33539,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "neuro_symbolic_ai",
+        "reference_operator": "supplied_rule_weight_score_propagation",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1964
       }
     },
     {
@@ -33514,7 +33560,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_rule_weight_score_propagation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33527,6 +33573,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "hybrid_ai",
+        "reference_operator": "supplied_rule_weight_score_propagation",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1965
       }
     },
     {
@@ -33622,7 +33675,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: literal_lexicon_token_count. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33635,6 +33688,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "sentiment_analysis",
+        "reference_operator": "literal_lexicon_token_count",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1969
       }
     },
     {
@@ -33649,7 +33709,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: literal_lexicon_token_count. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33662,6 +33722,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "opinion_mining",
+        "reference_operator": "literal_lexicon_token_count",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1970
       }
     },
     {
@@ -33732,7 +33799,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33745,6 +33812,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "swarm_intelligence",
+        "reference_operator": "scalar_elite_gaussian_mutation",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1975
       }
     },
     {
@@ -33759,7 +33833,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33772,6 +33846,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "evolutionary_computation",
+        "reference_operator": "scalar_elite_gaussian_mutation",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1976
       }
     },
     {
@@ -33786,7 +33867,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33799,6 +33880,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "genetic_algorithms",
+        "reference_operator": "scalar_elite_gaussian_mutation",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1977
       }
     },
     {
@@ -33813,7 +33901,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_polynomial_candidate_selection. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33826,6 +33914,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "genetic_programming",
+        "reference_operator": "supplied_polynomial_candidate_selection",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1978
       }
     },
     {
@@ -33840,7 +33935,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33853,6 +33948,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "artificial_life",
+        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1979
       }
     },
     {
@@ -33867,7 +33969,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_series_residual_diagnostics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33880,6 +33982,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "digital_twins",
+        "reference_operator": "supplied_series_residual_diagnostics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1980
       }
     },
     {
@@ -33990,7 +34099,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_graph_degree_diagnostics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34003,6 +34112,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "systems_science",
+        "reference_operator": "supplied_graph_degree_diagnostics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1986
       }
     },
     {
@@ -34017,7 +34133,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: supplied_graph_degree_diagnostics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34030,6 +34146,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "complexity_science",
+        "reference_operator": "supplied_graph_degree_diagnostics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1987
       }
     },
     {
@@ -34086,7 +34209,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34099,6 +34222,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "self_organization",
+        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1991
       }
     },
     {
@@ -34113,7 +34243,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34126,6 +34256,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "emergence",
+        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1992
       }
     },
     {
@@ -34140,7 +34277,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34153,6 +34290,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "adaptation",
+        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1993
       }
     },
     {
@@ -34167,7 +34311,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34180,6 +34324,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "evolution",
+        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1994
       }
     },
     {
@@ -34194,7 +34345,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34207,6 +34358,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "co_evolution",
+        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1995
       }
     },
     {
@@ -34221,7 +34379,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34234,6 +34392,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "symbiosis",
+        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1996
       }
     },
     {
@@ -34248,7 +34413,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34261,6 +34426,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "autopoiesis",
+        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1997
       }
     },
     {
@@ -34289,7 +34461,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Reference substitute only: hand_written_gain_adjustment_simulation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34302,6 +34474,13 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "reference_scope": {
+        "method": "second_order_cybernetics",
+        "reference_operator": "hand_written_gain_adjustment_simulation",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false,
+        "source_number": 1999
       }
     },
     {
