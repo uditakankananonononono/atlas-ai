@@ -1,0 +1,28 @@
+# A09 free local substitute: Local Postgres 16 + pgvector in Docker Compose,
+# driven by the existing alembic migration runner (scripts/migrate.py ->
+# alembic upgrade head); same schema and app wiring as the base topology.
+#
+# What this substitute honestly cannot cover: Supabase-managed hosting,
+# backups, dashboards and Supabase API surface.
+#
+# Additive only: this override ADDS one one-shot acceptance service and
+# redefines nothing from deploy/local/docker-compose.yml.
+#
+# Run (free/local only, no paid account, no cloud service):
+#   docker compose -f deploy/local/docker-compose.yml \
+#     -f deploy/local/docker-compose.postgres16.yml up postgres16-acceptance
+# The run orders itself: postgres healthy -> migrate completed -> acceptance.
+services:
+  postgres16-acceptance:
+    build: {context: ../..}
+    restart: "no"
+    command: ["python", "/opt/atlas-acceptance/postgres16_check.py"]
+    environment:
+      ATLAS_ENV: production
+      ATLAS_DATABASE_URL: postgresql+psycopg://atlas:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/atlas
+    # The runtime image copies only backend/scripts/migrations/alembic.ini, so
+    # the acceptance check is mounted read-only from this directory.
+    volumes: ["./acceptance/postgres16_check.py:/opt/atlas-acceptance/postgres16_check.py:ro"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      migrate: {condition: service_completed_successfully}
