@@ -125,6 +125,7 @@ def test_local_only_access_and_no_plaintext_credentials():
     assert override["services"]["prometheus"]["ports"] == ["9090:9090"]
     env = grafana["environment"]
     assert env["GF_USERS_ALLOW_SIGN_UP"] == "false"
+    assert env["GF_AUTH_ANONYMOUS_ENABLED"] == "false", "anonymous access must stay disabled in the local substitute"
     password = str(env["GF_SECURITY_ADMIN_PASSWORD"])
     assert password.startswith("${"), "admin password must come from the environment, not a committed literal"
     assert ":-" in password, "a local default is allowed only as an env-var default"
