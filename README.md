@@ -187,3 +187,21 @@ scan_cap+1 rows and scores newest bounded window. matched_total and omitted_by_s
 Existing exact-count endpoint unchanged. Pending independent verdict.
 
 After journal initialization, each cursor retrieval issues one SELECT LIMIT scan_cap+1 with no COUNT. HTTP store dependency may also inspect/create schema; unchanged exact-count endpoint still uses COUNT. Retrieval helper validates time/cursor bounds before its SELECT. HTTP store dependency initializes/checks journal schema before route-level bounds rejection.
+### M18 dispatch-intent candidate (opt-in, pending independent verdict)
+Separate WAL and dispatch binding deny pending intent on restart, no automatic
+clear/replay. Limits: conservative stuck-pending after crash; recovery-acknowledgment
+authority is caller/operator inspection (boolean, not authenticated role); two-file
+journal/snapshot ordering on weak directory-fsync filesystems; snapshot TTL and
+indefinitely retained old intent; no hostile-admin/replay proof, cross-process
+lease, or remote exactly-once. Unseen RetryAfter/record_failure WAL excluded.
+See docs/M18_DISPATCH_INTENT_20261010.md. Existing limiter/collectors unchanged.
+
+M18 intent binding refuses bootstrap kwarg and requires separately preprovisioned
+stores. Mixing plain DurableHostRateLimiter on the same directory ignores/bypasses
+WAL; caller must use the intent binding for every dispatch.
+### M25 version metadata integration candidate
+New version manifests preserve original UTC ingest timestamps and MIME through
+explicit verified restart restoration; legacy timestamps remain unknown and are
+never promoted. Old binaries cannot read new-format rows; no hostile-writer or
+trusted-clock authenticity claim. See docs/M25_VERSION_METADATA_20261010.md.
+Candidate status pending independent verdict, not deployed capacity acceptance.
