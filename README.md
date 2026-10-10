@@ -217,3 +217,17 @@ separate future unit. Independent combined test_m21*.py + test_m22*.py on cursor
 main:391PASS1SKIP (opt-in ATLAS_LIVE_REGISTRY). No repository-wide test claim.
 Other ApprovalStore tests not scanned. Optional next unit: request/event persistence
 assertions for the three repaired nodes, separate review gate.
+
+### M25 restart-safe service factory candidate
+Knowledge HTTP endpoints now require explicit ATLAS_M25_DURABLE_ROOT, private
+existing nonvolatile root plus administratively provisioned registry/workspace.
+No /tmp default or startup auto-provision. Cold cache verifies/restores before
+serving, missing/lost/corrupt all fixed503 (no silentemptyanswers). One pinned owner
+actor per tenant: ALL ingest/search/export/delete/contradictions/substantiate
+endpoints now reject other actors403. Offline-only deterministic embedder and
+unavailable transcriber profile; audio unavailable503, no implicit custom adapter
+attestation. No oldworkspace adoption/migration/collaboration/training/network.
+One process perroot, warmcache not full diskrevalidation, no crossprocesslease.
+Persistent mount durability is operator attestation, no TOCTOU/hostileadmin or
+aggregateCPU proof; claimed consent/legacytimestampunknown remain. Candidate
+pending fresh independent verdict; docs/M25_SERVICE_FACTORY_20261010.md.
