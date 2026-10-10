@@ -82,3 +82,25 @@ def test_nonentailment_with_partial_assignment_fills_valid_total_model():
  d={'clauses':[[1,-1]],'query':[2]};r=reason(d)
  assert r['status']=='not_entailed' and set(r['counterexample'])=={'1','2'}
  assert r['counterexample']['2'] is False
+
+def test_true_branch_required_for_countermodel_and_unsat_search():
+ d={'clauses':[[1,2],[1,-2]],'query':[3]}
+ r=reason(d)
+ assert r['status']=='not_entailed'
+ assignment={int(k):v for k,v in r['counterexample'].items()}
+ assert assignment[1] is True
+ assert all(holds(c,assignment)for c in d['clauses']) and not holds(d['query'],assignment)
+ # False branch conflicts on variable2, then True branch also conflicts on3.
+ unsat={'clauses':[[1,2],[1,-2],[-1,3],[-1,-3]],'query':[4]}
+ r=reason(unsat)
+ assert r['status']=='entailed';check_proof(unsat,r)
+
+
+def test_resolution_uses_the_shared_dpll_work_budget():
+ d={'clauses':[[1,2],[-1,2],[1,-2],[-1,-2]],'query':[1]}
+ limited=reason({**d,'max_steps':10})
+ assert limited['status']=='inconclusive' and limited['resolution_proof']==[]
+ assert limited['counterexample'] is None and limited['steps']==10
+ full=reason({**d,'max_steps':10000})
+ assert full['status']=='entailed' and full['steps']==41
+ check_proof(d,full)
