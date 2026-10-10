@@ -135,7 +135,9 @@ def test_forecast_default_control_hand_value_and_not_committed():
 
 def test_registry_and_model_identity_boundaries():
  from app.modules.m20_general_cognitive_worker.digital_twin_routes import bind_registry
- with pytest.raises(ValueError):bind_registry(object())
+ try:bind_registry(object())
+ except Exception as exc:assert isinstance(exc,ValueError) and 'TwinRegistry required' in str(exc)
+ else:pytest.fail('invalid registry accepted')
  for tenant in ('','  ',1):
   with pytest.raises(ValueError):TwinRegistry(tenant)
  r=TwinRegistry('a');assert create(r,'a'*120)['name']=='a'*120
