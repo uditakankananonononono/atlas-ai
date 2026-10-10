@@ -84,3 +84,27 @@ def test_actual_counted_scores_iteration_limit_seed_and_overflow():
 def test_population_validation_happens_before_donor_sampling():
  with pytest.raises(ValueError,match='population_size requires integer4..128'):
   solve(request(population_size=3,generations=1),1)
+
+def test_rosenbrock_exact_receipts_and_best_argmin_before_convergence():
+ d=request(objective='rosenbrock',bounds=[[-2,2],[-1,3]],population_size=5,generations=3)
+ r=solve(d,13)
+ for h in r['history']:
+  assert h['scores']==[score('rosenbrock',x)for x in h['population']]
+  index=min(range(5),key=lambda i:h['scores'][i])
+  assert h['best_score']==h['scores'][index]
+  assert h['best_vector']==h['population'][index]
+  for trial in h['trials']:assert trial['trial_score']==score('rosenbrock',trial['trial'])
+ final=r['history'][-1];index=min(range(5),key=lambda i:final['scores'][i])
+ assert r['best_score']==min(final['scores']) and r['best_vector']==final['population'][index]
+ assert max(final['scores'])>min(final['scores'])
+
+def test_boundary_clipped_equal_fitness_trial_is_accepted(monkeypatch):
+ from app.modules.m20_general_cognitive_worker import differential_evolution
+ class AtBoundary(random.Random):
+  def uniform(self,lo,hi):return hi
+ monkeypatch.setattr(differential_evolution.random,'Random',AtBoundary)
+ r=solve(request(bounds=[[0.,1.]],population_size=4,generations=1,mutation_factor=2.,crossover_rate=0.),17)
+ assert r['history'][0]['population']==[[1.]]*4
+ for trial in r['history'][1]['trials']:
+  assert trial['mutant']==trial['trial']==[1.]
+  assert trial['trial_score']==1. and trial['accepted'] is True
