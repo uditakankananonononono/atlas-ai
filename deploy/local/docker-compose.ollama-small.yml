@@ -1,0 +1,61 @@
+# X13 additive local profile; statically authored counterpart, builder did not run generator.
+# 32GB-class model capacity/quality gap: the smaller model is not equivalent to the 32-GB profile.
+# Owner-hardware-unverified: the profile has never run on the owner's actual hardware.
+# Local-first applies ONLY where the override is applied; the default chain may still use HF_TOKEN. NO globally-local-only claim.
+services:
+  ollama-small:
+    image: ollama/ollama:latest@sha256:b86366bb528bbf7f1424435d165028497a5b69bf6ddb4fa5a87102e2b79f44fb
+    restart: unless-stopped
+    environment:
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_MAX_LOADED_MODELS: "1"
+    volumes:
+      - atlas-small-ollama:/root/.ollama
+  api:
+    environment:
+      ATLAS_EMBEDDING_PROVIDER: "ollama"
+      ATLAS_OLLAMA_MODEL: "llama3.1:8b"
+      ATLAS_OLLAMA_EMBEDDING_MODEL: "bge-m3"
+      ATLAS_OLLAMA_URL: "http://ollama-small:11434"
+      ATLAS_AI_CONCURRENCY: "1"
+      ATLAS_COLLECTOR_CONCURRENCY: "1"
+      ATLAS_BROWSER_CONCURRENCY: "1"
+      ATLAS_ALLOW_PAID: "false"
+    depends_on:
+      ollama-small:
+        condition: service_started
+  worker:
+    environment:
+      ATLAS_EMBEDDING_PROVIDER: "ollama"
+      ATLAS_OLLAMA_MODEL: "llama3.1:8b"
+      ATLAS_OLLAMA_EMBEDDING_MODEL: "bge-m3"
+      ATLAS_OLLAMA_URL: "http://ollama-small:11434"
+      ATLAS_AI_CONCURRENCY: "1"
+      ATLAS_COLLECTOR_CONCURRENCY: "1"
+      ATLAS_BROWSER_CONCURRENCY: "1"
+      ATLAS_ALLOW_PAID: "false"
+    depends_on:
+      ollama-small:
+        condition: service_started
+    command:
+      - celery
+      - -A
+      - app.workers.celery_app:celery_app
+      - worker
+      - --concurrency=1
+      - --loglevel=INFO
+  migrate:
+    environment:
+      ATLAS_EMBEDDING_PROVIDER: "ollama"
+      ATLAS_OLLAMA_MODEL: "llama3.1:8b"
+      ATLAS_OLLAMA_EMBEDDING_MODEL: "bge-m3"
+      ATLAS_OLLAMA_URL: "http://ollama-small:11434"
+      ATLAS_AI_CONCURRENCY: "1"
+      ATLAS_COLLECTOR_CONCURRENCY: "1"
+      ATLAS_BROWSER_CONCURRENCY: "1"
+      ATLAS_ALLOW_PAID: "false"
+    depends_on:
+      ollama-small:
+        condition: service_started
+volumes:
+  atlas-small-ollama: {}
