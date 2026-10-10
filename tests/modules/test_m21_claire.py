@@ -5,7 +5,7 @@ from app.modules.m21_claire.service import Service
 class Model:
  async def __call__(self,purpose,payload):return {"steps":[{"id":"p","title":"prepare safely","risk":"read"}]}
 @pytest.mark.asyncio
-async def test_claire_is_sandboxed_bounded_and_transparent():
+async def test_claire_is_sandboxed_bounded_and_transparent(isolated_m00_approvals):
  approvals=ApprovalStore();s=Service(Cognitive(approvals,Model()),approvals,max_retries=999)
  g=s.intake("build a prototype",["tests pass"],{})
  assert g.limits["environment"]=="atlas" and g.limits["max_retries"]==5
@@ -26,12 +26,12 @@ def test_claire_enforces_full_cant_do_list(goal):
  s=Service(Cognitive(ApprovalStore(),Model()),ApprovalStore())
  with pytest.raises(ValueError):s.intake(goal,[],{})
 
-def test_claire_sends_and_spend_are_per_action_approval():
+def test_claire_sends_and_spend_are_per_action_approval(isolated_m00_approvals):
  approvals=ApprovalStore();s=Service(Cognitive(approvals,Model()),approvals);g=s.intake("manage outreach",[],{})
  assert s.request_environment_change(g.id,"send_message",{"recipient":"review first"}).status.value=="pending"
  assert s.request_environment_change(g.id,"spend_money",{"total":"review first"}).status.value=="pending"
 
-def test_claire_optional_pc_endpoint_has_full_owner_machine_capability_parity():
+def test_claire_optional_pc_endpoint_has_full_owner_machine_capability_parity(isolated_m00_approvals):
  approvals=ApprovalStore();s=Service(Cognitive(approvals,Model()),approvals);g=s.intake("organize my machine",[],{})
  for operation in ("type_text","click","scroll","browser_navigate","install_package","run_command","run_workflow","read_file","write_file","move_file","copy_file"):
   req=s.request_environment_change(g.id,operation,{"operation":operation})

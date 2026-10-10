@@ -128,15 +128,21 @@ _stub_app_core()
 import pytest
 
 @pytest.fixture
-def isolated_m22_approvals(tmp_path,monkeypatch):
+def isolated_m00_approvals(tmp_path,monkeypatch):
     """Real Module0 with per-test SQLite, never CWD atlas.db or a fake gate."""
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
     from app.modules.m00_approval_center import service as m00
-    engine=create_engine(f'sqlite:///{tmp_path / "m22-approvals.sqlite3"}')
+    engine=create_engine(f'sqlite:///{tmp_path / "m00-approvals.sqlite3"}')
     m00.ApprovalRequestRow.__table__.create(engine)
     m00.ApprovalEventRow.__table__.create(engine)
     service=m00.Service(session_factory=sessionmaker(bind=engine,expire_on_commit=False))
     monkeypatch.setattr(m00,'_default_service',service)
     yield service
     engine.dispose()
+
+
+@pytest.fixture
+def isolated_m22_approvals(isolated_m00_approvals):
+    """Compatibility alias for already reviewed M22 tests."""
+    return isolated_m00_approvals
