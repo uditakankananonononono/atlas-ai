@@ -253,3 +253,6 @@ def luxury_digest(data:DigestIn):return digest(data.pack)
 
 from .ranking_router import router as ranking_router
 router.include_router(ranking_router)
+
+from .snapshot_router import router as snapshot_router
+router.include_router(snapshot_router)
