@@ -233,3 +233,7 @@ aggregateCPU proof; claimed consent/legacytimestampunknown remain. PASS-WITH-NOT
 builder157PASS after normalized-root repair. Root env must be CANONICAL absolute
 path, valid noncanonical aliases may503 after first request. Not productionmount
 acceptance. docs/M25_SERVICE_FACTORY_20261010.md.
+
+### M14 offline sandbox ready wave (candidate, audit pending)
+
+Distinct approval-bound single-ready-wave API, not legacy plan-only proposals or full-DAG execution. Max parallel 1..8 and existing plan ceiling500; exact immutable code/input/plan/revision/budget/environment approval; explicit human review, live namespaces before claim, atomic SQL consume+CAS, permanent attempted-wave key, no automatic retry/resume. Claim without saved outcome remains unknown. Owner-actor-only receipts/artifacts. Opt-in Bubblewrap only, no mock/unsandboxed fallback. Deliberately one Pythonprocess: **threads/subprocesses excluded**, seccomp process-creation deny; readonly/tmp+directory with<=20declared outputfiles, hard50k/file<=1MBaggregate. Cooperative async cancellation does not instantly stop host-thread work; sandbox timeout owns process-group kill. Sandbox is not host containment. No deployment, remote/distributed, full-DAG or1000-builder claim. Exact enforced/admission/postexecution limits and residues: [M14 sandbox wave contract](docs/M14_SANDBOX_WAVE_20261010.md).
