@@ -78,7 +78,7 @@ def private_root(value):
         if not p.is_absolute() or any(x.is_symlink() for x in [p,*p.parents]):raise WaveUnavailable('sandbox root unavailable')
         p=p.resolve(strict=True)
         if not p.is_dir() or p.stat().st_mode & 0o077:raise WaveUnavailable('sandbox root unavailable')
-        if any(p==x or x in p.parents for x in map(Path,('/tmp','/var/tmp','/dev/shm'))):raise WaveUnavailable('sandbox root unavailable')
+        if any(p==x or x in p.parents for x in map(Path,('/tmp','/var/tmp','/dev/shm','/run'))):raise WaveUnavailable('sandbox root unavailable')
         return p
     except OSError:raise WaveUnavailable('sandbox root unavailable') from None
 
@@ -107,7 +107,7 @@ class SandboxWaveService:
                 total_bytes+=len(task.code.encode())
                 if len(set(task.outputs))!=len(task.outputs) or any(not re.fullmatch(r'[A-Za-z0-9_.-]{1,120}',name) or name in ('.','..') for name in task.outputs):raise WaveError('flat unique output names required')
                 for name,data in task.inputs.items():
-                    if not re.fullmatch(r'[A-Za-z0-9_.-]{1,120}',name) or name in ('.','..','analysis.py'):raise WaveError('flat input name required')
+                    if not re.fullmatch(r'[A-Za-z0-9_.-]{1,120}',name) or name in ('.','..','analysis.py','empty-tmp'):raise WaveError('flat input name required')
                     if len(data)>133336:raise WaveError('input exceeds100k')
                     try:raw=base64.b64decode(data,validate=True)
                     except (ValueError,TypeError):raise WaveError('invalid input encoding') from None

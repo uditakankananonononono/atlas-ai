@@ -310,3 +310,26 @@ def test_no_opt_in_no_sandbox_root_no_route_execution(monkeypatch,oidc_auth_head
     app=FastAPI();app.include_router(router)
     with TestClient(app) as client:
         assert client.post('/project-builder/sandbox-waves/not-existing/execute',headers=oidc_auth_headers('t','owner')).status_code==503
+
+
+
+def test_run_volatile_root_refused_before_any_work(monkeypatch):
+    # Simulate a private existing /run descendant even when this host has no
+    # private writable /run fixture. Resolved path policy, not OS permissions.
+    from types import SimpleNamespace
+    target=Path('/run/credentials/private-service')
+    monkeypatch.setattr(Path,'is_symlink',lambda self:False)
+    monkeypatch.setattr(Path,'resolve',lambda self,strict=False:self)
+    monkeypatch.setattr(Path,'is_dir',lambda self:True)
+    monkeypatch.setattr(Path,'stat',lambda self,*a,**kw:SimpleNamespace(st_mode=0o40700))
+    with pytest.raises(WaveUnavailable):private_root(str(target))
+
+
+def test_backend_helper_input_refused_before_claim_or_consume(env):
+    svc,sessions,_=env
+    req=request();req.tasks['a'].inputs={'empty-tmp':base64.b64encode(b'user data').decode()}
+    with pytest.raises(WaveError):svc.draft('t','owner','p',req)
+    with sessions() as db:
+        assert not db.scalar(select(SandboxWaveRow))
+        assert not db.scalar(select(ApprovalRequestRow))
+        assert not db.scalar(select(ApprovalEffectRow))
