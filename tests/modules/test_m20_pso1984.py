@@ -110,3 +110,26 @@ def test_seed_diversity_and_no_global_best_shortcut():
 def test_exact_retained_bound_boundary_refuses_before_work():
  with pytest.raises(ValueError,match='product'):
   solve(request(bounds=[[-1,1]]*16,particles=128,iterations=48),1)
+
+def test_exact_iteration_history_and_actual_score_call_count():
+ import sys
+ from app.modules.m20_general_cognitive_worker import particle_swarm
+ calls=[]
+ def profile(frame,event,arg):
+  if event=='call' and frame.f_code.co_name=='score' and frame.f_code.co_filename==particle_swarm.__file__:calls.append(1)
+ prior=sys.getprofile()
+ try:
+  sys.setprofile(profile);r=solve(request(particles=3,iterations=7),9)
+ finally:sys.setprofile(prior)
+ assert len(r['history'])==8 and r['history'][-1]['iteration']==7
+ assert r['evaluations']==len(calls)==3*8
+
+def test_inertia_upper_boundary():
+ with pytest.raises(ValueError,match='inertia'):solve(request(particles=2,iterations=1,inertia=1.0001),1)
+ assert solve(request(particles=2,iterations=1,inertia=1.),1)['history'][-1]['iteration']==1
+
+def test_iterations_upper_boundary_small_swarm():
+ d=request(bounds=[[-1,1]],particles=2)
+ with pytest.raises(ValueError,match='iterations'):solve({**d,'iterations':1001},1)
+ r=solve({**d,'iterations':1000},1)
+ assert len(r['history'])==1001 and r['history'][-1]['iteration']==1000
