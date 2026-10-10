@@ -63,3 +63,24 @@ def test_mounted_production_route_auth_exact_seed(monkeypatch,oidc_auth_headers)
   r=c.post(path,headers=oidc_auth_headers('de','owner'),json={'data':d,'seed':seed})
   assert r.status_code==200 and r.json()==solve(d,seed)
  assert c.post(path,headers=oidc_auth_headers('de','owner'),json={'data':request(population_size=3)}).status_code==422
+
+def test_actual_counted_scores_iteration_limit_seed_and_overflow():
+ import sys
+ from app.modules.m20_general_cognitive_worker import differential_evolution
+ calls=[]
+ def profile(frame,event,arg):
+  if event=='call'and frame.f_code.co_name=='score'and frame.f_code.co_filename==differential_evolution.__file__:calls.append(1)
+ old=sys.getprofile()
+ try:
+  sys.setprofile(profile);r=solve(request(population_size=4,generations=7),3)
+ finally:sys.setprofile(old)
+ assert r['evaluations']==len(calls)==32 and len(r['history'])==8
+ d=request(bounds=[[-1,1]],population_size=4)
+ assert len(solve({**d,'generations':1000},1)['history'])==1001
+ with pytest.raises(ValueError,match='generations'):solve({**d,'generations':1001},1)
+ with pytest.raises(ValueError,match='objective overflow'):solve(request(bounds=[[-1e200,1e200]]*2,generations=1),1)
+ assert solve(request(population_size=4,generations=1),1)['history']!=solve(request(population_size=4,generations=1),2)['history']
+
+def test_population_validation_happens_before_donor_sampling():
+ with pytest.raises(ValueError,match='population_size requires integer4..128'):
+  solve(request(population_size=3,generations=1),1)
