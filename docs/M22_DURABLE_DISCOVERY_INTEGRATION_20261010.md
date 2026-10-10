@@ -21,3 +21,17 @@ checksums detect corruption, not a malicious operator recomputing them or restor
 an old valid file. Clock rollback/future deadlines retained, no policy bypass claim.
 Capacity oversize candidate stop occurs during stream, not before remote work.
 Whole baseline has3missingM00approval_events failures, not fixed by this feature.
+
+## Independent review and narrowed latch
+Reviewer reproduced107PASS1SKIP3FAIL; same3missingM00table failures at exactbase.
+Pre-effect validation/capacity errors refuse without latching; existing admitted
+query remains usable after capacity refusal. Only StateError in post-effect store
+commit phase latches current instance. Fresh instance may load prior valid store
+and redispatch: PER-INSTANCE only, not restart-safe failure reconciliation.
+Non-StateError exceptions are not latched; no arbitrary injected method guarantee.
+Real store OSError paths code-read: lock/read errors map storage_unavailable;
+write/replace/fsync/readback OSError map commit_unverified; finally temporary
+cleanup ignores OSError. Other unexpected non-StateError remains a scoped risk.
+Times use time.time(), not injectable clock. Individual source/query commits,
+not atomic whole-query transaction. Crash before outcome save/cooldown remains;
+flock only state writes, checksum not authentication, noM00authority inferred.
