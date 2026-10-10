@@ -71,3 +71,28 @@ def test_seed_refusal(seed):
 def test_bound_and_overflow_refusal():
  with pytest.raises(ValueError,match='product'):solve_quadratic(request(weights=[1]*64,interactions=[[0,1,1]],population_size=128,generations=1000))
  with pytest.raises(ValueError,match='overflow'):solve_quadratic(request(weights=[1e308]*6),1)
+
+def test_search_discovers_optimum_absent_from_random_start():
+ d=request();r=solve_quadratic(d,1)
+ assert r['generation_history'][0]['best_score']<12
+ assert r['generation_history'][-1]['best_score']==12
+ assert any(h['best_score']==12 for h in r['generation_history'][1:])
+
+def test_no_exhaustive_oracle_hidden_in_solver():
+ import inspect
+ from app.modules.m20_general_cognitive_worker import genetic_algorithm
+ text=inspect.getsource(genetic_algorithm)
+ assert 'itertools' not in text and 'product(' not in text
+
+def test_quadratic_work_bound_and_reverse_pair_equivalence():
+ with pytest.raises(ValueError,match='quadratic evaluation'):
+  solve_quadratic(request(weights=[1]*64,interactions=[[i,j,1] for i in range(64) for j in range(i+1,64)],population_size=128,generations=10))
+ a=request();b=request(interactions=[[j,i,c] for i,j,c in a['interactions']])
+ assert solve_quadratic(a,1)==solve_quadratic(b,1)
+
+def test_ga01_result_bytes_preserved_against_versioned_reference():
+ # Fixed recorded GA01 fixture keeps regression proof independent of shared core.
+ import hashlib,json
+ d={'weights':[1.,2.,3.,4.],'population':[[0,0,0,0],[1,0,1,0],[0,1,0,1],[1,1,0,0]],'generations':12,'mutation_rate':.2,'crossover_rate':1.,'tournament_size':2,'elite_count':1}
+ result=json.dumps(solve(d,17),sort_keys=True,separators=(',',':')).encode()
+ assert hashlib.sha256(result).hexdigest()=='4f853851e86459b3ef2674e9486074eaa33a2a7a8de175b8026c006928feb8a9'

@@ -1,7 +1,7 @@
 from typing import Any
 from fastapi import APIRouter,HTTPException
 from pydantic import BaseModel,Field
-from .genetic_algorithm import solve
+from .genetic_algorithm import solve,solve_quadratic
 router=APIRouter(prefix='/genetic-algorithms',tags=['m20-genetic-algorithms'])
 class Request(BaseModel):
     data:dict[str,Any]
@@ -9,4 +9,9 @@ class Request(BaseModel):
 @router.post('/solve')
 def run(request:Request):
     try:return solve(request.data,request.seed)
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
+
+@router.post('/solve-quadratic')
+def run_quadratic(request:Request):
+    try:return solve_quadratic(request.data,request.seed)
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc

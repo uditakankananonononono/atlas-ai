@@ -8,7 +8,7 @@ and objective are supplied, not independently verified. No external effects.
 """
 import math,random
 
-def solve(data,seed=0):
+def _solve(data,seed=0,_objective=None,_rng=None):
     if not isinstance(data,dict):raise ValueError('data must be an object')
     weights=data.get('weights');population=data.get('population')
     if not isinstance(weights,list) or not 2<=len(weights)<=64 or any(type(w) not in (int,float) or not math.isfinite(w) for w in weights):raise ValueError('weights require 2..64 finite numbers')
@@ -31,9 +31,10 @@ def solve(data,seed=0):
     if generations*size*n>100000:raise ValueError('generation/population/genome product exceeds 100000')
     def score(genome):
         value=sum(w*b for w,b in zip(weights,genome))
+        if _objective is not None:value+=sum(c*genome[i]*genome[j] for i,j,c in _objective)
         if not math.isfinite(value):raise ValueError('objective overflow')
         return value
-    rng=random.Random(seed);population=[g[:] for g in population];evaluations=0
+    rng=_rng if _rng is not None else random.Random(seed);population=[g[:] for g in population];evaluations=0
     def evaluated(pop):
         nonlocal evaluations
         scores=[score(g) for g in pop];evaluations+=len(pop);return scores
@@ -66,3 +67,39 @@ def solve(data,seed=0):
             'best_genome':population[best][:],'best_score':scores[best],'evaluations':evaluations,
             'generation_history':history,'seed':seed,'global_optimum_guaranteed':False,
             'scope':'Actual binary genetic algorithm on supplied weighted-bit objective only; no general optimizer or cognition claim.'}
+
+
+def solve(data,seed=0):
+    """GA01 interface and receipts preserved exactly."""
+    return _solve(data,seed)
+
+
+def solve_quadratic(data,seed=0):
+    """Seeded random-init binary quadratic search, no oracle in execution."""
+    if not isinstance(data,dict):raise ValueError('data must be an object')
+    if 'population' in data:raise ValueError('quadratic search uses random population; supplied population refused')
+    weights=data.get('weights')
+    if not isinstance(weights,list) or not 2<=len(weights)<=64 or any(type(w) not in (int,float) or not math.isfinite(w) for w in weights):raise ValueError('weights require 2..64 finite numbers')
+    if type(seed) is not int or not 0<=seed<=2**32-1:raise ValueError('seed requires uint32')
+    n=len(weights);terms=data.get('interactions');size=data.get('population_size',32)
+    if type(size) is not int or not 2<=size<=128:raise ValueError('population_size requires integer 2..128')
+    if not isinstance(terms,list) or not 1<=len(terms)<=n*(n-1)//2:raise ValueError('interactions require bounded nonempty pairwise terms')
+    normalized=[];seen=set()
+    for term in terms:
+        if not isinstance(term,list) or len(term)!=3:raise ValueError('interaction requires [i,j,coefficient]')
+        i,j,c=term
+        if type(i) is not int or type(j) is not int or not 0<=i<n or not 0<=j<n or i==j:raise ValueError('interaction indices require distinct exact in-range integers')
+        if type(c) not in (int,float) or not math.isfinite(c) or c==0:raise ValueError('interaction coefficient requires finite nonzero number')
+        pair=tuple(sorted((i,j)))
+        if pair in seen:raise ValueError('duplicate interaction pair')
+        seen.add(pair);normalized.append((i,j,c))
+    generations=data.get('generations',20)
+    if type(generations) is not int or not 1<=generations<=1000:raise ValueError('generations requires integer 1..1000')
+    if generations*size*n>100000:raise ValueError('generation/population/genome product exceeds 100000')
+    if (generations+1)*size*(n+len(terms))>1000000:raise ValueError('quadratic evaluation work product exceeds 1000000')
+    rng=random.Random(seed)
+    population=[[rng.randrange(2) for _ in range(n)] for _ in range(size)]
+    result=_solve({**data,'population':population},seed,normalized,rng)
+    result.update(objective='maximize_binary_quadratic',initialization='seeded_random_binary',
+                  scope='Actual binary genetic search on supplied quadratic objective; bounded stochastic search, no global optimum guarantee or general cognition claim.')
+    return result
