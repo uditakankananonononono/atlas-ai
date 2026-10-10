@@ -17,9 +17,11 @@
 #
 # Requirements and honesty notes:
 # - Docker Compose v2.24+ for inline config `content:` (Compose Specification).
-# - Image tags prom/prometheus:v2.54.1 and grafana/grafana-oss:11.2.2 are pinned
-#   for reproducibility but were NOT verified against a registry by the builder
-#   (network restricted to the atlas git remote); adjust only if a pull fails.
+# - Images are pinned by tag AND digest. Digests verified 2026-10-10 22:17:51 IST via
+#   read-only Docker Hub registry HEAD requests against
+#   registry-1.docker.io/v2/<repo>/manifests/<tag> (HTTP 200, no pulls, no runs):
+#   prom/prometheus:v2.54.1 -> sha256:f6639335d34a77d9d9db382b92eeb7fc00934be8eae81dbc03b31cfe90411a94
+#   grafana/grafana-oss:11.2.2 -> sha256:d5133220d770aba5cb655147b619fa8770b90f41d8489a821d33b1cd34d16f89
 # - Local single-host only: no TLS, no auth proxy, anonymous access disabled,
 #   sign-up disabled, admin password from the environment with a local default.
 # - All state is in the two named volumes below; removing them resets everything.
@@ -59,7 +61,7 @@ configs:
             foldersFromFilesStructure: false
 services:
   prometheus:
-    image: prom/prometheus:v2.54.1
+    image: prom/prometheus:v2.54.1@sha256:f6639335d34a77d9d9db382b92eeb7fc00934be8eae81dbc03b31cfe90411a94
     restart: unless-stopped
     configs:
       - source: prometheus-local-config
@@ -69,7 +71,7 @@ services:
     depends_on:
       api: {condition: service_healthy}
   grafana:
-    image: grafana/grafana-oss:11.2.2
+    image: grafana/grafana-oss:11.2.2@sha256:d5133220d770aba5cb655147b619fa8770b90f41d8489a821d33b1cd34d16f89
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
