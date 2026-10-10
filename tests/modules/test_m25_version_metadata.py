@@ -76,3 +76,13 @@ def test_loaded_metadata_drift_refuses_append_without_overwrite(tmp_path):
     from app.modules.m25_knowledge_copilot_training.pipeline import KnowledgeError
     with pytest.raises(KnowledgeError):first.ingest(IngestRequest(source=src(),content='new',mime_type='text/plain',actor_id='actor-a'))
     assert tree_hashes(tmp_path)==before and len(first.records['s1'].versions)==1
+
+
+@pytest.mark.parametrize('entry',[5,None,'bad',[],True])
+def test_nonobject_version_rows_typed_refusal(tmp_path,entry):
+    first=pipe(tmp_path);ingest(first)
+    manifest=tmp_path/'tenant-a/s1/manifest.json';data=json.loads(manifest.read_text())
+    data['versions']=[entry];manifest.write_text(json.dumps(data))
+    from app.modules.m25_knowledge_copilot_training.pipeline import KnowledgeError
+    with pytest.raises(KnowledgeError):first.register(src())
+    with pytest.raises(RecoveryError):pipe(tmp_path).restore_verified(same_adapters_attested=True)

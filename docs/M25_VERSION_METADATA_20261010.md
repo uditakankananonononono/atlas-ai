@@ -19,6 +19,9 @@ No authenticity, trusted-clock or hostile manifest edit guarantee. An operator
 can edit timestamp/MIME/hash consistently; record association is not cryptographic
 authority. No adapter identity/consent authority change, default routes unchanged,
 no HTTP/training or downloads. Existing TOCTOU/private primitive dependency remains.
-Malformed metadata refuses, never silently falls back to legacy. New format is
+Malformed metadata refuses with typed KnowledgeError/RecoveryError, never silently
+falls back to legacy. Non-object version rows are checked before key inspection.
+MIME-only tampering can be undetected when two extraction transforms give identical
+segments (plain/markdown); no independent MIME authenticity claim. New format is
 not readable by old code; deploy compatible code before writing, old-binary
 rollback requires separate migration/export decision, not silent data downgrade.
