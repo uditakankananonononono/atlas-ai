@@ -30,5 +30,8 @@ Wire/decompressor bound NOT claimed; decompression behavior untested, liveHTTP
 never run. Helper freshness/cost/vector and route canary independently SUITE-ONLY,
 not adversarially probed. Legacy36/39/52/auth unchanged.
 Builder final terminal351PASS33.37s, noSKIP; independent reports350PASS1SKIP1warning
-across *m23* files. Exact skipped node/collection command pending reconciliation,
-not silently counted as independent pass. Preserve both environment receipts.
+across *m23* files. Count reconciliation CLOSED:351collected both sides. Verifier skip node
+tests/modules/test_m23_hz29_driver_constraint_and_commit_contract.py:64,
+"could not import pgserver" optional PostgreSQL fixture absent in reviewer venv.
+Builder env has pgserver,351PASS; verifier350PASS1optional-dependencySKIP. No
+code discrepancy, and no independent skipped test relabeled pass.
