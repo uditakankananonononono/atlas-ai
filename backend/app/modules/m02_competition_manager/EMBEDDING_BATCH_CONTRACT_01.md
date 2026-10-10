@@ -1,6 +1,6 @@
 # M02 embedding batch validation - PREP ONLY
 
-Base beaf700275a24829440a5e96c3919ed572061503.
+Base efa5649f7cbee5800e1cb38d0d38fbd3e5c55eca. Historical base beaf700275a24829440a5e96c3919ed572061503.
 Additive helper only. Existing product paths are unchanged. Separate
 UNAPPLIED patch proposes integration into profile_corpus.py and the three
 profile_routes.py indexing/retrieval endpoints. Not a completed repair.
@@ -61,3 +61,34 @@ the peer side; no DB/test/runtime execution occurred during preparation.
    tests, then existing test_m02_profile_corpus.py and peer-selected regression.
 6. Inspect HTTP 422/client close behavior for Docs, Sheets and retrieve;
    report independent verdict. No runtime or API result is verified here.
+
+## Fix-pass source bounds and residual error consequence
+
+The unapplied product patch remains limited to profile_corpus.py and
+profile_routes.py. routes.py:155-169 evidence_completeness calls
+score_from_corpus(ProfileCorpus(...), fields) without a validation-error catch.
+If that consumer invokes retrieve with an invalid embedding batch or mismatched
+stored vector, the new validation error still propagates as HTTP 500 there.
+This is deliberately disclosed, not fixed by silently widening API scope.
+The coordinator may separately authorize a matching 422 boundary for that
+consumer. Other application endpoints can likewise surface uncaught errors.
+
+New authored tests cover TestClient 422 for Docs, Sheets and retrieve; exact
+Google client closure on validation failures and on grounding failures; exact
+retrieval score/order (including a non-leading best row); and a distinct
+RankingStarted sentinel that must not be reached for stored mismatch. These
+are authored NOT RUN and do not claim any mutant result on the new head.
+
+## Historical peer audit attribution, not builder results
+
+Coordinator relay identifies OLD HEAD 6c1018b4fc6fa113be4479eeb2df16e719d69494
+at base beaf700275a24829440a5e96c3919ed572061503:
+- 39 PASS + 14 expected wiring-absent FAIL on the additive package.
+- 105 PASS with the separate product proposal applied.
+- Peer observed proposal applies clean; base NaN indexing returned HTTP 200
+  indexed 1, patched returned 422; onboarding 422 precedent and generic error
+  behavior, method-level invalid input without transaction begin.
+- Peer reported 8 mutant classes killed, but a zero-cosine mutant survived.
+These are peer-observed old-head results relayed by the coordinator, not
+builder executions, not independently reproduced, and not PASS for this fix
+or rebased head. All builder tests remain NOT RUN. New head awaits peer re-audit.
