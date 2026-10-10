@@ -30,7 +30,7 @@ Cancellation: cancelling an asyncio await does not stop host-thread work immedia
 
 `PYTHONPATH=$PWD/backend /tmp/atlas-memo3-venv/bin/python -m pytest tests/modules/test_m14*.py -q`
 
-Exact base: 914 PASS in13.64s. Initial candidate: 946 PASS in48.16s with32newcanaries. Latest named canaries34PASS23.83s; actual PG claim rollback/CAS and SQLite+PG migration up/down, real production OIDC (dev bypass disabled), restart/replay, bound output/network/read-only/fork/timeouts/process-group gone. Probe-dependent fixtures SKIP explicitly if host namespace capability unavailable; then no execution claim is supported on that host. PG tests require pgserver+psycopg, not an opt-in skip. Final whole receipt to be appended before audit handoff.
+Exact base: 914 PASS in13.64s. Initial candidate: 946 PASS in48.16s with32newcanaries. Historical pre-repair named canaries34PASS23.83s; actual PG claim rollback/CAS and SQLite+PG migration up/down, real production OIDC (dev bypass disabled), restart/replay, bound output/network/read-only/fork/timeouts/process-group gone. Probe-dependent fixtures SKIP explicitly if host namespace capability unavailable; then no execution claim is supported on that host. PG tests require pgserver+psycopg, not an opt-in skip. Current repaired whole receipt appears below.
 
 Initial strict-backend run 2FAIL/22PASS due malformed bindflag ordering; fixed then24PASS, later32PASS and34PASS. Initial HTTP probe1FAIL/26PASS because shared test development bypass was enabled; test explicitly disables bypass, then production OIDC passes. Prior failures remain receipts, not retroactively green.
 
