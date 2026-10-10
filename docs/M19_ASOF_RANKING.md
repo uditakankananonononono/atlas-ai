@@ -11,3 +11,12 @@ It is a deterministic identity checksum, not authenticity or external permission
 Repository method reads are separate snapshots; concurrent changes can yield a
 mixed read. No point-in-time SQL transaction or historical-stage reconstruction
 is claimed. Tests use offline fixtures; production load is unmeasured.
+
+Independent verdict ataba76ce2: new tests25PASS; verifier wholeM19 had271PASS,
+9FAIL,8SKIP with the same9 failures on exactf37156c7 base. Builder environment
+had280PASS8SKIP. Failed verifier groups: luxury_sources5/luxury_tools2/
+idea_incubator2. Exact tracebacks/dependency receipts have not been supplied here,
+so cause remains unclassified, not asserted network/dependency. Diagnostics are
+only visited rows. Digest binds INCLUDED scoring values and EXCLUDED kind/id/
+reason, not excluded row values or all repository content. Editing an excluded
+future row's strength need not change it. No full-integrity/authenticity claim.

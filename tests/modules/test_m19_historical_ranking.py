@@ -1,4 +1,4 @@
-"""AUTHORED, NOT RUN. Pins for historical_ranking.py using an in-test read-only fake repository."""
+"""Integrator-executed as-of ranking tests; reproduction receipts tracked separately."""
 from datetime import datetime,timedelta,timezone
 import pytest
 from app.modules.m19_idea_incubator.historical_ranking import rank_portfolio_as_of
