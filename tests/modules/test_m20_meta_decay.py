@@ -120,3 +120,73 @@ def test_history_limit_and_timestamp_validation_unmasked(tmp_path):
  for prefix in ['a','b']:assert m.ingest([{**base,'history_id':f'{prefix}{i}'}for i in range(1000)])['inserted']==1000
  with pytest.raises(ValueError):m.ingest([{**base,'history_id':'2001'}])
  assert len(m.state['histories'])==2000
+
+def test_track_identity_and_exact_fact_cap(tmp_path):
+ m=model(tmp_path);original=m.track('f','c',source='fixture:original',confirmed_at=10)
+ with pytest.raises(ValueError):m.track('f','different',source='fixture:changed',confirmed_at=20)
+ assert m.state['facts']['f']==original
+ for i in range(999):m.track(str(i),'c',source='fixture',confirmed_at=10)
+ assert len(m.state['facts'])==1000
+ with pytest.raises(ValueError):m.track('1001','c',source='fixture',confirmed_at=10)
+
+@pytest.mark.parametrize('change',[{'fact_id':''},{'fact_class':''},{'source':''},{'confirmed_at':float('nan')},{'confirmed_at':True}])
+def test_track_guards_fresh_ids(tmp_path,change):
+ m=model(tmp_path);args={'fact_id':'f','fact_class':'c','source':'fixture','confirmed_at':10};args.update(change)
+ with pytest.raises(ValueError):m.track(**args)
+ assert m.state['facts']=={}
+
+def test_refresh_unknown_status_and_initial_time_guard(tmp_path):
+ m=model(tmp_path)
+ with pytest.raises(ValueError):m.refresh('unknown',confirmed_at=10,source='fixture')
+ m.track('f','c',source='fixture',confirmed_at=10)
+ with pytest.raises(ValueError):m.refresh('f',confirmed_at=9,source='fixture')
+ with pytest.raises(ValueError):m.evaluate(as_of=9)
+ assert m.refresh('f',confirmed_at=10,source='fixture:new')=={'status':'caller_reconfirmed','source_truth_verified':False,'fact_id':'f'}
+
+def test_full_due_entry_order_idempotence_age_and_horizon_cap(tmp_path):
+ m=model(tmp_path);rows=history();m.ingest(rows)
+ for key in ['z','a']:m.track(key,'slow',source='fixture:'+key,confirmed_at=11)
+ assert m.evaluate(as_of=12)['due']==[]
+ forecast=m.forecast('slow',horizon=10,as_of=21);result=m.evaluate(as_of=21)
+ assert [r['fact_id']for r in result['due']]==['a','z'] and result['unsupported_fact_ids']==[]
+ for row,key in zip(result['due'],['a','z']):
+  assert row=={'fact_id':key,'fact_class':'slow','source':'fixture:'+key,'confirmed_at':11,'evaluated_at':21,'forecast_horizon':10,'age':10,'stale_probability':forecast['stale_probability'],'history_ids':forecast['history_ids'],'reason':'predicted_stale_probability_at_least_half','recommendation_only':True}
+ revision=m._revision;assert m.evaluate(as_of=21)==result and m._revision==revision
+ for age in [100,101,250]:
+  result=m.evaluate(as_of=11+age)
+  assert all(row['forecast_horizon']==100 and row['age']==age for row in result['due'])
+ assert forecast['sample_size']==len(rows)
+
+@pytest.mark.parametrize('probability,due',[(.49,False),(.5,True),(.51,True)])
+def test_crafted_due_threshold_inclusive(tmp_path,probability,due):
+ m=model(tmp_path);rate=10/math.expm1(-math.log1p(-probability)/6);duration=(rate-1)/40
+ rows=[{'history_id':str(i),'fact_class':'c','source':'fixture','started_at':0.,'ended_at':duration,'changed':i<5}for i in range(40)]
+ m.ingest(rows);m.track('f','c',source='fixture:fact',confirmed_at=10)
+ result=m.forecast('c',horizon=10,as_of=20)['stale_probability']
+ assert result==pytest.approx(probability)
+ if probability==.5:assert result==.5
+ assert bool(m.evaluate(as_of=20)['due']) is due
+
+def test_due_removed_after_new_evidence_and_unsupported_fact_ids(tmp_path):
+ m=model(tmp_path);rows=history();m.ingest(rows);m.track('f','slow',source='fixture',confirmed_at=11)
+ assert m.evaluate(as_of=21)['due']
+ m.ingest([{'history_id':f'censored{i}','fact_class':'slow','source':'fixture:new','started_at':-10000.,'ended_at':21.,'changed':False}for i in range(1000)])
+ assert m.evaluate(as_of=21)['due']==[]
+ m.track('unknown','unknown',source='fixture',confirmed_at=21)
+ m.ingest(history('sparse',cls='sparse',n=10));m.track('sparse','sparse',source='fixture',confirmed_at=21)
+ result=m.evaluate(as_of=21);assert result['unsupported_fact_ids']==['sparse','unknown']
+
+def test_empty_evaluate_no_write_and_invalid_times(tmp_path):
+ m=model(tmp_path);revision=m._revision
+ assert m.evaluate(as_of=10)['due']==[] and m._revision==revision and m.repo.read(m.kind)==(0,None)
+ for value in [float('nan'),True]:
+  with pytest.raises(ValueError):m.evaluate(as_of=value)
+
+def test_mounted_refresh_unknown_and_huge_number_refuse(tmp_path,monkeypatch,oidc_auth_headers):
+ from app.main import app
+ from fastapi.testclient import TestClient
+ from app.modules.m20_general_cognitive_worker import decay_survival_routes as routes
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setattr(routes,'_models',{})
+ routes.bind_model(model(tmp_path));c=TestClient(app);p='/api/v1/api/modules/20/decay-survival';h=oidc_auth_headers('a','owner')
+ assert c.post(p+'/refresh',headers=h,json={'fact_id':'unknown','source':'fixture','confirmed_at':10}).status_code==422
+ assert c.post(p+'/evaluate',headers=h,json={'as_of':10**400}).status_code==422
