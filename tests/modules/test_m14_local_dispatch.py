@@ -353,3 +353,42 @@ def test_r7_enqueue_guards_isolated(env,guard):
             db.add(BuilderSlotRow(id=str(uuid.uuid4()),work_key=str(uuid.uuid4()),**fields))
     with pytest.raises(WaveConflict):svc.enqueue(OWNER,b,w)
     with sessions() as db:assert not db.scalar(select(LocalDispatchJobRow.id))
+
+# Follow-up named survivors: product bytes unchanged from7f650e04.
+def test_pin_resource_cpu_before_local_claim(env):
+    svc,sessions,_,_=env;id=queued(svc,sessions)
+    with sessions.begin() as db:
+        job=db.get(LocalDispatchJobRow,id);slot=db.scalar(select(BuilderSlotRow).where(BuilderSlotRow.batch_id==job.batch_id));slot.resources={**slot.resources,'cpu_units':0}
+    with pytest.raises(WaveConflict,match='resources insufficient'):svc.claim(OWNER,id,'worker')
+    assert svc.get(OWNER,id)['state']=='queued'
+
+def test_pin_claim_source_after_self_consistent_wave_job_edit(env):
+    svc,sessions,_,_=env;id=queued(svc,sessions)
+    with sessions.begin() as db:
+        job=db.get(LocalDispatchJobRow,id);w=db.get(SandboxWaveRow,job.wave_id)
+        w.payload={**w.payload,'post_admission_marker':'changed'};w.digest=digest(w.payload)
+        job.payload={**job.payload,'wave_digest':w.digest};job.digest=digest(job.payload)
+        db.get(ApprovalRequestRow,w.approval_id).payload=w.payload
+    # Earlier enqueue snapshot survives in admission sources. Other exact
+    # payload checks are deliberately self-consistent to isolate this boundary.
+    with pytest.raises(WaveConflict,match='admission source drift'):svc.claim(OWNER,id,'worker')
+    assert svc.get(OWNER,id)['state']=='queued'
+
+def test_pin_pool_job_count_three_one_task_jobs(env):
+    svc,sessions,_,_=env;ids=[queued(svc,sessions,n=1) for _ in range(3)]
+    svc.claim(OWNER,ids[0],'one');svc.claim(OWNER,ids[1],'two')
+    # Three tasks fit the four-task cap, but three workers violate job count.
+    with pytest.raises(WaveConflict,match='pool exhausted'):svc.claim(OWNER,ids[2],'three')
+    assert svc.get(OWNER,ids[2])['state']=='queued'
+
+def test_pin_local_two_task_wave_limit(env):
+    svc,sessions,_,_=env;b,w=prepared(svc,sessions,n=3)
+    with pytest.raises(WaveConflict,match='local wave limit2'):svc.enqueue(OWNER,b,w)
+    with sessions() as db:assert not db.scalar(select(LocalDispatchJobRow.id))
+
+def test_pin_enqueue_slot_expiry_before_any_job_creation(env):
+    svc,sessions,_,_=env;b,w=prepared(svc,sessions,n=1)
+    with sessions.begin() as db:
+        slot=db.scalar(select(BuilderSlotRow).where(BuilderSlotRow.batch_id==b));slot.expires_at=(datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat()
+    with pytest.raises(WaveConflict,match='unexpired'):svc.enqueue(OWNER,b,w)
+    with sessions() as db:assert not db.scalar(select(LocalDispatchJobRow.id))
