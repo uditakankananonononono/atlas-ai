@@ -1,6 +1,6 @@
 # M14 approval-bound offline Python ready wave
 
-Status: code independently audited and F1/F2 rechecked; documentation confirmation and landing authorization pending. NOT landed. Base: 33e6510a19a685d29d7e3aa266f245f0c21491d9.
+Status: code, F1/F2 and documentation audits cleared; landed at 7d6098ff81b17478d0a975961f40904d5c69cb99. Not deployed. Base: 33e6510a19a685d29d7e3aa266f245f0c21491d9.
 
 ## Product contract
 
@@ -39,4 +39,4 @@ Named source mutations: each selected original test1PASS; each mutated test1FAIL
 Historical pre-repair candidate whole M14: **948 PASS**, one pgserver runtime-dir warning,46.41s. Compared with exactbase914PASS:34newcanaries. Final real timeout test records spawned process PID and verifies its process group no longer exists after timeout; output/read-only-root/dev-shm/fork bounds canary runs real too.
 
 
-Current verified F1/F2 repaired candidate81662bcac0db9ae2c2df2580f55d63c7586f9562: **36 canaries PASS25.10s / 950 whole M14 PASS49.16s**, one pgserver runtime-dir warning, no FAIL/SKIP. Exactbase914PASS unchanged. Independent auditor reproduced original34/948 and killed9supplied+3additional mutations; then cleared boundedF1/F2 repair. F1 rejects resolved `/run` descendants (private0700 does not make a conventional volatile path durable). F2 reserves `empty-tmp` at input admission, tested with ZERO operation/approval/effect rows on refusal. Physical mount durability remains unproven. Documentation confirmation/parent landing authorization pending: no public/deployed/landed claim.
+Current verified F1/F2 repaired candidate81662bcac0db9ae2c2df2580f55d63c7586f9562: **36 canaries PASS25.10s / 950 whole M14 PASS49.16s**, one pgserver runtime-dir warning, no FAIL/SKIP. Exactbase914PASS unchanged. Independent auditor reproduced original34/948 and killed9supplied+3additional mutations; then cleared boundedF1/F2 repair. F1 rejects resolved `/run` descendants (private0700 does not make a conventional volatile path durable). F2 reserves `empty-tmp` at input admission, tested with ZERO operation/approval/effect rows on refusal. Physical mount durability remains unproven. Documentation audit cleared; landed at 7d6098ff81b17478d0a975961f40904d5c69cb99, not deployed.

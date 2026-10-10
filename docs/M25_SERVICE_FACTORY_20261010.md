@@ -1,4 +1,4 @@
-# Restart-safe knowledge service factory candidate
+# Restart-safe knowledge service factory (landed, scoped audit)
 
 Base7628c745. Exact HTTP behavior changes for ALL six existing endpoints:
 POST ingest, POST search, GET export, DELETE sources/{source_id}, GET contradictions,
@@ -48,8 +48,8 @@ normalized-root repair adds1canary, builder157PASS. All sixendpointnarrowings
 probed independently. No productionmount/crash/distributedacceptance implied.
 
 
-## Conventional volatile /run parity repair (candidate, independent audit pending)
+## Conventional volatile /run parity repair (landed, scoped audit)
 
 Exactbase7d6098ff81b17478d0a975961f40904d5c69cb99: wholeM25 157PASS5.30s. Adds resolved `/run` and descendants to the production-root refusal list, without changing symlink/private/canonical environment/owner/profile/adapter/consent behavior. Two focused canaries model an existing private0700 `/run/credentials/private-service` path and exercise the real factory/provision refusal and productionOIDC HTTP503 before `_factory` cache publication. Filesystem metadata is simulated for host portability; actual ramfs/mount durability is NOT proved. Independent auditor should also probe a live private/run directory when available. Explicit non-HTTP test-scratch constructor remains unchanged. No deployment.
 
-Candidatewhole159PASS4.69s; focusedcandidate2PASS0.20s. Removing only `/run` from the list: focused2FAIL0.22s (constructor accepted; HTTP eventually503 but factory was published, so cache assertion catches it). This is before-publication proof, not merely status-code proof. Base whole157PASS remains the comparison. Original product restored after mutation. Audit pending, not landed.
+Candidatewhole159PASS4.69s; focusedcandidate2PASS0.20s. Removing only `/run` from the list: focused2FAIL0.22s (constructor accepted; HTTP eventually503 but factory was published, so cache assertion catches it). This is before-publication proof, not merely status-code proof. Base whole157PASS remains the comparison. Original product restored after mutation. Independent audit cleared; landed at 2d5e9b98b921d8f59ffb301d6486e0f0f95184fc, not deployed.
