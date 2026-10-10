@@ -306,3 +306,46 @@ def supersede_status(sid:str,context:TenantContext=Depends(require_tenant),svc=D
 def wave_key_history(project_id:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
     try:return WaveSupersedeService(svc).history(context,project_id)
     except WaveError as exc:raise _wave_error(exc) from exc
+
+from .reviewed_continuation import ReviewedContinuationService,ReviewRow,ContinuationRow
+class WaveReviewRequest(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    selection:dict
+class NextWaveRequest(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    config:WaveDraft
+    artifact_inputs:list[dict]=Field(default_factory=list,max_length=100)
+class WaveContinueRequest(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    new_wave_id:str
+
+def _review_call(operation):
+    try:return operation()
+    except (WaveError,ApprovalConflictError,IntegrityError,OperationalError) as exc:raise _wave_error(exc) from exc
+@router.post('/sandbox-waves/{wave_id}/reviews',status_code=202)
+def wave_review_propose(wave_id:str,body:WaveReviewRequest,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).propose_review(ctx,wave_id,body.selection))
+@router.post('/wave-reviews/{id}/decision')
+def wave_review_decide(id:str,body:SupersedeDecision,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).decide_review(ctx,id,body.decision))
+@router.post('/wave-reviews/{id}/apply')
+def wave_review_apply(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).apply_review(ctx,id))
+@router.get('/wave-reviews/{id}')
+def wave_review_get(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).get(ctx,id))
+@router.post('/wave-reviews/{id}/next-wave',status_code=201)
+def wave_review_draft_next(id:str,body:NextWaveRequest,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).draft_next(ctx,id,body.config,body.artifact_inputs))
+@router.post('/wave-reviews/{id}/continuations',status_code=202)
+def wave_continue_propose(id:str,body:WaveContinueRequest,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).propose_continuation(ctx,id,body.new_wave_id))
+@router.post('/wave-continuations/{id}/decision')
+def wave_continue_decide(id:str,body:SupersedeDecision,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).decide_continuation(ctx,id,body.decision))
+@router.post('/wave-continuations/{id}/apply')
+def wave_continue_apply(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).apply_continuation(ctx,id))
+@router.get('/wave-continuations/{id}')
+def wave_continue_get(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    return _review_call(lambda:ReviewedContinuationService(svc).get(ctx,id,ContinuationRow))

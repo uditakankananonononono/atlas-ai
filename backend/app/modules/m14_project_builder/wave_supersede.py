@@ -44,6 +44,9 @@ def project_key(wave):return digest({'tenant':wave.tenant_id,'project':wave.proj
 def current(db,wave):
     key=project_key(wave)
     row=db.scalar(select(WaveKeyVersionRow).where(WaveKeyVersionRow.project_key==key).order_by(WaveKeyVersionRow.version.desc()).limit(1))
+    from .reviewed_continuation import ContinuationKeyRow
+    continued=db.scalar(select(ContinuationKeyRow).where(ContinuationKeyRow.project_key==key).order_by(ContinuationKeyRow.version.desc()).limit(1))
+    if continued is not None and (row is None or continued.version>row.version):return continued.version,continued.new_wave_id
     return (row.version,row.new_wave_id) if row else (0,wave.id)
 
 def evidence(db,wave):
@@ -120,7 +123,10 @@ class WaveSupersedeService:
         with self.sessions.begin() as db:
             r=self._row(db,context,sid)
             if r.state!='approved' or r.approver_role!='atlas-admin' or not r.approver_actor or r.digest!=digest(r.payload):raise WaveConflict('role-bound approved supersede required')
-            prior=db.scalar(select(SandboxWaveRow).where(SandboxWaveRow.id==r.payload['prior_wave_id']).with_for_update())
+            from .sql_repository import ProjectRow
+            source=db.get(SandboxWaveRow,r.payload['prior_wave_id'])
+            db.scalar(select(ProjectRow).where(ProjectRow.tenant_id==context.tenant_id,ProjectRow.id==source.project_id).with_for_update())
+            prior=db.scalar(select(SandboxWaveRow).where(SandboxWaveRow.id==r.payload['prior_wave_id']).with_for_update().execution_options(populate_existing=True))
             prior,new,version=self._pair(db,context,r.payload['prior_wave_id'],r.payload['new_wave_id'])
             if prior.digest!=r.payload['prior_digest'] or new.digest!=r.payload['new_digest'] or version!=r.payload['current_key_version'] or evidence(db,prior)!=r.payload['evidence']:raise WaveConflict('supersede evidence or version changed')
             approval=db.get(ApprovalRequestRow,r.approval_id);now=self.gate._clock()

@@ -1,3 +1,4 @@
+from app.modules.m14_project_builder.reviewed_continuation import ReviewRow,ContinuationRow,ContinuationKeyRow
 """Human admin unblock, two approvals, durable evidence, never automatic resume."""
 import asyncio
 import pytest
@@ -164,7 +165,7 @@ def test_supersede_migration_sqlite_pg_and_pg_claim_apply(tmp_path):
                 migration.upgrade();assert 'm14_wave_key_versions' in inspect(connection).get_table_names();migration.downgrade()
         engine.dispose()
     engine=create_engine(pguri);sessions=sessionmaker(engine,expire_on_commit=False)
-    for model in (WaveKeyVersionRow,WaveSupersedeRow,ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
+    for model in (ReviewRow,ContinuationRow,ContinuationKeyRow,WaveKeyVersionRow,WaveSupersedeRow,ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
     root=Path(tempfile.mkdtemp(prefix='m14-supersede-pg-',dir=Path.home()));root.chmod(0o700)
     try:
         plan=ProjectPlan(goal='demo',tasks=[ProjectTask(id='a',title='write',objective='write result',agent_kind='coder'),ProjectTask(id='b',title='next',objective='dependent task',agent_kind='coder',dependencies=['a'])])
@@ -250,7 +251,7 @@ def pg_env(tmp_path):
     server=pgserver.get_server(tmp_path/'pg-race',cleanup_mode='stop')
     engine=create_engine(server.get_uri().replace('postgresql://','postgresql+psycopg://'))
     sessions=sessionmaker(engine,expire_on_commit=False)
-    for model in (WaveKeyVersionRow,WaveSupersedeRow,ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
+    for model in (ReviewRow,ContinuationRow,ContinuationKeyRow,WaveKeyVersionRow,WaveSupersedeRow,ProjectRow,ApprovalRequestRow,ApprovalEventRow,ApprovalEffectRow,ApprovalReviewStateRow,SandboxWaveRow,SandboxWaveTaskRow,SandboxWaveArtifactRow):model.__table__.create(engine,checkfirst=True)
     root=Path(tempfile.mkdtemp(prefix='m14-fence-pg-',dir=Path.home()));root.chmod(0o700)
     plan=ProjectPlan(goal='demo',tasks=[ProjectTask(id='a',title='write',objective='write result',agent_kind='coder'),ProjectTask(id='b',title='next',objective='dependent task',agent_kind='coder',dependencies=['a'])])
     with sessions.begin() as db:db.add(ProjectRow(tenant_id='t',id='p',goal='demo',brief={},budget=Budget().model_dump(mode='json'),status='planned',revision=1,plan=plan.model_dump(mode='json')))
@@ -270,7 +271,7 @@ def test_finalize_read_publication_interleaving_pg_lock(pg_env,monkeypatch):
     original=module.current
     def barrier(db,row):
         result=original(db,row)
-        if current_thread().name.startswith('finalize'):
+        if current_thread().name.startswith('finalize') and row.state=='claimed':
             entered.set();assert release.wait(15)
         return result
     monkeypatch.setattr(module,'current',barrier)

@@ -70,7 +70,7 @@ def test_static_claim_key_only_written_by_claim_transaction():
         re.compile(r"SandboxWaveRow\.claim_key\.is_not\(None\)"),
         # Approved human supersede appends versions, never clears original key.
         re.compile(r"WaveKeyVersionRow.project_key==claim_key"),
-        re.compile(r"claim_key=digest\(\{'project_key':claim_key,'version':version.version\}\)"),
+        re.compile(r"claim_key=digest\(\{'project_key':claim_key,'version':version\}\)"),
         re.compile(r"^\s*claim_key=digest\(\{'tenant':tenant,'project':row\.project_id\}\)\s*$"),
         re.compile(r"SandboxWaveRow\.claim_key==claim_key"),
         re.compile(r"\.values\(state='claimed',claim_key=claim_key\)"),
