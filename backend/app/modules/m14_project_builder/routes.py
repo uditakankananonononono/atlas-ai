@@ -220,3 +220,54 @@ def verify_and_persist_registered_receipts(body:RegisteredReceiptsIn,context:Ten
 def reverify_registered_receipt(receipt_id:str,context:TenantContext=Depends(require_tenant),registry=Depends(get_issuer_key_registry),store=Depends(get_live_receipt_store)):
  try:return {'tenant_id':context.tenant_id,**_reverify_receipt(receipt_id,registry,store)}
  except (LookupError,ValueError) as error:raise HTTPException(404,str(error)) from error
+
+# Deliberately separate from legacy, plan-only execution-proposals.
+from .sandbox_wave import SandboxWaveService,WaveDraft,WaveError,WaveForbidden,WaveConflict,WaveUnavailable
+from app.modules.m00_approval_center.service import ApprovalConflictError
+from sqlalchemy.exc import IntegrityError,OperationalError
+
+def get_wave_service(context:TenantContext=Depends(require_tenant)):
+    import os
+    from app.core.database import SessionLocal
+    if os.getenv('ATLAS_M14_SANDBOX_BACKEND')!='bubblewrap':raise HTTPException(503,'sandbox execution not enabled')
+    try:return SandboxWaveService(SessionLocal,os.getenv('ATLAS_M14_SANDBOX_ROOT'))
+    except WaveUnavailable as exc:raise HTTPException(503,str(exc)) from exc
+
+def _wave_error(exc):
+    if isinstance(exc,WaveForbidden):return HTTPException(403,str(exc))
+    if isinstance(exc,WaveUnavailable):return HTTPException(503,str(exc))
+    if isinstance(exc,(WaveConflict,ApprovalConflictError,IntegrityError,OperationalError)):return HTTPException(409,'wave conflict; fresh review required, never replay')
+    return HTTPException(422,str(exc))
+
+@router.post('/projects/{project_id}/sandbox-waves',status_code=201)
+def draft_wave(project_id:str,request:WaveDraft,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return svc.draft(context.tenant_id,context.actor_id,project_id,request)
+    except (WaveError,ApprovalConflictError,IntegrityError,OperationalError) as exc:raise _wave_error(exc) from exc
+
+@router.post('/sandbox-waves/{wave_id}/submit',status_code=202)
+def submit_wave(wave_id:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return svc.submit(context.tenant_id,context.actor_id,wave_id)
+    except (WaveError,ApprovalConflictError,IntegrityError,OperationalError) as exc:raise _wave_error(exc) from exc
+
+@router.post('/sandbox-waves/{wave_id}/execute')
+async def execute_wave(wave_id:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return await svc.execute(context.tenant_id,context.actor_id,wave_id)
+    except (WaveError,ApprovalConflictError,IntegrityError,OperationalError) as exc:raise _wave_error(exc) from exc
+
+@router.get('/sandbox-waves/{wave_id}')
+def wave_status(wave_id:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return svc.get(context.tenant_id,context.actor_id,wave_id)
+    except WaveError as exc:raise _wave_error(exc) from exc
+
+@router.get('/sandbox-waves/{wave_id}/artifacts')
+def wave_artifacts(wave_id:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return svc.artifacts(context.tenant_id,context.actor_id,wave_id)
+    except WaveError as exc:raise _wave_error(exc) from exc
+
+@router.get('/sandbox-waves/{wave_id}/artifacts/{artifact_id}')
+def wave_artifact(wave_id:str,artifact_id:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    from fastapi.responses import Response
+    try:
+        data,name,sha=svc.artifact(context.tenant_id,context.actor_id,wave_id,artifact_id)
+        return Response(content=data,media_type='application/octet-stream',headers={'X-Content-SHA256':sha})
+    except WaveError as exc:raise _wave_error(exc) from exc
