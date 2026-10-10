@@ -1666,3 +1666,6 @@ router.include_router(calibration_predictor_router)
 
 from .bayesian_model_routes import router as bayesian_model_router
 router.include_router(bayesian_model_router)
+
+from .decay_survival_routes import router as decay_survival_router
+router.include_router(decay_survival_router)

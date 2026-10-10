@@ -94,4 +94,28 @@ def test_mounted_routes_auth_errors_and_tenant(tmp_path,monkeypatch,oidc_auth_he
  assert c.post(p+'/evaluate',headers=h,json={'as_of':21}).json()['due'][0]['fact_id']=='f'
  assert c.post(p+'/refresh',headers=h,json={'fact_id':'f','source':'fixture:new','confirmed_at':21}).status_code==200
  stale=model(tmp_path);m.track('g','slow',source='fixture',confirmed_at=11);routes.bind_model(stale)
- assert c.post(p+'/evaluate',headers=h,json={'as_of':21}).status_code==409
+ assert c.post(p+'/evaluate',headers=h,json={'as_of':22}).status_code==409
+
+def test_exact_sample_event_time_boundaries_and_false_alarm(tmp_path):
+ m=model(tmp_path);rows=[{'history_id':str(i),'fact_class':'c','source':f'fixture:{i}','started_at':0.,'ended_at':10.,'changed':i<5}for i in range(40)]
+ m.ingest(rows);r=m.forecast('c',horizon=10,as_of=10)
+ assert r['events']==5 and r['censored']==35 and r['exposure']==400
+ assert r['stale_probability']==pytest.approx(1-(401/411)**6)
+ assert m.forecast('c',horizon=10,as_of=9.999)['status']=='abstained'
+ other=model(tmp_path,'four');other.ingest([{**row,'changed':int(row['history_id'])<4}for row in rows]);assert other.forecast('c',horizon=10,as_of=10)['status']=='abstained'
+ # Fixed holdout changed-by-5 truth, threshold policy versus always-due baseline.
+ rng=random.Random(55);truth=[rng.expovariate(.01)<=5 for _ in range(1000)]
+ slow=model(tmp_path,'slow');slow.ingest(history('slow',.01));p=slow.forecast('slow',horizon=5,as_of=11)['stale_probability']
+ false_alarms=sum((p>=.5)and not y for y in truth);always_false_alarms=sum(not y for y in truth)
+ assert false_alarms==0<always_false_alarms
+
+def test_history_limit_and_timestamp_validation_unmasked(tmp_path):
+ m=model(tmp_path);base=history(n=1)[0]
+ for field in ['started_at','ended_at']:
+  for value in [True,float('nan'),float('inf')]:
+   with pytest.raises(ValueError):m.ingest([{**base,'history_id':f'{field}{value}',field:value}])
+ for n in [0,1001]:
+  with pytest.raises(ValueError):m.ingest([{**base,'history_id':str(i)}for i in range(n)])
+ for prefix in ['a','b']:assert m.ingest([{**base,'history_id':f'{prefix}{i}'}for i in range(1000)])['inserted']==1000
+ with pytest.raises(ValueError):m.ingest([{**base,'history_id':'2001'}])
+ assert len(m.state['histories'])==2000
