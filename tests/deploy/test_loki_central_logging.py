@@ -87,3 +87,14 @@ def test_gaps_and_manual_binding_requirements_are_explicit():
     assert "ATLAS_API_DOCKER_LOG_DIR" in text and "ATLAS_WORKER_DOCKER_LOG_DIR" in text
     assert "Compose 2.23.1" in text
     assert "container recreation" in text
+
+
+def test_local_sink_disables_analytics_and_has_no_external_egress_network():
+    compose, promtail, _ = configurations()
+    config = yaml.safe_load(compose["configs"]["atlas-loki-local"]["content"])
+    assert config["analytics"]["reporting_enabled"] is False
+    assert compose["networks"]["atlas-log-sink"]["internal"] is True
+    for name in ("loki", "promtail"):
+        assert compose["services"][name]["networks"] == ["atlas-log-sink"]
+        assert "network_mode" not in compose["services"][name]
+    assert promtail["clients"] == [{"url": "http://loki:3100/loki/api/v1/push"}]

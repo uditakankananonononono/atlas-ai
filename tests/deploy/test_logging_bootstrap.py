@@ -120,3 +120,8 @@ def test_module_help_entrypoint_exits_without_starting_app_or_worker():
     assert result.returncode == 0
     assert "{api,worker}" in result.stdout
     assert not result.stderr
+
+
+def test_uvicorn_preserves_existing_application_loggers():
+    config = bootstrap.uvicorn_logging_config("INFO")
+    assert config["disable_existing_loggers"] is False
