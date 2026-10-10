@@ -102,3 +102,53 @@ def test_work_product_seed_and_overflow_refuse():
  with pytest.raises(ValueError):solve(request(x=[1e200]*5,y=[0]*5,population_size=6,generations=1),9)
  for seed in (-1,True,2**32):
   with pytest.raises(ValueError):solve(request(),seed)
+
+@pytest.mark.parametrize('maximum',[2,3])
+def test_mutation_remaining_depth_budget_and_nonroot_paths(maximum):
+ from app.modules.m20_general_cognitive_worker.genetic_programming import depth
+ r=solve(request(population_size=12,generations=18,max_depth=maximum,crossover_rate=0.,mutation_rate=1.),27)
+ assert all(depth(t)<=maximum for h in r['history']for t in h['population'])
+ assert any(c['mutation_path'] for h in r['history'][1:]for c in h['offspring'])
+
+@pytest.mark.parametrize('size',[1,2,5])
+def test_exact_tournament_candidate_size_and_argmin(size):
+ r=solve(request(population_size=6,generations=3,tournament_size=size),12)
+ def mse(t):return sum((oracle(t,x)-y)**2 for x,y in zip(request()['x'],request()['y']))/5
+ for h in r['history'][1:]:
+  for child in h['offspring']:
+   for contest,winner in zip(child['tournaments'],child['parents']):
+    assert len(contest)==size
+    assert winner==min(contest,key=mse)
+
+def test_grown_constants_and_full_initial_depth():
+ from app.modules.m20_general_cognitive_worker.genetic_programming import depth
+ constants=[];deeper=False
+ def visit(t):
+  if t[0]=='const':constants.append(t[1])
+  elif t[0] in ('add','sub','mul'):visit(t[1]);visit(t[2])
+ for seed in (1,2,3,4):
+  r=solve(request(population_size=12,generations=3,max_depth=5,mutation_rate=1.),seed)
+  for t in r['history'][0]['population']:visit(t);deeper|=depth(t)>2;assert depth(t)<=5
+  for h in r['history'][1:]:
+   for c in h['offspring']:visit(c['mutation_subtree'])
+ assert constants and set(constants)<={-2,-1,0,1,2} and deeper
+
+def test_evaluator_nonfinite_constants_and_six_level_limit():
+ for v in (float('inf'),float('nan')):
+  with pytest.raises(ValueError):evaluate(['const',v],1)
+ six=['x']
+ for _ in range(5):six=['add',six,['x']]
+ assert evaluate(six,1)==6
+ with pytest.raises(ValueError):evaluate(['add',six,['x']],1)
+
+def test_exact_size_depth_sample_and_independent_work_bounds():
+ d=request(population_size=2,generations=1,tournament_size=1)
+ with pytest.raises(ValueError,match='max_depth'):solve({**d,'max_depth':7},1)
+ assert solve({**d,'max_depth':6},1)['history']
+ with pytest.raises(ValueError,match='population_size'):solve({**d,'population_size':1},1)
+ with pytest.raises(ValueError,match='evaluation work product'):
+  solve(request(x=[0]*64,y=[0]*64,population_size=64,generations=20,max_depth=6),1)
+ with pytest.raises(ValueError,match='retained work product'):
+  solve(request(x=[0,1],y=[0,1],population_size=128,generations=40,max_depth=6),1)
+ with pytest.raises(ValueError,match='x/y'):solve({**d,'x':[0]*65,'y':[0]*65},1)
+ assert solve({**d,'x':[0]*64,'y':[0]*64},1)['history']
