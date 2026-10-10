@@ -116,6 +116,7 @@ class DispatchIntentWAL:
 class IntentBoundHostRateLimiter(DurableHostRateLimiter):
     """Explicit paired WAL+snapshot provisioning; no legacy collector wiring."""
     def __init__(self,private_root,tenant_id,**kwargs):
+        if 'bootstrap' in kwargs:raise StateRejected('preprovision both stores; bootstrap kwarg refused')
         self.intent_wal=DispatchIntentWAL(private_root,tenant_id)
         # Both stores must be explicitly provisioned separately for known-new tenant.
         self.intent_wal.read()

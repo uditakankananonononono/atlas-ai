@@ -24,3 +24,8 @@ Unseen RetryAfter and record_failure write-ahead OUT OF SCOPE. Crash can occur a
 clearing WAL before caller dispatch, then request pacing remains conservatively
 consumed. Pending host/timestamp stored in private file; no credentials/errors.
 No network/training/payment. Tests simulate phase boundaries, not powerloss proof.
+
+The opt-in binding rejects bootstrap kwarg (evenFalse); both stores must already
+exist. Plain DurableHostRateLimiter on same directory ignores WAL entirely.
+Mixing limiter classes bypasses WAL; deployment must use IntentBound class for
+all dispatches. This is a caller integration requirement, not global enforcement.
