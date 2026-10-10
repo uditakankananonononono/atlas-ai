@@ -187,3 +187,35 @@ def test_actual_http_constructor_dotdot_into_tmp_refuses(root,monkeypatch,oidc_a
         assert out.status_code==503 and out.json()=={'detail':UNAVAILABLE}
     assert r._factory is None
     with pytest.raises(ServiceUnavailable):provision(alias,'another','actor',known_new=True)
+
+
+def private_run_path(monkeypatch):
+    # Host-independent private 0700 /run fixture: simulate path metadata ONLY.
+    # Production _root, factory dependency and HTTP handler are not mocked.
+    from types import SimpleNamespace
+    target=Path('/run/credentials/private-service')
+    real_resolve=Path.resolve;real_symlink=Path.is_symlink;real_dir=Path.is_dir;real_stat=Path.stat
+    def simulated(p):return p==target or p in target.parents
+    monkeypatch.setattr(Path,'is_symlink',lambda self:False if simulated(self) else real_symlink(self))
+    monkeypatch.setattr(Path,'resolve',lambda self,strict=False:target if self==target else real_resolve(self,strict=strict))
+    monkeypatch.setattr(Path,'is_dir',lambda self:True if self==target else real_dir(self))
+    monkeypatch.setattr(Path,'stat',lambda self,*a,**kw:SimpleNamespace(st_mode=0o40700) if self==target else real_stat(self,*a,**kw))
+    return target
+
+
+def test_private_run_0700_root_refused(monkeypatch):
+    target=private_run_path(monkeypatch)
+    with pytest.raises(ServiceUnavailable):KnowledgeServiceFactory(str(target))
+    with pytest.raises(ServiceUnavailable):provision(str(target),'tenant','actor',known_new=True)
+
+
+def test_actual_http_private_run_refuses_before_factory_cache(monkeypatch,oidc_auth_headers):
+    from app.modules.m25_knowledge_copilot_training import routes as r
+    target=private_run_path(monkeypatch)
+    monkeypatch.setenv('ATLAS_DEV_NO_AUTH','0');monkeypatch.setenv('ATLAS_ENV','production')
+    monkeypatch.setenv('ATLAS_M25_DURABLE_ROOT',str(target));monkeypatch.setattr(r,'_factory',None)
+    app=FastAPI();app.include_router(r.router)
+    with TestClient(app) as c:
+        response=c.get('/knowledge-copilot-training/export',headers=oidc_auth_headers('tenant','actor'))
+        assert response.status_code==503 and response.json()=={'detail':UNAVAILABLE}
+    assert r._factory is None

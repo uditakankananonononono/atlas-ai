@@ -21,7 +21,7 @@ def _root(value,allow_test_scratch):
         p=p.resolve(strict=True)
         if any(x.is_symlink() for x in (p,*p.parents)) or not p.is_dir() or p.stat().st_mode & 0o077:raise ServiceUnavailable(UNAVAILABLE)
     except OSError:raise ServiceUnavailable(UNAVAILABLE) from None
-    if not allow_test_scratch and any(p==base or base in p.parents for base in map(Path,('/tmp','/var/tmp','/dev/shm'))):raise ServiceUnavailable(UNAVAILABLE)
+    if not allow_test_scratch and any(p==base or base in p.parents for base in map(Path,('/tmp','/var/tmp','/dev/shm','/run'))):raise ServiceUnavailable(UNAVAILABLE)
     return p
 
 def _registry(root,tenant):return root/('.m25-owner-'+hashlib.sha256(tenant.encode()).hexdigest()+'.json')
