@@ -1,4 +1,4 @@
-"""ATLAS-2 prep. Builder-authored and not run by the builder; the peer auditor independently reported 11 PASS.
+"""ATLAS-2 prep. Fresh local audit refresh of the landed peer prep; execution receipts are in the policy doc.
 Boundary pins for rank_portfolio_as_of using existing APIs only.
 The excluded-value test pins today's honest residue and does not demand any unimplemented binding."""
 from datetime import datetime,timedelta,timezone
@@ -43,17 +43,28 @@ def test_included_test_value_change_changes_digest():
 def test_included_experiment_value_change_changes_digest():
     a=dg(Repo([mk_idea()],ex=[mk_exp("x1",learnings="a")]));b=dg(Repo([mk_idea()],ex=[mk_exp("x1",learnings="b")]))
     assert a.provenance.digest!=b.provenance.digest
-def test_digest_changes_with_current_stage_but_provenance_has_no_stage_at_as_of_field():
+def test_digest_changes_with_current_stage_and_disclaims_reconstruction():
     a=dg(Repo([mk_idea(IdeaStage.VALIDATION)]));b=dg(Repo([mk_idea(IdeaStage.PARKED)]))
     assert len(a.ranking.ranked)==1 and a.ranking.excluded_count==0
     assert len(b.ranking.ranked)==0 and b.ranking.excluded_count==1  # current stage drives the current filter
     assert a.provenance.digest!=b.provenance.digest
-    fields=set(type(a.provenance).model_fields)|set(type(a.ranking).model_fields)
-    assert not any("stage_at" in f or "archiv" in f or "snapshot" in f for f in fields)  # no archival stage state is exposed
+    assert a.provenance.reconstruction_claimed is False and b.provenance.reconstruction_claimed is False
+    assert a.provenance.note==b.provenance.note
+    assert "not a historical reconstruction" in a.provenance.note
+    assert "current idea stage" in a.caveats[0]
     assert a.provenance.included==b.provenance.included and [d.model_dump() for d in a.diagnostics]==[d.model_dump() for d in b.diagnostics]
 def test_stage_mutation_back_restores_original_result_no_memory_of_prior_stage():
-    base=dg(Repo([mk_idea(IdeaStage.VALIDATION)]));back=dg(Repo([mk_idea(IdeaStage.VALIDATION)]))
-    assert base.provenance.digest==back.provenance.digest
+    repo=Repo([mk_idea(IdeaStage.VALIDATION)])
+    base=dg(repo)
+    repo.i[0].stage=IdeaStage.PARKED
+    changed=dg(repo)
+    assert changed.provenance.digest!=base.provenance.digest
+    assert changed.ranking.ranked==[] and changed.ranking.excluded_count==1
+    repo.i[0].stage=IdeaStage.VALIDATION
+    back=dg(repo)
+    assert base.model_dump(mode="json")==back.model_dump(mode="json")
+    assert len(base.ranking.ranked)==1 and base.ranking.excluded_count==0
+    assert back.provenance.reconstruction_claimed is False
 def test_stale_experiment_exclude_and_current_policies_are_distinct():
     r=Repo([mk_idea()],ex=[mk_exp("x1",updated=F)])
     ex=dg(r,stale_experiment_policy="exclude");cur=dg(r,stale_experiment_policy="current")
@@ -68,8 +79,20 @@ def test_stale_experiment_current_state_change_is_visible_only_under_current_pol
     assert a.provenance.digest!=b.provenance.digest
     c=dg(Repo([mk_idea()],ex=[mk_exp("x1",updated=F,status=ExperimentStatus.SUCCEEDED)]));d=dg(Repo([mk_idea()],ex=[mk_exp("x1",updated=F,status=ExperimentStatus.FAILED)]))
     assert c.provenance.digest==d.provenance.digest  # excluded under default policy: values not bound
-def test_snapshot_policy_doc_states_non_claims():
+def test_snapshot_policy_doc_structured_claim_contract():
     import pathlib
-    p=pathlib.Path(__file__).resolve().parents[2]/"docs"/"M19_SNAPSHOT_POLICY_PREP.md";t=p.read_text()
-    for s in ("NOT IMPLEMENTED","no signature","does NOT exist","excluded kind/id/reason","reconstruct"):
-        assert s.lower() in t.lower()
+    p=pathlib.Path(__file__).resolve().parents[2]/"docs"/"M19_SNAPSHOT_POLICY_PREP.md"
+    section=p.read_text().split("## 7. Current claim contract",1)[1].split("## 8.",1)[0]
+    rows={}
+    for line in section.splitlines():
+        if line.startswith("| "):
+            cells=[x.strip() for x in line.strip().strip("|").split("|")]
+            if cells[0] not in ("Capability","---"):rows[cells[0]]=tuple(cells[1:])
+    assert rows=={
+        "As-of ranking":("CURRENT_FILTER","Current stage and field values; row timestamps only."),
+        "Historical reconstruction":("NOT_IMPLEMENTED","No archival state can be recovered from current rows."),
+        "Immutable snapshots":("PROPOSAL_ONLY","No snapshot storage or capture endpoint exists."),
+        "Excluded values":("NOT_BOUND","Digest binds excluded kind/id/reason, not full excluded values."),
+        "Diagnostic census":("VISITED_ONLY","Not a complete repository census."),
+        "Signature and anti-rollback":("NOT_CLAIMED","Hash is a checksum, not authentication or rollback protection."),
+    }

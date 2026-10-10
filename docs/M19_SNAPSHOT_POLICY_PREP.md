@@ -75,3 +75,22 @@ Uses only existing APIs (`rank_portfolio_as_of`, schemas) with an in-test fake r
 - stale_experiment_exclude_and_current_are_distinct.
 Canonical command from repo root (pyproject pythonpath=backend): `python -m pytest tests/modules/test_m19_asof_digest_boundary_prep.py -q`, then the whole M19 module set.
 Unresolved: snapshot storage location (table vs object store), retention, whether decisions replay should be offered for stage-at-as_of.
+
+## 7. Current claim contract
+
+This table pins today's claim boundaries, not the proposed snapshot implementation.
+
+| Capability | Status | Meaning |
+| --- | --- | --- |
+| As-of ranking | CURRENT_FILTER | Current stage and field values; row timestamps only. |
+| Historical reconstruction | NOT_IMPLEMENTED | No archival state can be recovered from current rows. |
+| Immutable snapshots | PROPOSAL_ONLY | No snapshot storage or capture endpoint exists. |
+| Excluded values | NOT_BOUND | Digest binds excluded kind/id/reason, not full excluded values. |
+| Diagnostic census | VISITED_ONLY | Not a complete repository census. |
+| Signature and anti-rollback | NOT_CLAIMED | Hash is a checksum, not authentication or rollback protection. |
+
+## 8. Local audit refresh
+
+The landed peer prep is already present on main7792260305b4208d3657099c973e914f3302dbcf. This additive docs/test follow-up does not re-land the same original package, change product behavior or implement snapshot storage. Baseline fresh wholeM19:291PASS8SKIP20.36s. The three LOWs above are historical and now addressed: one same repository is ranked, changed to PARKED, ranked again, restored and ranked again, with complete result equality and intermediate exclusion asserted; affirmative reconstruction_claimed/note/caveat assertions replace brittle absent-field-name guessing; exact parsed claim/status/meaning table replaces loose doc substring checks. Independent audit confirmation is pending.
+
+After LOW repairs: wholeM19291PASS8SKIP16.74s under default environment. All eight skips require an isolated SQL database, not missing behavior; fresh isolated SQLite wholeM19299PASS22.68s with no skips. Three new direct mutation probes fail at the intended acceptance assertions: retained prior ranking across same-repository stage edits, reconstruction_claimed=True, and changing the structured historical-reconstruction status to IMPLEMENTED. All sources restored after each probe. This execution is local, not inherited peer verification. The future snapshot implementation remains a separate unit requiring its own audit.
