@@ -26,6 +26,7 @@ with f.service('tenant','actor') as s:
  v=s.records['s1'].versions[0]
  print(json.dumps({'hits':len(s.search('restart')),'mime':v.mime_type,'time':v.created_at.isoformat()}))
 '''
+    # Subprocess requires backend on PYTHONPATH; pytest pythonpath alone does not propagate.
     out=subprocess.run([sys.executable,'-c',script,str(root)],capture_output=True,text=True,check=True)
     assert json.loads(out.stdout)=={'hits':1,'mime':'text/markdown','time':expected}
 

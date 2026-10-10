@@ -229,5 +229,7 @@ unavailable transcriber profile; audio unavailable503, no implicit custom adapte
 attestation. No oldworkspace adoption/migration/collaboration/training/network.
 One process perroot, warmcache not full diskrevalidation, no crossprocesslease.
 Persistent mount durability is operator attestation, no TOCTOU/hostileadmin or
-aggregateCPU proof; claimed consent/legacytimestampunknown remain. Candidate
-pending fresh independent verdict; docs/M25_SERVICE_FACTORY_20261010.md.
+aggregateCPU proof; claimed consent/legacytimestampunknown remain. PASS-WITH-NOTES independent verdict, cold-restore/owner/root/profile policy verified;
+builder157PASS after normalized-root repair. Root env must be CANONICAL absolute
+path, valid noncanonical aliases may503 after first request. Not productionmount
+acceptance. docs/M25_SERVICE_FACTORY_20261010.md.
