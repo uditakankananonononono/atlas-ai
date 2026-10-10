@@ -27,7 +27,7 @@ def test_module_docstring_has_verbatim_gap_and_unmet_owner_gap_and_states_no_sol
     d=B.__doc__
     assert "Literal 1M-variable claim" in d and B.GAP_VERBATIM=="Literal 1M-variable claim"
     assert "1,000,000" in d and "NOT met" in d and "per-idea" in d
-    assert "no matrix" in d.lower() and "no optimi" in d.lower()
+    assert "no matrix or optimisation solver" in d.lower()
     assert B.TARGET_VARIABLES==1_000_000
 
 # ---- counting ----
