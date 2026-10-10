@@ -1,0 +1,30 @@
+{
+  "row_id": 1986,
+  "requirement": "Genetic Algorithms",
+  "status": "SCOPED",
+  "scope": "binary GA over linear and pairwise-quadratic objectives, 2-64 bits, random init, seeded, oracle-checked on small instances",
+  "residual_gap": "non-binary encodings / arbitrary objectives not implemented",
+  "closing_units": [
+    "GA01",
+    "GA02"
+  ],
+  "accepted_implementation_commit": "dfa6a6b10aa09a5f1ba681e405669a7a39ff19b7",
+  "implementation_tree": "cef45ca9580db2b3250b920f2d50a57458d7ec5a",
+  "tests_first_commit": "bb5d3b8d39a17f3426a166efef2f709240162ddd",
+  "acceptance": "independent audit accepted bounded original GA capability, not unrestricted title completion",
+  "spot_tests": {
+    "passed": 91,
+    "suite_paths": [
+      "tests/modules/test_m20_ga02.py",
+      "tests/modules/test_m20_genetic_algorithm.py",
+      "tests/modules/test_m20_cognitive_1960_2009.py"
+    ]
+  },
+  "other_rows_not_closed": [
+    1984,
+    1985,
+    1987,
+    1988
+  ],
+  "historical_note": "Additive current acceptance record. Historical reference catalog and prior generated IMPLEMENTATION_AUDIT rows retained, not authoritative current acceptance for this row."
+}
