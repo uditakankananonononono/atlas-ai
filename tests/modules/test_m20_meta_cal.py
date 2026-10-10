@@ -14,7 +14,7 @@ def test_heldout_brier_logloss_and_reliability_improve_without_leakage(tmp_path)
  p=predictor(tmp_path);p.ingest(data());held=data('heldout');raw=[];corrected=[];truth=[]
  for r in held:
   result=p.predict(r['claim_class'],r['confidence'],as_of=3.)
-  assert result['status']=='calibrated' and result['training_prediction_ids']==[x['prediction_id']for x in data()if int(x['confidence']*5)==int(r['confidence']*5)]
+  assert result['status']=='calibrated' and result['training_prediction_ids']==sorted(x['prediction_id']for x in data()if int(x['confidence']*5)==int(r['confidence']*5))
   assert all(not x.startswith('heldout')for x in result['training_prediction_ids'])
   raw.append(r['confidence']);corrected.append(result['corrected_confidence']);truth.append(r['outcome'])
  def brier(scores):return sum((v-int(y))**2 for v,y in zip(scores,truth))/len(scores)
@@ -61,3 +61,21 @@ def test_production_routes_prediction_and_tenant_isolation(tmp_path,monkeypatch,
  r=c.post(path+'/predict',headers=h,json={'claim_class':'synthetic-binary','confidence':.9,'as_of':3})
  assert r.status_code==200 and r.json()['status']=='calibrated'
  assert c.post(path+'/predict',headers=oidc_auth_headers('b','owner'),json={'claim_class':'synthetic-binary','confidence':.9,'as_of':3}).status_code==503
+
+def test_known_bin_estimate_exact_minimum_and_no_future_labels(tmp_path):
+ p=predictor(tmp_path);rows=data()[:20];p.ingest(rows)
+ result=p.predict('synthetic-binary',.1,as_of=3.)
+ assert result['sample_size']==20 and result['successes']==4
+ assert result['corrected_confidence']==5/22
+ p2=predictor(tmp_path,'b');p2.ingest(rows[:19]);assert p2.predict('synthetic-binary',.1,as_of=3.)['status']=='abstained'
+ future=[{**r,'prediction_id':'future'+r['prediction_id'],'resolved_at':10}for r in rows]
+ p.ingest(future);assert p.predict('synthetic-binary',.1,as_of=3.)==result
+ assert p.predict('synthetic-binary',.1,as_of=32.)['status']=='calibrated'
+ assert p.predict('synthetic-binary',.1,as_of=41.)['status']=='abstained'
+
+def test_missing_provenance_refuses_before_record_publish(tmp_path):
+ p=predictor(tmp_path);row=data()[0];row.pop('outcome_source')
+ try:p.ingest([row])
+ except Exception as exc:assert isinstance(exc,ValueError) and 'outcome_source' in str(exc)
+ else:assert False,'unbound outcome provenance accepted'
+ assert p.records=={}
