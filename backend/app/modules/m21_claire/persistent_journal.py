@@ -114,3 +114,8 @@ class PersistentJournal:
         with self.sessions() as db:
             return bounded_retrieve(db, tenant_id=self.tenant_id, actor_id=self.actor_id,
                                     query=query, **bounds)
+
+    def retrieve_cursor(self,query:str,**bounds)->dict:
+        from .cursor_journal_retrieval import cursor_retrieve
+        with self.sessions() as db:
+            return cursor_retrieve(db,tenant_id=self.tenant_id,actor_id=self.actor_id,query=query,**bounds)

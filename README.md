@@ -181,6 +181,12 @@ Legal1260-1309 PARTIAL supplied review templates/unverified reference structure.
 
 The risk register also has tenant-bound durable runtime routes: create/read/history/revise under `/api/modules/20/runtime/risk-registers`. SQL current-revision compare-and-update and history insertion commit together; stale revisions return409, other tenants cannot read/revise a register, and restart preserves earlier control gaps. The additive risk-table migration was tested on local SQLite only and was not run on production. History is append-only through this interface, not tamper-proof against database administrators. Ownership remains a supplied text label, not a verified assignee or a notification. Live evidence checks, scheduled follow-ups and PostgreSQL concurrent acceptance remain open.
 
+### M21 no-total cursor-window candidate
+Opt-in journal cursor endpoint avoids full-match COUNT, materializes at most
+scan_cap+1 rows and scores newest bounded window. matched_total and omitted_by_scan_cap unknown; omitted_by_limit counts positive matches omitted within scored window. Probe row not consumed. No DB CPU/index/load or global top-k guarantee.
+Existing exact-count endpoint unchanged. Pending independent verdict.
+
+After journal initialization, each cursor retrieval issues one SELECT LIMIT scan_cap+1 with no COUNT. HTTP store dependency may also inspect/create schema; unchanged exact-count endpoint still uses COUNT. Retrieval helper validates time/cursor bounds before its SELECT. HTTP store dependency initializes/checks journal schema before route-level bounds rejection.
 ### M18 dispatch-intent candidate (opt-in, pending independent verdict)
 Separate WAL and dispatch binding deny pending intent on restart, no automatic
 clear/replay. Limits: conservative stuck-pending after crash; recovery-acknowledgment
