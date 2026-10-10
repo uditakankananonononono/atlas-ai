@@ -117,3 +117,56 @@ def test_mounted_invalid_authority_and_overflow(tmp_path,monkeypatch,oidc_auth_h
  setup(m)
  assert c.post(p+'/enqueue',headers=h,json={'records':[{**question(),'source_ids':['forbidden']}]}).status_code==422
  assert c.post(p+'/run',headers=h,json={'max_cost':10**400}).status_code==422
+
+def test_exact_priority_components_order_flips_and_id_ties(tmp_path):
+ m=investigator(tmp_path);setup(m)
+ m.enqueue([question('costly',relevance=.8,cost=4),question('a',relevance=.5,cost=1),question('z',relevance=.5,cost=1)])
+ ranked=m.queue();assert [r['question_id']for r in ranked]==['a','z','costly']
+ assert ranked[2]['priority']==.2
+ assert all(r['rubric']=='binary entropy times supplied decision relevance divided by supplied lookup cost'for r in ranked)
+ relevance=investigator(tmp_path,'relevance');setup(relevance)
+ relevance.enqueue([question('z-high',relevance=1,cost=2),question('a-low',relevance=.1,cost=1)])
+ assert [r['question_id']for r in relevance.queue()]==['z-high','a-low']
+ cost=investigator(tmp_path,'cost');setup(cost)
+ cost.enqueue([question('a-expensive',relevance=1,cost=4),question('z-cheap',relevance=.8,cost=1)])
+ assert [r['question_id']for r in cost.queue()]==['z-cheap','a-expensive']
+
+@pytest.mark.parametrize('change',[{'decision_relevance':1.5},{'cost':1000.1},{'frequency':True},{'frequency':1.5},{'frequency':'3'},{'frequency':1000001}])
+def test_unmasked_question_upper_and_type_guards(tmp_path,change):
+ m=investigator(tmp_path);setup(m)
+ with pytest.raises(ValueError):m.enqueue([{**question('fresh'),**change}])
+ assert m.state['questions']=={}
+
+def test_exact_cost_frequency_source_count_and_sorted_ids(tmp_path):
+ m=investigator(tmp_path);ids=[f's{i:02}'for i in range(32)]
+ m.authorize([source(key)for key in ids],preauthorized=True,budget=1000)
+ r={**question(cost=1000,frequency=1000000),'source_ids':ids[::-1]}
+ assert m.enqueue([r])['inserted']==1 and m.queue()[0]['source_ids']==ids
+ assert m.state['questions']['q']['cost']==1000 and m.state['questions']['q']['frequency']==1000000
+ with pytest.raises(ValueError):m.enqueue([{**question('33'),'source_ids':ids+['extra']}])
+
+@pytest.mark.parametrize('record',[{'source_id':'','provenance':'fixture','answers':{}},{'source_id':'s','provenance':'','answers':{}},{'source_id':'s','answers':{}},[]])
+def test_source_guard_errors_are_valueerror(tmp_path,record):
+ m=investigator(tmp_path)
+ with pytest.raises(ValueError):m.authorize([record],preauthorized=True,budget=1)
+ assert m.state['sources']=={}
+
+def test_answer_cap_question_shape_and_unauthorized_run(tmp_path):
+ m=investigator(tmp_path)
+ with pytest.raises(ValueError):m.run(max_cost=1)
+ answers={str(i):'answer'for i in range(1000)}
+ assert m.authorize([source(answers=answers)],preauthorized=True,budget=1)['status']=='local_corpus_authorized'
+ other=investigator(tmp_path,'other')
+ with pytest.raises(ValueError):other.authorize([source(answers={**answers,'1001':'answer'})],preauthorized=True,budget=1)
+ with pytest.raises(ValueError):m.enqueue([[]])
+ with pytest.raises(ValueError):m.enqueue([question(str(i))for i in range(1001)])
+
+def test_full_investigation_record_honesty_and_mounted_boundary(tmp_path,monkeypatch,oidc_auth_headers):
+ m=investigator(tmp_path);setup(m);m.enqueue([question()]);result=m.run(max_cost=1)['investigations'][0]
+ assert result=={'question_id':'q','question':'What is the answer?','status':'answered','answer':'known answer','gap_narrowed':True,'source_records':[{'source_id':'s','provenance':'fixture:s','lookup_key':'question-key','answer':'known answer'}],'cost':1,'priority':1,'source_truth_verified':False,'boundary':m.boundary}
+ from app.main import app
+ from fastapi.testclient import TestClient
+ from app.modules.m20_general_cognitive_worker import curiosity_investigator_routes as routes
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setattr(routes,'_investigators',{});routes.bind_investigator(m)
+ response=TestClient(app).get('/api/v1/api/modules/20/curiosity-investigator/queue',headers=oidc_auth_headers('a','owner'))
+ assert response.status_code==200 and response.json()['boundary']==m.boundary
