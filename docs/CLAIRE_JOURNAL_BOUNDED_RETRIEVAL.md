@@ -46,3 +46,17 @@ is not global top-k. Row count and results share a single-statement view, but CO
 can still scan all matches in the database; bounded Python rows is not bounded DB
 CPU. SQLite tested; PostgreSQL behavior/load remains unverified. No table/index
 changes are included. Caller/session ownership is explicit in retrieve_bounded.
+
+## Independent integration verdict
+
+Clean4ac7212c source equivalent to reviewed71ad0198 except executed test marker.
+Independent SQLite whole266PASS32.7s; new8tests repeated six runs. Paging union,
+zero-hit/empty windows, tenant isolation, pre-query refusals reproduced. Shared
+require_tenant route code-read, not TestClient permission proof.
+Earlier builder timeout-interrupted3FAIL lines remain UNRECONCILED; reviewer did
+not reproduce them. Timeout-kill hypothesis is plausible, NOT a finding.
+count(*) OVER() still counts all matching rows: Python row materialization bound,
+NOT DB CPU cost bound. SQLite only; PostgreSQL/load unmeasured, no index/migration.
+Concurrent inserts/deletes can shift matched_total between pages. ID paging key,
+created_at filter-only. Newest scan window selected BEFORE scoring, not global
+top-k. limit<=scan_cap. Legacy route unchanged.
