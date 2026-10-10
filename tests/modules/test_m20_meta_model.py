@@ -89,3 +89,30 @@ def test_mounted_authenticated_routes_and_errors(tmp_path,monkeypatch,oidc_auth_
  assert c.post(path+'/evidence',headers=h,json={'records':[evidence(2,True,.2)]}).status_code==422
  stale=registry(tmp_path);r.ingest([evidence(2,.2,.8)]);routes.bind_registry(stale)
  assert c.post(path+'/evidence',headers=h,json={'records':[evidence(3,.8,.2)]}).status_code==409
+
+def test_three_hypotheses_zero_prior_and_output_contract(tmp_path):
+ r=registry(tmp_path)
+ h={'a':{'prior':.25,'assumptions':{'state':'A'}},'b':{'prior':.75,'assumptions':{'state':'B'}},'c':{'prior':0,'assumptions':{'state':'C'}}}
+ r.configure(h,partition_source='fixture:three',conditional_independence=True)
+ row={**evidence(1,.8,.2),'likelihoods':{'a':.8,'b':.2,'c':1}};r.ingest([row]);s=r.compare()
+ assert s['posteriors']==pytest.approx({'a':4/7,'b':3/7,'c':0}) and s['current_best']=='a'
+ assert s['evidence_provenance']==[{'source':'fixture:observation:1','observation':'observed-1'}]
+ assert s['partition_source']=='fixture:three' and s['conditional_independence'] is True and s['hypotheses']==h
+ assert s['estimator']=='Normalized prior times product of supplied conditionally independent likelihoods (log space)'
+ assert 'not verified truth' in s['boundary']
+
+def test_batch_atomic_configuration_bounds_and_history_cap(tmp_path):
+ r=registry(tmp_path);configure(r);before=deepcopy(r.state)
+ with pytest.raises(ValueError):r.ingest([evidence(1,.8,.2),{**evidence(2,.8,.2),'source':''}])
+ assert r.state==before
+ for invalid in [[],[evidence(i,.8,.2)for i in range(1001)]]:
+  with pytest.raises(ValueError):r.ingest(invalid)
+ for change in [{'prior':-.1},{'prior':1.1},{'assumptions':{'key':''}},{'assumptions':{'key':'x'*241}},{'assumptions':[]}]:
+  h=hypotheses();h['a'].update(change)
+  with pytest.raises(ValueError):r.configure(h,partition_source='fixture',conditional_independence=True)
+ assert r.state==before
+ for i in range(20):configure(r)
+ assert r.state['version']==21 and len(r.state['history'])==20
+ state=deepcopy(r.state)
+ with pytest.raises(ValueError):configure(r)
+ assert r.state==state==registry(tmp_path).state

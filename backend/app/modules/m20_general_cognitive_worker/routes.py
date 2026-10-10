@@ -1663,3 +1663,6 @@ from .meta_transfer_routes import router as meta_transfer_router
 router.include_router(meta_transfer_router)
 from .calibration_predictor_routes import router as calibration_predictor_router
 router.include_router(calibration_predictor_router)
+
+from .bayesian_model_routes import router as bayesian_model_router
+router.include_router(bayesian_model_router)
