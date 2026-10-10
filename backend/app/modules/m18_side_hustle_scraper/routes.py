@@ -42,20 +42,20 @@ _run_store=DurableRunStore(os.getenv("ATLAS_M18_RUN_DB","/tmp/atlas-m18-runs.sql
 def durable_runner(t:TenantContext=Depends(require_tenant)):return DurableHustleRunner(t.tenant_id,_run_store)
 
 
-def get_service() -> Service:
-    global _service
-    if _service is None:
-        repository = SQLiteDocumentRepository(":memory:")
-        collectors = build_collectors()
-        pipeline = CollectionPipeline(
-            repository=repository,
-            validator=DocumentValidator(),
-            ranker=BlueprintRanker(),
-            monitor=FreshnessMonitor(repository),
-            collectors=collectors,
-        )
-        _service = Service(generate=generate, collectors=collectors, pipeline=pipeline)
-    return _service
+from .service_factory import CollectorServiceFactory,FactoryUnavailable,OwnerMismatch,UNAVAILABLE
+from threading import RLock
+_factory=None
+_factory_lock=RLock()
+def get_service(context:TenantContext=Depends(require_tenant)):
+    global _factory
+    try:
+        with _factory_lock:
+            root=os.getenv('ATLAS_M18_DURABLE_ROOT')
+            if _factory is None:_factory=CollectorServiceFactory(root)
+            elif str(_factory.root)!=root:raise FactoryUnavailable(UNAVAILABLE)
+        with _factory.service(context.tenant_id,context.actor_id) as service:yield service
+    except OwnerMismatch:raise HTTPException(403,'collector owner access required') from None
+    except FactoryUnavailable:raise HTTPException(503,UNAVAILABLE) from None
 
 
 @router.post("/blueprints", response_model=list[BlueprintOut])
@@ -110,7 +110,7 @@ async def rank(request: RankIn, service: Service = Depends(get_service)):
 
 @router.post("/refresh", response_model=RefreshOut)
 async def refresh(tenant: TenantContext = Depends(require_tenant), service: Service = Depends(get_service)):
-    report = await service.refresh(build_refetcher(), tenant_id=tenant.tenant_id)
+    report = await service.refresh(service._bound_refetcher, tenant_id=tenant.tenant_id)
     return RefreshOut(
         sources_due=report.sources_due, sources_checked=report.sources_checked,
         changes_detected=report.changes_detected, dead_sources=list(report.dead_sources),
