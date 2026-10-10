@@ -1,0 +1,85 @@
+# Fleet-wide cert issuance/rotation across a real production deployment. mTLS is OPT-IN via the override, not default; no claim that the base deployment is encrypted.
+# Opt-in only: docker compose -f deploy/local/docker-compose.yml -f deploy/local/docker-compose.mtls.yml up
+# Local five-service substitute. NOT an attestation; peer must audit and exercise containers.
+# PKI expires in 30 days. Remove only the atlas-mtls volume to issue new material.
+# Existing DB/Redis volumes are not deleted by this override.
+x-client-tls: &client-tls
+  ATLAS_MTLS_ENABLED: '1'
+
+services:
+  mtls-init:
+    build: {context: ../..}
+    user: '0:0'
+    restart: 'no'
+    command: ['python', '/app/deploy/mtls/local_ca.py', 'init', '--root', '/mtls/pki', '--container-owners']
+    volumes:
+      - atlas-mtls:/mtls
+      - ../mtls/local_ca.py:/app/deploy/mtls/local_ca.py:ro
+
+  migrate:
+    environment:
+      <<: *client-tls
+      ATLAS_MTLS_DIR: /mtls/pki/migrate
+      ATLAS_DATABASE_URL: 'postgresql+psycopg://atlas:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/atlas?sslmode=verify-full&sslrootcert=/mtls/pki/migrate/ca.pem&sslcert=/mtls/pki/migrate/cert.pem&sslkey=/mtls/pki/migrate/key.pem'
+      ATLAS_REDIS_URL: 'rediss://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0?ssl_cert_reqs=required&ssl_check_hostname=true&ssl_ca_certs=/mtls/pki/migrate/ca.pem&ssl_certfile=/mtls/pki/migrate/cert.pem&ssl_keyfile=/mtls/pki/migrate/key.pem'
+    depends_on:
+      mtls-init: {condition: service_completed_successfully}
+    volumes:
+      - atlas-mtls:/mtls:ro
+      - ../mtls/local_ca.py:/app/deploy/mtls/local_ca.py:ro
+    command: ['sh', '-ec', 'python /app/deploy/mtls/local_ca.py check --root /mtls/pki --role migrate && python scripts/migrate.py']
+
+  api:
+    environment:
+      <<: *client-tls
+      ATLAS_MTLS_DIR: /mtls/pki/api
+      ATLAS_DATABASE_URL: 'postgresql+psycopg://atlas:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/atlas?sslmode=verify-full&sslrootcert=/mtls/pki/api/ca.pem&sslcert=/mtls/pki/api/cert.pem&sslkey=/mtls/pki/api/key.pem'
+      ATLAS_REDIS_URL: 'rediss://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0?ssl_cert_reqs=required&ssl_check_hostname=true&ssl_ca_certs=/mtls/pki/api/ca.pem&ssl_certfile=/mtls/pki/api/cert.pem&ssl_keyfile=/mtls/pki/api/key.pem'
+    depends_on:
+      mtls-init: {condition: service_completed_successfully}
+    volumes:
+      - atlas-mtls:/mtls:ro
+      - ../mtls/local_ca.py:/app/deploy/mtls/local_ca.py:ro
+    command: ['sh', '-ec', 'python /app/deploy/mtls/local_ca.py check --root /mtls/pki --role api && exec uvicorn app.main:app --host 0.0.0.0 --port 8080 --ssl-keyfile /mtls/pki/api/key.pem --ssl-certfile /mtls/pki/api/cert.pem --ssl-ca-certs /mtls/pki/api/ca.pem --ssl-cert-reqs 2']
+    healthcheck:
+      test: ['CMD', 'python', '-c', "import ssl,urllib.request; c=ssl.create_default_context(cafile='/mtls/pki/api/ca.pem'); c.load_cert_chain('/mtls/pki/api/cert.pem','/mtls/pki/api/key.pem'); urllib.request.urlopen('https://api:8080/ready',context=c,timeout=3)"]
+
+  worker:
+    environment:
+      <<: *client-tls
+      ATLAS_MTLS_DIR: /mtls/pki/worker
+      ATLAS_DATABASE_URL: 'postgresql+psycopg://atlas:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/atlas?sslmode=verify-full&sslrootcert=/mtls/pki/worker/ca.pem&sslcert=/mtls/pki/worker/cert.pem&sslkey=/mtls/pki/worker/key.pem'
+      ATLAS_REDIS_URL: 'rediss://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0?ssl_cert_reqs=required&ssl_check_hostname=true&ssl_ca_certs=/mtls/pki/worker/ca.pem&ssl_certfile=/mtls/pki/worker/cert.pem&ssl_keyfile=/mtls/pki/worker/key.pem'
+    depends_on:
+      mtls-init: {condition: service_completed_successfully}
+    volumes:
+      - atlas-mtls:/mtls:ro
+      - ../mtls/local_ca.py:/app/deploy/mtls/local_ca.py:ro
+    command: ['sh', '-ec', 'python /app/deploy/mtls/local_ca.py check --root /mtls/pki --role worker && exec python -m app.workers.celery_tls_config']
+
+  postgres:
+    user: '0:0'
+    entrypoint: ['sh', '-ec']
+    volumes:
+      - atlas-mtls:/mtls:ro
+    depends_on:
+      mtls-init: {condition: service_completed_successfully}
+    command:
+      - 'mkdir -p /run/atlas-postgres; cp /mtls/pki/postgres/* /run/atlas-postgres/; chown -R postgres:postgres /run/atlas-postgres; chmod 600 /run/atlas-postgres/key.pem; exec docker-entrypoint.sh postgres -c ssl=on -c ssl_cert_file=/run/atlas-postgres/cert.pem -c ssl_key_file=/run/atlas-postgres/key.pem -c ssl_ca_file=/run/atlas-postgres/ca.pem -c hba_file=/run/atlas-postgres/pg_hba.conf'
+
+  redis:
+    user: '0:0'
+    entrypoint: ['sh', '-ec']
+    volumes:
+      - atlas-mtls:/mtls:ro
+    depends_on:
+      mtls-init: {condition: service_completed_successfully}
+    command:
+      - 'mkdir -p /run/atlas-redis; cp /mtls/pki/redis/* /run/atlas-redis/; chown -R redis:redis /run/atlas-redis; chmod 600 /run/atlas-redis/key.pem; exec docker-entrypoint.sh redis-server --appendonly yes --requirepass "$${REDIS_PASSWORD}" --port 0 --tls-port 6379 --tls-cert-file /run/atlas-redis/cert.pem --tls-key-file /run/atlas-redis/key.pem --tls-ca-cert-file /run/atlas-redis/ca.pem --tls-auth-clients yes'
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli --tls --cacert /run/atlas-redis/ca.pem --cert /run/atlas-redis/cert.pem --key /run/atlas-redis/key.pem -h redis -a "$${REDIS_PASSWORD}" ping | grep PONG']
+volumes:
+  atlas-mtls: {}
+# Image-reference receipt for this override: no image references.
+# mtls-init uses the existing repository Dockerfile build. PostgreSQL/Redis base
+# image references are unchanged and inherited, not pinned or attested here.
