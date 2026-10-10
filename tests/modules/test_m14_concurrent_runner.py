@@ -203,3 +203,41 @@ def test_runtime_exhaustion_prevents_retry_dispatch():
         assert ledger.status().runtime_seconds_used==1 and ledger.status().agent_calls_used==1
         assert report.plan.tasks[0].attempt==1
     asyncio.run(scenario())
+
+
+def test_timeout_is_enforced_not_just_a_late_output_check():
+    async def scenario():
+        closed=[]
+        async def execute(t):
+            try:await asyncio.sleep(.2);return TaskOutput(True)
+            finally:closed.append(t.id)
+        runner,ledger=make(execute,auto=True,bound=lambda t:TaskReservation(0,.01))
+        report=await runner.run(plan(task('a')))
+        assert report.tasks_failed==('a',) and report.tasks_completed==()
+        assert closed==['a'] and ledger.status().agent_calls_used==1
+    asyncio.run(scenario())
+
+
+def test_iteration_exhaustion_blocks_retry_even_with_call_capacity():
+    async def scenario():
+        seen=[]
+        async def execute(t):seen.append(t.id);return TaskOutput(False)
+        runner,ledger=make(execute,attempts=3)
+        for _ in range(10):ledger.record_iteration()
+        report=await runner.run(plan(task('a')))
+        assert seen==['a'] and report.stopped_reason=='budget_exhausted'
+        assert report.tasks_failed==('a',) and ledger.status().agent_calls_used==1
+    asyncio.run(scenario())
+
+
+def test_nonempty_wave_partial_budget_break_only_funded_task_runs():
+    async def scenario():
+        seen=[]
+        async def execute(t):seen.append(t.id);return TaskOutput(True)
+        runner,ledger=make(execute,parallel=3,calls=10,runtime=100,cost=.15,
+                           auto=True,bound=lambda t:TaskReservation(.1,1))
+        report=await runner.run(plan(task('a'),task('b'),task('c')))
+        assert seen==['a'] and report.tasks_completed==('a',)
+        assert [t.status for t in report.plan.tasks]==['completed','blocked','blocked']
+        assert report.stopped_reason=='budget_exhausted' and ledger.status().agent_calls_used==1
+    asyncio.run(scenario())

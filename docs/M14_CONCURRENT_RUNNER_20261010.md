@@ -35,3 +35,12 @@ raises CancelledError rather than claiming completion. In-flight crash recovery,
 durable leases, multi-tenant scheduling, distributed dispatch, exactly-once
 external effects, API authorization wiring, and production capacity tests remain
 future units. No existing H/followup/import6 gate is changed.
+
+Independent reproduction at candidate7f8344fc:911PASS on Python3.12.14;
+20 single-line mutation checks killed14/survived6. Added explicit timeout,
+iteration-exhaustion and nonempty partial-wave dispatch canaries afterward.
+Cancellation tests exercise cancellation while awaiting the gather, which itself
+propagates cancellation. The separate finally fallback cancel/drain branches are
+code-read, not independently canaried. Removing those branches survived the prior
+mutation run. No stronger cleanup proof is claimed. Exception sanitization is
+code-read; no test currently observes the internal sanitized failure string.
