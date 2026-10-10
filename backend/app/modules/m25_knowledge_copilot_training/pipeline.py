@@ -98,6 +98,7 @@ class LocalKnowledgePipeline:
         for i,entry in enumerate(versions,1):
             number=entry.get('number') if isinstance(entry,dict) else None
             digest=entry.get('hash') if isinstance(entry,dict) else None
+            if not isinstance(entry,dict):raise bad
             keys=set(entry)
             if keys not in ({'number','hash'},{'number','hash','metadata_version','created_at','mime_type'}):raise bad
             if 'metadata_version' in entry:
