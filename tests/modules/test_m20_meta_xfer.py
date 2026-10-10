@@ -80,3 +80,32 @@ def test_mounted_authenticated_persisted_transfer(tmp_path,monkeypatch,oidc_auth
  routes.bind_learner(learner(tmp_path))
  r=c.post(path+'/transfer',headers=headers,json=target());assert r.status_code==200 and r.json()['plan']==['draft','edit','approve','print']
  assert c.post(path+'/transfer',headers=oidc_auth_headers('b','owner'),json=target()).status_code==503
+
+def grouped_episode(domain='laboratory',ident='policy1'):
+ return {'episode_id':ident,'domain':domain,'provenance':'fixture:observed:'+ident,'outcome':'succeeded','problem':{'objective':'dependency_safe_setup_continuity','tasks':['a','b','c','d'],'dependencies':[['a','d']],'groups':{'a':'red','b':'blue','c':'red','d':'red'}},'executed_order':['a','c','d','b']}
+
+def grouped_target():
+ return {'domain':'manufacturing','problem':{'objective':'dependency_safe_setup_continuity','tasks':['alpha','beta','gamma','omega'],'dependencies':[['alpha','omega']],'groups':{'alpha':'machine1','beta':'machine2','gamma':'machine1','omega':'machine1'}}}
+
+def switches(plan,groups):return sum(groups[a]!=groups[b]for a,b in zip(plan,plan[1:]))
+
+def test_induced_policy_transfers_beyond_retrieval_and_generic_topological_baseline(tmp_path):
+ l=learner(tmp_path);record=l.learn(grouped_episode());r=l.transfer(grouped_target())
+ assert record['learned_policy']=='prefer_previous_group_then_lexical'
+ assert record['policy_mismatch_counts']=={'lexical_ready_first':2,'prefer_previous_group_then_lexical':0}
+ assert r['plan']==['alpha','gamma','omega','beta']
+ groups=grouped_target()['problem']['groups']
+ assert switches(r['plan'],groups)==1<switches(['alpha','beta','gamma','omega'],groups)==3
+ assert r['plan']!=grouped_episode()['executed_order'] and r['mapping']['learned_policy']==record['learned_policy']
+ assert r['status']=='plan_candidate'and learner(tmp_path).transfer(grouped_target())==r
+ # Same task structure but a different demonstrated policy must change target plan.
+ other=grouped_episode(ident='lexical');other['executed_order']=['a','b','c','d']
+ l2=learner(tmp_path,'other');assert l2.learn(other)['learned_policy']=='lexical_ready_first'
+ assert l2.transfer(grouped_target())['plan']==['alpha','beta','gamma','omega']
+
+def test_nondiscriminating_or_unsupported_demonstration_abstains(tmp_path):
+ l=learner(tmp_path)
+ e=grouped_episode();e['problem']['groups']={k:'same'for k in e['problem']['tasks']};e['executed_order']=['a','b','c','d']
+ assert l.learn(e)['status']=='abstained'and l.patterns=={}
+ e=grouped_episode();e['executed_order']=['b','a','c','d']
+ assert l.learn(e)['status']=='abstained'and l.patterns=={}
