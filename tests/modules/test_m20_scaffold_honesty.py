@@ -1,4 +1,5 @@
-from app.modules.m20_general_cognitive_worker.learning_reasoning_810_859 import execute,capabilities
+import pytest
+from app.modules.m20_general_cognitive_worker.learning_reasoning_810_859 import execute,capabilities,LearningReasoningError
 
 
 def test_static_scientific_template_never_claims_executed_thinking():
@@ -11,9 +12,8 @@ def test_static_scientific_template_never_claims_executed_thinking():
 
 def test_adding_nonempty_junk_fields_does_not_upgrade_scaffold():
  p={'source':{'title':'label','url':'https://example.org'},'objective':'learn'}
- a=execute('self_explanation',p);b=execute('self_explanation',{**p,**{'junk'+str(i):'nonempty' for i in range(100)}})
- assert a['evaluation']['status']==b['evaluation']['status']=='planning_scaffold_only'
- assert not b['evaluation']['capability_executed']
+ for value in [p,{**p,**{'junk'+str(i):'nonempty' for i in range(100)}}]:
+  with pytest.raises(LearningReasoningError,match='explanation_target'):execute('self_explanation',value)
 
 
 def test_catalog_distinguishes_real_restricted_computation_from_scaffold():
