@@ -52,3 +52,15 @@ async def test_capacity_refuses_before_collector(tmp_path,monkeypatch):
     c=Collector();s=d.DurableDiscoveryService(None,[c],discovery_store=store)
     with pytest.raises(StateError,match='query_capacity'):await s.discover('new')
     assert c.calls==0
+    assert not s._persistence_failed
+    await s.discover('old')
+    assert c.calls==1
+
+
+@pytest.mark.asyncio
+async def test_invalid_kind_does_not_latch(tmp_path):
+    store=DiscoveryStateStore(tmp_path,'a');store.provision()
+    c=Collector();s=DurableDiscoveryService(None,[c],discovery_store=store)
+    with pytest.raises(StateError,match='invalid_kind'):await s.discover('q',kinds=['bad'])
+    assert not s._persistence_failed and c.calls==0
+    await s.discover('q');assert c.calls==1

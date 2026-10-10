@@ -40,6 +40,7 @@ class DurableDiscoveryService(Service):
     async def discover(self,query,kinds=None,weights=None):
         async with self._discovery_lock:
             if self._persistence_failed:raise StateError('persistence_failed')
+            persistence_phase=False
             try:
                 state=self._restore()
                 key=fingerprint(query,'query')
@@ -54,6 +55,7 @@ class DurableDiscoveryService(Service):
                 before={c.name:self.source_stats.get(c.name,{}).get('candidates',0) for c in active}
                 ranked=await super().discover(query,kinds,weights)
                 # Persist every attempted source before returning any candidates.
+                persistence_phase=True
                 for collector in active:
                     row=self.source_stats[collector.name]
                     self.discovery_store.record_source(collector.name,success=row['last_status']=='ok',
@@ -65,6 +67,7 @@ class DurableDiscoveryService(Service):
                 self.last_errors={name:'source_unavailable_or_cooling' for name in self.last_errors}
                 return ranked
             except StateError:
-                self._persistence_failed=True
-                self.candidates.clear()
+                if persistence_phase:
+                    self._persistence_failed=True
+                    self.candidates.clear()
                 raise
