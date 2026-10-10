@@ -107,3 +107,10 @@ class PersistentJournal:
             for row in rows:
                 db.delete(row)
             return len(rows)
+
+    def retrieve_bounded(self, query: str, **bounds) -> dict:
+        """Recent ID-window lexical retrieval; never global top-k or consent."""
+        from .bounded_journal_retrieval import bounded_retrieve
+        with self.sessions() as db:
+            return bounded_retrieve(db, tenant_id=self.tenant_id, actor_id=self.actor_id,
+                                    query=query, **bounds)
