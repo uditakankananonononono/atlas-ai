@@ -1,6 +1,6 @@
 # M18 opt-in collector dispatch-to-WAL binding
 
-Candidate, independent audit pending, not landed/deployed. Exactbasee05ece4abe22f9f7188cb4d76910d269aa124387.
+Candidate, independent audit pending, not landed/deployed. Exact base e05ece4abe22f9f7188cb4d76910d269aa124387.
 
 `IntentBoundHostRateLimiter.dispatch_intent_bound=True` explicitly declares the paired permission protocol. Inject that preprovisioned limiter into an existing `BaseCollector`. `_get` selects a separate branch only for exact-True declaration; the entire old check/sleep/record_request/fetch branch is unchanged. A declared protocol with missing/noncallable begin_request fails closed. No duck-typing based solely on method existence: plain DurableHostRateLimiter is not silently upgraded. Trusted caller owns injection and paired WAL/snapshot provision; no startup creation, reset or implicit pending acknowledgment.
 
@@ -33,3 +33,6 @@ Current comparison: exact public basebeaf700275a24829440a5e96c3919ed572061503 wh
 Expansion mutations: original selected1PASS -> mutant1FAIL for omit bound record_success, omit owner check, omit collector injection, raw refetch. Removing factory pending check alone SURVIVED (1PASS): independent paired-limiter startup guard still denies pending. This is redundant-defense residue, not a claimed kill. Initial omit-success mutation accidentally targeted legacy branch and survived; corrected mutation targets bound branch and fails required success assertion. Initial raw-refetch mutation survived weak canary; strengthened snapshot assertion then kills it. Initial whole1FAIL158PASS from removed implicit service setup and positive-feasibility fixture1FAIL19PASS from missing required fields were fixed then full181PASS. None retroactively green.
 
 No standalone binding-layer landing: original739bdd77 and expansion907343fc are integrated with latest public base into one meaningful workflow package. Product audit pending, not landed/deployed. Independent auditor must inspect expansion before any push.
+
+
+Redirect-zero is layered at the factory collector policy, robots gateway and bound refetch policy. The named fake-fetch canaries assert max_redirects==0 on collect, robots and refresh URLs only; they do not prove universal transport coverage. Independent auditor reproduced181PASS and the named mutations, plus identity-pin/robots-raw-transport kills. A deadlock hypothesis was not reproduced in60 concurrent same-tenant probes; this neither proves nor disproves every possible deadlock. Bounded redirect assertions/doc correction are pending final confirmation, not landed.
