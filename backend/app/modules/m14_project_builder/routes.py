@@ -404,3 +404,22 @@ def admission_cancel(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depend
 @router.post('/builder-admission/slots/{id}/reconcile')
 def admission_reconcile(id:str,body:AdmissionReconcileIn,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_admission_service)):
     return _admission(lambda:svc.reconcile(ctx,id,body.reason))
+
+from .local_dispatch import LocalDispatchService
+class LocalDispatchEnqueueIn(BaseModel):
+    model_config={'strict':True,'extra':'forbid'}
+    batch_id:str=Field(min_length=36,max_length=36)
+    wave_id:str=Field(min_length=36,max_length=36)
+def get_local_dispatch_service():
+    from .sandbox_wave import WaveUnavailable
+    import os
+    if os.getenv('ATLAS_M14_LOCAL_DISPATCH')!='1':raise HTTPException(503,'local dispatch explicitly disabled')
+    from app.core.database import SessionLocal
+    try:return LocalDispatchService(SessionLocal,os.getenv('ATLAS_M14_SANDBOX_ROOT'))
+    except WaveUnavailable:raise HTTPException(503,'local dispatch sandbox unavailable') from None
+@router.post('/local-dispatch/jobs',status_code=201)
+def local_enqueue(body:LocalDispatchEnqueueIn,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_local_dispatch_service)):
+    return _admission(lambda:svc.enqueue(ctx,body.batch_id,body.wave_id))
+@router.get('/local-dispatch/jobs/{id}')
+def local_job(id:str,ctx:TenantContext=Depends(require_tenant),svc=Depends(get_local_dispatch_service)):
+    return _admission(lambda:svc.get(ctx,id))
