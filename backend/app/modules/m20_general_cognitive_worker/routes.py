@@ -1659,3 +1659,5 @@ from .artificial_life_routes import router as artificial_life_router
 router.include_router(artificial_life_router)
 from .digital_twin_routes import router as digital_twin_router
 router.include_router(digital_twin_router)
+from .meta_transfer_routes import router as meta_transfer_router
+router.include_router(meta_transfer_router)

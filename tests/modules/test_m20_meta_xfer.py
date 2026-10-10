@@ -92,10 +92,10 @@ def switches(plan,groups):return sum(groups[a]!=groups[b]for a,b in zip(plan,pla
 def test_induced_policy_transfers_beyond_retrieval_and_generic_topological_baseline(tmp_path):
  l=learner(tmp_path);record=l.learn(grouped_episode());r=l.transfer(grouped_target())
  assert record['learned_policy']=='prefer_previous_group_then_lexical'
- assert record['policy_mismatch_counts']=={'lexical_ready_first':2,'prefer_previous_group_then_lexical':0}
+ assert record['policy_mismatch_counts']=={'lexical_ready_first':3,'prefer_previous_group_then_lexical':0}
  assert r['plan']==['alpha','gamma','omega','beta']
  groups=grouped_target()['problem']['groups']
- assert switches(r['plan'],groups)==1<switches(['alpha','beta','gamma','omega'],groups)==3
+ assert switches(r['plan'],groups)==1<switches(['alpha','beta','gamma','omega'],groups)==2
  assert r['plan']!=grouped_episode()['executed_order'] and r['mapping']['learned_policy']==record['learned_policy']
  assert r['status']=='plan_candidate'and learner(tmp_path).transfer(grouped_target())==r
  # Same task structure but a different demonstrated policy must change target plan.
@@ -109,3 +109,21 @@ def test_nondiscriminating_or_unsupported_demonstration_abstains(tmp_path):
  assert l.learn(e)['status']=='abstained'and l.patterns=={}
  e=grouped_episode();e['executed_order']=['b','a','c','d']
  assert l.learn(e)['status']=='abstained'and l.patterns=={}
+
+@pytest.mark.parametrize('domain',['manufacturing','travel','publishing'])
+def test_policy_transfer_heldout_quality_and_missing_group_abstention(tmp_path,domain):
+ l=learner(tmp_path);l.learn(grouped_episode());d=grouped_target();d['domain']=domain
+ r=l.transfer(d);assert switches(r['plan'],d['problem']['groups'])<switches(sorted(d['problem']['tasks']),d['problem']['groups'])
+ assert all(r['plan'].index(a)<r['plan'].index(b)for a,b in d['problem']['dependencies'])
+ d['problem']['groups'].pop('beta');assert l.transfer(d)['status']=='abstained'
+
+def test_evidence_identity_fails_and_success_persistence_rollback(tmp_path,monkeypatch):
+ l=learner(tmp_path);e=grouped_episode();e['outcome']='failed';assert l.learn(e)['status']=='excluded'
+ l.learn(grouped_episode());fresh=learner(tmp_path);assert fresh.patterns==l.patterns
+ altered=grouped_episode();altered['executed_order']=['a','b','c','d']
+ with pytest.raises(ValueError,match='episode identity'):l.learn(altered)
+ before=fresh.patterns.copy()
+ def fail(session):raise RuntimeError('commit failure')
+ monkeypatch.setattr(fresh.repo,'_before_commit',fail)
+ with pytest.raises(RuntimeError):fresh.learn(grouped_episode('other','p2'))
+ assert fresh.patterns==before==learner(tmp_path).patterns
