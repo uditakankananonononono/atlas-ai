@@ -85,6 +85,7 @@ def test_robots_and_refresh_shared_wal(root,monkeypatch):
         from urllib.parse import urlsplit
         state=read_snapshot(next(work.glob('m18-pacing-*')),tenant_id='t',now=datetime.now(timezone.utc))
         assert state.states[urlsplit(url).netloc].total_requests==1
+        assert kw['policy'].max_redirects==0  # Both robots and refetch URLs.
         seen.append(url);return original(url,**kw)
     http.fetch=fetch
     monkeypatch.setenv('ATLAS_M18_PUBLIC_URLS','https://example.org/page')
