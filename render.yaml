@@ -12,6 +12,10 @@ services:
         sync: false
       - key: ATLAS_REDIS_URL
         sync: false
+      - key: ATLAS_TOKEN_KEY
+        sync: false
+      - key: ATLAS_API_KEY_ENCRYPTION_KEY
+        sync: false
       - key: ATLAS_SECRET_PROVIDER
         value: platform-environment
       - key: ATLAS_TRUST_PLATFORM_SECRETS
