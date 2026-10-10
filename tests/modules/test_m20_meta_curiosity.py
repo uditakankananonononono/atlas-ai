@@ -170,3 +170,8 @@ def test_full_investigation_record_honesty_and_mounted_boundary(tmp_path,monkeyp
  monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setattr(routes,'_investigators',{});routes.bind_investigator(m)
  response=TestClient(app).get('/api/v1/api/modules/20/curiosity-investigator/queue',headers=oidc_auth_headers('a','owner'))
  assert response.status_code==200 and response.json()['boundary']==m.boundary
+
+def test_equal_priority_id_order_not_insertion_order(tmp_path):
+ m=investigator(tmp_path);setup(m);m.enqueue([question('b'),question('a')])
+ assert [r['question_id']for r in m.queue()]==['a','b']
+ assert [r['question_id']for r in m.run(max_cost=2)['investigations']]==['a','b']
