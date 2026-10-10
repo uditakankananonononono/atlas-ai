@@ -193,3 +193,9 @@ See docs/M18_DISPATCH_INTENT_20261010.md. Existing limiter/collectors unchanged.
 M18 intent binding refuses bootstrap kwarg and requires separately preprovisioned
 stores. Mixing plain DurableHostRateLimiter on the same directory ignores/bypasses
 WAL; caller must use the intent binding for every dispatch.
+### M25 version metadata integration candidate
+New version manifests preserve original UTC ingest timestamps and MIME through
+explicit verified restart restoration; legacy timestamps remain unknown and are
+never promoted. Old binaries cannot read new-format rows; no hostile-writer or
+trusted-clock authenticity claim. See docs/M25_VERSION_METADATA_20261010.md.
+Candidate status pending independent verdict, not deployed capacity acceptance.
