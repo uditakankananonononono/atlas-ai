@@ -32,7 +32,7 @@ def read_bounded(response: httpx.Response, limit: int) -> bytes:
         raise ValueError('limit must be integer0..2000000')
     chunks: list[bytes] = []
     total = 0
-    for chunk in response.iter_bytes(chunk_size=16_384):
+    for chunk in response.iter_bytes(chunk_size=min(16_384,limit+1)):
         room = limit + 1 - total
         if len(chunk) >= room:
             raise BodyTooLarge()
