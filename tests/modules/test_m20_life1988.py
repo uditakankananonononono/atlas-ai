@@ -74,3 +74,32 @@ def test_size_step_upper_boundaries_and_independent_work_guard():
  assert simulate(request(width=128,steps=1))['width']==128
  with pytest.raises(ValueError,match='product'):simulate(request(width=128,height=128,steps=12))
  assert simulate(request(width=128,height=128,steps=11))['cell_evaluations']==128*128*11
+
+def test_independent_minimum_dimensions_and_all_axis_coordinate_bounds():
+ with pytest.raises(ValueError,match='width'):simulate(request(width=2,live_cells=[]))
+ with pytest.raises(ValueError,match='height'):simulate(request(height=2,live_cells=[]))
+ assert simulate(request(width=3,height=3,live_cells=[]))['width']==3
+ for cell in ([0,6],[0,-1],[-1,0]):
+  with pytest.raises(ValueError,match='outside grid'):simulate(request(live_cells=[cell]))
+
+def test_omitted_steps_default_exact_history_and_work():
+ d=request();del d['steps'];r=simulate(d)
+ assert len(r['history'])==5 and r['history'][-1]['step']==4
+ assert r['cell_evaluations']==6*6*4
+
+def test_omitted_boundary_is_fixed_on_edge_touching_pattern():
+ d=request(width=5,height=4,live_cells=[[0,0],[4,0],[0,3],[2,1],[2,2]],steps=3)
+ r=simulate(d)
+ assert r['boundary']=='fixed'and r==simulate({**d,'boundary':'fixed'})
+ assert r['history']!=simulate({**d,'boundary':'toroidal'})['history']
+
+def test_transient_period_uses_first_seen_not_absolute_step():
+ d=request(live_cells=[[1,1]],steps=4);r=simulate(d)
+ live=set(map(tuple,d['live_cells']));seen={frozenset(live):0};expected=None
+ for step in range(1,5):
+  live=nextcells(live,6,6,'fixed');state=frozenset(live)
+  if state in seen and expected is None:expected={'first_seen_step':seen[state],'repeated_at_step':step,'period':step-seen[state]}
+  seen.setdefault(state,step)
+ assert r['first_repeat']==expected
+ assert expected['first_seen_step']>0
+ assert expected['period']==expected['repeated_at_step']-expected['first_seen_step']==1
