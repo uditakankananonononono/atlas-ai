@@ -271,3 +271,38 @@ def wave_artifact(wave_id:str,artifact_id:str,context:TenantContext=Depends(requ
         data,name,sha=svc.artifact(context.tenant_id,context.actor_id,wave_id,artifact_id)
         return Response(content=data,media_type='application/octet-stream',headers={'X-Content-SHA256':sha})
     except WaveError as exc:raise _wave_error(exc) from exc
+
+from .wave_supersede import WaveSupersedeService
+from pydantic import BaseModel,ConfigDict
+class SupersedeRequest(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    prior_wave_id:str
+    new_wave_id:str
+class SupersedeDecision(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    decision:str
+
+@router.post('/wave-supersedes',status_code=202)
+def propose_supersede(request:SupersedeRequest,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return WaveSupersedeService(svc).propose(context,request.prior_wave_id,request.new_wave_id)
+    except (WaveError,ApprovalConflictError,IntegrityError,OperationalError) as exc:raise _wave_error(exc) from exc
+
+@router.post('/wave-supersedes/{sid}/decision')
+def decide_supersede(sid:str,request:SupersedeDecision,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return WaveSupersedeService(svc).decide(context,sid,request.decision)
+    except (WaveError,ApprovalConflictError,IntegrityError,OperationalError) as exc:raise _wave_error(exc) from exc
+
+@router.post('/wave-supersedes/{sid}/apply')
+def apply_supersede(sid:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return WaveSupersedeService(svc).apply(context,sid)
+    except (WaveError,ApprovalConflictError,IntegrityError,OperationalError) as exc:raise _wave_error(exc) from exc
+
+@router.get('/wave-supersedes/{sid}')
+def supersede_status(sid:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return WaveSupersedeService(svc).get(context,sid)
+    except WaveError as exc:raise _wave_error(exc) from exc
+
+@router.get('/projects/{project_id}/wave-key-history')
+def wave_key_history(project_id:str,context:TenantContext=Depends(require_tenant),svc=Depends(get_wave_service)):
+    try:return WaveSupersedeService(svc).history(context,project_id)
+    except WaveError as exc:raise _wave_error(exc) from exc

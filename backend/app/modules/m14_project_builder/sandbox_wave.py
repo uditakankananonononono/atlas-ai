@@ -164,7 +164,17 @@ class SandboxWaveService:
             if approval is None or approval.status!='approved' or not approval.expires_at or _aware(approval.expires_at)<=now:raise WaveConflict('live approved unexpired request required')
             if not db.scalar(select(ApprovalEventRow.id).where(ApprovalEventRow.approval_id==row.approval_id,ApprovalEventRow.event=='approved')):raise WaveConflict('explicit human approval required')
             if db.scalar(select(ApprovalEffectRow.approval_id).where(ApprovalEffectRow.approval_id==row.approval_id)):raise WaveConflict('approval already consumed')
+            # Every durable claim reserves its full allocation, including unknown,
+            # failed, awaiting-review and superseded attempts. Never refund history.
+            attempts=list(db.scalars(select(SandboxWaveRow).where(SandboxWaveRow.tenant_id==tenant,SandboxWaveRow.project_id==row.project_id,SandboxWaveRow.claim_key.is_not(None))))
+            for reservation,limit in (('reserved_calls','max_agent_calls'),('reserved_runtime_seconds','max_runtime_seconds'),('reserved_cost_usd','max_cost_usd')):
+                if sum(a.payload[reservation] for a in attempts)+row.payload[reservation]>p.budget[limit]:raise WaveConflict('cumulative wave reservations exceed project budget')
             claim_key=digest({'tenant':tenant,'project':row.project_id})
+            from .wave_supersede import WaveKeyVersionRow
+            version=db.scalar(select(WaveKeyVersionRow).where(WaveKeyVersionRow.project_key==claim_key).order_by(WaveKeyVersionRow.version.desc()).limit(1))
+            if version is not None:
+                if version.new_wave_id!=row.id:raise WaveConflict('project already attempted this wave unit')
+                claim_key=digest({'project_key':claim_key,'version':version.version})
             if db.scalar(select(SandboxWaveRow.id).where(SandboxWaveRow.claim_key==claim_key)):raise WaveConflict('project already attempted this wave unit')
             changed=db.execute(update(SandboxWaveRow).where(SandboxWaveRow.id==wave_id,SandboxWaveRow.state=='awaiting_approval').values(state='claimed',claim_key=claim_key))
             if changed.rowcount!=1:raise WaveConflict('already claimed')
@@ -180,8 +190,13 @@ class SandboxWaveService:
         outcomes=await asyncio.gather(*(asyncio.to_thread(self._task,task_id,config['tasks'][task_id],config) for task_id in payload['ready_task_ids']))
         result={'tasks':[x[0] for x in outcomes],'environment':environment,'state':'awaiting_review','single_wave_only':True,'all_dag_completed':False,'independent_quality_verified':False,'reserved_calls':payload['reserved_calls'],'reserved_runtime_seconds':payload['reserved_runtime_seconds'],'reserved_cost_usd':0}
         with self.sessions.begin() as db:
-            row=self._owned(db,wave_id,tenant,actor)
+            row=db.scalar(select(SandboxWaveRow).where(SandboxWaveRow.id==wave_id).with_for_update())
+            if row is None or row.tenant_id!=tenant or row.actor_id!=actor:raise WaveForbidden('wave not available')
+            from .wave_supersede import current
+            if current(db,row)[1]!=row.id:raise WaveConflict('superseded worker publication fenced')
             if row.state!='claimed':raise WaveConflict('operation state changed; do not replay')
+            changed=db.execute(update(SandboxWaveRow).where(SandboxWaveRow.id==wave_id,SandboxWaveRow.state=='claimed').values(state='finalizing'))
+            if changed.rowcount!=1:raise WaveConflict('superseded worker publication fenced')
             project=db.scalar(select(ProjectRow).where(ProjectRow.tenant_id==tenant,ProjectRow.id==row.project_id))
             result['concurrent_project_drift']=project is None or project.revision!=payload['project_revision'] or project.plan!=payload['plan'] or project.budget!=payload['budget']
             for receipt,artifacts in outcomes:
