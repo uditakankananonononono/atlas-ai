@@ -23,6 +23,7 @@ def test_information_rubric_outperforms_frequency_and_executes(tmp_path):
  assert result['investigations'][0]['answer']=='known answer' and result['investigations'][0]['gap_narrowed'] is True
  assert result['investigations'][0]['source_records']==[{'source_id':'s','provenance':'fixture:s','lookup_key':'question-key','answer':'known answer'}]
  assert m.state['questions']['high']['status']=='answered' and m.state['questions']['low']['status']=='unresolved'
+ assert m.state['results']['high']==result['investigations'][0]
  assert investigator(tmp_path).state==m.state and investigator(tmp_path,'b').state['questions']=={}
 
 def test_budget_no_answer_conflict_duplicate_and_no_disallowed_lookup(tmp_path):
