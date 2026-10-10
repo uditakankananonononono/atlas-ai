@@ -1,0 +1,45 @@
+# Local OpenTelemetry acceptance override. Adds jaeger and otel-collector, and for the
+# existing api and worker services replaces only command, environment, depends_on and ports.
+# Use with the base file FIRST so relative paths resolve against deploy/local:
+#   docker compose -f deploy/local/docker-compose.yml -f deploy/local/docker-compose.otel.yml up
+# Then: curl -H 'authorization: ...' -H 'x-atlas-tenant: ...' http://127.0.0.1:8000/_otel/probe
+# and look for one trace containing atlas-api and atlas-worker at http://127.0.0.1:16686 .
+# BINDING AND AUTH (both required): every published port of this stack is 127.0.0.1 only.
+# The base file maps the api as 8000:8080 on all interfaces, so the override replaces that
+# list with `!override` (needs Docker Compose v2.24 or newer; unverified here). The probe
+# route lives on the main API behind the same Atlas auth dependency as the routers, and
+# ATLAS_OTEL_PROBE=1 is an extra gate. There is no unauthenticated probe: no unauthenticated path exists.
+# NAMED GAPS (all three; full text also in the docstring of backend/app/platform/telemetry_bootstrap.py):
+# GAP 1 - Production-scale trace pipeline and retention
+# GAP 2 - Instrumentation coverage: the bootstrap covers app + worker startup paths ONLY; NO claim of full auto-instrumentation coverage of every service/library.
+# GAP 3 - Image freshness beyond author time: digests are pinned and verified via read-only public registry fetches at author time; they are not a rolling latest.
+# Scope: see the docstring of backend/app/platform/telemetry_bootstrap.py (startup paths and
+# one probe task only). OTEL_EXPORTER_OTLP_ENDPOINT is deliberately NOT set, so the existing
+# telemetry.configure() stays a no-op. Pinned digests were read from Docker Hub on 2026-10-10.
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0@sha256:836e9b69c88afbedf7683ea7162e179de63b1f981662e83f5ebb68badadc710f
+    restart: unless-stopped
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports: ["127.0.0.1:16686:16686"]
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.111.0@sha256:a2a52e43c1a80aa94120ad78c2db68780eb90e6d11c8db5b3ce2f6a0cc6b5029
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes: ["../otel/jaeger-local.yaml:/etc/otelcol/config.yaml:ro"]
+    depends_on: [jaeger]
+  api:
+    command: ["python", "-m", "app.platform.telemetry_bootstrap", "api"]
+    ports: !override ["127.0.0.1:8000:8080"]
+    environment:
+      ATLAS_OTEL_COLLECTOR_ENDPOINT: otel-collector:4317
+      ATLAS_OTEL_PROBE: "1"
+    depends_on:
+      otel-collector: {condition: service_started}
+  worker:
+    command: ["python", "-m", "app.platform.telemetry_bootstrap", "worker"]
+    environment:
+      ATLAS_OTEL_COLLECTOR_ENDPOINT: otel-collector:4317
+    depends_on:
+      otel-collector: {condition: service_started}
