@@ -70,3 +70,35 @@ def test_mounted_production_route(monkeypatch,oidc_auth_headers):
  r=c.post(path,headers=oidc_auth_headers('gp','owner'),json={'data':d,'seed':4})
  assert r.status_code==200 and r.json()==solve(d,4)
  assert c.post(path,headers=oidc_auth_headers('gp','owner'),json={'data':request(max_depth=7)}).status_code==422
+
+def test_counted_fitness_calls_argmin_depth_and_seed_diversity():
+ import sys
+ from app.modules.m20_general_cognitive_worker import genetic_programming as gp
+ calls=[]
+ def profile(frame,event,arg):
+  if event=='call'and frame.f_code.co_name=='score'and frame.f_code.co_filename==gp.__file__:calls.append(1)
+ old=sys.getprofile()
+ try:
+  sys.setprofile(profile);r=solve(request(population_size=6,generations=3),9)
+ finally:sys.setprofile(old)
+ assert r['evaluations']==len(calls)==24 and len(r['history'])==4
+ for h in r['history']:
+  index=min(range(6),key=lambda i:h['scores'][i])
+  assert h['best_score']==h['scores'][index] and h['best_program']==h['population'][index]
+  assert h['scores']==[sum((oracle(t,x)-y)**2 for x,y in zip(request()['x'],request()['y']))/5 for t in h['population']]
+  assert all(gp.depth(t)<=5 for t in h['population'])
+ final=r['history'][-1];assert r['best_score']==min(final['scores'])and r['best_program']==final['best_program']
+ assert r['history']!=solve(request(population_size=6,generations=3),10)['history']
+
+def test_disabled_crossover_mutation_preserve_selected_parent():
+ r=solve(request(population_size=6,generations=3,crossover_rate=0.,mutation_rate=0.),9)
+ for h in r['history'][1:]:
+  for c in h['offspring']:
+   assert c['crossover_paths'] is None and c['mutation_path'] is None
+   assert c['program']==c['pre_mutation']==c['parents'][0]
+
+def test_work_product_seed_and_overflow_refuse():
+ with pytest.raises(ValueError,match='product'):solve(request(population_size=128,generations=1000,max_depth=6),1)
+ with pytest.raises(ValueError):solve(request(x=[1e200]*5,y=[0]*5,population_size=6,generations=1),9)
+ for seed in (-1,True,2**32):
+  with pytest.raises(ValueError):solve(request(),seed)

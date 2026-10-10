@@ -1653,3 +1653,5 @@ from .particle_swarm_routes import router as particle_swarm_router
 router.include_router(particle_swarm_router)
 from .differential_evolution_routes import router as differential_evolution_router
 router.include_router(differential_evolution_router)
+from .genetic_programming_routes import router as genetic_programming_router
+router.include_router(genetic_programming_router)
