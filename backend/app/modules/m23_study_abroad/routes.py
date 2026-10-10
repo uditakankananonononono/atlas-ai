@@ -107,7 +107,8 @@ def application_evidence_matrix(data:EvidenceMatrixIn):
  except ValueError as error:raise HTTPException(422,str(error)) from error
 
 # Public case-source index. An opt-in refresh checks the original page and robots rules.
-from .admitted_cases import cases, search_cases, fetch_case_metadata, reading_route
+from .admitted_cases import cases, search_cases, reading_route
+from .admitted_cases_bounded import fetch_case_metadata_bounded as fetch_case_metadata
 import httpx
 @router.get('/admitted-cases')
 def admitted_case_catalog(q:str='',evidence_type:str='',limit:int=20):
