@@ -1,0 +1,65 @@
+# ATLAS-U-1209 actual-service additive override, NOT a duplicate/standalone stack.
+# ALL env-file values are PUBLIC-DEMO parse-only, not secrets or real credentials.
+# From repo root (peer only, builder has NOT run):
+# docker compose --env-file deploy/local/dev-public-placeholder.env -f deploy/local/docker-compose.yml -f deploy/local/docker-compose.vault.yml config
+# Same options with up --build ONLY for peer independent loopback acceptance.
+# Service env_file alone DOES NOT provide CLI interpolation. NO inline markers.
+# CLI --env-file satisfies base required variables before merge. Both Atlas key
+# names clear below; bootstrap replaces them with peer-provisioned runtime Vault
+# values. No values are provisioned by this unit. Peer must seed Vault before
+# starting actual services; a missing Vault path fails closed, never fabricated.
+# Explicit ATLAS_RUNTIME_FALLBACK_<name> env fallback may be supplied by peer
+# at runtime, or a previously populated Fernet artifact used on transport outage.
+# Auth remains production/enabled. Dev OIDC issuer requires a real peer service.
+# Public fallback encryption key provides no confidentiality/security guarantee.
+# Vault dev storage is NOT encrypted at rest. Only Fernet artifact is encrypted.
+# https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+# https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/
+x-vault-bootstrap: &bootstrap
+  entrypoint: ["python", "-m", "app.platform.vault_dev_adapter", "--volume", "/vault-fallback-dev", "--"]
+  env_file: ["./dev-public-placeholder.env"]
+  environment:
+    ATLAS_ENV: production
+    ATLAS_DEV_NO_AUTH: "0"
+    ATLAS_TOKEN_KEY: ""
+    ATLAS_API_KEY_ENCRYPTION_KEY: ""
+    ATLAS_VAULT_FALLBACK_KEY: ${ATLAS_API_KEY_ENCRYPTION_KEY:?public-demo parse key required}
+    ATLAS_VAULT_DEV_URL: http://vault-dev:8200
+    ATLAS_VAULT_DEV_TOKEN: PUBLIC-DEMO-ONLY-vault-token
+  volumes: ["vault-fallback-dev:/vault-fallback-dev"]
+services:
+  migrate:
+    <<: *bootstrap
+    user: "0:0" # writable dev volume only, NOT production hardening
+    command: ["python", "scripts/migrate.py"]
+    depends_on:
+      vault-dev: {condition: service_healthy}
+  api:
+    <<: *bootstrap
+    user: "0:0"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+    depends_on:
+      vault-dev: {condition: service_healthy}
+  worker:
+    <<: *bootstrap
+    user: "0:0"
+    command: ["celery", "-A", "app.workers.celery_app:celery_app", "worker", "--loglevel=INFO"]
+    depends_on:
+      vault-dev: {condition: service_healthy}
+  vault-dev:
+    image: hashicorp/vault:1.18.3@sha256:8f1ba670da547c6af67be55609bd285c3ee3d8b73f88021adbfc43c82ca409e8
+    command: ["server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: PUBLIC-DEMO-ONLY-vault-token
+      VAULT_ADDR: http://127.0.0.1:8200
+    ports: ["127.0.0.1:18201:8200"]
+    cap_add: [IPC_LOCK]
+    volumes: ["vault-dev-local:/vault/file"]
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  vault-dev-local: {}
+  vault-fallback-dev: {}
