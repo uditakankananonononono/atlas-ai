@@ -1,0 +1,39 @@
+# Optional local RabbitMQ override. Use together with the base file:
+#   docker compose -f deploy/local/docker-compose.yml -f deploy/local/docker-compose.rabbitmq.yml up
+# Additive only. Set RABBITMQ_PASSWORD in your environment; no credential value is stored here. Any password
+# characters are fine: the URL is built and percent-encoded by app.workers.celery_broker_config, not by compose.
+# api and worker take their broker from that module (CELERY_CONFIG_MODULE plus CELERY_BROKER_URL exported at start).
+# Both must use it, otherwise tasks sent by api and tasks consumed by worker would use different brokers.
+# api and worker build from deploy/local/Dockerfile.rabbitmq (stock Dockerfile plus PIP_CONSTRAINT=/constraints.txt
+# for kombu==5.4.2 and celery==5.4.0). Build with --build; the pin is not active in an image built any other way.
+# Local only: no published ports. The image is pinned by index digest (rabbitmq 3.13.7, read from the public registry).
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-alpine@sha256:d7af1c87c5f1eda13fcfca06db452bf3aeab6619fc3358b68535c0c02c4e52bc
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: atlas
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD:?set RABBITMQ_PASSWORD}"
+    volumes: ["atlas-rabbitmq:/var/lib/rabbitmq"]
+    healthcheck: {test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_listener", "5672"], interval: 10s, timeout: 10s, retries: 12}
+  api:
+    build: {context: ../.., dockerfile: deploy/local/Dockerfile.rabbitmq}
+    environment:
+      CELERY_CONFIG_MODULE: app.workers.celery_broker_config
+      ATLAS_RABBITMQ_HOST: rabbitmq
+      ATLAS_RABBITMQ_USER: atlas
+      ATLAS_RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD:?set RABBITMQ_PASSWORD}"
+    command: ["sh", "-c", "export CELERY_BROKER_URL=\"$$(python -m app.workers.celery_broker_config --print-url)\" && exec uvicorn app.main:app --host 0.0.0.0 --port 8080"]
+    depends_on:
+      rabbitmq: {condition: service_healthy}
+  worker:
+    build: {context: ../.., dockerfile: deploy/local/Dockerfile.rabbitmq}
+    environment:
+      CELERY_CONFIG_MODULE: app.workers.celery_broker_config
+      ATLAS_RABBITMQ_HOST: rabbitmq
+      ATLAS_RABBITMQ_USER: atlas
+      ATLAS_RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD:?set RABBITMQ_PASSWORD}"
+    command: ["sh", "-c", "export CELERY_BROKER_URL=\"$$(python -m app.workers.celery_broker_config --print-url)\" && exec celery -A app.workers.celery_app:celery_app worker --loglevel=INFO"]
+    depends_on:
+      rabbitmq: {condition: service_healthy}
+volumes: {atlas-rabbitmq: {}}
