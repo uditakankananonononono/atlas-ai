@@ -75,3 +75,17 @@ def test_suspended_tenant_cannot_record_usage():
  from app.modules.m24_billing.schemas import UsageIn
  repo=LifecycleRepo();repo.upsert_tenant_billing('t',plan_id='pro',status='suspended');s=Service(A(),repo,S())
  with pytest.raises(PermissionError):s.record_usage('t',UsageIn(metric='runs',quantity=1,idempotency_key='x'))
+
+def test_basic_repo_fixture_matches_tenant_subscription_read_contract():
+ r=R();assert r.tenant_billing('other') is None
+ row=r.tenant_billing('t')
+ assert row.subscription_id=='sub_12345' and row.customer_id=='cus_12345'
+ assert row.status=='active' and row.cancel_at_period_end is False
+
+def test_checkout_refuses_pending_and_wrong_tenant_without_provider_call():
+ class Pending(R):
+  def approval(self,x):return {'status':'pending','payload':{'tenant_id':'t','plan':{'id':'pro'}}}
+ for repo,tenant in [(Pending(),'t'),(R(),'other')]:
+  s=Service(A(),repo,S())
+  with pytest.raises(PermissionError,match='tenant-bound'):asyncio.run(s.execute_checkout('approval',tenant))
+  assert repo.recorded==[]
