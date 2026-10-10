@@ -168,3 +168,21 @@ def test_hash_tampering_and_transaction_rollback_no_reserved_slot(env,monkeypatc
     monkeypatch.setattr(svc,'_rank',original);record=svc.capture(OWNER,**PARAMS)
     with sessions.begin() as db:db.get(SnapshotRow,record['snapshot_id']).content_hash='0'*64
     with pytest.raises(SnapshotError,match='checksum'):svc.get(OWNER,record['snapshot_id'])
+
+
+def test_unknown_reader_format_with_valid_recomputed_checksum_refused(env):
+    from app.modules.m19_idea_incubator.snapshots import checksum
+    svc,sessions,_=env;record=svc.capture(OWNER,**PARAMS)
+    with sessions.begin() as db:
+        row=db.get(SnapshotRow,record['snapshot_id']);row.payload={**row.payload,'schema_version':2};row.content_hash=checksum(row.payload)
+    with pytest.raises(SnapshotError,match='unknown snapshot format'):svc.get(OWNER,record['snapshot_id'])
+
+
+def test_exact_find_other_actor_is_false_and_not_shadowed(env):
+    svc,_,_=env;second=TenantContext('a','second-owner',frozenset())
+    first=svc.capture(OWNER,**PARAMS)
+    assert svc.find(second,**PARAMS)=={'snapshot_available':False}
+    own=svc.capture(second,**PARAMS)
+    newer=svc.capture(OWNER,**PARAMS)
+    assert newer['revision']>own['revision']>first['revision']
+    assert svc.find(second,**PARAMS)=={'snapshot_available':True,'snapshot':own}
