@@ -102,3 +102,31 @@ def test_checkout_refuses_pending_and_wrong_tenant_without_provider_call():
    assert isinstance(exc,PermissionError) and 'tenant-bound' in str(exc)
   else:pytest.fail('unapproved or cross-tenant checkout unexpectedly executed')
   assert repo.recorded==[]
+
+@pytest.mark.parametrize('customer_id',[None,''])
+def test_cancel_refuses_subscription_mapping_without_customer(customer_id):
+ from types import SimpleNamespace
+ from app.modules.m24_billing.schemas import CancelIn
+ class MissingCustomer(R):
+  def tenant_billing(self,tenant):
+   return SimpleNamespace(subscription_id='sub_12345',customer_id=customer_id,status='active',cancel_at_period_end=False)
+ s=Service(A(),MissingCustomer(),S())
+ try:s.propose_cancel('t',CancelIn(subscription_id='sub_12345'))
+ except Exception as exc:assert isinstance(exc,PermissionError) and 'subscription mapping' in str(exc)
+ else:pytest.fail('customer-less cancellation unexpectedly proposed')
+
+def test_invoice_execution_refuses_pending_and_wrong_tenant_without_provider_call():
+ class InvoiceRepo(R):
+  status='approved'
+  def approval(self,x):return {'status':self.status,'payload':{'tenant_id':'t','effect':'create_draft_invoice','customer_id':'cus_12345','amount_cents':9900}}
+ class PendingInvoice(InvoiceRepo):status='pending'
+ class RecordingProvider:
+  def __init__(self):self.calls=[]
+  async def create_invoice(self,*args,**kwargs):
+   self.calls.append((args,kwargs));raise AssertionError('invoice provider must not be called')
+ for repo,tenant in [(PendingInvoice(),'t'),(InvoiceRepo(),'other')]:
+  provider=RecordingProvider();s=Service(A(),repo,provider)
+  try:asyncio.run(s.execute_approved('invoice-approval',tenant))
+  except Exception as exc:assert isinstance(exc,PermissionError) and 'tenant-bound' in str(exc)
+  else:pytest.fail('pending or cross-tenant invoice unexpectedly executed')
+  assert provider.calls==[] and repo.recorded==[]
