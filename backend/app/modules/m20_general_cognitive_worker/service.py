@@ -117,7 +117,10 @@ class CognitiveWorkerService:
         rules: ConstitutionalRules | None = None,
         working_memory_capacity: int = 50,
         seed_judgment_skills: bool = True,
+        meta_repository=None,
+        calibration_repository=None,
     ) -> None:
+        self.meta_tenant_id = meta_repository.tenant_id if meta_repository is not None else None
         self.embedder = embedder
         self.sensory = SensoryLayer(
             transcriber=transcriber, vision=vision, document_parser=document_parser,
@@ -166,6 +169,16 @@ class CognitiveWorkerService:
         self.epistemic_calendar = EpistemicCalendar()
         self.decay_modeler = KnowledgeDecayModeler()
         self.curiosity = CuriosityEngine()
+        if meta_repository is not None:
+            if calibration_repository is None or calibration_repository.tenant_id != meta_repository.tenant_id:
+                raise ValueError('matching tenant calibration repository required')
+            from .meta_persistence import DurableMetaLearner,DurableWorldModels,DurableEpistemicCalendar,DurableCuriosity
+            from .persistence import DurableCalibrationEngine
+            self.meta_learner=DurableMetaLearner.load(meta_repository)
+            self.world_models=DurableWorldModels.load(meta_repository)
+            self.epistemic_calendar=DurableEpistemicCalendar.load(meta_repository)
+            self.curiosity=DurableCuriosity.load(meta_repository)
+            self.calibration=DurableCalibrationEngine.load(calibration_repository)
         # Simulation, forecasting and decision-analysis engines (rows 35-59)
         self.serendipity = SerendipityEngine()
         self.insights = InsightCapture()

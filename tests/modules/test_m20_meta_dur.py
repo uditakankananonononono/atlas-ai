@@ -61,3 +61,64 @@ def test_migration_columns_composite_key_and_downgrade(tmp_path):
   c.execute(sa.text("INSERT INTO m20_meta_state VALUES ('a','world',1,'{}')"))
   with pytest.raises(sa.exc.IntegrityError):c.execute(sa.text("INSERT INTO m20_meta_state VALUES ('a','world',2,'{}')"))
   m.downgrade();assert not sa.inspect(c).has_table('m20_meta_state')
+
+def test_patterns_preserve_fields_duplicate_sources_and_tenant(tmp_path):
+ from app.modules.m20_general_cognitive_worker.schemas import Episode,EpisodeOutcome,ActionRecord
+ p=DurableMetaLearner.load(repo(tmp_path))
+ episode=Episode(task_id='t',goal='research professors and draft outreach',actions=[ActionRecord(tool='web_search'),ActionRecord(tool='draft_email'),ActionRecord(tool='send_email')],outcome=EpisodeOutcome.SUCCEEDED)
+ first=p.abstract(episode);p.abstract(episode)
+ fresh=DurableMetaLearner.load(repo(tmp_path))
+ assert fresh.patterns==p.patterns and next(iter(fresh.patterns.values())).successes==1
+ assert first.source_episode_ids==[episode.id]
+ assert DurableMetaLearner.load(repo(tmp_path,'b')).patterns=={}
+ assert all(x['capability_executed'] is False for x in fresh.transfer('calculate astronomy'))
+
+@pytest.mark.parametrize('wrapper,operation,args,kwargs',[
+ (DurableEpistemicCalendar,'register',('new belief',),{}),
+ (DurableCuriosity,'detect_gaps',('zebra',),{}),
+])
+def test_each_new_snapshot_write_rolls_back(tmp_path,monkeypatch,wrapper,operation,args,kwargs):
+ r=repo(tmp_path);a=wrapper.load(r)
+ if wrapper is DurableCuriosity:
+  from app.modules.m20_general_cognitive_worker.semantic_memory import SemanticMemory
+  args=(*args,SemanticMemory())
+ def fail(session):raise RuntimeError('rollback')
+ monkeypatch.setattr(r,'_before_commit',fail)
+ with pytest.raises(RuntimeError):getattr(a,operation)(*args,**kwargs)
+ assert a._revision==0 and r.read(a.kind)==(0,None)
+ assert getattr(a,a.attribute)=={}
+
+def test_invalid_payload_never_commits(tmp_path):
+ r=repo(tmp_path)
+ with pytest.raises(ValueError):r.write('world',0,{'invalid':float('nan')})
+ assert r.read('world')==(0,None)
+
+def test_mounted_restart_and_cross_tenant_binding_refused(tmp_path,monkeypatch,oidc_auth_headers):
+ from fastapi.testclient import TestClient
+ from app.main import app
+ from app.modules.m20_general_cognitive_worker import routes
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setattr(routes,'_services',{})
+ r=repo(tmp_path);g=GCWRepository(r.engine,tenant_id='a');g.create_schema()
+ s=CognitiveWorkerService(meta_repository=r,calibration_repository=g,seed_judgment_skills=False)
+ routes.bind_service(s,tenant_id='a')
+ with pytest.raises(ValueError,match='tenant'):routes.bind_service(s,tenant_id='b')
+ c=TestClient(app);path='/api/v1/api/modules/20/meta/world-models';h=oidc_auth_headers('a','owner')
+ assert c.post(path,json={'name':'m','assumptions':{'x':'old'}}).status_code==401
+ assert c.post(path,headers=h,json={'name':'m','assumptions':{'x':'old'}}).status_code==201
+ assert c.post(path+'/m/revise',headers=h,json={'assumptions':{'x':'new'}}).status_code==200
+ fresh=CognitiveWorkerService(meta_repository=repo(tmp_path),calibration_repository=g,seed_judgment_skills=False)
+ routes.bind_service(fresh,tenant_id='a');response=c.get(path,headers=h)
+ assert response.status_code==200 and response.json()['models'][0]['version']==2
+ assert response.json()['capability_executed'] is False
+ assert c.get(path,headers=oidc_auth_headers('b','owner')).status_code==503
+
+def test_existing_calibration_write_failure_does_not_publish(tmp_path,monkeypatch):
+ from app.modules.m20_general_cognitive_worker.persistence import DurableCalibrationEngine
+ r=repo(tmp_path);g=GCWRepository(r.engine,tenant_id='a');g.create_schema();a=DurableCalibrationEngine.load(g)
+ claim=a.assess_claim('text',.3,evidence_count=9)
+ def fail(claim):raise RuntimeError('failed claim commit')
+ monkeypatch.setattr(g,'save_claim',fail)
+ with pytest.raises(RuntimeError):a.resolve(claim.id,True)
+ assert a.claims[claim.id].resolved is False
+ assert DurableCalibrationEngine.load(GCWRepository(r.engine,tenant_id='a')).claims[claim.id].resolved is False
+ assert DurableCalibrationEngine.load(GCWRepository(r.engine,tenant_id='b')).claims=={}

@@ -36,6 +36,8 @@ def bind_service(service, *, tenant_id: str = "local") -> None:
     global _service
     if not tenant_id or not isinstance(tenant_id,str):
         raise ValueError("nonempty tenant_id required")
+    if getattr(service,'meta_tenant_id',None) not in (None,tenant_id):
+        raise ValueError('durable meta tenant differs from binding tenant')
     if any(key != tenant_id and value is service for key,value in _services.items()):
         raise ValueError("service instance already bound to another tenant")
     _services[tenant_id] = service
