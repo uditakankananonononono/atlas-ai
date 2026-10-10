@@ -15,7 +15,8 @@ async def test_discovery_filters_and_install_is_approval_gated(isolated_m22_appr
  p=s.propose_install(items[0].id,"api",{"token_secret":"hidden","region":"us"},["read"])
  assert p.approval_id and not s.installed
  req=s.approvals.list()[0];assert "token_secret" not in req.payload["config_preview"]
- # AUTHORED-NOT-RUN: reopen the fixture's actual disk DB, not its service facade.
+ # Builder not run; peer rejected prior tree's score, audited a diagnostic fix.
+ # Repaired head awaits peer recheck; reopen actual disk DB, not service facade.
  db_path=tmp_path / "m00-approvals.sqlite3"
  assert db_path.is_file()
  reader=create_engine(f"sqlite:///{db_path}")
@@ -44,7 +45,7 @@ async def test_discovery_filters_and_install_is_approval_gated(isolated_m22_appr
      "disable_adapter":True,
      "candidate":"SafeTool",
     },
-    "score":0.7817,
+    "score":0.7833,
    }
    assert persisted.payload==expected_payload
    assert req.payload==expected_payload
