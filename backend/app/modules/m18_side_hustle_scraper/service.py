@@ -79,7 +79,15 @@ class Service:
                 raise ValueError(f"unsupported or non-compliant collector: {platform}")
             if platform not in self._collectors:
                 raise RuntimeError(f"collector not configured: {platform}")
-            for raw in await self._collectors[platform].collect(request.query, request.limit_per_platform):
+            collector=self._collectors[platform]
+            import inspect
+            if inspect.iscoroutinefunction(collector.collect):
+                raw_rows=await collector.collect(request.query,request.limit_per_platform)
+            else:
+                documents,errors=await asyncio.to_thread(collector.collect,request.query,request.limit_per_platform)
+                if errors:raise RuntimeError('collector unavailable; no blueprint generation')
+                raw_rows=[{'url':d.url,'text':d.text} for d in documents]
+            for raw in raw_rows:
                 text = " ".join((raw.get("transcript") or raw.get("text") or "").split())[:6000]
                 sources.append({"url": raw["url"], "platform": platform, "text": text,
                                 "scam_signals": [x for x in SCAM if x in text.lower()]})

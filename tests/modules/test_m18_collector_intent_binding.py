@@ -117,3 +117,19 @@ def test_circuit_blocks_fetch(tmp_path,monkeypatch):
     c,l,_,http,_=setup(tmp_path)
     monkeypatch.setattr(l,'circuit_open',lambda host:True)
     assert c._get(URL)[0] is None and http.calls==0
+
+
+def test_success_persists_record_success(tmp_path,monkeypatch):
+    c,l,_,http,_=setup(tmp_path);seen=[];original=l.record_success
+    def success(host):seen.append(host);return original(host)
+    monkeypatch.setattr(l,'record_success',success)
+    assert c._get(URL)[0]=='real fake response'
+    assert seen==[HOST]
+
+
+def test_plain_durable_not_upgraded(tmp_path):
+    clock=Clock();policy=FetchPolicy(max_retries=0)
+    plain=DurableHostRateLimiter(tmp_path,'t',bootstrap=True,clock=clock,policy=policy)
+    assert getattr(plain,'dispatch_intent_bound',False) is not True
+    http=Http(lambda n:None);c=BaseCollector(http,limiter=plain,clock=clock,policy=policy)
+    assert c._get(URL)[0]=='real fake response' and http.calls==1

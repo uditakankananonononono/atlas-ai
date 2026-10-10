@@ -111,6 +111,20 @@ class ApiTests(unittest.TestCase):
             self.skipTest("fastapi or shared repo stubs unavailable")
         app = FastAPI()
         app.include_router(routes.router, prefix="/api")
+        # Explicit private factory provisioning replaces the removed implicit
+        # volatile service. Keep every pre-existing behavior assertion below.
+        import tempfile,shutil,os
+        from unittest.mock import patch
+        from app.modules.m18_side_hustle_scraper.service_factory import provision,CollectorServiceFactory
+        from app.modules.m18_side_hustle_scraper.lane_http import FakeHttpClient
+        root=Path(tempfile.mkdtemp(prefix='m18-api-',dir=Path.home()));root.chmod(0o700)
+        self.addCleanup(shutil.rmtree,root)
+        provision(root,'local','local-user',known_new=True)
+        provision(root,'test-tenant','local-user',known_new=True)
+        env=patch.dict(os.environ,{'ATLAS_M18_DURABLE_ROOT':str(root)})
+        env.start();self.addCleanup(env.stop)
+        factory=patch.object(routes,'_factory',CollectorServiceFactory(root,http=FakeHttpClient(),sleeper=lambda n:None))
+        factory.start();self.addCleanup(factory.stop)
         client = TestClient(app)
 
         bad = client.post("/api/side-hustle-scraper/blueprints",
