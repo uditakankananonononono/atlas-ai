@@ -1,0 +1,10 @@
+# Additive pip constraints for the optional RabbitMQ route. Applied by deploy/local/Dockerfile.rabbitmq through
+# ENV PIP_CONSTRAINT=/constraints.txt in both the wheel-builder stage and the runtime pip install stage.
+# The stock Dockerfile does NOT apply this file; only an image built from Dockerfile.rabbitmq is governed by it.
+# kombu 5.4.2 is the version whose public source the RabbitMQ code was read against.
+# celery 5.4.0 requires kombu>=5.3.4,<6.0; celery 5.5+ requires kombu>=5.5.2, so without the celery pin pip
+# would resolve a newer celery that cannot use this kombu. pyproject allows celery[redis]>=5.4,<6, so 5.4.0 is in range.
+# Nothing was installed or run by the author. The build runs the check:
+#   python -m app.workers.celery_broker_config --kombu-status
+kombu==5.4.2
+celery==5.4.0
