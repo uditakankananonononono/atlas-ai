@@ -63,3 +63,22 @@ def test_production_mounted_reasoning_route(monkeypatch,oidc_auth_headers):
  assert r.status_code==200 and r.json()==reason(d)
  check_proof(d,r.json())
  assert c.post(path,headers=oidc_auth_headers('logic','owner'),json={'clauses':[[0]],'query':[1]}).status_code==422
+
+def test_generated_cnf_corpus_matches_truth_tables_and_proof_checks():
+ import random
+ rng=random.Random(53)
+ for _ in range(120):
+  variables=list(range(1,5));clauses=[]
+  for _ in range(rng.randrange(1,9)):
+   subset=rng.sample(variables,rng.randrange(1,4));clauses.append([v if rng.randrange(2)else -v for v in subset])
+  query=[v if rng.randrange(2)else -v for v in rng.sample(variables,rng.randrange(1,3))]
+  test_truth_table_oracle_and_independently_checked_resolution(clauses,query)
+
+@pytest.mark.parametrize('limit',[0,True,50001])
+def test_invalid_work_budget_refuses(limit):
+ with pytest.raises(ValueError):reason({'clauses':[[1]],'query':[1],'max_steps':limit})
+
+def test_nonentailment_with_partial_assignment_fills_valid_total_model():
+ d={'clauses':[[1,-1]],'query':[2]};r=reason(d)
+ assert r['status']=='not_entailed' and set(r['counterexample'])=={'1','2'}
+ assert r['counterexample']['2'] is False
