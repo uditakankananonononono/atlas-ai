@@ -11,8 +11,10 @@ Every collector here uses a legal channel only:
 Each collector is synchronous and side-effect free apart from HTTP through the
 injected client; the FastAPI/Celery layer runs them in an executor. All pacing
 goes through HostRateLimiter so collection stays at human speed and honors
-Retry-After. Failures are returned as CollectionError records, never raised
-past the collector boundary.
+Retry-After. A declared dispatch_intent_bound limiter additionally gates actual
+fetch on durable begin_request permission; default collectors remain unwired.
+Bound-branch persistence errors are minimized CollectionError records. Legacy
+branch behavior remains unchanged.
 """
 from __future__ import annotations
 
@@ -97,6 +99,8 @@ class BaseCollector:
     def _get(self, url: str, *, headers: Optional[Mapping[str, str]] = None,
              etag: Optional[str] = None, last_modified: Optional[str] = None) -> tuple[Optional[Any], Optional[CollectionError]]:
         """One paced, retried GET. Returns (response, None) or (None, error)."""
+        if getattr(self.limiter, 'dispatch_intent_bound', False) is True:
+            return self._get_intent_bound(url, headers=headers, etag=etag, last_modified=last_modified)
         host = urlsplit(url).netloc
         for attempt in range(self.policy.max_retries + 1):
             if self.limiter.circuit_open(host):
@@ -119,6 +123,57 @@ class BaseCollector:
                 backoff = min(self.policy.backoff_max_seconds, self.policy.backoff_base_seconds * (2 ** attempt))
                 self.sleeper(max(backoff, exc.retry_after or 0.0))
         return None, CollectionError(source=self.platform, url=url, reason="retries_exhausted")
+
+
+    def _get_intent_bound(self, url, *, headers=None, etag=None, last_modified=None):
+        """Declared paired limiter only. Legacy branch above is unchanged.
+
+        Three waits max, each <=3600s. No-op/frozen-clock sleeper never buys
+        permission: begin_request must return zero before every actual fetch.
+        Fail closed on any persistence/circuit/wait error, no auto repair.
+        """
+        import math
+        from .lane_rate_limit_state import StateRejected
+        host = urlsplit(url).netloc
+        begin = getattr(self.limiter, 'begin_request', None)
+        if not callable(begin):
+            return None, CollectionError(source=self.platform, url=url, reason='dispatch_protocol_unavailable')
+        try:
+            for attempt in range(self.policy.max_retries + 1):
+                for waiting in range(4):
+                    if self.limiter.circuit_open(host):
+                        return None, CollectionError(source=self.platform, url=url, reason='circuit_open')
+                    wait = begin(host)
+                    if isinstance(wait, bool) or not isinstance(wait, (int, float)) or not math.isfinite(wait) or wait < 0:
+                        raise StateRejected('invalid pacing permission')
+                    if wait == 0:
+                        break
+                    if waiting == 3 or wait > 3600:
+                        return None, CollectionError(source=self.platform, url=url, reason='dispatch_wait_exhausted')
+                    self.sleeper(wait)
+                # begin_request completed WAL + snapshot + completion readback.
+                try:
+                    resp = self.http.fetch(url, policy=self.policy, headers=headers, etag=etag, last_modified=last_modified)
+                except HttpError as exc:
+                    self.limiter.record_failure(host, (exc.reason, exc.status))
+                    if exc.retry_after is not None:
+                        self.limiter.honor_retry_after(host, exc.retry_after)
+                    retriable = exc.status in (429, 500, 502, 503, 504) or exc.status is None
+                    if not retriable or attempt >= self.policy.max_retries:
+                        return None, CollectionError(source=self.platform, url=url, reason=exc.reason, status=exc.status)
+                    backoff = min(self.policy.backoff_max_seconds, self.policy.backoff_base_seconds * (2 ** attempt))
+                    delay = max(backoff, exc.retry_after or 0.0)
+                    if not math.isfinite(delay) or not 0 <= delay <= 3600:
+                        return None, CollectionError(source=self.platform, url=url, reason='dispatch_wait_exhausted')
+                    self.sleeper(delay)
+                    continue
+                self.limiter.record_success(host)
+                return resp, None
+        except Exception:
+            # Never leak raw filesystem/provider details or return a successful
+            # response whose post-fetch persistence failed.
+            return None, CollectionError(source=self.platform, url=url, reason='dispatch_state_unavailable')
+        return None, CollectionError(source=self.platform, url=url, reason='retries_exhausted')
 
 
 class RedditJsonCollector(BaseCollector):

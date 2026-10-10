@@ -1,0 +1,19 @@
+# M18 opt-in collector dispatch-to-WAL binding
+
+Candidate, independent audit pending, not landed/deployed. Exactbasee05ece4abe22f9f7188cb4d76910d269aa124387.
+
+`IntentBoundHostRateLimiter.dispatch_intent_bound=True` explicitly declares the paired permission protocol. Inject that preprovisioned limiter into an existing `BaseCollector`. `_get` selects a separate branch only for exact-True declaration; the entire old check/sleep/record_request/fetch branch is unchanged. A declared protocol with missing/noncallable begin_request fails closed. No duck-typing based solely on method existence: plain DurableHostRateLimiter is not silently upgraded. Trusted caller owns injection and paired WAL/snapshot provision; no startup creation, reset or implicit pending acknowledgment.
+
+Before each real HTTP fetch, `begin_request` must return finite numeric zero after pending intent, timestamp snapshot readback and completed intent readback. Never calls bound `record_request`. Positive pacing permission causes at most three sleeps and four begin_request checks per dispatch attempt; waits above3600seconds fail closed. Sleeper is expected to honor its bound, not guaranteed killable. A no-op sleeper/frozen clock never converts a positive wait into dispatch. Each retry consumes its own request timestamp/reservation. Retry backoff/RetryAfter <=3600seconds per sleep; max attempts remains existing FetchPolicy.max_retries+1, not a new global request budget. Circuit-open refuses dispatch. Persistence failure before fetch blocks it; after success/failure/RetryAfter persistence error denies the current returned outcome rather than returning success. No raw file/provider exception text is returned; new reason codes may be minimized by existing CollectionError redaction.
+
+Scope: collector injection activates this only where BaseCollector._get is used. Production routes/default wiring remain volatile and NOT globally WAL-bound. No HTTP/authenticated/root-factory/all-collector guarantee, no service migration or deployment. PublicWeb robots checks and other independent transport paths are not retroactively covered. Defaults, legal source policy and plain limiter behavior unchanged. No network, paid call, model or training performed during tests.
+
+Residues: one writer/process for paired files, trusted directory/tenant/caller, no distributed lease/backup antirollback/power-loss proof. Phase faults and readback tests are not sudden-power-loss fsync validation. Pending startup refuses, no auto-replay; operator_inspected=True remains a trusted-caller boolean, not authenticated owner approval. Crash after provider response but before record_failure may still lose unseen RetryAfter. Process-local latch cannot by itself prove external effects. Sleeper/http functions are cooperative and may block; no arbitrary-call timeout or global CPU/machine containment is claimed.
+
+Reproduction at repo root:
+
+    PYTHONPATH=$PWD/backend /tmp/atlas-memo3-venv/bin/python -m pytest tests/modules/test_m18*.py -q
+
+Exactbase140PASS2.29s; candidate154PASS2.25s, finalrestored154PASS2.15s, noFAIL/SKIP. Fourteen new cases: realBaseCollector+pairedlimiter+realWAL/snapshot disk readback BEFORE fakeHTTP.fetch; pending fresh instance, intent/snapshot/completion/post-success/post-failure/RetryAfter faults, noop/excessivewait, realretrycharge/recheck, missingprotocol/circuit and unchangedplainpath. FakeHTTP only, no network. Initial11casesPASS0.27s, later3boundarycasesadded; no concealed initial failures.
+
+Named mutations, actual selected original test1PASS -> mutant1FAIL each: bypass-begin-request (0.22s/0.22s), fetch-before-permission (0.19s/0.21s), ignore-wait (0.17s/0.23s). Originalproduct restored and whole suite rerun. Independent auditor must inspect ordering adjacent paths; kills are scoped test evidence, not a proof of universal enforcement.
