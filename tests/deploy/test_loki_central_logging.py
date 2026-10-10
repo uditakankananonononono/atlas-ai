@@ -89,12 +89,15 @@ def test_gaps_and_manual_binding_requirements_are_explicit():
     assert "container recreation" in text
 
 
-def test_local_sink_disables_analytics_and_has_no_external_egress_network():
+def test_local_sink_disables_analytics_and_preserves_internal_promtail_reach():
     compose, promtail, _ = configurations()
     config = yaml.safe_load(compose["configs"]["atlas-loki-local"]["content"])
     assert config["analytics"]["reporting_enabled"] is False
     assert compose["networks"]["atlas-log-sink"]["internal"] is True
-    for name in ("loki", "promtail"):
-        assert compose["services"][name]["networks"] == ["atlas-log-sink"]
-        assert "network_mode" not in compose["services"][name]
+    assert compose["services"]["promtail"]["networks"] == ["atlas-log-sink"]
+    assert compose["services"]["loki"]["networks"] == ["atlas-log-sink", "atlas-log-host"]
+    assert compose["networks"]["atlas-log-host"]["internal"] is False
+    assert compose["services"]["loki"]["ports"] == ["127.0.0.1:3100:3100"]
+    assert "network_mode" not in compose["services"]["loki"]
+    assert "network_mode" not in compose["services"]["promtail"]
     assert promtail["clients"] == [{"url": "http://loki:3100/loki/api/v1/push"}]
