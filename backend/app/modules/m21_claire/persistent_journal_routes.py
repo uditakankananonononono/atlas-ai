@@ -52,3 +52,9 @@ def delete(entry_id: int, s: PersistentJournal = Depends(store)):
 @router.delete("/entries")
 def delete_all(s: PersistentJournal = Depends(store)):
     return {"deleted": s.delete_all()}
+
+@router.get('/decisions/bounded')
+def retrieve_bounded(query:str,limit:int=5,scan_cap:int=500,kind:str='decision',after_id:int|None=None,before_id:int|None=None,s:PersistentJournal=Depends(store)):
+    """Recent-ID window only, not global lexical top-k or consent."""
+    try:return s.retrieve_bounded(query,limit=limit,scan_cap=scan_cap,kind=kind,after_id=after_id,before_id=before_id)
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
