@@ -20,10 +20,15 @@ Source/query commits are individual, not all-or-nothing query transactions. Stat
 checksums detect corruption, not a malicious operator recomputing them or restoring
 an old valid file. Clock rollback/future deadlines retained, no policy bypass claim.
 Capacity oversize candidate stop occurs during stream, not before remote work.
-Whole baseline has3missingM00approval_events failures, not fixed by this feature.
+Initial baseline run had3missingM00approval_events failures; later reviewer base
+run passed them. STATE-DEPENDENT, not a stable baseline failure set. Cause
+unisolated, shared temporary SQLite residue only a hypothesis.
 
 ## Independent review and narrowed latch
-Reviewer reproduced107PASS1SKIP3FAIL; same3missingM00table failures at exactbase.
+Initial reviewer107PASS1SKIP3FAIL and exactbase run failed same3missingM00table
+nodes; later samebase passed, making these STATE-DEPENDENT, cause unisolated.
+Delta reviewer111PASS1SKIP0FAIL, builder108PASS1SKIP3FAIL. Not caused by diff,
+but not a stable pre-existing failure set. Fresh-temp cause isolation pending.
 Pre-effect validation/capacity errors refuse without latching; existing admitted
 query remains usable after capacity refusal. Only StateError in post-effect store
 commit phase latches current instance. Fresh instance may load prior valid store
