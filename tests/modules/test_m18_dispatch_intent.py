@@ -90,3 +90,10 @@ def test_expired_snapshot_pending_not_auto_cleared(tmp_path):
     wal,limiter=prepare(tmp_path);wal.begin('h',NOW)
     with pytest.raises(StateRejected):IntentBoundHostRateLimiter(tmp_path,'t',clock=lambda:NOW+timedelta(days=2))
     assert wal.read()['pending'] is not None
+
+
+@pytest.mark.parametrize('bootstrap',[True,False])
+def test_binding_rejects_bootstrap_kwarg_before_snapshot_creation(tmp_path,bootstrap):
+    wal=DispatchIntentWAL(tmp_path,'t');wal.provision()
+    with pytest.raises(StateRejected,match='bootstrap kwarg'):IntentBoundHostRateLimiter(tmp_path,'t',bootstrap=bootstrap,clock=lambda:NOW)
+    assert not list(tmp_path.glob('m18-pacing-*'))
