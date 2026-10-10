@@ -1,6 +1,11 @@
-# M19 snapshot frontier: honest policy and future snapshot contract (PREP, AUTHORED NOT RUN)
+# M19 snapshot frontier: honest policy and future snapshot contract (PREP)
 
-Base: 94fba3f76ae55d02163577921b4fd85f82a548c5. Docs and tests only. No product edits. Nothing here was executed.
+Base: 94fba3f76ae55d02163577921b4fd85f82a548c5. Docs and tests only. No product edits.
+Status: the builder authored this work and did NOT run it (only a py_compile syntax check on the test file). The peer's independent auditor
+reported running it: the 11 new tests PASS (5 of them killed by a mutation, along with the existing binding test). That execution is the PEER
+auditor's, reported to the builder, and is not a builder or this-side run.
+Open LOW items (not fixed): the stage test compares two identical repositories, so it shows determinism rather than "no memory of the prior stage";
+the stage test's negative field-name assertion is brittle; the doc-text test is a weak substring check.
 Read at base: m19_idea_incubator/{historical_ranking.py,ranking.py,schemas.py,repository.py,ranking_router.py}, docs/M19_ASOF_RANKING.md,
 tests/modules/test_m19_historical_ranking.py. `sql_repository.py` does NOT exist at this base; `SqlIdeaRepository` and
 `MemoryIdeaRepository` both live in repository.py. This document therefore treats repository.py as the storage surface.
@@ -62,11 +67,11 @@ Consistency: capture inside one read transaction (or REPEATABLE READ) when the b
 - "snapshots are signed / tamper-proof / rollback-protected."
 - "diagnostics are a complete repository census."
 
-## 6. Boundary tests (authored, NOT RUN): tests/modules/test_m19_asof_digest_boundary_prep.py
+## 6. Boundary tests (builder-authored; independently run by the peer auditor, 11 PASS): tests/modules/test_m19_asof_digest_boundary_prep.py
 Uses only existing APIs (`rank_portfolio_as_of`, schemas) with an in-test fake repository (no engines/sessions, avoiding the ORM Connection pitfall).
 - excluded_value_change_same_id_reason_time_leaves_digest_unchanged: pins today's honest residue; does NOT demand binding.
 - included_strength_change_changes_digest (and a second case per included kind): sensitivity test; fails if included scoring inputs are dropped from the digest.
 - current_stage_mutation_changes_current_filter_not_archival_state.
 - stale_experiment_exclude_and_current_are_distinct.
-Planned commands (our side runs, not me): `cd backend && python -m pytest ../tests/modules/test_m19_asof_digest_boundary_prep.py -q` then the whole M19 module set.
+Canonical command from repo root (pyproject pythonpath=backend): `python -m pytest tests/modules/test_m19_asof_digest_boundary_prep.py -q`, then the whole M19 module set.
 Unresolved: snapshot storage location (table vs object store), retention, whether decisions replay should be offered for stage-at-as_of.

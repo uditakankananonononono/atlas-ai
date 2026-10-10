@@ -1,4 +1,5 @@
-"""AUTHORED, NOT RUN (ATLAS-2 prep). Boundary pins for rank_portfolio_as_of using existing APIs only.
+"""ATLAS-2 prep. Builder-authored and not run by the builder; the peer auditor independently reported 11 PASS.
+Boundary pins for rank_portfolio_as_of using existing APIs only.
 The excluded-value test pins today's honest residue and does not demand any unimplemented binding."""
 from datetime import datetime,timedelta,timezone
 import pytest
