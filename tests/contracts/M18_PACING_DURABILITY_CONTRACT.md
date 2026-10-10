@@ -1,7 +1,7 @@
-# ATLAS-M18-PACING-DURABILITY-01: PREP ONLY
+# ATLAS-M18-PACING-DURABILITY-01: opt-in integrated contract
 
 Base: f37156c7fc7aec8cf7bec6ecbd0f8aa39ecb18fa.
-Tests are authored, not run. The helper is not wired and is not a completed repair.
+Helper and opt-in binding tests executed; default collector unchanged.
 Existing lane_rate_limit.py and collection behavior are unchanged.
 
 ## Written interface
@@ -64,10 +64,21 @@ private directory and trusted tenant derive the hashed file identity; restore is
 default, explicit bootstrap refuses existing state. Each begin_request validates
 stored TTL/state and persists the request timestamp before returning permission
 to fetch. Each mutation writes/readbacks before returning; failures block further
-begin_request until explicit reconciliation. Future Retry-After cannot be cleared
+begin_request ONLY within the current live instance until explicit reconciliation. Future Retry-After cannot be cleared
 by success. Tests now run by integrator; raw receipt supplied separately.
 The in-instance RLock is NOT a cross-process lease. One live instance/writer per
 tenant is required. Parent-directory races and old valid-file replay remain open.
 The safe dispatcher must use begin_request, not check plus later request. No
 claim that helper protects legacy collectors automatically. A crash before a
 new failure/Retry-After is recorded remains a window; no remote effect recovery.
+
+## Independent verdict and failure-restart residue
+Independent clone reproduced19new and144M18tests at011721c7; opt-in binding
+verified. Failure latch is in-memory PER INSTANCE only. A fresh instance may load
+the previous valid snapshot and permit dispatch; the failed-save request timestamp
+can be lost. Do not restart to bypass reconciliation of a persistence failure.
+No durable failure marker or restart-safe reconciliation is delivered. Potential
+future unit: dispatch-intent write-ahead ledger with restart-safe reconciliation.
+A catch-block marker on the same failed filesystem is not a guarantee. Checksum
+integrity, not authentication; no process lease; unseen RetryAfter/crash window;
+caller must use begin_request, not check-then-fetch, remains unenforced externally.
