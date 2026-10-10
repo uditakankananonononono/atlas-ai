@@ -40,8 +40,8 @@ def test_override_is_additive_only_and_oss_images():
     assert set(override["services"]) == {"prometheus", "grafana"}
     assert not (set(override["services"]) & set(base["services"])), "override must not redefine base services"
     assert {"migrate", "api", "worker", "postgres", "redis"} <= set(base["services"]), "base compose read as reference"
-    assert override["services"]["prometheus"]["image"].startswith("prom/prometheus:")
-    assert override["services"]["grafana"]["image"].startswith("grafana/grafana-oss:")
+    assert override["services"]["prometheus"]["image"]=="prom/prometheus:v2.54.1@sha256:f6639335d34a77d9d9db382b92eeb7fc00934be8eae81dbc03b31cfe90411a94"
+    assert override["services"]["grafana"]["image"]=="grafana/grafana-oss:11.2.2@sha256:d5133220d770aba5cb655147b619fa8770b90f41d8489a821d33b1cd34d16f89"
     text = OVERRIDE.read_text().lower()
     for forbidden in ("grafana.net", "grafana.com", "cloud.", "api_key", "apikey"):
         assert forbidden not in text, f"hosted/paid marker {forbidden!r} must not appear in the local substitute"
