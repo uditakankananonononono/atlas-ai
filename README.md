@@ -183,6 +183,7 @@ The risk register also has tenant-bound durable runtime routes: create/read/hist
 
 ### M21 no-total cursor-window candidate
 Opt-in journal cursor endpoint avoids full-match COUNT, materializes at most
-scan_cap+1 rows and scores newest bounded window. Total/omission count explicitly
-unknown, probe row not consumed. No DB CPU/index/load or global top-k guarantee.
+scan_cap+1 rows and scores newest bounded window. matched_total and omitted_by_scan_cap unknown; omitted_by_limit counts positive matches omitted within scored window. Probe row not consumed. No DB CPU/index/load or global top-k guarantee.
 Existing exact-count endpoint unchanged. Pending independent verdict.
+
+After journal initialization, each cursor retrieval issues one SELECT LIMIT scan_cap+1 with no COUNT. HTTP store dependency may also inspect/create schema; unchanged exact-count endpoint still uses COUNT. Retrieval helper validates time/cursor bounds before its SELECT. HTTP store dependency initializes/checks journal schema before route-level bounds rejection.
