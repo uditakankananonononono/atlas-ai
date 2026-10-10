@@ -1,9 +1,6 @@
-"""Tests for bounded_journal_retrieval - AUTHORED, NOT RUN.
+"""Integrator-executed SQLite bounded retrieval contracts.
 
-Per the work-unit constraints these tests were written without executing
-pytest, any test runner, or any database beyond static review. They are
-handed to the integrating side to run. Style mirrors
-tests/modules/test_m21_persistent_journal.py (SQLite via tmp_path).
+Helper and authenticated adapter tests executed; review receipts tracked in docs.
 """
 from datetime import datetime, timedelta, timezone
 
