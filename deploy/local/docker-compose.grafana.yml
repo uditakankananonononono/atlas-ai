@@ -1,0 +1,90 @@
+# ATLAS-U-1215 (sequence group X05) - free local substitute: Grafana OSS + Prometheus
+# containers rendering the repo's deploy/grafana/dashboard.json against local metrics.
+#
+# Named gap (verbatim, honestly not covered): Hosted/managed Grafana and production traffic dashboards
+#
+# What this is: a Compose OVERRIDE for deploy/local/docker-compose.yml. It adds two
+# services (prometheus, grafana) and three inline configs; it edits nothing and
+# requires no edits to any existing file. Prometheus scrapes the base `api`
+# service's /metrics endpoint (api:8080, route registered in backend/app/main.py);
+# Grafana provisions a Prometheus datasource with uid atlas-prometheus (the uid
+# every panel in dashboard.json references) and loads the unmodified repo
+# dashboard.json read-only.
+#
+# Usage (from deploy/local): docker compose -f docker-compose.yml -f docker-compose.grafana.yml up
+# Grafana on localhost:3000 (GF_SECURITY_ADMIN_USER/PASSWORD, local default admin/admin),
+# Prometheus on localhost:9090.
+#
+# Requirements and honesty notes:
+# - Docker Compose v2.24+ for inline config `content:` (Compose Specification).
+# - Image tags prom/prometheus:v2.54.1 and grafana/grafana-oss:11.2.2 are pinned
+#   for reproducibility but were NOT verified against a registry by the builder
+#   (network restricted to the atlas git remote); adjust only if a pull fails.
+# - Local single-host only: no TLS, no auth proxy, anonymous access disabled,
+#   sign-up disabled, admin password from the environment with a local default.
+# - All state is in the two named volumes below; removing them resets everything.
+configs:
+  prometheus-local-config:
+    content: |
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+      scrape_configs:
+        - job_name: atlas-api
+          metrics_path: /metrics
+          static_configs:
+            - targets: ["api:8080"]
+        - job_name: prometheus
+          static_configs:
+            - targets: ["localhost:9090"]
+  grafana-datasources:
+    content: |
+      apiVersion: 1
+      datasources:
+        - name: Atlas Prometheus (local)
+          uid: atlas-prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus:9090
+          isDefault: true
+  grafana-dashboards-provider:
+    content: |
+      apiVersion: 1
+      providers:
+        - name: atlas-local
+          type: file
+          updateIntervalSeconds: 30
+          options:
+            path: /var/lib/grafana/dashboards
+            foldersFromFilesStructure: false
+services:
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    restart: unless-stopped
+    configs:
+      - source: prometheus-local-config
+        target: /etc/prometheus/prometheus.yml
+    ports: ["9090:9090"]
+    volumes: ["atlas-prometheus:/prometheus"]
+    depends_on:
+      api: {condition: service_healthy}
+  grafana:
+    image: grafana/grafana-oss:11.2.2
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    ports: ["3000:3000"]
+    volumes:
+      - atlas-grafana:/var/lib/grafana
+      - ../grafana/dashboard.json:/var/lib/grafana/dashboards/atlas-operations.json:ro
+    configs:
+      - source: grafana-datasources
+        target: /etc/grafana/provisioning/datasources/atlas-prometheus.yaml
+      - source: grafana-dashboards-provider
+        target: /etc/grafana/provisioning/dashboards/atlas-local.yaml
+    depends_on:
+      prometheus: {condition: service_started}
+volumes: {atlas-prometheus: {}, atlas-grafana: {}}
