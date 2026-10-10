@@ -1669,3 +1669,6 @@ router.include_router(bayesian_model_router)
 
 from .decay_survival_routes import router as decay_survival_router
 router.include_router(decay_survival_router)
+
+from .curiosity_investigator_routes import router as curiosity_investigator_router
+router.include_router(curiosity_investigator_router)

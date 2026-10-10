@@ -84,3 +84,35 @@ def test_mounted_tenant_auth_authorization_and_results(tmp_path,monkeypatch,oidc
  assert c.post(p+'/run',headers=h,json={'extra':1}).status_code==422
  stale=investigator(tmp_path);m.enqueue([question('new')]);routes.bind_investigator(stale)
  assert c.post(p+'/enqueue',headers=h,json={'records':[question('stale')]}).status_code==409
+
+def test_total_budget_exhaustion_and_cheaper_skip(tmp_path):
+ m=investigator(tmp_path);m.authorize([source()],preauthorized=True,budget=2)
+ m.enqueue([question('first',cost=1),question('second',cost=1),question('third',cost=1)])
+ r=m.run(max_cost=2);assert [x['question_id']for x in r['investigations']]==['first','second'] and r['total_spent']==2 and r['remaining_budget']==0
+ assert m.run(max_cost=1000)['investigations']==[]
+ with pytest.raises(ValueError):setup(m)
+ skip=investigator(tmp_path,'skip');setup(skip);skip.enqueue([question('expensive',cost=2),question('cheap',relevance=.1,cost=1)])
+ assert skip.run(max_cost=1)['investigations'][0]['question_id']=='cheap'
+
+def test_source_shape_guards_exact_caps_and_question_total(tmp_path):
+ m=investigator(tmp_path)
+ for records in [[],[source('same'),source('same')],[source(str(i))for i in range(33)],[{**source(),'answers':[]}],[{**source(),'answers':{'k':''}}]]:
+  with pytest.raises(ValueError):m.authorize(records,preauthorized=True,budget=5)
+ for budget in [0,1000.1,True,float('nan')]:
+  with pytest.raises(ValueError):m.authorize([source()],preauthorized=True,budget=budget)
+ assert m.authorize([source(str(i))for i in range(32)],preauthorized=True,budget=1000)['budget']==1000
+ rows=[{**question(str(i)),'source_ids':['0']}for i in range(1000)]
+ assert m.enqueue(rows)['inserted']==1000
+ with pytest.raises(ValueError):m.enqueue([{**question('1001'),'source_ids':['0']}])
+ assert len(m.state['questions'])==1000
+
+def test_mounted_invalid_authority_and_overflow(tmp_path,monkeypatch,oidc_auth_headers):
+ from app.main import app
+ from fastapi.testclient import TestClient
+ from app.modules.m20_general_cognitive_worker import curiosity_investigator_routes as routes
+ monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setattr(routes,'_investigators',{})
+ m=investigator(tmp_path);routes.bind_investigator(m);c=TestClient(app);p='/api/v1/api/modules/20/curiosity-investigator';h=oidc_auth_headers('a','owner')
+ assert c.post(p+'/authorize',headers=h,json={'sources':[source()],'preauthorized':1,'budget':5}).status_code==422
+ setup(m)
+ assert c.post(p+'/enqueue',headers=h,json={'records':[{**question(),'source_ids':['forbidden']}]}).status_code==422
+ assert c.post(p+'/run',headers=h,json={'max_cost':10**400}).status_code==422
