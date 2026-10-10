@@ -58,3 +58,11 @@ def retrieve_bounded(query:str,limit:int=5,scan_cap:int=500,kind:str='decision',
     """Recent-ID window only, not global lexical top-k or consent."""
     try:return s.retrieve_bounded(query,limit=limit,scan_cap=scan_cap,kind=kind,after_id=after_id,before_id=before_id)
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
+
+from datetime import datetime
+
+@router.get('/decisions/cursor')
+def retrieve_cursor(query:str,limit:int=5,scan_cap:int=500,kind:str='decision',since:datetime|None=None,until:datetime|None=None,after_id:int|None=None,before_id:int|None=None,s:PersistentJournal=Depends(store)):
+    """Newest-ID window, no full-match count or global lexical top-k."""
+    try:return s.retrieve_cursor(query,limit=limit,scan_cap=scan_cap,kind=kind,since=since,until=until,after_id=after_id,before_id=before_id)
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
