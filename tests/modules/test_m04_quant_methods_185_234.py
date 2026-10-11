@@ -155,3 +155,48 @@ def test_row_223_dynamic_programming_rejects_unreachable_stage():
  o=run(223,data(223))['result'];assert o['algorithm']=='finite_horizon_Bellman_recurrence' and o['optimal_terminal_state']=='z' and o['reachable_state_counts']==[1,2,1]
  bad=data(223);bad['stages'][1]['transitions']={}
  with pytest.raises(QuantError,match='no reachable states'):run(223,bad)
+
+# ----------------------------------------------------------- row 225 repair
+ROB = {'sources': S, 'bounds': [[-1, 1], [-1, 1]]}
+
+def test_robust_counterexample_interior_optimum_not_vertex_only():
+    # worst(x) = |x1| + |x2|; the true minimizer [0,0] (value 0) is interior.
+    d = {**ROB, 'coefficients': [0, 0], 'coefficient_uncertainty': [1, 1]}
+    r = run(225, d)['result']
+    assert r['best_point'] == [0.0, 0.0]
+    assert r['best_value'] == 0.0 and r['worst_case_value'] == 0.0
+
+def test_robust_nominal_only_matches_linear_program():
+    # Zero uncertainty: robust counterpart collapses to the plain LP.
+    d = {**ROB, 'coefficients': [1, 2], 'coefficient_uncertainty': [0, 0]}
+    r = run(225, d)['result']
+    assert r['best_point'] == [-1.0, -1.0] and r['best_value'] == -3.0  # 1*-1 + 2*-1
+
+def test_robust_zero_uncertainty_per_coordinate_mixed():
+    # Coordinate 1 uncertain (min at 0), coordinate 2 certain (min at -1).
+    d = {**ROB, 'coefficients': [0, 3], 'coefficient_uncertainty': [2, 0]}
+    r = run(225, d)['result']
+    assert r['best_point'] == [0.0, -1.0] and r['best_value'] == -3.0
+
+def test_robust_box_only_uncertainty_weak_dominance():
+    # |nom| < rad pulls the minimizer to 0; |nom| > rad keeps the LP vertex.
+    d = {**ROB, 'coefficients': [1, 5], 'coefficient_uncertainty': [2, 1]}
+    r = run(225, d)['result']
+    assert r['best_point'] == [0.0, -1.0]
+    assert r['best_value'] == -4.0  # (1*0 + 2*|0|) + (5*-1 + 1*1)
+
+def test_robust_flat_direction_picks_an_optimal_point():
+    # nom == rad: objective flat for x1 <= 0; any x1 in [-1, 0] is optimal.
+    d = {**ROB, 'coefficients': [1, 0], 'coefficient_uncertainty': [1, 1]}
+    r = run(225, d)['result']
+    assert -1.0 <= r['best_point'][0] <= 0.0 and r['best_point'][1] == 0.0
+    assert r['best_value'] == 0.0  # x1 + |x1| = 0 for x1 <= 0; |x2| = 0 at x2 = 0
+
+def test_robust_respects_linear_constraints_with_interior_pull():
+    # Constraint x1 + x2 >= 1 cuts away the unconstrained minimizer [0, 0];
+    # the exact constrained min of |x1|+|x2| on that half-plane is 1.
+    d = {**ROB, 'coefficients': [0, 0], 'coefficient_uncertainty': [1, 1],
+         'constraints': [{'coefficients': [-1, -1], 'rhs': -1}]}
+    r = run(225, d)['result']
+    assert r['best_value'] == 1.0
+    assert sum(r['best_point']) == 1.0

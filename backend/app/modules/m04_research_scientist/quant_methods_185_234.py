@@ -256,6 +256,27 @@ def _bayes_or_gp(i,d,bounds,rng):
   grid=[[rng.uniform(a,b) for a,b in bounds] for __ in range(100)];stats=[_gp_predict(xs,ys,z,d.get('length_scale',1.)) for z in grid];z=min(zip(grid,stats),key=lambda q:q[1][0]-2*sqrt(q[1][1]))[0];xs.append(z);ys.append(objective(d,z));hist.append(min(ys))
  k=min(range(len(ys)),key=ys.__getitem__);return _finish(i,d,xs[k],hist,len(ys),{'acquisition':'lower_confidence_bound','kernel':'RBF','observations':len(ys)})
 
+def _robust_candidates(d,bounds,nom,rad):
+ """Exact candidate set for min of sum(nom_j*x_j + rad_j*|x_j|) over a 2D polygon.
+ The robust counterpart is convex piecewise-linear and separable, so its minimum
+ over a polytope is attained at a vertex, at a kink where an edge crosses x_j = 0,
+ or at the unconstrained per-coordinate minimizer - vertex-only search is invalid."""
+ if len(bounds)!=2:raise QuantError('linear programming reference solver supports exactly two variables')
+ cons=d.get('constraints',[])
+ lines=[([1.,0.],bounds[0][0]),([1.,0.],bounds[0][1]),([0.,1.],bounds[1][0]),([0.,1.],bounds[1][1])]+[(list(map(float,c['coefficients'])),float(c['rhs'])) for c in cons]
+ cand=[]
+ for k,(a,r) in enumerate(lines):
+  for b,s in lines[k+1:]:
+   det=a[0]*b[1]-a[1]*b[0]
+   if abs(det)>1e-12:cand.append([(r*b[1]-a[1]*s)/det,(a[0]*s-r*b[0])/det])
+ for a,r in lines:
+  if abs(a[1])>1e-12:cand.append([0.0,r/a[1]])
+  if abs(a[0])>1e-12:cand.append([r/a[0],0.0])
+ cand.append([lo if a>r else hi if a<-r else min(max(0.0,lo),hi) for (lo,hi),a,r in zip(bounds,nom,rad)])
+ pts=[x for x in cand if _feasible(x,bounds,cons)]
+ if not pts:raise QuantError('no feasible point: constraints are infeasible')
+ return pts
+
 def _lp_vertices(d,bounds):
  if len(bounds)!=2:raise QuantError('linear programming reference solver supports exactly two variables')
  lines=[([1.,0.],bounds[0][0]),([1.,0.],bounds[0][1]),([0.,1.],bounds[1][0]),([0.,1.],bounds[1][1])]+[(list(map(float,c['coefficients'])),float(c['rhs'])) for c in d.get('constraints',[])]
@@ -382,7 +403,8 @@ def optimize(i,d):
   need(d,'coefficients','coefficient_uncertainty');nom=list(map(float,d['coefficients']));rad=list(map(float,d['coefficient_uncertainty']))
   if len(rad)!=len(bounds) or any(x<0 for x in rad):raise QuantError('nonnegative uncertainty radius required per coefficient')
   def worst(x):return sum(a*b+r*abs(b) for a,r,b in zip(nom,rad,x))
-  pts=_lp_vertices(d,bounds);x=min(pts,key=worst);out=_finish(i,{**d,'objective':'linear','coefficients':nom},x,[worst(x)],len(pts),{'algorithm':'box_uncertainty_robust_counterpart','worst_case_value':worst(x)});out['best_value']=worst(x);return out
+  if len(nom)!=len(bounds):raise QuantError('coefficient dimension mismatch')
+  pts=_robust_candidates(d,bounds,nom,rad);x=min(pts,key=worst);out=_finish(i,{**d,'objective':'linear','coefficients':nom},x,[worst(x)],len(pts),{'algorithm':'box_uncertainty_robust_counterpart','worst_case_value':worst(x),'search':'exact_vertices_edge_kinks_interior'});out['best_value']=worst(x);return out
  if i in (226,228,229,230,231,232,233):return _derivative_solver(i,d,bounds,rng)
  if i==227:
   starts=d.get('starts') or [[rng.uniform(a,b) for a,b in bounds] for _ in range(max(4,d.get('restarts',8)))];sol=[]
