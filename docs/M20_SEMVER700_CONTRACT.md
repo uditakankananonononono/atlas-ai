@@ -9,3 +9,5 @@ The recommendation is exact arithmetic on the current version, parsed as strict 
 Caller change labels (overall and per-symbol) are accepted as claims, validated, and echoed as `label_conflicts` when they disagree with the structural result; they never influence the classification or the recommendation. Unknown label values or labels for unknown symbols refuse with E_SCHEMA.
 
 This is a restricted computation over declared API shapes, not a runtime compatibility proof, a changelog, a release decision or publishing. No network, persistence, repository mutation or installation. Mounted authentication and tenant boundaries apply after integrator wiring; the wiring patch is separate and unapplied.
+
+Source pin: `audits/additional-2000-features.json`, row `700`, requirement "Semantic Versioning", description "Communicates changes", source document ID `1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY`. This is a ledger title/description pin, not a fresh source-document read or proof of full capability.
