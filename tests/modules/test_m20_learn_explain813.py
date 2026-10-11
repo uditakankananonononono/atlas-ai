@@ -129,3 +129,23 @@ def test_submitted_premise_atom_cap_and_guards():
   with pytest.raises(LearningReasoningError):run(explanation_attempts=[attempt])
  attempt={'evidence_id':'a','source':'fixture','steps':[{'rule_id':'germinate','conclusion':'sprout','premises':[str(i)for i in range(64)]}]}
  assert run(explanation_attempts=[attempt])['result']['explanation_practice']['attempt_results'][0]['correct'] is False
+
+def test_single_character_string_premises_never_atom_list():
+ p=payload();p['explanation_rules'][0]['if']='s'
+ with pytest.raises(LearningReasoningError):execute('self_explanation',p)
+ attempt={'evidence_id':'a','source':'fixture','steps':[{'rule_id':'germinate','conclusion':'sprout','premises':'s'}]}
+ with pytest.raises(LearningReasoningError):run(explanation_attempts=[attempt])
+
+def test_sorted_three_premise_derivation_feedback_and_fixed_seed():
+ import os,subprocess,sys
+ p=payload();p['explanation_facts']=[{'atom':name,'source':'fixture:'+name}for name in ['zebra','middle','alpha']]
+ p['explanation_rules']=[{'id':'r','if':['zebra','middle','alpha'],'then':'plant','source':'fixture:r'}]
+ p['explanation_attempts']=[{'evidence_id':'a','source':'fixture:a','steps':[{'rule_id':'r','conclusion':'plant','premises':['zebra','middle','alpha']}]}]
+ r=execute('self_explanation',p)['result']['explanation_practice']
+ assert r['derivation'][0]['premises']==['alpha','middle','zebra']
+ assert r['attempt_results'][0]['step_feedback'][0]['expected_premises']==['alpha','middle','zebra']
+ # An unsorted set can accidentally be sorted on any given process hash seed.
+ # Fixed seed proves this concrete case isn't relying on that luck.
+ code="from app.modules.m20_general_cognitive_worker.explanation_practice import practice; p="+repr(p)+"; r=practice('self_explanation',p); assert r['derivation'][0]['premises']==['alpha','middle','zebra']; assert r['attempt_results'][0]['step_feedback'][0]['expected_premises']==['alpha','middle','zebra']"
+ result=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'6'},capture_output=True,text=True)
+ assert result.returncode==0,result.stdout+result.stderr
