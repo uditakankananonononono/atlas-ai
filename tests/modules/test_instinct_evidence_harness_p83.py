@@ -121,6 +121,16 @@ class ExternalValidation(Base):
         self.assertEqual(rep["receipts_verified"], False)
         self.assertEqual(rep["external_calls_made"], False)
 
+
+    def test_receipt_count_scoped_to_external_validation(self):
+        # A receipt on a non-external-validation entry must not inflate the
+        # external-validation receipt count.
+        h = build(E("a", "p1", "test_run", "runs/t1", receipt="r0"),
+                  E("b", "p1", "external_validation", "claims/x", receipt="r1"))
+        rep = m.report(h)
+        self.assertEqual(rep["counts"]["external_validation_claims"], 1)
+        self.assertEqual(rep["counts"]["external_validation_with_receipt"], 1)
+
     def test_blank_receipt_is_absent(self):
         rows = m.items(build(E("a", "p1", "external_validation", "claims/x", receipt="   ")))
         self.assertEqual(rows[0]["receipt_present"], False)
