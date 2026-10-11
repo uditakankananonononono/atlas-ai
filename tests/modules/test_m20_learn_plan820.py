@@ -78,3 +78,52 @@ def test_duplicate_coverage_without_other_gap_invalidates():
  p=payload();p['plan_chunks'][0]['elements'].append('addition')
  r=execute('chunking',p)['result']['objective_plan']
  assert r['coverage']['missing_elements']==r['coverage']['unexpected_elements']==[] and r['coverage']['multiply_assigned_elements']==['addition'] and r['valid'] is False
+
+def test_core_naive_all_deadlines_explicit_timezone_error():
+ from app.modules.m20_general_cognitive_worker.objective_plan import plan
+ p=payload();p['plan_goal']['deadline']='2026-10-15T18:00:00'
+ for row in p['plan_chunks']:row['deadline']='2026-10-14T16:00:00'
+ with pytest.raises(ValueError,match='^goal deadline requires timezone$'):plan(p)
+ p=payload()
+ for row in p['plan_chunks']:row['deadline']='2026-10-14T16:00:00'
+ with pytest.raises(ValueError,match='^chunk deadline requires timezone$'):plan(p)
+
+@pytest.mark.parametrize('field,value,message',[('chunk_id',5,'chunk_id requires bounded nonempty string'),('source',5,'chunk source requires bounded nonempty string'),('target',1.5,'unique chunk IDs, same additive metric and positive integer target required'),('target',2.0,'unique chunk IDs, same additive metric and positive integer target required'),('target',1000001,'unique chunk IDs, same additive metric and positive integer target required'),('elements','a','chunk elements requires bounded text list'),('elements',[5],'chunk elements requires bounded nonempty string'),('elements',['a','a'],'chunk elements requires unique keys'),('elements',[str(i)for i in range(65)],'chunk elements requires bounded text list'),('prerequisites',[5],'prerequisites requires bounded nonempty string'),('if_then',[],'if_then object required')])
+def test_core_chunk_validator_errors_unmasked(field,value,message):
+ from app.modules.m20_general_cognitive_worker.objective_plan import plan
+ p=payload();p['plan_chunks'][0][field]=value
+ with pytest.raises(ValueError,match='^'+message+'$'):plan(p)
+
+def test_chunks_65_refused_independent_of_required_cap():
+ from app.modules.m20_general_cognitive_worker.objective_plan import plan
+ p=payload();p['plan_chunks']=[{**p['plan_chunks'][1],'chunk_id':str(i),'elements':[],'prerequisites':[]}for i in range(65)]
+ with pytest.raises(ValueError,match='^plan_chunks requires1..64 records$'):plan(p)
+
+def test_only_unexpected_gap_status_and_sorted_required_elements():
+ p=payload();p['required_elements']=['division','addition'];p['plan_chunks'][0]['elements'].append('extra')
+ r=execute('chunking',p)['result']['objective_plan'];assert r['coverage']['required_elements']==['addition','division']
+ assert r['coverage']['missing_elements']==r['coverage']['multiply_assigned_elements']==[] and r['coverage']['unexpected_elements']==['extra']
+ assert r['valid'] is False and r['status']=='gaps_or_conflicts'
+
+def test_topological_non_alphabetical_order_and_sorted_chunk_fields():
+ p=payload();p['plan_chunks'][0]['chunk_id']='a';p['plan_chunks'][0]['prerequisites']=['z'];p['plan_chunks'][1]['chunk_id']='z'
+ r=execute('chunking',p)['result']['objective_plan'];assert r['ordered_chunk_ids']==['z','a'] and [c['chunk_id']for c in r['chunks']]==['z','a'] and r['valid'] is True
+ p=payload();p['required_elements']=['c','b','a'];p['plan_goal']['target']=3
+ template=p['plan_chunks'][1]
+ p['plan_chunks']=[{**template,'chunk_id':'c','elements':['b','a'],'target':1,'prerequisites':['z','y']},{**template,'chunk_id':'z','elements':['c'],'target':1,'prerequisites':[]},{**template,'chunk_id':'y','elements':[],'target':1,'prerequisites':[]}]
+ r=execute('chunking',p)['result']['objective_plan'];assert r['chunks'][-1]['elements']==['a','b'] and r['chunks'][-1]['prerequisites']==['y','z']
+ assert r['coverage']['required_elements']==['a','b','c'] and r['deadline_conflicts']==[] and r['valid'] is True
+
+def test_equal_prerequisite_deadline_valid_and_conflicts_sorted():
+ p=payload();p['plan_chunks'][0]['deadline']=p['plan_chunks'][1]['deadline']
+ r=execute('chunking',p)['result']['objective_plan'];assert r['deadline_conflicts']==[] and r['valid'] is True
+ p=payload()
+ for row in p['plan_chunks']:row['deadline']='2026-10-16T16:00:00+05:30'
+ r=execute('chunking',p)['result']['objective_plan'];assert r['deadline_conflicts']==[{'chunk_id':'a','reason':'chunk_deadline_after_goal'},{'chunk_id':'z','reason':'chunk_deadline_after_goal'}] and r['status']=='gaps_or_conflicts'
+
+def test_mounted_nondict_ifthen_returns422(monkeypatch,oidc_auth_headers):
+ from app.main import app
+ from fastapi.testclient import TestClient
+ monkeypatch.setenv('ATLAS_ENV','production');p=payload();p['plan_chunks'][0]['if_then']=[]
+ response=TestClient(app).post('/api/v1/api/modules/20/learning-reasoning-810-859/chunking',headers=oidc_auth_headers('a','owner'),json={'payload':p})
+ assert response.status_code==422 and response.json()['detail']=='if_then object required'
