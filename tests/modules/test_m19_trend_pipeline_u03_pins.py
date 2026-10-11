@@ -200,3 +200,46 @@ def test_resolved_at_equal_to_predicted_at_is_refused():
 def test_naive_and_offset_less_timestamps_are_refused():
     refused(lambda: tp.extract_trends([P(0, "aurora")], as_of="2026-03-31T00:00:00"), "as_of")
     refused(lambda: tp.extract_trends([dict(P(0, "aurora"), posted_at="2026-03-30T00:00:00")], as_of=AS_OF), "posted_at")
+
+
+# ---- closing pins (auditor-5 named survivors, tests only) ----------------------
+def test_pin_bigrams_never_skip_an_ineligible_token():
+    t = terms([P(i, "cat ab dog") for i in range(3)])
+    assert "cat" in t and "dog" in t and "ab" not in t
+    assert "cat dog" not in t and "cat ab" not in t
+
+
+def test_pin_evidence_post_ids_are_sorted_and_capped_at_five():
+    ids = ["p9", "p3", "p7", "p1", "p8", "p2"]
+    posts = [{"post_id": pid, "author": f"a{i % 2}", "posted_at": at(1), "text": "aurora"} for i, pid in enumerate(ids)]
+    t = terms(posts)
+    assert t["aurora"]["evidence_post_ids"] == ["p1", "p2", "p3", "p7", "p8"]
+
+
+def test_pin_future_post_ids_are_sorted():
+    future = [dict(P(i, "aurora"), post_id=pid, posted_at=(DT + timedelta(days=1)).isoformat())
+              for i, pid in enumerate(["z2", "m1", "a9"])]
+    r = tp.extract_trends([P(9, "aurora")] + future, as_of=AS_OF)
+    assert r["excluded"]["future"] == 3
+    assert r["excluded"]["future_post_ids"] == ["a9", "m1", "z2"]
+
+
+def test_pin_as_of_is_echoed_raw_not_normalized():
+    r = tp.extract_trends([P(i, "aurora") for i in range(3)], as_of="2026-03-31T05:30:00+05:30")  # same instant as AS_OF
+    assert r["as_of"] == "2026-03-31T05:30:00+05:30"
+    assert r["posts_used"] == 3
+
+
+def test_pin_top_n_is_echoed_in_parameters():
+    r = tp.extract_trends([P(i, "aurora") for i in range(3)], as_of=AS_OF, top_n=7)
+    assert r["parameters"]["top_n"] == 7
+
+
+def test_pin_non_dict_prediction_is_a_trend_error_not_a_type_error():
+    with pytest.raises(tp.TrendError) as e:
+        score([42])
+    assert "prediction 0 must be an object" in str(e.value)
+
+
+def test_pin_score_predictions_refuses_a_foreign_claim_class():
+    refused(lambda: score([pred(claim_class="other")]), "'claim_class'")

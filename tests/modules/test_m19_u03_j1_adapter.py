@@ -1,5 +1,6 @@
 """U03 -> J1 adapter, written against the early J1 call shape (keyword-only, exact schema, no extras).
-J1 itself is not imported: it is not on main. This adapter only builds J1-shaped dicts and resolves outcomes from posts."""
+J1 has since landed on main but is still not imported: this adapter only builds J1-shaped dicts and resolves outcomes from
+posts, and has not been run against the landed ledger."""
 import importlib.util
 import pathlib
 import sys
@@ -255,3 +256,86 @@ def test_ts_text_fields_still_compared_exactly():
         ret = _returned_with(pending, _z)
         ret[0][key] = val
         assert "no returned prediction" in err(lambda ret=ret: ad.bind_ids(pending, ret))
+
+
+# ---- closing pins (auditor-5 named survivors, tests only) ----
+def test_pin_source_type_and_length_bounds():
+    preds = u03_predictions()
+    assert "source" in err(lambda: ad.to_j1_predictions(preds, source=5))
+    assert "source" in err(lambda: ad.to_j1_predictions(preds, source="   "))
+    assert len(ad.to_j1_predictions(preds, source="s" * 200)["j1_predictions"]) == 2
+    assert "source" in err(lambda: ad.to_j1_predictions(preds, source="s" * 201))
+
+
+def test_pin_probability_bounds_zero_one_and_non_finite():
+    p = u03_predictions()
+    assert ad.to_j1_predictions([dict(p[0], confidence=0)], source="s")["j1_predictions"][0]["probability"] == 0
+    assert ad.to_j1_predictions([dict(p[0], confidence=1)], source="s")["j1_predictions"][0]["probability"] == 1
+    for bad in (float("inf"), float("-inf"), float("nan")):
+        assert "probability" in err(lambda bad=bad: ad.to_j1_predictions([dict(p[0], confidence=bad)], source="s"))
+
+
+def test_pin_horizon_days_bounds_one_to_ninety():
+    p = u03_predictions()
+    assert ad.to_j1_predictions([dict(p[0], horizon_days=1)], source="s")["j1_predictions"][0]["horizon"] == "2026-04-01T00:00:00+00:00"
+    assert ad.to_j1_predictions([dict(p[0], horizon_days=90)], source="s")["j1_predictions"][0]["horizon"] == "2026-06-29T00:00:00+00:00"
+    assert "horizon_days" in err(lambda: ad.to_j1_predictions([dict(p[0], horizon_days=91)], source="s"))
+    assert "horizon_days" in err(lambda: ad.to_j1_predictions([dict(p[0], horizon_days=0)], source="s"))
+
+
+def test_pin_term_must_be_a_non_blank_string():
+    p = u03_predictions()
+    for bad in ("", "   ", 5, None):
+        assert "'term'" in err(lambda bad=bad: ad.to_j1_predictions([dict(p[0], term=bad)], source="s"))
+
+
+def test_pin_threshold_posts_type_and_bounds():
+    p = u03_predictions()
+    for ok in (1, 2, 10 ** 9):
+        assert ad.to_j1_predictions([dict(p[0], threshold_posts=ok)], source="s")["j1_predictions"]
+    for bad in (0, -1, True, 1.5, "1"):
+        assert "'threshold_posts'" in err(lambda bad=bad: ad.to_j1_predictions([dict(p[0], threshold_posts=bad)], source="s"))
+
+
+def test_pin_claim_text_uses_repr_of_term():
+    p = u03_predictions()
+    claim = ad.to_j1_predictions([dict(p[0], term="it's")], source="s")["j1_predictions"][0]["claim"]
+    assert 'term="it\'s"' in claim
+    assert "term=it's" not in claim
+
+
+def test_pin_to_j1_predictions_shape_refusals():
+    assert "prediction 0 must be an object" in err(lambda: ad.to_j1_predictions([42], source="s"))
+    assert "predictions" in err(lambda: ad.to_j1_predictions("x", source="s"))
+
+
+def test_pin_bind_ids_shape_refusals():
+    pending = ad.to_j1_predictions(u03_predictions(), source="s")
+    returned = [dict(j, prediction_id=f"{i:064x}") for i, j in enumerate(pending["j1_predictions"])]
+    assert "pending_result" in err(lambda: ad.bind_ids("x", returned))
+    assert "pending_result" in err(lambda: ad.bind_ids({"pending": "x"}, returned))
+    assert "returned must be a list" in err(lambda: ad.bind_ids(pending, "x"))
+    bad_type = [dict(returned[0], prediction_id=5)] + returned[1:]
+    assert "returned 0" in err(lambda: ad.bind_ids(pending, bad_type))
+    bad_empty = [dict(returned[0], prediction_id="")] + returned[1:]
+    assert "returned 0" in err(lambda: ad.bind_ids(pending, bad_empty))
+
+
+def test_pin_resolutions_from_posts_shape_refusals():
+    assert "bound" in err(lambda: ad.resolutions_from_posts("x", [], resolved_at="2026-04-07T00:00:00+00:00"))
+    assert "bound 0 must be an object" in err(
+        lambda: ad.resolutions_from_posts([42], [], resolved_at="2026-04-07T00:00:00+00:00"))
+
+
+def test_pin_pending_echoes_probability_and_j1_probability_is_passthrough():
+    preds = u03_predictions(conf=0.13)
+    out = ad.to_j1_predictions(preds, source="s")
+    assert [j["probability"] for j in out["j1_predictions"]] == [0.13, 0.13]
+    assert [e["probability"] for e in out["pending"]] == [p["confidence"] for p in preds]
+
+
+def test_pin_scoring_value_errors_are_wrapped_as_adapter_error():
+    bound = bound_from(u03_predictions())
+    dup = later(2, "aurora") + [later(1, "aurora")[0]]                     # duplicate post_id inside scoring
+    m = err(lambda: ad.resolutions_from_posts(bound, dup, resolved_at="2026-04-07T00:00:00+00:00"))
+    assert "duplicate" in m

@@ -1,4 +1,4 @@
-"""[U03] Count-series trend detection and calibration bins.
+"""[U03] Count-series trend detection.
 
 Pure, hermetic, stdlib only. Input is rows the caller already has (for example an exported counts file):
 {"term", "date" (ISO with offset), "count" (int >= 0), "source"}. Output is arithmetic over those rows.

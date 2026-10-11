@@ -1,4 +1,6 @@
-"""[U03] Adapter between U03 trend predictions and the early forecast-ledger call shape.
+"""[U03] Adapter between U03 trend predictions and the forecast-ledger call shape.
+
+Prepared against an early interface note; the J1 ledger has since landed on main with the same keyword-only call shape (checked by reading the landed source, never by running against it).
 
 Additive and pure. It builds dictionaries with the exact keys claim, probability, horizon, source, made_at,
 binds the ids the ledger hands back to the U03 term and threshold, and works out which predictions can be

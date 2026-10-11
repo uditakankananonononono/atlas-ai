@@ -1,6 +1,7 @@
 # M19 trend pipeline (U03) contract
 
-Module: `backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py` (new file). Tests: `tests/modules/test_m19_trend_pipeline_u03.py`.
+Module: `backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py` (new file). Tests: `tests/modules/test_m19_trend_pipeline_u03.py`, `tests/modules/test_m19_trend_pipeline_u03_pins.py`,
+`tests/modules/test_m19_trend_counts_u03.py`, `tests/modules/test_m19_u03_j1_adapter.py`.
 
 ## Existing mechanisms read first
 - `m06 social_reading/idea_feed.py`: harvests term scores from collected posts into ideas.
@@ -34,8 +35,8 @@ Scoring counts posts in (predicted_at, predicted_at + horizon].
 - No "strategy" output: any strategy text would be a claim this module cannot measure.
 - No collection, scraping, ingest, checkpointing or resumption.
 
-## Forecast-ledger adapter (`u03_j1_adapter.py`, new file) - prepared against an early call shape only
-Written against an early interface note (keyword-only calls; prediction keys claim, probability, horizon, source, made_at). The ledger and scorer are NOT in this repository at the time of writing, so nothing here imports them, calls them or has been run against them. Final integration needs the landed, audited source and one real scored round trip.
+## Forecast-ledger adapter (`u03_j1_adapter.py`, new file) - prepared against the early call shape; the ledger has since landed
+Written against an early interface note (keyword-only calls; prediction keys claim, probability, horizon, source, made_at). The J1 forecast ledger has since landed on main (`backend/app/modules/m20_general_cognitive_worker/j1_forecast.py`) with the same keyword-only `append_prediction(claim, probability, horizon, source, made_at)` call shape, checked by reading the landed source. The adapter still does not import the ledger or scorer and has not been run against them. Final integration needs one real scored round trip.
 - `to_j1_predictions(predictions, *, source)`: confidence -> probability, predicted_at -> made_at (UTC), horizon_days -> an absolute horizon deadline. Exact five keys, no extras. The term and threshold go into the claim text and a side map.
 - `bind_ids(pending_result, returned)`: attaches the ids the ledger returns, matching on exact content; no match or an ambiguous match is refused.
 - `resolutions_from_posts(bound, later_posts, *, resolved_at)`: outcome dicts only where the horizon has passed and posts were collected inside it. Too early, no posts in the horizon, or no later data: no resolution, listed as unresolved, never a miss. Window (made_at, horizon], end inclusive.
