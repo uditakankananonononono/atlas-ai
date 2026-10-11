@@ -66,7 +66,7 @@ def _check_deliverable(record):
         if name not in record:
             raise _err("empty_field:" + name)
     number = record["number"]
-    if isinstance(number, bool) or not isinstance(number, int):
+    if type(number) is not int:
         raise _err("bad_type:number")
     if number < 1 or number > DELIVERABLE_COUNT:
         raise _err("number_out_of_range:number")

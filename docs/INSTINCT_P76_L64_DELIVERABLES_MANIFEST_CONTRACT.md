@@ -29,7 +29,7 @@ Module: `backend/app/modules/instinct_doc/deliverables_manifest_p76.py`. Pure st
 Exactly three fields, no unknown or missing keys, no truncation, no coercion:
 - `project_id`: nonblank string 1..64 chars.
 - `kind`: exactly one of `project`, `task`, `module`, `tool`, `research_project` (the five subjects named in the source line).
-- `deliverables`: a list of declaration records, each exactly `number` (strict int 1..15, bool refused) and `evidence_ref` (nonblank string 1..128 chars; recorded verbatim, never resolved).
+- `deliverables`: a list of declaration records, each exactly `number` (strict int 1..15, exact type; bool and int subclasses refused) and `evidence_ref` (nonblank string 1..128 chars; recorded verbatim, never resolved).
 
 ## Completeness rule
 Every number 1..15 must be declared exactly once. A duplicate is refused `P76:duplicate_deliverable:<n>` (first repeat in input order). Any missing numbers refuse `P76:missing_deliverables:<csv>` with all missing numbers sorted ascending (empty list declares nothing and reports all 15). A valid manifest returns deliverables sorted by number, `deliverable_count` 15, `complete` True.

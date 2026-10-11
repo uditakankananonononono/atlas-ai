@@ -90,6 +90,15 @@ class Incompleteness(Base):
             self.refuses("bad_type:number", m.validate_manifest,
                          MANIFEST(numbers=list(range(1, 15)) + [bad]))
 
+    def test_int_subclass_refused_exact_type(self):
+        class MyInt(int):
+            pass
+        self.refuses("bad_type:number", m.validate_manifest,
+                     MANIFEST(numbers=list(range(1, 15)) + [MyInt(15)]))
+        man = MANIFEST()
+        man["deliverables"][0]["number"] = MyInt(1)
+        self.refuses("bad_type:number", m.validate_manifest, man)
+
 
 class Refusals(Base):
     def test_manifest_shape(self):
