@@ -65,3 +65,27 @@ naive shared-state any-of-then baseline floor over a 150-case seeded corpus
 (engine detection is a superset of the baseline's, with strictly more
 catches from isolation and all-of-then). Mounted auth/tenant route checks
 live in the separate wiring patch.
+
+## Advisory disclosures (auditor pin round)
+
+- Exact acceptance/refusal pairs are pinned: assignment integers accept +/-2^62
+  and refuse 2^62+1; scalar strings accept 256 characters and refuse 257;
+  variable names accept 64 characters and refuse 65.
+- `provenance.input_sha256` binds the WHOLE caller packet: top-level JSON keys
+  the executor does not use are ignored for execution but still change the hash.
+- Status priority: an assertion failure in an earlier scenario followed by the
+  step cap in a later one reports top status `inconclusive_step_cap_exceeded`
+  while the earlier failure trace is preserved per scenario.
+- Generated names for unnamed scenarios (`scenario-<index>`) live in the same
+  namespace as explicit names; a generated name colliding with an explicit one
+  is refused as a duplicate.
+- Scenario names have NO length cap by deliberate resource-hardening choice:
+  resource limits live on scenario count, steps per section, and the executed
+  step cap, not on name length (a 5,000,000-character name is permitted).
+- Caller packets are JSON-typed. Inputs outside JSON types (for example bytes,
+  or dicts with non-string keys) can surface a TypeError from canonical hashing
+  rather than a ValueError; this contract does NOT claim that every malformed
+  input is refused with ValueError.
+- Equality is exact type identity: an int subclass (including bool) is a
+  different type from int, and an unknown variable fails BOTH assertion kinds
+  (`equals` and `not_equals`) with an `unknown_variable` trace.

@@ -383,3 +383,99 @@ def test_human_review_required_is_always_true():
 def test_scalar_arithmetic_and_isolation_receipt_counts():
     r = execute_scenarios({"scenarios": [_counter(1), _counter(-1)]})
     assert r["status"] == "all_passed" and r["steps_executed"] == 6 and r["human_review_required"] is True
+
+
+# --- Advisory pin round (auditor-4 specification); tests-only, core unchanged. ---
+
+def test_advisory_integer_assignment_boundary_pair():
+    ok = scenario(given=[{"op": "assign", "var": "x", "value": INT_LIMIT}],
+                  then=[{"assert": "equals", "var": "x", "value": INT_LIMIT}])
+    assert execute_scenarios({"scenarios": [ok]})["status"] == "all_passed"
+    with pytest.raises(ValueError, match="integer outside"):
+        execute_scenarios({"scenarios": [scenario(given=[{"op": "assign", "var": "x", "value": INT_LIMIT + 1}])]})
+
+
+def test_advisory_scalar_string_length_boundary_pair():
+    ok = scenario(given=[{"op": "assign", "var": "x", "value": "y" * 256}],
+                  then=[{"assert": "equals", "var": "x", "value": "y" * 256}])
+    assert execute_scenarios({"scenarios": [ok]})["status"] == "all_passed"
+    with pytest.raises(ValueError, match="over 256"):
+        execute_scenarios({"scenarios": [scenario(given=[{"op": "assign", "var": "x", "value": "y" * 257}])]})
+
+
+def test_advisory_variable_name_length_boundary_pair():
+    ok = scenario(given=[{"op": "assign", "var": "a" * 64, "value": 1}],
+                  then=[{"assert": "equals", "var": "a" * 64, "value": 1}])
+    assert execute_scenarios({"scenarios": [ok]})["status"] == "all_passed"
+    with pytest.raises(ValueError, match="identifier"):
+        execute_scenarios({"scenarios": [scenario(given=[{"op": "assign", "var": "a" * 65, "value": 1}])]})
+
+
+def test_advisory_whole_input_hash_includes_ignored_json_extras():
+    base = {"scenarios": [_counter()]}
+    extra1 = {**base, "ignored_extra": 1}
+    extra2 = {**base, "ignored_extra": 2}
+    r0 = execute_scenarios(base)
+    r1 = execute_scenarios(extra1)
+    r2 = execute_scenarios(extra2)
+    # Extras change nothing about execution...
+    assert r0["status"] == r1["status"] == r2["status"] == "all_passed"
+    assert r0["scenarios"] == r1["scenarios"] == r2["scenarios"]
+    # ...but the provenance hash binds the WHOLE caller packet, extras included.
+    assert r0["provenance"]["input_sha256"] != r1["provenance"]["input_sha256"]
+    assert r1["provenance"]["input_sha256"] != r2["provenance"]["input_sha256"]
+
+
+def test_advisory_prior_failure_then_cap_keeps_trace_with_cap_priority_status():
+    failing = scenario(given=[{"op": "assign", "var": "x", "value": 1}],
+                       then=[{"assert": "equals", "var": "x", "value": 2}], name="bad")
+    long = scenario(given=[{"op": "assign", "var": "y", "value": 0}],
+                    when=[{"op": "increment", "var": "y", "by": 1}] * 10, name="long")
+    r = execute_scenarios({"scenarios": [failing, long], "max_steps": 3})
+    assert r["status"] == "inconclusive_step_cap_exceeded"  # cap has top-status priority
+    assert r["scenarios"][0]["status"] == "failed"
+    assert r["scenarios"][0]["failure"]["reason"] == "assertion_failed"
+    assert r["scenarios"][0]["failure"]["section"] == "then" and r["scenarios"][0]["failure"]["step_index"] == 0
+    assert r["scenarios"][1]["status"] == "incomplete"
+    assert r["steps_executed"] == 3
+
+
+def test_advisory_generated_names_can_collide_with_explicit_names():
+    # scenarios[1] is unnamed, generating "scenario-1" - which collides with the
+    # explicit name of scenarios[0]. Collisions are refused like any duplicate.
+    data = {"scenarios": [scenario(name="scenario-1"), scenario(), scenario()]}
+    with pytest.raises(ValueError, match="^duplicate scenario name: scenario-1$"):
+        execute_scenarios(data)
+    # Sanity: the same three with no explicit name generate distinct names.
+    assert execute_scenarios({"scenarios": [scenario(), scenario(), scenario()]})["status"] == "all_passed"
+
+
+def test_advisory_scenario_names_have_no_length_cap():
+    # Deliberate resource-hardening choice: caps live on scenario/step counts,
+    # not on name length. A 5,000,000-character name is permitted.
+    long_name = "n" * 5_000_000
+    r = execute_scenarios({"scenarios": [scenario(name=long_name)]})
+    assert r["status"] == "all_passed" and r["scenarios"][0]["name"] == long_name
+
+
+def test_advisory_typed_equality_is_exact_type_identity():
+    from app.modules.m20_general_cognitive_worker.bdd_scenarios686 import _typed_equal
+
+    class MyInt(int):
+        pass
+
+    assert _typed_equal(1, 1) is True
+    assert _typed_equal(1, True) is False          # bool is not int here
+    assert _typed_equal(MyInt(1), 1) is False      # an int SUBCLASS differs from int
+    assert _typed_equal(1, MyInt(1)) is False
+    assert _typed_equal("1", 1) is False
+    assert _typed_equal("a", "a") is True
+
+
+def test_advisory_unknown_variable_in_not_equals_also_fails():
+    data = {"scenarios": [scenario(then=[{"assert": "not_equals", "var": "ghost", "value": 1}])]}
+    r = execute_scenarios(data)
+    assert r["status"] == "failures_present"
+    f = r["scenarios"][0]["failure"]
+    assert f["reason"] == "unknown_variable" and f["step"]["assert"] == "not_equals"
+    assert f["section"] == "then" and f["step_index"] == 0
