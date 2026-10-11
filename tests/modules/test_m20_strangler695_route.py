@@ -830,3 +830,50 @@ def test_legacy_removal_blockers_each_only_under_its_cause():
     # matching fixtures everywhere and fixture covering a no-route request
     on_unrouted = ev([leg], [Q("u", "GET", "/missing")], [fx("f", "u")])
     assert on_unrouted["legacy_removal_blockers"] == sorted(CLEAN + ["unrouted_requests_present"])
+
+
+# ================================================================ R3 audit pins (tests only; runtime unchanged)
+def test_path_length_256_ok_257_refused_for_rule_and_request():
+    p256, p257 = "/" + "a" * 255, "/" + "a" * 256
+    assert len(p256) == 256 and len(p257) == 257
+    for kind in ("exact", "prefix"):
+        evaluate(base(rules=[R("r", "GET", kind, p256, "legacy")]))
+        with pytest.raises(ValueError, match="^rule r path refused: path_length$"):
+            evaluate(base(rules=[R("r", "GET", kind, p257, "legacy")]))
+    ok = routes(ev([R("r", "*", "exact", p256, "legacy")], [Q("q", "GET", p256)]))["q"]
+    assert ok["decision"] == "routed" and ok["reasons"] == [] and ok["path"] == p256
+    bad = routes(ev([R("r", "*", "prefix", "/", "legacy")], [Q("q", "GET", p257)]))["q"]
+    assert bad["decision"] == "refused" and bad["reasons"] == ["path_length"] and bad["path"] is None and bad["method"] == "GET"
+
+
+def test_empty_path_refused_with_path_length_for_rule_and_request():
+    with pytest.raises(ValueError, match="^rule r path refused: path_length$"):
+        evaluate(base(rules=[R("r", "GET", "exact", "", "legacy")]))
+    with pytest.raises(ValueError, match="^rule r path refused: path_length$"):
+        evaluate(base(rules=[R("r", "GET", "prefix", "", "legacy")]))
+    bad = routes(ev([R("r", "*", "prefix", "/", "legacy")], [Q("q", "GET", "")]))["q"]
+    assert bad["decision"] == "refused" and bad["reasons"] == ["path_length"] and bad["path"] is None
+    one = routes(ev([R("r", "*", "prefix", "/", "legacy")], [Q("q", "GET", "/")]))["q"]
+    assert one["decision"] == "routed" and one["reasons"] == []
+
+
+def _dict_nest(levels):
+    v = 1
+    for _ in range(levels):
+        v = {"k": v}
+    return v
+
+
+def test_dict_nesting_depth_boundary_7_ok_8_refused_in_either_output():
+    def run(legacy, replacement=None):
+        return ev([R("r", "*", "prefix", "/", "legacy")], [Q("q", "POST", "/x")],
+                  [fx("f", "q", legacy=out(200, legacy), replacement=out(200, legacy if replacement is None else replacement))])
+    run(_dict_nest(7))
+    run({"a": [{"b": [{"c": [{"d": 1}]}]}]})  # mixed dict/list, depth 8 with the leaf
+    for body in (_dict_nest(8), _dict_nest(9), {"a": [{"b": [{"c": [{"d": [1]}]}]}]}):
+        with pytest.raises(ValueError, match="^body exceeds depth 8 or 256 nodes$"):
+            run(body)
+        with pytest.raises(ValueError, match="^body exceeds depth 8 or 256 nodes$"):
+            run(1, body)
+    res = run(_dict_nest(7), _dict_nest(6))
+    assert res["parity"][0]["mismatched_fields"] == ["body"]
