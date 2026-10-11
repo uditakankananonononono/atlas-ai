@@ -19,7 +19,7 @@ def D(number, evidence_ref="ref"):
 
 def MANIFEST(numbers=range(1, 16), kind="project", project_id="proj-1"):
     return {"project_id": project_id, "kind": kind,
-            "deliverables": [D(n, "ref-%d" % n) for n in numbers]}
+            "deliverables": [D(n, "ref-%s" % n) for n in numbers]}
 
 
 class Base(unittest.TestCase):
