@@ -12,6 +12,7 @@ rules, and is not proof of legal compliance. Missing declarations are denied
 from __future__ import annotations
 
 import math
+from fractions import Fraction
 
 SCOPE = "declared-input-only"
 #: Time values and rate windows must satisfy abs(v) <= 2**53 (every such integer is
@@ -164,10 +165,12 @@ def preflight(action, declarations):
     if rule is None:
         checks.append(_chk("rate_limit", False, "no rate limit declared for this platform and kind"))
     else:
-        lo = a["at"] - rule["window_seconds"]
+        # Exact rational arithmetic: float subtraction can round the window edge and drop an entry.
+        at = Fraction(a["at"])
+        lo = at - rule["window_seconds"]
         used = sum(e.get("count", 1) for e in recent
                    if e["platform"] == a["platform"] and (wildcard or e["kind"] == a["kind"])
-                   and lo < e["at"] <= a["at"])
+                   and lo < Fraction(e["at"]) <= at)
         total = used + a["count"]
         checks.append(_chk("rate_limit", total <= rule["max"],
                            f"{total} in window (limit {rule['max']} per {rule['window_seconds']}s)"))

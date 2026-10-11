@@ -484,3 +484,69 @@ def test_exact_reason_strings_for_privacy_branches():
     d = decl()
     d.pop("privacy")
     assert reason(preflight(act(data_categories=["email"]), d)) == "data categories given but no privacy declaration"
+
+
+# ---- round 4: exact rate-window membership (float subtraction fail-open found by independent review) ----
+import itertools
+import math
+from fractions import Fraction
+
+
+def _oracle_in_window(at, window, entry_at):
+    """Independent exact oracle: left-open, right-closed window (at - window, at]."""
+    a, w, e = Fraction(at), Fraction(window), Fraction(entry_at)
+    return a - w < e <= a
+
+
+def _rate_verdict(at, window, entry_at):
+    d = decl()
+    d["rate_limits"] = {"acme": {"post": {"max": 1, "window_seconds": window}}}
+    d["recent_actions"] = [{"platform": "acme", "kind": "post", "at": entry_at, "count": 1}]
+    return preflight(act(at=at), d)["verdict"]
+
+
+def test_original_fail_open_fixture_is_denied():
+    # at - window = -9007199254740990.5 exactly; float subtraction rounds it to -...990 and drops the entry
+    assert _rate_verdict(0.5, 9007199254740991, -9007199254740990) == "deny"
+
+
+def test_exact_window_edges_with_floats():
+    at, w = 100.0, 10
+    assert _rate_verdict(at, w, 90) == "allow"                       # left edge excluded
+    assert _rate_verdict(at, w, math.nextafter(90.0, 200.0)) == "deny"   # just inside
+    assert _rate_verdict(at, w, math.nextafter(90.0, 0.0)) == "allow"    # just outside
+    assert _rate_verdict(at, w, 100) == "deny"                       # right edge included
+    assert _rate_verdict(at, w, math.nextafter(100.0, 200.0)) == "allow"  # future excluded
+    assert _rate_verdict(at, w, 101) == "allow"
+
+
+_BASE_VALUES = [0, 1, 0.5, 1.5, 2 ** 52, 2 ** 52 - 0.5, 2 ** 52 + 1, 2 ** 53 - 1, 2 ** 53,
+                float(2 ** 52), float(2 ** 53), float(2 ** 53 - 1)]
+_VALUES = sorted({v for b in _BASE_VALUES for v in (b, -b, ) if abs(v) <= 2 ** 53}, key=lambda x: (Fraction(x), type(x).__name__))
+_WINDOWS = [1, 2, 3, 2 ** 52, 2 ** 52 + 1, 2 ** 53 - 1, 2 ** 53]
+
+
+def test_rate_window_matches_exact_fraction_oracle_near_2_52_and_2_53():
+    checked = 0
+    for at, w in itertools.product(_VALUES, _WINDOWS):
+        edges = {Fraction(at), Fraction(at) - w}
+        cands = set(_VALUES)
+        for e in list(edges):
+            for delta in (-1, 0, 1):
+                v = e + delta
+                if abs(v) <= 2 ** 53:
+                    cands.add(int(v) if v.denominator == 1 else float(v))
+            cands.add(float(e))
+        for entry in cands:
+            if abs(entry) > 2 ** 53:
+                continue
+            want = "deny" if _oracle_in_window(at, w, entry) else "allow"
+            assert _rate_verdict(at, w, entry) == want, (at, w, entry)
+            checked += 1
+    assert checked > 2000
+
+
+def test_mixed_int_float_pairs_hit_both_verdicts():
+    seen = {_rate_verdict(at, 2 ** 53 - 1, e) for at in (0.5, -0.5, 2 ** 52, 2.0 ** 52)
+            for e in (-(2 ** 53) + 2, -(2 ** 53) + 1, 0, 2 ** 53)}
+    assert seen == {"allow", "deny"}
