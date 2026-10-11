@@ -13,7 +13,7 @@ was built for. It is a bounded mechanism.
 ## 2. Mutation evidence
 
 - Author campaign: 30 hand-written mutants, one at a time, raw log per mutant. Final run: 29 reported KILLED by the script, of which one (m20, cycle guard disabled) was ended by a timeout, plus 1 SURVIVED (m28). The script labels exit status only, so "29 killed" is not "29 assertion kills".
-- Independent re-run of that campaign, as reported to the author: 28 ordinary rejections (test failure), 1 TIMEOUT, 1 SURVIVOR.
+- Author campaign classification independently inspected: 28 ordinary rejections, 1 TIMEOUT, 1 SURVIVOR; m28 independently reconstructed and tested.
 - Independent fresh set of 20 AST mutants: 14 killed by an assertion, 4 killed by an error, 2 killed by timeout, 0 survived. The two timeouts: runner mutant 7 (line 47, cycle guard disabled, the layer loop never ends on an empty layer) and runner mutant 16 (line 51, `remaining` flipped, processed forever).
 - TIMEOUT IS ITS OWN FINDING CLASS. A mutant that makes the program loop forever is stopped by the harness clock, not by a test assertion. It shows the mutation is detectable as a hang, not that a test asserts the correct behavior. Timeouts are counted separately from assertion kills and error kills everywhere in this contract.
 - Test count: author 36 tests on Python 3.10.12; independent runs reported 36 and 37 passing, the latter on Python 3.12.14, with no core defect found.
