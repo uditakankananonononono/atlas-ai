@@ -68,3 +68,43 @@ def test_exact_weight_threshold_caps_and_output_boundary():
  p=payload();p['transfer_schema'][0]['weight']=1000.1
  with pytest.raises(LearningReasoningError):run(p=p)
  assert run()['boundary']=='Caller-declared weighted exact feature agreement rubric; near/far is threshold classification, not semantic distance. Independent target exact-key response scoring is separate, independence/truth not verified; no general transfer claim.'
+
+def test_schema_empty_and_65_fully_matching_core_refusal():
+ from app.modules.m20_general_cognitive_worker.near_far_transfer import compare
+ p=payload();p.update(transfer_schema=[],source_features={},target_features={})
+ with pytest.raises(ValueError,match='^transfer_schema requires bounded object list$'):compare('near_transfer',p)
+ p=payload();p['transfer_schema']=[{'feature_id':str(i),'weight':1,'source':'fixture'}for i in range(65)];p['source_features']={str(i):'same'for i in range(65)};p['target_features']=dict(p['source_features'])
+ with pytest.raises(ValueError,match='^transfer_schema requires bounded object list$'):compare('near_transfer',p)
+
+@pytest.mark.parametrize('field',['source_features','target_features'])
+def test_feature_dictionary_shapes_exact_cover_and_missing_core(field):
+ from app.modules.m20_general_cognitive_worker.near_far_transfer import compare
+ for value in [['operation','context'],{'operation':'add'},{'operation':'add','context':'shop','extra':'value'}]:
+  p=payload();p[field]=value
+  with pytest.raises(ValueError,match='^'+field+' must cover exactly declared feature schema$'):compare('near_transfer',p)
+
+@pytest.mark.parametrize('field',['source_features','target_features'])
+def test_nontext_schema_matching_feature_names_rejected(field):
+ from app.modules.m20_general_cognitive_worker.near_far_transfer import compare
+ p=payload();p['transfer_schema'][0]['feature_id']=5;p['source_features']={5:'add','context':'shop'};p['target_features']={5:'add','context':'lab'}
+ with pytest.raises(ValueError,match='^feature_id requires bounded nonempty string$'):compare('near_transfer',p)
+
+@pytest.mark.parametrize('field,label',[('task_id','task_id'),('source','answer key source')])
+def test_nontext_task_fields_core_errors(field,label):
+ from app.modules.m20_general_cognitive_worker.near_far_transfer import compare
+ p=payload();p['independent_target_task'][field]=[]
+ with pytest.raises(ValueError,match='^'+label+' requires bounded nonempty string$'):compare('near_transfer',p)
+
+def test_answer_key_exact_cap_and_response_shapes():
+ from app.modules.m20_general_cognitive_worker.near_far_transfer import compare
+ p=payload();p['independent_target_task']['accepted_answers']=[str(i)for i in range(64)];assert compare('near_transfer',p)['target_performance']['correct'] is True
+ p['independent_target_task']['accepted_answers'].append('64')
+ with pytest.raises(ValueError,match='^accepted_answers requires bounded text list$'):compare('near_transfer',p)
+ for value in [[],'response']:
+  p=payload();p['independent_target_response']=value
+  with pytest.raises(ValueError,match='^independent_target_response object required$'):compare('near_transfer',p)
+
+@pytest.mark.parametrize('answer,correct',[('4',True),('wrong',False)])
+def test_scored_status_and_evidence_for_both_outcomes(answer,correct):
+ p=payload();p['independent_target_response']['answer']=answer;r=run(p=p)
+ assert r['status']=='scored_target_performance' and r['transfer_evidence_recorded'] is True and r['target_performance']['correct'] is correct
