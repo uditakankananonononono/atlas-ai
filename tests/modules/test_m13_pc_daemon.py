@@ -126,6 +126,32 @@ async def test_submit_click_with_valid_token_runs(daemon):
 
 
 @pytest.mark.asyncio
+async def test_submit_click_refuses_tampered_values_digest(daemon):
+    # token signed over the real digest; wire carries a different one
+    token = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
+                                  selector="#go", values_digest="d" * 64)
+    args = {"session": "s", "selector": "#go", "approval_id": "a1",
+            "capture_sha256": "c" * 64, "values_digest": "e" * 64, "token": token}
+    answer = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args))
+    assert answer["ok"] is False
+    assert answer["blocked"] == BlockKind.POLICY.value
+    assert daemon.browser._page.clicked == []
+
+
+@pytest.mark.asyncio
+async def test_submit_click_refuses_missing_values_digest(daemon):
+    # token signed over a nonempty digest; wire omits the digest entirely
+    token = protocol.submit_token("topsecret", approval_id="a1", capture_sha256="c" * 64,
+                                  selector="#go", values_digest="d" * 64)
+    args = {"session": "s", "selector": "#go", "approval_id": "a1",
+            "capture_sha256": "c" * 64, "token": token}
+    answer = await daemon.execute(_command(CommandKind.CLICK_SUBMIT, args))
+    assert answer["ok"] is False
+    assert answer["blocked"] == BlockKind.POLICY.value
+    assert daemon.browser._page.clicked == []
+
+
+@pytest.mark.asyncio
 async def test_navigate_reports_platform_block(daemon):
     class LoginWallBrowser(FakeBrowser):
         async def page(self, name):

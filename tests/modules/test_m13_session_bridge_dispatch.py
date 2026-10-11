@@ -117,6 +117,14 @@ async def test_click_defaults_to_nav_and_armed_click_becomes_submit(env):
     assert protocol.verify_submit_token(
         device["command_secret"], approval_id="a1", capture_sha256="c" * 64,
         selector="#go", values_digest=values_digest(values), token=command["args"]["token"])
+    # the daemon sees only the wire args: the digest the server signed must be
+    # present and the token must verify against the wire values exactly
+    wire = command["args"]
+    assert wire["values_digest"] == values_digest(values)
+    assert protocol.verify_submit_token(
+        device["command_secret"], approval_id=wire["approval_id"],
+        capture_sha256=wire["capture_sha256"], selector=wire["selector"],
+        values_digest=wire["values_digest"], token=wire["token"])
 
     # The armed token is one-shot: the next click is a nav click again.
     await page.locator("#go").click()

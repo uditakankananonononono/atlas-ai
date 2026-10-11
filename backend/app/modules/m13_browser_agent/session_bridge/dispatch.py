@@ -278,11 +278,13 @@ class BridgedSessions:
         device = self.registry.get_device(device_id)
         if device is None or device.tenant_id != tenant_id:
             raise DeviceOffline("no paired device for this session")
+        digest = values_digest(values)
         token = protocol.submit_token(device.command_secret, approval_id=approval_id,
                                       capture_sha256=capture_sha256, selector=selector,
-                                      values_digest=values_digest(values))
+                                      values_digest=digest)
         self._armed[(tenant_id, session_id)] = {
-            "approval_id": approval_id, "capture_sha256": capture_sha256, "token": token}
+            "approval_id": approval_id, "capture_sha256": capture_sha256,
+            "values_digest": digest, "token": token}
 
     def _click_class(self, tenant_id: str, device_id: str, local_name: str,
                      selector: str) -> tuple[CommandKind, dict[str, str]]:
