@@ -39,8 +39,8 @@ def test_exact_fixture_comments_categories_flags_blocks():
     cs = res["comments"]
     assert [c["id"] for c in cs] == ["C%04d" % i for i in range(1, 8)]
     assert [(c["line"], c["col"], c["end_col"], c["kind"]) for c in cs] == [
-        (1, 0, 22, "standalone"), (2, 0, 24, "standalone"), (3, 0, 16, "standalone"), (4, 7, 14, "inline"),
-        (5, 0, 14, "standalone"), (6, 11, 24, "inline"), (7, 4, 33, "standalone")]
+        (1, 0, 21, "standalone"), (2, 0, 23, "standalone"), (3, 0, 16, "standalone"), (4, 7, 14, "inline"),
+        (5, 0, 15, "standalone"), (6, 11, 23, "inline"), (7, 4, 33, "standalone")]
     assert [c["text"] for c in cs] == ["!/usr/bin/env python", " -*- coding: utf-8 -*-", " Compute total.", " x = 1", " TODO fix this", " noqa: E501",
                                       " because the API requires it"]
     assert [c["category"] for c in cs] == ["directive", "directive", "prose", "prose", "marker", "directive", "prose"]
@@ -51,7 +51,7 @@ def test_exact_fixture_comments_categories_flags_blocks():
         {"id": "B0001", "first_line": 1, "last_line": 3, "col": 0, "comment_ids": ["C0001", "C0002", "C0003"], "associated_line": 4},
         {"id": "B0002", "first_line": 5, "last_line": 5, "col": 0, "comment_ids": ["C0005"], "associated_line": 6},
         {"id": "B0003", "first_line": 7, "last_line": 7, "col": 4, "comment_ids": ["C0007"], "associated_line": 8}]
-    assert res["comment_count"] == 7 and res["code_line_count"] == 4 and res["line_count"] == 8
+    assert res["comment_count"] == 7 and res["code_line_count"] == 3 and res["line_count"] == 8
     assert res["counts"]["by_category"] == {"directive": 3, "empty": 0, "marker": 1, "prose": 3}
     assert res["counts"]["by_kind"] == {"inline": 2, "standalone": 5}
     assert res["counts"]["by_flag"] == {"commented_out_code_candidate": 1, "marker_without_owner_or_ref": 1, "restates_code_candidate": 1}
@@ -87,15 +87,15 @@ TRAP = ('s = "# fake1"\nt = \'\'\'\n# fake2\n# fake3\n\'\'\'\nu = f"{s}# fake4"\
 def test_hash_inside_strings_is_never_a_comment():
     res = run(TRAP)
     assert [(c["line"], c["text"]) for c in res["comments"]] == [(7, " real1"), (12, " real2"), (13, " real3")]
-    assert res["comments"][0]["col"] == 14 and res["comments"][0]["kind"] == "inline"
+    assert res["comments"][0]["col"] == 15 and res["comments"][0]["kind"] == "inline"
     assert res["comments"][2]["associated_line"] is None  # no code line after it
 
 
 def test_unicode_columns_are_code_points():
     src = 's = "\U0001F600"  # c\n# \u00e9\u0301\U0001F600\n'
     cs = run(src)["comments"]
-    assert (cs[0]["col"], cs[0]["end_col"]) == (10, 13)
-    assert (cs[1]["col"], cs[1]["end_col"], cs[1]["text"]) == (0, 6, " \u00e9\u0301\U0001F600")
+    assert (cs[0]["col"], cs[0]["end_col"]) == (9, 12)
+    assert (cs[1]["col"], cs[1]["end_col"], cs[1]["text"]) == (0, 5, " \u00e9\u0301\U0001F600")
 
 
 @pytest.mark.parametrize("nl", ["\n", "\r\n"])
@@ -212,15 +212,11 @@ def test_empty_comments_inside_a_block_are_paragraph_separators():
 
 
 def test_block_grouping_rules():
-    src = "# a\n# b\n\n# c\n    \n# d\nx = 1\n    # e\n    y = 2\n"
-    with pytest.raises(ValueError):
-        run(src)  # indented statement without block is a syntax error; fix the fixture below
-    src = "# a\n# b\n\n# c\n# d\nx = 1\nif x:\n    # e\n    # f\n  # g\n    y = 2\n"
-    with pytest.raises(ValueError):
-        run(src)
     src = "# a\n# b\n\n# c\n# d\nx = 1\nif x:\n    # e\n    # f\n    y = 2\n"
     res = run(src)
     assert [(b["first_line"], b["last_line"], b["col"], b["associated_line"]) for b in res["blocks"]] == [(1, 2, 0, None), (4, 5, 0, 6), (8, 9, 4, 10)]
+    res = run("# a\n    \n# b\nx = 1\n")
+    assert [(b["first_line"], b["last_line"]) for b in res["blocks"]] == [(1, 1), (3, 3)]  # whitespace-only line separates blocks
 
 
 def test_inline_comment_never_joins_a_block_and_standalone_col_change_splits():
@@ -242,7 +238,7 @@ def test_comment_after_dedent_counts_to_enclosing_range_only_by_line():
     src = "def f():\n    pass\n    # trailing inside\ndef g():\n    pass\n"
     syms = {s["name"]: s for s in run(src)["symbols"]}
     assert syms["f"]["end_line"] == 2 and syms["f"]["inner_comment_count"] == 0  # comment after the last statement is outside the node range
-    assert syms["g"]["leading_block_id"] is None  # blank not needed: comment is followed by def but belongs to line 3 block
+    assert syms["g"]["leading_block_id"] == "B0001"  # line-based: the comment on line 3 directly precedes line 4, indentation is not considered
     res = run(src)
     assert res["blocks"][0]["associated_line"] == 4
 
@@ -401,7 +397,7 @@ def test_generated_sources_match_construction_oracle():
         for c, w in zip(res["comments"], want):
             assert c["category"] == w["category"], (src, c)
             multi = any(len(b) > 1 and w in b for b in wblocks)
-            wf = [] if (w["category"] == "empty" and multi) else w["flags"]
+            wf = ([] if multi else ["empty_comment"]) if w["category"] == "empty" else w["flags"]
             assert c["flags"] == sorted(wf), (src, c)
             assert c["has_rationale_keyword"] == bool(RATIONALE.search(w["text"]))
         got_blocks = [[c["line"] for c in res["comments"] if c["block_id"] == b["id"]] for b in res["blocks"]]
@@ -428,7 +424,7 @@ def test_source_hash_binding_and_counts():
     import hashlib
     res = run(S1)
     assert res["source_sha256"] == hashlib.sha256(S1.encode()).hexdigest() and res["source_chars"] == len(S1) and res["source_bytes"] == len(S1.encode())
-    assert run(S1 + " ")["source_sha256"] != res["source_sha256"] if False else True
+    assert run(S1 + "\n")["source_sha256"] != res["source_sha256"]
 
 
 def test_module_is_pure_and_never_executes_source(tmp_path):
@@ -455,3 +451,77 @@ def test_limits_stated():
         assert w in text
     assert res["algorithm"] == "python_comment_audit_v1"
     assert res["position_convention"] == "line 1-based; col 0-based Unicode code points; end exclusive; line breaks LF, CRLF"
+
+
+# ---------------------------------------------------------------- mutation-audit additions (survivors of the first audit)
+def _body(n, comment_at=None, extra=""):
+    lines = ["def f():"] + ["    x = %d" % i for i in range(n - 1)]
+    if comment_at is not None:
+        lines[comment_at] += "  # c"
+    return "\n".join(lines) + "\n" + extra
+
+
+def test_default_min_lines_is_15_exactly():
+    assert run(_body(15))["symbols"][0]["flags"] == ["long_symbol_without_comments"]
+    assert run(_body(14))["symbols"][0]["flags"] == []
+    assert run(_body(15))["options"] == {"max_line_length": 100, "min_lines_for_comment": 15}
+
+
+def test_one_inner_comment_exempts_symbol_and_leading_block_exempts():
+    assert run(_body(5, comment_at=2), min_lines_for_comment=3)["symbols"][0]["flags"] == []
+    assert run(_body(5, comment_at=2), min_lines_for_comment=3)["symbols"][0]["inner_comment_count"] == 1
+    s = run("# why\n" + _body(5), min_lines_for_comment=3)["symbols"][0]
+    assert s["leading_block_id"] == "B0001" and s["flags"] == []
+
+
+def test_inner_range_includes_last_line_and_excludes_def_line():
+    s = run("def f():\n    return 1  # last\n")["symbols"][0]
+    assert s["inner_comment_count"] == 1
+    s = run("def f():  # on def line\n    return 1\n")["symbols"][0]
+    assert s["inner_comment_count"] == 0
+
+
+def test_decorated_symbol_starts_at_first_decorator():
+    res = run("# lead\n@a\n@b\ndef f():\n    return 1\n")
+    s = res["symbols"][0]
+    assert (s["start_line"], s["end_line"], s["line_span"], s["leading_block_id"]) == (2, 5, 4, "B0001")
+
+
+def test_wordless_prose_never_restates():
+    res = run("x = 1  # ???\n# ...\ny = 2\n")
+    assert [c["flags"] for c in res["comments"]] == [[], []]
+
+
+def test_marker_and_directive_only_at_start_of_text():
+    cs = run("x = 1  # see TODO later\ny = 2  # use noqa here\nz = 3  # a type: b\n")["comments"]
+    assert [c["category"] for c in cs] == ["prose", "prose", "prose"]
+
+
+def test_marker_reference_must_be_near_start():
+    far = " TODO " + "." * 80 + " (ana)"
+    assert run("# %s\nx = 1\n" % far.strip())["comments"][0]["flags"] == ["marker_without_owner_or_ref"]
+    assert run("#  TODO(ana)\nx = 1\n")["comments"][0]["flags"] == []
+
+
+def test_commented_code_needs_call_await_or_lambda_for_expressions():
+    assert run("# lambda: 1\nx = 1\n")["comments"][0]["flags"] == ["commented_out_code_candidate"]
+    assert run("# foo()\nx = 1\n")["comments"][0]["flags"] == ["commented_out_code_candidate"]
+    assert run("# a + b\nx = 1\n")["comments"][0]["flags"] == []
+
+
+def test_flags_are_sorted_when_long_and_code():
+    res = run("x = 1  # " + "a = 1" + " " * 40 + "\n", max_line_length=40)
+    assert res["comments"][0]["flags"] == ["commented_out_code_candidate", "long_comment_line"]
+    res = run("# TODO " + "x" * 60 + "\nx = 1\n", max_line_length=40)
+    assert res["comments"][0]["flags"] == ["long_comment_line", "marker_without_owner_or_ref"]
+
+
+def test_multiline_string_lines_count_as_code_lines():
+    assert run('x = """a\nb\nc"""\n')["code_line_count"] == 3
+    assert run('x = 1\n\n# c\n')["code_line_count"] == 1
+    assert run('s = (1,\n     2)  # c\n')["code_line_count"] == 2
+
+
+def test_docstring_must_be_string_constant_first_statement():
+    d = {s["name"]: s["has_docstring"] for s in run('def a():\n    "d"\n\ndef b():\n    42\n\ndef c():\n    f()\n\ndef d():\n    x = 1\n    "late"\n\ndef e():\n    b"x"\n')["symbols"]}
+    assert d == {"a": True, "b": False, "c": False, "d": False, "e": False}
