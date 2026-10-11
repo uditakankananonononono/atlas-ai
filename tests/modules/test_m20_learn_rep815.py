@@ -207,3 +207,45 @@ def test_one_invalid_among_multiple_valid_reports_not_all_guard():
  r=execute('dual_coding',p)['result']['representation_pack'];assert r['valid'] is False and [m['valid']for m in r['mapping_reports']]==[False,True]
  p=pack();p['example_items'].append({**p['example_items'][0],'example_id':'bad','features':{'sides':'four','closed':'yes','color':'red'}})
  r=execute('concrete_examples',p)['result']['example_pack'];assert r['valid'] is False and r['concept_reports'][0]['coverage_complete'] is True and r['example_reports'][2]['valid'] is False
+
+def test_empty_dual_concepts_refuses_not_vacuous_validation():
+ from app.modules.m20_general_cognitive_worker.representation_practice import dual_pack
+ p=pack();p.update(concepts=[],verbal_propositions=[],visual_elements=[],representation_mappings=[])
+ with pytest.raises(ValueError,match='concepts requires1..64 records'):dual_pack(p)
+
+@pytest.mark.parametrize('field,key,value,message',[('concepts','concept_id',[], 'concept_id requires bounded nonempty string'),('verbal_propositions','id',[], 'representation id requires bounded nonempty string'),('visual_elements','id',1, 'representation id requires bounded nonempty string'),('representation_mappings','verbal_id',[], 'verbal_id requires bounded nonempty string'),('representation_mappings','visual_id',[], 'visual_id requires bounded nonempty string')])
+def test_unhashable_nontext_ids_refuse_valueerror(field,key,value,message):
+ from app.modules.m20_general_cognitive_worker.representation_practice import dual_pack
+ p=pack();p[field][0][key]=value
+ with pytest.raises(ValueError,match=message):dual_pack(p)
+
+def test_reference_errors_are_valueerror_not_keyerror():
+ from app.modules.m20_general_cognitive_worker.representation_practice import dual_pack,example_pack
+ for field in ['verbal_propositions','visual_elements']:
+  p=pack();p[field][0]['concept_id']='unknown'
+  with pytest.raises(ValueError,match='unique representation IDs and known concepts required'):dual_pack(p)
+ p=pack();p['representation_mappings'][0]['concept_id']='unknown'
+ with pytest.raises(ValueError,match='known representation/concept references required'):dual_pack(p)
+ p=pack();p['example_items'][0]['concept_id']='unknown'
+ with pytest.raises(ValueError,match='unique example IDs and known concepts required'):example_pack(p)
+ p=pack();p['example_items'][0]['variant_features']=[[]]
+ with pytest.raises(ValueError,match='variant feature requires bounded nonempty string'):example_pack(p)
+
+def test_noninvariant_disagreement_and_each_invariant_direction():
+ p=pack();p['verbal_propositions'][0]['features']['color']='red';p['visual_elements'][0]['features']['color']='blue'
+ r=execute('dual_coding',p)['result']['representation_pack'];assert r['mapping_reports'][0]['conflicting_features']==['color'] and r['mapping_reports'][0]['valid'] is False and r['valid'] is False
+ # Set both representation values equal but contrary to the definition. Removing
+ # either invariant-v check is exercised separately by omitting that key in the
+ # other representation, so shared-pair disagreements cannot mask the validator.
+ for bad,other in [('verbal_propositions','visual_elements'),('visual_elements','verbal_propositions')]:
+  p=pack();p[bad][0]['features']['sides']='four';p[other][0]['features'].pop('sides')
+  r=execute('dual_coding',p)['result']['representation_pack']
+  assert r['mapping_reports'][0]['conflicting_features']==['sides'] and r['mapping_reports'][0]['valid'] is False
+ p=pack();p['visual_elements'][0]['features'].pop('closed')
+ r=execute('dual_coding',p)['result']['representation_pack'];assert r['mapping_reports'][0]['missing_visual_invariants']==['closed'] and r['mapping_reports'][0]['valid'] is False
+
+def test_unmapped_visual_top_status_and_invalid_counterexample_coverage():
+ p=pack();p['visual_elements'].append({**p['visual_elements'][0],'id':'unmapped'})
+ r=execute('dual_coding',p)['result']['representation_pack'];assert r['unmapped_visual_ids']==['unmapped'] and r['valid'] is False and r['status']=='gaps_or_conflicts'
+ p=pack();p['example_items'][1]['features']['sides']='three'
+ r=execute('concrete_examples',p)['result']['example_pack'];assert r['example_reports'][1]['valid'] is False and r['concept_reports'][0]['valid_counterexample_ids']==[] and r['concept_reports'][0]['coverage_complete'] is False
