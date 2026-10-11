@@ -1,0 +1,376 @@
+"""Unit 14 University-fit filter over a USER-SUPPLIED table (stdlib only).
+
+The module is loaded by file path so the package __init__ (and third-party
+imports) are not needed. It never fetches data and never claims admission odds.
+"""
+import copy
+import importlib.util
+import itertools
+import json
+import pathlib
+import sys
+from datetime import datetime, timedelta, timezone
+
+import pytest
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+MOD_DIR = ROOT / "backend/app/modules/m23_study_abroad"
+MOD_PATH = MOD_DIR / "university_fit.py"
+SCHEMA_PATH = MOD_DIR / "university_fit_schema.json"
+
+
+def _load(path=MOD_PATH, name="university_fit"):
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+uf = _load()
+NOW = datetime(2026, 10, 11, 12, 0, 0, tzinfo=timezone.utc)
+URL = "https://example.edu/aid"
+
+
+def row(name="Alpha U", country="US", **over):
+    r = {"university": name, "country": country, "source_url": URL,
+         "checked_at": "2026-10-01T00:00:00+00:00", "intl_ug_aid": "full",
+         "additional_written_test": "no", "sat": "optional", "ielts_accepted": "yes"}
+    r.update(over)
+    return r
+
+
+PROFILE = {"has_sat": True}
+
+
+def ev(rows, profile=None, now=NOW, **kw):
+    return uf.evaluate(rows, PROFILE if profile is None else profile, now, **kw)
+
+
+def only(res):
+    assert len(res["rows"]) == 1
+    return res["rows"][0]
+
+
+# ---------------- basic verdicts ----------------
+def test_fits_when_all_criteria_met_and_fresh():
+    r = only(ev([row()]))
+    assert r["verdict"] == "fits" and r["reasons"] == []
+    assert r["source_url"] == URL and r["checked_at"] == "2026-10-01T00:00:00+00:00"
+    assert r["age_days"] == pytest.approx(10.5)
+
+
+@pytest.mark.parametrize("over,reason", [
+    ({"intl_ug_aid": "partial"}, "aid_not_full"),
+    ({"intl_ug_aid": "none"}, "aid_not_full"),
+    ({"additional_written_test": "yes"}, "additional_written_test_required"),
+    ({"sat": "required"}, None),  # profile has SAT here: fits
+    ({"ielts_accepted": "no"}, "ielts_not_accepted"),
+])
+def test_single_criterion_failures(over, reason):
+    r = only(ev([row(**over)], {"has_sat": True, "ielts": "yes"}))
+    if reason is None:
+        assert r["verdict"] == "fits"
+    else:
+        assert r["verdict"] == "does_not_fit" and r["reasons"] == [reason]
+
+
+def test_sat_required_without_profile_sat():
+    r = only(ev([row(sat="required")], {"has_sat": False}))
+    assert r["verdict"] == "does_not_fit" and r["reasons"] == ["sat_required_profile_has_none"]
+    assert only(ev([row(sat="optional")], {"has_sat": False}))["verdict"] == "fits"
+    assert only(ev([row(sat="not_considered")], {"has_sat": False}))["verdict"] == "fits"
+
+
+def test_reason_order_is_fixed():
+    r = only(ev([row(intl_ug_aid="none", additional_written_test="yes", sat="required", ielts_accepted="no")],
+                {"has_sat": False, "ielts": "yes"}))
+    assert r["reasons"] == ["aid_not_full", "additional_written_test_required",
+                            "sat_required_profile_has_none", "ielts_not_accepted"]
+
+
+def test_profile_flags_can_disable_criteria():
+    rr = row(intl_ug_aid="partial", additional_written_test="yes")
+    assert only(ev([rr], {"has_sat": True, "require_full_aid": False, "forbid_additional_written_test": False}))["verdict"] == "fits"
+    assert only(ev([rr], {"has_sat": True, "require_full_aid": False}))["reasons"] == ["additional_written_test_required"]
+    assert only(ev([rr], {"has_sat": True, "forbid_additional_written_test": False}))["reasons"] == ["aid_not_full"]
+
+
+def test_ielts_profile_values():
+    no_ielts = row(ielts_accepted="no")
+    assert only(ev([no_ielts], {"has_sat": True, "ielts": "no"}))["verdict"] == "fits"
+    assert only(ev([no_ielts], {"has_sat": True, "ielts": "maybe"}))["reasons"] == ["ielts_not_accepted"]
+    assert only(ev([no_ielts], {"has_sat": True}))["reasons"] == ["ielts_not_accepted"]  # default maybe
+    assert only(ev([no_ielts], {"has_sat": True, "ielts": "yes"}))["reasons"] == ["ielts_not_accepted"]
+
+
+def oracle(aid, written, sat, ielts_acc, has_sat, ielts):
+    reasons = []
+    if aid != "full": reasons.append("aid_not_full")
+    if written == "yes": reasons.append("additional_written_test_required")
+    if sat == "required" and not has_sat: reasons.append("sat_required_profile_has_none")
+    if ielts_acc == "no" and ielts != "no": reasons.append("ielts_not_accepted")
+    return ("fits" if not reasons else "does_not_fit"), reasons
+
+
+def test_exhaustive_oracle_all_216_combinations():
+    n = 0
+    for aid, written, sat, acc, has_sat, ielts in itertools.product(
+            ["full", "partial", "none"], ["yes", "no"], ["required", "optional", "not_considered"],
+            ["yes", "no"], [True, False], ["yes", "no", "maybe"]):
+        r = only(ev([row(intl_ug_aid=aid, additional_written_test=written, sat=sat, ielts_accepted=acc)],
+                    {"has_sat": has_sat, "ielts": ielts}))
+        assert (r["verdict"], r["reasons"]) == oracle(aid, written, sat, acc, has_sat, ielts)
+        n += 1
+    assert n == 216
+
+
+# ---------------- freshness and source (per row) ----------------
+def test_age_boundary_exact_days():
+    exactly = (NOW - timedelta(days=180)).isoformat()
+    over = (NOW - timedelta(days=180, seconds=1)).isoformat()
+    assert only(ev([row(checked_at=exactly)]))["verdict"] == "fits"
+    r = only(ev([row(checked_at=over)]))
+    assert r["verdict"] == "unverified" and r["reasons"] == ["stale"]
+    assert only(ev([row(checked_at=over)], max_age_days=181))["verdict"] == "fits"
+
+
+def test_future_and_exact_now():
+    assert only(ev([row(checked_at=NOW.isoformat())]))["verdict"] == "fits"
+    r = only(ev([row(checked_at=(NOW + timedelta(seconds=1)).isoformat())]))
+    assert r["verdict"] == "unverified" and r["reasons"] == ["checked_at_future"]
+
+
+@pytest.mark.parametrize("val,reason", [
+    (None, "checked_at_missing"), ("", "checked_at_missing"), ("   ", "checked_at_missing"),
+    ("2026-10-01T00:00:00", "checked_at_naive"), ("2026-10-01", "checked_at_naive"),
+    ("last week", "checked_at_invalid"), (20261001, "checked_at_invalid"), ("2026-13-01T00:00:00Z", "checked_at_invalid"),
+    ("2026-10-01T00:00:00Z" + "x" * 60, "checked_at_invalid"),
+])
+def test_bad_dates_are_unverified_never_fit(val, reason):
+    r = only(ev([row(checked_at=val)]))
+    assert r["verdict"] == "unverified" and r["reasons"] == [reason]
+
+
+def test_z_suffix_and_offsets_accepted_and_normalised():
+    r = only(ev([row(checked_at="2026-10-01T05:30:00+05:30")]))
+    assert r["verdict"] == "fits" and r["checked_at"] == "2026-10-01T00:00:00+00:00"
+    assert only(ev([row(checked_at="2026-10-01T00:00:00Z")]))["verdict"] == "fits"
+
+
+@pytest.mark.parametrize("val,reason", [
+    (None, "source_url_missing"), ("", "source_url_missing"),
+    ("http://example.edu/aid", "source_url_invalid"), ("https://", "source_url_invalid"),
+    ("example.edu/aid", "source_url_invalid"), ("https://u:p@example.edu/", "source_url_invalid"),
+    ("https://exa mple.edu/", "source_url_invalid"), ("https://example.edu/" + "a" * 2100, "source_url_invalid"),
+    (5, "source_url_invalid"),
+])
+def test_bad_sources_are_unverified(val, reason):
+    r = only(ev([row(source_url=val)]))
+    assert r["verdict"] == "unverified" and r["reasons"] == [reason]
+
+
+def test_unverified_beats_criteria_failure_and_lists_all_problems():
+    r = only(ev([row(source_url=None, checked_at=None, intl_ug_aid="none")]))
+    assert r["verdict"] == "unverified"
+    assert r["reasons"] == ["source_url_missing", "checked_at_missing"]
+
+
+def test_missing_and_invalid_fields_are_unverified():
+    bad = row(); del bad["sat"]
+    assert only(ev([bad])) ["reasons"] == ["missing_field:sat"]
+    assert only(ev([row(intl_ug_aid="maybe")]))["reasons"] == ["invalid_value:intl_ug_aid"]
+    assert only(ev([row(additional_written_test=True)]))["reasons"] == ["invalid_value:additional_written_test"]
+    assert only(ev([row(ielts_accepted="YES")]))["reasons"] == ["invalid_value:ielts_accepted"]
+    assert only(ev([row(sat="maybe")]))["reasons"] == ["invalid_value:sat"]
+
+
+@pytest.mark.parametrize("field", ["acceptance_probability", "rank", "score", "essay", "user_id"])
+def test_unsupported_row_fields_unverified(field):
+    r = only(ev([row(**{field: 1})]))
+    assert r["verdict"] == "unverified" and r["reasons"] == [f"unsupported_field:{field}"]
+
+
+# ---------------- batch-level errors (exact) ----------------
+def test_batch_errors_exact():
+    with pytest.raises(ValueError, match=r"^rows must be a list$"):
+        ev("abc")
+    with pytest.raises(ValueError, match=r"^row 1 must be an object$"):
+        ev([row(), 5])
+    with pytest.raises(ValueError, match=r"^row 0 needs a non-empty university and country$"):
+        ev([row(name="")])
+    with pytest.raises(ValueError, match=r"^row 0 needs a non-empty university and country$"):
+        ev([row(country=None)])
+    with pytest.raises(ValueError, match=r"^duplicate row Alpha U \(US\)$"):
+        ev([row(), row()])
+    with pytest.raises(ValueError, match=r"^now must be a timezone-aware datetime$"):
+        ev([row()], now=datetime(2026, 10, 11))
+    with pytest.raises(ValueError, match=r"^now must be a timezone-aware datetime$"):
+        ev([row()], now="2026-10-11")
+    for bad in (0, -1, 3651, 1.5, True, "9"):
+        with pytest.raises(ValueError, match=r"^max_age_days must be an integer from 1 to 3650$"):
+            ev([row()], max_age_days=bad)
+    assert only(ev([row()], max_age_days=3650))["verdict"] == "fits"
+    assert only(ev([row()], max_age_days=1))["reasons"] == ["stale"]
+
+
+def test_profile_errors_exact():
+    with pytest.raises(ValueError, match=r"^profile must be an object$"):
+        uf.evaluate([row()], None, NOW)
+    with pytest.raises(ValueError, match=r"^profile needs has_sat$"):
+        uf.evaluate([row()], {}, NOW)
+    for k in ("has_sat", "require_full_aid", "forbid_additional_written_test"):
+        p = {"has_sat": True}; p[k] = "yes"
+        with pytest.raises(ValueError, match=rf"^profile.{k} must be true or false$"):
+            uf.evaluate([row()], p, NOW)
+    with pytest.raises(ValueError, match=r"^profile.ielts must be one of yes, no, maybe$"):
+        uf.evaluate([row()], {"has_sat": True, "ielts": "sometimes"}, NOW)
+    for key in ("gpa", "marks", "cbse", "income", "nationality"):
+        with pytest.raises(ValueError, match=rf"^profile has unsupported field {key}$"):
+            uf.evaluate([row()], {"has_sat": True, key: 1}, NOW)
+
+
+def test_row_bounds_exact_N_and_N_plus_1():
+    assert uf.MAX_ROWS == 2000
+    ok = [row(name=f"U{i:04d}") for i in range(2000)]
+    res = ev(ok)
+    assert res["counts"]["rows"] == 2000
+    with pytest.raises(ValueError, match=r"^at most 2000 rows are allowed, got 2001$"):
+        ev(ok + [row(name="extra")])
+    assert ev([])["rows"] == [] and ev([])["counts"]["rows"] == 0
+
+
+# ---------------- determinism, immutability, output contract ----------------
+def test_unsorted_input_determinism_all_permutations():
+    base = [row(name="C U"), row(name="A U", intl_ug_aid="none"), row(name="B U", source_url=None), row(name="A U", country="CA")]
+    ref = ev(base)
+    for perm in itertools.permutations(base):
+        assert ev(list(perm)) == ref
+    assert [(r["university"], r["country"]) for r in ref["rows"]] == [("A U", "CA"), ("A U", "US"), ("B U", "US"), ("C U", "US")]
+
+
+def test_counts_and_limits_and_gaps_declared():
+    res = ev([row(name="A"), row(name="B", intl_ug_aid="none"), row(name="C", source_url=None)])
+    assert res["counts"] == {"rows": 3, "fits": 1, "does_not_fit": 1, "unverified": 1}
+    assert "supplied" in res["method_limits"] and "no admission" in res["method_limits"]
+    assert res["data_provenance"] == "caller-supplied table; not verified by this module"
+
+
+def test_input_not_mutated():
+    rows = [row(name="B"), row(name="A", intl_ug_aid="none")]; p = {"has_sat": True}
+    r0, p0 = copy.deepcopy(rows), copy.deepcopy(p)
+    ev(rows, p)
+    assert rows == r0 and p == p0
+
+
+def test_whitespace_in_names_normalised_for_duplicates():
+    with pytest.raises(ValueError, match=r"^duplicate row Alpha U \(US\)$"):
+        ev([row(name="Alpha U"), row(name="  Alpha U ", country=" US")])
+
+
+def test_no_network_or_third_party_imports():
+    text = MOD_PATH.read_text()
+    for banned in ("import requests", "import httpx", "urllib.request", "socket", "subprocess", "open(", "import app", "fastapi"):
+        assert banned not in text.replace("SCHEMA_PATH.read_text", "")
+
+
+# ---------------- schema file ----------------
+def test_schema_file_is_valid_json_and_drives_enums():
+    s = json.loads(SCHEMA_PATH.read_text())
+    assert s["schema_version"] == 1
+    assert s["row"]["enums"] == {"intl_ug_aid": ["full", "partial", "none"], "additional_written_test": ["yes", "no"],
+                                 "sat": ["required", "optional", "not_considered"], "ielts_accepted": ["yes", "no"]}
+    assert s["profile"]["enums"] == {"ielts": ["yes", "no", "maybe"]}
+    assert s["limits"] == {"max_rows": 2000, "default_max_age_days": 180, "max_age_days_ceiling": 3650}
+    assert uf.MAX_ROWS == 2000 and uf.DEFAULT_MAX_AGE_DAYS == 180 and uf.MAX_AGE_DAYS_CEILING == 3650
+
+
+def test_schema_enum_change_changes_behaviour(tmp_path):
+    d = tmp_path / "m"; d.mkdir()
+    s = json.loads(SCHEMA_PATH.read_text()); s["row"]["enums"]["sat"].append("sometimes")
+    (d / "university_fit_schema.json").write_text(json.dumps(s))
+    (d / "university_fit.py").write_text(MOD_PATH.read_text())
+    m2 = _load(d / "university_fit.py", "university_fit_alt")
+    assert m2.evaluate([row(sat="sometimes")], PROFILE, NOW)["rows"][0]["verdict"] == "fits"
+    assert uf.evaluate([row(sat="sometimes")], PROFILE, NOW)["rows"][0]["reasons"] == ["invalid_value:sat"]
+
+
+# ---------------- independent mutants ----------------
+def _mutant(name, old, new):
+    src = MOD_PATH.read_text()
+    assert old in src, f"mutant {name}: anchor missing"
+    d = pathlib.Path(__import__("tempfile").mkdtemp())
+    (d / "university_fit_schema.json").write_text(SCHEMA_PATH.read_text())
+    (d / "university_fit.py").write_text(src.replace(old, new, 1))
+    return _load(d / "university_fit.py", f"uf_mut_{name}")
+
+
+def _killed(m):
+    def e(rows, profile=None, now=NOW, **kw):
+        return m.evaluate(rows, PROFILE if profile is None else profile, now, **kw)
+    try:
+        # oracle sweep
+        for aid, written, sat, acc, has_sat, ielts in itertools.product(
+                ["full", "partial", "none"], ["yes", "no"], ["required", "optional", "not_considered"],
+                ["yes", "no"], [True, False], ["yes", "no", "maybe"]):
+            r = e([row(intl_ug_aid=aid, additional_written_test=written, sat=sat, ielts_accepted=acc)], {"has_sat": has_sat, "ielts": ielts})["rows"][0]
+            if (r["verdict"], r["reasons"]) != oracle(aid, written, sat, acc, has_sat, ielts):
+                return True
+        exactly = (NOW - timedelta(days=180)).isoformat()
+        if e([row(checked_at=exactly)])["rows"][0]["verdict"] != "fits": return True
+        if e([row(checked_at=(NOW - timedelta(days=180, seconds=1)).isoformat())])["rows"][0]["reasons"] != ["stale"]: return True
+        if e([row(checked_at=NOW.isoformat())])["rows"][0]["verdict"] != "fits": return True
+        if e([row(checked_at=(NOW + timedelta(seconds=1)).isoformat())])["rows"][0]["reasons"] != ["checked_at_future"]: return True
+        if e([row(checked_at="2026-10-01T00:00:00")])["rows"][0]["reasons"] != ["checked_at_naive"]: return True
+        if e([row(source_url="http://example.edu/")])["rows"][0]["reasons"] != ["source_url_invalid"]: return True
+        if e([row(source_url="https://u:p@example.edu/")])["rows"][0]["reasons"] != ["source_url_invalid"]: return True
+        if e([row(source_url=None, checked_at=None, intl_ug_aid="none")])["rows"][0]["verdict"] != "unverified": return True
+        if e([row(rank=1)])["rows"][0]["reasons"] != ["unsupported_field:rank"]: return True
+        if e([row(name="B"), row(name="A")])["rows"][0]["university"] != "A": return True
+        for bad in (lambda: e([row(name=f"U{i}") for i in range(2001)]),
+                    lambda: e([row(), row()]),
+                    lambda: e([row()], max_age_days=3651),
+                    lambda: e([row()], now=datetime(2026, 10, 11)),
+                    lambda: e([row()], {"has_sat": True, "gpa": 3}),
+                    lambda: e([row()], {"has_sat": "yes"})):
+            try:
+                bad()
+            except ValueError:
+                continue
+            return True
+        if len(e([row(name=f"U{i}") for i in range(2000)])["rows"]) != 2000: return True
+        return False
+    except Exception:
+        return True
+
+
+MUTANTS = [
+    ("aid_check_dropped", "if prof['require_full_aid'] and aid != 'full':", "if False:"),
+    ("aid_partial_ok", "aid != 'full'", "aid == 'none'"),
+    ("written_dropped", "if prof['forbid_additional_written_test'] and written == 'yes':", "if False:"),
+    ("sat_check_dropped", "if sat == 'required' and not prof['has_sat']:", "if False:"),
+    ("sat_inverted", "not prof['has_sat']", "prof['has_sat']"),
+    ("ielts_ignores_profile", "ielts_acc == 'no' and prof['ielts'] != 'no'", "ielts_acc == 'no'"),
+    ("ielts_maybe_exempt", "prof['ielts'] != 'no'", "prof['ielts'] == 'yes'"),
+    ("age_ge", "age > timedelta(days=max_age_days)", "age >= timedelta(days=max_age_days)"),
+    ("future_allowed", "if checked > now:", "if False:"),
+    ("naive_allowed", "if dt.tzinfo is None or dt.utcoffset() is None:", "if False:"),
+    ("http_allowed", "parts.scheme != 'https'", "parts.scheme not in ('http', 'https')"),
+    ("userinfo_allowed", "'@' in parts.netloc", "False"),
+    ("unverified_not_priority", "if problems:", "if False:"),
+    ("unsupported_field_ignored", "for k in sorted(r, key=str):\n        if k not in allowed:", "for k in []:\n        if k not in allowed:"),
+    ("no_sort", "out.sort(key=lambda x: (x['university'], x['country']))", "pass"),
+    ("max_rows_off", "MAX_ROWS = _S['limits']['max_rows']", "MAX_ROWS = _S['limits']['max_rows'] + 1"),
+    ("dup_allowed", "if key in seen:", "if False:"),
+    ("age_ceiling_off", "or not 1 <= max_age_days <= MAX_AGE_DAYS_CEILING", "or not 1 <= max_age_days <= MAX_AGE_DAYS_CEILING + 1"),
+    ("fits_when_reasons", "'fits' if not reasons else 'does_not_fit'", "'fits'"),
+]
+
+
+@pytest.mark.parametrize("name,old,new", MUTANTS, ids=[m[0] for m in MUTANTS])
+def test_mutant_is_killed(name, old, new):
+    assert _killed(_mutant(name, old, new)), f"mutant {name} survived"
+
+
+def test_negative_control_unmutated_not_killed():
+    assert _killed(uf) is False

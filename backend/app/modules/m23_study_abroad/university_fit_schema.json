@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "description": "Shape of the caller-supplied university table and profile for university_fit.py. Every row carries its own source_url (https) and checked_at (ISO-8601 with offset).",
+  "row": {
+    "text": ["university", "country", "source_url", "checked_at"],
+    "enums": {
+      "intl_ug_aid": ["full", "partial", "none"],
+      "additional_written_test": ["yes", "no"],
+      "sat": ["required", "optional", "not_considered"],
+      "ielts_accepted": ["yes", "no"]
+    }
+  },
+  "profile": {
+    "bools": ["has_sat", "require_full_aid", "forbid_additional_written_test"],
+    "enums": {"ielts": ["yes", "no", "maybe"]}
+  },
+  "limits": {"max_rows": 2000, "default_max_age_days": 180, "max_age_days_ceiling": 3650}
+}
