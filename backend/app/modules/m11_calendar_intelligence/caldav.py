@@ -42,7 +42,15 @@ class HttpxCalDAVClient:
         self._client = client
         self._auth = (username, password)
 
+    def with_credentials(self, username: str, password: str) -> "HttpxCalDAVClient":
+        # Return a client sharing the transport with saved credentials applied.
+        if not username or not password:
+            raise UpstreamServiceError("CalDAV credentials refused: empty username or password")
+        return HttpxCalDAVClient(self._client, username, password)
+
     async def fetch_events(self, calendar_url: str, start: datetime, end: datetime) -> list[IcsEvent]:
+        if not self._auth[0] or not self._auth[1]:
+            raise UpstreamServiceError("CalDAV request refused: empty credentials")
         body = _REPORT_BODY.format(start=format_ics_dt(start), end=format_ics_dt(end))
         response = await self._client.request(
             "REPORT",

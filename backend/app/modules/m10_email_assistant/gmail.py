@@ -25,6 +25,9 @@ GMAIL_SCOPES = (
 )
 
 
+_MAX_HISTORY_PAGES = 100  # refuse rather than silently drop later history pages
+
+
 class UpstreamServiceError(RuntimeError):
     """Raised when the Gmail or OAuth endpoint cannot satisfy a request."""
 
@@ -199,22 +202,27 @@ class HttpxGmailClient:
         return response.json()
 
     async def list_history(self, access_token: str, start_history_id: str) -> list[str]:
-        data = await self.client_get(
-            "/history",
-            access_token,
-            params={
-                "startHistoryId": start_history_id,
-                "historyTypes": "messageAdded",
-                "maxResults": 500,
-            },
-        )
+        params = {
+            "startHistoryId": start_history_id,
+            "historyTypes": "messageAdded",
+            "maxResults": 500,
+        }
         ids: list[str] = []
-        for record in data.get("history", []) or []:
-            for added in record.get("messagesAdded", []) or []:
-                message = added.get("message", {})
-                if message.get("id"):
-                    ids.append(message["id"])
-        return ids
+        for _ in range(_MAX_HISTORY_PAGES):
+            data = await self.client_get("/history", access_token, params=params)
+            for record in data.get("history", []) or []:
+                for added in record.get("messagesAdded", []) or []:
+                    message = added.get("message", {})
+                    if message.get("id"):
+                        ids.append(message["id"])
+            next_token = data.get("nextPageToken")
+            if not next_token:
+                return ids
+            params["pageToken"] = next_token
+        raise UpstreamServiceError(
+            f"Gmail history sync exceeded {_MAX_HISTORY_PAGES} pages; "
+            "refusing to drop later pages"
+        )
 
     async def get_message(self, access_token: str, message_id: str) -> GmailRawMessage:
         data = await self.client_get(

@@ -12,7 +12,9 @@ from sqlalchemy.orm import sessionmaker
 from app.core.database import Base
 from app.core.models import ApprovalRequest
 from app.core.token_crypto import TokenCipher
-from app.modules.m11_calendar_intelligence.caldav import HttpxCalDAVClient, parse_multistatus
+from app.modules.m11_calendar_intelligence.caldav import (
+    HttpxCalDAVClient, UpstreamServiceError, parse_multistatus,
+)
 from app.modules.m11_calendar_intelligence.google_calendar import (
     EventPage,
     SyncTokenExpiredError,
@@ -456,3 +458,86 @@ def test_meeting_load_report(tmp_path):
     assert monday_load.short_gaps == 1  # 15-minute gap between A and B
     assert report.days[1].meeting_minutes == 90
     assert report.total_meeting_minutes == 195
+
+
+def test_caldav_saved_credentials_reach_the_client():
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["auth"] = request.headers.get("Authorization")
+        return httpx.Response(207, text="""<?xml version="1.0"?>
+        <d:multistatus xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
+          <d:response><d:propstat><d:prop><c:calendar-data>BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:evt-creds
+SUMMARY:Creds event
+DTSTART:20260921T140000Z
+DTEND:20260921T150000Z
+END:VEVENT
+END:VCALENDAR</c:calendar-data></d:prop></d:propstat></d:response>
+        </d:multistatus>""")
+
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            mounted = HttpxCalDAVClient(client, "", "")
+            caldav = mounted.with_credentials("saved@example.com", "secret")
+            events = await caldav.fetch_events(
+                "https://caldav.example.com/cal/", dt(MONDAY, 0), dt(MONDAY + timedelta(days=7), 0))
+            return events, mounted
+
+    import base64
+    events, mounted = asyncio.run(run())
+    assert [e.uid for e in events] == ["evt-creds"]
+    assert seen["auth"] == "Basic " + base64.b64encode(b"saved@example.com:secret").decode()
+    # the placeholder client is unchanged and still refuses to send
+    async def check_mounted():
+        with pytest.raises(UpstreamServiceError):
+            await mounted.fetch_events("https://caldav.example.com/cal/",
+                                       dt(MONDAY, 0), dt(MONDAY + timedelta(days=7), 0))
+    asyncio.run(check_mounted())
+
+
+def test_caldav_empty_credentials_refused_closed_no_send():
+    called = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        called.append(request)
+        return httpx.Response(200)
+
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            caldav = HttpxCalDAVClient(client, "", "")
+            await caldav.fetch_events("https://caldav.example.com/cal/",
+                                      dt(MONDAY, 0), dt(MONDAY + timedelta(days=7), 0))
+
+    with pytest.raises(UpstreamServiceError):
+        asyncio.run(run())
+    assert called == []
+
+    async def run_partial(user, pw):
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            caldav = HttpxCalDAVClient(client, user, pw)
+            await caldav.fetch_events("https://caldav.example.com/cal/",
+                                      dt(MONDAY, 0), dt(MONDAY + timedelta(days=7), 0))
+
+    for user, pw in (("user@example.com", ""), ("", "pw")):
+        with pytest.raises(UpstreamServiceError):
+            asyncio.run(run_partial(user, pw))
+    assert called == []
+
+
+@pytest.mark.parametrize("user,pw", [("", "x"), ("x", ""), ("", "")])
+def test_caldav_with_credentials_direct_refuses_empty_side(user, pw):
+    called = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        called.append(request)
+        return httpx.Response(200)
+
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            HttpxCalDAVClient(client, "u", "p").with_credentials(user, pw)
+
+    with pytest.raises(UpstreamServiceError):
+        asyncio.run(run())
+    assert called == []

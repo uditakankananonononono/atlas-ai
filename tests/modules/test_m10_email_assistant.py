@@ -24,7 +24,10 @@ from app.modules.m10_email_assistant.extraction import (
     heuristic_extract,
     parse_action_json,
 )
-from app.modules.m10_email_assistant.gmail import GmailRawMessage, WatchInfo, parse_gmail_message
+from app.modules.m10_email_assistant.gmail import (
+    GmailRawMessage, HttpxGmailClient, UpstreamServiceError, WatchInfo,
+    parse_gmail_message,
+)
 from app.modules.m10_email_assistant.schemas import EmailCategory
 from app.modules.m10_email_assistant.service import (
     PubSubVerificationError,
@@ -383,3 +386,79 @@ def test_bert_classifier_loads_configured_pipeline_and_preserves_provenance(monk
     out=BertEmailClassifier("verified-local").classify(ClassifierInput("Please sign","x@example.org","sign by Friday"))
     assert out.category.value == "action_required" and out.confidence == .97
     assert out.reasons == ["bert:ACTION_REQUIRED"]
+
+
+def test_gmail_history_follows_next_page_token_until_exhausted():
+    calls = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(dict(request.url.params))
+        token = request.url.params.get("pageToken")
+        if token is None:
+            return httpx.Response(200, json={
+                "history": [{"messagesAdded": [{"message": {"id": "m1"}}]}],
+                "nextPageToken": "p2"})
+        if token == "p2":
+            return httpx.Response(200, json={
+                "history": [{"messagesAdded": [{"message": {"id": "m2"}},
+                                               {"message": {"id": "m3"}}]}],
+                "nextPageToken": "p3"})
+        return httpx.Response(200, json={
+            "history": [{"messagesAdded": [{"message": {"id": "m4"}}]}]})
+
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            gmail = HttpxGmailClient(client, base_url="https://gmail.example.com")
+            return await gmail.list_history("token", "123")
+
+    ids = asyncio.run(run())
+    assert ids == ["m1", "m2", "m3", "m4"]
+    assert len(calls) == 3
+    assert "pageToken" not in calls[0]
+    assert calls[1]["pageToken"] == "p2" and calls[2]["pageToken"] == "p3"
+    assert all(c["startHistoryId"] == "123" for c in calls)
+
+
+def test_gmail_history_pagination_bound_refuses_silent_truncation():
+    calls = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(200, json={
+            "history": [{"messagesAdded": [{"message": {"id": "mx"}}]}],
+            "nextPageToken": "forever"})
+
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            gmail = HttpxGmailClient(client, base_url="https://gmail.example.com")
+            await gmail.list_history("token", "123")
+
+    with pytest.raises(UpstreamServiceError):
+        asyncio.run(run())
+    assert len(calls) == 100
+
+
+def test_gmail_history_request_shape_path_and_params_exact():
+    seen = []
+
+    class Recording(HttpxGmailClient):
+        async def client_get(self, path, access_token, params=None):
+            seen.append((path, access_token, dict(params)))
+            if len(seen) == 1:
+                return {"history": [{"messagesAdded": [{"message": {"id": "a1"}}]}],
+                        "nextPageToken": "tok2"}
+            return {"history": [{"messagesAdded": [{"message": {"id": "a2"}}]}]}
+
+    async def run():
+        async with httpx.AsyncClient() as client:
+            return await Recording(client).list_history("acc-token", "777")
+
+    assert asyncio.run(run()) == ["a1", "a2"]
+    assert len(seen) == 2
+    assert seen[0][0] == "/history" and seen[1][0] == "/history"
+    assert seen[0][1] == "acc-token" and seen[1][1] == "acc-token"
+    assert seen[0][2] == {"startHistoryId": "777", "historyTypes": "messageAdded",
+                          "maxResults": 500}
+    assert seen[1][2] == {"startHistoryId": "777", "historyTypes": "messageAdded",
+                          "maxResults": 500, "pageToken": "tok2"}
+    assert type(seen[0][2]["maxResults"]) is int
