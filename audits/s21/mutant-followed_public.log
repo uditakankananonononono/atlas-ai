@@ -1,0 +1,30 @@
+............F................................................            [100%]
+=================================== FAILURES ===================================
+___________________ test_owner_data_not_third_party_private ____________________
+
+    def test_owner_data_not_third_party_private():
+        assert run(data=payload([record(visibility='owner')]))['counts']['unique'] == 1
+        refuse('SOCIAL_REFUSED_THIRDPARTYPRIVATE', lambda: run(data=payload([record(visibility='private')])))
+>       refuse('SOCIAL_REFUSED_THIRDPARTYPRIVATE', lambda: run(data=payload([record(kind='followed_account', visibility='owner')])))
+
+tests/s21/test_social_scan.py:73:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_THIRDPARTYPRIVATE'
+f = <function test_owner_data_not_third_party_private.<locals>.<lambda> at 0x7faede520220>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_owner_data_not_third_party_private
+1 failed, 60 passed, 1 warning in 0.23s

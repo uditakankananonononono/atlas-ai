@@ -1,0 +1,33 @@
+.......F.....................................................            [100%]
+=================================== FAILURES ===================================
+_________________ test_same_id_different_platform_is_distinct __________________
+
+    def test_same_id_different_platform_is_distinct():
+>       assert run(data=payload([record(), record(platform='other')]))['counts']['unique'] == 2
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/s21/test_social_scan.py:62:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/s21/test_social_scan.py:29: in run
+    return (s or scanner()).run(tenant_id='a', connector=connector, payload=data if data is not None else payload(), as_of=AS_OF, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/core.py:149: in run
+    reject('SOCIAL_REFUSED_CONFLICT')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_CONFLICT'
+
+    def reject(code: str):
+>       raise Refusal(code)
+E       s21.core.Refusal: SOCIAL_REFUSED_CONFLICT
+
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/core.py:27: Refusal
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_same_id_different_platform_is_distinct
+1 failed, 60 passed, 1 warning in 0.18s

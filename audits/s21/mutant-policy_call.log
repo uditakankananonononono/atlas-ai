@@ -1,0 +1,94 @@
+........................................FFFF.................            [100%]
+=================================== FAILURES ===================================
+___________________ test_injected_policy_fail_closed[False] ____________________
+
+answer = False
+
+    @pytest.mark.parametrize('answer', [False, None, 1, 'yes'])
+    def test_injected_policy_fail_closed(answer):
+>       refuse('POLICY_REFUSED_ACTION', lambda: run(scanner(policy=lambda action: answer)))
+
+tests/s21/test_social_scan.py:119:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'POLICY_REFUSED_ACTION'
+f = <function test_injected_policy_fail_closed.<locals>.<lambda> at 0x7f2c17041260>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+____________________ test_injected_policy_fail_closed[None] ____________________
+
+answer = None
+
+    @pytest.mark.parametrize('answer', [False, None, 1, 'yes'])
+    def test_injected_policy_fail_closed(answer):
+>       refuse('POLICY_REFUSED_ACTION', lambda: run(scanner(policy=lambda action: answer)))
+
+tests/s21/test_social_scan.py:119:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'POLICY_REFUSED_ACTION'
+f = <function test_injected_policy_fail_closed.<locals>.<lambda> at 0x7f2c181d91c0>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+_____________________ test_injected_policy_fail_closed[1] ______________________
+
+answer = 1
+
+    @pytest.mark.parametrize('answer', [False, None, 1, 'yes'])
+    def test_injected_policy_fail_closed(answer):
+>       refuse('POLICY_REFUSED_ACTION', lambda: run(scanner(policy=lambda action: answer)))
+
+tests/s21/test_social_scan.py:119:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'POLICY_REFUSED_ACTION'
+f = <function test_injected_policy_fail_closed.<locals>.<lambda> at 0x7f2c181d8720>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+____________________ test_injected_policy_fail_closed[yes] _____________________
+
+answer = 'yes'
+
+    @pytest.mark.parametrize('answer', [False, None, 1, 'yes'])
+    def test_injected_policy_fail_closed(answer):
+>       refuse('POLICY_REFUSED_ACTION', lambda: run(scanner(policy=lambda action: answer)))
+
+tests/s21/test_social_scan.py:119:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'POLICY_REFUSED_ACTION'
+f = <function test_injected_policy_fail_closed.<locals>.<lambda> at 0x7f2c181d9440>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_injected_policy_fail_closed[False]
+FAILED tests/s21/test_social_scan.py::test_injected_policy_fail_closed[None]
+FAILED tests/s21/test_social_scan.py::test_injected_policy_fail_closed[1] - F...
+FAILED tests/s21/test_social_scan.py::test_injected_policy_fail_closed[yes]
+4 failed, 57 passed, 1 warning in 0.30s

@@ -1,0 +1,338 @@
+FFF..........................................................            [100%]
+=================================== FAILURES ===================================
+___________________ test_route_roundtrip_and_tenant_boundary ___________________
+
+    def test_route_roundtrip_and_tenant_boundary():
+        app,c=client()
+        app.dependency_overrides[require_tenant]=lambda:TenantContext('a','owner')
+>       r=c.post('/api/v1/c33/self-feed/run',json=body())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/s21/test_routes.py:22:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:538: in post
+    return super().post(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:340: in handle_request
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:337: in handle_request
+    portal.call(self.app, scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/applications.py:112: in __call__
+    await self.middleware_stack(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:714: in __call__
+    await self.middleware_stack(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:734: in app
+    await route.handle(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/routes.py:19: in safe_handler
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+body = ExportRequest(connector='normalized_json', payload='{"schema_version": 1, "records": [{"id": "p1", "kind": "liked_post...source robot sensor", "visibility": "public", "source_ref": "export:fixture/p1"}]}', as_of='2026-10-11T15:10:00+05:30')
+tenant = 'a'
+
+    @router.post('/run')
+    def run(body: ExportRequest, tenant: str = 'a'):
+        try:
+>           return service.run(tenant_id=tenant.tenant_id, connector=body.connector,
+                                         ^^^^^^^^^^^^^^^^
+                               payload=body.payload.encode('utf-8'), as_of=body.as_of)
+E                              AttributeError: 'str' object has no attribute 'tenant_id'
+
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/routes.py:39: AttributeError
+__________________ test_unauthed_production_and_extra_fields ___________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc251f6fad0>
+
+    def test_unauthed_production_and_extra_fields(monkeypatch):
+        monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+        monkeypatch.setenv('ATLAS_ENV','production')
+        app,c=client()
+>       assert c.post('/api/v1/c33/self-feed/run',json=body()).status_code==401
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/s21/test_routes.py:34:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:538: in post
+    return super().post(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:340: in handle_request
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:337: in handle_request
+    portal.call(self.app, scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/applications.py:112: in __call__
+    await self.middleware_stack(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:714: in __call__
+    await self.middleware_stack(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:734: in app
+    await route.handle(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/routes.py:19: in safe_handler
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+body = ExportRequest(connector='normalized_json', payload='{"schema_version": 1, "records": [{"id": "p1", "kind": "liked_post...source robot sensor", "visibility": "public", "source_ref": "export:fixture/p1"}]}', as_of='2026-10-11T15:10:00+05:30')
+tenant = 'a'
+
+    @router.post('/run')
+    def run(body: ExportRequest, tenant: str = 'a'):
+        try:
+>           return service.run(tenant_id=tenant.tenant_id, connector=body.connector,
+                                         ^^^^^^^^^^^^^^^^
+                               payload=body.payload.encode('utf-8'), as_of=body.as_of)
+E                              AttributeError: 'str' object has no attribute 'tenant_id'
+
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/routes.py:39: AttributeError
+_________________________ test_real_signed_tenant_path _________________________
+
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7fc2507e72e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc251fff380>
+
+    def test_real_signed_tenant_path(oidc_auth_headers,monkeypatch):
+        monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+        monkeypatch.setenv('ATLAS_ENV','production')
+        app,c=client()
+>       r=c.post('/api/v1/c33/self-feed/run',json=body(),headers=oidc_auth_headers(tenant='a'))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/s21/test_routes.py:46:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:538: in post
+    return super().post(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:1144: in post
+    return self.request(
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:914: in send
+    response = self._send_handling_auth(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/httpx/_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:340: in handle_request
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:337: in handle_request
+    portal.call(self.app, scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/applications.py:112: in __call__
+    await self.middleware_stack(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:714: in __call__
+    await self.middleware_stack(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:734: in app
+    await route.handle(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/routes.py:19: in safe_handler
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+/tmp/s21-venv/lib/python3.12/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/tmp/s21-venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+body = ExportRequest(connector='normalized_json', payload='{"schema_version": 1, "records": [{"id": "p1", "kind": "liked_post...source robot sensor", "visibility": "public", "source_ref": "export:fixture/p1"}]}', as_of='2026-10-11T15:10:00+05:30')
+tenant = 'a'
+
+    @router.post('/run')
+    def run(body: ExportRequest, tenant: str = 'a'):
+        try:
+>           return service.run(tenant_id=tenant.tenant_id, connector=body.connector,
+                                         ^^^^^^^^^^^^^^^^
+                               payload=body.payload.encode('utf-8'), as_of=body.as_of)
+E                              AttributeError: 'str' object has no attribute 'tenant_id'
+
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/routes.py:39: AttributeError
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_routes.py::test_route_roundtrip_and_tenant_boundary - A...
+FAILED tests/s21/test_routes.py::test_unauthed_production_and_extra_fields - ...
+FAILED tests/s21/test_routes.py::test_real_signed_tenant_path - AttributeErro...
+3 failed, 58 passed, 1 warning in 0.96s

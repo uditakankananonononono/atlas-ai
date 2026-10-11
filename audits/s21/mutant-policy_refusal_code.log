@@ -1,0 +1,34 @@
+............................................................F            [100%]
+=================================== FAILURES ===================================
+________________________ test_policy_callable_required _________________________
+
+    def test_policy_callable_required():
+>       refuse('POLICY_REFUSED_ACTION',lambda:scanner(policy=None))
+
+tests/s21/test_social_scan.py:205:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'POLICY_REFUSED_ACTION'
+f = <function test_policy_callable_required.<locals>.<lambda> at 0x7fc3511df240>
+
+    def refuse(code, f):
+        with pytest.raises(m.Refusal) as e:
+            f()
+>       assert e.value.code == code
+E       AssertionError: assert 'POLICY_REFUSED_OTHER' == 'POLICY_REFUSED_ACTION'
+E
+E         - POLICY_REFUSED_ACTION
+E         ?                ^^ ^^^
+E         + POLICY_REFUSED_OTHER
+E         ?                ^ ^^^
+
+tests/s21/test_social_scan.py:34: AssertionError
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_policy_callable_required - Asserti...
+1 failed, 60 passed, 1 warning in 0.18s

@@ -1,0 +1,28 @@
+....................................................F........            [100%]
+=================================== FAILURES ===================================
+_____________________________ test_tenant_required _____________________________
+
+    def test_tenant_required():
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: scanner().run(tenant_id='',connector='normalized_json',payload=payload(),as_of=AS_OF))
+
+tests/s21/test_social_scan.py:163:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_tenant_required.<locals>.<lambda> at 0x7f9133ad2660>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_tenant_required - Failed: DID NOT ...
+1 failed, 60 passed, 1 warning in 0.20s

@@ -1,0 +1,29 @@
+......................................................F......            [100%]
+=================================== FAILURES ===================================
+______________ test_csv_rejects_bad_headers_and_duplicate_columns ______________
+
+    def test_csv_rejects_bad_headers_and_duplicate_columns():
+        for data in [b'id,text\np1,hello\n', b'id,id,kind,platform,author,text,visibility,source_ref\np1,p1,liked_post,sandbox,x,hi,public,export:p1\n']:
+>           refuse('SOCIAL_REFUSED_SCHEMA',lambda:run(data=data,connector_override='pasted_csv'))
+
+tests/s21/test_social_scan.py:176:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_csv_rejects_bad_headers_and_duplicate_columns.<locals>.<lambda> at 0x7fa0a94bbba0>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_csv_rejects_bad_headers_and_duplicate_columns
+1 failed, 60 passed, 1 warning in 0.24s

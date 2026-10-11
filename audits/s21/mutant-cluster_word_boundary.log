@@ -1,0 +1,25 @@
+........................................................F....            [100%]
+=================================== FAILURES ===================================
+___________________ test_determinism_and_word_not_substring ____________________
+
+    def test_determinism_and_word_not_substring():
+        records=[record(text='robotics'),record(id='p2',text='robot')]
+        a=run(data=payload(records));b=run(data=payload(list(reversed(records))))
+        assert a['clusters']==b['clusters']
+>       assert {c['theme'] for c in a['clusters']}=={'engineering','unclassified'}
+E       AssertionError: assert {'engineering'} == {'engineering...unclassified'}
+E
+E         Extra items in the right set:
+E         'unclassified'
+E         Use -v to get more diff
+
+tests/s21/test_social_scan.py:187: AssertionError
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_determinism_and_word_not_substring
+1 failed, 60 passed, 1 warning in 0.19s

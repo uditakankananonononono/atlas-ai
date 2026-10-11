@@ -1,0 +1,94 @@
+{
+  "checks_passed": 8,
+  "checks": [
+    "supplied fixture two records",
+    "two measured themes",
+    "draft-only provenance",
+    "no effects",
+    "owner report roundtrip",
+    "SOCIAL_REFUSED_NOTFOUND",
+    "POLICY_REFUSED_ACTION",
+    "SOCIAL_REFUSED_CONNECTOR"
+  ],
+  "report": {
+    "unit_id": "c33.S2.1",
+    "action": "none",
+    "counts": {
+      "supplied": 2,
+      "unique": 2,
+      "duplicates": 0,
+      "liked_post": 1,
+      "comment": 0,
+      "followed_account": 1,
+      "feed_post": 0
+    },
+    "clusters": [
+      {
+        "theme": "design",
+        "record_count": 1,
+        "source_refs": [
+          "export:fixture/p2"
+        ],
+        "authors": [
+          "designer"
+        ]
+      },
+      {
+        "theme": "engineering",
+        "record_count": 1,
+        "source_refs": [
+          "export:fixture/p1"
+        ],
+        "authors": [
+          "maker"
+        ]
+      }
+    ],
+    "briefs": [
+      {
+        "theme": "design",
+        "status": "draft",
+        "source_refs": [
+          "export:fixture/p2"
+        ],
+        "inspiration": "Review the supplied design examples before choosing a direction.",
+        "product_idea": "Prototype an original design tool for a chosen audience.",
+        "improvement_hypothesis": "Test whether clearer onboarding or accessibility improves the chosen example; no superiority is established."
+      },
+      {
+        "theme": "engineering",
+        "status": "draft",
+        "source_refs": [
+          "export:fixture/p1"
+        ],
+        "inspiration": "Review the supplied engineering examples before choosing a direction.",
+        "product_idea": "Prototype an original engineering tool for a chosen audience.",
+        "improvement_hypothesis": "Test whether clearer onboarding or accessibility improves the chosen example; no superiority is established."
+      }
+    ],
+    "input_sha256": "0f91096f93a4eb3a767317aa87fad369008caa8230c4efe62578934e578100e2",
+    "scope": {
+      "implemented": [
+        "normalized supplied export parsing",
+        "bounded dedupe",
+        "lexical theme clustering",
+        "draft inspiration briefs"
+      ],
+      "not_implemented": [
+        "live platform access",
+        "raw vendor export formats",
+        "continuous scanning",
+        "posting or outreach",
+        "human psychology",
+        "exhaustive coverage",
+        "model-generated analysis",
+        "durable storage"
+      ],
+      "data_source": "supplied:pasted_csv",
+      "as_of": "2026-10-11T15:10:00+05:30"
+    },
+    "as_of_meaning": "Caller-supplied snapshot label, not verified platform freshness.",
+    "method": "Fixed keyword counts; clusters and improvement ideas are unverified heuristic drafts.",
+    "report_id": "671f28f181f88651505dfe18b63ca16a7ae8b89dd21d9a347a237e852751be97"
+  }
+}

@@ -1,0 +1,31 @@
+....................F........................................            [100%]
+=================================== FAILURES ===================================
+______________________ test_invalid_records[extra-secret] ______________________
+
+field = 'extra', value = 'secret'
+
+    @pytest.mark.parametrize('field,value', [('id',''), ('platform',''), ('author',''), ('source_ref',''), ('kind','dm'), ('text',123), ('source_ref','javascript:alert(1)'), ('extra','secret')])
+    def test_invalid_records(field, value):
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: run(data=payload([record(**{field:value})])))
+
+tests/s21/test_social_scan.py:78:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_invalid_records.<locals>.<lambda> at 0x7f775f40ed40>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_invalid_records[extra-secret] - Fa...
+1 failed, 60 passed, 1 warning in 0.19s

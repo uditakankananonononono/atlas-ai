@@ -1,0 +1,36 @@
+............................F................................            [100%]
+=================================== FAILURES ===================================
+_______________________ test_limits_at_and_over_boundary _______________________
+
+    def test_limits_at_and_over_boundary():
+        s = scanner(max_records=1, max_bytes=1000, max_text=40)
+        assert run(s, payload([record(text='x'*40)]))['counts']['unique'] == 1
+        refuse('SOCIAL_REFUSED_OVERSIZE', lambda: run(s, payload([record(text='x'*41)])))
+        refuse('SOCIAL_REFUSED_OVERSIZE', lambda: run(s, payload([record(),record()])))
+>       refuse('SOCIAL_REFUSED_OVERSIZE', lambda: run(s, b'x'*1001))
+
+tests/s21/test_social_scan.py:96:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_OVERSIZE'
+f = <function test_limits_at_and_over_boundary.<locals>.<lambda> at 0x7f2187f38720>
+
+    def refuse(code, f):
+        with pytest.raises(m.Refusal) as e:
+            f()
+>       assert e.value.code == code
+E       AssertionError: assert 'SOCIAL_REFUSED_SCHEMA' == 'SOCIAL_REFUSED_OVERSIZE'
+E
+E         - SOCIAL_REFUSED_OVERSIZE
+E         + SOCIAL_REFUSED_SCHEMA
+
+tests/s21/test_social_scan.py:34: AssertionError
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_limits_at_and_over_boundary - Asse...
+1 failed, 60 passed, 1 warning in 0.28s

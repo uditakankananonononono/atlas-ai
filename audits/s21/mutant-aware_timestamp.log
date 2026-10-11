@@ -1,0 +1,52 @@
+.................................................FF..........            [100%]
+=================================== FAILURES ===================================
+____________________ test_as_of_needs_timezone[2026-10-11] _____________________
+
+as_of = '2026-10-11'
+
+    @pytest.mark.parametrize('as_of', ['', '2026-10-11', '2026-10-11T12:00:00', 'yesterday'])
+    def test_as_of_needs_timezone(as_of):
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: scanner().run(tenant_id='a',connector='normalized_json',payload=payload(),as_of=as_of))
+
+tests/s21/test_social_scan.py:159:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_as_of_needs_timezone.<locals>.<lambda> at 0x7facfddb2e80>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+________________ test_as_of_needs_timezone[2026-10-11T12:00:00] ________________
+
+as_of = '2026-10-11T12:00:00'
+
+    @pytest.mark.parametrize('as_of', ['', '2026-10-11', '2026-10-11T12:00:00', 'yesterday'])
+    def test_as_of_needs_timezone(as_of):
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: scanner().run(tenant_id='a',connector='normalized_json',payload=payload(),as_of=as_of))
+
+tests/s21/test_social_scan.py:159:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_as_of_needs_timezone.<locals>.<lambda> at 0x7facfddb3ce0>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_as_of_needs_timezone[2026-10-11]
+FAILED tests/s21/test_social_scan.py::test_as_of_needs_timezone[2026-10-11T12:00:00]
+2 failed, 59 passed, 1 warning in 0.23s

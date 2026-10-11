@@ -1,0 +1,71 @@
+.................F...........................................            [100%]
+=================================== FAILURES ===================================
+________________________ test_invalid_records[kind-dm] _________________________
+
+field = 'kind', value = 'dm'
+
+    @pytest.mark.parametrize('field,value', [('id',''), ('platform',''), ('author',''), ('source_ref',''), ('kind','dm'), ('text',123), ('source_ref','javascript:alert(1)'), ('extra','secret')])
+    def test_invalid_records(field, value):
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: run(data=payload([record(**{field:value})])))
+
+tests/s21/test_social_scan.py:78:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/s21/test_social_scan.py:33: in refuse
+    f()
+tests/s21/test_social_scan.py:78: in <lambda>
+    refuse('SOCIAL_REFUSED_SCHEMA', lambda: run(data=payload([record(**{field:value})])))
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/s21/test_social_scan.py:29: in run
+    return (s or scanner()).run(tenant_id='a', connector=connector, payload=data if data is not None else payload(), as_of=AS_OF, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <s21.core.Scanner object at 0x7f665a113500>
+
+    def run(self, *, tenant_id: str, connector: str, payload: bytes, as_of: str, action='analyze'):
+        # Enforce local effect ban as well as the injected integration guard.
+        if self.policy(action) is not True or action != 'analyze':
+            reject('POLICY_REFUSED_ACTION')
+        if type(tenant_id) is not str or not tenant_id.strip() or len(tenant_id) > 120:
+            reject('SOCIAL_REFUSED_SCHEMA')
+        try:
+            moment = datetime.fromisoformat(as_of)
+            if moment.utcoffset() is None:
+                reject('SOCIAL_REFUSED_SCHEMA')
+        except (ValueError, TypeError):
+            reject('SOCIAL_REFUSED_SCHEMA')
+        if type(payload) is not bytes or not payload:
+            reject('SOCIAL_REFUSED_NOEXPORT')
+        if len(payload) > self.max_bytes:
+            reject('SOCIAL_REFUSED_OVERSIZE')
+        if type(connector) is not str or connector not in self.connectors:
+            reject('SOCIAL_REFUSED_CONNECTOR')
+        unique = {}
+        supplied = 0
+        for raw in self.connectors[connector].read(payload):
+            supplied += 1
+            if supplied > self.max_records:
+                reject('SOCIAL_REFUSED_OVERSIZE')
+            row = _record(raw, self.max_text)
+            key = (row['platform'], row['kind'], row['id'])
+            if key in unique and unique[key] != row:
+                reject('SOCIAL_REFUSED_CONFLICT')
+            unique[key] = row
+        clusters = {}
+        counts = dict(supplied=supplied, unique=len(unique), duplicates=supplied-len(unique), **{kind: 0 for kind in KINDS})
+        for key in sorted(unique):
+            row = unique[key]
+>           counts[row['kind']] += 1
+            ^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'dm'
+
+backend/app/modules/m20_general_cognitive_worker/c33_self_feed/core.py:155: KeyError
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_invalid_records[kind-dm] - KeyErro...
+1 failed, 60 passed, 1 warning in 0.20s

@@ -1,0 +1,24 @@
+..............................................F..............            [100%]
+=================================== FAILURES ===================================
+________________ test_reports_are_detached_and_tenant_isolated _________________
+
+    def test_reports_are_detached_and_tenant_isolated():
+        s = scanner()
+        out = run(s)
+        out['counts']['unique'] = 999
+        found = s.report('a',out['report_id'])
+        assert found['counts']['unique'] == 1
+        found['scope']['implemented'].clear()
+>       assert s.report('a',out['report_id'])['scope']['implemented']
+E       assert []
+
+tests/s21/test_social_scan.py:145: AssertionError
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_reports_are_detached_and_tenant_isolated
+1 failed, 60 passed, 1 warning in 0.21s

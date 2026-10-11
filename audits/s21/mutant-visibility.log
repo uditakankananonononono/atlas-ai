@@ -1,0 +1,71 @@
+............F...............................F............F...            [100%]
+=================================== FAILURES ===================================
+___________________ test_owner_data_not_third_party_private ____________________
+
+    def test_owner_data_not_third_party_private():
+        assert run(data=payload([record(visibility='owner')]))['counts']['unique'] == 1
+>       refuse('SOCIAL_REFUSED_THIRDPARTYPRIVATE', lambda: run(data=payload([record(visibility='private')])))
+
+tests/s21/test_social_scan.py:72:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_THIRDPARTYPRIVATE'
+f = <function test_owner_data_not_third_party_private.<locals>.<lambda> at 0x7fc5425302c0>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+______________ test_pluggable_sandbox_connector_and_revalidation _______________
+
+    def test_pluggable_sandbox_connector_and_revalidation():
+        class Plugin:
+            def read(self, data): return iter([record()])
+        assert scanner(connectors={'mock':Plugin()}).run(tenant_id='a', connector='mock', payload=b'x', as_of=AS_OF)['counts']['unique'] == 1
+        class Bad:
+            def read(self, data): return [record(visibility='private')]
+>       refuse('SOCIAL_REFUSED_THIRDPARTYPRIVATE', lambda: scanner(connectors={'bad':Bad()}).run(tenant_id='a', connector='bad', payload=b'x', as_of=AS_OF))
+
+tests/s21/test_social_scan.py:128:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_THIRDPARTYPRIVATE'
+f = <function test_pluggable_sandbox_connector_and_revalidation.<locals>.<lambda> at 0x7fc5436ca840>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+____________________ test_failure_creates_no_partial_report ____________________
+
+    def test_failure_creates_no_partial_report():
+        s=scanner()
+>       refuse('SOCIAL_REFUSED_THIRDPARTYPRIVATE',lambda:run(s,data=payload([record(),record(id='p2',visibility='private')])))
+
+tests/s21/test_social_scan.py:192:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_THIRDPARTYPRIVATE'
+f = <function test_failure_creates_no_partial_report.<locals>.<lambda> at 0x7fc5436c82c0>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_owner_data_not_third_party_private
+FAILED tests/s21/test_social_scan.py::test_pluggable_sandbox_connector_and_revalidation
+FAILED tests/s21/test_social_scan.py::test_failure_creates_no_partial_report
+3 failed, 58 passed, 1 warning in 0.21s

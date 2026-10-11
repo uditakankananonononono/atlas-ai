@@ -1,0 +1,30 @@
+............................F................................            [100%]
+=================================== FAILURES ===================================
+_______________________ test_limits_at_and_over_boundary _______________________
+
+    def test_limits_at_and_over_boundary():
+        s = scanner(max_records=1, max_bytes=1000, max_text=40)
+        assert run(s, payload([record(text='x'*40)]))['counts']['unique'] == 1
+>       refuse('SOCIAL_REFUSED_OVERSIZE', lambda: run(s, payload([record(text='x'*41)])))
+
+tests/s21/test_social_scan.py:94:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_OVERSIZE'
+f = <function test_limits_at_and_over_boundary.<locals>.<lambda> at 0x7f430f6db060>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_limits_at_and_over_boundary - Fail...
+1 failed, 60 passed, 1 warning in 0.17s

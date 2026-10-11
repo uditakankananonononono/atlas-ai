@@ -1,0 +1,21 @@
+...........................................................F.            [100%]
+=================================== FAILURES ===================================
+____________________ test_unclassified_never_generates_idea ____________________
+
+    def test_unclassified_never_generates_idea():
+>       assert run(data=payload([record(text='Hello world')]))['briefs']==[]
+E       AssertionError: assert [{'improvemen...re/p1'], ...}] == []
+E
+E         Left contains one more item: {'improvement_hypothesis': 'Test whether clearer onboarding or accessibility improves the chosen example; no superiori...uct_idea': 'Prototype an original unclassified tool for a chosen audience.', 'source_refs': ['export:fixture/p1'], ...}
+E         Use -v to get more diff
+
+tests/s21/test_social_scan.py:201: AssertionError
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_unclassified_never_generates_idea
+1 failed, 60 passed, 1 warning in 0.19s

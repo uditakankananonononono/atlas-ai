@@ -1,0 +1,210 @@
+{
+  "mutants": 34,
+  "killed": 34,
+  "results": [
+    {
+      "name": "policy_call",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_injected_policy_fail_closed[False]\nFAILED tests/s21/test_social_scan.py::test_injected_policy_fail_closed[None]\nFAILED tests/s21/test_social_scan.py::test_injected_policy_fail_closed[1] - F...\nFAILED tests/s21/test_social_scan.py::test_injected_policy_fail_closed[yes]\n4 failed, 57 passed, 1 warning in 0.30s\n"
+    },
+    {
+      "name": "local_effect_ban",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_even_permissive_injected_guard_cannot_authorize_effect\n1 failed, 60 passed, 1 warning in 0.23s\n"
+    },
+    {
+      "name": "tenant_required",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_tenant_required - Failed: DID NOT ...\n1 failed, 60 passed, 1 warning in 0.20s\n"
+    },
+    {
+      "name": "aware_timestamp",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_as_of_needs_timezone[2026-10-11]\nFAILED tests/s21/test_social_scan.py::test_as_of_needs_timezone[2026-10-11T12:00:00]\n2 failed, 59 passed, 1 warning in 0.23s\n"
+    },
+    {
+      "name": "payload_byte_limit",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_limits_at_and_over_boundary - Asse...\n1 failed, 60 passed, 1 warning in 0.28s\n"
+    },
+    {
+      "name": "record_limit",
+      "killed": true,
+      "exit_code": 124,
+      "test_failures": "Runtime boundedness test timed out at 4 seconds."
+    },
+    {
+      "name": "text_limit",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_limits_at_and_over_boundary - Fail...\n1 failed, 60 passed, 1 warning in 0.17s\n"
+    },
+    {
+      "name": "config_exact_int",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_config_limits[kw0] - Failed: DID N...\n1 failed, 60 passed, 1 warning in 0.24s\n"
+    },
+    {
+      "name": "config_positive",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_config_limits[kw1] - Failed: DID N...\nFAILED tests/s21/test_social_scan.py::test_config_limits[kw3] - Failed: DID N...\n2 failed, 59 passed, 1 warning in 0.22s\n"
+    },
+    {
+      "name": "config_upper",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_config_limits[kw2] - Failed: DID N...\n1 failed, 60 passed, 1 warning in 0.19s\n"
+    },
+    {
+      "name": "visibility",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_owner_data_not_third_party_private\nFAILED tests/s21/test_social_scan.py::test_pluggable_sandbox_connector_and_revalidation\nFAILED tests/s21/test_social_scan.py::test_failure_creates_no_partial_report\n3 failed, 58 passed, 1 warning in 0.21s\n"
+    },
+    {
+      "name": "followed_public",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_owner_data_not_third_party_private\n1 failed, 60 passed, 1 warning in 0.23s\n"
+    },
+    {
+      "name": "conflicting_dedupe",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_duplicates_and_conflicting_ids - F...\n1 failed, 60 passed, 1 warning in 0.18s\n"
+    },
+    {
+      "name": "platform_dedupe",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_same_id_different_platform_is_distinct\n1 failed, 60 passed, 1 warning in 0.18s\n"
+    },
+    {
+      "name": "json_exact_version",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_bad_envelope[{\"schema_version\":true,\"records\":[]}]\n1 failed, 60 passed, 1 warning in 0.16s\n"
+    },
+    {
+      "name": "duplicate_json_key",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_bad_envelope[{\"schema_version\":1,\"schema_version\":1,\"records\":[]}]\n1 failed, 60 passed, 1 warning in 0.20s\n"
+    },
+    {
+      "name": "csv_columns",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_csv_rejects_bad_headers_and_duplicate_columns\n1 failed, 60 passed, 1 warning in 0.24s\n"
+    },
+    {
+      "name": "record_fields",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_invalid_records[extra-secret] - Fa...\n1 failed, 60 passed, 1 warning in 0.19s\n"
+    },
+    {
+      "name": "record_kind",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_invalid_records[kind-dm] - KeyErro...\n1 failed, 60 passed, 1 warning in 0.20s\n"
+    },
+    {
+      "name": "blank_identity",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_invalid_records[id-] - Failed: DID...\nFAILED tests/s21/test_social_scan.py::test_invalid_records[platform-] - Faile...\nFAILED tests/s21/test_social_scan.py::test_invalid_records[author-] - Failed:...\n3 failed, 58 passed, 1 warning in 0.19s\n"
+    },
+    {
+      "name": "source_scheme",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_invalid_records[source_ref-javascript:alert(1)]\n1 failed, 60 passed, 1 warning in 0.19s\n"
+    },
+    {
+      "name": "unicode_scalar",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_surrogate_refusal - Failed: DID NO...\n1 failed, 60 passed, 1 warning in 0.24s\n"
+    },
+    {
+      "name": "detached_run",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_reports_are_detached_and_tenant_isolated\n1 failed, 60 passed, 1 warning in 0.27s\n"
+    },
+    {
+      "name": "detached_report",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_reports_are_detached_and_tenant_isolated\n1 failed, 60 passed, 1 warning in 0.21s\n"
+    },
+    {
+      "name": "report_retention",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_reports_bounded - Failed: DID NOT ...\n1 failed, 60 passed, 1 warning in 0.22s\n"
+    },
+    {
+      "name": "cluster_word_boundary",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_determinism_and_word_not_substring\n1 failed, 60 passed, 1 warning in 0.19s\n"
+    },
+    {
+      "name": "unknown_no_brief",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_unclassified_never_generates_idea\n1 failed, 60 passed, 1 warning in 0.19s\n"
+    },
+    {
+      "name": "body_extra_fields",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_routes.py::test_unauthed_production_and_extra_fields - ...\n1 failed, 60 passed, 1 warning in 0.16s\n"
+    },
+    {
+      "name": "auth_run",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_routes.py::test_route_roundtrip_and_tenant_boundary - A...\nFAILED tests/s21/test_routes.py::test_unauthed_production_and_extra_fields - ...\nFAILED tests/s21/test_routes.py::test_real_signed_tenant_path - AttributeErro...\n3 failed, 58 passed, 1 warning in 0.96s\n"
+    },
+    {
+      "name": "tenant_report",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_routes.py::test_route_roundtrip_and_tenant_boundary - A...\nFAILED tests/s21/test_routes.py::test_real_signed_tenant_path - AssertionErro...\n2 failed, 59 passed, 1 warning in 0.25s\n"
+    },
+    {
+      "name": "schema_refusal_code",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_routes.py::test_unauthed_production_and_extra_fields - ...\nFAILED tests/s21/test_social_scan.py::test_bad_envelope[bad] - AssertionError...\nFAILED tests/s21/test_social_scan.py::test_bad_envelope[{\"schema_version\":1,\"schema_version\":1,\"records\":[]}]\n3 failed, 58 passed, 1 warning in 0.25s\n"
+    },
+    {
+      "name": "private_refusal_code",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_owner_data_not_third_party_private\nFAILED tests/s21/test_social_scan.py::test_pluggable_sandbox_connector_and_revalidation\nFAILED tests/s21/test_social_scan.py::test_failure_creates_no_partial_report\n3 failed, 58 passed, 1 warning in 0.18s\n"
+    },
+    {
+      "name": "oversize_refusal_code",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_limits_at_and_over_boundary - Asse...\n1 failed, 60 passed, 1 warning in 0.20s\n"
+    },
+    {
+      "name": "policy_refusal_code",
+      "killed": true,
+      "exit_code": 1,
+      "test_failures": " ============================\nFAILED tests/s21/test_social_scan.py::test_policy_callable_required - Asserti...\n1 failed, 60 passed, 1 warning in 0.18s\n"
+    }
+  ]
+}

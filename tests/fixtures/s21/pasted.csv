@@ -1,0 +1,3 @@
+id,kind,platform,author,text,visibility,source_ref
+p1,liked_post,sandbox,maker,Built robot sensor,public,export:fixture/p1
+p2,followed_account,sandbox,designer,Fragrance skincare packaging design,public,export:fixture/p2

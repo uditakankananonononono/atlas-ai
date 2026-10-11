@@ -1,0 +1,30 @@
+.F...........................................................            [100%]
+=================================== FAILURES ===================================
+__________________ test_unauthed_production_and_extra_fields ___________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f879be7d190>
+
+    def test_unauthed_production_and_extra_fields(monkeypatch):
+        monkeypatch.delenv('ATLAS_DEV_NO_AUTH',raising=False)
+        monkeypatch.setenv('ATLAS_ENV','production')
+        app,c=client()
+        assert c.post('/api/v1/c33/self-feed/run',json=body()).status_code==401
+        assert c.get('/api/v1/c33/self-feed/report',params={'report_id':'x'}).status_code==401
+        app.dependency_overrides[require_tenant]=lambda:TenantContext('a','owner')
+        for extra in [{'tenant_id':'b'},{'action':'post'},{'token':'secret'}]:
+>           assert c.post('/api/v1/c33/self-feed/run',json={**body(),**extra}).status_code==422
+E           assert 200 == 422
+E            +  where 200 = <Response [200 OK]>.status_code
+E            +    where <Response [200 OK]> = post('/api/v1/c33/self-feed/run', json={'as_of': '2026-10-11T15:10:00+05:30', 'connector': 'normalized_json', 'payload': '{"schema_version": 1, "records": [{...xt": "Built open source robot sensor", "visibility": "public", "source_ref": "export:fixture/p1"}]}', 'tenant_id': 'b'})
+E            +      where post = <starlette.testclient.TestClient object at 0x7f879be7ec30>.post
+
+tests/s21/test_routes.py:38: AssertionError
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_routes.py::test_unauthed_production_and_extra_fields - ...
+1 failed, 60 passed, 1 warning in 0.16s

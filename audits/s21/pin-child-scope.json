@@ -1,0 +1,9 @@
+{
+  "parent_tip": "03266d5d97553f17aba0e9dc30a094e9cc040d08",
+  "runtime_changes": false,
+  "added_test_cases": 43,
+  "total_test_cases": 104,
+  "groups": ["numeric boundaries", "surrogate endpoints", "exact mixed clusters/counts", "alphabetic tie-break", "fixed canonical report ID", "exact type/refusal codes", "strict CSV and BOM", "write recency eviction", "exact dict/str subclasses"],
+  "audit_wording_correction": "Non-bytes payload runtime refuses SOCIAL_REFUSED_NOEXPORT, not SOCIAL_REFUSED_SCHEMA; child pins actual runtime contract without changing it.",
+  "new_independent_auditor_mutants": "Original 32 survivor definitions not supplied to this builder; their re-run remains the auditor gate."
+}

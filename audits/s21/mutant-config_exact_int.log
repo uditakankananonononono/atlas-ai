@@ -1,0 +1,31 @@
+.............................F...............................            [100%]
+=================================== FAILURES ===================================
+___________________________ test_config_limits[kw0] ____________________________
+
+kw = {'max_records': True}
+
+    @pytest.mark.parametrize('kw', [{'max_records':True}, {'max_records':0}, {'max_records':5001}, {'max_bytes':0}, {'max_text':False}])
+    def test_config_limits(kw):
+>       refuse('SOCIAL_REFUSED_LIMIT', lambda: scanner(**kw))
+
+tests/s21/test_social_scan.py:101:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_LIMIT'
+f = <function test_config_limits.<locals>.<lambda> at 0x7f36f1c40360>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_config_limits[kw0] - Failed: DID N...
+1 failed, 60 passed, 1 warning in 0.24s

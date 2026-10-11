@@ -1,0 +1,73 @@
+.............FFF.............................................            [100%]
+=================================== FAILURES ===================================
+__________________________ test_invalid_records[id-] ___________________________
+
+field = 'id', value = ''
+
+    @pytest.mark.parametrize('field,value', [('id',''), ('platform',''), ('author',''), ('source_ref',''), ('kind','dm'), ('text',123), ('source_ref','javascript:alert(1)'), ('extra','secret')])
+    def test_invalid_records(field, value):
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: run(data=payload([record(**{field:value})])))
+
+tests/s21/test_social_scan.py:78:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_invalid_records.<locals>.<lambda> at 0x7fc68cd2c360>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+_______________________ test_invalid_records[platform-] ________________________
+
+field = 'platform', value = ''
+
+    @pytest.mark.parametrize('field,value', [('id',''), ('platform',''), ('author',''), ('source_ref',''), ('kind','dm'), ('text',123), ('source_ref','javascript:alert(1)'), ('extra','secret')])
+    def test_invalid_records(field, value):
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: run(data=payload([record(**{field:value})])))
+
+tests/s21/test_social_scan.py:78:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_invalid_records.<locals>.<lambda> at 0x7fc68def7100>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+________________________ test_invalid_records[author-] _________________________
+
+field = 'author', value = ''
+
+    @pytest.mark.parametrize('field,value', [('id',''), ('platform',''), ('author',''), ('source_ref',''), ('kind','dm'), ('text',123), ('source_ref','javascript:alert(1)'), ('extra','secret')])
+    def test_invalid_records(field, value):
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: run(data=payload([record(**{field:value})])))
+
+tests/s21/test_social_scan.py:78:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_invalid_records.<locals>.<lambda> at 0x7fc68def72e0>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_invalid_records[id-] - Failed: DID...
+FAILED tests/s21/test_social_scan.py::test_invalid_records[platform-] - Faile...
+FAILED tests/s21/test_social_scan.py::test_invalid_records[author-] - Failed:...
+3 failed, 58 passed, 1 warning in 0.19s

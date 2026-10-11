@@ -1,0 +1,11 @@
+{
+  "unit_id": "c33.S2.1",
+  "status": "IMPLEMENTED-BOUNDED",
+  "implemented": ["offline normalized connectors", "output revalidation", "bounded lexical analysis", "draft briefs", "tenant report store", "unmounted router factory"],
+  "substitutes": ["offline policy + injected guard instead of missing c30.policy"],
+  "open_gates": ["c30 shared policy binding", "router mounting", "full bootstrap/combined regression", "external validation"],
+  "external_validation": {"status": "NOT_RUN", "verdict": null},
+  "live_access": false,
+  "posting": false,
+  "publication": false
+}

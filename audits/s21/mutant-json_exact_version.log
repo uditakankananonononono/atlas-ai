@@ -1,0 +1,31 @@
+.......................F.....................................            [100%]
+=================================== FAILURES ===================================
+___________ test_bad_envelope[{"schema_version":true,"records":[]}] ____________
+
+data = b'{"schema_version":true,"records":[]}'
+
+    @pytest.mark.parametrize('data', [b'bad', b'[]', b'{"schema_version":true,"records":[]}', b'{"schema_version":1,"records":{}}', b'{"schema_version":1,"records":[],"token":"secret"}', b'{"schema_version":1,"schema_version":1,"records":[]}'])
+    def test_bad_envelope(data):
+>       refuse('SOCIAL_REFUSED_SCHEMA', lambda: run(data=data))
+
+tests/s21/test_social_scan.py:83:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'SOCIAL_REFUSED_SCHEMA'
+f = <function test_bad_envelope.<locals>.<lambda> at 0x7fa5406409a0>
+
+    def refuse(code, f):
+>       with pytest.raises(m.Refusal) as e:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 's21.core.Refusal'>
+
+tests/s21/test_social_scan.py:32: Failed
+=============================== warnings summary ===============================
+../../../tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/s21-venv/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/s21/test_social_scan.py::test_bad_envelope[{"schema_version":true,"records":[]}]
+1 failed, 60 passed, 1 warning in 0.16s
