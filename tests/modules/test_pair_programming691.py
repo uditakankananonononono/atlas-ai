@@ -100,3 +100,110 @@ def test_refusals():
     p = payload(); p['understanding_checks'] = []; error(p, 'understanding_checks')
     p = payload(); p['understanding_checks'][0]['confirmed'] = 'yes'; error(p, 'confirmed')
     p = payload(); p['understanding_checks'][0]['item'] = ''; error(p, 'item')
+
+
+# --- repair pins (second-audit survivors; tests only, runtime frozen) ---
+
+def exact_refusal(p, message):
+    with pytest.raises(ValueError) as e:
+        collaborate(p)
+    assert str(e.value) == message
+
+def test_session_id_refusal_exact_text():
+    p = payload(); del p['session_id']
+    exact_refusal(p, 'session_id requires bounded nonempty string')
+
+def test_unknown_driver_refusal_exact_text():
+    p = payload(); p['rotations'][0]['driver_id'] = 'caro'
+    exact_refusal(p, 'rotation driver_id must be one of the participants')
+
+def test_duration_refusal_exact_text():
+    p = payload(); p['rotations'][0]['duration_minutes'] = 181
+    exact_refusal(p, 'duration_minutes requires 0 < minutes <= 180')
+
+def test_confirmed_refusal_exact_text():
+    p = payload(); p['understanding_checks'][0]['confirmed'] = 'yes'
+    exact_refusal(p, 'confirmed requires a boolean')
+
+def test_rotation_list_cap_accepts_64_refuses_65():
+    rotations = [{'driver_id': 'asha' if i % 2 == 0 else 'biren',
+                  'duration_minutes': 1, 'handoff_note': 'n'} for i in range(64)]
+    p = payload(); p['rotations'] = rotations
+    assert collaborate(p)['rotation_count'] == 64
+    p = payload(); p['rotations'] = rotations + [
+        {'driver_id': 'biren', 'duration_minutes': 1, 'handoff_note': 'n'}]
+    exact_refusal(p, 'rotations requires bounded object list')
+
+def test_understanding_checks_cap_accepts_16_refuses_17():
+    checks = [{'item': 'item %d' % i, 'confirmed': True} for i in range(16)]
+    p = payload(); p['understanding_checks'] = checks
+    assert collaborate(p)['shared_understanding_aligned'] is True
+    p = payload(); p['understanding_checks'] = checks + [{'item': 'item 16', 'confirmed': True}]
+    exact_refusal(p, 'understanding_checks requires bounded object list')
+
+def test_single_rotation_and_single_check_accepted():
+    p = payload()
+    p['rotations'] = [{'driver_id': 'asha', 'duration_minutes': 45}]
+    p['understanding_checks'] = [{'item': 'goal clear', 'confirmed': True}]
+    r = collaborate(p)
+    assert r['rotation_count'] == 1 and r['total_minutes'] == 45
+    assert r['drive_minutes'] == {'asha': 45, 'biren': 0}
+    assert r['status'] == 'session_rotation_gaps'
+
+def test_dominance_just_below_three_quarters_is_balanced():
+    p = payload(); p['rotations'] = [
+        {'driver_id': 'asha', 'duration_minutes': 107},
+        {'driver_id': 'biren', 'duration_minutes': 36, 'handoff_note': 'x'}]
+    r = collaborate(p)
+    assert r['drive_share'] == {'asha': 107 / 143, 'biren': 36 / 143}
+    assert 0.74 < r['drive_share']['asha'] < 0.75
+    assert r['dominant_driver'] is None and r['balanced_rotation'] is True
+
+def test_final_rotation_switch_without_note_flagged():
+    p = payload(); p['rotations'] = [
+        {'driver_id': 'asha', 'duration_minutes': 30},
+        {'driver_id': 'biren', 'duration_minutes': 30, 'handoff_note': 'x'},
+        {'driver_id': 'asha', 'duration_minutes': 30}]
+    r = collaborate(p)
+    assert r['missing_handoff_indexes'] == [2]
+    assert 'missing_handoff_note' in r['gaps']
+
+def test_final_rotation_repeat_flagged():
+    p = payload(); p['rotations'] = [
+        {'driver_id': 'asha', 'duration_minutes': 30},
+        {'driver_id': 'biren', 'duration_minutes': 30, 'handoff_note': 'x'},
+        {'driver_id': 'biren', 'duration_minutes': 30}]
+    r = collaborate(p)
+    assert r['consecutive_repeat_indexes'] == [2]
+    assert 'consecutive_driver_repeat' in r['gaps']
+
+def test_participants_sorted_not_input_order():
+    p = payload(); p['participants'] = ['biren', 'asha']
+    r = collaborate(p)
+    assert r['participants'] == ['asha', 'biren']
+    assert list(r['drive_minutes']) == ['asha', 'biren']
+    assert list(r['drive_share']) == ['asha', 'biren']
+
+def test_same_driver_without_note_is_not_switch_gap():
+    # missing-note condition: first half FALSE (no switch), second half TRUE (note absent)
+    p = payload(); p['rotations'] = [
+        {'driver_id': 'asha', 'duration_minutes': 30},
+        {'driver_id': 'asha', 'duration_minutes': 30}]
+    r = collaborate(p)
+    assert r['missing_handoff_indexes'] == []
+    assert 'missing_handoff_note' not in r['gaps']
+
+def test_switch_with_note_is_not_switch_gap():
+    # missing-note condition: second half FALSE (note present), first half TRUE (a switch)
+    p = payload()
+    assert collaborate(p)['missing_handoff_indexes'] == []
+
+def test_envelope_keys_exact():
+    r = collaborate(payload())
+    assert set(r) == {'session_id', 'task', 'participants', 'rotation_count',
+                      'total_minutes', 'drive_minutes', 'drive_share',
+                      'dominant_driver', 'never_drove', 'consecutive_repeat_indexes',
+                      'missing_handoff_indexes', 'unconfirmed_understanding_items',
+                      'balanced_rotation', 'shared_understanding_aligned', 'gaps',
+                      'status', 'collaboration_observed', 'code_changes_made',
+                      'source_truth_verified', 'boundary'}
