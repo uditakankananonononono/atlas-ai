@@ -303,3 +303,74 @@ def test_oversized_file_is_refused_before_it_is_opened(tmp_path, monkeypatch):
     monkeypatch.setattr("builtins.open", no_open)
     with pytest.raises(ExportAdapterError, match="max_bytes"):
         run(cfg(p))
+
+
+# ---- repair round: validation, dotted CSV header, canonical derived ids ----------------------
+
+@pytest.mark.parametrize("bad", ["x", None, [], 5, ("path",)])
+def test_config_must_be_an_object(bad):
+    with pytest.raises(ExportAdapterError) as ei:
+        run(bad)
+    assert str(ei.value) == "config must be an object"
+
+
+@pytest.mark.parametrize("bad", ["", 5, ["id"], {"a": 1}, True])
+def test_external_id_mapping_must_be_a_non_empty_string(tmp_path, bad):
+    m = {"url": "link", "external_id": bad}
+    with pytest.raises(ExportAdapterError) as ei:
+        run(cfg(csv_file(tmp_path, CSV), mapping=m))
+    assert str(ei.value) == "mapping.external_id must be a non-empty string"
+
+
+@pytest.mark.parametrize("bad", ["", 5, ["a"], True])
+def test_record_path_must_be_a_non_empty_string(tmp_path, bad):
+    p = tmp_path / "e.json"
+    p.write_text("[]")
+    with pytest.raises(ExportAdapterError) as ei:
+        run({"path": str(p), "format": "json", "record_path": bad, "mapping": {"url": "u"}})
+    assert str(ei.value) == "record_path must be a non-empty string"
+
+
+@pytest.mark.parametrize("fields", [
+    {"": "date"}, {"a": ""}, {"a": 3}, {3: "date"}, {"a": None}, {"a": ["x"]}, ["a"], "a", 7, None,
+])
+def test_fields_mapping_must_be_strings_to_strings(tmp_path, fields):
+    with pytest.raises(ExportAdapterError) as ei:
+        run(cfg(csv_file(tmp_path, CSV), mapping={"url": "link", "fields": fields}))
+    assert str(ei.value) == "mapping.fields must map output names to source names (strings)"
+
+
+def test_url_mapping_must_be_a_non_empty_string(tmp_path):
+    for bad in ("", 5, None, ["link"]):
+        with pytest.raises(ExportAdapterError, match="mapping.url"):
+            run(cfg(csv_file(tmp_path, CSV), mapping={"url": bad}))
+
+
+def test_csv_dotted_header_is_a_literal_column_not_a_nested_path(tmp_path):
+    p = csv_file(tmp_path, 'a.url,a.when\nhttps://example.org/1,d1\nhttps://example.org/2,d2\n')
+    b = run({"path": p, "format": "csv", "mapping": {"url": "a.url", "fields": {"w": "a.when"}}})
+    assert [i.canonical_url for i in b.items] == ["https://example.org/1", "https://example.org/2"]
+    assert [i.payload["w"] for i in b.items] == ["d1", "d2"]
+    # a nested-looking name does not match a header that only has the prefix
+    q = csv_file(tmp_path, "a,b\nhttps://example.org/1,x\n", "n.csv")
+    with pytest.raises(ExportAdapterError, match=r"column 'a\.url' not found"):
+        run({"path": q, "format": "csv", "mapping": {"url": "a.url"}})
+
+
+def test_json_dotted_key_is_a_nested_path_even_when_a_literal_dotted_key_exists(tmp_path):
+    p = tmp_path / "e.json"
+    p.write_text(json.dumps([{"a.url": "https://example.org/lit", "a": {"url": "https://example.org/nested"}}]))
+    b = run({"path": str(p), "format": "json", "mapping": {"url": "a.url"}})
+    assert b.items[0].canonical_url == "https://example.org/nested"
+
+
+def test_derived_ids_do_not_depend_on_mapped_field_order(tmp_path):
+    q = tmp_path / "e.jsonl"
+    q.write_text('{"u":"https://example.org/1","a":"x","b":"y"}\n')
+    one = run({"path": str(q), "format": "jsonl", "mapping": {"url": "u", "fields": {"a": "a", "b": "b"}}})
+    two = run({"path": str(q), "format": "jsonl", "mapping": {"url": "u", "fields": {"b": "b", "a": "a"}}})
+    assert one.items[0].external_id == two.items[0].external_id
+    import hashlib
+    expected = hashlib.sha256(json.dumps(["https://example.org/1", {"a": "x", "b": "y"}],
+                                         sort_keys=True, default=str).encode()).hexdigest()[:16]
+    assert one.items[0].external_id == expected

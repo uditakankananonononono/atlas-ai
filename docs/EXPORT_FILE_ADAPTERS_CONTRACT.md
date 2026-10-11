@@ -48,3 +48,15 @@ Refused: files over `max_bytes`, ZIP or other archives (by magic bytes or suffix
 - Whole-file in memory up to `max_bytes`. Records are counted as lines or rows, not checked for meaning.
 - The module is not registered in `registry.py` and has no HTTP route; no wiring patch was produced. It has not been run inside a unit 6 job.
 - Not run: the full repo test suite, mounted auth/tenant tests, Postgres, hosted CI.
+
+## Memory and re-read limits (added 2026-10-11, doc and tests only, core unchanged)
+
+- The `max_bytes` cap (default 256 MiB) limits the RAW INPUT FILE only. The parsed objects (CSV rows as dicts, decoded JSON values, the emitted items and their payloads) can use more memory than the file size, often several times more. There is NO total memory cap. Callers that handle large exports should lower `max_bytes` and `max_records`.
+- Every call re-reads and re-parses the whole file, including each paged call made with `cursor`. Paging bounds the size of what is returned, not the work or memory done per call.
+
+## Mapping rules pinned by tests (added 2026-10-11)
+
+- CSV: a mapped name is looked up as a literal header, so a header such as `a.url` is one column. It is not treated as a nested path.
+- JSON and JSONL: a mapped name with dots is a nested path (`a.url` means key `a`, then key `url`), even if a literal key `a.url` also exists in the record.
+- Derived external ids (used when no `external_id` is mapped) are computed with sorted keys, so reordering the `fields` mapping does not change them.
+- Validation errors have fixed messages for: config not an object, `mapping.url`, `mapping.external_id`, `record_path`, `mapping.fields`.
