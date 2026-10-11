@@ -47,3 +47,12 @@ At base the row status is PARTIAL, and the recorded scope says no code transform
 - No file or repository walking. It works on a string.
 - No authentication, tenant or HTTP layer. A wiring patch exists separately and is unapplied and untested.
 - The existing `legacy_code_modernization` method in `software_practice_685_709.py` is unchanged.
+
+## Repair round: known defect and untested constructs
+
+Recorded by the second commit. The module bytes did not change in that commit.
+
+- Known defect, covered by a strict xfail test (`test_known_defect_unnormalized_identifier_crashes`): a method name written in a non-NFKC spelling (for example a fullwidth first letter in `self.assertEquals`) makes `modernize` raise `UnicodeDecodeError`. The ast normalizes the name, so its byte length differs from the source text, and the attribute span is cut in the middle of a character. The same span helper is used for `os.getcwdu` and the `iter*` methods. Not fixed in that commit.
+- Declared unreachable or untested, not pretended tested: the `could not locate the method name in source` refusal in the unittest rule (the defect above raises before it can be reached, and ASCII names never mismatch); the `source if not res.changes else text` choice in the syntax-error branch (it would need a rewrite that produces unparsable text, and no input is known); the second `compile()` in `_finish` (a repeat of the check made in `modernize`).
+- One hand-written mutant survived: changing the overlap test from `start < last_end` to `start <= last_end`. No input is known where two edits touch end to start. It is not claimed equivalent.
+- Collections ABC names in the module: 25 (the earlier note of 26 was a miscount).

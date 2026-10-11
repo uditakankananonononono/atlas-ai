@@ -314,3 +314,235 @@ def test_result_to_dict_is_plain_data():
     assert d["changes"][0]["rule"] == "xrange"
     assert d["refusals"][0]["rule"] == "dict_iter"
     assert "modernized" in d
+
+
+# ===== repair round (second commit): per-construct coverage ================
+ALIAS_PAIRS = [
+    ("assertEquals", "assertEqual"), ("assertNotEquals", "assertNotEqual"), ("assert_", "assertTrue"),
+    ("failUnless", "assertTrue"), ("failIf", "assertFalse"), ("failUnlessEqual", "assertEqual"),
+    ("assertAlmostEquals", "assertAlmostEqual"), ("assertNotAlmostEquals", "assertNotAlmostEqual"),
+    ("assertRegexpMatches", "assertRegex"), ("assertNotRegexpMatches", "assertNotRegex"),
+    ("assertRaisesRegexp", "assertRaisesRegex"),
+]
+ABC_NAMES = [
+    "Mapping", "MutableMapping", "Sequence", "MutableSequence", "Set", "MutableSet", "Iterable", "Iterator",
+    "Callable", "Hashable", "Sized", "Container", "Generator", "Awaitable", "Coroutine", "AsyncIterable",
+    "AsyncIterator", "AsyncGenerator", "Collection", "Reversible", "ByteString", "KeysView", "ItemsView",
+    "ValuesView", "MappingView",
+]
+
+
+def test_alias_table_matches_literal_list():
+    assert dict(ALIAS_PAIRS) == M.UNITTEST_ALIASES
+    assert set(ABC_NAMES) == set(M.COLLECTIONS_ABCS)
+
+
+@pytest.mark.parametrize("old,new", ALIAS_PAIRS)
+def test_each_unittest_alias(old, new):
+    r = out(f"self.{old}(a, b)\n")
+    assert r.modernized == f"self.{new}(a, b)\n"
+    assert [(c.rule, c.before, c.after) for c in r.changes] == [("unittest_aliases", old, new)]
+
+
+@pytest.mark.parametrize("name", ABC_NAMES)
+def test_each_collections_abc_name(name):
+    r = out(f"from collections import {name}\n")
+    assert r.modernized == f"from collections.abc import {name}\n"
+    r2 = out(f"from collections import {name}, OrderedDict\n")
+    assert r2.modernized == f"from collections import {name}, OrderedDict\n"
+    assert [x.rule for x in r2.refusals] == ["collections_abc"]
+    r3 = out(f"import collections\nx = collections.{name}\n")
+    assert [x.rule for x in r3.refusals] == ["collections_abc"] and r3.modernized.endswith(f"collections.{name}\n")
+
+
+def test_collections_import_with_parenthesis_and_odd_spacing():
+    assert out("from  collections  import (Mapping,\n    Sequence)\n").modernized == (
+        "from  collections.abc  import (Mapping,\n    Sequence)\n")
+
+
+def test_collections_import_with_line_continuation_is_refused_not_rewritten():
+    src = "from \\\n collections import Mapping\n"
+    r = out(src)
+    assert r.modernized == src
+    assert [x.rule for x in r.refusals] == ["collections_abc"]
+    assert "could not locate" in r.refusals[0].reason
+
+
+@pytest.mark.parametrize("consumer", ["sorted", "list", "tuple", "set", "frozenset", "sum", "min", "max",
+                                      "any", "all", "enumerate"])
+def test_each_safe_consumer_of_iter_methods(consumer):
+    r = out(f"x = {consumer}(d.iteritems())\n")
+    assert r.modernized == f"x = {consumer}(d.items())\n"
+
+
+@pytest.mark.parametrize("src", [
+    "x = len(d.iteritems())\n", "x = zip(d.iterkeys(), e)\n", "x = max(1, d.itervalues())\n",
+    "x = foo.sorted(d.iteritems())\n", "x = [d.iteritems()]\n", "return_value = d.iteritems()\n",
+])
+def test_iter_methods_outside_safe_contexts_are_refused(src):
+    r = out(src)
+    assert r.modernized == src
+    assert [x.rule for x in r.refusals] == ["dict_iter"]
+
+
+def test_max_passes_constant_and_cap():
+    assert M.MAX_PASSES == 10
+
+    def nested(depth):
+        s = "k"
+        for _ in range(depth):
+            s = f"d.has_key({s})"
+        return s + "\n"
+
+    ok = out(nested(10))
+    assert ok.passes == 10 and not [x for x in ok.refusals if x.rule == "max_passes"]
+    assert "has_key" not in ok.modernized
+    over = out(nested(11))
+    assert over.passes == 10
+    assert [x.rule for x in over.refusals] == ["max_passes"]
+    assert "has_key" in over.modernized
+    assert over.refusals[0].line == 1 and over.refusals[0].col == 0
+
+
+def test_max_passes_cap_follows_constant(monkeypatch):
+    monkeypatch.setattr(M, "MAX_PASSES", 2)
+    r = out("d.has_key(d.has_key(d.has_key(k)))\n")
+    assert r.passes == 2 and [x.rule for x in r.refusals] == ["max_passes"]
+    monkeypatch.setattr(M, "MAX_PASSES", 3)
+    r = out("d.has_key(d.has_key(d.has_key(k)))\n")
+    assert r.passes == 3 and r.refusals == []
+
+
+@pytest.mark.parametrize("bind", [
+    "import foo as {n}", "from foo import {n}", "from foo import bar as {n}", "{n} = 1", "def {n}(): pass",
+    "class {n}: pass", "def f({n}): pass", "def f(*{n}): pass", "def f(**{n}): pass", "def f(*, {n}): pass",
+    "lambda {n}: 1", "try:\n    pass\nexcept E as {n}:\n    pass", "for {n} in y:\n    pass",
+    "with y as {n}:\n    pass", "del {n}", "async def {n}(): pass",
+])
+def test_xrange_not_rewritten_when_name_is_bound(bind):
+    src = bind.format(n="xrange") + "\nx = xrange(3)\n"
+    r = out(src)
+    assert r.modernized == src and not [c for c in r.changes if c.rule == "xrange"]
+
+
+def test_xrange_plain_import_does_not_count_as_a_definition_of_range():
+    src = "import xrange\nx = xrange(3)\n"
+    assert out(src).modernized == src  # a bound name, so the call is left alone
+
+
+@pytest.mark.parametrize("bind", [
+    "import foo as {n}", "from foo import {n}", "from foo import bar as {n}", "{n} = 1", "def {n}(): pass",
+    "class {n}: pass", "def f({n}): pass", "try:\n    pass\nexcept E as {n}:\n    pass",
+])
+@pytest.mark.parametrize("mod,call,expected", [
+    ("string", "x = string.lower(a)", "x = a.lower()"),
+    ("os", "x = os.getcwdu()", "x = os.getcwd()"),
+])
+def test_stdlib_name_rules_skip_when_name_rebound(bind, mod, call, expected):
+    ok = f"import {mod}\n{call}\n"
+    assert out(ok).modernized == f"import {mod}\n{expected}\n"
+    src = f"import {mod}\n{bind.format(n=mod)}\n{call}\n"
+    assert out(src).modernized == src
+
+
+def test_import_forms_for_stdlib_names():
+    assert out("import os.path\nx = os.getcwdu()\n").modernized == "import os.path\nx = os.getcwd()\n"
+    src = "import os as o\nx = os.getcwdu()\n"
+    assert out(src).modernized == src
+    src = "from os import path\nx = os.getcwdu()\n"
+    assert out(src).modernized == src
+
+
+@pytest.mark.parametrize("src,expected,refused", [
+    ("import string\nx = string.join()\n", None, True),
+    ("import string\nx = string.join(w)\n", "import string\nx = ' '.join(w)\n", False),
+    ("import string\nx = string.join(w, s)\n", "import string\nx = s.join(w)\n", False),
+    ("import string\nx = string.join(w, s, 1)\n", None, True),
+    ("import string\nx = string.join(w, sep=s)\n", None, True),
+    ("import string\nx = string.join(*w)\n", None, True),
+    ("import string\nx = string.lower()\n", None, True),
+    ("import string\nx = string.lower(a, b)\n", None, True),
+    ("import string\nx = string.upper(a, b)\n", None, True),
+    ("import string\nx = string.lower(*a)\n", None, True),
+])
+def test_string_arity(src, expected, refused):
+    r = out(src)
+    assert r.modernized == (expected if expected is not None else src)
+    assert [x.rule for x in r.refusals] == (["string_module"] if refused else [])
+
+
+def test_getcwdu_with_arguments_left_alone_and_not_refused():
+    src = "import os\nx = os.getcwdu(1)\n"
+    r = out(src)
+    assert r.modernized == src and r.changes == [] and r.refusals == []
+
+
+def test_nested_overlap_across_different_rules_takes_two_passes():
+    r = out("d.has_key(xrange(3))\n")
+    assert r.modernized == "range(3) in d\n"
+    assert r.passes == 2
+    assert [(c.rule, c.pass_no) for c in r.changes] == [("has_key", 1), ("xrange", 2)]
+
+
+def test_sibling_edits_apply_in_one_pass():
+    r = out("a = d.has_key(k)\nb = xrange(2)\n")
+    assert r.passes == 1 and [c.pass_no for c in r.changes] == [1, 1]
+
+
+def test_syntax_error_details_and_source_untouched():
+    src = "x = 1\nprint 'a'\n"
+    r = out(src)
+    assert r.modernized == src and r.original == src
+    [ref] = r.refusals
+    assert (ref.rule, ref.line, ref.col) == ("syntax_error", 2, 1)
+    assert ref.reason.startswith("source does not parse as Python 3: SyntaxError: ")
+    assert r.changes == [] and r.passes == 0 and r.compiled_ok is False and r.verified is False
+
+
+def test_syntax_error_without_position_defaults_to_line_1_col_0():
+    src = "x = 1\x00\n"
+    r = out(src)
+    [ref] = r.refusals
+    assert (ref.rule, ref.line, ref.col) == ("syntax_error", 1, 0)
+    assert r.modernized == src
+
+
+def test_syntax_error_with_check_reports_not_run():
+    r = out("print 'a'\n", check=lambda s: True)
+    assert r.check_passed is False and r.check_error == "not run: modernized source does not compile"
+
+
+def test_parses_but_does_not_compile():
+    r = out("return 1\n")
+    assert r.compiled_ok is False and r.verified is False and r.refusals == []
+    r2 = out("x = xrange(3)\nreturn 1\n", check=lambda s: True)
+    assert r2.modernized == "x = range(3)\nreturn 1\n"
+    assert r2.compiled_ok is False
+    assert r2.check_passed is False
+    assert r2.check_error == "not run: modernized source does not compile"
+    assert r2.verified is False
+
+
+def test_check_not_called_when_not_compiling():
+    called = []
+    out("return 1\n", check=lambda s: called.append(s) or True)
+    assert called == []
+
+
+def test_check_receives_modernized_text():
+    seen = []
+    r = out("x = xrange(3)\n", check=lambda s: seen.append(s) or True)
+    assert seen == ["x = range(3)\n"] and r.verified is True and r.check_error is None
+
+
+def test_check_returning_falsy_is_failed_without_error_text():
+    r = out("x = 1\n", check=lambda s: 0)
+    assert r.check_passed is False and r.check_error is None and r.verified is False
+
+
+@pytest.mark.xfail(strict=True, raises=UnicodeDecodeError,
+                   reason="known defect, runtime unchanged in this commit: a method name written in a "
+                          "non-NFKC form (fullwidth letter) has a different byte length in source than "
+                          "ast's normalized attr, so attr_span slices mid-character")
+def test_known_defect_unnormalized_identifier_crashes():
+    out("class T:\n def t(self):\n  self.\uff41ssertEquals(1, 1)\n")
