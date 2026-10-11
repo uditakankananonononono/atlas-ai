@@ -85,3 +85,17 @@ emoji source strings as HTTP200. This is evidence for those shapes, not a claim
 that every possible response-encoding path is safe. The endpoint encode guard
 remains. Malformed JSON and parser limits outside these tested shapes are not
 claimed covered by this parsed-JSON check.
+
+Landed route boundary follow-up pins: exactly100000 ASCII characters/bytes and
+50000 accented U+00E9 characters (100000 bytes) accepted;100001 ASCII characters
+refuse with Pydantic string_too_long;50001 U+00E9 characters refuse the UTF-8 byte
+bound.64 matching metadata refs accepted,65 refused. Parsed-JSON depth counts
+root at0, so a leaf/key at64 is accepted, at65 refused; list/dict values and
+nested dict keys are pinned independently, including deepest surrogates and
+first-over-depth surrogates. Omitted/null actor IDs bind the authenticated actor;
+a mismatching actor refuses403. These are behavior pins, not a claim that
+exclude_none=False is killed: owner_payload separately ignores a None actor.
+The endpoint UnicodeEncodeError guard is unreachable through the mounted route
+because the dependency rejects first; kept as defense in depth, not claimed
+covered by a mounted kill. Router tag text has no behavior claim. Docker/PG floor
+remains unverified.

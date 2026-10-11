@@ -66,3 +66,55 @@ def test_deep_json_refuses_before_validation(monkeypatch,oidc_auth_headers):
  r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1','extra':nested})
  assert r.status_code==422,r.text
  assert r.json()['detail']=='legacy694 JSON nesting exceeds 64 levels'
+
+@pytest.mark.parametrize('source,status,detail',[
+ ('x'*100000,200,None),('x'*100001,422,'string_too_long'),
+ ('é'*50000,200,None),('é'*50001,422,'source exceeds 100000 UTF-8 bytes'),
+])
+def test_source_character_and_utf8_edges(monkeypatch,oidc_auth_headers,source,status,detail):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':source})
+ assert r.status_code==status,r.text
+ if detail=='string_too_long':assert r.json()['detail'][0]['type']==detail
+ elif detail:assert r.json()['detail']==detail
+
+@pytest.mark.parametrize('count,status',[(64,200),(65,422)])
+def test_legacy_reference_count_edge(monkeypatch,oidc_auth_headers,count,status):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1','resource_refs':[{'tenant_id':'a','actor_id':'owner','id':str(i)}for i in range(count)]})
+ assert r.status_code==status,r.text
+ if count==65:assert r.json()['detail'][0]['type']=='too_long'
+
+@pytest.mark.parametrize('kind',['list','dict'])
+@pytest.mark.parametrize('levels,leaf,detail',[
+ (63,'plain',None),(64,'plain','legacy694 JSON nesting exceeds 64 levels'),
+ (63,'\ud800','source contains invalid Unicode surrogate'),
+ (64,'\ud800','legacy694 JSON nesting exceeds 64 levels'),
+])
+def test_json_value_depth_exact_edges(monkeypatch,oidc_auth_headers,kind,levels,leaf,detail):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ value=leaf
+ for _ in range(levels):value=[value]if kind=='list'else{'value':value}
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers('a','owner'),'Content-Type':'application/json'},content=json.dumps({'source':'x=1','extra':value}))
+ assert r.status_code==(422 if detail else 200),r.text
+ if detail:assert r.json()['detail']==detail
+
+@pytest.mark.parametrize('levels,key,detail',[
+ (62,'plain',None),(63,'plain','legacy694 JSON nesting exceeds 64 levels'),
+ (62,'\ud800','source contains invalid Unicode surrogate'),
+ (63,'\ud800','legacy694 JSON nesting exceeds 64 levels'),
+])
+def test_json_key_depth_exact_edges(monkeypatch,oidc_auth_headers,levels,key,detail):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ value={key:0}
+ for _ in range(levels):value={'value':value}
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers('a','owner'),'Content-Type':'application/json'},content=json.dumps({'source':'x=1','extra':value}))
+ assert r.status_code==(422 if detail else 200),r.text
+ if detail:assert r.json()['detail']==detail
+
+@pytest.mark.parametrize('extra,status',[({},200),({'actor_id':None},200),({'actor_id':'other'},403)])
+def test_legacy_exclude_none_owner_semantic(monkeypatch,oidc_auth_headers,extra,status):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1',**extra})
+ assert r.status_code==status,r.text
+ if status==200:assert r.json()['actor_id']=='owner'
