@@ -15,6 +15,7 @@ def calibrate_attempts(attempts: list[dict[str, Any]]) -> dict[str, Any]:
         raise ValueError('attempts must contain scored observations')
     groups: dict[str, list[dict[str, Any]]] = {}
     seen: set[str] = set()
+    seen_evidence: set[str] = set()
     observations = []
     for attempt in attempts:
         if not isinstance(attempt, dict):
@@ -24,9 +25,10 @@ def calibrate_attempts(attempts: list[dict[str, Any]]) -> dict[str, Any]:
         evidence = attempt.get('evidence_id')
         if not all(isinstance(v, str) and v.strip() for v in (ident, strategy, evidence)):
             raise ValueError('attempt needs id, strategy and evidence_id')
-        if ident in seen:
-            raise ValueError('attempt ids must be unique')
+        if ident in seen or evidence in seen_evidence:
+            raise ValueError('attempt ids and evidence ids must be unique')
         seen.add(ident)
+        seen_evidence.add(evidence)
         probability, outcome = attempt.get('predicted_success'), attempt.get('succeeded')
         if isinstance(probability, bool) or not isinstance(probability, (float, int)):
             raise ValueError('predicted_success must be a numeric probability')

@@ -58,3 +58,27 @@ def test_mounted_calibration_cycle_auth_tenant(monkeypatch,oidc_auth_headers):
   r=c.post(path,headers=h,json={'payload':payload});assert r.status_code==200 and r.json()['tenant_id']=='a'
   assert c.post(path,headers=h,json={'payload':{**payload,'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
  assert c.post('/api/v1/api/modules/20/learning-reasoning-810-859/self_regulated_learning',headers=h,json={'payload':{'objective':'x','source':SRC}}).status_code==422
+
+def test_cycle_ties_no_choice_and_goal_exact_threshold():
+ p=cycle();p['attempts']=[{'id':'a','strategy':'recall','evidence_id':'e1','predicted_success':.5,'succeeded':True},{'id':'b','strategy':'example','evidence_id':'e2','predicted_success':.5,'succeeded':False}];p['reflection']['evidence_ids']=['e2','e1'];p['learning_goal']['target']=.5
+ r=run('self_regulated_learning',p)['regulated_cycle'];assert r['recommended_strategy'] is None and r['recommended_action'] is None and r['choice_matches_recommendation'] is None
+ assert r['selected_next_action']=='Study checked example' and r['goal_met_on_observed_attempts'] is True and r['reflection_evidence_ids']==['e1','e2']
+ p['learner_choice']=None;assert run('self_regulated_learning',p)['regulated_cycle']['status']=='awaiting_learner_choice'
+
+@pytest.mark.parametrize('change',[{'learning_goal':None},{'learning_goal':{'goal_id':'g','source':'fixture','metric':'score','target':.5}},{'learning_goal':{'goal_id':'g','source':'fixture','metric':'task_success_rate','target':True}},{'strategy_catalog':[]},{'strategy_catalog':[[]]},{'reflection':{'source':'fixture','observation':'x','evidence_ids':['e1']}},{'reflection':{'source':'fixture','observation':'x','evidence_ids':['e1','e1','e2','e3']}},{'learner_choice':{'strategy':'recall','reason':'','source':'fixture'}}])
+def test_cycle_shapes_bounds_refs_invalid(change):
+ p={**cycle(),**change};before=deepcopy(p)
+ with pytest.raises(LearningReasoningError):run('self_regulated_learning',p)
+ assert p==before
+
+def test_catalog_and_attempt_caps():
+ p=cycle();p['strategy_catalog']=[{'strategy':str(i),'next_action':'action','source':'fixture'}for i in range(32)];p['attempts']=[]
+ assert run('self_regulated_learning',p)['regulated_cycle']['reason']=='missing_attempt_evidence'
+ p['strategy_catalog'].append({'strategy':'32','next_action':'action','source':'fixture'})
+ with pytest.raises(LearningReasoningError):run('self_regulated_learning',p)
+ p=cycle();p['strategy_catalog']*=2
+ with pytest.raises(LearningReasoningError):run('self_regulated_learning',p)
+ p=cycle();p['attempts']=[{'id':str(i),'strategy':'recall','evidence_id':str(i),'predicted_success':.5,'succeeded':False}for i in range(1000)];p['reflection']['evidence_ids']=[str(i)for i in range(1000)]
+ assert run('self_regulated_learning',p)['regulated_cycle']['status']=='recommendation_ready'
+ p['attempts'].append({'id':'1000','strategy':'recall','evidence_id':'1000','predicted_success':.5,'succeeded':False})
+ with pytest.raises(LearningReasoningError):run('self_regulated_learning',p)

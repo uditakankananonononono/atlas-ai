@@ -27,7 +27,8 @@ def test_823_metacognition_calibrates():
  o=L('metacognition',attempts=[{'id':'1','strategy':'retrieval','evidence_id':'scored-1','predicted_success':.8,'succeeded':False}])
  assert o['calibration']['brier_loss']==pytest.approx(.64)
  assert o['calibration']['overconfidence']==pytest.approx(.8)
-def test_824_self_regulated_cycle():assert L('self_regulated_learning')['srl_cycle']==['forethought','performance monitoring','self-reflection']
+def test_824_minimal_cycle_not_execution():
+ with pytest.raises(LearningReasoningError,match='learning_goal'):L('self_regulated_learning')
 def test_825_goal_setting_is_measurable_and_has_if_then():assert 'implementation_intention' in L('goal_setting',goal={'specific':'x','metric':'m'})['goal']
 def test_826_progress_monitoring_computes_change():assert L('progress_monitoring',unit='points',records=[{'value':1,'evidence_id':'p1','observed_at':'2026-10-01T00:00:00+00:00'},{'value':4,'evidence_id':'p2','observed_at':'2026-10-02T00:00:00+00:00'}])['progress']['change']==3
 @pytest.mark.parametrize('n',['self_assessment','peer_assessment'])
