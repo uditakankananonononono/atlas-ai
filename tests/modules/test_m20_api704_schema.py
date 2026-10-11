@@ -1059,3 +1059,18 @@ def test_inline_body_and_response_schema_depth_8_vs_9():
     generate_openapi(d)
     d["operations"][0]["responses"]["200"]["schema"] = _nest(9)
     assert "schema depth bound 8 exceeded" in msg_of(d)
+
+
+# ---------- R3 pins ----------
+def test_cycle_message_names_exact_node():
+    assert msg_of(_graph({"A": ["B"], "B": ["A"]})) == "recursive $ref cycle involving 'A'"
+    assert msg_of(_graph({"B": ["C"], "C": ["B"]}, names=["A"])) == "recursive $ref cycle involving 'B'"
+    assert msg_of(_graph({"A": ["A"]})) == "recursive $ref cycle involving 'A'"
+
+
+def test_parameter_schema_depth_8_reaches_scalar_check_9_hits_depth_bound():
+    d = base(); d["operations"][0]["parameters"].append({"name": "z", "in": "query", "schema": _nest(8)})
+    assert msg_of(d) == "operation 'getPet' parameter 2: parameter schema must be scalar or array of scalars"
+    d = base(); d["operations"][0]["parameters"].append({"name": "z", "in": "query", "schema": _nest(9)})
+    m = msg_of(d)
+    assert m == "operation 'getPet' parameter 2 schema" + ".items" * 8 + ": schema depth bound 8 exceeded"
