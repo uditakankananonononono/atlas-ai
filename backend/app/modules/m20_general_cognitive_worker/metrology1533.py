@@ -12,6 +12,7 @@ from math import isqrt
 MAX_ITEMS = 64
 MAX_CHAIN = 16
 MAX_TEXT = 128
+MAX_NUMBER_CHARS = 20
 MAX_UNIT = 16
 MAX_K = 10 * 10 ** 6
 KINDS = ('type_a', 'type_b')
@@ -48,8 +49,10 @@ def _text(value, field, limit=MAX_TEXT):
 
 
 def _micro(value, code, signed):
+    if type(value) is not str or len(value) > MAX_NUMBER_CHARS:
+        _fail(code)
     pattern = _SIGNED if signed else _UNSIGNED
-    match = pattern.fullmatch(value) if type(value) is str else None
+    match = pattern.fullmatch(value)
     if match is None:
         _fail(code)
     groups = match.groups()
