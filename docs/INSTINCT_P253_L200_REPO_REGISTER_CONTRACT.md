@@ -47,6 +47,11 @@ recorded row carries `verification: "UNVERIFIED"`, `resolved: False`,
 | `project_id` | 64        | owning project id                              |
 | `kind`       | -         | `"link"` or `"path"`                           |
 | `value`      | 512       | the link URL or repository-relative path       |
+
+All interpolated string fields (`id`, `project_id`, `value`, `source_ref`) reject
+characters in Unicode categories Cc, Zl and Zp (controls, line/paragraph
+separators), so a recorded value can never inject a fabricated line into
+`render()` output or smuggle one into `report()` items.
 | `source_ref` | 128       | where the value was declared                   |
 
 ## Validation
@@ -75,6 +80,8 @@ recorded row carries `verification: "UNVERIFIED"`, `resolved: False`,
 - `P253:unknown_fields:entry` - entry has a key outside FIELDS.
 - `P253:empty_field:<name>` - a required field missing or blank (checked before
   kind membership and shape, so `kind=""` refuses `empty_field:kind`).
+- `P253:control_chars:<name>` - `id`, `project_id`, `value` or `source_ref`
+  contains a Cc/Zl/Zp character (\n, \t, NUL, U+2028, U+2029, ...).
 - `P253:text_too_long:<name>` - a field exceeds its limit; the limit itself passes.
 - `P253:bad_kind:<value>` - kind not in `("link", "path")`.
 - `P253:bad_link:<value>` - value fails link validation.
@@ -91,12 +98,13 @@ recorded row carries `verification: "UNVERIFIED"`, `resolved: False`,
 4. field presence
 5. field types (bool is not a string)
 6. blank
-7. length
-8. kind membership
-9. link/path shape
-10. duplicate id
-11. duplicate normalized entry
-12. capacity
+7. control characters (Cc/Zl/Zp) in interpolated string fields
+8. length
+9. kind membership
+10. link/path shape
+11. duplicate id
+12. duplicate normalized entry
+13. capacity
 
 ## Limits
 
@@ -123,3 +131,8 @@ later pin can supersede them:
   `{entries, projects, links, paths}`, offline flags, `open_verification`,
   boundary text.
 - Exact refusal-code strings and the order of checks above.
+- R2 (repair): Cc/Zl/Zp rejection on interpolated string fields with
+  `control_chars:<name>`, placed after blank and before length; `kind` needs no
+  such check because kind membership already constrains it to two literals.
+  Auditor repro `https://example.com/x\nproject forged (1 entries)` is a
+  pinned regression test.

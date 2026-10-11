@@ -7,6 +7,7 @@ every recorded entry stays UNVERIFIED.
 """
 from __future__ import annotations
 
+import unicodedata
 from dataclasses import dataclass
 from urllib.parse import urlsplit
 
@@ -14,6 +15,8 @@ FIELDS = ("id", "project_id", "kind", "value", "source_ref")
 KINDS = ("link", "path")
 TEXT_LIMITS = {"id": 64, "project_id": 64, "value": 512, "source_ref": 128}
 MAX_ENTRIES = 4096
+
+FORBIDDEN_CATEGORIES = ("Cc", "Zl", "Zp")
 
 BOUNDARY = ("Declared repository link/path register only. It records caller-supplied values; "
             "it never resolves links, fetches content or reads a filesystem, so recording is "
@@ -82,6 +85,9 @@ def _validate(entry) -> tuple:
     for name in ("id", "project_id", "kind", "value", "source_ref"):
         if not entry[name].strip():
             raise _err("empty_field:" + name)
+    for name in ("id", "project_id", "value", "source_ref"):
+        if any(unicodedata.category(c) in FORBIDDEN_CATEGORIES for c in entry[name]):
+            raise _err("control_chars:" + name)
     for name, limit in TEXT_LIMITS.items():
         if len(entry[name]) > limit:
             raise _err("text_too_long:" + name)
