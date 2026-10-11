@@ -1,0 +1,113 @@
+{
+    "status": 1,
+    "msg": "ok",
+    "meta": {
+        "paging": {
+            "count": 3,
+            "page": 0,
+            "first_page": 0,
+            "last_page": 1,
+            "next_page": 1,
+            "prev_page": null
+        },
+        "API_INFO": {
+            "API_VERSION": "0.2"
+        },
+        "SERVER": "88.99.101.163",
+        "duration": 0
+    },
+    "data": [
+        {
+            "title": "The Real Python Podcast",
+            "id": 84616,
+            "xmlURL": "https:\/\/realpython.com\/podcasts\/rpp\/feed",
+            "htmlURL": "https:\/\/realpython.com\/podcasts\/rpp\/",
+            "imgURL": "https:\/\/files.realpython.com\/media\/real-python-logo-square.28474fda9228.png",
+            "status": 200,
+            "status_since": "2026-09-23 22:14:02",
+            "slug": "the-real-python-podcast",
+            "layoutImageURL": "https:\/\/img-1.fyyd.de\/pd\/layout\/846164e2ca387b4446b7e274d59c6a9773cdf.jpg",
+            "thumbImageURL": "https:\/\/img-1.fyyd.de\/pd\/thumbs\/846164e2ca387b4446b7e274d59c6a9773cdf.png",
+            "smallImageURL": "https:\/\/img-1.fyyd.de\/pd\/small\/846164e2ca387b4446b7e274d59c6a9773cdf.jpg",
+            "microImageURL": "https:\/\/img-1.fyyd.de\/pd\/micro\/846164e2ca387b4446b7e274d59c6a9773cdf.png",
+            "language": "en",
+            "generator": null,
+            "categories": [
+                203
+            ],
+            "lastpub": "2026-10-09T14:00:00+02:00",
+            "rank": 112,
+            "url_fyyd": "https:\/\/fyyd.de\/podcast\/the-real-python-podcast\/0",
+            "description": "A weekly Python podcast hosted by Christopher Bailey with interviews, coding tips, and conversation with guests from the Python community.\n\nThe show covers a wide range of topics including Python programming best practices, career tips, and related software development topics. Join us every Friday morning to hear what's new in the world of Python programming and become a more effective Pythonista.",
+            "subtitle": "Python Tips, Interviews, and More",
+            "tcolor": "#fff",
+            "color": "#14344b",
+            "episode_count": 315,
+            "iflags": null,
+            "paymentURL": "https:\/\/realpython.com\/join",
+            "author": "Real Python"
+        },
+        {
+            "title": "Python Bytes",
+            "id": 51889,
+            "xmlURL": "https:\/\/pythonbytes.fm\/episodes\/rss",
+            "htmlURL": "https:\/\/pythonbytes.fm\/",
+            "imgURL": "https:\/\/cdn.pythonbytes.fm\/static\/img\/podcast-theme-img_3000.jpg",
+            "status": 200,
+            "status_since": "2026-10-10 00:50:06",
+            "slug": "python-bytes",
+            "layoutImageURL": "https:\/\/img-1.fyyd.de\/pd\/layout\/5188998d52dff35a11e6a862381fa08b50119.jpg",
+            "thumbImageURL": "https:\/\/img-1.fyyd.de\/pd\/thumbs\/5188998d52dff35a11e6a862381fa08b50119.png",
+            "smallImageURL": "https:\/\/img-1.fyyd.de\/pd\/small\/5188998d52dff35a11e6a862381fa08b50119.jpg",
+            "microImageURL": "https:\/\/img-1.fyyd.de\/pd\/micro\/5188998d52dff35a11e6a862381fa08b50119.png",
+            "language": "en",
+            "generator": null,
+            "categories": [
+                203,
+                155,
+                162
+            ],
+            "lastpub": "2026-10-07T01:16:32+02:00",
+            "rank": 146,
+            "url_fyyd": "https:\/\/fyyd.de\/podcast\/python-bytes\/0",
+            "description": "Python Bytes is a weekly podcast hosted by Michael Kennedy and Calvin Hendryx-Parker. The show is a short discussion on the headlines and noteworthy news in the Python, developer, and data science space.",
+            "subtitle": "Developer headlines delivered directly to your earbuds",
+            "tcolor": "#fff",
+            "color": "#27545e",
+            "episode_count": 504,
+            "iflags": null,
+            "paymentURL": null,
+            "author": "Michael Kennedy and Calvin Hendryx-Parker"
+        },
+        {
+            "title": "Talk Python To Me",
+            "id": 76473,
+            "xmlURL": "https:\/\/talkpython.fm\/episodes\/rss",
+            "htmlURL": "https:\/\/talkpython.fm\/",
+            "imgURL": "https:\/\/cdn-podcast.talkpython.fm\/static\/img\/talk-python-3000.jpg",
+            "status": 200,
+            "status_since": "2026-10-08 22:48:04",
+            "slug": "talk-python-to-me",
+            "layoutImageURL": "https:\/\/img-1.fyyd.de\/pd\/layout\/76473d668fe2e460e381067b6a7469369c8e4.jpg",
+            "thumbImageURL": "https:\/\/img-1.fyyd.de\/pd\/thumbs\/76473d668fe2e460e381067b6a7469369c8e4.png",
+            "smallImageURL": "https:\/\/img-1.fyyd.de\/pd\/small\/76473d668fe2e460e381067b6a7469369c8e4.jpg",
+            "microImageURL": "https:\/\/img-1.fyyd.de\/pd\/micro\/76473d668fe2e460e381067b6a7469369c8e4.png",
+            "language": "en",
+            "generator": null,
+            "categories": [
+                203
+            ],
+            "lastpub": "2026-10-02T02:09:20+02:00",
+            "rank": 194,
+            "url_fyyd": "https:\/\/fyyd.de\/podcast\/talk-python-to-me\/0",
+            "description": "Talk Python to Me is a weekly podcast for Python developers, data scientists, and AI builders,\n            hosted by developer and entrepreneur Michael Kennedy. We dive deep into the packages, tools, and people\n            shaping Python, from web development and data science to AI and LLMs. If you're new to Python, you'll\n            quickly learn the ins and outs of the community by hearing from its leaders. And if you've been Pythoning\n            for years, you'll hear about your favorite packages and the hot new ones coming out of open source.\n        ",
+            "subtitle": "The podcast for Python developers, data scientists, and AI builders",
+            "tcolor": "#000",
+            "color": "#fbfa90",
+            "episode_count": 567,
+            "iflags": null,
+            "paymentURL": null,
+            "author": "Michael Kennedy"
+        }
+    ]
+}

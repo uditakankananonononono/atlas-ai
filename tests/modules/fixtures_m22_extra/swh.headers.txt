@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Age: 0
+Allow: OPTIONS, OPTIONS, GET, HEAD
+Content-Length: 1711
+Content-Type: application/json
+Cross-Origin-Opener-Policy: same-origin
+Date: Sun, 11 Oct 2026 12:34:41 GMT
+Link: <https://archive.softwareheritage.org/api/1/origin/search/python/?limit=3&page_token=gsQFc2NvcmXLP/AAABrX8pvEBHNoYTHZKDAwMDAyMjE4ZGEwMWI5ZmRhZDI0ZjkxYjA0MjMxZWVmM2Q3YTI3Y2E%3D&with_visit=true>; rel="next"
+Referrer-Policy: same-origin
+Strict-Transport-Security: max-age=15768000;
+Vary: Accept, origin, Cookie
+Via: 1.1 varnish (Varnish/7.1)
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Ratelimit-Limit: 10
+X-Ratelimit-Remaining: 8
+X-Ratelimit-Reset: 1791722118
+X-Total-Count: 4868944
+X-Varnish: 376176874
+Connection: close
+
