@@ -43,11 +43,19 @@ from require_tenant's authenticated tenant and actor, not request payload.
 Isolated mounted-adapter tests use production RS256 verification fixtures.
 The adapter serializes operations with an RLock in one process only.
 
-Default local enforce_policy rejects spend/outreach/fake_account/autopost/
-scrape/trade and every action except draft. A policy_hook(action) can further
-restrict: it must return literal True; it cannot override the local refusal.
-Shared c30.policy does not exist at base a1b859ce. The integrator must map
-that hook to the eventual shared policy before calling this integrated.
+The default adapter now injects shared_policy_hook. Offline draft preparation
+is allowed explicitly and never calls the shared deny-only check('draft'),
+which would refuse it as unknown. Canonical spend/outreach/fakeacct/autopost/
+scrape/trade call c30.policy.check(action, 'POLICY') and preserve its refusal
+reason. The legacy fake_account alias maps to fakeacct; all other values,
+including non-strings, raise POLICY_REFUSED_UNSUPPORTED without echoing input.
+The core enforces these denials before any optional caller hook. A hook must
+return literal True and cannot widen this boundary. Unexpected shared-guard
+allow still fails closed. No spending, sending or other execution is added.
+
+The shared guard c30.policy is present; the adapter injects it.
+Main-app mounting and durable storage remain absent.
+
 
 ## LIMITS
 
@@ -66,12 +74,11 @@ A deployed persistence layer must implement owner-bound deletion separately.
 
 ## Verification
 
-Initial test-first import RED was before engine creation. Later boundary
-canaries were RED (2 failed / 17 passed) before malformed-key and fail-closed
-shared-hook fixes. Python 3.12.14 with real tests/conftest.py: 21 passed,
-0 failed. The FastAPI adapter has one dependency deprecation warning.
-Hand-selected mutation battery is self-run, not an independent audit; its
-exact modes and counts are in audits/c2-launch-quiz/mutation-results.json.
-Full regression, independent audit, external model validation, shared-policy
-mapping and production main-app mounting remain open. No release candy gate
-is closed by this unit.
+Current focused floor: Python 3.12.14 with real tests/conftest.py,
+66 passed, 0 failed. This covers the existing engine and authenticated
+isolated adapter plus shared-policy, alias/reason, offline-draft and literal
+True hook-acceptance pins. One dependency deprecation warning remains.
+Targeted self-run mutation evidence is not an independent audit or an
+exhaustive mutation claim. Full regression, external model validation and
+production main-app mounting remain open. No release candy gate is closed
+by this unit.

@@ -5,6 +5,7 @@ network I/O. Document text is evidence, never executable instructions.
 """
 from copy import deepcopy
 import re
+from app.modules.c30 import policy
 
 
 class QuizError(ValueError):
@@ -157,11 +158,28 @@ class LaunchQuiz:
 
 
 def enforce_policy(action):
-    """Product policy hook: unit is draft-only regardless of approval flags."""
-    refused = {'spend': 'SPEND', 'outreach': 'OUTREACH', 'fake_account': 'FAKEACCT', 'autopost': 'AUTOPOST', 'scrape': 'SCRAPE', 'trade': 'TRADE'}
+    """Draft preparation is offline; all action modes remain deny-only.
+
+    The legacy fake_account spelling maps to the canonical shared fakeacct
+    action. Unknown values are never passed to the helper or echoed.
+    """
     if not isinstance(action, str):
         raise QuizError('POLICY_REFUSED_UNSUPPORTED')
-    if action in refused:
-        raise QuizError('POLICY_REFUSED_' + refused[action])
-    if action != 'draft':
+    if action == 'draft':
+        return
+    canonical = 'fakeacct' if action == 'fake_account' else action
+    if canonical not in ('spend', 'outreach', 'fakeacct', 'autopost', 'scrape', 'trade'):
         raise QuizError('POLICY_REFUSED_UNSUPPORTED')
+    try:
+        policy.check(canonical, 'POLICY')
+    except ValueError as exc:
+        raise QuizError(str(exc)) from exc
+    # The shared guard is deny-only. A future accidental allow must not
+    # create an execution path or relax this unit's offline boundary.
+    raise QuizError('POLICY_REFUSED_UNSUPPORTED')
+
+
+def shared_policy_hook(action):
+    """Default adapter hook: literal True only for offline draft preparation."""
+    enforce_policy(action)
+    return True

@@ -9,10 +9,10 @@ from threading import RLock
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
-from .launch_quiz_c2 import LaunchQuiz, QuizError
+from .launch_quiz_c2 import LaunchQuiz, QuizError, shared_policy_hook
 
 router = APIRouter(prefix='/api/v1/c31/launch-quiz', tags=['C2'])
-_engine = LaunchQuiz()
+_engine = LaunchQuiz(policy_hook=shared_policy_hook)
 _lock = RLock()
 
 
