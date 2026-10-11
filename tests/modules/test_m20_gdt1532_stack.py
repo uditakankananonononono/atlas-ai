@@ -119,6 +119,52 @@ class StackTests(unittest.TestCase):
         d=packet(); d["datums"][0]["offset"]="0"*63+"1"; E(d)
         d["datums"][0]["offset"]="0"*64+"1"; self.error(d,"GDT1532:invalid_number:offset")
 
+    def test_r2_finite_float_acceptance(self):
+        d=packet(); d["datums"][0]["offset"]=0.5
+        d["components"]=[dict(d["components"][0],nominal=1.25,lower=1.0,upper=1.5)]
+        d["fit_limits"]=[dict(d["fit_limits"][0],lower=1.0,upper=2.0)]
+        r=E(d)
+        self.assertEqual((r["nominal"],r["lower"],r["upper"]),("7/4","3/2","2"))
+        self.assertEqual(r["fit_status"],"guaranteed_within_declared_limits")
+
+    def test_r2_integer_magnitude_exact_bound(self):
+        d=packet(); d["datums"][0]["offset"]=10**12
+        d["components"]=d["components"][:1]; d["fit_limits"]=[]
+        self.assertEqual(E(d)["nominal"],str(10**12+10))
+        d["datums"][0]["offset"]=10**12+1
+        self.error(d,"GDT1532:number_bound:offset")
+        d["datums"][0]["offset"]=-(10**12); E(d)
+        d["datums"][0]["offset"]=-(10**12+1)
+        self.error(d,"GDT1532:number_bound:offset")
+
+    def test_r2_record_shape_errors_all_collections(self):
+        for collection in ("datums","components","fit_limits"):
+            for value in (None,42,"row",[],True):
+                d=packet(); d[collection][0]=value
+                self.error(d,"GDT1532:invalid_record:"+collection)
+            d=packet(); del d[collection][0]["source_ref"]
+            self.error(d,"GDT1532:invalid_fields:"+collection)
+            d=packet(); d[collection][0]["extra"]=0
+            self.error(d,"GDT1532:invalid_fields:"+collection)
+        d=packet(); d["datums"]=[]
+        self.error(d,"GDT1532:invalid_count:datums")
+
+    def test_r2_feature_and_all_claim_flags(self):
+        r=E(packet())
+        self.assertEqual(r["feature_id"],1532)
+        self.assertIs(type(r["feature_id"]),int)
+        for key in ("sources_verified","full_gdt_claimed","physical_inspection_claimed",
+                    "release_authorized","statistical_rss_performed"):
+            self.assertIs(r[key],False,key)
+
+    def test_r2_disjoint_stack_fit_both_sides(self):
+        for lower,upper in ((-2,3),(9,10)):
+            d=packet(); d["fit_limits"][0].update(lower=lower,upper=upper)
+            r=E(d)
+            self.assertEqual((r["lower"],r["upper"]),("4","8"))
+            self.assertEqual(r["fit_intersection"],{"lower":str(lower),"upper":str(upper)})
+            self.assertEqual(r["fit_status"],"no_feasible_fit")
+
     def test_n_nplus1_bounds(self):
         for collection in ("datums","components","fit_limits"):
             d=packet(); proto=d[collection][0]
