@@ -57,3 +57,14 @@ def test_mounted_auth_refusal_tenant(monkeypatch,oidc_auth_headers):
   r=c.post(path,headers=h,json={'payload':payload()});assert r.status_code==200 and r.json()['tenant_id']=='a'
   assert c.post(path,headers=h,json={'payload':{'source':SRC,'source_case':{'features':['x']},'target_case':{'features':['x']}}}).status_code==422
   assert c.post(path,headers=h,json={'payload':{**payload(),'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
+
+def test_exact_weight_threshold_caps_and_output_boundary():
+ p=payload();p['similarity_threshold']=0;assert run(p=p)['classification']=='near'
+ p['similarity_threshold']=1;assert run(p=p)['classification']=='far'
+ p=payload();p['transfer_schema']=[{'feature_id':str(i),'weight':1000,'source':'fixture'}for i in range(64)];p['source_features']={str(i):'same'for i in range(64)};p['target_features']=dict(p['source_features'])
+ r=run(p=p);assert r['total_weight']==64000 and r['matching_weight']==64000 and r['similarity']==1
+ p['transfer_schema'].append({'feature_id':'64','weight':1,'source':'fixture'})
+ with pytest.raises(LearningReasoningError):run(p=p)
+ p=payload();p['transfer_schema'][0]['weight']=1000.1
+ with pytest.raises(LearningReasoningError):run(p=p)
+ assert run()['boundary']=='Caller-declared weighted exact feature agreement rubric; near/far is threshold classification, not semantic distance. Independent target exact-key response scoring is separate, independence/truth not verified; no general transfer claim.'

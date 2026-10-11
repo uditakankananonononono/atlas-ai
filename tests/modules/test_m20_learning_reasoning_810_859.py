@@ -43,7 +43,8 @@ def test_832_prior_knowledge_not_graded():
 def T(n,**x):
  p={'source_case':{'features':['structure','red']},'target_case':{'features':['structure','blue']},'source':SRC};p.update(x);return execute(n,p)['result']
 @pytest.mark.parametrize('n,t',[('near_transfer','near'),('far_transfer','far')])
-def test_833_835_transfer_deep_structure_and_independent_performance(n,t):assert T(n)['transfer_type']==t and T(n)['requires_independent_target_performance']
+def test_833_835_transfer_deep_structure_and_independent_performance(n,t):
+ with pytest.raises(LearningReasoningError,match='transfer_schema'):T(n)
 def test_836_analogy_rejects_surface_similarity():assert T('analogical_reasoning')['analogy']['surface_similarity_is_insufficient']
 def test_837_case_reasoning_retrieve_reuse_revise_retain():assert len(T('case_based_reasoning')['case_reasoning_cycle'])==4
 def R(n,**x):
@@ -96,7 +97,9 @@ def test_830_summative_assessment_purpose(): assert L('summative_assessment',ass
 def test_831_diagnostic_assessment_purpose(): assert L('diagnostic_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='prerequisite and misconception diagnosis'
 def test_833_transfer_requires_independent_target_performance():
  with pytest.raises(LearningReasoningError,match='transfer_rule'):T('transfer')
-def test_834_near_transfer_requires_independent_target_performance(): assert T('near_transfer')['transfer_type']=='near' and T('near_transfer')['requires_independent_target_performance']
-def test_835_far_transfer_requires_independent_target_performance(): assert T('far_transfer')['transfer_type']=='far' and T('far_transfer')['requires_independent_target_performance']
+def test_834_near_transfer_requires_independent_target_performance():
+ with pytest.raises(LearningReasoningError,match='transfer_schema'):T('near_transfer')
+def test_835_far_transfer_requires_independent_target_performance():
+ with pytest.raises(LearningReasoningError,match='transfer_schema'):T('far_transfer')
 def test_848_default_reasoning_is_revisable(): assert R('default_reasoning',facts=['bird'],defaults=[{'if':['bird'],'unless':['abnormal'],'then':'flies'}])['defaults']['beliefs_revisable']
 def test_849_nonmonotonic_reasoning_is_revisable(): assert R('non_monotonic_reasoning',facts=['bird'],defaults=[{'if':['bird'],'unless':['abnormal'],'then':'flies'}])['defaults']['beliefs_revisable']
