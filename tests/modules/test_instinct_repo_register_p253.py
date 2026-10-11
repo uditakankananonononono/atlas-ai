@@ -59,7 +59,7 @@ class Validation(Base):
         self.assertEqual(len(build(E(kind="link")).entries), 1)
         self.assertEqual(len(build(E(kind="path", value="a/b")).entries), 1)
         self.refuses("bad_kind:weird", build, E(kind="weird"))
-        self.refuses("bad_kind:", build, E(kind=""))
+        self.refuses("empty_field:kind", build, E(kind=""))  # blank precedes membership, P252 convention
 
     def test_bad_types_and_bools(self):
         self.refuses("bad_type:register", m.add_entry, "x", E())
@@ -78,7 +78,8 @@ class Validation(Base):
         self.refuses("empty_field:value", build, E(value=""))
         self.refuses("text_too_long:value", build, E(value="a" * 513))
         self.refuses("text_too_long:id", build, E(id="i" * 65))
-        self.assertEqual(len(build(E(id="i" * 64, value="a" * 512)).entries), 1)
+        self.assertEqual(len(build(E(id="i" * 64, kind="path", value="a" * 512)).entries), 1)
+        self.assertEqual(len(build(E(value="https://github.com/x/" + "y" * 491)).entries), 1)
 
     def test_link_shape_refusals(self):
         for bad in ("http://github.com/x/y", "github.com/x/y", "https://",
@@ -99,9 +100,13 @@ class Dedup(Base):
 
     def test_duplicate_entry_normalized_link(self):
         # Same repository spelled with case, .git and trailing-slash differences.
+        # Host case, .git suffix and trailing slash all normalize away.
         self.refuses("duplicate_entry:e1", build,
-                     E("e1", value="https://github.com/X/y"),
-                     E("e2", value="https://GitHub.com/x/y.git/"))
+                     E("e1", value="https://GitHub.com/x/y"),
+                     E("e2", value="https://github.com/x/y.git/"))
+        # Path case is significant: '/X/y' and '/x/y' are different repositories.
+        reg = build(E("e1", value="https://github.com/X/y"), E("e2", value="https://github.com/x/y"))
+        self.assertEqual(len(reg.entries), 2)
 
     def test_duplicate_entry_same_path(self):
         self.refuses("duplicate_entry:e1", build, E("e1", kind="path", value="a/b"),
@@ -110,8 +115,9 @@ class Dedup(Base):
     def test_same_value_allowed_across_projects_and_kinds(self):
         reg = build(E("e1", project_id="p1", value="https://github.com/x/y"),
                     E("e2", project_id="p2", value="https://github.com/x/y"),
-                    E("e3", project_id="p1", kind="path", value="https://github.com/x/y"))
-        self.assertEqual(len(reg.entries), 3)
+                    E("e3", project_id="p1", kind="path", value="x/y"),
+                    E("e4", project_id="p2", kind="path", value="x/y"))
+        self.assertEqual(len(reg.entries), 4)
 
     def test_entry_cap(self):
         reg = build(*[E(f"e{i}", value=f"https://github.com/x/{i}") for i in range(m.MAX_ENTRIES)])
