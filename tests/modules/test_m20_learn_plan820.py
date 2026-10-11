@@ -73,3 +73,8 @@ def test_full_goal_chunks_ifthen_and_boundary_echo():
  p=payload();r=execute('chunking',p)['result']['objective_plan']
  assert r['goal']==p['plan_goal'] and r['chunks']==[p['plan_chunks'][1],p['plan_chunks'][0]] and r['deadline_conflicts']==[]
  assert r['boundary']=='Supplied additive count-goal DAG decomposition and coverage/deadline/if-then validation only. No autonomous goal choice, feasibility prediction, scheduling or verified achievement.'
+
+def test_duplicate_coverage_without_other_gap_invalidates():
+ p=payload();p['plan_chunks'][0]['elements'].append('addition')
+ r=execute('chunking',p)['result']['objective_plan']
+ assert r['coverage']['missing_elements']==r['coverage']['unexpected_elements']==[] and r['coverage']['multiply_assigned_elements']==['addition'] and r['valid'] is False
