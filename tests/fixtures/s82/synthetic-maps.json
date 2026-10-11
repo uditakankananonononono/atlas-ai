@@ -1,0 +1,16 @@
+{
+ "exclusions": {
+  "syn-a:5": "numbering token",
+  "syn-b:10": "greeting only",
+  "syn-b:6": "unrelated chatter",
+  "syn-b:9": "aside only"
+ },
+ "explicit_maps": {
+  "syn-a:0": [
+   "S1.1"
+  ],
+  "syn-a:10": [
+   "S2.2"
+  ]
+ }
+}

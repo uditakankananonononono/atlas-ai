@@ -1,0 +1,8 @@
+copy this list closely: 1.
+-orbit planner that tracks satellites  and
+sends daily summaries
+-lunar garden simulator for classrooms
+2. Also build a tidy invoice tool. Use free tools only.
+Note the colour palette is teal. Links https://example.invalid/doc/abc
+  
+Finally, a pleasantry line goes here.

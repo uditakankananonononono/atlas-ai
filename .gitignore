@@ -14,3 +14,4 @@ frontend/node_modules/
 frontend/.next/
 frontend/tsconfig.tsbuildinfo
 .env.inkling
+tests/fixtures/s82_private/

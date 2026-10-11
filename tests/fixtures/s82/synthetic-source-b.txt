@@ -1,0 +1,5 @@
+[01/01, 9:00 am] Pat: Please add a telescope guide module that can self improve by its own
+Stop the weather tool for now.
+Skip the dashboard for now. Park the dashboard.
+Unrelated chatter about lunch. Orbit Planner should also email people directly.
+I know its a lot. Good luck :)
