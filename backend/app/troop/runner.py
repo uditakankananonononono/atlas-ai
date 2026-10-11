@@ -20,6 +20,7 @@ class RunResult:
     step_status: dict
     attempts: dict
     transcript: list
+    max_workers: int = 0  # configured concurrency this run used, reported back
 
 
 class TroopRunner:
@@ -95,4 +96,4 @@ class TroopRunner:
                         outputs[s.id] = out
         done = sum(1 for v in status.values() if v == "completed")
         overall = "completed" if done == len(status) else ("failed" if done == 0 else "partial")
-        return RunResult(overall, outputs, status, attempts, transcript)
+        return RunResult(overall, outputs, status, attempts, transcript, self.max_workers)

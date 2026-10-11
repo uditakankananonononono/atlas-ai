@@ -50,3 +50,9 @@ returns a step-status table and a transcript. Two fixture task kinds exist (`tex
 - No language model, no browser, no email inbox, no memory across runs, no schedules, no human-approval gate, no tool integrations, no persistence.
 - Not wired into any route, module registry or module of this repository.
 - No comparison against the named products was run, so nothing here shows it is better than any of them.
+
+## Scanner fixture note (S1.1)
+
+The S1.1 scanner tests (`tests/troop/test_landscape_s1_1.py`) read the Cellcog, Strawberry browser and YC sample
+sections above as saved-text fixtures. What the scanner extracts from them is vendor-stated keyword matches, not
+tested product facts. The matrix covers only these pages. See `docs/TROOP_S1_FLEET_CONTRACT.md`.
