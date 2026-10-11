@@ -84,3 +84,7 @@ def test_exact_depth_operations_rational_limits():
  with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task={**task(),'operations':rows+[{'id':'8','kind':'add','operand':'0','source':'fixture'}]})
  for value in [1.5,'1'*65,str(10**12+1),'1/'+str(10**12+1)]:
   with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task={**task(),'initial':value})
+
+def test_invalid_step_never_advances_current_register():
+ rows=trace();rows[0]['post']='4';r=run(worked_trace=rows)
+ assert r['final_value']=='1' and r['step_reports'][1]['expected_post']=='2' and r['step_reports'][1]['pre_matches'] is False
