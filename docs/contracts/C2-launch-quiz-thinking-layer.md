@@ -1,7 +1,6 @@
 # C2 launch quiz and thinking-style profile
 
-Source pin: Udita's authenticated WhatsApp message, October 11, 2026,
-15:03:34 IST: "can literally copy my thinking and intelligence layer by
+Excerpt from owner request: "can literally copy my thinking and intelligence layer by
 quizzing me during the launch process make it advanced"; "the thinking
 process should be like me when i feed it some docs (which it asks for) and
 is highly step by step and advanced".
