@@ -228,6 +228,10 @@ def test_pin_as_of_is_echoed_raw_not_normalized():
     r = tp.extract_trends([P(i, "aurora") for i in range(3)], as_of="2026-03-31T05:30:00+05:30")  # same instant as AS_OF
     assert r["as_of"] == "2026-03-31T05:30:00+05:30"
     assert r["posts_used"] == 3
+    # a Z-suffixed input re-serializes to +00:00 under isoformat(), so a plain
+    # re-serialization mutant cannot survive this echo check (auditor-5 100)
+    z = tp.extract_trends([P(i, "aurora") for i in range(3)], as_of="2026-03-31T00:00:00Z")
+    assert z["as_of"] == "2026-03-31T00:00:00Z"
 
 
 def test_pin_top_n_is_echoed_in_parameters():
