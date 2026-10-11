@@ -525,3 +525,41 @@ def test_multiline_string_lines_count_as_code_lines():
 def test_docstring_must_be_string_constant_first_statement():
     d = {s["name"]: s["has_docstring"] for s in run('def a():\n    "d"\n\ndef b():\n    42\n\ndef c():\n    f()\n\ndef d():\n    x = 1\n    "late"\n\ndef e():\n    b"x"\n')["symbols"]}
     assert d == {"a": True, "b": False, "c": False, "d": False, "e": False}
+
+
+# --- pins added after independent audit (test-only; runtime unchanged) ---
+
+def test_syntax_error_messages_are_exact_for_two_fixtures():
+    # Messages come from the host interpreter grammar; pinned as observed on CPython 3.12.
+    assert err({"source": "def f(:\n"}) == "syntax_error: line 1 col 7: invalid syntax"
+    assert err({"source": "if x:\n"}) == "syntax_error: line 1 col 6: expected an indented block after 'if' statement on line 1"
+
+
+def _marker_text(total):
+    """Comment text after '#': ' TODO ' + dots + '(ab)', lstripped length == total."""
+    body = "TODO " + "." * (total - len("TODO ") - len("(ab)")) + "(ab)"
+    assert len(body) == total
+    return " " + body
+
+
+def test_marker_ref_boundary_at_char_80_of_lstripped_text():
+    def flags(total):
+        return run("#%s\nx = 1\n" % _marker_text(total))["comments"][0]["flags"]
+    assert flags(79) == []          # ref ends at 79: inside the window
+    assert flags(80) == []          # ref ends exactly at char 80: still inside
+    assert flags(81) == ["marker_without_owner_or_ref"]  # ref ends at 81: cut off
+
+
+def test_marker_ref_window_counts_after_lstrip_not_before():
+    # extra leading spaces must not eat the 80-char window
+    text = "      " + _marker_text(80).lstrip()
+    assert run("#%s\nx = 1\n" % text)["comments"][0]["flags"] == []
+
+
+def test_comment_at_column_zero_is_zero_based_end_exclusive_codepoints():
+    c = run("#a\n")["comments"][0]
+    assert (c["line"], c["col"], c["end_col"]) == (1, 0, 2)
+    c = run("#\u00e9\U0001F600\n")["comments"][0]
+    assert (c["col"], c["end_col"]) == (0, 3)   # code points, not UTF-16 units or bytes
+    c = run("x = 1#a\n")["comments"][0]
+    assert (c["col"], c["end_col"]) == (5, 7)

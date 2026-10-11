@@ -39,3 +39,9 @@ Symbols: each def / async def / class (flat walk, source order): `start_line` (f
 
 ## Not claimed
 Whether a comment explains, helps, is correct or current is not judged. The flags are lexical candidates. Not executed; no tests run; grammar is that of the host interpreter.
+
+## Position pins (addendum)
+Columns are counted in Unicode code points, 0-based. A comment starting at the first character of a line has `col` 0, and `end_col` is end-exclusive,
+so `#a` gives col 0, end_col 2. A non-BMP character counts as one code point. The marker owner/reference window is the first 80 characters of the comment
+text after left-stripping: a reference that ends at character 80 is found, one that ends at character 81 is not (the marker is then flagged).
+Syntax-error text is produced by the host interpreter; `def f(:` reports `syntax_error: line 1 col 7: invalid syntax` and `if x:` reports line 1 col 6 (CPython 3.12); `if x:` reports line 1 col 6 with the interpreter text `expected an indented block after 'if' statement on line 1`.
