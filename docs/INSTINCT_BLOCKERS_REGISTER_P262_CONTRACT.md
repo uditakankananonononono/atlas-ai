@@ -1,0 +1,13 @@
+# P262 L209: declared blockers and UNVERIFIED register
+
+Source exact [P262|L209]: "- Blockers and UNVERIFIED items, if any."
+
+This source is an output requirement, not an OWNER/STATUS schema. The mechanism validates a bounded list of caller-supplied records and returns a sorted register, per-status counts, open IDs and IDs lacking source references. It does not discover actual blockers, authenticate evidence, assign an owner, resolve a problem, persist records or prove completion. OWNER and STATUS are local explicit declarations, not additional source-doc wording. No claim of whole-line fulfillment.
+
+`register_blockers(items)` accepts a list of 0..256 dictionaries with exactly id, owner, status, reason, source_refs. Nonblank text limits in characters: id and owner128; reason2000; each source_ref256. Reference lists have 0..16 unique strings. Item IDs unique. No truncation, coercion or unknown fields. Status exactly BLOCKED, UNVERIFIED or RESOLVED. Missing/empty references remain explicit missing_source_item_ids; reference presence never verifies evidence. RESOLVED is caller-declared, not independently confirmed. Empty input is a valid empty supplied register, never evidence no actual blockers exist. No transitions or inference from reason text.
+
+Output items sorted by case-sensitive Unicode ID, references sorted the same way, counts include all three statuses even at zero. open_item_ids contains BLOCKED and UNVERIFIED, sorted by ID. Every row marks owner_is_caller_declared and status_is_caller_declared=true. Top-level evidence_verified, actual_blockers_exhaustively_checked and completion_verified are exactly false. Pure computation: no network, account, platform, spend, persistence, clock dependency or effect. Sorting determinism applies to valid input, not order-independent error selection for multiple malformed records.
+
+Existing Atlas M16 blockers.py detects blockers from stored approvals, timeline, heartbeat and catalog data. M20 execution_truth.py rolls up caller-declared execution claims. Both are untouched; this independent register does not replace their detection/claims mechanisms. No wiring or namespace __init__.py is added. Module can load in a PEP420 namespace on Python3.10+.
+
+Gaps: coverage of real outstanding work, completeness of supplied records, real owner consent, authenticated source content, resolution proof, storage and live workflow integration are not provided. A caller can omit a real blocker; this mechanism cannot detect that omission. Fixture tests and handwritten mutants prove bounded validation and rollup only, not policy enforcement, quality or completion.
