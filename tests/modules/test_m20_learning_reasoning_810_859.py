@@ -20,7 +20,8 @@ def test_817_818_minimal_payload_refused(method):
  with pytest.raises(LearningReasoningError,match='arithmetic_task'):L(method)
 def test_819_deliberate_targets_subskill_feedback_rest():
  o=L('deliberate_practice',scored_attempts=[{'evidence_id':'e','skill':'addition','succeeded':False,'feedback':'incorrect sum'}],exercise_catalog=[{'id':'1','skill':'addition','task':'2+2'}])['practice_plan'];assert o['target_subskills']==['addition'] and o['selected_exercises'][0]['id']=='1'
-def test_820_chunking_preserves_principle():assert L('chunking',chunks=[{'label':'x','elements':[1,2],'principle':'cause'}])['chunks'][0]['organizing_principle']=='cause'
+def test_820_chunking_minimal_payload_refuses():
+ with pytest.raises(LearningReasoningError,match='plan_goal'):L('chunking')
 @pytest.mark.parametrize('n',['scaffolding','fading'])
 def test_821_822_support_fades_on_evidence(n):assert L(n,support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['active_support']=='model'
 def test_823_metacognition_calibrates():
@@ -29,7 +30,8 @@ def test_823_metacognition_calibrates():
  assert o['calibration']['overconfidence']==pytest.approx(.8)
 def test_824_minimal_cycle_not_execution():
  with pytest.raises(LearningReasoningError,match='learning_goal'):L('self_regulated_learning')
-def test_825_goal_setting_is_measurable_and_has_if_then():assert 'implementation_intention' in L('goal_setting',goal={'specific':'x','metric':'m'})['goal']
+def test_825_goal_setting_minimal_payload_refuses():
+ with pytest.raises(LearningReasoningError,match='plan_goal'):L('goal_setting')
 def test_826_progress_monitoring_computes_change():assert L('progress_monitoring',unit='points',records=[{'value':1,'evidence_id':'p1','observed_at':'2026-10-01T00:00:00+00:00'},{'value':4,'evidence_id':'p2','observed_at':'2026-10-02T00:00:00+00:00'}])['progress']['change']==3
 @pytest.mark.parametrize('n',['self_assessment','peer_assessment'])
 def test_827_828_assessment_requires_evidence_and_bias_check(n):assert L(n,criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']

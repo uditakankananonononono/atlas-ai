@@ -57,3 +57,19 @@ def test_mounted_auth_declared_break_tenant(monkeypatch,oidc_auth_headers):
   r=c.post(path,headers=h,json={'payload':payload()});assert r.status_code==200 and r.json()['tenant_id']=='a'
   assert c.post(path,headers=h,json={'payload':{'source':SRC,'objective':'x'}}).status_code==422
   assert c.post(path,headers=h,json={'payload':{**payload(),'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
+
+def test_exact_caps_target_bounds_and_equal_deadlines():
+ p=payload();p['required_elements']=[str(i)for i in range(64)];p['plan_chunks']=[{'chunk_id':str(i),'elements':[str(i)],'observable_subgoal':'subgoal','metric':'completed_tasks','target':1,'deadline':p['plan_goal']['deadline'],'prerequisites':[],'if_then':{'if':'condition','then':'action'},'source':'fixture'}for i in range(64)];p['plan_goal']['target']=64
+ assert execute('chunking',p)['result']['objective_plan']['valid'] is True
+ p['required_elements'].append('64')
+ with pytest.raises(LearningReasoningError):execute('chunking',p)
+ p=payload();p['plan_goal']['target']=1000000;p['plan_chunks'][0]['target']=999994
+ assert execute('goal_setting',p)['result']['objective_plan']['valid'] is True
+ for value in [0,1000001,1.5]:
+  p=payload();p['plan_goal']['target']=value
+  with pytest.raises(LearningReasoningError):execute('goal_setting',p)
+
+def test_full_goal_chunks_ifthen_and_boundary_echo():
+ p=payload();r=execute('chunking',p)['result']['objective_plan']
+ assert r['goal']==p['plan_goal'] and r['chunks']==[p['plan_chunks'][1],p['plan_chunks'][0]] and r['deadline_conflicts']==[]
+ assert r['boundary']=='Supplied additive count-goal DAG decomposition and coverage/deadline/if-then validation only. No autonomous goal choice, feasibility prediction, scheduling or verified achievement.'
