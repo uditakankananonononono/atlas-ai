@@ -291,3 +291,35 @@ def test_well_typed_non_numeric_ordering_is_still_refused(kind,value,op):
     p=packet();p['fields'][0]['type']=kind;p['rules'][0]['predicate']={'op':op,'field':'age','value':value}
     p['examples'][0]['inputs']['age']=value
     with pytest.raises(ValueError,match='ordering requires numeric'):evaluate_example_mapping(p)
+
+
+def test_number_scalar_exact_float_bound_r3pin():
+    for place in ['input','literal']:
+        p=packet();p['fields'][0]['type']='number'
+        if place=='input':
+            p['examples'][0]['inputs']['age']=float(2**53);evaluate_example_mapping(p)
+            p['examples'][0]['inputs']['age']=float(2**53+2)
+        else:
+            p['rules'][0]['predicate']={'op':'eq','field':'age','value':float(2**53)};evaluate_example_mapping(p)
+            p['rules'][0]['predicate']['value']=float(2**53+2)
+        with pytest.raises(ValueError,match='scalar type or bound mismatch'):evaluate_example_mapping(p)
+
+
+def test_number_scalar_lower_region_accepted_r3pin():
+    for place in ['input','literal']:
+        p=packet();p['fields'][0]['type']='number'
+        if place=='input':
+            p['examples'][0]['inputs']['age']=float(2**52+2)
+        else:
+            p['rules'][0]['predicate']={'op':'eq','field':'age','value':float(2**52+2)}
+        evaluate_example_mapping(p)
+
+
+def test_and_predicate_arg_count_exact_messages_r3pin():
+    p=packet();leaf=p['rules'][0]['predicate']
+    p['rules'][0]['predicate']={'op':'and','args':[deepcopy(leaf) for _ in range(63)]}
+    evaluate_example_mapping(p)
+    p['rules'][0]['predicate']={'op':'and','args':[deepcopy(leaf) for _ in range(64)]}
+    with pytest.raises(ValueError,match='predicate depth or node bound'):evaluate_example_mapping(p)
+    p['rules'][0]['predicate']={'op':'and','args':[deepcopy(leaf) for _ in range(65)]}
+    with pytest.raises(ValueError,match='bounded nonempty boolean operands required'):evaluate_example_mapping(p)
