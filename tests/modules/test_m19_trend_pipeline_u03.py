@@ -58,7 +58,7 @@ def by_term(r):
 def refuse(call, text=None):
     with pytest.raises(tp.TrendError) as e:
         call()
-    assert str(e.value).startswith("TREND_U03: ")
+    assert str(e.value).startswith(("TREND_U03: ", "TREND_REFUSED_OVERSIZE: "))
     if text:
         assert text in str(e.value)
 
@@ -569,3 +569,16 @@ def test_late_duplicate_later_post_id_refused():
     with pytest.raises(tp.TrendError) as e:
         score(preds, lp)
     assert "duplicate post_id" in str(e.value)
+
+
+# ---- S2.3 follow-up (G4): oversize refusals carry the TREND_REFUSED_OVERSIZE code ----
+def test_s23_oversize_refusals_use_refused_oversize_code():
+    p = {"post_id": "x", "author": "a", "posted_at": AS_OF, "text": "aurora"}
+    with pytest.raises(tp.TrendError) as e:
+        tp.extract_trends([dict(p, post_id=str(i)) for i in range(20001)], as_of=AS_OF)
+    assert str(e.value).startswith("TREND_REFUSED_OVERSIZE: ") and "too many posts" in str(e.value)
+    preds = tp.make_predictions(extract(), confidence=0.5, horizon_days=7, limit=1)
+    lp = [dict(p, post_id=str(i)) for i in range(20001)]
+    with pytest.raises(tp.TrendError) as e2:
+        tp.score_predictions(preds, lp, resolved_at="2026-04-20T00:00:00+00:00")
+    assert str(e2.value).startswith("TREND_REFUSED_OVERSIZE: ")

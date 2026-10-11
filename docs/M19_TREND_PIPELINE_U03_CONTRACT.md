@@ -24,3 +24,13 @@ Scoring counts posts in (predicted_at, predicted_at + horizon]; fewer than 20 sc
 - Measures term frequency in the supplied posts only. Sampling bias and bots are not detected.
 - English, ASCII-token tokenizer.
 - No collection, network, accounts, clock or model calls. No impersonation, no posting.
+
+## Count-series input and calibration bins (`trend_counts_u03.py`, new file)
+- `extract_count_trends(series, ...)`: same windows and growth formula as above, over rows `{term, date, count, source}` (for example an exported counts file). Terms are lowercased. A row set larger than 200000 is refused with `TREND_REFUSED_OVERSIZE`.
+- `calibration_bins(records, bins=5)`: stated confidence against observed hit rate per bin, from records shaped like the ones `score_predictions` returns. Under 20 records it says so.
+- Oversize refusals in `trend_pipeline_u03.py` also carry the `TREND_REFUSED_OVERSIZE` code.
+
+## Not done on purpose
+- Ideas are not written to the incubator and carry no score; scoring output is separate. Nothing is wired.
+- No "strategy" output: any strategy text would be a claim this module cannot measure.
+- No collection, scraping, ingest, checkpointing or resumption.

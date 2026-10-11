@@ -40,8 +40,8 @@ class TrendError(ValueError):
     pass
 
 
-def _fail(msg):
-    raise TrendError("TREND_U03: " + msg)
+def _fail(msg, code="TREND_U03"):
+    raise TrendError(f"{code}: {msg}")
 
 
 def _str(v, where, limit):
@@ -109,7 +109,7 @@ def extract_trends(posts, *, as_of, recent_days=7, baseline_days=28, min_recent_
     if not posts:
         _fail("posts must not be empty")
     if len(posts) > MAX_POSTS:
-        _fail(f"too many posts (limit {MAX_POSTS})")
+        _fail(f"too many posts (limit {MAX_POSTS})", "TREND_REFUSED_OVERSIZE")
     t_as_of = _when(as_of, "as_of")
     recent_days = _int(recent_days, "recent_days", 1, 90)
     baseline_days = _int(baseline_days, "baseline_days", 1, 365)
@@ -240,7 +240,7 @@ def score_predictions(predictions, later_posts, *, resolved_at):
     if not isinstance(later_posts, list):
         _fail("later_posts must be a list")
     if len(later_posts) > MAX_POSTS:
-        _fail(f"too many later posts (limit {MAX_POSTS})")
+        _fail(f"too many later posts (limit {MAX_POSTS})", "TREND_REFUSED_OVERSIZE")
     t_res = _when(resolved_at, "resolved_at")
     for i, (_, _, _, _, _, t0) in enumerate(checked):
         if t_res <= t0:
