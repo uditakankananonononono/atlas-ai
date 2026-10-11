@@ -342,7 +342,9 @@ def test_path_length_and_segment_bounds():
     assert routes(evaluate(base(requests=[Q("q", "GET", p257)])))["q"]["decision"] == "refused"
     s16 = "/" + "/".join("a" * 1 for _ in range(16))
     s17 = s16 + "/a"
-    assert routes(evaluate(base(requests=[Q("q", "GET", s16)])))["q"]["decision"] != "refused"
+    s16_rules = [R("r16", "*", "prefix", "/a", "replacement")]
+    r16 = routes(evaluate(base(rules=s16_rules, requests=[Q("q", "GET", s16)])))["q"]
+    assert r16["decision"] == "routed" and r16["rule_id"] == "r16" and r16["target"] == "replacement" and r16["reasons"] == []
     assert routes(evaluate(base(requests=[Q("q", "GET", s17)])))["q"]["decision"] == "refused"
     with pytest.raises(ValueError):
         evaluate(base(rules=[R("r", "GET", "exact", p257, "legacy")]))
@@ -557,3 +559,274 @@ def test_result_is_json_serialisable_and_finite():
     d = base(fixtures=[fx("f", "q2", legacy=out(200, [1.5]), replacement=out(200, [1.5]))])
     s = json.dumps(evaluate(d), allow_nan=False)
     assert "handler" in s
+
+
+# ================================================================ R2 audit pins (tests only; runtime unchanged)
+def ev(rules, requests, fixtures=None, default=None):
+    d = {"targets": copy.deepcopy(TARGETS), "rules": rules, "requests": requests}
+    if fixtures is not None:
+        d["fixtures"] = fixtures
+    if default is not None:
+        d["default_target"] = default
+    return evaluate(d)
+
+
+def test_body_integer_bit_length_boundary_256_ok_257_refused():
+    ok = (1 << 256) - 1
+    bad = 1 << 256
+    rules, reqs = [R("r", "*", "prefix", "/", "legacy")], [Q("q", "GET", "/x")]
+    for v in (ok, -ok, 0, 1 << 255):
+        ev(rules, reqs, [fx("f", "q", legacy=out(200, v), replacement=out(200, v))])
+    for v in (bad, -bad, bad + 1):
+        with pytest.raises(ValueError, match="body integer too large"):
+            ev(rules, reqs, [fx("f", "q", legacy=out(200, v))])
+        with pytest.raises(ValueError, match="body integer too large"):
+            ev(rules, reqs, [fx("f", "q", replacement=out(200, [v]))])
+    res = ev(rules, reqs, [fx("f", "q", legacy=out(200, ok), replacement=out(200, ok - 1))])
+    assert res["parity"][0]["mismatched_fields"] == ["body"]
+
+
+def reasons_for(path):
+    return ev([R("r", "*", "prefix", "/", "legacy")], [Q("q", "GET", path)])["routes"][0]["reasons"]
+
+
+@pytest.mark.parametrize("path", ["/a%20b", "/a%21", "/a%7B", "/a%80", "/a%FF", "/%C3%A9", "/a%20%20"])
+def test_percent_escapes_that_are_allowed(path):
+    assert reasons_for(path) == []
+
+
+@pytest.mark.parametrize("path", ["/a%1F", "/a%00", "/a%0A", "/a%7F", "/a%41", "/a%7A", "/a%7E", "/a%2D", "/a%2E", "/a%30", "/a%5F",
+                                  "/a%2F", "/a%5C", "/a%25", "/a%3F", "/a%23"])
+def test_percent_escapes_that_are_ambiguous_are_refused(path):
+    assert reasons_for(path) == ["ambiguous_percent_encoding"]
+
+
+@pytest.mark.parametrize("path", ["/a%2", "/a%", "/a%GG", "/a%1f", "/a%7f", "/a%2g", "/a%%20"])
+def test_malformed_or_lowercase_percent_escapes_refused(path):
+    assert reasons_for(path) == ["bad_percent_encoding"]
+
+
+def test_percent_hex_is_base_16_not_10():
+    assert reasons_for("/a%10") == ["ambiguous_percent_encoding"]  # 0x10 control char; base 10 would read 10 (allowed)
+    assert reasons_for("/a%20") == []  # 0x20 space; base 10 would read 20 (control char)
+    assert reasons_for("/a%99") == []  # 0x99 allowed
+    assert reasons_for("/a%7E") == ["ambiguous_percent_encoding"]
+
+
+def test_percent_escape_in_rule_path_same_policy():
+    evaluate(base(rules=[R("r", "GET", "exact", "/a%20b", "legacy")]))
+    for bad in ("/a%1F", "/a%7F", "/a%41"):
+        with pytest.raises(ValueError, match="ambiguous_percent_encoding"):
+            evaluate(base(rules=[R("r", "GET", "exact", bad, "legacy")]))
+
+
+def test_same_path_different_methods_do_not_overlap_or_conflict():
+    for kind in ("exact", "prefix"):
+        res = ev([R("a", "GET", kind, "/x", "legacy"), R("b", "POST", kind, "/x", "replacement")], [Q("q", "GET", "/x"), Q("p", "POST", "/x")])
+        assert res["overlaps"] == []
+        assert {r["request_id"]: r["rule_id"] for r in res["routes"]} == {"q": "a", "p": "b"}
+
+
+def test_overlap_kind_labels_winner_and_direction_for_both_id_orders():
+    cases = [
+        # (rules, kind, winner, shadowed, targets_differ)
+        ([("a", "*", "exact", "/x", "legacy"), ("b", "GET", "exact", "/x", "replacement")], "method_specific_vs_wildcard", "b", "a", True),
+        ([("a", "GET", "exact", "/x", "legacy"), ("b", "*", "exact", "/x", "replacement")], "method_specific_vs_wildcard", "a", "b", True),
+        ([("a", "*", "exact", "/x", "legacy"), ("b", "GET", "exact", "/x", "legacy")], "method_specific_vs_wildcard", "b", "a", False),
+        ([("a", "*", "prefix", "/x", "legacy"), ("b", "*", "prefix", "/x/y", "replacement")], "prefix_vs_prefix", "b", "a", True),
+        ([("a", "*", "prefix", "/x/y", "replacement"), ("b", "*", "prefix", "/x", "legacy")], "prefix_vs_prefix", "a", "b", True),
+        ([("a", "GET", "prefix", "/x", "legacy"), ("b", "*", "prefix", "/x", "replacement")], "prefix_vs_prefix", "a", "b", True),
+        ([("a", "*", "prefix", "/x", "legacy"), ("b", "GET", "exact", "/x/y", "replacement")], "exact_vs_prefix", "b", "a", True),
+        ([("a", "GET", "exact", "/x/y", "replacement"), ("b", "*", "prefix", "/x", "legacy")], "exact_vs_prefix", "a", "b", True),
+        ([("a", "*", "prefix", "/", "legacy"), ("b", "*", "prefix", "/x", "legacy")], "prefix_vs_prefix", "b", "a", False),
+        ([("a", "*", "prefix", "/x", "legacy"), ("b", "*", "exact", "/", "legacy")], None, None, None, None),
+    ]
+    for rules, kind, winner, shadowed, differ in cases:
+        rs = [R(*r) for r in rules]
+        res = ev(rs, [Q("q", "GET", "/x")])
+        if kind is None:
+            assert res["overlaps"] == []
+        else:
+            assert res["overlaps"] == [{"kind": kind, "winner": winner, "shadowed": shadowed, "targets_differ": differ}], rules
+        res2 = ev(list(reversed(rs)), [Q("q", "GET", "/x")])
+        assert res2["overlaps"] == res["overlaps"]
+
+
+def test_non_overlapping_prefixes_and_segment_boundary_produce_no_overlap():
+    res = ev([R("a", "*", "prefix", "/x", "legacy"), R("b", "*", "prefix", "/xy", "replacement"), R("c", "*", "exact", "/xz", "legacy")], [Q("q", "GET", "/x")])
+    assert res["overlaps"] == []
+
+
+def test_dominance_and_ambiguity_both_orders():
+    # more specific path but wildcard method vs less specific path but method-specific, different targets: ambiguous
+    pairs = [
+        (R("a", "*", "prefix", "/x/y", "legacy"), R("b", "GET", "prefix", "/x", "replacement")),
+        (R("a", "*", "exact", "/x/y", "legacy"), R("b", "GET", "prefix", "/x", "replacement")),
+        (R("a", "GET", "exact", "/x", "legacy"), R("b", "*", "exact", "/x", "legacy")),
+    ]
+    for a, b in pairs[:2]:
+        for order in ((a, b), (b, a)):
+            with pytest.raises(ValueError, match="ambiguous_precedence"):
+                ev(list(order), [Q("q", "GET", "/x/y")])
+        same = dict(b, target=a["target"])
+        res = ev([a, same], [Q("q", "GET", "/x/y")])  # same target: allowed, recorded as not differing
+        assert [o["targets_differ"] for o in res["overlaps"]] == [False]
+    # dominating on both axes (or tied on one) is fine
+    ok = ev([R("a", "GET", "exact", "/x", "legacy"), R("b", "*", "prefix", "/x", "replacement")], [Q("q", "GET", "/x")])
+    assert ok["routes"][0]["rule_id"] == "a" and ok["overlaps"][0]["winner"] == "a"
+    ok = ev([R("a", "GET", "prefix", "/x/y", "legacy"), R("b", "*", "prefix", "/x", "replacement")], [Q("q", "GET", "/x/y")])
+    assert ok["routes"][0]["rule_id"] == "a"
+    ok = ev([R("a", "*", "prefix", "/x/y", "legacy"), R("b", "*", "prefix", "/x", "replacement")], [Q("q", "GET", "/x/y")])
+    assert ok["routes"][0]["rule_id"] == "a"
+
+
+def test_equal_specificity_keys_never_overlap_exhaustive():
+    """The 'equal key' tie in overlap winner selection is unreachable: prove it over a small universe."""
+    paths = ["/", "/a", "/a/b", "/b", "/a/b/c"]
+    rules = [(m, k, p) for m in ("*", "GET", "POST") for k in ("exact", "prefix") for p in paths]
+    n = 0
+    for (m1, k1, p1), (m2, k2, p2) in itertools.combinations(rules, 2):
+        a, b = R("a", m1, k1, p1, "legacy"), R("b", m2, k2, p2, "replacement")
+        try:
+            res = ev([a, b], [Q("q", "GET", "/a")])
+        except ValueError:
+            continue  # duplicate selector or ambiguity refusals
+        for o in res["overlaps"]:
+            ka = (k1 == "exact", 0 if k1 == "exact" else 0 if p1 == "/" else p1.count("/"), m1 != "*")
+            kb = (k2 == "exact", 0 if k2 == "exact" else 0 if p2 == "/" else p2.count("/"), m2 != "*")
+            assert ka != kb
+            assert o["winner"] == ("a" if ka > kb else "b")
+            n += 1
+    assert n > 100
+
+
+def test_default_target_replacement_rollback_after_mismatch():
+    reqs = [Q("q", "GET", "/nothing"), Q("r", "GET", "/o")]
+    rules = [R("ro", "*", "exact", "/o", "legacy")]
+    fixture_bad = fx("f1", "q", legacy=out(200, "a"), replacement=out(200, "b"))
+    res = ev(rules, reqs, [fixture_bad], default="replacement")
+    q = routes(res)["q"]
+    assert (q["decision"], q["target"], q["rule_id"], q["handler"]) == ("default", "replacement", None, "new-app")
+    assert res["rollback_candidates"] == ["@default"]
+    assert res["rollback_effect"] == [{"request_id": "q", "rule_id": None, "before": "replacement", "after": "legacy"}]
+    aq = {r["request_id"]: r for r in res["after_rollback_routes"]}["q"]
+    assert (aq["decision"], aq["target"], aq["rule_id"], aq["handler"]) == ("default", "legacy", None, "old-app")
+    ar = {r["request_id"]: r for r in res["after_rollback_routes"]}["r"]
+    assert ar["target"] == "legacy" and ar["rule_id"] == "ro"
+    # matching fixture: nothing to roll back; still replacement
+    ok = ev(rules, reqs, [fx("f1", "q")], default="replacement")
+    assert ok["rollback_candidates"] == [] and ok["rollback_effect"] == []
+    assert {r["request_id"]: r for r in ok["after_rollback_routes"]}["q"]["target"] == "replacement"
+    # no fixture: unverified default, no candidate
+    nf = ev(rules, reqs, [], default="replacement")
+    assert nf["unverified_replacement_rules"] == ["@default"] and nf["rollback_candidates"] == []
+    # default legacy: never a candidate, stays legacy
+    dl = ev(rules, reqs, [fixture_bad], default="legacy")
+    assert dl["rollback_candidates"] == [] and routes(dl)["q"]["target"] == "legacy"
+    assert {r["request_id"]: r for r in dl["after_rollback_routes"]}["q"]["target"] == "legacy"
+    assert dl["unverified_replacement_rules"] == []
+
+
+def test_default_golden_violation_alone_triggers_default_rollback():
+    reqs = [Q("q", "GET", "/nothing")]
+    rules = [R("ro", "*", "exact", "/o", "legacy")]
+    g = {"parity": False, "mismatched_fields": ["body"]}
+    res = ev(rules, reqs, [fx("f", "q", golden=g)], default="replacement")  # outputs match, golden claims mismatch
+    assert res["golden_violations"] == ["f"] and res["rollback_candidates"] == ["@default"]
+    assert res["after_rollback_routes"][0]["target"] == "legacy"
+
+
+def test_request_echo_fields_valid_and_refused():
+    res = ev([R("r", "*", "prefix", "/", "legacy")], [Q("a", "GET", "/ok"), Q("b", "get", "/ok"), Q("c", "GET", "/ok/"), Q("d", "Get", "ok"), Q("e", 7, "/ok")])
+    r = routes(res)
+    assert (r["a"]["method"], r["a"]["path"], r["a"]["reasons"], r["a"]["decision"]) == ("GET", "/ok", [], "routed")
+    assert (r["b"]["method"], r["b"]["path"], r["b"]["reasons"], r["b"]["decision"], r["b"]["rule_id"], r["b"]["trace"]) == (
+        None, "/ok", ["method_not_normalized_uppercase_http_method"], "refused", None, [])
+    assert (r["c"]["method"], r["c"]["path"], r["c"]["reasons"]) == ("GET", None, ["trailing_slash_ambiguous"])
+    assert (r["d"]["method"], r["d"]["path"], r["d"]["reasons"]) == (None, None, ["method_not_normalized_uppercase_http_method", "path_must_start_with_slash"])
+    assert (r["e"]["method"], r["e"]["path"], r["e"]["reasons"]) == (None, "/ok", ["method_not_normalized_uppercase_http_method"])
+    for k in ("a", "b", "c", "d", "e"):
+        assert r[k]["request_id"] == k
+    for k in ("b", "c", "d", "e"):
+        assert r[k]["handler"] is None and r[k]["target"] is None
+    assert r["a"]["handler"] == "old-app" and r["a"]["target"] == "legacy"
+
+
+def test_golden_ok_is_exact_equality_over_all_field_subsets():
+    fields = [[], ["body"], ["status"], ["body", "status"]]
+    for actual in fields:
+        for claimed in fields:
+            legacy = out(200, "x")
+            repl = out(200 if "status" not in actual else 201, "x" if "body" not in actual else "y")
+            g = {"parity": not claimed, "mismatched_fields": list(reversed(claimed))}
+            res = ev([R("r", "*", "prefix", "/", "legacy")], [Q("q", "GET", "/a")], [fx("f", "q", legacy=legacy, replacement=repl, golden=g)])
+            p = res["parity"][0]
+            assert p["mismatched_fields"] == actual and p["parity"] == (not actual)
+            assert p["golden_ok"] is (sorted(claimed) == actual)
+            assert res["golden_violations"] == ([] if sorted(claimed) == actual else ["f"])
+    none = ev([R("r", "*", "prefix", "/", "legacy")], [Q("q", "GET", "/a")], [fx("f", "q")])
+    assert none["parity"][0]["golden_ok"] is None and none["golden_violations"] == []
+
+
+def test_golden_wrong_fields_with_consistent_parity_and_wrong_parity_rejected():
+    rules, reqs = [R("r", "*", "prefix", "/", "legacy")], [Q("q", "GET", "/a")]
+    # wrong mismatched_fields, internally consistent parity=False
+    res = ev(rules, reqs, [fx("f", "q", legacy=out(200, "a"), replacement=out(200, "b"), golden={"parity": False, "mismatched_fields": ["status"]})])
+    assert res["parity"][0]["golden_ok"] is False
+    # golden says all good while outputs differ
+    res = ev(rules, reqs, [fx("f", "q", legacy=out(200, "a"), replacement=out(200, "b"), golden={"parity": True, "mismatched_fields": []})])
+    assert res["parity"][0]["golden_ok"] is False
+    # golden claims mismatch while outputs equal
+    res = ev(rules, reqs, [fx("f", "q", golden={"parity": False, "mismatched_fields": ["body"]})])
+    assert res["parity"][0]["golden_ok"] is False
+    # internally inconsistent golden is refused outright
+    for g in ({"parity": True, "mismatched_fields": ["body"]}, {"parity": False, "mismatched_fields": []}):
+        with pytest.raises(ValueError, match="golden parity contradicts"):
+            ev(rules, reqs, [fx("f", "q", golden=g)])
+
+
+CLEAN = ["fixture_parity_compares_recorded_outputs_only", "no_production_traffic_or_handler_execution_observed"]
+
+
+def test_legacy_removal_blockers_each_only_under_its_cause():
+    leg = R("l", "*", "exact", "/old", "legacy")
+    rep = R("n", "*", "exact", "/new", "replacement")
+    clean = ev([leg], [Q("q", "GET", "/old")])
+    assert clean["legacy_removal_blockers"] == sorted(CLEAN) and clean["legacy_removal_safe"] is False
+
+    refused = ev([leg], [Q("q", "GET", "/old"), Q("bad", "get", "/old")])
+    assert refused["legacy_removal_blockers"] == sorted(CLEAN + ["refused_requests_present"])
+
+    unrouted = ev([leg], [Q("q", "GET", "/old"), Q("u", "GET", "/missing")])
+    assert unrouted["legacy_removal_blockers"] == sorted(CLEAN + ["unrouted_requests_present"])
+
+    both = ev([leg], [Q("q", "GET", "/old"), Q("u", "GET", "/missing"), Q("bad", "get", "/old")])
+    assert both["legacy_removal_blockers"] == sorted(CLEAN + ["refused_requests_present", "unrouted_requests_present"])
+
+    no_fix = ev([leg, rep], [Q("q", "GET", "/old"), Q("n", "GET", "/new")])
+    assert no_fix["legacy_removal_blockers"] == sorted(CLEAN + ["replacement_routes_without_fixture"])
+
+    verified = ev([leg, rep], [Q("q", "GET", "/old"), Q("n", "GET", "/new")], [fx("f", "n")])
+    assert verified["legacy_removal_blockers"] == sorted(CLEAN) and verified["unverified_replacement_rules"] == []
+
+    # default (no_route avoided) with replacement default and no fixture counts as unverified too
+    dflt = ev([leg], [Q("q", "GET", "/old"), Q("u", "GET", "/x")], default="replacement")
+    assert dflt["legacy_removal_blockers"] == sorted(CLEAN + ["replacement_routes_without_fixture"])
+    dflt_leg = ev([leg], [Q("q", "GET", "/old"), Q("u", "GET", "/x")], default="legacy")
+    assert dflt_leg["legacy_removal_blockers"] == sorted(CLEAN)
+
+    mism = ev([leg, rep], [Q("q", "GET", "/old"), Q("n", "GET", "/new")], [fx("f", "n", replacement=out(500, "x"))])
+    assert mism["legacy_removal_blockers"] == sorted(CLEAN + ["parity_mismatch_present"])
+    mism_legacy_routed = ev([leg], [Q("q", "GET", "/old")], [fx("f", "q", replacement=out(200, "other"))])
+    assert mism_legacy_routed["legacy_removal_blockers"] == sorted(CLEAN + ["parity_mismatch_present"])
+
+    golden = ev([leg, rep], [Q("q", "GET", "/old"), Q("n", "GET", "/new")],
+                [fx("f", "n", golden={"parity": False, "mismatched_fields": ["body"]})])
+    assert golden["legacy_removal_blockers"] == sorted(CLEAN + ["golden_violation_present"])
+
+    # fixture on a refused request: parity is computed against recorded outputs, no routing blocker added except refusal
+    on_refused = ev([leg], [Q("bad", "get", "/old")], [fx("f", "bad")])
+    assert on_refused["legacy_removal_blockers"] == sorted(CLEAN + ["refused_requests_present"])
+    # matching fixtures everywhere and fixture covering a no-route request
+    on_unrouted = ev([leg], [Q("u", "GET", "/missing")], [fx("f", "u")])
+    assert on_unrouted["legacy_removal_blockers"] == sorted(CLEAN + ["unrouted_requests_present"])
