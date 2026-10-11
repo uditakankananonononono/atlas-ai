@@ -34,3 +34,11 @@ Scoring counts posts in (predicted_at, predicted_at + horizon]; fewer than 20 sc
 - Ideas are not written to the incubator and carry no score; scoring output is separate. Nothing is wired.
 - No "strategy" output: any strategy text would be a claim this module cannot measure.
 - No collection, scraping, ingest, checkpointing or resumption.
+
+## Forecast-ledger adapter (`u03_j1_adapter.py`, new file) - prepared against an early call shape only
+Written against an early interface note (keyword-only calls; prediction keys claim, probability, horizon, source, made_at). The ledger and scorer are NOT in this repository at the time of writing, so nothing here imports them, calls them or has been run against them. Final integration needs the landed, audited source and one real scored round trip.
+- `to_j1_predictions(predictions, *, source)`: confidence -> probability, predicted_at -> made_at (UTC), horizon_days -> an absolute horizon deadline. Exact five keys, no extras. The term and threshold go into the claim text and a side map.
+- `bind_ids(pending_result, returned)`: attaches the ids the ledger returns, matching on exact content; no match or an ambiguous match is refused.
+- `resolutions_from_posts(bound, later_posts, *, resolved_at)`: outcome dicts only where the horizon has passed and posts were collected inside it. Too early, no posts in the horizon, or no later data: no resolution, listed as unresolved, never a miss. Window (made_at, horizon], end inclusive.
+- No local Brier, hit rate or bins in this adapter; scoring belongs to the single scorer.
+- Limit: U03 cannot tell whether the later-post collection was complete, and the scorer does not verify outcome truth.
