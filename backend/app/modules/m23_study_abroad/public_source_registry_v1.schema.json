@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "M23 derived public-source registry v1",
+  "type": "array",
+  "minItems": 20,
+  "maxItems": 20,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "publisher",
+      "url",
+      "evidence_type",
+      "outcome_basis",
+      "example_school",
+      "schema_version",
+      "reading_mode",
+      "outcome_status",
+      "license_status",
+      "terms_status",
+      "body_collection_allowed",
+      "training_rights_granted"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "publisher": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "url": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "evidence_type": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "outcome_basis": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "example_school": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "schema_version": {
+        "const": "1"
+      },
+      "reading_mode": {
+        "const": "publisher_page"
+      },
+      "outcome_status": {
+        "const": "source_reported_not_independently_verified"
+      },
+      "license_status": {
+        "const": "not_granted"
+      },
+      "terms_status": {
+        "const": "unreviewed"
+      },
+      "body_collection_allowed": {
+        "const": false
+      },
+      "training_rights_granted": {
+        "const": false
+      }
+    }
+  }
+}
