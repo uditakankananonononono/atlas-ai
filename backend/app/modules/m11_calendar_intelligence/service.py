@@ -477,7 +477,9 @@ class Service:
         }
         approval = ApprovalRequest(
             id=str(uuid4()), module_id=11, action_type="apply_calendar_plan", payload=payload)
-        self.approval_gate.put(approval)
+        # Module 0 issues its own canonical id on submit; retain it so every
+        # stored reference and response links the real approval (M10 pattern).
+        approval = self.approval_gate.put(approval) or approval
         self.repository.set_plan_status(plan_id, "proposed", approval_id=approval.id)
         return ProposedAction(approval_id=approval.id,
                               action_type="apply_calendar_plan", payload=payload)
@@ -584,7 +586,9 @@ class Service:
         }
         approval = ApprovalRequest(
             id=str(uuid4()), module_id=11, action_type="apply_reschedule", payload=payload)
-        self.approval_gate.put(approval)
+        # Module 0 issues its own canonical id on submit; retain it so every
+        # stored reference and response links the real approval (M10 pattern).
+        approval = self.approval_gate.put(approval) or approval
         proposal = ProposedAction(approval_id=approval.id,
                                   action_type="apply_reschedule", payload=payload)
         return report, proposal

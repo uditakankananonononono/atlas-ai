@@ -88,4 +88,4 @@ class Service:
     def propose(self,build_id,action):
         row=self.repo.get(build_id)
         if not row:raise NotFoundError(build_id)
-        payload={"tenant_id":self.tenant_id,"build_id":build_id,"project_id":row.project_id,"kind":row.kind,"sha256":row.sha256,"manifest":row.manifest};a=ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type=action,payload=payload);self.approvals.put(a,user_id=self.tenant_id);return PublishProposal(approval_id=a.id,action_type=action,payload=payload)
+        payload={"tenant_id":self.tenant_id,"build_id":build_id,"project_id":row.project_id,"kind":row.kind,"sha256":row.sha256,"manifest":row.manifest};a=ApprovalRequest(id=str(uuid4()),module_id=MODULE_ID,action_type=action,payload=payload);a=self.approvals.put(a,user_id=self.tenant_id) or a;return PublishProposal(approval_id=a.id,action_type=action,payload=payload)
