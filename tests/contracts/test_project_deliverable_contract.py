@@ -4,6 +4,10 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
+from types import SimpleNamespace
+import stat
+import os
 
 PATH = Path(__file__).resolve().parents[2] / 'backend/app/core/project_deliverable_contract.py'
 spec = importlib.util.spec_from_file_location('project_deliverable_contract', PATH)
@@ -115,6 +119,92 @@ class DeliverableTests(unittest.TestCase):
         self.assertEqual(s,old);self.assertEqual(list(self.root.iterdir()),before)
         r['requested_targets']['datasets']=0
         self.assertEqual(s['requested_targets']['datasets'],120)
+
+
+
+
+class AuditRepairTests(unittest.TestCase):
+    setUp=DeliverableTests.setUp
+    artifact=DeliverableTests.artifact
+
+    def test_invalid_text_and_controls(self):
+        for value in [None, 1, '', ' ', 'x'*2001, 'x'+chr(31), 'x'+chr(127)]:
+            with self.subTest(value=value), self.assertRaises(m.ContractError):m._text(value)
+        m._text('x'*2000);m._text('x y')
+
+    def test_refs_targets_containers_rows_sha_benchmark(self):
+        cases=[('source_lines',['bad']),('source_lines',[1]),('source_lines','P1|L1'),('requested_targets',{}),('requested_targets',[]),('requested_targets',{'datasets':1,'project_tools':2,'program_tools':3,'extra':0}),('artifacts',{}),('artifacts',()),('artifacts',[dict(self.artifact(),extra=1)]),('artifacts',[None]),('artifacts',[self.artifact(sha256='G'*64)]),('artifacts',[self.artifact(sha256='a'*63)]),('artifacts',[self.artifact(sha256=1)]),('benchmark',{}),('benchmark',[])]
+        for key,value in cases:
+            s=spec_data();s[key]=value
+            with self.subTest(key=key,value=value),self.assertRaises(m.ContractError):m.validate_spec(s)
+        b={'comparator':'tool','metric':'score','dataset_artifact_id':'artifact-one','result_artifact_id':'artifact-one','protocol':'plan'}
+        for key in b:
+            x=dict(b);x[key]='bad'+chr(31)
+            s=spec_data([self.artifact()]);s['benchmark']=x
+            with self.subTest(key=key),self.assertRaises(m.ContractError):m.validate_spec(s)
+        s=spec_data([self.artifact()]);s['benchmark']=dict(b,extra='x')
+        with self.assertRaises(m.ContractError):m.validate_spec(s)
+        # Distinct ids and paths make only the list bound cause rejection.
+        s=spec_data([self.artifact(id='a'+str(i),path='f'+str(i)) for i in range(10001)])
+        with self.assertRaises(m.ContractError):m.validate_spec(s)
+
+    def measured(self,before=None,after=None,chunks=None,bound=10,error=None,path='out.txt'):
+        initial=SimpleNamespace(st_mode=stat.S_IFREG|0o600,st_size=3,st_mtime_ns=1,st_ctime_ns=2,st_dev=1,st_ino=2)
+        before=before or initial;after=after or initial
+        row=self.artifact(path=path,sha256=hashlib.sha256(b'abc').hexdigest())
+        with mock.patch.object(m.os,'dup',return_value=20),mock.patch.object(m.os,'open',side_effect=error or ([30] if '/' not in path else [25,30])) as opened,mock.patch.object(m.os,'fstat',side_effect=[before,after]),mock.patch.object(m.os,'read',side_effect=chunks or [b'abc',b'']) as read,mock.patch.object(m.os,'close') as close:
+            result=m._measure(10,row,bound)
+            return result,read.call_args_list,close.call_args_list,opened.call_args_list
+
+    def test_regular_device_fifo_directory_classification(self):
+        for mode in [stat.S_IFCHR,stat.S_IFBLK,stat.S_IFIFO,stat.S_IFDIR,stat.S_IFSOCK]:
+            before=SimpleNamespace(st_mode=mode,st_size=3)
+            r,reads,closes,_=self.measured(before=before)
+            self.assertEqual(r,('NOT_REGULAR_FILE',None,None));self.assertEqual(reads,[])
+            self.assertEqual(closes,[mock.call(30),mock.call(20)])
+
+    def test_static_oversize_has_no_read_and_status(self):
+        before=SimpleNamespace(st_mode=stat.S_IFREG,st_size=11)
+        r,reads,closes,_=self.measured(before=before,bound=10)
+        self.assertEqual(r,('TOO_LARGE',None,None));self.assertEqual(reads,[])
+        self.assertEqual(closes,[mock.call(30),mock.call(20)])
+
+    def test_oversize_while_read_and_chunk_request(self):
+        r,reads,closes,_=self.measured(chunks=[b'ab',b'cd'],bound=3)
+        self.assertEqual(r,('TOO_LARGE',None,None))
+        self.assertEqual(reads,[mock.call(30,4),mock.call(30,2)])
+        self.assertEqual(closes,[mock.call(30),mock.call(20)])
+
+    def test_before_after_race_fields_and_short_read(self):
+        for field,value in [('st_size',4),('st_mtime_ns',2),('st_ctime_ns',3)]:
+            after=SimpleNamespace(st_mode=stat.S_IFREG,st_size=3,st_mtime_ns=1,st_ctime_ns=2,st_dev=1,st_ino=2)
+            setattr(after,field,value)
+            r,_,closes,_=self.measured(after=after)
+            self.assertEqual(r,('CHANGED_DURING_READ',None,None));self.assertEqual(closes,[mock.call(30),mock.call(20)])
+        r,_,_,_=self.measured(chunks=[b'ab',b''])
+        self.assertEqual(r,('CHANGED_DURING_READ',None,None))
+
+    def test_fd_cleanup_success_fail_open_nested_and_read(self):
+        r,_,closes,_=self.measured()
+        self.assertEqual(r[0],'FILE_HASH_MATCH');self.assertEqual(closes,[mock.call(30),mock.call(20)])
+        r,_,closes,_=self.measured(error=OSError('denied'))
+        self.assertEqual(r,('UNREADABLE_OR_UNSAFE',None,None));self.assertEqual(closes,[mock.call(20)])
+        r,_,closes,opened=self.measured(path='nested/file')
+        self.assertEqual(closes,[mock.call(20),mock.call(30),mock.call(25)])
+        self.assertTrue(opened[0].args[1]&os.O_DIRECTORY);self.assertTrue(opened[0].args[1]&os.O_NOFOLLOW)
+        self.assertTrue(opened[1].args[1]&os.O_NOFOLLOW);self.assertTrue(opened[1].args[1]&os.O_NONBLOCK)
+        r,_,closes,_=self.measured(chunks=[OSError('read failure')])
+        self.assertEqual(r[0],'UNREADABLE_OR_UNSAFE');self.assertEqual(closes,[mock.call(30),mock.call(20)])
+
+    def test_real_nested_exact_fifo_symlink_root(self):
+        (self.root/'nested').mkdir();(self.root/'nested/file').write_bytes(b'abc')
+        s=spec_data([self.artifact(path='nested/file',sha256=hashlib.sha256(b'abc').hexdigest())])
+        self.assertEqual(m.check_deliverables(self.root,s,max_file_bytes=3)['measured_artifact_count'],1)
+        self.assertEqual(m.check_deliverables(self.root,s,max_file_bytes=2)['artifacts'][0]['status'],'TOO_LARGE')
+        os.mkfifo(self.root/'fifo')
+        self.assertEqual(m.check_deliverables(self.root,spec_data([self.artifact(path='fifo')]))['artifacts'][0]['status'],'NOT_REGULAR_FILE')
+        (self.root/'link').symlink_to(self.root,target_is_directory=True)
+        with self.assertRaises(m.ContractError):m.check_deliverables(self.root/'link',s)
 
 
 if __name__ == '__main__':unittest.main()
