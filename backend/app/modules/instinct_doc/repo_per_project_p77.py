@@ -94,7 +94,16 @@ def _valid_url(u):
     if not isinstance(u, str) or not u.strip():
         return False
     try:
-        s = urlsplit(u.strip())
+        raw = u.strip()
+        s = urlsplit(raw)
+        # Whitespace anywhere in the authority (urlsplit silently drops tabs and newlines) and an
+        # unparseable port (non-numeric or outside 0..65535) make the declared URL invalid.
+        authority = raw.partition("://")[2]
+        for sep in "/?#":
+            authority = authority.split(sep, 1)[0]
+        if any(c.isspace() for c in authority):
+            return False
+        s.port  # raises ValueError for a non-numeric or out-of-range port
         return s.scheme == "https" and bool(s.hostname) and not s.username and not s.password \
             and not s.query and not s.fragment
     except ValueError:

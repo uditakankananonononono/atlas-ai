@@ -603,3 +603,92 @@ def test_hardlinked_fifo_config_is_not_counted_as_a_shared_regular_file(tmp_path
     r = rp.check_repo_per_project(tmp_path, [a, b])
     assert "SHARED_INODE" not in codes(r, 0) and "SHARED_INODE" not in codes(r, 1)
     assert r["projects"][0]["remote_recorded"] is False
+
+
+# --- fourth commit: strict declared URL host and port (finding REPOSITORY_URL_INVALID, no exception) ---
+_URL_MSG = "declared repository must be a plain credential-free https URL"
+
+
+@pytest.mark.parametrize("bad", [
+    "https://exa mple.test:99999999/x",
+    "https://exa mple.test/x",
+    "https://example.test:99999999/x",
+    "https://example.test:65536/x",
+    "https://example.test:abc/x",
+    "https://example.test:-1/x",
+    "https://example.test:1 2/x",
+    "https://example. test/x",
+    "https://example.test\t/x",
+    "https://exa\tmple.test/x",
+    "https://example.test:80a/x",
+])
+def test_declared_url_with_space_host_or_bad_port_is_a_finding_not_an_exception(tmp_path, bad):
+    p = proj(tmp_path, "alpha", url=bad)
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REPOSITORY_URL_INVALID" in codes(r)
+    f = [f for f in r["projects"][0]["findings"] if f["code"] == "REPOSITORY_URL_INVALID"]
+    assert len(f) == 1 and f[0]["detail"] == _URL_MSG
+    assert r["projects"][0]["status"] == "STRUCTURE_FAILED"
+
+
+@pytest.mark.parametrize("good", [
+    "https://example.test/x",
+    "https://example.test:443/x",
+    "https://example.test:0/x",
+    "https://example.test:65535/x",
+    "https://example.test:8080/org/repo.git",
+    "https://example.test:/x",
+])
+def test_declared_url_with_valid_port_still_passes(tmp_path, good):
+    p = proj(tmp_path, "alpha", url=good)
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REPOSITORY_URL_INVALID" not in codes(r)
+    assert r["projects"][0]["status"] == "STRUCTURE_CONSISTENT"
+
+
+def test_invalid_declared_url_does_not_raise_repo_structure_error(tmp_path):
+    p = proj(tmp_path, "alpha", url="https://exa mple.test:99999999/x")
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert r["projects"][0]["remote_recorded"] in (True, False)
+
+
+def test_bad_port_url_is_not_compared_against_remote(tmp_path):
+    p, d = _one(tmp_path, url="https://example.test:99999999/x")
+    _cfg(d, '[remote "origin"]\n\turl = https://other.test/x\n')
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REPOSITORY_URL_INVALID" in codes(r) and "REMOTE_MISMATCH" not in codes(r)
+
+
+def test_remote_config_url_is_still_only_compared_not_validated(tmp_path):
+    p, d = _one(tmp_path, url="https://example.test/x")
+    _cfg(d, '[remote "origin"]\n\turl = https://exa mple.test:99999999/x\n')
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REPOSITORY_URL_INVALID" not in codes(r)
+    assert "REMOTE_MISMATCH" in codes(r)
+    assert r["projects"][0]["remote_recorded"] is True
+
+
+def test_two_projects_invalid_urls_are_not_reported_as_shared(tmp_path):
+    a = proj(tmp_path, "alpha", url="https://exa mple.test:99999999/x")
+    b = proj(tmp_path, "beta", {"x.py": b"x\n"}, url="https://exa mple.test:99999999/x")
+    r = rp.check_repo_per_project(tmp_path, [a, b])
+    assert "SHARED_REPOSITORY_URL" not in codes(r, 0) and "SHARED_REPOSITORY_URL" not in codes(r, 1)
+
+
+def test_whitespace_rule_is_limited_to_the_authority_not_the_path(tmp_path):
+    p = proj(tmp_path, "alpha", url="https://example.test/org/my repo")
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REPOSITORY_URL_INVALID" not in codes(r)
+
+
+def test_surrounding_whitespace_around_a_valid_declared_url_is_tolerated(tmp_path):
+    p = proj(tmp_path, "alpha", url="  https://example.test:8443/x \n")
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REPOSITORY_URL_INVALID" not in codes(r)
+    assert r["projects"][0]["status"] == "STRUCTURE_CONSISTENT"
+
+
+def test_trailing_whitespace_after_a_bare_authority_is_tolerated(tmp_path):
+    p = proj(tmp_path, "alpha", url="https://example.test:8443 ")
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REPOSITORY_URL_INVALID" not in codes(r)
