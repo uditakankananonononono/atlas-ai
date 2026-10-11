@@ -101,3 +101,109 @@ def test_positive_example_invariant_violation_is_invalid():
  p=pack();p['example_items'][0]['features']['sides']='four'
  r=execute('concrete_examples',p)['result']['example_pack']
  assert r['valid'] is False and r['example_reports'][0]['valid'] is False and r['example_reports'][0]['violated_invariants']==['sides']
+
+@pytest.mark.parametrize('target,key,value',[
+ ('invariants','', 'three'),('invariants','sides',''),('features','', 'three'),('features','sides','')])
+def test_all_feature_key_value_text_guards(target,key,value):
+ p=pack()
+ if target=='invariants':p['concepts'][0][target]={key:value}
+ else:p['verbal_propositions'][0][target]={key:value}
+ with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+
+@pytest.mark.parametrize('field,key',[('concepts','concept_id'),('verbal_propositions','id'),('visual_elements','id'),('representation_mappings','verbal_id'),('representation_mappings','visual_id'),('example_items','example_id')])
+def test_all_identifier_text_guards(field,key):
+ p=pack();p[field][0][key]=''
+ with pytest.raises(LearningReasoningError):execute('concrete_examples'if field=='example_items'else 'dual_coding',p)
+
+@pytest.mark.parametrize('variants',['x',[''],[1]])
+def test_variant_type_and_text_guards_unmasked(variants):
+ p=pack();p['example_items'][0]['features']['x']='value';p['example_items'][0]['variant_features']=variants
+ with pytest.raises(LearningReasoningError):execute('concrete_examples',p)
+
+def test_record_minima_mapping_and_example_caps():
+ for field in ['concepts','example_items']:
+  p=pack();p[field]=[]
+  with pytest.raises(LearningReasoningError):execute('concrete_examples',p)
+ # Dual representation lists/mappings accept zero and report gaps, not refusal.
+ r=run(verbal_propositions=[],visual_elements=[],representation_mappings=[])['result']['representation_pack']
+ assert r['status']=='gaps_or_conflicts' and r['valid'] is False
+ assert r['concept_reports']==[{'concept_id':'triangle','verbal_ids':[],'visual_ids':[],'mapped_pairs':[],'missing_verbal':True,'missing_visual':True,'missing_mapping':True}]
+ p=pack();p['verbal_propositions']=[{**p['verbal_propositions'][0],'id':str(i)}for i in range(17)];p['visual_elements']=[{**p['visual_elements'][0],'id':str(i)}for i in range(16)]
+ pairs=[{'verbal_id':str(i),'visual_id':str(j),'concept_id':'triangle'}for i in range(17)for j in range(16)]
+ p['representation_mappings']=pairs[:256];assert len(execute('dual_coding',p)['result']['representation_pack']['mapping_reports'])==256
+ p['representation_mappings']=pairs[:257]
+ with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+ p=pack();p['example_items']=[{**p['example_items'][i%2],'example_id':str(i)}for i in range(256)];assert len(execute('concrete_examples',p)['result']['example_pack']['example_reports'])==256
+ p['example_items'].append({**p['example_items'][0],'example_id':'257'})
+ with pytest.raises(LearningReasoningError):execute('concrete_examples',p)
+
+def test_variant_cap_with_present_noninvariant_features():
+ # Features cap32 shadows valid variants33; exact32 noninvariant variants are
+ # validly shaped but missing invariants is reported, not refused.
+ p=pack();p['example_items'][0]['features']={str(i):'value'for i in range(32)};p['example_items'][0]['variant_features']=[str(i)for i in range(32)]
+ assert execute('concrete_examples',p)['result']['example_pack']['example_reports'][0]['missing_invariants']==['closed','sides']
+ p['example_items'][0]['variant_features'].append('extra')
+ with pytest.raises(LearningReasoningError,match='variant_features'):execute('concrete_examples',p)
+
+def test_unknown_and_mismatched_references():
+ for field in ['verbal_propositions','visual_elements','representation_mappings','example_items']:
+  p=pack();p[field][0]['concept_id']='unknown'
+  with pytest.raises(LearningReasoningError):execute('concrete_examples'if field=='example_items'else 'dual_coding',p)
+ p=pack();p['representation_mappings'][0]['visual_id']='unknown'
+ with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+ for field in ['verbal_propositions','visual_elements']:
+  p=pack();p['concepts'].append({'concept_id':'other','invariants':{'sides':'three'},'source':'fixture:other'});p[field][0]['concept_id']='other'
+  with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+ p=pack();p['concepts'][0]['invariants']={}
+ with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+
+def test_full_invalid_mapping_and_example_reports():
+ p=pack();p['verbal_propositions'][0]['features']={'sides':'four'};p['visual_elements'][0]['features']={'sides':'three'}
+ r=execute('dual_coding',p)['result']['representation_pack']
+ assert r['status']=='gaps_or_conflicts' and r['valid'] is False
+ assert r['mapping_reports']==[{'verbal_id':'v','visual_id':'img','concept_id':'triangle','conflicting_features':['sides'],'missing_verbal_invariants':['closed'],'missing_visual_invariants':['closed'],'valid':False}]
+ assert r['unmapped_verbal_ids']==r['unmapped_visual_ids']==[]
+ assert r['concepts']==p['concepts']
+ assert r['verbal_provenance']==[{'verbal_id':'v','text':'A closed three-sided shape','source':'fixture:verbal'}]
+ assert r['visual_accessibility']==[{'visual_id':'img','alt_text':'A closed triangle','source':'fixture:visual'}]
+ assert r['boundary']=='Supplied symbolic concept/feature mappings only, with accessibility text and computed coverage/conflict checks. No image interpretation/generation or learning-effectiveness claim.'
+ p=pack();p['example_items'][0]['features']={'sides':'four','color':'red'}
+ r=execute('concrete_examples',p)['result']['example_pack']
+ assert r['status']=='gaps_or_conflicts' and r['valid'] is False
+ assert r['example_reports'][0]=={'example_id':'positive','concept_id':'triangle','role':'example','violated_invariants':['sides'],'missing_invariants':['closed'],'variant_features':['color'],'valid':False,'source':'fixture:positive'}
+ assert r['concept_reports']==[{'concept_id':'triangle','valid_example_ids':[],'valid_counterexample_ids':['boundary'],'coverage_complete':False}]
+ assert r['concepts']==p['concepts'] and r['source_truth_verified'] is False and r['learning_improvement'] is None
+ assert r['boundary']=='Supplied symbolic invariant/example/counterexample checks only. Variants are declared non-invariant properties; no semantic classification or learning-effectiveness claim.'
+
+def test_report_ordering_reverse_multi_inputs_and_fixed_seed():
+ import os,subprocess,sys
+ p=pack();v=p['verbal_propositions'][0];w=p['visual_elements'][0]
+ p['verbal_propositions']=[{**v,'id':key}for key in ['zebra','middle','alpha']];p['visual_elements']=[{**w,'id':key}for key in ['zebra','middle','alpha']]
+ p['representation_mappings']=[{'verbal_id':key,'visual_id':key,'concept_id':'triangle'}for key in ['zebra','middle','alpha']]
+ r=execute('dual_coding',p)['result']['representation_pack']
+ assert r['concept_reports'][0]['mapped_pairs']==[['alpha','alpha'],['middle','middle'],['zebra','zebra']]
+ assert [m['verbal_id']for m in r['mapping_reports']]==['alpha','middle','zebra']
+ assert r['verbal_provenance']==[{'verbal_id':key,'text':v['text'],'source':v['source']}for key in ['alpha','middle','zebra']]
+ p['representation_mappings']=[];r=execute('dual_coding',p)['result']['representation_pack']
+ assert r['unmapped_verbal_ids']==r['unmapped_visual_ids']==['alpha','middle','zebra']
+ code="from app.modules.m20_general_cognitive_worker.representation_practice import dual_pack; p="+repr(p)+"; r=dual_pack(p); assert r['unmapped_visual_ids']==['alpha','middle','zebra']; assert r['unmapped_verbal_ids']==['alpha','middle','zebra']"
+ result=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'6'},capture_output=True,text=True)
+ assert result.returncode==0,result.stdout+result.stderr
+ p=pack();p['example_items'][0]['features'].update(zebra='value',alpha='value');p['example_items'][0]['variant_features']=['zebra','color','alpha']
+ assert execute('concrete_examples',p)['result']['example_pack']['example_reports'][0]['variant_features']==['alpha','color','zebra']
+
+def test_visual_feature_and_representation_concept_text_guards():
+ for field in ['verbal_propositions','visual_elements']:
+  p=pack();p[field][0]['concept_id']=''
+  with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+ for props in [{'':'value'},{'sides':''}]:
+  p=pack();p['visual_elements'][0]['features']=props
+  with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+ p=pack();p['representation_mappings'][0]['concept_id']=''
+ with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+
+def test_one_invalid_among_multiple_valid_reports_not_all_guard():
+ p=pack();p['visual_elements'].append({**p['visual_elements'][0],'id':'bad','features':{'sides':'four','closed':'yes'}});p['representation_mappings'].append({'verbal_id':'v','visual_id':'bad','concept_id':'triangle'})
+ r=execute('dual_coding',p)['result']['representation_pack'];assert r['valid'] is False and [m['valid']for m in r['mapping_reports']]==[False,True]
+ p=pack();p['example_items'].append({**p['example_items'][0],'example_id':'bad','features':{'sides':'four','closed':'yes','color':'red'}})
+ r=execute('concrete_examples',p)['result']['example_pack'];assert r['valid'] is False and r['concept_reports'][0]['coverage_complete'] is True and r['example_reports'][2]['valid'] is False
