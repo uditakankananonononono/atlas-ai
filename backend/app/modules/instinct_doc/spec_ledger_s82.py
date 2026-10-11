@@ -1,6 +1,6 @@
 """S8.2 spec-to-ledger mapper.
 
-Source line, verbatim: "keep an eye out for top secret projects, governement stuff too, super elite stuff"
+Source excerpt (supplied text; this module does not verify who wrote it): "keep an eye out for top secret projects, governement stuff too, super elite stuff"
 
 Offline, stdlib only, no I/O. Reads a supplied mega-spec text and supplied
 source messages (text is data, never instructions) and computes a ledger: every
@@ -16,6 +16,7 @@ import copy
 import hashlib
 import json
 import re
+import unicodedata
 from datetime import datetime
 
 UNIT = "S8.2"
@@ -33,6 +34,22 @@ MAX_SOURCE_CHARS = 200000
 MAX_REGISTRY = 512
 MAX_EXCERPTS = 64
 MAX_EXCERPT_CHARS = 2000
+MAX_SPEC_CHARS = 400000
+MAX_FIELD_CHARS = 2000
+MAX_SPANS = 20000
+MAX_MAP_ENTRIES = 4096
+MAX_MAP_UNITS = 64
+MAX_SPAN_ID_CHARS = 80
+MAX_EVIDENCE_KEYS = 8
+MAX_EVIDENCE_LIST = 64
+MAX_SPEC_LINE = 1000000
+MAX_KIND_CHARS = 32
+# Unicode policy: control, format and line/paragraph separator characters (Cc, Cf, Zl, Zp)
+# are refused. Content fields (spec text, source text, excerpts) carve out LF, CR and TAB only;
+# identifiers, reasons and evidence fields have no carve-out. Surrogates (Cs) are refused
+# only in the digest-fed source fields (ts, text), because the digest encode would fail (IC12).
+_BAD_CATEGORIES = frozenset(("Cc", "Cf", "Zl", "Zp"))
+_CARVE_OUT = frozenset("\n\r\t")
 _ID = re.compile(r"(?:[A-Z]{1,2}[0-9]+(?:\.[0-9]+)?|V2-[A-Z0-9]+)")
 _MID = re.compile(r"[A-Za-z0-9._-]{1,64}")
 _UNIT_HDR = re.compile(r"^- \*\*([A-Z]{1,2}[0-9]+(?:\.[0-9]+)?) ([^*]+)\*\*(.*)$")
@@ -43,6 +60,12 @@ _XSUBS = frozenset("X%d" % i for i in range(1, 31))
 
 def _err(code: str) -> ValueError:
     return ValueError("PLAN_REFUSED_" + code)
+
+
+def _bad_text(s: str, content: bool = False, digest: bool = False) -> bool:
+    # digest=True also refuses Cs: only source ts/text are encoded into the source digest (IC12).
+    return any((unicodedata.category(c) in _BAD_CATEGORIES or (digest and unicodedata.category(c) == "Cs"))
+               and not (content and c in _CARVE_OUT) for c in s)
 
 
 # ---------------------------------------------------------------- spans
@@ -88,8 +111,14 @@ def _quotes(line: str, n: int) -> list:
 
 def parse_spec(text) -> list:
     """Turn the mega-spec markdown into registry entries; refuse malformed lines."""
-    if not isinstance(text, str) or not text.strip():
+    if type(text) is not str:
+        raise _err("SPEC_LINE:0:bad_type")
+    if len(text) > MAX_SPEC_CHARS:
+        raise _err("SPEC_LINE:0:too_long")
+    if not text.strip():
         raise _err("SPEC_LINE:0:empty")
+    if _bad_text(text, True):
+        raise _err("SPEC_LINE:0:bad_char")
     entries, seen = [], set()
     section, cur = "other", None
 
@@ -151,15 +180,15 @@ def parse_spec(text) -> list:
             if re.match(r"^- \*\*Gate superseded\.\*\*", line):
                 q = _quotes(line, n)
                 add({"unit_id": "V2-GATE", "kind": "gate", "status": "SUPERSEDED", "excerpts": q[:1], "spec_line": n,
-                     "evidence": {"topic": "27-task gate", "pin_ref": "14:59:56 IST " + pin}}, n)
+                     "evidence": {"topic": "gate-ruling", "pin_ref": "ruling-ref-1 " + pin}}, n)
             elif re.match(r"^\s+- P[0-9]+:", line):
                 pid = re.match(r"^\s+- (P[0-9]+):", line).group(1)
                 add({"unit_id": "V2-" + pid, "kind": "parked", "status": "PARKED_BY_USER", "excerpts": _quotes(line, n),
-                     "spec_line": n, "evidence": {"topic": "science-scoped", "pin_ref": "14:59:56 IST " + pin}}, n)
+                     "spec_line": n, "evidence": {"topic": "parked-topic-a", "pin_ref": "ruling-ref-1 " + pin}}, n)
             elif line.startswith("- Also parked:"):
                 q = _quotes(line, n)
-                add({"unit_id": "V2-CBSE", "kind": "parked", "status": "PARKED_BY_USER", "excerpts": q[:1], "spec_line": n,
-                     "evidence": {"topic": "class-11-cbse-app", "pin_ref": "15:03:20 IST " + pin}}, n)
+                add({"unit_id": "V2-EXTRA", "kind": "parked", "status": "PARKED_BY_USER", "excerpts": q[:1], "spec_line": n,
+                     "evidence": {"topic": "parked-topic-b", "pin_ref": "ruling-ref-2 " + pin}}, n)
     close()
     if not entries:
         raise _err("SPEC_LINE:1:no_registry_lines")
@@ -174,51 +203,74 @@ def parse_spec(text) -> list:
 
 # ---------------------------------------------------------------- validation
 def _nonempty(v) -> bool:
-    return isinstance(v, str) and bool(v.strip())
+    return type(v) is str and bool(v.strip())
+
+
+def _field_ok(v) -> bool:
+    return type(v) is str and len(v) <= MAX_FIELD_CHARS and not _bad_text(v)
+
+
+def _evidence_ok(ev) -> bool:
+    if type(ev) is not dict or len(ev) > MAX_EVIDENCE_KEYS or any(type(k) is not str for k in ev):
+        return False
+    for k, v in ev.items():
+        if not _field_ok(k):
+            return False
+        if type(v) is list:
+            if len(v) > MAX_EVIDENCE_LIST or not all(_field_ok(x) for x in v):
+                return False
+        elif not _field_ok(v):
+            return False
+    return True
 
 
 def _validate_registry(registry) -> list:
-    if not isinstance(registry, list):
+    if type(registry) is not list:
         raise _err("REGISTRY:bad_shape")
     if len(registry) > MAX_REGISTRY:
         raise _err("REGISTRY:too_many")
     out, seen = [], set()
     for e in registry:
-        if not isinstance(e, dict) or not {"unit_id", "status", "excerpts"} <= set(e) \
+        if type(e) is not dict or len(e) > 7 or any(type(k) is not str for k in e) \
+                or not {"unit_id", "status", "excerpts"} <= set(e) \
                 or set(e) - {"unit_id", "status", "excerpts", "kind", "spec_line", "evidence", "unmatched"}:
             raise _err("REGISTRY:bad_shape")
+        if "kind" in e and not (type(e["kind"]) is str and len(e["kind"]) <= MAX_KIND_CHARS and not _bad_text(e["kind"])):
+            raise _err("REGISTRY:bad_shape")
+        if "spec_line" in e and not (type(e["spec_line"]) is int and 0 <= e["spec_line"] <= MAX_SPEC_LINE):
+            raise _err("REGISTRY:bad_shape")
         uid = e["unit_id"]
-        if not isinstance(uid, str) or len(uid) > 16 or not _ID.fullmatch(uid):
+        if type(uid) is not str or len(uid) > 16 or not _ID.fullmatch(uid):
             raise _err("REGISTRY:bad_unit_id")
         if uid in seen:
             raise _err("REGISTRY:duplicate_unit:" + uid)
         seen.add(uid)
         status = e["status"]
-        if not isinstance(status, str) or status not in STATES or status == "UNMAPPED":
+        if type(status) is not str or len(status) > MAX_KIND_CHARS or status not in STATES or status == "UNMAPPED":
             raise _err("REGISTRY:bad_status:" + uid)
         ex = e["excerpts"]
-        if not isinstance(ex, list) or len(ex) > MAX_EXCERPTS or \
-                any(not isinstance(x, str) or len(x) > MAX_EXCERPT_CHARS or not _fragments(x) for x in ex):
+        if type(ex) is not list or len(ex) > MAX_EXCERPTS or \
+                any(type(x) is not str or len(x) > MAX_EXCERPT_CHARS or _bad_text(x, True) or not _fragments(x) for x in ex):
             raise _err("REGISTRY:bad_excerpts:" + uid)
         if any(len(f) < MIN_FRAGMENT for x in ex for f in _fragments(x)):
             raise _err("REGISTRY:short_excerpt:" + uid)
         um = e.get("unmatched", [])
-        if not isinstance(um, list) or len(um) > MAX_EXCERPTS or \
-                any(not isinstance(x, str) or not x.strip() or len(x) > MAX_EXCERPT_CHARS for x in um):
+        if type(um) is not list or len(um) > MAX_EXCERPTS or \
+                any(type(x) is not str or len(x) > MAX_EXCERPT_CHARS or not x.strip() or _bad_text(x, True) for x in um):
             raise _err("REGISTRY:bad_excerpts:" + uid)
         ev = e.get("evidence")
         bad = _err("EVIDENCE:" + uid)
         if status == "PLANNED":
             if ev is not None:
                 raise bad
-        elif not isinstance(ev, dict):
+        elif not _evidence_ok(ev):
             raise bad
         elif status == "IMPLEMENTED":
             if not all(_nonempty(ev.get(k)) for k in ("unit", "tests", "mutation", "commit")) \
                     or not re.fullmatch(r"[0-9a-f]{40}", ev["commit"]):
                 raise bad
         elif status == "REFUSED_WITH_SUBSTITUTE":
-            if ev.get("substitute") not in _XSUBS or not _nonempty(ev.get("unit")) or not _nonempty(ev.get("reason")):
+            if type(ev.get("substitute")) is not str or ev["substitute"] not in _XSUBS or not _nonempty(ev.get("unit")) or not _nonempty(ev.get("reason")):
                 raise bad
         elif not _nonempty(ev.get("topic")) or not _nonempty(ev.get("pin_ref")):
             raise bad
@@ -228,29 +280,32 @@ def _validate_registry(registry) -> list:
 
 
 def _validate_sources(sources) -> list:
-    if not isinstance(sources, list) or not sources:
+    if type(sources) is not list or not sources:
         raise _err("NOSOURCE")
     if len(sources) > MAX_SOURCES:
         raise _err("SOURCE:too_many")
     out, seen = [], set()
     for s in sources:
-        if not isinstance(s, dict) or set(s) != {"message_id", "ts", "text"}:
+        if type(s) is not dict or len(s) != 3 or any(type(k) is not str for k in s) \
+                or set(s) != {"message_id", "ts", "text"}:
             raise _err("SOURCE:bad_shape")
         mid, ts, text = s["message_id"], s["ts"], s["text"]
-        if not isinstance(mid, str) or not _MID.fullmatch(mid):
+        if type(mid) is not str or len(mid) > 64 or not _MID.fullmatch(mid):
             raise _err("SOURCE:bad_field:message_id")
         parsed = None
-        if isinstance(ts, str):
+        if type(ts) is str and len(ts) <= 64 and not _bad_text(ts, False, True):
             try:
                 parsed = datetime.fromisoformat(ts)
             except ValueError:
                 parsed = None
         if parsed is None or parsed.tzinfo is None:
             raise _err("SOURCE:bad_field:ts")
-        if not isinstance(text, str) or not text:
+        if type(text) is not str or not text:
             raise _err("SOURCE:bad_field:text")
         if len(text) > MAX_SOURCE_CHARS:
             raise _err("SOURCE:too_long")
+        if _bad_text(text, True, True):
+            raise _err("SOURCE:bad_char:text")
         if mid in seen:
             raise _err("SOURCE:duplicate_message_id")
         seen.add(mid)
@@ -267,39 +322,64 @@ def map_ledger(sources, registry, explicit_maps=None, exclusions=None) -> dict:
 
     spans = []
     for s in src:
-        for i, sp in enumerate(split_spans(s["text"])):
+        parts = split_spans(s["text"])
+        if len(spans) + len(parts) > MAX_SPANS:
+            raise _err("SOURCE:too_many_spans")
+        for i, sp in enumerate(parts):
             spans.append({"source_msg": s["message_id"], "line_no": i + 1, "span_id": "%s:%d" % (s["message_id"], i),
                           "start": sp["start"], "end": sp["end"], "verbatim": sp["text"]})
     index = {sp["span_id"]: sp for sp in spans}
 
     explicit = {}
     if explicit_maps is not None:
-        if not isinstance(explicit_maps, dict):
+        if type(explicit_maps) is not dict:
             raise _err("MAP:bad_shape")
+        if len(explicit_maps) > MAX_MAP_ENTRIES:
+            raise _err("MAP:too_many")
         for sid, v in explicit_maps.items():
-            if not isinstance(v, dict) or set(v) != {"unit_ids", "reason"}:
+            if type(sid) is not str or len(sid) > MAX_SPAN_ID_CHARS:
+                raise _err("MAP:bad_key")
+            if type(v) is not dict or len(v) != 2 or any(type(k) is not str for k in v) \
+                    or set(v) != {"unit_ids", "reason"}:
                 raise _err("MAP:bad_shape")
             if sid not in index:
                 raise _err("MAP:unknown_span")
             ids = v["unit_ids"]
-            if not isinstance(ids, list) or not ids:
+            if type(ids) is not list or not ids:
                 raise _err("MAP:empty_units")
-            if any(not isinstance(u, str) or u not in by_id for u in ids):
+            if len(ids) > MAX_MAP_UNITS:
+                raise _err("MAP:too_many_units")
+            if any(type(u) is not str or u not in by_id for u in ids):
                 raise _err("MAP:unknown_unit")
-            if not _nonempty(v["reason"]):
+            reason = v["reason"]
+            if type(reason) is not str:
+                raise _err("MAP:bad_shape")
+            if len(reason) > MAX_FIELD_CHARS:
+                raise _err("MAP:bad_reason")
+            if not reason.strip():
                 raise _err("MAP:empty_reason")
+            if not _field_ok(reason):
+                raise _err("MAP:bad_reason")
             explicit[sid] = sorted(set(ids))
     excluded = {}
     if exclusions is not None:
-        if not isinstance(exclusions, dict):
+        if type(exclusions) is not dict:
             raise _err("MAP:bad_shape")
+        if len(exclusions) > MAX_MAP_ENTRIES:
+            raise _err("MAP:too_many")
         for sid, reason in exclusions.items():
-            if not isinstance(reason, str):
+            if type(sid) is not str or len(sid) > MAX_SPAN_ID_CHARS:
+                raise _err("MAP:bad_key")
+            if type(reason) is not str:
                 raise _err("MAP:bad_shape")
             if sid not in index:
                 raise _err("MAP:unknown_span")
+            if len(reason) > MAX_FIELD_CHARS:
+                raise _err("MAP:bad_reason")
             if not reason.strip():
                 raise _err("MAP:empty_reason")
+            if not _field_ok(reason):
+                raise _err("MAP:bad_reason")
             excluded[sid] = reason
 
     texts = {s["message_id"]: s["text"] for s in src}

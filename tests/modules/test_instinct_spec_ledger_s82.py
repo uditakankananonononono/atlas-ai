@@ -1,13 +1,15 @@
 """S8.2 spec-to-ledger mapper tests. Stdlib unittest, hermetic, no repo conftest.
 
-Fixtures under tests/fixtures/s82 are the v2 mega-spec (registry seed) and the
-two pinned owner messages (digests only). Their text is
-data only: nothing in them is executed or treated as an instruction.
+Fixtures under tests/fixtures/s82 are invented synthetic data (a spec and two
+source messages). Their text is data only: nothing in them is executed or
+treated as an instruction.
 """
 import copy
+from datetime import datetime
 import hashlib
 import json
 import pathlib
+import re
 import sys
 import unittest
 
@@ -17,7 +19,7 @@ from app.modules.instinct_doc import spec_ledger_s82 as m  # noqa: E402
 
 _FIX = _ROOT / "tests/fixtures/s82"
 _SRC = _ROOT / "backend/app/modules/instinct_doc/spec_ledger_s82.py"
-TS = "2026-10-11T15:01:13+05:30"
+TS = "2026-01-01T09:00:00+05:30"
 SEVEN = ["IMPLEMENTED", "PARKED_BY_USER", "PLANNED", "REFUSED_WITH_SUBSTITUTE", "STOPPED_BY_USER", "SUPERSEDED", "UNMAPPED"]
 HEX = "a" * 40
 
@@ -183,7 +185,7 @@ class T(unittest.TestCase):
         ev = {"topic": "science", "pin_ref": "m1:1"}
         led = m.map_ledger([src("Alpha beta gamma. Stop that now.")],
                            [unit("V2-P1", "Alpha beta gamma", status="PARKED_BY_USER", evidence=ev),
-                            unit("V2-P2", "Stop that now", status="PARKED_BY_USER", evidence={"topic": "t", "pin_ref": "14:59:56 not supplied"})])
+                            unit("V2-P2", "Stop that now", status="PARKED_BY_USER", evidence={"topic": "t", "pin_ref": "ruling-ref-1 not supplied"})])
         self.assertEqual(led["report"]["unresolved_pins"], ["V2-P2"])
         self.assertEqual(led["pins"], {"V2-P1": True, "V2-P2": False})
 
@@ -235,7 +237,7 @@ class T(unittest.TestCase):
         for k, v in (("message_id", 5), ("message_id", True), ("message_id", ""), ("message_id", "a b"), ("message_id", "x" * 65),
                      ("text", 5), ("text", None), ("text", ""), ("ts", 5)):
             self.refuses("PLAN_REFUSED_SOURCE:bad_field:" + k, m.map_ledger, [{**src(), k: v}], reg)
-        for ts in ("2026-10-11T15:01:13", "yesterday", "2026-13-01T00:00:00+05:30"):
+        for ts in ("2026-01-01T09:00:00", "yesterday", "2026-13-01T00:00:00+05:30"):
             self.refuses("PLAN_REFUSED_SOURCE:bad_field:ts", m.map_ledger, [src(ts=ts)], reg)
         self.refuses("PLAN_REFUSED_SOURCE:duplicate_message_id", m.map_ledger, [src(), src()], reg)
         self.refuses("PLAN_REFUSED_SOURCE:too_long", m.map_ledger, [src("x" * 200001)], reg)
@@ -287,17 +289,17 @@ class T(unittest.TestCase):
         m.map_ledger(s, [{"unit_id": "S1.1", "status": "PLANNED", "excerpts": [], "unmatched": ["x" * 2000]}])
 
     def test_as_of_is_latest_source_regardless_of_order(self):
-        late, early = src("aaa", "m2", "2026-10-11T15:03:34+05:30"), src("bbb", "m1", "2026-10-11T15:01:13+05:30")
+        late, early = src("aaa", "m2", "2026-01-01T09:05:00+05:30"), src("bbb", "m1", "2026-01-01T09:00:00+05:30")
         for order in ([late, early], [early, late]):
             rep = m.map_ledger(order, [unit("S1.1")])["report"]
-            self.assertEqual(rep["scope"]["as_of"], "2026-10-11T15:03:34+05:30")
+            self.assertEqual(rep["scope"]["as_of"], "2026-01-01T09:05:00+05:30")
 
     def test_parse_spec_odd_quotes_refused(self):
         self.refuses("PLAN_REFUSED_SPEC_LINE:3:odd_quotes", m.parse_spec,
                      '## 2. Units\n- **S1.1 a** | y\n  Source: "abc')
 
     def test_digest_covers_every_source(self):
-        a, b = src("aaa", "m1"), src("bbb", "m2", "2026-10-11T15:03:34+05:30")
+        a, b = src("aaa", "m1"), src("bbb", "m2", "2026-01-01T09:05:00+05:30")
         self.assertNotEqual(m.map_ledger([a, b], [unit("S1.1")])["report"]["source_digest"],
                             m.map_ledger([a], [unit("S1.1")])["report"]["source_digest"])
 
@@ -422,7 +424,7 @@ class T(unittest.TestCase):
         "- **S3.2 page-maker** | `/c34/pages` : static sites.",
         "", "## 4. Coverage notes", "- **S1.1 not a unit here** | x", "",
         "## V2-0 Retired", "",
-        '- **Gate superseded.** Quote: "once the first batch is done". Ruling: "skip science" at 14:59:56.',
+        '- **Gate superseded.** Quote: "once the first batch is done". Ruling: "skip science" at noon.',
         "- **Shelved topic, PARKED**:",
         '  - P1: "per project 120+ datasets".',
         '- Also parked: "make a small quiz app" (her other message: "no need").',
@@ -438,12 +440,12 @@ class T(unittest.TestCase):
             ("S3.2", "unit", "PLANNED", [], 17),
             ("V2-GATE", "gate", "SUPERSEDED", ["once the first batch is done"], 24),
             ("V2-P1", "parked", "PARKED_BY_USER", ["per project 120+ datasets"], 26),
-            ("V2-CBSE", "parked", "PARKED_BY_USER", ["make a small quiz app"], 27),
+            ("V2-EXTRA", "parked", "PARKED_BY_USER", ["make a small quiz app"], 27),
         ])
         x = reg[0]["evidence"]
         self.assertEqual(x, {"substitute": "X1", "unit": "S2.1", "reason": "Not finite.", "unit_refs": ["S2.1", "S2.2"]})
-        self.assertEqual(reg[4]["evidence"]["topic"], "27-task gate")
-        self.assertEqual(reg[5]["evidence"]["topic"], "science-scoped")
+        self.assertEqual(reg[4]["evidence"]["topic"], "gate-ruling")
+        self.assertEqual(reg[5]["evidence"]["topic"], "parked-topic-a")
         self.assertTrue(reg[5]["evidence"]["pin_ref"])
 
     def test_parse_spec_refusals(self):
@@ -451,7 +453,7 @@ class T(unittest.TestCase):
             return "\n".join(["## 2. Units", *lines])
         P = "PLAN_REFUSED_SPEC_LINE:"
         self.refuses(P + "0:empty", m.parse_spec, "")
-        self.refuses(P + "0:empty", m.parse_spec, 5)
+        self.refuses(P + "0:bad_type", m.parse_spec, 5)
         self.refuses(P + "2:bad_unit_header", m.parse_spec, spec("- **s1.1 x** | y"))
         self.refuses(P + "2:bad_unit_header", m.parse_spec, spec("- not bold"))
         self.refuses(P + "2:bad_unit_header", m.parse_spec, spec("- **S1.1** | y"))
@@ -490,7 +492,7 @@ class T(unittest.TestCase):
         reg = m.parse_spec(spec)
         ids = [e["unit_id"] for e in reg]
         self.assertEqual(ids, ["X1", "X2", "X3", "S1.1", "S1.2", "S1.3", "S2.1", "S2.2", "S2.3", "S2.4", "S2.6",
-                               "S2.5", "V2-GATE", "V2-P1", "V2-P2", "V2-CBSE"])
+                               "S2.5", "V2-GATE", "V2-P1", "V2-P2", "V2-EXTRA"])
         self.assertTrue(all(e["status"] == "PLANNED" for e in reg if e["kind"] == "unit"))
         self.assertTrue(all(e["status"] == "REFUSED_WITH_SUBSTITUTE" for e in reg if e["kind"] == "x"))
         self.assertEqual([e["status"] for e in reg if e["kind"] == "gate"], ["SUPERSEDED"])
@@ -514,7 +516,7 @@ class T(unittest.TestCase):
         self.assertEqual(rep["drift_units"], ["S2.4", "S2.6"])
         self.assertEqual(rep["unmatched_units"], ["S2.5", "X3"])
         self.assertEqual(rep["unpinned_units"], ["S2.3"])
-        self.assertEqual(rep["unresolved_pins"], ["V2-CBSE", "V2-GATE", "V2-P1", "V2-P2"])
+        self.assertEqual(rep["unresolved_pins"], ["V2-EXTRA", "V2-GATE", "V2-P1", "V2-P2"])
         self.assertEqual([r["span_id"] for r in led["rows"] if r["status"] == "UNMAPPED"],
                          ["syn-a:0", "syn-a:5", "syn-a:10", "syn-b:6", "syn-b:9", "syn-b:10"])
         self.assertEqual(rep["source_digest"], "c63849a9dce098189b1e4e9fd604911c749b0763c225a1c695ec2babff9e5e85")
@@ -620,10 +622,10 @@ class T(unittest.TestCase):
         spec, _ = synth()
         reg = {e["unit_id"]: e for e in m.parse_spec(spec)}
         pin = "ruling cited in spec, source message not supplied"
-        self.assertEqual(reg["V2-GATE"]["evidence"], {"topic": "27-task gate", "pin_ref": "14:59:56 IST " + pin})
-        self.assertEqual(reg["V2-P1"]["evidence"], {"topic": "science-scoped", "pin_ref": "14:59:56 IST " + pin})
-        self.assertEqual(reg["V2-P2"]["evidence"], {"topic": "science-scoped", "pin_ref": "14:59:56 IST " + pin})
-        self.assertEqual(reg["V2-CBSE"]["evidence"], {"topic": "class-11-cbse-app", "pin_ref": "15:03:20 IST " + pin})
+        self.assertEqual(reg["V2-GATE"]["evidence"], {"topic": "gate-ruling", "pin_ref": "ruling-ref-1 " + pin})
+        self.assertEqual(reg["V2-P1"]["evidence"], {"topic": "parked-topic-a", "pin_ref": "ruling-ref-1 " + pin})
+        self.assertEqual(reg["V2-P2"]["evidence"], {"topic": "parked-topic-a", "pin_ref": "ruling-ref-1 " + pin})
+        self.assertEqual(reg["V2-EXTRA"]["evidence"], {"topic": "parked-topic-b", "pin_ref": "ruling-ref-2 " + pin})
         self.assertEqual(reg["X1"]["evidence"], {"substitute": "X1", "unit": "S1.1", "reason": "Outreach needs approval.",
                                                  "unit_refs": ["S1.1"]})
         self.assertEqual(reg["X2"]["evidence"], {"substitute": "X2", "unit": "UNSPECIFIED", "reason": "No unit.",
@@ -742,43 +744,457 @@ GOLDEN = {"spans": 159, "nonrequests": 26,
                      "STOPPED_BY_USER": 0, "SUPERSEDED": 2, "UNMAPPED": 43}}
 
 _PRIV = _ROOT / "tests/fixtures/s82_private"
-_PRIV_SHA = {
-    "source-msg-150113.txt": "e364bf663808e5637762ea6f2c6d80f348d9718c94573b5f6a2a85a0bea7a6b1",
-    "source-msg-150334.txt": "5b41901ebe3070b5129f6031249f8d116488fc3cb3869ac8483c37cdf2e95bc5",
-    "spec-v2.1.1.md": "9079f7c8e30779d329b4b158e2163910f534f9146c0a342c8de2a4d3c4a0f792",
-    "v21-owner-maps.json": "f913ac1f465e8b3ba1b9fbc3501991b361ff7d9b68eaaebf42b415a7f9abf159",
-}
+_PINS = _PRIV / "pins.json"
 
 
-@unittest.skipUnless(all((_PRIV / n).exists() for n in _PRIV_SHA),
-                     "private real-input fixtures not present (git-ignored tests/fixtures/s82_private)")
+# ---------------------------------------------------------------- caller-boundary repair pins
+BASE_SPEC = synth()[0]
+
+
+def _spec_of_len(n):
+    head = BASE_SPEC + "\n## 9. Pad\n"
+    assert len(head) < n
+    return head + "y" * (n - len(head))
+
+
+class CallerBoundary(unittest.TestCase):
+    def refuses(self, code, fn, *a, **k):
+        with self.assertRaises(ValueError) as cm:
+            fn(*a, **k)
+        self.assertEqual(str(cm.exception), code)
+        self.assertNotIn("\n", str(cm.exception))
+
+    # ---- parse_spec
+    def test_spec_type_strip_then_cap(self):
+        class S(str):
+            pass
+        for bad in (None, 5, b"## 1. x", ["## 1."], S(BASE_SPEC)):
+            self.refuses("PLAN_REFUSED_SPEC_LINE:0:bad_type", m.parse_spec, bad)
+        self.refuses("PLAN_REFUSED_SPEC_LINE:0:empty", m.parse_spec, "")
+        self.refuses("PLAN_REFUSED_SPEC_LINE:0:empty", m.parse_spec, " \n\t ")
+        # the raw cap comes before strip: 400000 whitespace chars is empty, 400001 is too_long
+        self.refuses("PLAN_REFUSED_SPEC_LINE:0:empty", m.parse_spec, " " * 400000)
+        self.refuses("PLAN_REFUSED_SPEC_LINE:0:too_long", m.parse_spec, " " * 400001)
+
+    def test_spec_raw_cap_400000(self):
+        self.assertEqual(len(m.parse_spec(_spec_of_len(400000))), len(m.parse_spec(BASE_SPEC)))
+        self.refuses("PLAN_REFUSED_SPEC_LINE:0:too_long", m.parse_spec, _spec_of_len(400001))
+        # cap counts the raw text, not the stripped text
+        self.refuses("PLAN_REFUSED_SPEC_LINE:0:too_long", m.parse_spec, BASE_SPEC + " " * 400000)
+
+    def test_spec_unicode_policy_with_lf_cr_tab_carve_out(self):
+        ok = BASE_SPEC + "\n## 9. Notes\ntab\there\r\nline two\r\n"
+        self.assertEqual(len(m.parse_spec(ok)), len(m.parse_spec(BASE_SPEC)))
+        for ch in ("\x00", "\x1b", "\x7f", "\x85", "\u200b", "\u200d", "\ufeff", "\u2028", "\u2029"):
+            self.refuses("PLAN_REFUSED_SPEC_LINE:0:bad_char", m.parse_spec, BASE_SPEC + "\n## 9. Notes\na" + ch + "b")
+
+    # ---- registry
+    def _ok_unit(self, **kw):
+        e = {"unit_id": "S1.1", "status": "PLANNED", "excerpts": ["abcdefgh ijk"]}
+        e.update(kw)
+        return e
+
+    def test_registry_container_and_entry_types(self):
+        class L(list):
+            pass
+
+        class D(dict):
+            pass
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}]
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, L([self._ok_unit()]))
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, [D(self._ok_unit())])
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, [{**self._ok_unit(), 1: "x"}])
+        # all 7 allowed keys accepted; an 8th key refused
+        seven = self._ok_unit(kind="unit", spec_line=3, evidence=None, unmatched=[])
+        self.assertEqual(len(seven), 7)
+        m.map_ledger(s, [seven])
+        eight = dict(seven, extra=2)
+        self.assertEqual(len(eight), 8)
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, [eight])
+
+    def test_registry_strict_scalar_types(self):
+        class S(str):
+            pass
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}]
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_unit_id", m.map_ledger, s, [self._ok_unit(unit_id=S("S1.1"))])
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_status:S1.1", m.map_ledger, s, [self._ok_unit(status=S("PLANNED"))])
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_excerpts:S1.1", m.map_ledger, s, [self._ok_unit(excerpts=[S("abcdefgh ijk")])])
+        for bad in (True, "3", 3.0, -1, 1000001):
+            self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, [self._ok_unit(spec_line=bad)])
+        m.map_ledger(s, [self._ok_unit(spec_line=0)])
+        m.map_ledger(s, [self._ok_unit(spec_line=1000000)])
+        for bad in (5, "k" * 33, "a\nb", S("unit")):
+            self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, [self._ok_unit(kind=bad)])
+        m.map_ledger(s, [self._ok_unit(kind="k" * 32)])
+
+    def test_registry_evidence_boundary(self):
+        class D(dict):
+            pass
+
+        class S(str):
+            pass
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}]
+        ev = {"topic": "t", "pin_ref": "p"}
+        u = lambda e: self._ok_unit(status="PARKED_BY_USER", evidence=e)  # noqa: E731
+        m.map_ledger(s, [u(ev)])
+        E = "PLAN_REFUSED_EVIDENCE:S1.1"
+        self.refuses(E, m.map_ledger, s, [u(D(ev))])
+        self.refuses(E, m.map_ledger, s, [u({**ev, 1: "x"})])
+        eight = {**ev, **{"k%d" % i: "v" for i in range(6)}}
+        self.assertEqual(len(eight), 8)
+        m.map_ledger(s, [u(eight)])
+        nine = dict(eight, k9="v")
+        self.assertEqual(len(nine), 9)
+        self.refuses(E, m.map_ledger, s, [u(nine)])
+        self.refuses(E, m.map_ledger, s, [u({"topic": S("t"), "pin_ref": "p"})])
+        self.refuses(E, m.map_ledger, s, [u({"topic": "t", "pin_ref": "p", "x": {"a": 1}})])
+        # field cap 2000 accepted, 2001 refused; control and format chars refused
+        m.map_ledger(s, [u({"topic": "t" * 2000, "pin_ref": "p"})])
+        self.refuses(E, m.map_ledger, s, [u({"topic": "t" * 2001, "pin_ref": "p"})])
+        for ch in ("\n", "\r", "\t", "\x00", "\u200b", "\u2028", "\u2029"):
+            self.refuses(E, m.map_ledger, s, [u({"topic": "t" + ch + "t", "pin_ref": "p"})])
+        # whitespace-only is empty; huge whitespace-only does not pass through an uncapped strip
+        self.refuses(E, m.map_ledger, s, [u({"topic": " " * 5000, "pin_ref": "p"})])
+        # list-valued evidence (unit_refs) is bounded: 64 strings accepted, 65 refused
+        x = {"substitute": "X1", "unit": "S1.1", "reason": "r", "unit_refs": ["S1.1"] * 64}
+        m.map_ledger(s, [self._ok_unit(status="REFUSED_WITH_SUBSTITUTE", evidence=x)])
+        x65 = dict(x, unit_refs=["S1.1"] * 65)
+        self.refuses(E, m.map_ledger, s, [self._ok_unit(status="REFUSED_WITH_SUBSTITUTE", evidence=x65)])
+        self.refuses(E, m.map_ledger, s, [self._ok_unit(status="REFUSED_WITH_SUBSTITUTE", evidence=dict(x, unit_refs=[5]))])
+        self.refuses(E, m.map_ledger, s, [self._ok_unit(status="REFUSED_WITH_SUBSTITUTE", evidence=dict(x, substitute=["X1"]))])
+
+    def test_registry_excerpt_unicode_policy(self):
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}]
+        m.map_ledger(s, [self._ok_unit(excerpts=["abcdefgh\tijk"])])
+        for ch in ("\x00", "\x1b", "\u200b", "\u2028", "\u2029"):
+            self.refuses("PLAN_REFUSED_REGISTRY:bad_excerpts:S1.1", m.map_ledger, s, [self._ok_unit(excerpts=["abcdefgh" + ch + "ijk"])])
+            self.refuses("PLAN_REFUSED_REGISTRY:bad_excerpts:S1.1", m.map_ledger, s, [self._ok_unit(unmatched=["abc" + ch])])
+
+    # ---- surrogate (Cs) policy (IC12) and raw-cap-first ordering
+    def test_cs_refused_only_in_digest_fed_source_fields(self):
+        # IC12: Cs is refused only where it would reach the source digest encode (source ts and text)
+        reg = [self._ok_unit()]
+        self.refuses("PLAN_REFUSED_SOURCE:bad_char:text", m.map_ledger, [{"message_id": "m1", "ts": TS, "text": "abcdefgh\ud800ijk"}], reg)
+        self.refuses("PLAN_REFUSED_SOURCE:bad_field:ts", m.map_ledger, [{"message_id": "m1", "ts": TS[:-6] + "\ud800+05:30", "text": "abcdefgh ijk"}], reg)
+        # not digest-fed: spec text, excerpts, reasons and evidence are not refused for Cs alone
+        self.assertEqual(len(m.parse_spec(BASE_SPEC + "\n## 9. Notes\na\ud800b")), len(m.parse_spec(BASE_SPEC)))
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}]
+        m.map_ledger(s, [self._ok_unit(excerpts=["abcdefgh ijk", "abcdefgh\ud800ijk"])])
+        m.map_ledger(s, [self._ok_unit(status="PARKED_BY_USER", evidence={"topic": "t\ud800", "pin_ref": "p"})])
+
+    def test_raw_cap_runs_before_scan_regex_and_membership(self):
+        calls = []
+
+        class Rec(frozenset):
+            def __contains__(self, x):
+                calls.append(x)
+                return frozenset.__contains__(self, x)
+
+        class RecRx:
+            def fullmatch(self, x):
+                calls.append(x)
+                return _MID0.fullmatch(x)
+
+        orig_bad, orig_states, orig_mid = m._bad_text, m.STATES, m._MID
+        _MID0 = orig_mid
+        m._bad_text = lambda x, content=False, digest=False: (calls.append(x), orig_bad(x, content, digest))[1]
+        m.STATES = Rec(orig_states)
+        m._MID = RecRx()
+        try:
+            long_ts = "2" * 5000
+            self.refuses("PLAN_REFUSED_SOURCE:bad_field:ts", m.map_ledger, [{"message_id": "m1", "ts": long_ts, "text": "abcdefgh ijk"}], [self._ok_unit()])
+            self.assertNotIn(long_ts, calls)
+            calls.clear()
+            long_mid = "m" * 65
+            self.refuses("PLAN_REFUSED_SOURCE:bad_field:message_id", m.map_ledger, [{"message_id": long_mid, "ts": TS, "text": "abcdefgh ijk"}], [self._ok_unit()])
+            self.assertNotIn(long_mid, calls)
+            calls.clear()
+            long_status = "P" * 5000
+            self.refuses("PLAN_REFUSED_REGISTRY:bad_status:S1.1", m.map_ledger, [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}], [self._ok_unit(status=long_status)])
+            self.assertNotIn(long_status, calls)
+        finally:
+            m._bad_text, m.STATES, m._MID = orig_bad, orig_states, orig_mid
+
+    def test_evidence_unknown_keys_are_validated(self):
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}]
+        ev = lambda **x: dict({"topic": "t", "pin_ref": "p"}, **x)  # noqa: E731
+        E = "PLAN_REFUSED_EVIDENCE:S1.1"
+        unit = lambda e: self._ok_unit(status="PARKED_BY_USER", evidence=e)  # noqa: E731
+        m.map_ledger(s, [unit(ev(extra="v"))])
+        m.map_ledger(s, [unit(ev(**{"k" * 2000: "v"}))])
+        self.refuses(E, m.map_ledger, s, [unit(ev(**{"k" * 2001: "v"}))])
+        for ch in ("\x00", "\x1b", "\u200b", "\u200d", "\ufeff", "\u2028", "\u2029", "\n", "\t"):
+            self.refuses(E, m.map_ledger, s, [unit(ev(**{"k" + ch + "k": "v"}))])
+            self.refuses(E, m.map_ledger, s, [unit(ev(extra="v" + ch))])
+            self.refuses(E, m.map_ledger, s, [unit(ev(extra=["ok", "v" + ch]))])
+        self.refuses(E, m.map_ledger, s, [unit(ev(extra="v" * 2001))])
+        self.refuses(E, m.map_ledger, s, [unit(ev(extra=["v"] * 65))])
+        self.refuses(E, m.map_ledger, s, [unit(ev(extra=5))])
+
+    def _record(self):
+        calls = []
+
+        class Rec(frozenset):
+            def __contains__(self, x):
+                calls.append(x)
+                return frozenset.__contains__(self, x)
+
+        mid0 = m._MID
+
+        class RecRx:
+            def fullmatch(self, x):
+                calls.append(x)
+                return mid0.fullmatch(x)
+
+        saved = (m._bad_text, m.STATES, m._MID)
+        bad0 = m._bad_text
+        m._bad_text = lambda x, content=False, digest=False: (calls.append(x), bad0(x, content, digest))[1]
+        m.STATES = Rec(saved[1])
+        m._MID = RecRx()
+        self.addCleanup(lambda: (setattr(m, "_bad_text", saved[0]), setattr(m, "STATES", saved[1]), setattr(m, "_MID", saved[2])))
+        return calls
+
+    def test_raw_cap_seams_64_65_and_32_33(self):
+        calls = self._record()
+        src = lambda mid="m1", ts=TS: [{"message_id": mid, "ts": ts, "text": "abcdefgh ijk"}]  # noqa: E731
+        reg = [self._ok_unit()]
+        ts64 = "2026-01-01T00:00:00." + "1" * 38 + "+00:00"
+        ts65 = ts64.replace("1" * 38, "1" * 39)
+        self.assertEqual((len(ts64), len(ts65)), (64, 65))
+        # 64 chars reaches the scan; 65 is refused before any scan
+        try:
+            m.map_ledger(src(ts=ts64), reg)
+        except ValueError as exc:
+            self.assertEqual(str(exc), "PLAN_REFUSED_SOURCE:bad_field:ts")
+        self.assertIn(ts64, calls)
+        calls.clear()
+        self.refuses("PLAN_REFUSED_SOURCE:bad_field:ts", m.map_ledger, src(ts=ts65), reg)
+        self.assertNotIn(ts65, calls)
+        calls.clear()
+        # where the interpreter parses long fractional seconds, the 64-char timestamp is accepted
+        # and the 65-char one is still refused
+        # simulate an interpreter that parses long fractional seconds (3.11+), so this seam is
+        # exercised on every version: exactly 64 chars accepted, 65 refused
+        class Wide(datetime):
+            @classmethod
+            def fromisoformat(cls, x):
+                return datetime.fromisoformat(re.sub(r"\.(\d{6})\d+", r".\1", x))
+
+        saved_dt = m.datetime
+        m.datetime = Wide
+        self.addCleanup(lambda: setattr(m, "datetime", saved_dt))
+        self.assertIn("rows", m.map_ledger(src(ts=ts64), reg))
+        self.refuses("PLAN_REFUSED_SOURCE:bad_field:ts", m.map_ledger, src(ts=ts65), reg)
+        m.datetime = saved_dt
+        mid64, mid65 = "m" * 64, "m" * 65
+        m.map_ledger(src(mid=mid64), reg)
+        self.assertIn(mid64, calls)
+        calls.clear()
+        self.refuses("PLAN_REFUSED_SOURCE:bad_field:message_id", m.map_ledger, src(mid=mid65), reg)
+        self.assertNotIn(mid65, calls)
+        calls.clear()
+        st32, st33 = "P" * 32, "P" * 33
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_status:S1.1", m.map_ledger, src(), [self._ok_unit(status=st32)])
+        self.assertIn(st32, calls)
+        calls.clear()
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_status:S1.1", m.map_ledger, src(), [self._ok_unit(status=st33)])
+        self.assertNotIn(st33, calls)
+
+    def test_source_ts_is_identifier_class_no_carve_out(self):
+        reg = [self._ok_unit()]
+        for sep in ("\n", "\r", "\t"):
+            self.refuses("PLAN_REFUSED_SOURCE:bad_field:ts", m.map_ledger,
+                         [{"message_id": "m1", "ts": "2026-01-01" + sep + "09:00:00+05:30", "text": "abcdefgh ijk"}], reg)
+
+    def test_content_fields_accept_lf_cr_tab_matched_and_unmatched(self):
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh\tijk\nmore\rtext"}]
+        m.map_ledger(s, [self._ok_unit(excerpts=["abcdefgh\tijk", "more\rtext\n"], unmatched=["abc\n\r\tdef"])])
+        for ch in ("\n", "\r", "\t"):
+            m.map_ledger(s, [self._ok_unit(unmatched=["abc" + ch + "def"])])
+
+    def test_source_digest_known_answer_non_ascii(self):
+        s = [{"message_id": "m1", "ts": TS, "text": "caf\u00e9 abcdefgh ijk"}]
+        rep = m.map_ledger(s, [self._ok_unit()])["report"]
+        self.assertEqual(rep["source_digest"], "525b7ed99322601a3b55cb25ebde2411e08e518a128fd43d74ece9d521e5b4ab")
+
+    def test_str_subclass_keys_refused_in_every_shape(self):
+        class S(str):
+            pass
+
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}]
+        reg = [self._ok_unit()]
+        # registry entry: a str-subclass key equal to an allowlisted name is refused, alone or mixed
+        for name in ("unit_id", "status", "excerpts"):
+            e = self._ok_unit()
+            e[S(name)] = e.pop(name)
+            self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, [e])
+        e = self._ok_unit(kind="x", spec_line=1)
+        e[S("kind")] = e.pop("kind")
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, [e])
+        # source row
+        for name in ("message_id", "ts", "text"):
+            row = dict(s[0])
+            row[S(name)] = row.pop(name)
+            self.refuses("PLAN_REFUSED_SOURCE:bad_shape", m.map_ledger, [row], reg)
+        # explicit-map value
+        sp, rg = self._lines(2)
+        for name in ("unit_ids", "reason"):
+            v = {"unit_ids": ["S1.1"], "reason": "r"}
+            v[S(name)] = v.pop(name)
+            self.refuses("PLAN_REFUSED_MAP:bad_shape", m.map_ledger, sp, rg, explicit_maps={"m1:0": v})
+
+    def test_registry_key_count_checked_before_key_set_scan(self):
+        calls = []
+        saved = m.set if hasattr(m, "set") else None
+        m.set = lambda *a: (calls.append(1) if a and type(a[0]) is dict and "status" in a[0] else None, set(*a))[1]
+        self.addCleanup(lambda: delattr(m, "set") if saved is None else setattr(m, "set", saved))
+        s = [{"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}]
+        e8 = self._ok_unit(kind="x", spec_line=1, evidence=None, unmatched=[], extra=1)
+        self.assertEqual(len(e8), 8)
+        self.refuses("PLAN_REFUSED_REGISTRY:bad_shape", m.map_ledger, s, [e8])
+        self.assertEqual(calls, [])
+        e7 = self._ok_unit(kind="x", spec_line=1, unmatched=[], evidence=None)
+        self.assertEqual(len(e7), 7)
+        m.map_ledger(s, [e7])
+        self.assertTrue(calls)
+
+    # ---- sources
+    def test_sources_container_and_types(self):
+        class L(list):
+            pass
+
+        class D(dict):
+            pass
+
+        class S(str):
+            pass
+        reg = [self._ok_unit()]
+        good = {"message_id": "m1", "ts": TS, "text": "abcdefgh ijk"}
+        self.refuses("PLAN_REFUSED_NOSOURCE", m.map_ledger, L([good]), reg)
+        self.refuses("PLAN_REFUSED_SOURCE:bad_shape", m.map_ledger, [D(good)], reg)
+        self.refuses("PLAN_REFUSED_SOURCE:bad_shape", m.map_ledger, [{**good, 1: "x"}], reg)
+        self.refuses("PLAN_REFUSED_SOURCE:bad_shape", m.map_ledger, [{**good, "x": 1}], reg)
+        self.refuses("PLAN_REFUSED_SOURCE:bad_field:message_id", m.map_ledger, [dict(good, message_id=S("m1"))], reg)
+        self.refuses("PLAN_REFUSED_SOURCE:bad_field:ts", m.map_ledger, [dict(good, ts=S(TS))], reg)
+        self.refuses("PLAN_REFUSED_SOURCE:bad_field:text", m.map_ledger, [dict(good, text=S("abcdefgh ijk"))], reg)
+
+    def test_sources_text_cap_and_unicode(self):
+        reg = [self._ok_unit()]
+        ok = lambda t: [{"message_id": "m1", "ts": TS, "text": t}]  # noqa: E731
+        m.map_ledger(ok("abcdefgh ijk\n\t\r tail"), reg)
+        for ch in ("\x00", "\x1b", "\x85", "\u200b", "\u200d", "\ufeff", "\u2028", "\u2029", "\ud800"):
+            self.refuses("PLAN_REFUSED_SOURCE:bad_char:text", m.map_ledger, ok("abcdefgh" + ch + "ijk"), reg)
+        m.map_ledger(ok("x" * 200000), reg)
+        self.refuses("PLAN_REFUSED_SOURCE:too_long", m.map_ledger, ok("x" * 200001), reg)
+        # cap is checked before the character policy: an over-long text with a bad char reports too_long
+        self.refuses("PLAN_REFUSED_SOURCE:too_long", m.map_ledger, ok("\x00" + "x" * 200000), reg)
+
+    def test_span_count_cap_20000(self):
+        reg = [self._ok_unit()]
+        ok = lambda n: [{"message_id": "m1", "ts": TS, "text": "a\n" * n}]  # noqa: E731
+        self.assertEqual(m.map_ledger(ok(20000), reg)["report"]["candidate_spans"], 20000)
+        self.refuses("PLAN_REFUSED_SOURCE:too_many_spans", m.map_ledger, ok(20001), reg)
+
+    # ---- maps and exclusions
+    def _lines(self, n):
+        return [{"message_id": "m1", "ts": TS, "text": "a\n" * n}], [self._ok_unit(excerpts=["zzzzzzzz zz"])]
+
+    def test_map_entry_caps_4096(self):
+        s, reg = self._lines(4096)
+        full = {"m1:%d" % i: {"unit_ids": ["S1.1"], "reason": "r"} for i in range(4096)}
+        self.assertEqual(m.map_ledger(s, reg, explicit_maps=full)["report"]["counts"]["PLANNED"], 4096)
+        over = dict(full)
+        for i in range(4096, 4097):
+            over["bogus:%d" % i] = {"unit_ids": ["S1.1"], "reason": "r"}
+        self.refuses("PLAN_REFUSED_MAP:too_many", m.map_ledger, s, reg, explicit_maps=over)
+        exc = {"m1:%d" % i: "r" for i in range(4096)}
+        m.map_ledger(s, reg, exclusions=exc)
+        exc["bogus:1"] = "r"
+        self.refuses("PLAN_REFUSED_MAP:too_many", m.map_ledger, s, reg, exclusions=exc)
+
+    def test_map_key_and_value_types(self):
+        class D(dict):
+            pass
+
+        class L(list):
+            pass
+
+        class S(str):
+            pass
+        s, reg = self._lines(3)
+        v = {"unit_ids": ["S1.1"], "reason": "r"}
+        self.refuses("PLAN_REFUSED_MAP:bad_shape", m.map_ledger, s, reg, explicit_maps=D({"m1:0": v}))
+        self.refuses("PLAN_REFUSED_MAP:bad_shape", m.map_ledger, s, reg, exclusions=D({"m1:0": "r"}))
+        self.refuses("PLAN_REFUSED_MAP:bad_key", m.map_ledger, s, reg, explicit_maps={5: v})
+        self.refuses("PLAN_REFUSED_MAP:bad_key", m.map_ledger, s, reg, exclusions={5: "r"})
+        self.refuses("PLAN_REFUSED_MAP:bad_key", m.map_ledger, s, reg, explicit_maps={S("m1:0"): v})
+        self.refuses("PLAN_REFUSED_MAP:unknown_span", m.map_ledger, s, reg, explicit_maps={"k" * 80: v})
+        self.refuses("PLAN_REFUSED_MAP:bad_key", m.map_ledger, s, reg, explicit_maps={"k" * 81: v})
+        self.refuses("PLAN_REFUSED_MAP:unknown_span", m.map_ledger, s, reg, exclusions={"k" * 80: "r"})
+        self.refuses("PLAN_REFUSED_MAP:bad_key", m.map_ledger, s, reg, exclusions={"k" * 81: "r"})
+        self.refuses("PLAN_REFUSED_MAP:bad_shape", m.map_ledger, s, reg, explicit_maps={"m1:0": D(v)})
+        self.refuses("PLAN_REFUSED_MAP:bad_shape", m.map_ledger, s, reg, explicit_maps={"m1:0": {1: "x", "reason": "r"}})
+        self.refuses("PLAN_REFUSED_MAP:empty_units", m.map_ledger, s, reg, explicit_maps={"m1:0": {"unit_ids": L(["S1.1"]), "reason": "r"}})
+        self.refuses("PLAN_REFUSED_MAP:unknown_unit", m.map_ledger, s, reg, explicit_maps={"m1:0": {"unit_ids": [S("S1.1")], "reason": "r"}})
+
+    def test_map_unit_id_count_cap_64(self):
+        s, reg = self._lines(2)
+        ok = {"m1:0": {"unit_ids": ["S1.1"] * 64, "reason": "r"}}
+        self.assertEqual(m.map_ledger(s, reg, explicit_maps=ok)["rows"][0]["unit_ids"], ["S1.1"])
+        bad = {"m1:0": {"unit_ids": ["S1.1"] * 65, "reason": "r"}}
+        self.refuses("PLAN_REFUSED_MAP:too_many_units", m.map_ledger, s, reg, explicit_maps=bad)
+
+    def test_map_reason_boundary(self):
+        class S(str):
+            pass
+        s, reg = self._lines(2)
+        mk = lambda r: {"m1:0": {"unit_ids": ["S1.1"], "reason": r}}  # noqa: E731
+        m.map_ledger(s, reg, explicit_maps=mk("r" * 2000))
+        m.map_ledger(s, reg, exclusions={"m1:0": "r" * 2000})
+        self.refuses("PLAN_REFUSED_MAP:bad_reason", m.map_ledger, s, reg, explicit_maps=mk("r" * 2001))
+        self.refuses("PLAN_REFUSED_MAP:bad_reason", m.map_ledger, s, reg, exclusions={"m1:0": "r" * 2001})
+        for ch in ("\n", "\r", "\t", "\x00", "\x1b", "\u200b", "\u2028", "\u2029"):
+            self.refuses("PLAN_REFUSED_MAP:bad_reason", m.map_ledger, s, reg, explicit_maps=mk("a" + ch + "b"))
+            self.refuses("PLAN_REFUSED_MAP:bad_reason", m.map_ledger, s, reg, exclusions={"m1:0": "a" + ch + "b"})
+        self.refuses("PLAN_REFUSED_MAP:bad_shape", m.map_ledger, s, reg, explicit_maps=mk(S("r")))
+        self.refuses("PLAN_REFUSED_MAP:bad_shape", m.map_ledger, s, reg, exclusions={"m1:0": S("r")})
+        # raw cap before strip: 2000 blanks is empty_reason, 2001 blanks is bad_reason
+        self.refuses("PLAN_REFUSED_MAP:empty_reason", m.map_ledger, s, reg, explicit_maps=mk(" " * 2000))
+        self.refuses("PLAN_REFUSED_MAP:empty_reason", m.map_ledger, s, reg, exclusions={"m1:0": " " * 2000})
+        self.refuses("PLAN_REFUSED_MAP:bad_reason", m.map_ledger, s, reg, explicit_maps=mk(" " * 2001))
+        self.refuses("PLAN_REFUSED_MAP:bad_reason", m.map_ledger, s, reg, exclusions={"m1:0": " " * 2001})
+
+
+@unittest.skipUnless(_PINS.exists(), "local-only inputs not present (git-ignored tests/fixtures/s82_private)")
 class PrivateRealInput(unittest.TestCase):
-    """Runs only where the owner's private files are present locally. Digests are pinned so a local
-    run proves it used the exact files; the committed tree holds no private chat text."""
+    """Runs only where local-only files are present. Their digests and expected results are read
+    from the local pins file, so the committed tree holds no copy of those inputs or their results."""
 
-    def test_private_digests_match(self):
-        for name, want in _PRIV_SHA.items():
+    def pins(self):
+        return json.loads(_PINS.read_text())
+
+    def test_local_digests_match(self):
+        pins = self.pins()
+        for name, want in pins["files"].items():
             self.assertEqual(hashlib.sha256((_PRIV / name).read_bytes()).hexdigest(), want, name)
 
-    def test_real_v211_with_owner_maps_is_green(self):
-        sources = [src((_PRIV / "source-msg-150113.txt").read_text(), "wa-150113", "2026-10-11T15:01:13+05:30"),
-                   src((_PRIV / "source-msg-150334.txt").read_text(), "wa-150334", "2026-10-11T15:03:34+05:30")]
-        reg = m.parse_spec((_PRIV / "spec-v2.1.1.md").read_text())
-        self.assertEqual(len(reg), 114)
-        maps = json.loads((_PRIV / "v21-owner-maps.json").read_text())
+    def test_local_inputs_with_supplied_maps_are_green(self):
+        pins = self.pins()
+        sources = [src((_PRIV / s["file"]).read_text(), s["message_id"], s["ts"]) for s in pins["sources"]]
+        reg = m.parse_spec((_PRIV / "spec.md").read_text())
+        self.assertEqual(len(reg), pins["registry_units"])
+        maps = json.loads((_PRIV / "maps.json").read_text())
         led = m.map_ledger(sources, reg,
-                           explicit_maps={k: {"unit_ids": v, "reason": "supplied owner-map data, not an approval"}
+                           explicit_maps={k: {"unit_ids": v, "reason": "supplied mapping data, not an approval"}
                                           for k, v in maps["explicit_maps"].items()},
                            exclusions=maps["exclusions"])
         rep = led["report"]
         self.assertIs(rep["passed"], True)
         self.assertEqual(led["drift"], [])
-        self.assertEqual(rep["counts"], {"IMPLEMENTED": 0, "PARKED_BY_USER": 7, "PLANNED": 75,
-                                         "REFUSED_WITH_SUBSTITUTE": 47, "STOPPED_BY_USER": 0,
-                                         "SUPERSEDED": 2, "UNMAPPED": 0})
-        self.assertEqual(rep["candidate_spans"], 159)
-        self.assertEqual(rep["nonrequests"], 28)
-        self.assertEqual(rep["source_digest"], "1de6173f60c6b18c01a366fa721c9f99d01f1dc6f2a58afd4d714bfb5c6fbeee")
+        self.assertEqual(rep["counts"], pins["counts"])
+        self.assertEqual(rep["candidate_spans"], pins["candidate_spans"])
+        self.assertEqual(rep["nonrequests"], pins["nonrequests"])
+        self.assertEqual(rep["source_digest"], pins["source_digest"])
         self.assertEqual(m.require_complete(led), rep)
 
 
