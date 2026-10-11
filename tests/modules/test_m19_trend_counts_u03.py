@@ -1,4 +1,4 @@
-"""U03 S2.3 follow-up: count-series trend detection and calibration bins. Hermetic, loads module by path."""
+"""U03 S2.3 follow-up: count-series trend detection. Hermetic, loads module by path."""
 import importlib.util
 import pathlib
 import sys
@@ -100,23 +100,6 @@ def test_oversize_has_refused_code():
     assert m.startswith("TREND_REFUSED_OVERSIZE: ")
 
 
-def test_calibration_bins():
-    recs = [{"confidence": 0.9, "outcome": True}, {"confidence": 0.95, "outcome": False}, {"confidence": 0.1, "outcome": False},
-            {"confidence": 0.5, "outcome": True}, {"confidence": 1.0, "outcome": True}]
-    b = tc.calibration_bins(recs, bins=5)
-    assert [x["n"] for x in b["bins"]] == [1, 0, 1, 0, 3]
-    last = b["bins"][-1]
-    assert last["hits"] == 2 and last["hit_rate"] == round(2 / 3, 6) and last["mean_confidence"] == round((0.9 + 0.95 + 1.0) / 3, 6)
-    assert b["bins"][1]["hit_rate"] is None
-    assert b["total"] == 5 and "fewer than 20" in b["caveat"]
-    assert "no accuracy is promised" in b["boundary"]
-
-
-def test_calibration_bins_validation():
-    assert "records" in err(lambda: tc.calibration_bins([], bins=5))
-    assert "bins" in err(lambda: tc.calibration_bins([{"confidence": 0.5, "outcome": True}], bins=1))
-    assert "confidence" in err(lambda: tc.calibration_bins([{"confidence": 1.5, "outcome": True}], bins=5))
-    assert "outcome" in err(lambda: tc.calibration_bins([{"confidence": 0.5, "outcome": 1}], bins=5))
 
 
 def test_hermetic_source():

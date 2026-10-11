@@ -6,7 +6,6 @@ Not wired to any other module. Measured counts only; not investment advice; does
 """
 from __future__ import annotations
 
-import math
 from datetime import datetime, timedelta
 
 SCOPE = "TREND_U03 measured counts only"
@@ -14,7 +13,6 @@ BOUNDARY = ("Measured counts in the supplied rows only. It does not predict mark
             "is not investment advice, and no accuracy is promised. A rising count is a measurement, not a recommendation.")
 FORMULA = "growth_ratio = (recent_count / recent_days) / ((baseline_count + 1) / baseline_days)"
 MAX_ROWS = 200000
-MIN_FOR_SAMPLE = 20
 
 
 class TrendError(ValueError):
@@ -112,32 +110,3 @@ def extract_count_trends(series, *, as_of, recent_days=7, baseline_days=28, min_
     return {"scope": SCOPE, "boundary": BOUNDARY, "as_of": as_of,
             "status": "TRENDS_MEASURED" if trends else "NO_TRENDS_MEETING_THRESHOLDS",
             "excluded": {"future": future, "out_of_window": out}, "trends": trends}
-
-
-def calibration_bins(records, *, bins=5):
-    if not isinstance(records, list) or not records:
-        _fail("records must be a non-empty list")
-    bins = _int(bins, "bins", 2, 20)
-    acc = [{"n": 0, "hits": 0, "csum": 0.0} for _ in range(bins)]
-    for i, r in enumerate(records):
-        if not isinstance(r, dict) or "confidence" not in r or "outcome" not in r:
-            _fail(f"record {i} must be an object with 'confidence' and 'outcome'")
-        c, o = r["confidence"], r["outcome"]
-        if type(c) not in (int, float) or not math.isfinite(c) or not 0 <= c <= 1:
-            _fail(f"record {i} 'confidence' must be a finite number from 0 to 1")
-        if type(o) is not bool:
-            _fail(f"record {i} 'outcome' must be true or false")
-        b = acc[min(int(c * bins), bins - 1)]
-        b["n"] += 1
-        b["hits"] += 1 if o else 0
-        b["csum"] += c
-    out = []
-    for i, b in enumerate(acc):
-        n = b["n"]
-        out.append({"range": [i / bins, (i + 1) / bins], "n": n, "hits": b["hits"],
-                    "hit_rate": round(b["hits"] / n, 6) if n else None,
-                    "mean_confidence": round(b["csum"] / n, 6) if n else None})
-    total = len(records)
-    return {"boundary": BOUNDARY, "total": total, "bins": out,
-            "caveat": ("fewer than 20 records: bins say nothing reliable about calibration" if total < MIN_FOR_SAMPLE
-                       else "bins describe the supplied records only, not future accuracy")}

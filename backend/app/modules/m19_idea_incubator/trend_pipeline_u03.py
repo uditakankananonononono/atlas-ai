@@ -27,7 +27,6 @@ MAX_POSTS = 20000
 MAX_TEXT = 10000
 MAX_ID = 200
 MAX_PREDICTIONS = 1000
-MIN_SCORED_FOR_SAMPLE = 20
 
 _STOP = frozenset("""the and for are but not you all any can had her was one our out has his how its may new now see two way who did
 get use she him let put say too off own yet via per was with that this from they will have been were what when your than then them
@@ -200,19 +199,6 @@ def make_predictions(result, *, confidence, horizon_days, limit):
     return preds
 
 
-def _summary(results):
-    scored = [r for r in results if r["status"] == "SCORED"]
-    n = len(scored)
-    hits = sum(1 for r in scored if r["outcome"])
-    brier = sum((r["_conf"] - (1.0 if r["outcome"] else 0.0)) ** 2 for r in scored) / n if n else None
-    enough = n >= MIN_SCORED_FOR_SAMPLE
-    return {"scored": n, "hits": hits, "hit_rate": (hits / n) if n else None, "brier": brier,
-            "constant_half_brier": 0.25, "sample_sufficient": enough,
-            "caveat": ("20 or more scored predictions: a measured rate over the supplied posts only, not a promise of future accuracy"
-                       if enough else
-                       "fewer than 20 scored predictions: too few to say anything about calibration or accuracy")}
-
-
 def score_predictions(predictions, later_posts, *, resolved_at):
     if not isinstance(predictions, list) or not predictions or len(predictions) > MAX_PREDICTIONS:
         _fail(f"predictions must be a non-empty list of at most {MAX_PREDICTIONS}")
@@ -254,9 +240,8 @@ def score_predictions(predictions, later_posts, *, resolved_at):
         lseen.add(pid)
         posts.append((when, _terms(text)))
     if not posts:
-        return {"scope": SCOPE, "boundary": BOUNDARY, "status": "NO_LATER_DATA", "results": [], "records": [],
-                "summary": _summary([])}
-    results, records = [], []
+        return {"scope": SCOPE, "boundary": BOUNDARY, "status": "NO_LATER_DATA", "results": []}
+    results = []
     for pid, term, thr, conf, hz, t0 in checked:
         end = t0 + timedelta(days=hz)
         row = {"prediction_id": pid, "term": term, "threshold_posts": thr, "observed_posts": None, "outcome": None}
@@ -269,14 +254,5 @@ def score_predictions(predictions, later_posts, *, resolved_at):
             else:
                 obs = sum(1 for terms in window if term in terms)
                 row.update(status="SCORED", observed_posts=obs, outcome=obs >= thr)
-                records.append({"prediction_id": pid, "claim_class": CLAIM_CLASS,
-                                "prediction_source": "caller_supplied_confidence", "outcome_source": "later_collected_posts",
-                                "confidence": conf, "outcome": row["outcome"],
-                                "predicted_at": t0.timestamp(), "resolved_at": t_res.timestamp()})
-        row["_conf"] = conf
         results.append(row)
-    summary = _summary(results)
-    for r in results:
-        del r["_conf"]
-    return {"scope": SCOPE, "boundary": BOUNDARY, "status": "SCORING_DONE", "results": results, "records": records,
-            "summary": summary}
+    return {"scope": SCOPE, "boundary": BOUNDARY, "status": "SCORING_DONE", "results": results}

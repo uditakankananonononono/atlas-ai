@@ -12,12 +12,12 @@ Module: `backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py` (new file
 ## Exact delta
 Nothing above is edited, wired, called or replaced. The new module adds one pure chain over posts the caller supplies:
 posts -> measured trend candidates (recent window vs baseline window, stated growth formula, thresholds on posts and authors) -> templated idea candidates (human review required, never written to the incubator) -> persistence predictions with a caller-stated confidence -> scoring against later collected posts.
-Scoring emits calibration-style records (same field names as a resolved record). No integration with m20 is claimed or tested.
+Scoring returns per-prediction outcomes only (observed posts, threshold, hit or miss, or an unresolved status). It computes no Brier score, hit rate or reliability bins and emits no calibration records: that belongs to a single scorer elsewhere. No integration with m20 is claimed or tested.
 
 ## Functions
 `extract_trends`, `ideas_from_trends`, `make_predictions`, `score_predictions`. Errors are `TrendError(ValueError)`, messages start with `TREND_U03: `.
 Windows: recent = (as_of - recent_days, as_of]; baseline = the baseline_days before that. Posts after as_of are excluded and listed. A term counts once per post.
-Scoring counts posts in (predicted_at, predicted_at + horizon]; fewer than 20 scored predictions carries a "too few" caveat.
+Scoring counts posts in (predicted_at, predicted_at + horizon].
 
 ## Limits
 - Not investment advice. Does not predict markets, prices or business outcomes. No accuracy is promised.
@@ -25,9 +25,8 @@ Scoring counts posts in (predicted_at, predicted_at + horizon]; fewer than 20 sc
 - English, ASCII-token tokenizer.
 - No collection, network, accounts, clock or model calls. No impersonation, no posting.
 
-## Count-series input and calibration bins (`trend_counts_u03.py`, new file)
+## Count-series input (`trend_counts_u03.py`, new file)
 - `extract_count_trends(series, ...)`: same windows and growth formula as above, over rows `{term, date, count, source}` (for example an exported counts file). Terms are lowercased. A row set larger than 200000 is refused with `TREND_REFUSED_OVERSIZE`.
-- `calibration_bins(records, bins=5)`: stated confidence against observed hit rate per bin, from records shaped like the ones `score_predictions` returns. Under 20 records it says so.
 - Oversize refusals in `trend_pipeline_u03.py` also carry the `TREND_REFUSED_OVERSIZE` code.
 
 ## Not done on purpose
@@ -40,5 +39,5 @@ Written against an early interface note (keyword-only calls; prediction keys cla
 - `to_j1_predictions(predictions, *, source)`: confidence -> probability, predicted_at -> made_at (UTC), horizon_days -> an absolute horizon deadline. Exact five keys, no extras. The term and threshold go into the claim text and a side map.
 - `bind_ids(pending_result, returned)`: attaches the ids the ledger returns, matching on exact content; no match or an ambiguous match is refused.
 - `resolutions_from_posts(bound, later_posts, *, resolved_at)`: outcome dicts only where the horizon has passed and posts were collected inside it. Too early, no posts in the horizon, or no later data: no resolution, listed as unresolved, never a miss. Window (made_at, horizon], end inclusive.
-- No local Brier, hit rate or bins in this adapter; scoring belongs to the single scorer.
+- No local Brier, hit rate or bins anywhere in U03; scoring belongs to the single scorer.
 - Limit: U03 cannot tell whether the later-post collection was complete, and the scorer does not verify outcome truth.

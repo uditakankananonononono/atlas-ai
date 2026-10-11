@@ -303,15 +303,12 @@ def score(preds, later_posts, resolved_at=RESOLVED):
     return tp.score_predictions(preds, later_posts, resolved_at=resolved_at)
 
 
-def test_scoring_hit_and_miss_with_brier_and_records():
+def test_scoring_hit_and_miss_outcomes():
     preds = tp.make_predictions(extract(), confidence=0.8, horizon_days=7, limit=2)
     r = score(preds, later(4, 2))
     a, q = r["results"]
     assert (a["term"], a["observed_posts"], a["threshold_posts"], a["outcome"]) == ("aurora", 4, 4, True)
     assert (q["term"], q["observed_posts"], q["threshold_posts"], q["outcome"]) == ("quartz", 2, 3, False)
-    assert r["summary"]["scored"] == 2 and r["summary"]["hits"] == 1 and r["summary"]["hit_rate"] == 0.5
-    assert r["summary"]["brier"] == pytest.approx(((0.8 - 1) ** 2 + (0.8 - 0) ** 2) / 2)
-    assert r["summary"]["constant_half_brier"] == 0.25
 
 
 def test_scoring_threshold_is_inclusive():
@@ -353,7 +350,7 @@ def test_too_early_to_score_is_not_scored_and_not_counted():
     preds = tp.make_predictions(extract(), confidence=0.8, horizon_days=7, limit=1)
     r = score(preds, later(4, 0), resolved_at=(AS_OF_DT + timedelta(days=6)).isoformat())
     assert r["results"][0]["status"] == "UNRESOLVED_TOO_EARLY"
-    assert r["summary"]["scored"] == 0 and r["summary"]["brier"] is None and r["summary"]["hit_rate"] is None
+    assert r["results"][0]["outcome"] is None and r["results"][0]["observed_posts"] is None
 
 
 def test_resolution_exactly_at_horizon_end_is_scored():
@@ -365,51 +362,16 @@ def test_resolution_exactly_at_horizon_end_is_scored():
 def test_no_later_posts_is_not_a_miss():
     preds = tp.make_predictions(extract(), confidence=0.8, horizon_days=7, limit=1)
     r = score(preds, [])
-    assert r["status"] == "NO_LATER_DATA" and r["results"] == [] and r["summary"]["scored"] == 0
+    assert r["status"] == "NO_LATER_DATA" and r["results"] == []
 
 
 def test_later_posts_only_outside_every_horizon_is_no_data_for_that_prediction():
     preds = tp.make_predictions(extract(), confidence=0.8, horizon_days=7, limit=1)
     r = score(preds, later(5, 0, start_days_after=30))
-    assert r["results"][0]["status"] == "NO_COLLECTED_POSTS_IN_HORIZON" and r["summary"]["scored"] == 0
+    assert r["results"][0]["status"] == "NO_COLLECTED_POSTS_IN_HORIZON"
 
 
-def test_calibration_style_records_are_emitted_for_scored_predictions_only():
-    preds = tp.make_predictions(extract(), confidence=0.8, horizon_days=7, limit=2)
-    r = score(preds, later(4, 2))
-    rec = r["records"][0]
-    assert set(rec) == {"prediction_id", "claim_class", "prediction_source", "outcome_source", "confidence", "outcome",
-                        "predicted_at", "resolved_at"}
-    assert rec["claim_class"] == "trend_persistence" and rec["outcome"] is True and rec["confidence"] == 0.8
-    assert rec["predicted_at"] == AS_OF_DT.timestamp() and rec["resolved_at"] == (AS_OF_DT + timedelta(days=8)).timestamp()
-    assert rec["prediction_source"] == "caller_supplied_confidence" and rec["outcome_source"] == "later_collected_posts"
-    assert len(r["records"]) == 2
-    early = score(preds, later(4, 2), resolved_at=(AS_OF_DT + timedelta(days=1)).isoformat())
-    assert early["records"] == []
 
-
-def test_small_sample_caveat_always_stated_below_twenty():
-    preds = tp.make_predictions(extract(), confidence=0.8, horizon_days=7, limit=2)
-    r = score(preds, later(4, 2))
-    assert "fewer than 20" in r["summary"]["caveat"] and r["summary"]["sample_sufficient"] is False
-
-
-def test_twenty_scored_predictions_lift_the_small_sample_caveat():
-    _n[0] = 0
-    posts = []
-    for t in range(20):
-        word = "term%c" % (97 + t)
-        word = "".join(ch for ch in word if ch.isalpha()) + "xyz"
-        for d, a in [(1, "a1"), (2, "a2"), (3, "a3")]:
-            posts.append(post(word, d, a))
-    r = extract(posts, min_recent_posts=3, top_n=100)
-    preds = [p for p in tp.make_predictions(r, confidence=0.5, horizon_days=7, limit=100)]
-    assert len(preds) >= 20
-    lp = [{"post_id": f"L{i}", "author": "q", "text": " ".join(p["term"] for p in preds if " " not in p["term"]),
-           "posted_at": (AS_OF_DT + timedelta(days=1, minutes=i)).isoformat()} for i in range(5)]
-    res = score(preds[:20], lp)
-    assert res["summary"]["scored"] == 20 and res["summary"]["sample_sufficient"] is True
-    assert "fewer than 20" not in res["summary"]["caveat"]
 
 
 def test_boundary_text_in_scoring_result():
@@ -553,14 +515,6 @@ def test_late_digit_only_tokens_are_not_terms():
     assert "2024" not in terms and "aurora 2024" not in terms and "aurora" in terms
 
 
-def test_late_sample_not_sufficient_below_twenty_scored():
-    preds = []
-    for i in range(19):
-        preds.append({"prediction_id": f"aurora@{i}", "term": "aurora", "claim_class": "trend_persistence",
-                      "threshold_posts": 1, "confidence": 0.5, "predicted_at": AS_OF, "horizon_days": 7})
-    s = score(preds, later(2, 0))["summary"]
-    assert s["scored"] == 19 and s["sample_sufficient"] is False and "fewer than 20" in s["caveat"]
-
 
 def test_late_duplicate_later_post_id_refused():
     preds = tp.make_predictions(extract(), confidence=0.5, horizon_days=7, limit=1)
@@ -582,3 +536,14 @@ def test_s23_oversize_refusals_use_refused_oversize_code():
     with pytest.raises(tp.TrendError) as e2:
         tp.score_predictions(preds, lp, resolved_at="2026-04-20T00:00:00+00:00")
     assert str(e2.value).startswith("TREND_REFUSED_OVERSIZE: ")
+
+
+# ---- removal of the local scorer (child commit): the scoring result carries per-prediction outcomes only ----
+def test_scoring_result_has_no_summary_records_or_brier():
+    preds = tp.make_predictions(extract(), confidence=0.8, horizon_days=7, limit=2)
+    for r in (score(preds, later(4, 2)), score(preds, [])):
+        assert set(r) == {"scope", "boundary", "status", "results"}
+        flat = repr(r).lower()
+        for banned in ("brier", "hit_rate", "sample_sufficient", "records", "summary"):
+            assert banned not in flat
+    assert score(preds, later(4, 2))["status"] == "SCORING_DONE"
