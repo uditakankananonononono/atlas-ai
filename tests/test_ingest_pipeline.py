@@ -257,3 +257,19 @@ def test_optional_config_none_accepted():
     assert report["status"] == "completed" and collector.calls == 1
     assert report["items_new"] == 1
     store.close()
+
+
+def test_duplicate_update_stores_canonical_sorted_serialization(tmp_path):
+    import sqlite3
+    db = str(tmp_path / "ingest.sqlite")
+    store = IngestStore(db)
+    store.commit_batch("job", "rss_atom", [item("e1", payload={"title": "T", "n": 1})], None,
+                       now="2026-10-11T00:00:00+00:00")
+    reordered = {"zeta": 1, "mid": {"b": 2, "a": 1}, "alpha": [1, 2]}
+    store.commit_batch("job", "rss_atom", [item("e1", payload=reordered)], None,
+                       now="2026-10-12T00:00:00+00:00")
+    store.close()
+    raw = sqlite3.connect(db).execute(
+        "SELECT payload_json FROM ingest_items WHERE source = 'rss_atom' AND external_id = 'e1'").fetchone()[0]
+    assert raw == json.dumps(reordered, sort_keys=True, default=str)
+    assert raw.index("alpha") < raw.index("mid") < raw.index("zeta")
