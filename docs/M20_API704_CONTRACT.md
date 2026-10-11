@@ -47,6 +47,18 @@ example string 2000, input 262144 bytes / 50000 nodes / depth 48 (iterative
 prescan, so hostile nesting cannot hit the recursion limit), integers 64-bit,
 output 1,000,000 bytes. Non-finite numbers and boolean-as-number refuse.
 
+## Traversal boundary
+- Preflight fence: `_prescan` is the first and only walk of the raw request. It admits exact builtin types only (`None`, `bool`, `int`, `float`, `str`, `list`, `dict`). A subclass or any other type is refused by `type()` alone with the constant message "unsupported input value type", before `len`, iteration, equality, hashing or any other method of the value is used. A dict key must be an exact `str`, else "non-string key refused". Container counts are compared with the node bound before a container is iterated.
+- After the fence, validators use exact-type checks (`type(x) is ...`), never `isinstance`; the root type is checked after the fence.
+- Raw caps run before item validation: text length before the blank check, `required` count (IC1: 64, equal to the property cap) before its items, dict keys (IC2: 500 characters, equal to the text cap) in the fence.
+- Identifier regexes use full-match semantics (`\Z`), so a trailing newline no longer passes a name, id, segment, status or `$ref` check (behavior change, pinned).
+- Refusal messages never carry a caller-supplied value: unknown keys, schema keywords, types, property and schema names, statuses, path segments, example property names and serialization errors are reported with constant text. Names that already passed the identifier whitelist (for example operation ids and schema names in labels) may still appear.
+- Integer-typed schemas refuse a float example even when it is integral (for example `7.0`); this is stricter than JSON Schema and errs on the safe side (pinned).
+- IC1 and IC2 are interpretation choices (new caps not stated before this repair). The repair has no text-length refusal code to hide: over-cap text reports the existing constant "(length bound)" message, which carries neither the text nor its length.
+
+## Mutation record (traversal repair, builder-only; the fresh gate decides)
+351 token mutants of openapi704.py (comparison, boundary integers, and/or, True/False, not): 346 killed, 5 judged equivalent, 0 open. Two first-pass survivors (the container pre-check `>` and the required cap `>`) were pinned by exact N/N+1 tests and re-killed by hand. Equivalent: `_PARAM_ORDER` header rank 2 to 3 (only the relative order path < query < header matters); cycle-state done marker 2 to 3 (any truthy value other than the in-progress 1); the three `kind_rank` flips for request/response ordering (ties fall back to a sort key that already orders request before response, and one request per operation). Built on Python 3.10 with `--noconftest` and a package stub; not a substitute for the real-interpreter, real-conftest run.
+
 ## Limits (residual)
 Documents only what the caller supplies. It does not read, import or execute the
 implementation, so it cannot show the doc matches live routes; a passing result
@@ -63,6 +75,5 @@ The raw JSON guard reused from the landed LEGACY694 boundary checks all parsed
 string keys/values for UTF-8 surrogates and refuses nodes deeper than64. Mounted
 pins cover401, two authenticated owners200, mismatched tenant/actor/reference403,
 invalid generator input422, surrogate type-error/data/key shapes422. No live API
-conformance or external source verification is added. Core is byte-frozen at R3.
-The supplied unauthenticated wiring patch is not applied unchanged; this owner
-boundary is a separate integration requiring independent review.
+conformance or external source verification is added. The mounted boundary calls the current repaired core.
+The authenticated tenant/actor boundary remains a separate integration; this repair adds no route or permission for external effects.

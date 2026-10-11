@@ -29,6 +29,8 @@ MAX_INPUT_NODES = 50000
 MAX_RAW_DEPTH = 48
 MAX_OUTPUT_BYTES = 1_000_000
 MAX_LENGTH_KEYWORD = 10000
+MAX_KEY = 500            # IC: raw cap on any input dict key (equal to MAX_TEXT)
+MAX_REQUIRED = MAX_PROPERTIES  # IC: raw cap on a required list, checked before its items
 
 LIMITS = [
     "Documents only the supplied operation and schema descriptions; it does not verify them against any live implementation, route table or deployment.",
@@ -39,12 +41,12 @@ LIMITS = [
 
 _METHODS = ("get", "put", "post", "delete", "patch")
 _NO_BODY = ("get", "delete")
-_NAME = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
-_OPID = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
-_SEG = re.compile(r"^[A-Za-z0-9._~-]+$")
-_PH = re.compile(r"^\{([A-Za-z_][A-Za-z0-9_]{0,63})\}$")
-_STATUS = re.compile(r"^[1-5][0-9][0-9]$")
-_REF = re.compile(r"^#/components/schemas/([A-Za-z0-9._-]{1,64})$")
+_NAME = re.compile(r"^[A-Za-z0-9._-]{1,64}\Z")
+_OPID = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}\Z")
+_SEG = re.compile(r"^[A-Za-z0-9._~-]+\Z")
+_PH = re.compile(r"^\{([A-Za-z_][A-Za-z0-9_]{0,63})\}\Z")
+_STATUS = re.compile(r"^[1-5][0-9][0-9]\Z")
+_REF = re.compile(r"^#/components/schemas/([A-Za-z0-9._-]{1,64})\Z")
 _TYPES = ("string", "integer", "number", "boolean", "array", "object")
 _SCALARS = ("string", "integer", "number", "boolean")
 _RESERVED_HEADERS = ("accept", "content-type", "authorization")
@@ -73,23 +75,28 @@ def _isnum(v):
 
 
 def _text(v, label, required=True):
-    if not isinstance(v, str) or (required and not v.strip()):
+    if type(v) is not str:
         _fail(f"{label} must be a non-blank string")
     if len(v) > MAX_TEXT:
         _fail(f"{label} exceeds {MAX_TEXT} characters (length bound)")
+    if required and not v.strip():
+        _fail(f"{label} must be a non-blank string")
     return v
 
 
 def _keys(d, allowed, label):
     for k in d:
-        if not isinstance(k, str):
-            _fail(f"{label}: non-string key")
         if k not in allowed:
-            _fail(f"unknown key '{k}' in {label}")
+            _fail(f"unknown key in {label}")
 
 
 def _prescan(data):
-    """Iterative walk: types, finiteness, depth and node bounds before any recursion."""
+    """Preflight fence: one iterative walk before any validation or recursion.
+
+    Only exact builtin types are admitted (None, bool, int, float, str, list, dict); a
+    subclass or any other type is refused by `type()` alone, before len, iteration, equality,
+    hashing or any other method of the value is used. Container counts are checked before a
+    container is iterated. Messages are constants and never carry caller values."""
     stack = [(data, 0)]
     nodes = 0
     while stack:
@@ -99,27 +106,34 @@ def _prescan(data):
             _fail("input node bound exceeded")
         if depth > MAX_RAW_DEPTH:
             _fail("input depth bound exceeded")
-        if node is None or isinstance(node, (bool, str)):
+        t = type(node)
+        if node is None or t is bool or t is str:
             continue
-        if isinstance(node, int):
+        if t is int:
             if node.bit_length() > 64:
                 _fail("integer exceeds 64-bit bound")
-        elif isinstance(node, float):
+        elif t is float:
             if not math.isfinite(node):
                 _fail("non-finite number refused (finite numbers only)")
-        elif isinstance(node, list):
+        elif t is list:
+            if nodes + len(node) + len(stack) > MAX_INPUT_NODES:
+                _fail("input node bound exceeded")
             stack.extend((x, depth + 1) for x in node)
-        elif isinstance(node, dict):
+        elif t is dict:
+            if nodes + len(node) + len(stack) > MAX_INPUT_NODES:
+                _fail("input node bound exceeded")
             for k, v in node.items():
-                if not isinstance(k, str):
+                if type(k) is not str:
                     _fail("non-string key refused")
+                if len(k) > MAX_KEY:
+                    _fail("input key exceeds bound")
                 stack.append((v, depth + 1))
         else:
-            _fail(f"unsupported input value type {type(node).__name__}")
+            _fail("unsupported input value type")
     try:
         size = len(json.dumps(data, allow_nan=False))
-    except (TypeError, ValueError) as exc:
-        _fail(f"input not JSON-serializable: {exc}")
+    except (TypeError, ValueError):
+        _fail("input not JSON-serializable")
     if size > MAX_INPUT_BYTES:
         _fail(f"input size bound exceeded ({MAX_INPUT_BYTES} bytes)")
 
@@ -131,14 +145,14 @@ class _Ctx:
 
 
 def _norm_schema(s, cdepth, ctx, label, allow_ref=True):
-    if not isinstance(s, dict):
+    if type(s) is not dict:
         _fail(f"{label}: schema must be an object")
     if "$ref" in s:
         if not allow_ref:
             _fail(f"{label}: $ref not allowed here")
         if len(s) != 1:
             _fail(f"{label}: $ref must stand alone")
-        m = _REF.match(s["$ref"]) if isinstance(s["$ref"], str) else None
+        m = _REF.fullmatch(s["$ref"]) if type(s["$ref"]) is str else None
         if not m:
             _fail(f"{label}: unsupported $ref (only #/components/schemas/<name>)")
         ctx.all_refs.append(m.group(1))
@@ -146,11 +160,11 @@ def _norm_schema(s, cdepth, ctx, label, allow_ref=True):
             ctx.refs_from.add(m.group(1))
         return {"$ref": s["$ref"]}
     t = s.get("type")
-    if not isinstance(t, str) or t not in _TYPES:
-        _fail(f"{label}: unsupported schema type {t!r}")
+    if type(t) is not str or t not in _TYPES:
+        _fail(f"{label}: unsupported schema type")
     for k in s:
         if k not in _KEYS_BY_TYPE[t]:
-            _fail(f"{label}: unsupported or unknown schema keyword '{k}' for type {t}")
+            _fail(f"{label}: unsupported or unknown schema keyword for type {t}")
     nullable = s.get("nullable", False)
     if type(nullable) is not bool:
         _fail(f"{label}: nullable must be boolean")
@@ -159,7 +173,7 @@ def _norm_schema(s, cdepth, ctx, label, allow_ref=True):
         out["description"] = _text(s["description"], f"{label}.description")
     if "enum" in s:
         e = s["enum"]
-        if not isinstance(e, list) or not e:
+        if type(e) is not list or not e:
             _fail(f"{label}: enum must be a non-empty list")
         if len(e) > MAX_ENUM:
             _fail(f"{label}: enum exceeds {MAX_ENUM} values")
@@ -200,23 +214,27 @@ def _norm_schema(s, cdepth, ctx, label, allow_ref=True):
         if cdepth + 1 > MAX_DEPTH:
             _fail(f"{label}: schema depth bound {MAX_DEPTH} exceeded")
         props = s.get("properties", {})
-        if not isinstance(props, dict):
+        if type(props) is not dict:
             _fail(f"{label}: properties must be an object")
         if len(props) > MAX_PROPERTIES:
             _fail(f"{label}: properties exceed {MAX_PROPERTIES}")
         np = {}
         for name, ps in props.items():
-            if not _NAME.match(name):
-                _fail(f"{label}: invalid property name {name!r}")
+            if not _NAME.fullmatch(name):
+                _fail(f"{label}: invalid property name")
             np[name] = _norm_schema(ps, cdepth + 1, ctx, f"{label}.{name}")
         req = s.get("required", [])
-        if not isinstance(req, list) or any(not isinstance(r, str) for r in req):
+        if type(req) is not list:
+            _fail(f"{label}: required must be a list of property names")
+        if len(req) > MAX_REQUIRED:
+            _fail(f"{label}: required exceeds {MAX_REQUIRED}")
+        if any(type(r) is not str for r in req):
             _fail(f"{label}: required must be a list of property names")
         if len(set(req)) != len(req):
             _fail(f"{label}: required has duplicate entries")
         for r in req:
             if r not in np:
-                _fail(f"{label}: required property '{r}' not in properties")
+                _fail(f"{label}: required property not in properties")
         ap = s.get("additionalProperties", False)
         if type(ap) is not bool:
             _fail(f"{label}: unsupported additionalProperties schema (boolean only)")
@@ -237,7 +255,7 @@ def _bound(s, key, label):
 
 def _matches_scalar(v, t):
     if t == "string":
-        return isinstance(v, str)
+        return type(v) is str
     if t == "boolean":
         return type(v) is bool
     if t == "integer":
@@ -254,11 +272,12 @@ def _count_nodes(v):
         n += 1
         if n > MAX_EXAMPLE_NODES:
             _fail(f"example exceeds {MAX_EXAMPLE_NODES} nodes (bound)")
-        if isinstance(x, str) and len(x) > MAX_EXAMPLE_STRING:
+        t = type(x)
+        if t is str and len(x) > MAX_EXAMPLE_STRING:
             _fail("example string exceeds bound")
-        if isinstance(x, list):
+        if t is list:
             stack.extend(x)
-        elif isinstance(x, dict):
+        elif t is dict:
             stack.extend(x.values())
     return n
 
@@ -266,12 +285,12 @@ def _count_nodes(v):
 def _check(v, s, comps, path):
     """Validate example v against normalized schema s. Raises ValueError('example ...')."""
     if "$ref" in s:
-        name = _REF.match(s["$ref"]).group(1)
+        name = _REF.fullmatch(s["$ref"]).group(1)
         if name not in comps:
             _fail(f"dangling $ref to '{name}'")
         return _check(v, comps[name], comps, path)
     t = s["type"]
-    nullable = isinstance(t, list)
+    nullable = type(t) is list
     base = t[0] if nullable else t
     if v is None:
         if nullable:
@@ -290,12 +309,12 @@ def _check(v, s, comps, path):
                 _fail(f"example {path}: number out of bounds")
         return
     if base == "array":
-        if not isinstance(v, list):
+        if type(v) is not list:
             _fail(f"example {path}: expected array")
         for i, x in enumerate(v):
             _check(x, s["items"], comps, f"{path}[{i}]")
         return
-    if not isinstance(v, dict):
+    if type(v) is not dict:
         _fail(f"example {path}: expected object")
     for r in s["required"]:
         if r not in v:
@@ -304,13 +323,13 @@ def _check(v, s, comps, path):
         if k in s["properties"]:
             _check(x, s["properties"][k], comps, f"{path}.{k}")
         elif not s["additionalProperties"]:
-            _fail(f"example {path}: unexpected property '{k}'")
+            _fail(f"example {path}: unexpected property")
 
 
 def _resolve_root(s, comps):
     seen = 0
     while "$ref" in s:
-        s = comps[_REF.match(s["$ref"]).group(1)]
+        s = comps[_REF.fullmatch(s["$ref"]).group(1)]
         seen += 1
         if seen > MAX_SCHEMAS:
             _fail("recursive $ref cycle")
@@ -318,19 +337,19 @@ def _resolve_root(s, comps):
 
 
 def _norm_path(path):
-    if not isinstance(path, str) or not path.startswith("/") or len(path) > MAX_PATH:
+    if type(path) is not str or len(path) > MAX_PATH or not path.startswith("/"):
         _fail(f"path must start with '/' and be at most {MAX_PATH} characters")
     holders, canon = [], []
     if path != "/":
         for seg in path[1:].split("/"):
-            m = _PH.match(seg)
+            m = _PH.fullmatch(seg)
             if m:
                 holders.append(m.group(1))
                 canon.append("{}")
-            elif _SEG.match(seg):
+            elif _SEG.fullmatch(seg):
                 canon.append(seg)
             else:
-                _fail(f"path has an invalid segment {seg!r}")
+                _fail("path has an invalid segment")
     if len(set(holders)) != len(holders):
         _fail("path has duplicate placeholder names")
     return holders, "/" + "/".join(canon)
@@ -358,12 +377,12 @@ def _detect_cycles(graph):
 
 
 def generate_openapi(data: Any) -> dict[str, Any]:
-    if not isinstance(data, dict):
-        _fail("request must be an object")
     _prescan(data)
+    if type(data) is not dict:
+        _fail("request must be an object")
     _keys(data, {"info", "schemas", "operations"}, "request")
     info = data.get("info")
-    if not isinstance(info, dict):
+    if type(info) is not dict:
         _fail("info must be an object")
     _keys(info, {"title", "version", "description"}, "info")
     out_info = {"title": _text(info.get("title"), "info.title"), "version": _text(info.get("version"), "info.version")}
@@ -371,12 +390,12 @@ def generate_openapi(data: Any) -> dict[str, Any]:
         out_info["description"] = _text(info["description"], "info.description")
 
     schemas = data.get("schemas", {})
-    if not isinstance(schemas, dict):
+    if type(schemas) is not dict:
         _fail("schemas must be an object")
     if len(schemas) > MAX_SCHEMAS:
         _fail(f"schemas exceed {MAX_SCHEMAS}")
     ops = data.get("operations")
-    if not isinstance(ops, list) or not ops:
+    if type(ops) is not list or not ops:
         _fail("operations must be a non-empty list")
     if len(ops) > MAX_OPERATIONS:
         _fail(f"operations exceed {MAX_OPERATIONS}")
@@ -386,9 +405,9 @@ def generate_openapi(data: Any) -> dict[str, Any]:
     graph: dict[str, set] = {}
     trace = []
     for name, entry in schemas.items():
-        if not _NAME.match(name):
-            _fail(f"invalid schema name {name!r}")
-        if not isinstance(entry, dict):
+        if not _NAME.fullmatch(name):
+            _fail("invalid schema name")
+        if type(entry) is not dict:
             _fail(f"schema '{name}' must be an object")
         _keys(entry, {"source_ref", "schema"}, f"schema '{name}'")
         ref = _text(entry.get("source_ref"), f"schema '{name}' source_ref")
@@ -408,7 +427,7 @@ def generate_openapi(data: Any) -> dict[str, Any]:
     seen_ids, seen_mp, canon_paths = set(), set(), {}
     examples = []
     for i, op in enumerate(ops):
-        if not isinstance(op, dict):
+        if type(op) is not dict:
             _fail(f"operation {i} must be an object")
         label = f"operation {i}"
         _keys(op, {"operation_id", "method", "path", "summary", "source_ref", "parameters", "request_body", "responses"}, label)
@@ -416,7 +435,7 @@ def generate_openapi(data: Any) -> dict[str, Any]:
         if method not in _METHODS:
             _fail(f"{label}: method must be one of {', '.join(_METHODS)}")
         oid = op.get("operation_id")
-        if not isinstance(oid, str) or not _OPID.match(oid):
+        if type(oid) is not str or not _OPID.fullmatch(oid):
             _fail(f"{label}: invalid operation_id")
         if oid in seen_ids:
             _fail(f"duplicate operation_id '{oid}'")
@@ -435,18 +454,18 @@ def generate_openapi(data: Any) -> dict[str, Any]:
         trace.append({"kind": "operation", "name": oid, "source_ref": sref})
 
         plist = op.get("parameters", [])
-        if not isinstance(plist, list):
+        if type(plist) is not list:
             _fail(f"{label}: parameters must be a list")
         if len(plist) > MAX_PARAMETERS:
             _fail(f"{label}: parameters exceed {MAX_PARAMETERS}")
         params, pseen, path_declared = [], set(), set()
         for j, p in enumerate(plist):
             pl = f"{label} parameter {j}"
-            if not isinstance(p, dict):
+            if type(p) is not dict:
                 _fail(f"{pl} must be an object")
             _keys(p, {"name", "in", "required", "schema", "example", "description"}, pl)
             pname, loc = p.get("name"), p.get("in")
-            if not isinstance(pname, str) or not _NAME.match(pname):
+            if type(pname) is not str or not _NAME.fullmatch(pname):
                 _fail(f"{pl}: invalid name")
             if loc not in _PARAM_ORDER:
                 _fail(f"{pl}: 'in' must be path, query or header")
@@ -464,10 +483,10 @@ def generate_openapi(data: Any) -> dict[str, Any]:
                     _fail(f"{pl}: path parameter must declare required true")
                 path_declared.add(pname)
             ps = _norm_schema(p.get("schema"), 0, ctx, pl + " schema", allow_ref=False)
-            pt = ps["type"][0] if isinstance(ps["type"], list) else ps["type"]
+            pt = ps["type"][0] if type(ps["type"]) is list else ps["type"]
             if pt == "object" or (pt == "array" and (loc == "path" or "items" not in ps or ps["items"].get("type") not in _SCALARS)):
                 _fail(f"{pl}: parameter schema must be scalar{'' if loc == 'path' else ' or array of scalars'}")
-            if loc == "path" and isinstance(ps["type"], list):
+            if loc == "path" and type(ps["type"]) is list:
                 _fail(f"{pl}: path parameter cannot be nullable")
             np_ = {"name": pname, "in": loc, "required": req, "schema": ps}
             if "description" in p:
@@ -489,7 +508,7 @@ def generate_openapi(data: Any) -> dict[str, Any]:
             if method in _NO_BODY:
                 _fail(f"{label}: {method} operations cannot have a request body")
             rb = op["request_body"]
-            if not isinstance(rb, dict):
+            if type(rb) is not dict:
                 _fail(f"{label}: request_body must be an object")
             _keys(rb, {"required", "schema", "example"}, f"{label} request_body")
             rreq = rb.get("required", False)
@@ -506,15 +525,15 @@ def generate_openapi(data: Any) -> dict[str, Any]:
             item["requestBody"] = {"required": rreq, "content": {"application/json": media}}
 
         resp = op.get("responses")
-        if not isinstance(resp, dict) or not resp:
+        if type(resp) is not dict or not resp:
             _fail(f"{label}: responses must be a non-empty object")
         if len(resp) > MAX_RESPONSES:
             _fail(f"{label}: responses exceed {MAX_RESPONSES}")
         oresp = {}
         for code, r in resp.items():
-            if code != "default" and not _STATUS.match(code):
-                _fail(f"{label}: invalid response status {code!r}")
-            if not isinstance(r, dict):
+            if code != "default" and not _STATUS.fullmatch(code):
+                _fail(f"{label}: invalid response status")
+            if type(r) is not dict:
                 _fail(f"{label} response {code} must be an object")
             _keys(r, {"description", "schema", "example"}, f"{label} response {code}")
             entry = {"description": _text(r.get("description"), f"{label} response {code} description")}
@@ -546,8 +565,8 @@ def generate_openapi(data: Any) -> dict[str, Any]:
         doc["components"] = {"schemas": components}
     try:
         canonical = json.dumps(doc, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
-    except (TypeError, ValueError) as exc:
-        _fail(f"document not serializable: {exc}")
+    except (TypeError, ValueError):
+        _fail("document not serializable")
     if len(canonical) > MAX_OUTPUT_BYTES:
         _fail(f"output size bound exceeded ({MAX_OUTPUT_BYTES} bytes)")
     parsed = json.loads(canonical)

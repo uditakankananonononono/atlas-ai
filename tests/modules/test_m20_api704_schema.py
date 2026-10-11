@@ -419,7 +419,7 @@ def _nested_list(depth):
 def test_input_depth_bound_48_vs_49():
     # key 'x' is unknown, so an input that passes the prescan fails later with 'unknown key'
     # (value of x sits at depth 1; a list nested k levels deep reaches depth k)
-    with pytest.raises(ValueError, match="unknown key 'x'"):
+    with pytest.raises(ValueError, match="^unknown key in request$"):
         generate_openapi(_with_extra(x=_nested_list(48)))
     with pytest.raises(ValueError) as e:
         generate_openapi(_with_extra(x=_nested_list(49)))
@@ -437,7 +437,7 @@ def test_input_node_bound_50000_vs_50001():
         return c
     b = count(base())
     # adding key x contributes the list node itself plus its items
-    with pytest.raises(ValueError, match="unknown key 'x'"):
+    with pytest.raises(ValueError, match="^unknown key in request$"):
         generate_openapi(_with_extra(x=[0] * (50000 - b - 1)))
     with pytest.raises(ValueError) as e:
         generate_openapi(_with_extra(x=[0] * (50000 - b)))
@@ -450,7 +450,7 @@ def test_input_byte_bound_262144_vs_262145():
     pad = 262144 - len(_j.dumps(d))
     d["x"] = "a" * pad
     assert len(_j.dumps(d)) == 262144
-    with pytest.raises(ValueError, match="unknown key 'x'"):
+    with pytest.raises(ValueError, match="^unknown key in request$"):
         generate_openapi(d)
     d["x"] = "a" * (pad + 1)
     with pytest.raises(ValueError) as e:
@@ -473,7 +473,7 @@ def test_input_byte_bound_accepts_valid_request_at_limit():
 
 def test_integer_64_bit_bound():
     for ok in (2 ** 63, 2 ** 64 - 1, -(2 ** 64 - 1), 0):
-        with pytest.raises(ValueError, match="unknown key 'x'"):
+        with pytest.raises(ValueError, match="^unknown key in request$"):
             generate_openapi(_with_extra(x=ok))
     for bad in (2 ** 64, -(2 ** 64)):
         with pytest.raises(ValueError) as e:
@@ -688,9 +688,9 @@ def test_numeric_keyword_types_integer_vs_number():
     d = base(); d["schemas"]["Pet"]["schema"]["properties"]["id"]["maximum"] = False
     refuse(d, "maximum must be a finite numeric value")
     d = base(); d["schemas"]["Pet"]["schema"]["properties"]["name"]["minimum"] = 1
-    refuse(d, "unsupported or unknown schema keyword 'minimum'")
+    refuse(d, "unsupported or unknown schema keyword for type")
     d = base(); d["schemas"]["Pet"]["schema"]["properties"]["id"]["minLength"] = 1
-    refuse(d, "unsupported or unknown schema keyword 'minLength'")
+    refuse(d, "unsupported or unknown schema keyword for type")
 
 
 def test_isnum_and_matches_scalar_direct():
