@@ -1,0 +1,26 @@
+# M19 trend pipeline (U03) contract
+
+Module: `backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py` (new file). Tests: `tests/modules/test_m19_trend_pipeline_u03.py`.
+
+## Existing mechanisms read first
+- `m06 social_reading/idea_feed.py`: harvests term scores from collected posts into ideas.
+- `m19 historical_ranking.py`: ranks ideas from history.
+- `m06 analytics.py` trend: trends over metrics, not over terms in post text.
+- `m20 calibration_predictor.py`: class-conditional calibration of predictions that are already resolved.
+- `m20 strategy.py`: carries the "not investment advice" disclaimer.
+
+## Exact delta
+Nothing above is edited, wired, called or replaced. The new module adds one pure chain over posts the caller supplies:
+posts -> measured trend candidates (recent window vs baseline window, stated growth formula, thresholds on posts and authors) -> templated idea candidates (human review required, never written to the incubator) -> persistence predictions with a caller-stated confidence -> scoring against later collected posts.
+Scoring emits calibration-style records (same field names as a resolved record). No integration with m20 is claimed or tested.
+
+## Functions
+`extract_trends`, `ideas_from_trends`, `make_predictions`, `score_predictions`. Errors are `TrendError(ValueError)`, messages start with `TREND_U03: `.
+Windows: recent = (as_of - recent_days, as_of]; baseline = the baseline_days before that. Posts after as_of are excluded and listed. A term counts once per post.
+Scoring counts posts in (predicted_at, predicted_at + horizon]; fewer than 20 scored predictions carries a "too few" caveat.
+
+## Limits
+- Not investment advice. Does not predict markets, prices or business outcomes. No accuracy is promised.
+- Measures term frequency in the supplied posts only. Sampling bias and bots are not detected.
+- English, ASCII-token tokenizer.
+- No collection, network, accounts, clock or model calls. No impersonation, no posting.
