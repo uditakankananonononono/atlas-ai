@@ -166,3 +166,12 @@ def test_reverse_order_multirecord_echo_and_lower_anchor():
  assert [r['criterion_id']for r in out['criterion_reports']]==['a','z'] and all(r['highest_anchor_supported']is False for r in out['criterion_reports'])
  assert [(r['criterion_id'],r['rater_id'],r['rating_id'])for r in out['rating_reports']]==[('a','apeer','aapeer'),('a','zpeer','azpeer'),('z','apeer','zapeer'),('z','zpeer','zzpeer')]
  assert all(r['evidence_ids']==['a','z']for r in out['rating_reports'])
+
+def test_control_and_rating_set_sort_fixed_seed():
+ import os,subprocess,sys
+ p=payload();p['assessment_controls']['conflicted_rater_ids']=['zebra','middle','alpha']
+ p['assessment_evidence']=[{**p['assessment_evidence'][0],'evidence_id':key}for key in ['zebra','middle','alpha']]
+ p['assessment_ratings'][0]['evidence_ids']=['zebra','middle','alpha']
+ code="from app.modules.m20_general_cognitive_worker.anchored_assessment import assess; p="+repr(p)+"; r=assess('self',p); assert r['controls']['conflicted_rater_ids']==['alpha','middle','zebra']; assert r['rating_reports'][0]['evidence_ids']==['alpha','middle','zebra']"
+ result=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'6'},capture_output=True,text=True)
+ assert result.returncode==0,result.stdout+result.stderr
