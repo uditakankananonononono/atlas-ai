@@ -19,3 +19,16 @@ def test_api704_owner_bound_mounted(monkeypatch,oidc_auth_headers):
  assert c.post(PATH,headers=h,json={'data':{}}).status_code==422
  for packet in [{'data':['\ud800']},{'data':{'x':'\ud800'}},['\ud800'],{'data':DATA,'\ud800':'x'}]:
   r=c.post(PATH,headers={**h,'Content-Type':'application/json'},content=json.dumps(packet));assert r.status_code==422,r.text
+
+def test_api704_exactly_64_matching_refs_accepted(monkeypatch,oidc_auth_headers):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ refs=[{'tenant_id':'a','actor_id':'owner','id':str(i)}for i in range(64)]
+ r=c.post(PATH,headers=oidc_auth_headers('a','owner'),json={'data':DATA,'resource_refs':refs})
+ assert r.status_code==200,r.text
+ assert r.json()['tenant_id']=='a'and r.json()['implementation_verified']is False
+
+def test_api704_65_matching_refs_refused(monkeypatch,oidc_auth_headers):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ refs=[{'tenant_id':'a','actor_id':'owner','id':str(i)}for i in range(65)]
+ r=c.post(PATH,headers=oidc_auth_headers('a','owner'),json={'data':DATA,'resource_refs':refs})
+ assert r.status_code==422,r.text
