@@ -94,3 +94,28 @@ def test_main_uses_same_mount_helper():
                and n.func.id == 'mount_training_routes' and len(n.args) == 1
                and isinstance(n.args[0], ast.Name) and n.args[0].id == 'app'
                for n in ast.walk(tree))
+
+
+@pytest.mark.parametrize('tenant_id, code', [('', 'POLICY_REFUSED_EMPTY:tenant_id'),
+                                           (5, 'POLICY_REFUSED_BAD_TYPE:tenant_id'),
+                                           ('x' * 121, 'POLICY_REFUSED_TEXT_TOO_LONG:tenant_id')])
+def test_configure_rejects_invalid_tenant_before_binding(host, tenant_id, code):
+    with pytest.raises(ValueError, match='^' + code + '$'):
+        routes.configure_training_units(tenant_id, {'fixture': permit()})
+    assert routes._STORES == {}
+
+
+def test_explicit_analyze_type_is_carried_in_canonical_descriptor(host, oidc_auth_headers, monkeypatch):
+    from app.modules.c30 import policy
+    seen = []
+    real = policy.classify
+    def recorded(descriptor):
+        seen.append(descriptor)
+        return real(descriptor)
+    monkeypatch.setattr(policy, 'classify', recorded)
+    routes.configure_training_units('tenant-a', {'fixture': permit()})
+    response = host.post('/api/v1/c32/books/run', json=payload({'type': 'analyze'}),
+                         headers=oidc_auth_headers())
+    assert response.status_code == 200
+    assert seen == [{'class': 'offline', 'module_id': 20, 'tenant_id': 'tenant-a',
+                     'action_type': 'analyze', 'payload': {'type': 'analyze'}}]
