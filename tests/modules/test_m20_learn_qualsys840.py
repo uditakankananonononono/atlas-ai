@@ -151,3 +151,114 @@ def test_boundary_echo_execution_kind_and_no_prediction():
   r=execute(method,p);assert r['evaluation']['capability_executed'] is True and r['evaluation']['independent_verification_required'] is True
   result=r['result']['qualitative_graph' if method=='qualitative_reasoning'else'stock_flow_simulation']
   assert result['source_truth_verified'] is False and result['boundary']
+
+def test_r2_zero_plus_positive_effect_and_upper_clamp():
+ p=qualitative();p['qualitative_variables'].append({**deepcopy(p['qualitative_variables'][0]),'id':'zero_driver','initial':'zero'})
+ p['qualitative_influences'].append({'id':'zero','from':'zero_driver','to':'b','sign':1,'source':'zero'})
+ r=core.qualitative(p);assert r['states_by_step'][1]==[{'a':'high','b':'high','zero_driver':'zero'}] and r['states_by_step'][2]==r['states_by_step'][1]
+
+
+def test_r2_generated_budget_exact(monkeypatch):
+ p=qualitative();p['qualitative_steps']=1
+ monkeypatch.setattr(core,'product',lambda *args:iter([(2,1)]*4096))
+ assert core.qualitative(p)['status']=='simulated'
+ monkeypatch.setattr(core,'product',lambda *args:iter([(2,1)]*4097))
+ r=core.qualitative(p);assert r['status']=='state_budget_exhausted' and r['completed_steps']==0
+
+
+def test_r2_successor_budget_exact_and_duplicate(monkeypatch):
+ from itertools import product as cartesian
+ p=qualitative();p['qualitative_variables']=[{'id':str(i),'landmarks':[{'id':str(j),'sign':0}for j in range(5)],'initial':'0'}for i in range(4)];p['qualitative_influences']=[];p['qualitative_steps']=1
+ candidates=list(cartesian(range(5),repeat=4))
+ monkeypatch.setattr(core,'product',lambda *args:iter(candidates[:256]+[candidates[0]]))
+ r=core.qualitative(p);assert r['status']=='simulated' and len(r['states_by_step'][1])==256
+ monkeypatch.setattr(core,'product',lambda *args:iter(candidates[:257]))
+ assert core.qualitative(p)['status']=='state_budget_exhausted'
+
+
+def test_r2_ordered_outputs_fixed_seed():
+ import subprocess,os,sys
+ code='''from app.modules.m20_general_cognitive_worker import qualitative_systems as c
+p={'qualitative_variables':[{'id':k,'landmarks':[{'id':'l','sign':-1},{'id':'z','sign':0},{'id':'h','sign':1}],'initial':'h'if k=='z'else'z'}for k in ['z','b','a']],'qualitative_influences':[{'id':k,'from':'z','to':'a','sign':s,'source':k}for k,s in [('z',1),('a',-1)]],'qualitative_steps':1}
+r=c.qualitative(p)
+assert [x['id']for x in r['influences']]==['a','z']
+assert list(r['states_by_step'][0][0])==['a','b','z']
+assert [x['a']for x in r['states_by_step'][1]]==['l','z','h']
+'''
+ r=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'0'},capture_output=True,text=True);assert r.returncode==0,r.stderr
+
+
+def test_r2_unknown_qual_source_zero_steps():
+ p=qualitative();p['qualitative_steps']=0;p['qualitative_influences'][0]['from']='unknown'
+ error(core.qualitative,p,'unique influences, known variables and nonzero signs required')
+
+
+def test_r2_dt_and_rate_upper_bounds():
+ p=system();p['system_flows']=[];p['system_dt']=1000;assert core.stock_flow(p)['status']=='simulated'
+ p['system_dt']=1001;error(core.stock_flow,p,'system_dt in(0,1000] required')
+ p=system();p['system_steps']=0;p['system_flows'][0]['rate']=1000;assert core.stock_flow(p)['status']=='simulated'
+ p['system_flows'][0]['rate']=1001;error(core.stock_flow,p,'supported nonnegative rates and matching endpoint/time units required')
+
+@pytest.mark.parametrize('field,label',[('system_time_unit','system_time_unit'),('source','flow source'),('stock_unit','flow stock unit')])
+@pytest.mark.parametrize('value',['',None,42])
+def test_r2_text_validators(field,label,value):
+ p=system()
+ if field=='system_time_unit':p[field]=value
+ else:p['system_flows'][0][field]=value
+ error(core.stock_flow,p,label+' requires bounded nonempty string')
+
+
+def test_r2_driver_unit_and_unknown_target():
+ p=system();p['system_stocks'].append({'id':'kg','unit':'kg','initial':1,'source':'kg'});p['system_flows'][0]['driver']='kg'
+ error(core.stock_flow,p,'constant has no driver/delay; proportional has matching known driver required')
+ p=system();p['system_flows'][0]['to']='unknown';error(core.stock_flow,p,'unique flows with distinct known endpoints or one external endpoint required')
+
+
+def test_r2_zero_rate_no_cycles_external_proportional_and_outflow():
+ p=system();p['system_flows'][0]['rate']=0;assert core.stock_flow(p)['feedback_cycles']==[]
+ p=system();p['system_flows'][0]['to']=None;r=core.stock_flow(p)
+ assert r['trajectory'][-1]['stocks']=={'a':'5/2','b':'0'} and r['external_net_by_unit']=={'litre':'-15/2'} and r['conservation_verified'] is True and r['closed_system'] is False
+ p['system_flows'].append({'id':'internal','from':'a','to':'b','rate_kind':'constant','driver':None,'rate':0,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'i'})
+ r=core.stock_flow(p);assert r['closed_system'] is False and r['stock_sources']=={'a':'fixture:a','b':'fixture:b'}
+
+
+def test_r2_three_edge_signed_cycle():
+ p=system();p['system_stocks'].append({'id':'c','unit':'litre','initial':0,'source':'c'})
+ p['system_flows']=[{'id':str(i),'from':b,'to':None,'rate_kind':'proportional','driver':a,'rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':str(i)}for i,(a,b)in enumerate([('a','b'),('b','c'),('c','a')])];p['system_steps']=0
+ assert core.stock_flow(p)['feedback_cycles']==[{'stock_ids':['a','b','c'],'sign':-1}]
+
+
+def test_r2_amount_post_external_bounds_independent():
+ p=system();p['system_stocks'][0]['initial']=10**12;p['system_flows'][0]['rate']=2
+ error(core.stock_flow,p,'simulation rational components exceed10**12')
+ p=system();p['system_stocks'][1]['initial']=10**12;p['system_flows'][0].update({'rate_kind':'constant','driver':None,'rate':1})
+ error(core.stock_flow,p,'simulation rational components exceed10**12')
+ # Net external balance can overflow while every stock and amount remains bounded.
+ p=system();p['system_stocks']=[{'id':str(i),'unit':'litre','initial':10**12,'source':str(i)}for i in range(2)];p['system_flows']=[{'id':str(i),'from':str(i),'to':None,'rate_kind':'proportional','driver':str(i),'rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':str(i)}for i in range(2)];p['system_steps']=1
+ error(core.stock_flow,p,'simulation rational components exceed10**12')
+
+
+def test_r2_multiunit_conservation_guard_fault_injection(monkeypatch):
+ import builtins
+ p=system();p['system_flows']=[];p['system_steps']=0;p['system_stocks'].append({'id':'other','unit':'z','initial':1,'source':'other'})
+ count=0
+ def corrupted_sum(values):
+  nonlocal count
+  count+=1
+  return builtins.sum(values)+(1 if count==3 else 0)
+ # Verification totals call 1/2 for first unit, 3/4 for second unit.
+ monkeypatch.setattr(core,'sum',corrupted_sum,raising=False)
+ assert core.stock_flow(p)['conservation_verified'] is False
+
+
+def test_r2_feedback_traversal_exact_budget(monkeypatch):
+ import builtins
+ p=system();p['system_stocks']=p['system_stocks'][:1];p['system_flows'][0]['to']=None;p['system_steps']=0
+ repetitions=4096
+ def expanded_edges(value,*args,**kwargs):
+  if isinstance(value,set) and value=={('a','a',-1)}:return [('a','a',-1)]*repetitions
+  return builtins.sorted(value,*args,**kwargs)
+ monkeypatch.setattr(core,'sorted',expanded_edges,raising=False)
+ assert core.stock_flow(p)['feedback_cycles']==[{'stock_ids':['a'],'sign':-1}]
+ repetitions=4097
+ error(core.stock_flow,p,'feedback cycle search exceeds4096 edges')
