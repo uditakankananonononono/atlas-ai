@@ -149,3 +149,7 @@ def test_dos_strings_refuse_all_numeric_positions_and_mounted_routes(monkeypatch
   p=payload();p['arithmetic_task']['initial']=bad;start=time.monotonic()
   assert c.post('/api/v1/api/modules/20/learning-reasoning-810-859/'+method,headers=h,json={'payload':p}).status_code==422
   assert time.monotonic()-start<2
+
+def test_signed_zero_padded_string_length_exact_boundary():
+ assert run('problem_solving',arithmetic_task={**task(),'initial':'+'+'0'*62+'1'})['status']=='solved'
+ with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task={**task(),'initial':'+'+'0'*63+'1'})
