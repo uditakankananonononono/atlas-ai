@@ -219,3 +219,182 @@ def test_consent_revoked_must_be_bool():
     d["consent"] = [consent(revoked="no")]
     with pytest.raises(ValueError):
         preflight(act(subjects=["u1"], purpose="outreach"), d)
+
+
+# ---- repair pins (round 2): finite timestamps, nested ToS/privacy field types, guards ----
+NAN, INF = float("nan"), float("inf")
+
+
+@pytest.mark.parametrize("bad", [NAN, INF, -INF])
+def test_non_finite_numbers_rejected_everywhere(bad):
+    d = decl()
+    with pytest.raises(ValueError):
+        preflight(act(at=bad), d)
+    d = decl()
+    d["recent_actions"] = [{"platform": "acme", "kind": "post", "at": bad, "count": 1}]
+    with pytest.raises(ValueError):
+        preflight(act(), d)
+    d = decl()
+    d["consent"] = [consent(granted_at=bad)]
+    with pytest.raises(ValueError):
+        preflight(act(subjects=["u1"], purpose="outreach"), d)
+    d = decl()
+    d["consent"] = [consent(expires_at=bad)]
+    with pytest.raises(ValueError):
+        preflight(act(subjects=["u1"], purpose="outreach"), d)
+
+
+def test_string_allowed_kinds_is_rejected_not_substring_matched():
+    d = decl()
+    d["tos"]["acme"]["allowed_kinds"] = "post"
+    with pytest.raises(ValueError):
+        preflight(act(kind="po"), d)
+    with pytest.raises(ValueError):
+        preflight(act(kind="post"), d)
+
+
+@pytest.mark.parametrize("bad_entry", [
+    "x", ["post"], None, 5,
+    {"allowed_kinds": "post"}, {"allowed_kinds": [1]}, {"allowed_kinds": [""]}, {"allowed_kinds": {"post": 1}},
+    {"allowed_kinds": ["post"], "automation_allowed": "yes"},
+    {"allowed_kinds": ["post"], "automation_allowed": 1},
+])
+def test_malformed_tos_entry_raises_value_error(bad_entry):
+    d = decl()
+    d["tos"]["acme"] = bad_entry
+    with pytest.raises(ValueError):
+        preflight(act(), d)
+
+
+def test_declared_platform_without_allowed_kinds_denies_not_crashes():
+    d = decl()
+    d["tos"]["acme"] = {}
+    r = preflight(act(), d)
+    assert r["verdict"] == "deny" and "tos_kind_allowed" in failed(r)
+    assert "tos_declared" not in failed(r)
+
+
+def test_tos_entries_for_other_platforms_are_also_validated():
+    d = decl()
+    d["tos"]["other"] = {"allowed_kinds": "post"}
+    with pytest.raises(ValueError):
+        preflight(act(), d)
+
+
+@pytest.mark.parametrize("priv", [
+    [], "x", 5,
+    {"purpose_allowed": []}, {"purpose_allowed": "x"}, {"purpose_allowed": {"outreach": "email"}},
+    {"purpose_allowed": {"outreach": [1]}}, {"purpose_allowed": {"": ["email"]}},
+    {"personal_categories": "email"}, {"personal_categories": [1]}, {"personal_categories": [""]},
+])
+def test_malformed_privacy_raises_value_error(priv):
+    d = decl()
+    d["privacy"] = priv
+    with pytest.raises(ValueError):
+        preflight(act(), d)
+
+
+def test_empty_but_well_typed_privacy_is_valid_and_denies_personal_use():
+    d = decl()
+    d["privacy"] = {}
+    assert preflight(act(), d)["verdict"] == "allow"
+    assert preflight(act(data_categories=["email"], purpose="outreach"), d)["verdict"] == "allow"
+    d["privacy"] = {"personal_categories": ["email"]}
+    assert failed(preflight(act(data_categories=["email"], purpose="outreach"), d)) == ["privacy_purpose"]
+
+
+def test_non_personal_category_with_missing_purpose_is_allowed():
+    r = preflight(act(data_categories=["weather"]), decl())
+    assert r["verdict"] == "allow"
+
+
+def test_personal_category_with_missing_purpose_is_denied():
+    r = preflight(act(data_categories=["email"]), decl())
+    assert failed(r) == ["privacy_purpose"]
+
+
+def test_consent_defaults_absent_revoked_and_expiry_mean_valid():
+    d = decl()
+    d["consent"] = [{"subject": "u1", "purpose": "outreach", "granted_at": NOW - 1}]
+    assert preflight(act(subjects=["u1"], purpose="outreach"), d)["verdict"] == "allow"
+    d["consent"][0]["revoked"] = True
+    assert failed(preflight(act(subjects=["u1"], purpose="outreach"), d)) == ["consent"]
+
+
+def test_one_valid_consent_among_revoked_and_expired_records_is_enough():
+    d = decl()
+    d["consent"] = [consent(revoked=True), consent(expires_at=NOW - 5), consent()]
+    assert preflight(act(subjects=["u1"], purpose="outreach"), d)["verdict"] == "allow"
+
+
+def test_subject_with_no_purpose_is_denied():
+    d = decl()
+    d["consent"] = [consent()]
+    assert failed(preflight(act(subjects=["u1"]), d)) == ["consent"]
+
+
+@pytest.mark.parametrize("a,d", [
+    (None, None), ("x", None), ([], None),
+])
+def test_top_level_types(a, d):
+    with pytest.raises(ValueError):
+        preflight(a if a is not None else None, decl() if d is None else d)
+
+
+def test_declarations_not_dict_rejected():
+    for bad in (None, [], "x"):
+        with pytest.raises(ValueError):
+            preflight(act(), bad)
+
+
+@pytest.mark.parametrize("mut", [
+    lambda a, d: d.update(tos=[]), lambda a, d: d.update(rate_limits=[]),
+    lambda a, d: d.update(rate_limits={"acme": []}),
+    lambda a, d: d.update(rate_limits={"acme": {"post": []}}),
+    lambda a, d: d["rate_limits"]["acme"]["post"].update(max="3"),
+    lambda a, d: d["rate_limits"]["acme"]["post"].update(max=True),
+    lambda a, d: d["rate_limits"]["acme"]["post"].update(window_seconds=True),
+    lambda a, d: d["rate_limits"]["acme"]["post"].update(window_seconds=1.5),
+    lambda a, d: d.update(recent_actions=["x"]),
+    lambda a, d: d.update(recent_actions=[{"platform": "", "kind": "post", "at": 1, "count": 1}]),
+    lambda a, d: d.update(recent_actions=[{"platform": "acme", "kind": "", "at": 1, "count": 1}]),
+    lambda a, d: d.update(recent_actions=[{"platform": "acme", "kind": "post", "at": 1, "count": 0}]),
+    lambda a, d: d.update(consent={}),
+    lambda a, d: d.update(consent=["x"]),
+    lambda a, d: d.update(consent=[{"subject": "", "purpose": "p", "granted_at": 1}]),
+    lambda a, d: d.update(consent=[{"subject": "u", "purpose": "", "granted_at": 1}]),
+    lambda a, d: d.update(consent=[{"subject": "u", "purpose": "p"}]),
+    lambda a, d: d.update(consent=[{"subject": "u", "purpose": "p", "granted_at": 1, "expires_at": "x"}]),
+    lambda a, d: d.update(review_kinds="post"),
+    lambda a, d: d.update(review_kinds=[1]),
+    lambda a, d: a.update(purpose=""), lambda a, d: a.update(purpose=5),
+    lambda a, d: a.update(platform=5), lambda a, d: a.update(count="1"), lambda a, d: a.update(count=-1),
+    lambda a, d: a.update(subjects=[""]), lambda a, d: a.update(subjects=[1]),
+    lambda a, d: a.update(data_categories=[""]), lambda a, d: a.update(data_categories=[1]),
+    lambda a, d: a.update(automated=1),
+])
+def test_more_malformed_inputs_raise_value_error(mut):
+    a, d = act(), decl()
+    mut(a, d)
+    with pytest.raises(ValueError):
+        preflight(a, d)
+
+
+def test_review_kinds_must_be_strings_but_may_be_absent():
+    d = decl()
+    d.pop("review_kinds")
+    assert preflight(act(), d)["verdict"] == "allow"
+    d["review_kinds"] = ("post",)
+    assert preflight(act(), d)["verdict"] == "needs_review"
+
+
+def test_integer_and_float_timestamps_both_finite_ok():
+    assert preflight(act(at=NOW + 0.5), decl())["verdict"] == "allow"
+
+
+@pytest.mark.parametrize("kind", ["po", "pos", "ost", "'", "post'", "["])
+def test_kind_must_equal_a_declared_kind_exactly(kind):
+    d = decl()
+    d["rate_limits"]["acme"]["*"] = {"max": 9, "window_seconds": 60}
+    r = preflight(act(kind=kind), d)
+    assert r["verdict"] == "deny" and "tos_kind_allowed" in failed(r)

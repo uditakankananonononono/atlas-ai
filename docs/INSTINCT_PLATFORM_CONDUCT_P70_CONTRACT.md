@@ -33,13 +33,22 @@ kind, or `"*"`: `max`, `window_seconds`), `recent_actions` (caller-supplied hist
 Missing declarations deny (fail closed). Malformed input raises `ValueError`. `needs_review` only when
 every check passes and the kind is in `review_kinds`; a deny always wins.
 
-## Mutation evidence (author run, hand-written, one at a time, raw logs per mutant)
+## Round 2 repair (this commit)
 
-40 mutants. First run: 37 killed, 3 survived (m25, m26, m39). Two tests were added for m26 and m39. Final
-run: 39 killed by test failure, 1 survived. m25 (allow a `None` action purpose to match a consent purpose)
-is an equivalent mutant through `preflight`: consent purposes are validated as non-empty strings, so they
-never equal `None`. It would differ only if a caller bypassed validation. No timeouts occurred.
-Test count: 45 on Python 3.10.12.
+Defects found by independent review of the first commit and fixed in the core, each with pinned tests:
+1. Timestamps accepted NaN and infinity. All numeric time inputs (`at`, history `at`, consent `granted_at` and `expires_at`) must now be finite.
+2. `allowed_kinds` given as a string matched by substring. Every `tos` entry must now be a dict, `allowed_kinds` a list of non-empty strings, `automation_allowed` a bool; entries for every platform are validated, not only the acted-on one.
+3. `privacy.purpose_allowed` as a list raised AttributeError instead of ValueError. `privacy` fields are now fully typed: `personal_categories` a list of strings, `purpose_allowed` a dict of non-empty string keys to lists of strings. `review_kinds` must be a list of strings.
+Pinned defaults: a declared platform with no `allowed_kinds` denies (does not crash); consent with absent `revoked` is not revoked and with absent `expires_at` does not expire; a non-personal category with no purpose is allowed; a personal category with no purpose is denied.
+
+## Mutation evidence (author runs, hand-written, one at a time, raw logs per mutant)
+
+Round 1 (commit 2c1a141b): 40 mutants; first run 37 killed, 3 survived; after 2 added tests 39 killed, 1 survived (m25).
+Round 2 (this commit): 52 mutants against the repaired core. First run: 49 killed, 3 survived (m25, m43, m52). A test was added for m52 (substring regression: kinds like "po" must not match "post"). Final run: 50 killed by test failure, 2 survived, 0 timeouts. Test count: 120 on Python 3.10.12.
+Survivors, scoped:
+- m25 (a `None` action purpose may match a consent purpose): equivalent through `preflight`, since consent purposes are validated as non-empty strings and never equal `None`.
+- m43 (remove the list-or-tuple check on `allowed_kinds`): equivalent through `preflight`, since the next line's string-list validation rejects non-lists itself. The first guard is redundant.
+Neither equivalence holds for a caller that bypasses the module's validation. An independent reviewer ran a larger variant set against commit 1 (reported as 83 variants, 17 survivors, including malformed guards); the author did not run it and has not re-measured it against this commit.
 
 ## Not covered
 
@@ -50,4 +59,5 @@ Test count: 45 on Python 3.10.12.
 - No contacting, submitting or account action is performed or approved here. This is not an approval gate for the user's own review of outbound messages.
 - Not wired into any route or registry; the existing m03, m06 and m18 gates are untouched.
 - Not run: the repo conftest, mounted auth/tenant tests, Python 3.12. Environment was Python 3.10.12.
-- The `instinct_doc` directory has no `__init__.py` in this commit (namespace package); see the hand-off note about who owns that marker.
+- The `instinct_doc` directory has no `__init__.py` (namespace package); ownership of that marker is undecided.
+- Reviewer exceptions and non-ValueError failures from caller-supplied objects with custom `__len__` or `__eq__` behavior are not handled.

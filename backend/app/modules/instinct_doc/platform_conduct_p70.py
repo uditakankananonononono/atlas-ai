@@ -11,12 +11,14 @@ rules, and is not proof of legal compliance. Missing declarations are denied
 """
 from __future__ import annotations
 
+import math
+
 SCOPE = "declared-input-only"
 
 
 def _num(name, v):
-    if isinstance(v, bool) or not isinstance(v, (int, float)):
-        raise ValueError(f"{name} must be a number")
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+        raise ValueError(f"{name} must be a finite number")
     return v
 
 
@@ -60,6 +62,15 @@ def _norm_decl(d):
     tos = d.get("tos")
     if not isinstance(tos, dict):
         raise ValueError("tos must be a dict")
+    for plat, entry in tos.items():
+        if not isinstance(entry, dict):
+            raise ValueError(f"tos entry for {plat!r} must be a dict")
+        if "allowed_kinds" in entry:
+            if not isinstance(entry["allowed_kinds"], (list, tuple)):
+                raise ValueError("tos allowed_kinds must be a list")
+            _strs("tos allowed_kinds", entry["allowed_kinds"])
+        if "automation_allowed" in entry and not isinstance(entry["automation_allowed"], bool):
+            raise ValueError("tos automation_allowed must be a bool")
     rl = d.get("rate_limits", {})
     if not isinstance(rl, dict):
         raise ValueError("rate_limits must be a dict")
@@ -95,11 +106,22 @@ def _norm_decl(d):
         if not isinstance(c.get("revoked", False), bool):
             raise ValueError("consent revoked must be a bool")
     privacy = d.get("privacy")
-    if privacy is not None and not isinstance(privacy, dict):
-        raise ValueError("privacy must be a dict")
+    if privacy is not None:
+        if not isinstance(privacy, dict):
+            raise ValueError("privacy must be a dict")
+        if "personal_categories" in privacy:
+            _strs("privacy personal_categories", privacy["personal_categories"])
+        if "purpose_allowed" in privacy:
+            pa = privacy["purpose_allowed"]
+            if not isinstance(pa, dict):
+                raise ValueError("privacy purpose_allowed must be a dict")
+            for purpose, cats in pa.items():
+                _str("privacy purpose", purpose)
+                _strs("privacy purpose_allowed categories", cats)
     review = d.get("review_kinds", [])
     if not isinstance(review, (list, tuple)):
         raise ValueError("review_kinds must be a list")
+    _strs("review_kinds", review)
     return tos, rl, recent, consent, privacy, list(review)
 
 
