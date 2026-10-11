@@ -13,9 +13,11 @@ def _refuse(text):raise Bargain91Error('BARGAIN91: '+text)
 def _shape(value,keys,label):
     if type(value)is not dict or set(value)!=set(keys):_refuse(label+' must contain exactly '+', '.join(keys))
 def _text(value,label,limit):
-    if type(value)is not str or not value.strip() or len(value)>limit or any(ord(c)<32 or ord(c)==127 for c in value):_refuse(label+' must be nonempty bounded text without controls')
+    if type(value)is not str or len(value)>limit or not value.strip() or any(ord(c)<32 or ord(c)==127 for c in value):_refuse(label+' must be nonempty bounded text without controls')
 def _weight(value):
-    if type(value)is not str or not re.fullmatch(r'\d+(?:/[1-9]\d*)?',value):_refuse('weight must be a nonnegative rational string')
+    if type(value)is not str:_refuse('weight must be a nonnegative rational string')
+    if len(value)>15:_refuse('weight raw length exceeds15')
+    if not re.fullmatch(r'\d+(?:/[1-9]\d*)?',value):_refuse('weight must be a nonnegative rational string')
     parts=value.split('/')
     if any(len(x)>7 or int(x)>LIMITS['rational_component'] for x in parts):_refuse('weight numerator and denominator exceed limit')
     return Fraction(value)
