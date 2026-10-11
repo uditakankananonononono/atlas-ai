@@ -55,18 +55,33 @@ def _validate(document: Any) -> dict:
     return {'id': doc_id, 'kind': kind, 'text': text}
 
 
+def _lowered_with_index(text: str) -> tuple[str, list[int]]:
+    """Lowercase per character, keeping a map from each lowered position back to
+    the originating index in the caller's text. Per-character lowering preserves
+    text.lower() semantics for every ASCII pattern while tracking length-expanding
+    characters (U+0130 lowers to two codepoints), so reported offsets always index
+    the caller's original text."""
+    parts: list[str] = []
+    index: list[int] = []
+    for position, char in enumerate(text):
+        lowered = char.lower()
+        parts.append(lowered)
+        index.extend([position] * len(lowered))
+    return ''.join(parts), index
+
+
 def screen(document: dict) -> dict:
     """Screen one document; returns a verdict dict. Blocked content is a verdict,
     never a refusal. Matching is case-insensitive exact-phrase (substring) search
     over the caller's text; the offset indexes the caller's original text."""
     doc = _validate(document)
-    lowered = doc['text'].lower()
+    lowered, index = _lowered_with_index(doc['text'])
     for category, patterns in PROHIBITED_PATTERNS:
         for pattern in patterns:
-            offset = lowered.find(pattern)
-            if offset != -1:
+            lowered_offset = lowered.find(pattern)
+            if lowered_offset != -1:
                 return {'id': doc['id'], 'verdict': f'blocked:{category}', 'category': category,
-                        'matched_pattern': pattern, 'offset': offset}
+                        'matched_pattern': pattern, 'offset': index[lowered_offset]}
     return {'id': doc['id'], 'verdict': 'clear', 'category': None,
             'matched_pattern': None, 'offset': None}
 
