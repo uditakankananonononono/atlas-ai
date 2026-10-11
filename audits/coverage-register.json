@@ -25964,7 +25964,7 @@
       "post_semantic_status": "PARTIAL",
       "implementation_details": "Scoped supplied-input bookkeeping/computation only. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
       "depth_sweep_status": "PARTIAL-supplied-operator",
-      "depth_evidence": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1975. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "depth_evidence": "Supplied operator: supplied_scored_attempt_brier_calibration. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1975. Original named capability remains unverified; this is not practitioner-depth verification.",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1975,
@@ -25985,7 +25985,7 @@
       "post_semantic_status": "PARTIAL",
       "implementation_details": "Scoped supplied-input bookkeeping/computation only. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
       "depth_sweep_status": "PARTIAL-supplied-operator",
-      "depth_evidence": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1976. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "depth_evidence": "Supplied operator: supplied_valence_arousal_quadrant_rubric. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1976. Original named capability remains unverified; this is not practitioner-depth verification.",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1976,
@@ -26006,7 +26006,7 @@
       "post_semantic_status": "PARTIAL",
       "implementation_details": "Scoped supplied-input bookkeeping/computation only. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
       "depth_sweep_status": "PARTIAL-supplied-operator",
-      "depth_evidence": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1977. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "depth_evidence": "Supplied operator: supplied_valence_arousal_quadrant_rubric. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1977. Original named capability remains unverified; this is not practitioner-depth verification.",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1977,
@@ -26273,7 +26273,7 @@
       "post_semantic_status": "SCOPED",
       "implementation_details": "Scoped supplied-input bookkeeping/computation only. Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research.",
       "depth_sweep_status": "SCOPED-supplied-operator",
-      "depth_evidence": "Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research. Scope/status source: audits/additional-2000-features.json row 1992. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "depth_evidence": "Supplied operator: finite_binary_knapsack_enumeration_max_20_items. Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research. Scope/status source: audits/additional-2000-features.json row 1992. Original named capability remains unverified; this is not practitioner-depth verification.",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1992,
@@ -26294,7 +26294,7 @@
       "post_semantic_status": "SCOPED",
       "implementation_details": "Scoped supplied-input bookkeeping/computation only. Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research.",
       "depth_sweep_status": "SCOPED-supplied-operator",
-      "depth_evidence": "Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research. Scope/status source: audits/additional-2000-features.json row 1993. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "depth_evidence": "Supplied operator: finite_binary_knapsack_enumeration_max_20_items. Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research. Scope/status source: audits/additional-2000-features.json row 1993. Original named capability remains unverified; this is not practitioner-depth verification.",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1993,
@@ -26590,7 +26590,7 @@
       "post_semantic_status": "PARTIAL",
       "implementation_details": "Scoped supplied-input bookkeeping/computation only. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
       "depth_sweep_status": "PARTIAL-supplied-operator",
-      "depth_evidence": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 2009. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "depth_evidence": "Supplied operator: supplied_scored_attempt_brier_calibration. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 2009. Original named capability remains unverified; this is not practitioner-depth verification.",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2009,
