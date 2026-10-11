@@ -21,7 +21,7 @@ was built for. It is a bounded mechanism.
 
 ## 3. m28 equivalence (scoped)
 
-Mutant m28 changes `_run_step` so a failed step returns its last output instead of `None`. It survives. It is equivalent ONLY for inputs that reach the return through the public `run`: `run` discards the output of any step whose status is not `completed` (lines 103-104 at this commit). It is not equivalent in general. A caller that calls `_run_step` directly would see the difference. No test covers that private call.
+Mutant m28 changes `_run_step` so a failed step returns its last output instead of `None`. It survives. It is equivalent ONLY for inputs that reach the return through the public `run`: `run` discards the output of any step whose status is not `completed` (lines 94-95 of `runner.py` at this commit: `if st == "completed": outputs[s.id] = out`; the review cited lines 103-104, which do not exist in this 98-line file, so the line numbers here were re-read from the committed file). It is not equivalent in general. A caller that calls `_run_step` directly would see the difference. No test covers that private call.
 
 ## 4. Survey status
 
