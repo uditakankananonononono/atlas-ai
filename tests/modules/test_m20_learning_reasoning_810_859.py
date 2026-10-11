@@ -68,8 +68,10 @@ def test_850_abduction_not_proof():assert R('abductive_reasoning',observations=[
 def test_851_induction_searches_declared_hypotheses():assert R('inductive_reasoning',features=['a'],induction_observations=[{'evidence_id':'e','features':{'a':True},'label':True}])['induction']['hypotheses_evaluated']==3
 def test_852_deduction_separates_validity_truth():assert R('deductive_reasoning',formulas=['P',{'implies':['P','Q']}],conclusion='Q')['deduction']['validity'] and R('deductive_reasoning',formulas=['P'],conclusion='Q')['deduction']['soundness'] is None
 def test_853_transduction_scope_one_target():assert 'target instance graph only' in R('transductive_reasoning',nodes=['a','b'],similarity_matrix=[[0,1],[1,0]],observed_labels=[{'node_id':'a','label':'yes','evidence_id':'e1'}])['transduction']['scope']
-def test_854_dialectic_keeps_unresolved_conflict():assert R('dialectical_reasoning')['dialectic']['synthesis_must_preserve_unresolved_conflict']
-def test_855_integration_keeps_tradeoffs():assert R('integrative_thinking')['integration']['tradeoffs_visible']
+def test_854_minimal_refuses():
+ with pytest.raises(LearningReasoningError,match='reasoning_schema'):R('dialectical_reasoning')
+def test_855_minimal_refuses():
+ with pytest.raises(LearningReasoningError,match='reasoning_schema'):R('integrative_thinking')
 def I(n,**x):
  p={'problem':'Improve access','source':SRC};p.update(x);return execute(n,p)['result']
 def test_856_minimal_refuses():
