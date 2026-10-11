@@ -23,7 +23,7 @@ def pref(fid,decision='approved'):
  return {'consent':{'status':'granted','scope':'writing-assistant'},'provenance':[{'source':'owner correction','id':'m1'}],'examples':[{'id':'x','purpose':'match concise style'}],'holdout':[{'baseline_score':.5,'candidate_score':.8}], 'candidates':[{'id':'a','score':.9},{'id':'b','score':.5}],'owner_decision':decision}
 @pytest.mark.parametrize('fid,name',[(4,'Voice Fine-Tuning'),(6,'Preference Ranking'),(9,'Human-in-the-Loop Reinforcement (Weekly)')])
 def test_thin_rows_require_holdout_consent_provenance_and_owner_approval(fid,name):
- o=preference_feedback_4_6_9(fid,pref(fid));assert o['concept']==name and o['holdout_evaluation']['improved'] and o['behavior_mutated'] and o['promotion_status']=='promoted'
+ o=preference_feedback_4_6_9(fid,pref(fid));assert o['concept']==name and o['holdout_evaluation']['improved'] and o['activation_recommended'] and not o['behavior_mutated'] and o['promotion_status']=='proposal_not_activated'
 def test_no_silent_mutation_without_owner_approval():
  o=preference_feedback_4_6_9(4,pref(4,'pending'));assert not o['behavior_mutated'] and o['promotion_status'].startswith('blocked')
 def test_revocation_detector_evasion_and_impersonation_are_rejected():
@@ -34,4 +34,19 @@ def test_revocation_detector_evasion_and_impersonation_are_rejected():
   with pytest.raises(ValueError):preference_feedback_4_6_9(4,d)
 def test_routes_mounted_and_tenant_scoped():
  c=TestClient(app);r=c.post('/api/v1/claire/owner-workflow-279-329',headers={'x-atlas-tenant':'claire-t'},json={'row_id':329,'data':payload(329)});assert r.status_code==200 and r.json()['tenant_id']=='claire-t'
- p=c.post('/api/v1/claire/preference-feedback-4-6-9',headers={'x-atlas-tenant':'claire-t'},json={'feature_id':6,'data':pref(6)});assert p.status_code==200 and p.json()['behavior_mutated']
+ p=c.post('/api/v1/claire/preference-feedback-4-6-9',headers={'x-atlas-tenant':'claire-t'},json={'feature_id':6,'data':pref(6)});assert p.status_code==200 and p.json()['behavior_mutated'] is False and p.json()['promotion_status']=='proposal_not_activated'
+
+@pytest.mark.parametrize('fid',(4,6,9))
+def test_feedback_never_claims_mutation_or_promotion_without_side_effect(fid):
+    # the handler has no mutation, persistence or activation path, so no input
+    # may produce behavior_mutated=True or a 'promoted'/activated status
+    for decision in ('approved','pending','denied'):
+        o=preference_feedback_4_6_9(fid,pref(fid,decision))
+        assert o['behavior_mutated'] is False
+        assert o['promotion_status'] not in ('promoted','activated')
+    o=preference_feedback_4_6_9(fid,pref(fid,'approved'))
+    assert o['activation_recommended'] is True
+    assert o['promotion_status']=='proposal_not_activated'
+    d=pref(fid,'approved');d['holdout']=[{'baseline_score':.9,'candidate_score':.1}]
+    o=preference_feedback_4_6_9(fid,d)
+    assert o['activation_recommended'] is False and o['promotion_status'].startswith('blocked')
