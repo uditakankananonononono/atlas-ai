@@ -12,6 +12,7 @@ which keeps approval-gated, sandboxed execution outside this engine.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Tuple
 
@@ -73,6 +74,7 @@ class TaskRunner:
         executor: ExecutorFn,
         max_task_attempts: int = 2,
         auto_approve: bool = False,
+        cost_estimator=None,
     ):
         if max_task_attempts < 1:
             raise RunnerError("max_task_attempts must be >= 1")
@@ -80,6 +82,10 @@ class TaskRunner:
         self.executor = executor
         self.max_task_attempts = max_task_attempts
         self.auto_approve = auto_approve
+        # Optional per-task cost estimate used to pre-reserve budget. Without
+        # one the runner reserves the full remaining cost headroom per call
+        # (maximally conservative; settle_call refunds down to the actual).
+        self.cost_estimator = cost_estimator
 
     def _update(self, plan: ProjectPlan, task_id: str, **changes) -> ProjectPlan:
         tasks = [
@@ -110,12 +116,30 @@ class TaskRunner:
             )
         return self._update(plan, task_id, status="ready")
 
+    def _estimate_cost(self, task: ProjectTask) -> float:
+        if self.cost_estimator is None:
+            return round(max(self.ledger.status().cost_usd_remaining, 0.0), 6)
+        estimate = self.cost_estimator(task)
+        if type(estimate) not in (int, float) or not math.isfinite(estimate) or estimate <= 0:
+            raise RunnerError("cost_estimator must return a positive finite number, not bool")
+        return estimate
+
     def _run_task(self, plan: ProjectPlan, task: ProjectTask) -> ProjectPlan:
         plan = self._update(plan, task.id, status="running")
-        output = self.executor(task)
-        self.ledger.record_agent_call(
-            cost_usd=output.cost_usd, note=f"task {task.id}"
-        )
+        # Hold/reserve: the gate binds BEFORE the call - an unaffordable
+        # estimate raises BudgetExceeded here and the executor never runs.
+        reservation = self.ledger.reserve_call(
+            self._estimate_cost(task), note=f"reserve task {task.id}")
+        try:
+            output = self.executor(task)
+        except BaseException:
+            # Spend is unknown (the provider may have been charged): retain
+            # the hold conservatively - never a free-budget refund here.
+            self.ledger.abandon_call(
+                reservation, note=f"executor raised task {task.id}; unknown spend retained")
+            raise
+        # Reconcile to the actual recorded cost (refund or truthful overage).
+        self.ledger.settle_call(reservation, output.cost_usd, note=f"settle task {task.id}")
         if output.runtime_seconds:
             self.ledger.record_runtime(
                 output.runtime_seconds, note=f"task {task.id}"
@@ -152,8 +176,6 @@ class TaskRunner:
                 break
             progressed = False
             for task in ready:
-                if not self.ledger.can_afford_call():
-                    return self._report(current, "budget_exhausted")
                 try:
                     current = self._run_task(current, task)
                 except BudgetExceeded:
