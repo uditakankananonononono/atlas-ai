@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import date
 import re
+import unicodedata
 from app.modules.c30 import policy
 
 _SEND = {'send','approve','approved','approval','approval_token','smtp','token','email_send','sender','smtp_host','smtp_port','smtp_user'}
@@ -22,24 +23,40 @@ def _refuse(reason, field=None):
 
 
 def _key_scan(value):
-    keys, nonstring, seen = set(), False, set()
-    stack = [value]
+    keys, nonstring, active = set(), False, set()
+    if len(value)>32:_refuse('OVERSIZE','request')
+    rows=value.get('requests')
+    if type(rows) is list:
+        if len(rows)>1000:_refuse('OVERSIZE','requests')
+        for row in rows:
+            if type(row) is dict:
+                if len(row)>32:_refuse('OVERSIZE','request')
+                for field,cap in (('id',128),('text',2000),('kind_hint',200)):
+                    v=row.get(field)
+                    if type(v) is str and len(v)>cap:_refuse('OVERSIZE',field)
+    day=value.get('as_of')
+    if type(day) is str and len(day)>10:_refuse('OVERSIZE','as_of')
+    stack=[(value,0,False,32)];nodes=0
     while stack:
-        v = stack.pop()
-        if type(v) not in (dict, list):
-            continue
-        if id(v) in seen:
-            continue
-        seen.add(id(v))
+        v,depth,leaving,cap=stack.pop()
+        if leaving:active.remove(id(v));continue
+        if type(v) in (dict,list,tuple):nodes+=1
+        if nodes>10000 or depth>32:_refuse('OVERSIZE','request')
+        if type(v) not in (dict,list,tuple):continue
+        if len(v)>cap:_refuse('OVERSIZE','request')
+        if id(v) in active:_refuse('BAD_TYPE','request')
+        active.add(id(v));stack.append((v,depth,True,cap))
         if type(v) is dict:
-            for k, item in v.items():
+            for k,item in reversed(list(v.items())):
                 if type(k) is str:
+                    if len(k)>200:_refuse('OVERSIZE','key')
+                    if any(unicodedata.category(c) in {'Cc','Cf','Zl','Zp'} for c in k):_refuse('CONTROL_CHARS','key')
                     keys.add(k.casefold().replace('-', '_'))
-                else:
-                    nonstring = True
-                stack.append(item)
+                else:nonstring=True
+                limit=1000 if depth==0 and k=='requests' and type(item) is list else (32 if type(item) is dict else 64)
+                stack.append((item,depth+1,False,limit))
         else:
-            stack.extend(v)
+            stack.extend((item,depth+1,False,32 if type(item) is dict else 64) for item in reversed(v))
     for group, reason in ((_SEND,'SEND'),(_SPEND,'SPEND'),(_PHYSICAL|_EFFECT,'unit'),(_CREDS,'NOCREDS')):
         found = sorted(keys & group)
         if found:
@@ -55,7 +72,7 @@ def _nested_keys(value):
     stack, seen = [value], set()
     while stack:
         v = stack.pop()
-        if type(v) not in (dict, list) or id(v) in seen:
+        if type(v) not in (dict, list, tuple) or id(v) in seen:
             continue
         seen.add(id(v))
         if type(v) is dict:
@@ -121,6 +138,7 @@ def _validate(request):
             _refuse('BAD_TYPE','requests')
         seen.add(row['id'])
         hint = row.get('kind_hint')
+        if type(hint) is str:policy.clean_text(hint,'VENT','kind_hint',200)
         if hint is not None and (type(hint) is not str or hint not in _KEYWORDS):
             _refuse('BAD_TYPE','kind_hint')
     return rows

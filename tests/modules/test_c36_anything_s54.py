@@ -85,7 +85,7 @@ def test_nonstring_key_after_forbidden_scan():refusal(req(extra={1:0,'token':Fal
 
 
 @pytest.mark.parametrize('day',['2026-02-30','2026-1-01','2026-10-11\n',False])
-def test_iso_day(day):refusal(req(as_of=day),'BAD_TYPE:as_of')
+def test_iso_day(day):refusal(req(as_of=day),'OVERSIZE:as_of' if type(day) is str and len(day)>10 else 'BAD_TYPE:as_of')
 
 
 def test_empty_list():refusal(req([]),'EMPTY')
