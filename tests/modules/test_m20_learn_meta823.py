@@ -87,3 +87,62 @@ def test_unknown_attempt_strategy_core_valueerror_not_keyerror():
  from app.modules.m20_general_cognitive_worker.regulated_learning import cycle as core_cycle
  p=cycle();p['attempts'][0]['strategy']='unknown'
  with pytest.raises(ValueError,match='unknown attempt strategy'):core_cycle(p)
+
+def test_goal_echo_fields_and_inclusive_targets():
+ from app.modules.m20_general_cognitive_worker.regulated_learning import cycle as core
+ p=cycle();r=core(p);assert r['goal']=={'goal_id':'g','metric':'task_success_rate','source':'fixture:goal','target':.8}
+ for target in [0,1]:
+  p=cycle();p['learning_goal']['target']=target;assert core(p)['goal']['target']==target
+ p=cycle();p['learning_goal']['target']=1.0001
+ with pytest.raises(ValueError,match=r'task_success_rate metric and target\[0,1\] required'):core(p)
+ for field in ['goal_id','metric','source']:
+  p=cycle();p['learning_goal'][field]=[]
+  with pytest.raises(ValueError,match=field+' requires bounded nonempty string'):core(p)
+
+def test_catalog_empty_unmasked_text_and_source_echo():
+ from app.modules.m20_general_cognitive_worker.regulated_learning import cycle as core
+ p=cycle();p['strategy_catalog']=[]
+ with pytest.raises(ValueError,match='strategy_catalog requires1..32 entries'):core(p)
+ for field in ['strategy','next_action','source']:
+  p=cycle();p['strategy_catalog'][0][field]=[]
+  with pytest.raises(ValueError,match=field+' requires bounded nonempty string'):core(p)
+ # Source is intentionally not echoed in cycle output, but must be required.
+ p=cycle();p['strategy_catalog'][0].pop('source')
+ with pytest.raises(ValueError,match='source requires bounded nonempty string'):core(p)
+
+def test_attempts_list_guard_and_1001_refusal_before_calibration():
+ from app.modules.m20_general_cognitive_worker.regulated_learning import cycle as core
+ for value in [None,{},'x']:
+  p=cycle();p['attempts']=value
+  with pytest.raises(ValueError,match='attempts requires0..1000 records'):core(p)
+ p=cycle();p['attempts']=[{'id':str(i),'strategy':'recall','evidence_id':str(i),'predicted_success':.5,'succeeded':False}for i in range(1001)]
+ p['reflection']=None
+ with pytest.raises(ValueError,match='attempts requires0..1000 records'):core(p)
+
+def test_reflection_shape_text_ids_guard_and_error_order():
+ from app.modules.m20_general_cognitive_worker.regulated_learning import cycle as core
+ p=cycle();p['reflection']=[]
+ with pytest.raises(ValueError,match='reflection object required'):core(p)
+ for field in ['observation','source']:
+  p=cycle();p['reflection'][field]=[]
+  with pytest.raises(ValueError,match='reflection '+field+' requires bounded nonempty string'):core(p)
+ for value in ['e1',[],list(range(1001))]:
+  p=cycle();p['reflection']['evidence_ids']=value
+  with pytest.raises(ValueError,match='reflection evidence IDs required'):core(p)
+ p=cycle();p['reflection']['evidence_ids']=[[]]
+ with pytest.raises(ValueError,match='reflection evidence ID requires bounded nonempty string'):core(p)
+
+def test_full_cycle_calibration_reflection_tie_outputs_and_choice_errors():
+ from app.modules.m20_general_cognitive_worker.regulated_learning import cycle as core
+ p=cycle();r=core(p);assert r['calibration']==run()['calibration'] and r['reflection']=={'observation':'Example attempt failed','source':'fixture:reflection'} and r['reason'] is None
+ p['learner_choice']=None;r=core(p);assert r['reason']=='no_learner_choice' and r['status']=='awaiting_learner_choice'
+ p=cycle();p['learner_choice']=[]
+ with pytest.raises(ValueError,match='learner_choice object required'):core(p)
+ p=cycle();p['learner_choice']['strategy']='unknown'
+ with pytest.raises(ValueError,match='unknown learner choice strategy'):core(p)
+ p=cycle();p['attempts']=[{'id':'a','strategy':'recall','evidence_id':'e1','predicted_success':.5,'succeeded':True},{'id':'b','strategy':'example','evidence_id':'e2','predicted_success':.5,'succeeded':False}];p['reflection']['evidence_ids']=['e1','e2']
+ r=core(p);assert r['best_observed_strategies']==['example','recall'] and r['calibration']['best_observed_strategies']==['example','recall']
+
+def test_duplicate_attempt_id_distinct_evidence_refused():
+ p=base();p['attempts'][1]['id']=p['attempts'][0]['id']
+ with pytest.raises(LearningReasoningError,match='attempt ids and evidence ids must be unique'):run(p=p)
