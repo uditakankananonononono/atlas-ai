@@ -14,11 +14,18 @@ from __future__ import annotations
 import math
 
 SCOPE = "declared-input-only"
+#: Time values and rate windows must satisfy abs(v) <= 2**53 (every such integer is
+#: exact as a float). Larger values raise ValueError; they are never converted to float.
+MAX_ABS = 2 ** 53
 
 
 def _num(name, v):
-    if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        raise ValueError(f"{name} must be a number")
+    if isinstance(v, float) and not math.isfinite(v):
         raise ValueError(f"{name} must be a finite number")
+    if abs(v) > MAX_ABS:
+        raise ValueError(f"{name} must not exceed 2**53 in absolute value")
     return v
 
 
@@ -81,7 +88,8 @@ def _norm_decl(d):
             if not isinstance(rule, dict):
                 raise ValueError("rate limit rule must be a dict")
             _pint("rate limit max", rule.get("max"))
-            _pint("rate limit window_seconds", rule.get("window_seconds"))
+            if _pint("rate limit window_seconds", rule.get("window_seconds")) > MAX_ABS:
+                raise ValueError("rate limit window_seconds must not exceed 2**53")
     recent = d.get("recent_actions", [])
     if not isinstance(recent, list):
         raise ValueError("recent_actions must be a list")

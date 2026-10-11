@@ -398,3 +398,89 @@ def test_kind_must_equal_a_declared_kind_exactly(kind):
     d["rate_limits"]["acme"]["*"] = {"max": 9, "window_seconds": 60}
     r = preflight(act(kind=kind), d)
     assert r["verdict"] == "deny" and "tos_kind_allowed" in failed(r)
+
+
+# ---- round 3: huge JSON ints must give ValueError (never OverflowError) ----
+BIG = 10 ** 400
+LIMIT = 2 ** 53
+
+
+@pytest.mark.parametrize("v", [BIG, -BIG, LIMIT + 1, -(LIMIT + 1), 1e300, -1e300])
+def test_out_of_range_numbers_rejected_on_every_time_path(v):
+    with pytest.raises(ValueError):
+        preflight(act(at=v), decl())
+    d = decl()
+    d["recent_actions"] = [{"platform": "acme", "kind": "post", "at": v, "count": 1}]
+    with pytest.raises(ValueError):
+        preflight(act(), d)
+    d = decl()
+    d["consent"] = [consent(granted_at=v)]
+    with pytest.raises(ValueError):
+        preflight(act(subjects=["u1"], purpose="outreach"), d)
+    d = decl()
+    d["consent"] = [consent(expires_at=v)]
+    with pytest.raises(ValueError):
+        preflight(act(subjects=["u1"], purpose="outreach"), d)
+
+
+def test_numbers_exactly_at_limit_are_accepted():
+    d = decl()
+    d["recent_actions"] = [{"platform": "acme", "kind": "post", "at": LIMIT, "count": 1}]
+    d["consent"] = [consent(granted_at=-LIMIT, expires_at=LIMIT)]
+    assert preflight(act(at=LIMIT - 1, subjects=["u1"], purpose="outreach"), d)["verdict"] == "allow"
+
+
+@pytest.mark.parametrize("w", [BIG, LIMIT + 1])
+def test_huge_rate_window_rejected_with_value_error(w):
+    d = decl()
+    d["rate_limits"]["acme"]["post"]["window_seconds"] = w
+    with pytest.raises(ValueError):
+        preflight(act(at=NOW + 0.5), d)
+    with pytest.raises(ValueError):
+        preflight(act(), d)
+
+
+def test_window_exactly_at_limit_is_accepted_with_float_time():
+    d = decl()
+    d["rate_limits"]["acme"]["post"]["window_seconds"] = LIMIT
+    assert preflight(act(at=NOW + 0.5), d)["verdict"] == "allow"
+
+
+def test_huge_counts_and_max_do_not_overflow():
+    d = decl()
+    d["rate_limits"]["acme"]["post"]["max"] = BIG * 2
+    d["recent_actions"] = [{"platform": "acme", "kind": "post", "at": NOW - 1, "count": BIG}]
+    assert preflight(act(count=BIG), d)["verdict"] == "allow"
+    d["rate_limits"]["acme"]["post"]["max"] = BIG * 2 - 1
+    assert preflight(act(count=BIG), d)["verdict"] == "deny"
+
+
+# ---- round 3: pins for non-equivalent survivors reported by independent review ----
+@pytest.mark.parametrize("bad", [(), "", {}, 0, None])
+def test_recent_actions_must_be_a_list(bad):
+    d = decl()
+    d["recent_actions"] = bad
+    with pytest.raises(ValueError):
+        preflight(act(), d)
+
+
+def test_wildcard_only_rate_limit_allows_within_limit_and_denies_over():
+    d = decl()
+    d["rate_limits"] = {"acme": {"*": {"max": 2, "window_seconds": 60}}}
+    assert preflight(act(), d)["verdict"] == "allow"
+    d["recent_actions"] = [{"platform": "acme", "kind": "dm", "at": NOW - 1, "count": 1}]
+    assert preflight(act(), d)["verdict"] == "allow"
+    assert failed(preflight(act(count=2), d)) == ["rate_limit"]
+
+
+def test_exact_reason_strings_for_privacy_branches():
+    def reason(r):
+        return [c["reason"] for c in r["checks"] if c["check"] == "privacy_purpose"][0]
+    assert reason(preflight(act(data_categories=["weather"]), decl())) == "no declared personal categories"
+    assert reason(preflight(act(), decl())) == "no data categories declared"
+    assert reason(preflight(act(data_categories=["email"], purpose="outreach"), decl())) == "personal categories within declared purpose"
+    assert reason(preflight(act(data_categories=["email"], purpose="analytics"), decl())) == \
+        "categories not allowed for declared purpose: email"
+    d = decl()
+    d.pop("privacy")
+    assert reason(preflight(act(data_categories=["email"]), d)) == "data categories given but no privacy declaration"
