@@ -150,7 +150,8 @@ class Validation(Base):
             self.refuses("bad_type:exclusion", m.report, led, exclusions=(bad,))
 
     def test_unknown_and_missing_fields(self):
-        self.refuses("unknown_fields:entry", build, E(extra="x"))
+        e = E(); e["extra"] = "x"
+        self.refuses("unknown_fields:entry", build, e)
         for field in ("id", "project_id", "requirement_ref", "mark", "evidence_ref"):
             e = E()
             del e[field]
