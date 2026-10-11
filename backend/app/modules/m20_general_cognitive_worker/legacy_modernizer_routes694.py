@@ -16,7 +16,9 @@ class ModernizeRequest(BaseModel):
 @router.post('/modernize')
 def modernize_source(body:ModernizeRequest,tenant:TenantContext=Depends(require_tenant)):
     owner_payload(body.model_dump(exclude_none=True),tenant)
-    if len(body.source.encode('utf-8'))>100000:raise HTTPException(422,'source exceeds100000 UTF-8 bytes')
+    try:encoded=body.source.encode('utf-8')
+    except UnicodeEncodeError as e:raise HTTPException(422,'source contains invalid Unicode surrogate')from e
+    if len(encoded)>100000:raise HTTPException(422,'source exceeds 100000 UTF-8 bytes')
     try:
         result=modernize(body.source,rules=body.rules).to_dict()
         return {**result,'tenant_id':tenant.tenant_id,'actor_id':tenant.actor_id,'source_execution_performed':False}

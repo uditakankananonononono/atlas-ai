@@ -61,8 +61,8 @@ Recorded by the second commit. The module bytes did not change in that commit.
 
 The separate `/legacy-modernization/694/modernize` route binds authenticated
 owner/actor, checks declared resource-reference metadata and returns identity.
-It retrieves no referenced data. Source is at most100000 characters and100000
-UTF-8 bytes; at most7 rule names and64 reference records. No characterization
+It retrieves no referenced data. Source is at most 100000 characters and 100000
+UTF-8 bytes; at most 7 rule names and 64 reference records. No characterization
 callback is accepted or passed, so the route compiles but never executes source.
 Core bytes stay frozen from the reviewed R2. Fullwidth identifier UnicodeDecodeError
 is contained as explicit HTTP422; the core defect is NOT fixed and the strict
@@ -74,3 +74,5 @@ Named audit residuals remain: L378 collections_abc rule-subset selection unteste
 L422 syntax-error-after-rewrite branch untested; L262 unreachable refusal deletion
 candidate is not demonstrated by a real input. Source-vs-ledger9-row offset remains
 unresolved; source title alone does not establish full legacy modernization.
+
+Lone Unicode surrogates refuse HTTP422 before UTF-8 byte-size validation.

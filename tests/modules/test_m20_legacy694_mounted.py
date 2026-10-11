@@ -19,3 +19,8 @@ def test_known_unicode_defect_and_resource_failure_refuse(monkeypatch,oidc_auth_
  for exc in [RecursionError,MemoryError]:
   def fail(*args,**kwargs):raise exc()
   monkeypatch.setattr(routes,'modernize',fail);r=c.post(path,headers=h,json={'source':'x=1'});assert r.status_code==422 and r.json()['detail']=='legacy694 parser resource limit; transformation refused'
+
+def test_lone_surrogate_refuses_422(monkeypatch,oidc_auth_headers):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app)
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers('a','owner'),'Content-Type':'application/json'},content='{"source":"\\ud800"}')
+ assert r.status_code==422 and r.json()['detail']=='source contains invalid Unicode surrogate'
