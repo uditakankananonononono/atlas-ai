@@ -81,9 +81,9 @@ class VerdictPaths(Base):
         r = classify(item(id="x9", terms=["mosquito", "mosquito"], mode="physical", ref="R"))
         self.assertEqual(r, {"contract": "P68|L57", "id": "x9", "verdict": "flagged_physical_with_review_ref", "execution_mode": "physical",
                              "matched_terms": ["mosquito"], "approval_ref": "R", "approval_validated": False, "biosafety_review_performed": False,
-                             "safe_claim": False, "limits": mod.LIMITS})
+                             "safe_claim": False, "limits": list(mod.LIMITS)})
         text = " ".join(mod.LIMITS).lower()
-        for word in ("lexical", "not a biosafety review", "never authenticated", "closed"):
+        for word in ("lexical", "not a biosafety, ethics or legal review", "never authenticated", "closed"):
             self.assertIn(word, text)
 
     def test_approval_ref_recorded_verbatim_and_never_upgrades_to_allowed(self):
@@ -136,7 +136,7 @@ class Refusals(Base):
 
     def test_domain_terms_codes(self):
         for bad in ("crispr", None, ("crispr",), {"a": 1}, 5):
-            self.assertEqual(self.refusal(item(terms=bad)), "P68:bad_type:domain_terms")
+            self.assertEqual(self.refusal(dict(item(), domain_terms=bad)), "P68:bad_type:domain_terms")
         for bad in ([5], [None], ["ok", 1], [["crispr"]], [True]):
             self.assertEqual(self.refusal(item(terms=bad)), "P68:bad_type:domain_terms")
         self.assertEqual(self.refusal(item(terms=["a" * 65])), "P68:text_too_long:domain_terms")
@@ -167,6 +167,21 @@ class Refusals(Base):
 
     def test_term_count_before_element_checks(self):
         self.assertEqual(self.refusal(item(terms=[5] * 33)), "P68:limit_exceeded:domain_terms")
+
+
+class StrictTypes(Base):
+    def test_subclasses_of_str_and_dict_are_refused_as_wrong_type(self):
+        class S(str):
+            pass
+
+        class D(dict):
+            pass
+        self.assertEqual(self.refusal(item(id=S("a"))), "P68:bad_type:id")
+        self.assertEqual(self.refusal(item(terms=[S("crispr")])), "P68:bad_type:domain_terms")
+        self.assertEqual(self.refusal(dict(item(), execution_mode=S("physical"))), "P68:bad_type:execution_mode")
+        self.assertEqual(self.refusal(dict(item(), approval_ref=S("r"))), "P68:bad_type:approval_ref")
+        self.assertEqual(self.refusal(D(item())), "P68:bad_type:item")
+        self.assertEqual(self.refusal(item(terms=type("L", (list,), {})())), "P68:bad_type:domain_terms")
 
 
 class Boundaries(Base):
