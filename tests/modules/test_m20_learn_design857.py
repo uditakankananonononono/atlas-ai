@@ -119,3 +119,81 @@ def test_feature_constraint_output_ref_bounds_and_sources():
 @pytest.mark.parametrize('fn,bank,label',[(core.design,'design_prototypes','prototype source'),(core.design,'design_feedback','feedback source'),(core.design,'design_revisions','revision source'),(core.algorithm,'algorithm_nodes','node source'),(core.algorithm,'algorithm_tests','test source')])
 def test_source_text(fn,bank,label):
  p=design()if fn==core.design else compute();p[bank][0]['source']='';error(fn,p,label+' requires bounded nonempty string')
+
+
+def test_r2_actual_failed_tests_sorted_counts_and_node_sources():
+ p=compute();p['algorithm_tests']=[{**deepcopy(p['algorithm_tests'][0]),'id':'z','expected_outputs':{'double':19}},{**deepcopy(p['algorithm_tests'][0]),'id':'a'}]
+ r=core.algorithm(p);assert [t['id']for t in r['test_reports']]==['a','z']
+ assert r['test_reports'][1]['actual_outputs']=={'double':'20'} and r['test_reports'][1]['expected_outputs']=={'double':'19'} and r['test_reports'][1]['passed'] is False
+ assert r['node_sources']=={'sum':'node:sum','double':'node:double'} and r['complexity']['test_execution_steps']==4
+
+
+def simple_algorithm(op,inputs,args):
+ p=compute();p['algorithm_inputs']=[{'id':k,'type':kind,'value':v}for k,kind,v in inputs];p['algorithm_nodes']=[{'id':'n','op':op,'args':args,'source':'n'}];p['algorithm_outputs']=['n'];p['algorithm_tests']=[];return p
+
+
+def test_r2_boolean_equal_select_types_and_strict_less():
+ p=simple_algorithm('not',[('b','boolean',1)],['b']);error(core.algorithm,p,'input value boolean required')
+ p=simple_algorithm('equal',[('b','boolean',True),('x','number',1)],['b','x']);error(core.algorithm,p,'node argument type mismatch')
+ p=simple_algorithm('select',[('x','number',1),('y','number',2)],['x','x','y']);error(core.algorithm,p,'node argument type mismatch')
+ p=simple_algorithm('select',[('b','boolean',True),('x','number',1)],['b','x','b']);error(core.algorithm,p,'node argument type mismatch')
+ p=simple_algorithm('less_than',[('x','number',1)],['x','x']);assert core.algorithm(p)['outputs']=={'n':False}
+ p=simple_algorithm('not',[('b','boolean',True)],['b']);p['algorithm_tests']=[{'id':'t','inputs':{'b':True},'expected_outputs':{'n':0},'source':'t'}];error(core.algorithm,p,'expected output boolean required')
+ p=compute();p['algorithm_tests'][0]['expected_outputs']['double']=True;error(core.algorithm,p,'expected output requires rational string/integer')
+
+
+def test_r2_algorithm_identity_arity_minimum_and_rational_boundaries():
+ p=compute();p['algorithm_nodes'][0]['id']='x';error(core.algorithm,p,'unique supported typed nodes with exact arity required')
+ p=compute();p['algorithm_nodes'][0]['args'].append('x');error(core.algorithm,p,'unique supported typed nodes with exact arity required')
+ p=compute();p['algorithm_outputs']=[];error(core.algorithm,p,'algorithm_outputs requires bounded text list')
+ p=compute();p['algorithm_inputs']=[];error(core.algorithm,p,'algorithm_inputs requires bounded object list')
+ p=simple_algorithm('add',[('x','number',10**12),('zero','number',0)],['x','zero']);assert core.algorithm(p)['outputs']=={'n':str(10**12)}
+ p['algorithm_inputs'][1]['value']=1;error(core.algorithm,p,'algorithm result rational components exceed10**12')
+ p=simple_algorithm('divide',[('x','number','1/1000000'),('y','number',1000000)],['x','y']);assert core.algorithm(p)['outputs']=={'n':'1/1000000000000'}
+ p['algorithm_inputs'][1]['value']=1000001;error(core.algorithm,p,'algorithm result rational components exceed10**12')
+
+
+def test_r2_design_suggestion_feature_match_preservation_wrong_refs_equal_interval():
+ p=design();p['design_feedback'][0]['suggested_value']=True;error(core.design,p,'suggested_value requires rational string/integer')
+ p=design();p['design_prototypes'][0]['features']['other']=6;p['design_feedback'][0]['feature']='other';r=core.design(p)['revision_reports'][0];assert r['unbacked_features']==['cost'] and r['supported'] is False
+ p=design();p['design_prototypes'][0]['features']['other']=6;p['design_brief']['constraints'].append({'id':'other','feature':'other','minimum':6,'maximum':6,'source':'other'});r=core.design(p)['revision_reports'][0]
+ assert r['features']=={'cost':'6','other':'6'} and r['supported'] is True and r['violated_constraints']==[]
+ p=design();p['design_feedback'].append({'id':'wrong','prototype_id':'b','feature':'cost','suggested_value':6,'source':'wrong'});p['design_revisions'][0]['feedback_ids']=['e','wrong'];r=core.design(p)['revision_reports'][0]
+ assert r['unbacked_features']==[] and r['wrong_prototype_feedback_ids']==['wrong'] and r['supported'] is False
+
+
+def test_r2_design_minima_feedback_ref_cap():
+ p=design();p['design_prototypes']=[];error(core.design,p,'design_prototypes requires bounded object list')
+ p=design();p['design_prototypes'][0]['features']={};error(core.design,p,'prototype features requires1..32 numeric features')
+ p=design();p['design_revisions'][0]['changes']={};error(core.design,p,'changes requires1..32 numeric features')
+ p=design();p['design_brief']['constraints']=[];error(core.design,p,'brief constraints requires bounded object list')
+ p=design();p['design_feedback']=[{**p['design_feedback'][0],'id':str(i)}for i in range(65)];p['design_revisions'][0]['feedback_ids']=[str(i)for i in range(64)];assert core.design(p)['revision_reports'][0]['supported'] is True
+ p['design_revisions'][0]['feedback_ids'].append('64');error(core.design,p,'feedback_ids requires bounded text list')
+ p['design_revisions'][0]['feedback_ids']=[];error(core.design,p,'feedback_ids requires bounded text list')
+
+
+def test_r2_design_text_fresh_validator_errors():
+ p=design();p['design_prototypes'][0]['features']={'':1};error(core.design,p,'prototype features key requires bounded nonempty string')
+ p=design();p['design_brief']['audience']='';error(core.design,p,'brief audience requires bounded nonempty string')
+ p=design();p['design_brief']['constraints'][0]['id']='';error(core.design,p,'constraint id requires bounded nonempty string')
+ p=design();p['design_brief']['constraints'][0]['feature']='';error(core.design,p,'constraint feature requires bounded nonempty string')
+ p=design();p['design_brief']['constraints'][0]['source']='';error(core.design,p,'constraint source requires bounded nonempty string')
+
+
+def test_r2_unsorted_prototypes_revisions_violations_features():
+ p=design();p['design_prototypes']=[{'id':k,'features':{'z':12,'a':12},'source':k}for k in ['z','a']];p['design_brief']['constraints']=[{'id':k,'feature':k,'minimum':0,'maximum':10,'source':k}for k in ['z','a']];p['design_feedback']=[];p['design_revisions']=[]
+ r=core.design(p);assert [x['id']for x in r['prototype_reports']]==['a','z'] and r['prototype_reports'][0]['violated_constraints']==['a','z']
+ p['design_feedback']=[{'id':k,'prototype_id':'z','feature':k,'suggested_value':6,'source':k}for k in ['z','a']];p['design_revisions']=[{'id':k,'base_prototype_id':'z','feedback_ids':['z','a'],'changes':{'z':6,'a':6},'source':k}for k in ['z','a']]
+ r=core.design(p);assert [x['id']for x in r['revision_reports']]==['a','z'] and list(r['revision_reports'][0]['features'])==['a','z'] and r['revision_reports'][0]['feedback_ids']==['a','z']
+
+
+def test_r2_set_ref_and_unbacked_sort_fixed_seed():
+ import subprocess,os,sys
+ code='''from app.modules.m20_general_cognitive_worker.design_algorithms import design
+names=['z','q','m','j','h','f','d','c']
+p={'design_brief':{'audience':'a','constraints':[{'id':'c','feature':'z','minimum':0,'maximum':10,'source':'c'}]},'design_prototypes':[{'id':'p','features':{k:1 for k in names},'source':'p'}],'design_feedback':[{'id':k,'prototype_id':'p','feature':k,'suggested_value':2,'source':k}for k in names],'design_revisions':[{'id':'r','base_prototype_id':'p','feedback_ids':names,'changes':{k:3 for k in names},'source':'r'}]}
+r=design(p)['revision_reports'][0]
+assert r['feedback_ids']==['c','d','f','h','j','m','q','z']
+assert r['unbacked_features']==['c','d','f','h','j','m','q','z']
+'''
+ r=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'0'},capture_output=True,text=True);assert r.returncode==0,r.stderr
