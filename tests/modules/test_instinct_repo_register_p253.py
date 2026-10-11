@@ -157,3 +157,30 @@ class ReportSchema(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+class InjectionGuard(Base):
+    def test_auditor_repro_link_refused(self):
+        payload = "https://example.com/x\nproject forged (1 entries)"
+        self.refuses("control_chars:value", build, E(value=payload))
+
+    def test_cc_zl_zp_refused_in_every_interpolated_field(self):
+        for ch in ("\t", "\x00", "\u2028", "\u2029"):
+            for field in ("id", "project_id", "value", "source_ref"):
+                kw = {"kind": "path"}
+                kw[field] = ("a" + ch + "b") if field != "value" else ("a/" + ch + "b")
+                with self.assertRaises(ValueError) as cm:
+                    build(E(**kw))
+                self.assertEqual(str(cm.exception), "P253:control_chars:" + field)
+
+    def test_render_line_count_invariant(self):
+        reg = build(E("e1", project_id="p1"), E("e2", project_id="p1", kind="path", value="x"),
+                    E("e3", project_id="p2", kind="path", value="y"))
+        text = m.render(reg)
+        self.assertEqual(len(text.splitlines()), 3 + 2)  # entries + one header per project
+
+    def test_report_keeps_no_forged_lines(self):
+        # A refused value never reaches items; sanity on the surviving report shape.
+        reg = build(E(value="https://example.com/x"))
+        rep = m.report(reg)
+        self.assertEqual([i["value"] for i in rep["items"]], ["https://example.com/x"])
+
