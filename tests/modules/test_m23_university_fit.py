@@ -305,6 +305,26 @@ def _mutant(name, old, new):
     return _load(d / "university_fit.py", f"uf_mut_{name}")
 
 
+from datetime import tzinfo as _tzinfo
+
+
+class _NoOffset(_tzinfo):
+    """tzinfo that is present but reports no UTC offset (datetime then counts as naive)."""
+    def utcoffset(self, dt):
+        return None
+
+    def dst(self, dt):
+        return None
+
+    def tzname(self, dt):
+        return None
+
+
+def _url_of_len(n):
+    prefix = "https://example.edu/"
+    return prefix + "a" * (n - len(prefix))
+
+
 def _kill_checks(m):
     """Independent checks, each run on its own. Each returns True when it detects a mismatch."""
     def e(rows, profile=None, now=NOW, **kw):
@@ -348,6 +368,15 @@ def _kill_checks(m):
         "port_1_ok": lambda: r0([row(source_url="https://example.edu:1/")])["verdict"] != "fits",
         "unverified_priority": lambda: r0([row(source_url=None, checked_at=None, intl_ug_aid="none")])["verdict"] != "unverified",
         "unverified_bad_field_priority": lambda: r0([row(intl_ug_aid="maybe")])["verdict"] != "unverified",
+        "url_len_2048_ok": lambda: r0([row(source_url=_url_of_len(2048))])["verdict"] != "fits",
+        "url_len_2049_bad": lambda: r0([row(source_url=_url_of_len(2049))])["reasons"] != ["source_url_invalid"],
+        "url_no_host_with_port": lambda: r0([row(source_url="https://:443/x")])["reasons"] != ["source_url_invalid"],
+        "date_padded_stripped_first": lambda: r0([row(checked_at=" " * 20 + "2026-10-01T00:00:00.123456+05:30" + " " * 20)])["verdict"] != "fits",
+        "date_33_chars_invalid": lambda: r0([row(checked_at="2026-10-01T00:00:00.123456+05:30" + "0")])["reasons"] != ["checked_at_invalid"],
+        "now_tz_without_offset": lambda: raises(lambda: e([row()], now=datetime(2026, 10, 11, tzinfo=_NoOffset()))),
+        "age_days_rounding_6": lambda: [r0([row(checked_at=ts(days=1, seconds=1))])["age_days"], r0([row(checked_at=ts(seconds=1))])["age_days"],
+                                        r0([row(checked_at=ts(days=2, microseconds=1))])["age_days"]] != [1.000012, 0.000012, 2.0],
+        "empty_port_accepted_pin": lambda: r0([row(source_url="https://example.edu:/x")])["verdict"] != "fits",
         "unsupported_field": lambda: r0([row(rank=1)])["reasons"] != ["unsupported_field:rank"],
         "sorted": lambda: e([row(name="B"), row(name="A")])["rows"][0]["university"] != "A",
         "rows_2001": lambda: raises(lambda: e([row(name=f"U{i}") for i in range(2001)])),
@@ -400,6 +429,19 @@ MUTANTS = [
     ("port_range_unchecked", "if port is not None and not 1 <= port <= 65535:", "if False:"),
     ("port_valueerror_ignored", "    try:\n        port = parts.port\n    except ValueError:\n        return 'source_url_invalid'\n", "    port = None\n"),
     ("port_zero_ok", "not 1 <= port <= 65535", "not 0 <= port <= 65535"),
+    ("url_len_ge", "len(raw) > MAX_URL", "len(raw) >= MAX_URL"),
+    ("url_len_gt_plus1", "len(raw) > MAX_URL", "len(raw) > MAX_URL + 1"),
+    ("url_scheme_arm_dropped", "parts.scheme != 'https' or ", ""),
+    ("url_hostname_arm_dropped", "or not parts.hostname:", ":"),
+    ("url_scheme_netloc_or_to_and", "parts.scheme != 'https' or not parts.netloc", "parts.scheme != 'https' and not parts.netloc"),
+    ("url_netloc_hostname_or_to_and", "not parts.netloc or not parts.hostname", "not parts.netloc and not parts.hostname"),
+    ("date_len_checked_before_strip", "    s = raw.strip()\n    if len(s) > MAX_DATE_TEXT:", "    s = raw.strip()\n    if len(raw) > MAX_DATE_TEXT:"),
+    ("date_len_limit_32", "MAX_DATE_TEXT = 40", "MAX_DATE_TEXT = 31"),
+    ("now_tz_or_to_and", "now.tzinfo is None or now.utcoffset() is None:\n        raise ValueError('now must", "now.tzinfo is None and now.utcoffset() is None:\n        raise ValueError('now must"),
+    ("now_offset_arm_dropped", "or now.tzinfo is None or now.utcoffset() is None:\n        raise ValueError('now must", "or now.tzinfo is None:\n        raise ValueError('now must"),
+    ("age_round_5", "round(age.total_seconds() / 86400, 6)", "round(age.total_seconds() / 86400, 5)"),
+    ("age_round_7", "round(age.total_seconds() / 86400, 6)", "round(age.total_seconds() / 86400, 7)"),
+    ("age_not_rounded", "round(age.total_seconds() / 86400, 6)", "age.total_seconds() / 86400"),
 ]
 
 
@@ -453,3 +495,72 @@ def test_r2_equivalent_mutant_noted():
     # upper-bound 65535 -> 65536 is equivalent here: urllib's parts.port already raises for 65536.
     r = only(ev([row(source_url="https://example.edu:65536/")]))
     assert r["reasons"] == ["source_url_invalid"]
+
+
+# ---------------- R3: pins named in the peer's second audit ----------------
+def test_r3_empty_port_is_accepted_documented_residual():
+    # RESIDUAL (named, not a blocker): "https://example.edu:/x" has an empty port. RFC 3986 allows an
+    # empty port and it means the scheme default (443). urllib reports port None, so the row is accepted.
+    # No core tightening in R3; this test documents the current behaviour only.
+    r = only(ev([row(source_url="https://example.edu:/x")]))
+    assert r["verdict"] == "fits" and r["source_url"] == "https://example.edu:/x"
+
+
+def test_r3_url_length_2048_accepted_2049_rejected():
+    assert uf.MAX_URL == 2048
+    ok, bad = _url_of_len(2048), _url_of_len(2049)
+    assert len(ok) == 2048 and len(bad) == 2049
+    assert only(ev([row(source_url=ok)]))["verdict"] == "fits"
+    r = only(ev([row(source_url=bad)]))
+    assert r["verdict"] == "unverified" and r["reasons"] == ["source_url_invalid"]
+
+
+def test_r3_url_hostname_arm_alone_and_scheme_arm_alone():
+    # netloc present but no hostname: only the hostname guard catches it
+    r = only(ev([row(source_url="https://:443/x")]))
+    assert r["reasons"] == ["source_url_invalid"]
+    # valid host, wrong scheme: only the scheme guard catches it
+    assert only(ev([row(source_url="http://example.edu/")]))["reasons"] == ["source_url_invalid"]
+    assert only(ev([row(source_url="ftp://example.edu/")]))["reasons"] == ["source_url_invalid"]
+    # empty netloc
+    assert only(ev([row(source_url="https:///x")]))["reasons"] == ["source_url_invalid"]
+
+
+def test_r3_date_text_limit_with_strip_first():
+    assert uf.MAX_DATE_TEXT == 40
+    valid32 = "2026-10-01T00:00:00.123456+05:30"
+    assert len(valid32) == 32
+    assert only(ev([row(checked_at=" " * 20 + valid32 + " " * 20)]))["verdict"] == "fits"  # raw length 72, stripped 32
+    for extra in (1, 8, 9, 40):  # stripped lengths 33, 40, 41, 72: all invalid dates
+        r = only(ev([row(checked_at=valid32 + "0" * extra)]))
+        assert r["verdict"] == "unverified" and r["reasons"] == ["checked_at_invalid"]
+    # RESIDUAL: the 40 versus 41 boundary cannot be separated here. On this Python, no valid ISO
+    # date text longer than 32 characters parses, so len > 40 and len >= 40 behave the same.
+
+
+def test_r3_now_with_tzinfo_but_no_offset_refused():
+    with pytest.raises(ValueError, match=r"^now must be a timezone-aware datetime$"):
+        ev([row()], now=datetime(2026, 10, 11, 12, 0, 0, tzinfo=_NoOffset()))
+    with pytest.raises(ValueError, match=r"^now must be a timezone-aware datetime$"):
+        ev([row()], now=datetime(2026, 10, 11, 12, 0, 0))
+
+
+def test_r3_age_days_rounds_to_exactly_six_decimals():
+    assert only(ev([row(checked_at=(NOW - timedelta(days=1, seconds=1)).isoformat())]))["age_days"] == 1.000012
+    assert only(ev([row(checked_at=(NOW - timedelta(seconds=1)).isoformat())]))["age_days"] == 0.000012
+    assert only(ev([row(checked_at=(NOW - timedelta(days=2, microseconds=1)).isoformat())]))["age_days"] == 2.0
+    assert only(ev([row(checked_at=(NOW - timedelta(days=3, hours=6)).isoformat())]))["age_days"] == 3.25
+    assert only(ev([row(checked_at=(NOW - timedelta(seconds=43200 + 3)).isoformat())]))["age_days"] == 0.500035
+
+
+# Mutants that are equivalent on this Python/urllib, pinned so a change is noticed.
+EQUIVALENT_MUTANTS = [
+    ("url_netloc_arm_dropped", "or not parts.netloc or not parts.hostname", "or not parts.hostname"),
+    ("date_len_ge_40", "len(s) > MAX_DATE_TEXT", "len(s) >= MAX_DATE_TEXT"),
+    ("port_upper_65536", "not 1 <= port <= 65535", "not 1 <= port <= 65536"),
+]
+
+
+@pytest.mark.parametrize("name,old,new", EQUIVALENT_MUTANTS, ids=[m[0] for m in EQUIVALENT_MUTANTS])
+def test_r3_equivalent_mutant_survives_by_equivalence(name, old, new):
+    assert _kill_kind(_mutant(name, old, new)) is None
