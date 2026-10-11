@@ -82,3 +82,8 @@ def test_catalog_and_attempt_caps():
  assert run('self_regulated_learning',p)['regulated_cycle']['status']=='recommendation_ready'
  p['attempts'].append({'id':'1000','strategy':'recall','evidence_id':'1000','predicted_success':.5,'succeeded':False})
  with pytest.raises(LearningReasoningError):run('self_regulated_learning',p)
+
+def test_unknown_attempt_strategy_core_valueerror_not_keyerror():
+ from app.modules.m20_general_cognitive_worker.regulated_learning import cycle as core_cycle
+ p=cycle();p['attempts'][0]['strategy']='unknown'
+ with pytest.raises(ValueError,match='unknown attempt strategy'):core_cycle(p)
