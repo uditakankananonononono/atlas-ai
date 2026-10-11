@@ -74,3 +74,8 @@ def test_full_boundaries_checks_echo_and_no_autoeffect():
  assert r['checks']==p['case_target_checks']['checks'] and r['source_truth_verified'] is False and r['target_source']=='fixture:target'
  assert r['boundary']=='Declared weighted exact feature case retrieval and supplied action reuse only after caller-recorded target checks. No invented adaptation, execution, semantic similarity or general case learning.'
  assert run('analogical_reasoning',analogy())['boundary']=='Explicit supplied symbolic correspondences and target allowed-value constraints only. Mapping gaps/many-to-one preserved; no semantic analogy discovery or independently verified inferences.'
+
+def test_source_value_mismatch_not_masked_by_constraint():
+ p=analogy();p['candidate_inferences'][0]['value']='blue';p['target_constraints'][0]['allowed_values']=['blue']
+ r=run('analogical_reasoning',p)['inference_reports'][0]
+ assert r['source_value_matches'] is False and r['target_constraints_present'] is True and r['supported'] is False
