@@ -339,3 +339,21 @@ def test_pin_scoring_value_errors_are_wrapped_as_adapter_error():
     dup = later(2, "aurora") + [later(1, "aurora")[0]]                     # duplicate post_id inside scoring
     m = err(lambda: ad.resolutions_from_posts(bound, dup, resolved_at="2026-04-07T00:00:00+00:00"))
     assert "duplicate" in m
+
+
+def test_pin_bound_probability_echoed_and_passed_through_to_scoring(monkeypatch):
+    # auditor EQ mutants 276/281: a constant-0 probability in the bound record, or a dropped
+    # confidence on the way into the scorer, must not survive.
+    preds = u03_predictions(conf=0.7)
+    bound = bound_from(preds)
+    assert bound[0]["probability"] == 0.7
+    seen = {}
+    real = tp.score_predictions
+
+    def spy(predictions, later_posts, *, resolved_at):
+        seen["confidence"] = predictions[0]["confidence"]
+        return real(predictions, later_posts, resolved_at=resolved_at)
+
+    monkeypatch.setattr(tp, "score_predictions", spy)
+    ad.resolutions_from_posts(bound, later(3, day=1), resolved_at="2026-04-15T00:00:00+00:00")
+    assert seen["confidence"] == 0.7
