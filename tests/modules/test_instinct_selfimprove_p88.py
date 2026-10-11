@@ -166,9 +166,9 @@ class Verdicts(Base):
         t = verify(rec([task(base=0.1, rescored=0.30000000000000004, decision="accept")], thr=0.3, minimp=0.2))["tasks"][0]
         self.assertTrue(t["improvement_met"])
         big = 10.0 ** 12
-        t = verify(rec([task(base=big, rescored=big + 1, decision="accept")], thr=big, minimp=1))["tasks"][0]
+        t = verify(rec([task(base=big - 1, rescored=big, decision="accept")], thr=big, minimp=1))["tasks"][0]
         self.assertEqual(t["expected_decision"], "accept")
-        t = verify(rec([task(base=-big, rescored=big, decision="accept")], thr=0, minimp=2 * big))["tasks"][0]
+        t = verify(rec([task(base=-big, rescored=big, decision="accept")], thr=0, minimp=big))["tasks"][0]
         self.assertEqual(t["expected_decision"], "accept")
 
     def test_both_decisions_exercised_flag_is_informational(self):
@@ -235,7 +235,7 @@ class Refusals(Base):
 
     def test_tasks_container_and_count_bounds(self):
         for bad in (None, "x", (task(),), {"a": 1}):
-            self.assertEqual(self.refusal(rec(tasks=bad)), "P88:bad_type:tasks")
+            self.assertEqual(self.refusal(dict(rec(), tasks=bad)), "P88:bad_type:tasks")
         verify(rec(tasks=[task("t%d" % i) for i in range(32)]))
         self.assertEqual(self.refusal(rec(tasks=[task("t%d" % i) for i in range(33)])), "P88:limit_exceeded:tasks")
         self.assertEqual(self.refusal(rec(tasks=[5] * 33)), "P88:limit_exceeded:tasks")
@@ -322,6 +322,25 @@ class Refusals(Base):
         r = verify(rec([task(base=1, rescored=2, decision="accept")], thr=1, minimp=1))
         self.assertEqual(r["tasks"][0]["expected_decision"], "accept")
         self.assertEqual(r["tasks"][0]["baseline_score"], 1)
+        self.assertIs(type(r["tasks"][0]["baseline_score"]), int)
+        self.assertIs(type(r["tasks"][0]["rescored"]), int)
+        r = verify(rec([task(base=1.5, rescored=2, decision="accept")], thr=1, minimp=0))
+        self.assertIs(type(r["tasks"][0]["baseline_score"]), float)
+
+    def test_bounds_are_exact_for_integers(self):
+        for bad in (10 ** 12 + 1, -10 ** 12 - 1):
+            self.assertEqual(self.refusal(rec(thr=bad)), "P88:bad_value:accept_threshold")
+            t = task(); t["rescored"] = bad
+            self.assertEqual(self.refusal(rec(tasks=[t])), "P88:bad_value:rescored")
+        self.assertEqual(self.refusal(rec(minimp=10 ** 12 + 1)), "P88:bad_value:min_improvement")
+        verify(rec(thr=10 ** 12, minimp=10 ** 12)); verify(rec(thr=-10 ** 12))
+
+    def test_task_dict_subclass_and_inconsistent_decision_echoed(self):
+        class D(dict):
+            pass
+        self.assertEqual(self.refusal(rec(tasks=[D(task())])), "P88:bad_type:task")
+        t = verify(rec([task(rescored=3.0, decision="reject")]))["tasks"][0]
+        self.assertEqual((t["decision"], t["expected_decision"], t["status"]), ("reject", "accept", "inconsistent"))
 
 
 class Hygiene(Base):
