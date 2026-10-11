@@ -4,6 +4,7 @@ from datetime import datetime,timedelta,timezone
 from math import exp,log
 import re
 from typing import Any
+from .design_algorithms import design as design_check,algorithm as algorithm_run
 from .claim_integration import check as claim_integration
 from .qualitative_systems import qualitative as qualitative_graph,stock_flow
 from .analogy_cases import analogy as checked_analogy,reuse as checked_case
@@ -35,7 +36,7 @@ class LearningReasoningError(ValueError):pass
 ROWS={810:'Spaced Repetition',811:'Interleaving',812:'Retrieval Practice',813:'Elaborative Interrogation',814:'Self-Explanation',815:'Dual Coding',816:'Concrete Examples',817:'Worked Examples',818:'Problem Solving',819:'Deliberate Practice',820:'Chunking',821:'Scaffolding',822:'Fading',823:'Metacognition',824:'Self-Regulated Learning',825:'Goal Setting',826:'Progress Monitoring',827:'Self-Assessment',828:'Peer Assessment',829:'Formative Assessment',830:'Summative Assessment',831:'Diagnostic Assessment',832:'Prior Knowledge Activation',833:'Transfer',834:'Near Transfer',835:'Far Transfer',836:'Analogical Reasoning',837:'Case-Based Reasoning',838:'Rule-Based Reasoning',839:'Model-Based Reasoning',840:'Qualitative Reasoning',841:'Quantitative Reasoning',842:'Spatial Reasoning',843:'Temporal Reasoning',844:'Causal Reasoning',845:'Counterfactual Reasoning',846:'Probabilistic Reasoning',847:'Fuzzy Logic',848:'Default Reasoning',849:'Non-Monotonic Reasoning',850:'Abductive Reasoning',851:'Inductive Reasoning',852:'Deductive Reasoning',853:'Transductive Reasoning',854:'Dialectical Reasoning',855:'Integrative Thinking',856:'Systems Thinking',857:'Design Thinking',858:'Computational Thinking',859:'Scientific Thinking'}
 def slug(x):return re.sub(r'[^a-z0-9]+','_',x.lower()).strip('_')
 KEYS={slug(v):k for k,v in ROWS.items()}
-EXECUTED_ROWS={810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,854,855,856,841,842,843,844,845,846,847,848,849,850,851,852,853}
+EXECUTED_ROWS={810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,854,855,856,857,858,841,842,843,844,845,846,847,848,849,850,851,852,853}
 SCAFFOLD_ROWS=set(ROWS)-EXECUTED_ROWS
 FAMILY={**{i:'learning' for i in range(810,833)},**{i:'transfer' for i in range(833,838)},**{i:'reasoning' for i in range(838,856)},**{i:'inquiry' for i in range(856,860)}}
 def capabilities():return [{'row_id':i,'key':slug(n),'name':n,'family':FAMILY[i],'execution_kind':'restricted_computation' if i in EXECUTED_ROWS else 'planning_scaffold'} for i,n in ROWS.items()]
@@ -170,8 +171,9 @@ def inquiry(row,p):
  if row==856:
   try:out['stock_flow_simulation']=stock_flow(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
- if row==857:out['design_cycle']=['empathize without claiming mind-reading','define need','diverge ideas','prototype','test with participants','iterate'];out['constraints']=p.get('constraints',[])
- if row==858:out['computational']={'decomposition':p.get('decomposition',[]),'patterns':p.get('patterns',[]),'abstraction':p.get('abstraction'),'algorithm':p.get('algorithm',[]),'test_cases':p.get('test_cases',[]),'complexity':p.get('complexity'),'automation_boundary':p.get('automation_boundary')}
+ if row in (857,858):
+  try:out['design_check'if row==857 else 'algorithm_run']=(design_check if row==857 else algorithm_run)(p)
+  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==859:out['science']={'question':p.get('question'),'hypothesis':p.get('hypothesis'),'prediction':p.get('prediction'),'design':p.get('design'),'controls':p.get('controls',[]),'measurements':p.get('measurements',[]),'analysis_plan':p.get('analysis_plan'),'falsification_condition':p.get('falsification_condition'),'replication_and_open_materials':True}
  return out
 def execute(method,payload):

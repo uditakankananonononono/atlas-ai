@@ -27,3 +27,95 @@ def test_mounted_auth_and_tenant(monkeypatch,oidc_auth_headers):
   assert c.post(path,headers=h,json={'payload':p}).status_code==200
   assert c.post(path,headers=h,json={'payload':{'source':SRC,'problem':'x'}}).status_code==422
   assert c.post(path,headers=h,json={'payload':{**p,'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
+
+from copy import deepcopy
+from app.modules.m20_general_cognitive_worker import design_algorithms as core
+
+def error(fn,p,msg):
+ with pytest.raises(ValueError)as e:fn(p)
+ assert str(e.value)==msg
+
+@pytest.mark.parametrize('op,args,value',[('add',[2,3],'5'),('subtract',[2,3],'-1'),('multiply',[2,3],'6'),('divide',[2,3],'2/3'),('less_than',[2,3],True),('equal',[2,3],False),('and',[True,False],False),('or',[True,False],True),('not',[True],False),('select',[False,2,3],'3')])
+def test_all_operations(op,args,value):
+ p=compute();p['algorithm_inputs']=[{'id':str(i),'type':'boolean'if type(v)is bool else'number','value':v}for i,v in enumerate(args)];p['algorithm_nodes']=[{'id':'n','op':op,'args':[str(i)for i in range(len(args))],'source':'n'}];p['algorithm_outputs']=['n'];p['algorithm_tests']=[]
+ assert core.algorithm(p)['outputs']=={'n':value}
+
+@pytest.mark.parametrize('change,msg',[('duplicate_input','unique typed number/boolean inputs required'),('bad_type','unique typed number/boolean inputs required'),('bool_number','input value requires rational string/integer'),('duplicate_node','unique supported typed nodes with exact arity required'),('arity','unique supported typed nodes with exact arity required'),('unknown_arg','known argument/output references required'),('unknown_output','known argument/output references required'),('cycle','algorithm must be acyclic'),('mismatch','node argument type mismatch'),('zero','algorithm division by zero'),('overflow','algorithm result rational components exceed10**12'),('test_input','unique tests with exact input/output schema required'),('test_output','unique tests with exact input/output schema required'),('duplicate_test','unique tests with exact input/output schema required')])
+def test_algorithm_errors(change,msg):
+ p=compute()
+ if change=='duplicate_input':p['algorithm_inputs']*=2
+ elif change=='bad_type':p['algorithm_inputs'][0]['type']='string'
+ elif change=='bool_number':p['algorithm_inputs'][0]['value']=True
+ elif change=='duplicate_node':p['algorithm_nodes'].append(deepcopy(p['algorithm_nodes'][0]))
+ elif change=='arity':p['algorithm_nodes'][0]['args']=['x']
+ elif change=='unknown_arg':p['algorithm_nodes'][0]['args'][0]='unknown'
+ elif change=='unknown_output':p['algorithm_outputs']=['unknown']
+ elif change=='cycle':p['algorithm_nodes'][0]['args'][0]='double'
+ elif change=='mismatch':p['algorithm_inputs'][0].update(type='boolean',value=True)
+ elif change=='zero':p['algorithm_nodes'][0]['op']='divide';p['algorithm_inputs'][1]['value']=0
+ elif change=='overflow':p['algorithm_inputs'][0]['value']=10**12
+ elif change=='test_input':p['algorithm_tests'][0]['inputs']={'x':4}
+ elif change=='test_output':p['algorithm_tests'][0]['expected_outputs']={'unknown':20}
+ else:p['algorithm_tests']*=2
+ error(core.algorithm,p,msg)
+
+
+def test_select_boolean_branch_and_failed_test_and_sorted_topology():
+ p=compute();p['algorithm_inputs']=[{'id':'cond','type':'boolean','value':True},{'id':'t','type':'boolean','value':False},{'id':'f','type':'boolean','value':True}];p['algorithm_nodes']=[{'id':'n','op':'select','args':['cond','t','f'],'source':'n'}];p['algorithm_outputs']=['n'];p['algorithm_tests']=[]
+ assert core.algorithm(p)['outputs']=={'n':False}
+ p=compute();p['algorithm_tests'][0]['expected_outputs']['double']=19;assert core.algorithm(p)['test_reports'][0]['passed'] is False
+ p['algorithm_nodes'].reverse();assert core.algorithm(p)['execution_order']==['sum','double']
+ p=compute();p['algorithm_nodes']=[{'id':k,'op':'add','args':['x','y'],'source':k}for k in ['z','a']];p['algorithm_outputs']=['z','a'];p['algorithm_tests']=[];r=core.algorithm(p)
+ assert r['execution_order']==['a','z'] and list(r['outputs'])==['a','z']
+
+@pytest.mark.parametrize('field,cap',[('algorithm_inputs',32),('algorithm_nodes',64),('algorithm_tests',64)])
+def test_algorithm_caps(field,cap):
+ p=compute()
+ if field=='algorithm_inputs':p[field]=[{'id':str(i),'type':'number','value':1}for i in range(cap)];p['algorithm_nodes']=[];p['algorithm_outputs']=['0'];p['algorithm_tests']=[]
+ elif field=='algorithm_nodes':p[field]=[{**deepcopy(p[field][0]),'id':str(i)}for i in range(cap)];p['algorithm_outputs']=['x'];p['algorithm_tests']=[]
+ else:p[field]=[{**deepcopy(p[field][0]),'id':str(i)}for i in range(cap)]
+ core.algorithm(p)
+ p[field].append({**deepcopy(p[field][0]),'id':'overflow'});error(core.algorithm,p,field+' requires bounded object list')
+
+@pytest.mark.parametrize('change,msg',[('constraint_dup','unique constraints with minimum<=maximum required'),('interval','unique constraints with minimum<=maximum required'),('prototype_dup','unique prototype IDs required'),('feedback_dup','unique feedback bound to known prototype feature required'),('feedback_base','unique feedback bound to known prototype feature required'),('feedback_feature','unique feedback bound to known prototype feature required'),('revision_dup','unique revisions with known base, feedback and changed features required'),('revision_base','unique revisions with known base, feedback and changed features required'),('revision_ref','unique revisions with known base, feedback and changed features required'),('revision_feature','unique revisions with known base, feedback and changed features required')])
+def test_design_errors(change,msg):
+ p=design()
+ if change=='constraint_dup':p['design_brief']['constraints']*=2
+ elif change=='interval':p['design_brief']['constraints'][0]['minimum']=11
+ elif change=='prototype_dup':p['design_prototypes']*=2
+ elif change=='feedback_dup':p['design_feedback']*=2
+ elif change=='feedback_base':p['design_feedback'][0]['prototype_id']='unknown'
+ elif change=='feedback_feature':p['design_feedback'][0]['feature']='unknown'
+ elif change=='revision_dup':p['design_revisions']*=2
+ elif change=='revision_base':p['design_revisions'][0]['base_prototype_id']='unknown'
+ elif change=='revision_ref':p['design_revisions'][0]['feedback_ids']=['unknown']
+ else:p['design_revisions'][0]['changes']={'unknown':1}
+ error(core.design,p,msg)
+
+
+def test_revision_wrong_prototype_feedback_constraints_and_missing_feature():
+ p=design();p['design_feedback'][0]['prototype_id']='b';r=core.design(p)['revision_reports'][0]
+ assert r['wrong_prototype_feedback_ids']==['e'] and r['unbacked_features']==['cost'] and r['supported'] is False
+ p=design();p['design_feedback'][0]['suggested_value']=11;p['design_revisions'][0]['changes']['cost']=11;r=core.design(p)['revision_reports'][0]
+ assert r['unbacked_features']==[] and r['violated_constraints']==['c'] and r['supported'] is False
+ p=design();p['design_brief']['constraints'][0]['feature']='missing';assert core.design(p)['prototype_reports'][1]['feasible'] is False
+ p=design();p['design_prototypes'][1]['features']['cost']=0;assert core.design(p)['prototype_reports'][1]['feasible'] is True
+ p['design_prototypes'][1]['features']['cost']=10;assert core.design(p)['prototype_reports'][1]['feasible'] is True
+
+@pytest.mark.parametrize('field,cap',[('design_prototypes',64),('design_feedback',128),('design_revisions',64)])
+def test_design_caps(field,cap):
+ p=design();p[field]=[{**deepcopy(p[field][0]),'id':str(i)}for i in range(cap)]
+ if field=='design_prototypes':p['design_feedback'][0]['prototype_id']='0';p['design_revisions'][0]['base_prototype_id']='0'
+ elif field=='design_feedback':p['design_revisions'][0]['feedback_ids']=['0']
+ core.design(p);p[field].append({**deepcopy(p[field][0]),'id':'overflow'});error(core.design,p,field+' requires bounded object list')
+
+
+def test_feature_constraint_output_ref_bounds_and_sources():
+ p=design();p['design_brief']['constraints']=[{**p['design_brief']['constraints'][0],'id':str(i)}for i in range(32)];core.design(p);p['design_brief']['constraints'].append({**p['design_brief']['constraints'][0],'id':'overflow'});error(core.design,p,'brief constraints requires bounded object list')
+ p=design();p['design_prototypes'][0]['features'].update({str(i):1 for i in range(31)});core.design(p);p['design_prototypes'][0]['features']['overflow']=1;error(core.design,p,'prototype features requires1..32 numeric features')
+ p=compute();p['algorithm_nodes']=[];p['algorithm_tests']=[];p['algorithm_inputs']=[{'id':str(i),'type':'number','value':1}for i in range(32)];p['algorithm_outputs']=[str(i)for i in range(32)];core.algorithm(p);p['algorithm_outputs'].append('overflow');error(core.algorithm,p,'algorithm_outputs requires bounded text list')
+ p=design();r=core.design(p);assert r['audience']=='supplied participant group' and r['constraint_sources']=={'c':'brief:c'} and r['revision_reports'][0]['feedback_sources']==['participant:e'] and r['participant_validation_performed'] is False and r['invented_prototype'] is None
+
+@pytest.mark.parametrize('fn,bank,label',[(core.design,'design_prototypes','prototype source'),(core.design,'design_feedback','feedback source'),(core.design,'design_revisions','revision source'),(core.algorithm,'algorithm_nodes','node source'),(core.algorithm,'algorithm_tests','test source')])
+def test_source_text(fn,bank,label):
+ p=design()if fn==core.design else compute();p[bank][0]['source']='';error(fn,p,label+' requires bounded nonempty string')

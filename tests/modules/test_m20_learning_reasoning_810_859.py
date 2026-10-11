@@ -76,8 +76,10 @@ def I(n,**x):
  p={'problem':'Improve access','source':SRC};p.update(x);return execute(n,p)['result']
 def test_856_minimal_refuses():
  with pytest.raises(LearningReasoningError,match='system_stocks'):I('systems_thinking')
-def test_857_design_thinking_tests_with_participants():assert 'test with participants' in I('design_thinking')['design_cycle']
-def test_858_computational_has_decomposition_algorithm_tests_complexity():assert set(I('computational_thinking')['computational'])>={'decomposition','algorithm','test_cases','complexity'}
+def test_857_minimal_refuses():
+ with pytest.raises(LearningReasoningError,match='design_brief'):I('design_thinking')
+def test_858_minimal_refuses():
+ with pytest.raises(LearningReasoningError,match='algorithm_inputs'):I('computational_thinking')
 def test_859_science_is_falsifiable_and_replicable():
  o=I('scientific_thinking')['science'];assert 'falsification_condition' in o and o['replication_and_open_materials']
 def test_validation_and_route():
