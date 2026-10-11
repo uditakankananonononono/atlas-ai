@@ -393,3 +393,213 @@ def test_valid_manifest_over_one_mib_is_rejected_and_one_under_is_accepted(tmp_p
     assert "MANIFEST_MISSING_OR_INVALID" in codes(rp.check_repo_per_project(tmp_path, [p]))
     (tmp_path / "alpha" / "manifest.json").write_text(body + " " * (1024 * 1024 - len(body) - 1))
     assert rp.check_repo_per_project(tmp_path, [p])["projects"][0]["status"] == "STRUCTURE_CONSISTENT"
+
+
+# --- third commit: tests only, pins the peer's surviving mutants and special-file probes ---
+def _one(tmp_path, name="alpha", files=None, **kw):
+    p = proj(tmp_path, name, files, **kw)
+    return p, tmp_path / name
+
+
+def _cfg(d, text):
+    (d / ".git" / "config").write_text(text)
+
+
+def test_oversized_git_config_is_ignored_not_a_crash(tmp_path):
+    p, d = _one(tmp_path)
+    _cfg(d, '[remote "origin"]\n\turl = https://example.test/other\n' + "#" + "x" * 70000 + "\n")
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert r["projects"][0]["remote_recorded"] is False
+    assert r["projects"][0]["status"] == "STRUCTURE_CONSISTENT"
+
+
+def test_git_config_at_exact_read_limit_is_still_read(tmp_path):
+    p, d = _one(tmp_path)
+    head = '[remote "origin"]\n\turl = https://example.test/other\n'
+    _cfg(d, head + "#" * (65536 - len(head)))
+    assert (d / ".git" / "config").stat().st_size == 65536
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REMOTE_MISMATCH" in codes(r)
+
+
+def test_manifest_file_count_cap(tmp_path):
+    for n, ok in ((10000, True), (10001, False)):
+        name = f"cap{n}"
+        make_repo(tmp_path, name, {}, manifest={"project_id": name,
+                  "files": [{"path": f"f{i}", "sha256": "0" * 64} for i in range(n)]})
+        r = rp.check_repo_per_project(tmp_path, [{"project_id": name, "directory": name}])
+        details = [f["detail"] for f in r["projects"][0]["findings"] if f["code"] == "MANIFEST_MISSING_OR_INVALID"]
+        assert bool(details) is (not ok), (n, details)
+        if not ok:
+            assert "too many" in details[0]
+
+
+def test_file_size_cap_reports_too_large_and_boundary_matches(tmp_path):
+    limit = rp.FILE_LIMIT
+    big = tmp_path / "big.bin"
+    with open(big, "wb") as f:
+        f.truncate(limit + 1)
+    make_repo(tmp_path, "alpha", {}, manifest={"project_id": "alpha", "files": [{"path": "big.bin", "sha256": "0" * 64}]})
+    os.rename(big, tmp_path / "alpha" / "big.bin")
+    r = rp.check_repo_per_project(tmp_path, [{"project_id": "alpha", "directory": "alpha"}])
+    assert {f["detail"] for f in r["projects"][0]["findings"] if f["code"] == "MANIFEST_FILE_NOT_MATCHED"} == {"big.bin:TOO_LARGE"}
+    data = b"\0" * limit
+    (tmp_path / "alpha" / "big.bin").write_bytes(data)
+    (tmp_path / "alpha" / "manifest.json").write_text(json.dumps(
+        {"project_id": "alpha", "files": [{"path": "big.bin", "sha256": sha(data)}]}))
+    r = rp.check_repo_per_project(tmp_path, [{"project_id": "alpha", "directory": "alpha"}])
+    assert r["projects"][0]["status"] == "STRUCTURE_CONSISTENT" and r["projects"][0]["manifest_files_matched"] == 1
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root can read mode 000 files")
+def test_unreadable_file_reports_unreadable_not_a_crash(tmp_path):
+    p, d = _one(tmp_path, files={"a.py": b"a"})
+    os.chmod(d / "a.py", 0)
+    try:
+        r = rp.check_repo_per_project(tmp_path, [p])
+    finally:
+        os.chmod(d / "a.py", 0o644)
+    assert {f["detail"] for f in r["projects"][0]["findings"] if f["code"] == "MANIFEST_FILE_NOT_MATCHED"} == {"a.py:UNREADABLE"}
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root can read mode 000 files")
+def test_unreadable_manifest_and_head_are_findings_not_crashes(tmp_path):
+    p, d = _one(tmp_path)
+    os.chmod(d / "manifest.json", 0)
+    os.chmod(d / ".git" / "HEAD", 0)
+    try:
+        r = rp.check_repo_per_project(tmp_path, [p])
+    finally:
+        os.chmod(d / "manifest.json", 0o644)
+        os.chmod(d / ".git" / "HEAD", 0o644)
+    assert {"MANIFEST_MISSING_OR_INVALID", "GIT_HEAD_INVALID"} <= codes(r)
+
+
+@pytest.mark.parametrize("bad", [("README.md",), {"README.md": 1}, None, 5, "README.md"])
+def test_required_files_must_be_a_list(tmp_path, bad):
+    p, _ = _one(tmp_path)
+    p["required_files"] = bad
+    with pytest.raises(rp.RepoStructureError, match="required_files must be a list"):
+        rp.check_repo_per_project(tmp_path, [p])
+
+
+@pytest.mark.parametrize("bad", ["https://[::1", "https://[invalid/x"])
+def test_unparseable_declared_url_is_a_finding_not_an_exception(tmp_path, bad):
+    p, _ = _one(tmp_path)
+    p["repository"] = bad
+    assert "REPOSITORY_URL_INVALID" in codes(rp.check_repo_per_project(tmp_path, [p]))
+
+
+def test_remote_only_read_from_origin_section_and_url_key(tmp_path):
+    p, d = _one(tmp_path, url="https://example.test/alpha")
+    cases = [
+        '[remote "upstream"]\n\turl = https://example.test/other\n',
+        '[remote "origin"]\n\tfetch = +refs/heads/*:refs/remotes/origin/*\n',
+        '[core]\n\turl = https://example.test/other\n',
+        '[remote "origin"]\n\turlfoo = https://example.test/other\n',
+        '[remote "origin"]\n\tpushurl = https://example.test/other\n',
+    ]
+    for text in cases:
+        _cfg(d, text)
+        r = rp.check_repo_per_project(tmp_path, [p])
+        assert r["projects"][0]["remote_recorded"] is False, text
+        assert r["projects"][0]["status"] == "STRUCTURE_CONSISTENT", text
+
+
+def test_remote_origin_url_found_after_other_sections(tmp_path):
+    p, d = _one(tmp_path, url="https://example.test/alpha")
+    _cfg(d, '[core]\n\tbare = false\n[remote "upstream"]\n\turl = https://example.test/zzz\n'
+            '[remote "origin"]\n\tfetch = +x\n\turl = https://example.test/alpha\n')
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert r["projects"][0]["remote_recorded"] is True and r["projects"][0]["status"] == "STRUCTURE_CONSISTENT"
+
+
+def test_distinct_hosts_with_same_path_are_not_merged(tmp_path):
+    a = proj(tmp_path, "alpha", url="https://one.example/team/repo")
+    b = proj(tmp_path, "beta", {"x.py": b"x\n"}, url="https://two.example/team/repo")
+    r = rp.check_repo_per_project(tmp_path, [a, b])
+    assert all(p["status"] == "STRUCTURE_CONSISTENT" for p in r["projects"])
+
+
+def test_remote_with_different_host_same_path_is_a_mismatch(tmp_path):
+    p, d = _one(tmp_path, url="https://one.example/team/repo")
+    _cfg(d, '[remote "origin"]\n\turl = https://two.example/team/repo\n')
+    assert "REMOTE_MISMATCH" in codes(rp.check_repo_per_project(tmp_path, [p]))
+
+
+def test_same_host_different_case_is_one_repository(tmp_path):
+    a = proj(tmp_path, "alpha", url="https://One.Example/team/repo")
+    b = proj(tmp_path, "beta", {"x.py": b"x\n"}, url="https://one.example/team/repo")
+    assert "SHARED_REPOSITORY_URL" in codes(rp.check_repo_per_project(tmp_path, [a, b]))
+
+
+def test_missing_head_and_missing_config_are_findings_not_crashes(tmp_path):
+    p, d = _one(tmp_path)
+    os.remove(d / ".git" / "HEAD")
+    os.remove(d / ".git" / "config")
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "GIT_HEAD_INVALID" in codes(r) and r["projects"][0]["remote_recorded"] is False
+    assert "NO_OWN_GIT_DIR" not in codes(r)
+
+
+def test_missing_config_alone_is_not_a_finding(tmp_path):
+    p, d = _one(tmp_path)
+    os.remove(d / ".git" / "config")
+    assert rp.check_repo_per_project(tmp_path, [p])["projects"][0]["status"] == "STRUCTURE_CONSISTENT"
+
+
+@pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="needs mkfifo")
+def test_fifo_head_config_and_manifest_do_not_hang_and_are_rejected(tmp_path):
+    p, d = _one(tmp_path)
+    for rel in (".git/HEAD", ".git/config", "manifest.json"):
+        os.remove(d / rel)
+        os.mkfifo(d / rel)
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert {"GIT_HEAD_INVALID", "MANIFEST_MISSING_OR_INVALID"} <= codes(r)
+    assert r["projects"][0]["remote_recorded"] is False
+
+
+@pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="needs mkfifo")
+def test_fifo_readme_and_listed_file_rejected(tmp_path):
+    p, d = _one(tmp_path, files={"a.py": b"a"})
+    os.remove(d / "README.md")
+    os.mkfifo(d / "README.md")
+    os.remove(d / "a.py")
+    os.mkfifo(d / "a.py")
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "REQUIRED_FILE_MISSING" in codes(r)
+    assert {f["detail"] for f in r["projects"][0]["findings"] if f["code"] == "MANIFEST_FILE_NOT_MATCHED"} == {"a.py:NOT_REGULAR_FILE"}
+
+
+@pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="needs mkfifo")
+def test_hardlinked_fifo_head_is_not_counted_as_a_shared_regular_file(tmp_path):
+    a, da = _one(tmp_path, "alpha")
+    b, db = _one(tmp_path, "beta", {"x.py": b"x\n"})
+    os.remove(da / ".git" / "HEAD")
+    os.remove(db / ".git" / "HEAD")
+    os.mkfifo(da / ".git" / "HEAD")
+    os.link(da / ".git" / "HEAD", db / ".git" / "HEAD")
+    r = rp.check_repo_per_project(tmp_path, [a, b])
+    assert "GIT_HEAD_INVALID" in codes(r, 0) and "SHARED_INODE" not in codes(r, 0)
+
+
+def test_git_dir_with_head_directory_and_config_directory(tmp_path):
+    p, d = _one(tmp_path)
+    for rel in (".git/HEAD", ".git/config"):
+        os.remove(d / rel)
+        (d / rel).mkdir()
+    r = rp.check_repo_per_project(tmp_path, [p])
+    assert "GIT_HEAD_INVALID" in codes(r) and r["projects"][0]["remote_recorded"] is False
+
+
+@pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="needs mkfifo")
+def test_hardlinked_fifo_config_is_not_counted_as_a_shared_regular_file(tmp_path):
+    a, da = _one(tmp_path, "alpha")
+    b, db = _one(tmp_path, "beta", {"x.py": b"x\n"})
+    os.remove(da / ".git" / "config")
+    os.remove(db / ".git" / "config")
+    os.mkfifo(da / ".git" / "config")
+    os.link(da / ".git" / "config", db / ".git" / "config")
+    r = rp.check_repo_per_project(tmp_path, [a, b])
+    assert "SHARED_INODE" not in codes(r, 0) and "SHARED_INODE" not in codes(r, 1)
+    assert r["projects"][0]["remote_recorded"] is False
