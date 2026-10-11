@@ -85,3 +85,84 @@ def test_caps_and_duplicate_pair():
  p=payload();p['assessment_rubric'][0]['anchors']=[{'level':i,'description':'observable','required_features':[]}for i in range(16)];p['assessment_ratings']=[];assert len(run(p=p)['rubric'][0]['anchors'])==16
  p['assessment_rubric'][0]['anchors'].append({'level':16,'description':'observable','required_features':[]})
  with pytest.raises(LearningReasoningError):run(p=p)
+
+def test_peer_author_refuses_without_anonymization_mask():
+ from app.modules.m20_general_cognitive_worker.anchored_assessment import assess
+ p=payload(True);p['assessment_ratings'][0]['rater_id']='author'
+ with pytest.raises(ValueError,match='rater identity differs from self/peer mode'):assess('peer',p)
+
+@pytest.mark.parametrize('level',[True,1.0,101])
+def test_anchor_level_type_and_cap(level):
+ from app.modules.m20_general_cognitive_worker.anchored_assessment import assess
+ p=payload();p['assessment_rubric'][0]['anchors'][1]['level']=level
+ with pytest.raises(ValueError,match='unique integer anchor levels'):assess('self',p)
+
+def test_anchor_minimum_duplicates_and_rating_level_types():
+ from app.modules.m20_general_cognitive_worker.anchored_assessment import assess
+ p=payload();assert assess('self',p)['status']=='assessed'
+ p['assessment_rubric'][0]['anchors']=p['assessment_rubric'][0]['anchors'][:1]
+ with pytest.raises(ValueError,match='anchors requires bounded object list'):assess('self',p)
+ p=payload();p['assessment_rubric'][0]['anchors'][1]['level']=0
+ with pytest.raises(ValueError,match='unique integer anchor levels'):assess('self',p)
+ for level in [True,1.0]:
+  p=payload();p['assessment_ratings'][0]['level']=level
+  with pytest.raises(ValueError,match='known criterion and integer anchor level required'):assess('self',p)
+ p=payload();p['assessment_rubric']=[];p['assessment_ratings']=[]
+ with pytest.raises(ValueError,match='assessment_rubric requires bounded object list'):assess('self',p)
+
+def test_evidence_and_peer_ratings_exact_1000_caps():
+ from app.modules.m20_general_cognitive_worker.anchored_assessment import assess
+ p=payload(True);p['assessment_evidence']=[{**p['assessment_evidence'][0],'evidence_id':str(i)}for i in range(1000)];p['assessment_ratings']=[{**p['assessment_ratings'][0],'rating_id':str(i),'rater_id':'peer'+str(i),'evidence_ids':['0']}for i in range(1000)]
+ assert len(assess('peer',p)['rating_reports'])==1000
+ for field,key in [('assessment_evidence','evidence_id'),('assessment_ratings','rating_id')]:
+  from copy import deepcopy
+  q=deepcopy(p);extra={**q[field][0],key:'extra'}
+  if field=='assessment_ratings':extra['rater_id']='extra'
+  q[field].append(extra)
+  with pytest.raises(ValueError,match=field+' requires bounded object list'):assess('peer',q)
+
+def test_keys_caps_types_nontext_and_duplicate_unmasked():
+ from app.modules.m20_general_cognitive_worker.anchored_assessment import assess
+ for field in ['features','evidence_ids','conflicted_rater_ids']:
+  for value in [{'e':1},[5]]:
+   p=payload()
+   target=p['assessment_evidence'][0]if field=='features'else p['assessment_ratings'][0]if field=='evidence_ids'else p['assessment_controls']
+   target[field]=value
+   with pytest.raises(ValueError,match='requires bounded text list|requires bounded nonempty string'):assess('self',p)
+ for field in ['features','evidence_ids']:
+  p=payload();target=p['assessment_evidence'][0]if field=='features'else p['assessment_ratings'][0];target[field]=['e','e']
+  with pytest.raises(ValueError,match='requires unique keys'):assess('self',p)
+ for field in ['features','evidence_ids','conflicted_rater_ids']:
+  p=payload();p['assessment_evidence']=[{**p['assessment_evidence'][0],'evidence_id':str(i)}for i in range(65)];p['assessment_ratings'][0]['evidence_ids']=['0']
+  target=p['assessment_evidence'][0]if field=='features'else p['assessment_ratings'][0]if field=='evidence_ids'else p['assessment_controls']
+  target[field]=[str(i)for i in range(64)];assess('self',p)
+  target[field].append('64')
+  with pytest.raises(ValueError,match='requires bounded text list'):assess('self',p)
+
+@pytest.mark.parametrize('container,field,label',[('root','artifact_id','artifact_id'),('root','author_id','author_id'),('rubric','criterion_id','criterion_id'),('rubric','source','rubric source'),('anchor','description','anchor description'),('evidence','evidence_id','evidence_id'),('evidence','artifact_id','evidence artifact_id'),('evidence','source','evidence source'),('rating','rating_id','rating_id'),('rating','criterion_id','rating criterion_id'),('rating','rater_id','rater_id')])
+def test_text_fields_core_exact_refusal(container,field,label):
+ from app.modules.m20_general_cognitive_worker.anchored_assessment import assess
+ p=payload();target={'root':p,'rubric':p['assessment_rubric'][0],'anchor':p['assessment_rubric'][0]['anchors'][0],'evidence':p['assessment_evidence'][0],'rating':p['assessment_ratings'][0]}[container];target[field]=[]
+ with pytest.raises(ValueError,match='^'+label+' requires bounded nonempty string$'):assess('self',p)
+
+def test_rating_id_duplicate_distinct_pair_and_core_ref_errors():
+ from app.modules.m20_general_cognitive_worker.anchored_assessment import assess
+ p=payload(True);p['assessment_ratings'].append({**p['assessment_ratings'][0],'rater_id':'different'})
+ with pytest.raises(ValueError,match='unique rating IDs and criterion/rater pairs required'):assess('peer',p)
+ for key,value,message in [('criterion_id','unknown','known criterion and integer anchor level required'),('level',2,'known anchor level/evidence IDs required'),('evidence_ids',['unknown'],'known anchor level/evidence IDs required')]:
+  p=payload();p['assessment_ratings'][0][key]=value
+  with pytest.raises(ValueError,match=message):assess('self',p)
+
+def test_reverse_order_multirecord_echo_and_lower_anchor():
+ from app.modules.m20_general_cognitive_worker.anchored_assessment import assess
+ p=payload(True);p['assessment_rubric']=[{'criterion_id':c,'source':'fixture:'+c,'anchors':[{'level':1,'description':'higher','required_features':['z','a']},{'level':0,'description':'lower','required_features':[]}]}for c in ['z','a']]
+ p['assessment_evidence']=[{'evidence_id':e,'artifact_id':'artifact','features':['z','a'],'source':'fixture:'+e}for e in ['z','a']]
+ p['assessment_controls']['conflicted_rater_ids']=['zconflict','aconflict']
+ p['assessment_ratings']=[{'rating_id':c+r,'criterion_id':c,'rater_id':r,'level':0,'evidence_ids':['z','a']}for c in ['z','a']for r in ['zpeer','apeer']]
+ out=assess('peer',p)
+ assert [r['criterion_id']for r in out['rubric']]==['a','z'] and [e['evidence_id']for e in out['evidence']]==['a','z']
+ assert all([a['level']for a in r['anchors']]==[0,1]and r['anchors'][1]['required_features']==['a','z']for r in out['rubric'])
+ assert all(e['features']==['a','z']for e in out['evidence']) and out['controls']['conflicted_rater_ids']==['aconflict','zconflict']
+ assert [r['criterion_id']for r in out['criterion_reports']]==['a','z'] and all(r['highest_anchor_supported']is False for r in out['criterion_reports'])
+ assert [(r['criterion_id'],r['rater_id'],r['rating_id'])for r in out['rating_reports']]==[('a','apeer','aapeer'),('a','zpeer','azpeer'),('z','apeer','zapeer'),('z','zpeer','zzpeer')]
+ assert all(r['evidence_ids']==['a','z']for r in out['rating_reports'])
