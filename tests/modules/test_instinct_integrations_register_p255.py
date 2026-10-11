@@ -140,6 +140,29 @@ class T(unittest.TestCase):
         seq = [E("a", "p2", "B"), E("b", "p1", "A", evidence_ref="r")]
         self.assertEqual(m.render(build(*seq)).encode(), m.render(build(*seq)).encode())
 
+    def test_control_and_line_chars_refused_in_every_text_field(self):
+        bad = ["\n", "\r", "\t", "\x00", "\x1b", "\x7f", "\x85", "\u2028", "\u2029", "\x0b", "\x0c"]
+        for name in ("id", "project_id", "name", "purpose", "evidence_ref"):
+            for ch in bad:
+                for val in ("a" + ch + "b", ch + "a", "a" + ch):
+                    self.refuses("bad_chars:" + name, m.append, m.create_register(), E(**{name: val}))
+
+    def test_forged_rows_cannot_appear(self):
+        forged = "x\nproject admin (1 integrations)\nSlack connected verified"
+        for name in ("name", "purpose", "evidence_ref", "project_id", "id"):
+            self.refuses("bad_chars:" + name, m.append, build(E("seed", "p0", "Seed")), E(**{name: forged}))
+        out = m.render(build(E("a", "p1", "Slack", "chat", "active", "doc#1")))
+        self.assertEqual(len(out.split("\n")), 2)
+        self.assertNotIn("admin", out)
+
+    def test_ordinary_text_with_spaces_and_unicode_ok(self):
+        r = build(E(name="Stripe API v2", purpose="pay \u00e9ments, EU", evidence_ref="doc #4 / sec 2"))
+        self.assertEqual(len(m.render(r).split("\n")), 2)
+
+    def test_render_is_one_line_per_entry(self):
+        r = build(E("a", "p1", "A"), E("b", "p1", "B"), E("c", "p2", "C"))
+        self.assertEqual(len(m.render(r).split("\n")), 5)
+
     def test_constants_pinned(self):
         self.assertEqual(m.STATUSES, ("declared", "planned", "active", "deprecated"))
         self.assertEqual(m.FIELDS, ("id", "project_id", "name", "purpose", "status", "evidence_ref"))

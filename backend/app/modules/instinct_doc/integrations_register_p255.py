@@ -6,6 +6,7 @@ integration is connected or verified. evidence_ref is recorded, never resolved.
 """
 from __future__ import annotations
 
+import unicodedata
 from dataclasses import dataclass
 
 STATUSES = ("declared", "planned", "active", "deprecated")
@@ -23,6 +24,10 @@ class Register:
 
 def create_register() -> Register:
     return Register()
+
+
+def _has_control(text: str) -> bool:
+    return any(unicodedata.category(c) in ("Cc", "Zl", "Zp") for c in text)
 
 
 def _err(code: str) -> ValueError:
@@ -43,6 +48,9 @@ def _validate(entry) -> tuple:
         v = values[name]
         if isinstance(v, bool) or not isinstance(v, str):
             raise _err("bad_type:" + name)
+    for name in FIELDS:
+        if _has_control(values[name]):
+            raise _err("bad_chars:" + name)
     for name in REQUIRED:
         if not values[name].strip():
             raise _err("empty_field:" + name)

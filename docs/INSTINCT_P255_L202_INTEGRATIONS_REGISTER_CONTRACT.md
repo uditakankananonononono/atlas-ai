@@ -14,9 +14,12 @@ Fields: id (<=64, unique across the register), project_id (<=64), name (<=64, un
 Projects sort by project_id, integrations by name. Header: `project <project_id> (<n> integrations)`. Line: `<name> <status> <purpose> <evidence>`. Evidence is `[<evidence_ref>]` when present and the literal `UNVERIFIED` when empty. Lines join with `\n`, with no trailing newline. An empty register renders as `""`. An unknown project_id is refused. Nothing in the module's output claims "connected" or "verified". `active` only records a declared status.
 
 ## Refusals (ValueError, `P255:` prefix, IC)
-`unknown_fields:entry`, `empty_field:<name>` (also for a missing required field), `bad_status:<value>`, `duplicate_id:<id>`, `duplicate_name:<name>`, `text_too_long:<name>`, `limit_exceeded:integrations_per_project` (>256), `limit_exceeded:projects` (>1024), `unknown_project:<project_id>`, `bad_type:<name>` (also `entry`, `register`, `project_id`).
+`unknown_fields:entry`, `empty_field:<name>` (also for a missing required field), `bad_status:<value>`, `duplicate_id:<id>`, `duplicate_name:<name>`, `text_too_long:<name>`, `limit_exceeded:integrations_per_project` (>256), `limit_exceeded:projects` (>1024), `bad_chars:<name>`, `unknown_project:<project_id>`, `bad_type:<name>` (also `entry`, `register`, `project_id`).
 
-Check order: entry type, unknown fields, missing required fields, field types in field order, blank, too long, status, then register state: duplicate id, duplicate name, per-project limit, project limit.
+Check order: entry type, unknown fields, missing required fields, field types in field order, control characters (`bad_chars`), blank, too long, status, then register state: duplicate id, duplicate name, per-project limit, project limit.
+
+## Control characters (R2 repair, IC)
+Every text field (id, project_id, name, purpose, evidence_ref) is REJECTED, not escaped, if it contains any Unicode control or line character: category Cc (includes newline, carriage return, tab, NUL, ESC, DEL, NEL), Zl (U+2028) or Zp (U+2029). Refusal: `P255:bad_chars:<name>`. This keeps one entry to exactly one rendered row, so caller data cannot forge extra project headers or integration rows.
 
 ## Limits
 Output artifact only. It does not discover, call, test or authenticate any integration, and does not verify that the stated purpose or status is true. No persistence. Passing tests is not audit acceptance.
