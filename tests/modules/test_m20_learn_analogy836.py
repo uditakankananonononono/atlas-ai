@@ -190,3 +190,10 @@ def test_r2_unmapped_source_sort_fixed_seed():
  code='import json;from app.modules.m20_general_cognitive_worker.analogy_cases import analogy;p=json.loads('+repr(json.dumps(p))+');assert analogy(p)["unmapped_source_features"]==["c","d","f","h","j","m","q","z"]'
  result=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'0'},capture_output=True,text=True)
  assert result.returncode==0,result.stderr
+
+def test_r3_unmapped_source_prevents_complete_and_unknown_target_refuses():
+ p=analogy();p['analogy_source_features']['c']='extra';r=core.analogy(p)
+ assert r['mapping_complete'] is False and r['status']=='mapping_gaps' and r['unmapped_source_features']==['c']
+ p=analogy();p['analogy_correspondences'][0]['target_feature']='unknown'
+ with pytest.raises(LearningReasoningError):run('analogical_reasoning',p)
+ exact_error(core.analogy,p,'known feature references and unique source mapping required')
