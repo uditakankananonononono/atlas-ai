@@ -261,3 +261,10 @@ def test_purity_and_surface():
     assert repr(d) == before and a == lp.review(d) and len(a["limits"]) == 3
     pub = [n for n in dir(lp) if not n.startswith("_") and callable(getattr(lp, n)) and getattr(getattr(lp, n), "__module__", "") == "libertarian_paternalism109"]
     assert sorted(pub) == ["LibertarianError", "review"]
+
+
+def test_share_over_one_refuses_with_values_message_not_sum_message():
+    # 1.5 + 0 would also miss the exact-sum rule; the per-value grammar must refuse first.
+    msg = refused(two(s={"x": "1.5", "y": "0"}), "population_shares values")
+    assert "sum" not in msg
+    assert "1.5" not in msg
