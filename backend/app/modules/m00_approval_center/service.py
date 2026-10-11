@@ -786,6 +786,19 @@ def _install_extensions() -> None:
                             return {"approval_id": approval_id, "effect_id": effect_id,
                                     "allowed": True, "consumed_at": _aware(existing.consumed_at)}
                         raise ApprovalConflictError("approval has already been consumed")
+                    # Canonical permission semantics: an approved grant past
+                    # expires_at refuses NEW consumption here, inside the
+                    # atomic consume transaction (same txn as the permit
+                    # insert, so the check survives races). The idempotent
+                    # receipt return above is deliberately checked first: a
+                    # permit consumed before expiry stays valid.
+                    # The entry clock is stale by the time the row is read;
+                    # refresh it here so time crossing expires_at during the
+                    # fetch still refuses. The refreshed timestamp is also
+                    # what the permit and audit event record.
+                    now = self._clock()
+                    if row.expires_at is not None and _aware(row.expires_at) <= now:
+                        raise ApprovalConflictError("approval has expired")
                     if row.status != ApprovalStatus.APPROVED.value:
                         raise ApprovalConflictError(f"approval is {row.status}, not approved")
                     stored = _request_hash(module_id=row.module_id, action_type=row.action_type,
