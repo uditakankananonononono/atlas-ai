@@ -479,3 +479,11 @@ def test_not_counted_lists_only_audited_categories():
     arts = full() + [art("d1", "dataset", "data/d.csv", status="EMPTY_FILE")]
     rep = A.audit_project(result(arts))
     assert rep["not_counted"] == []
+
+
+def test_report_source_lines_do_not_alias_the_input():
+    r = result([])
+    report = A.audit_project(r)
+    r["source_lines"].append("P1|L1")
+    assert report["source_lines"] == ["P81|L69"]
+    assert report["source_lines"] is not r["source_lines"]
