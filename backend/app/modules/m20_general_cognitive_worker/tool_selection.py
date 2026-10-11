@@ -15,7 +15,7 @@ from typing import Any
 
 from .embeddings import DeterministicEmbedding, EmbeddingProvider, cosine_similarity, tokenize
 from .schemas import Risk
-from .tools import ToolRegistry
+from .tools import ToolRegistry, policy_refusal_for_effect
 
 RISK_PENALTY = {Risk.READ: 0.0, Risk.REVERSIBLE: 0.1, Risk.EXTERNAL: 0.25, Risk.IRREVERSIBLE: 0.45}
 
@@ -132,6 +132,8 @@ class ToolSelector:
         for tool in self.registry._tools.values():
             spec = tool.spec
             missing = tool.check_preconditions(context)
+            refusal = policy_refusal_for_effect(spec.effect_class)
+            blocked = bool(missing) or refusal is not None
             capability_tokens = set(tokenize(" ".join(spec.capabilities) + " " + spec.name.replace("_", " ")))
             if step_tokens and capability_tokens:
                 capability_match = len(step_tokens & capability_tokens) / len(step_tokens | capability_tokens)
@@ -147,7 +149,7 @@ class ToolSelector:
                 + 0.30 * description_similarity
                 + 0.15 * historical
                 + 0.10 * (1.0 - risk_penalty)
-                - (0.5 if missing else 0.0)
+                - (0.5 if blocked else 0.0)
             )
             scored.append(ToolScore(
                 tool_name=spec.name, total=round(total, 4),
@@ -158,8 +160,8 @@ class ToolSelector:
                 supplied_failures=self._history.get(spec.name,(0.0,0.0))[1],
                 supplied_unknowns=self._unknowns.get(spec.name, 0.0),
                 risk_penalty=risk_penalty,
-                preconditions_met=not missing,
-                missing_preconditions=missing,
+                preconditions_met=not blocked,
+                missing_preconditions=missing + ([refusal] if refusal is not None else []),
             ))
         scored.sort(key=lambda s: s.total, reverse=True)
         return scored

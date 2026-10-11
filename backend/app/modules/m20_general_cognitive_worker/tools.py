@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable
 
 from app.core.providers import ProviderOutcomeUnknown
+from app.modules.c30 import policy as _policy
 
 from .safety import SafetyGate, requires_approval
 from .schemas import ActionRecord, ApprovalGateDecision, Risk, ToolSpec
@@ -95,9 +96,13 @@ class RegisteredTool:
         return self._handler
 
     def check_preconditions(self, context: dict[str, Any]) -> list[str]:
-        """Each precondition is a context key that must be truthy."""
+        """Each precondition is a context key that must be the bool True.
+
+        Strict fail-closed (M20-POL): 1, "yes", "true", non-empty strings and
+        lists no longer satisfy - this only narrows what passes, never widens.
+        """
         missing = [
-            key for key in self.spec.preconditions if not context.get(key)
+            key for key in self.spec.preconditions if context.get(key) is not True
         ]
         return missing
 
@@ -111,6 +116,38 @@ class RegisteredTool:
                 "parameters": self.spec.parameters or {"type": "object", "properties": {}},
             },
         }
+
+
+# M20-POL: ToolSpec declared effect class -> canonical c30.policy standing rule.
+# The mapping lives here only; the refusal code always comes from the guard.
+_EFFECT_CLASS_TO_RULE = {
+    "spend": "spend",
+    "outreach": "outreach",
+    "account": "fakeacct",
+    "post": "autopost",
+    "trade": "trade",
+    "scrape": "scrape",
+}
+
+
+def policy_refusal_for_effect(effect_class) -> str | None:
+    """Deny-only policy verdict for a ToolSpec's declared effect class.
+
+    Returns a POLICY_REFUSED_* code when the declared class is a standing
+    refusal, None when the tool declares no effect (None or 'none'). An
+    unknown declared class refuses closed: a new class can never silently
+    pass. Never raises; never approves."""
+    if effect_class is None or effect_class == "none":
+        return None
+    action = _EFFECT_CLASS_TO_RULE.get(effect_class)
+    if action is None:
+        return "POLICY_REFUSED_UNKNOWN:%s" % str(effect_class)[:64]
+    try:
+        _policy.check(action, "POLICY")
+    except ValueError as exc:
+        return str(exc)
+    # Fail closed if the guard ever passes a mapped standing rule.
+    return "POLICY_REFUSED_UNKNOWN:%s" % action
 
 
 class ToolRegistry:
@@ -182,6 +219,9 @@ class ToolDispatcher:
         arguments = copy.deepcopy(arguments)
         tool.validate_arguments(arguments)
         context = context or {}
+        refusal = policy_refusal_for_effect(tool.spec.effect_class)
+        if refusal is not None:
+            raise ToolBlockedError(name, [refusal])
         missing = tool.check_preconditions(context)
         if missing:
             raise ToolBlockedError(name, [f"missing precondition: {m}" for m in missing])

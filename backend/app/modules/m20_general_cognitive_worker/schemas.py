@@ -227,6 +227,9 @@ class ToolSpec(BaseModel):
     capabilities: list[str] = Field(default_factory=list)
     timeout_seconds: int = 60
     max_retries: int = 2
+    # M20-POL: declared side-effect class for the c30 policy gate. None/'none'
+    # means no policy call; unknown declared classes refuse closed at dispatch.
+    effect_class: str | None = None
 
 
 class TaskContext(BaseModel):

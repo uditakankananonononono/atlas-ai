@@ -119,6 +119,10 @@ async def test_dispatcher_preconditions():
         await dispatcher.dispatch("deploy", {}, context={"tests_passing": False})
     record = await dispatcher.dispatch("deploy", {}, context={"tests_passing": True})
     assert record.succeeded
+    # M20-POL strict fail-closed: only the bool True satisfies a precondition.
+    for bad in (1, "yes", "true", []):
+        with pytest.raises(ToolBlockedError):
+            await dispatcher.dispatch("deploy", {}, context={"tests_passing": bad})
 
 
 def test_tool_registration_policy_snapshot_cannot_be_weakened_by_caller():

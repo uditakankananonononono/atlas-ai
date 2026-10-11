@@ -346,7 +346,7 @@ class GCWRuntime:
         return updated
 
     def preflight_task(self, task_id, *, context=None):
-        from .tools import ToolError, ToolBlockedError
+        from .tools import ToolError, ToolBlockedError, policy_refusal_for_effect
         task = self.get_task(task_id)
         if task is None: raise KeyError(task_id)
         context = context or {}
@@ -366,6 +366,8 @@ class GCWRuntime:
                     row['issues'].append('unknown_tool'); rows.append(row); continue
                 tiers = [Risk.READ, Risk.REVERSIBLE, Risk.EXTERNAL, Risk.IRREVERSIBLE]
                 row['effective_risk'] = tiers[max(tiers.index(tool.spec.risk), tiers.index(node.risk))].value
+                refusal = policy_refusal_for_effect(tool.spec.effect_class)
+                if refusal is not None: row['issues'].append(refusal)
                 row['missing_preconditions'] = tool.check_preconditions(context)
                 if row['missing_preconditions']: row['issues'].append('missing_preconditions')
                 if bindings(node.arguments):
