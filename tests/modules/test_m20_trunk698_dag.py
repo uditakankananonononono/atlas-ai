@@ -438,3 +438,141 @@ def test_exhaustive_dag_oracle_up_to_5_nodes():
                     assert b["state"] == state, (par, trunk_tip, tip, b["state"])
                     cases += 1
     assert cases > 20000
+
+
+# ================================================================ R2 audit pins (tests only; runtime unchanged)
+def test_source_ref_length_guard_top_commit_branch_check_200_ok_201_refused():
+    ok, bad = "r" * 200, "r" * 201
+    d = base(); d["source_ref"] = ok
+    analyze_trunk(d)
+    d["source_ref"] = bad
+    assert msg(d) == "source_ref exceeds 200 characters"
+    d = base(); d["commits"][0]["source_ref"] = ok
+    analyze_trunk(d)
+    d["commits"][0]["source_ref"] = bad
+    assert msg(d) == f"commit {S(1)} source_ref exceeds 200 characters"
+    d = base(); d["branches"][1]["source_ref"] = ok
+    analyze_trunk(d)
+    d["branches"][1]["source_ref"] = bad
+    assert msg(d) == "branch feat source_ref exceeds 200 characters"
+    d = base(); d["checks"][0]["source_ref"] = ok
+    analyze_trunk(d)
+    d["checks"][0]["source_ref"] = bad
+    assert msg(d) == f"check ci@{S(5)} source_ref exceeds 200 characters"
+    d = base(); d["source_ref"] = "x" * 199 + "é"  # 200 characters, 201 bytes: the limit counts characters
+    analyze_trunk(d)
+
+
+@pytest.mark.parametrize("trunk", [5, None, "", "a" * 101, "bad name", "ma!n", ["main"], True])
+def test_invalid_trunk_name_has_its_own_diagnostic(trunk):
+    d = base(); d["trunk"] = trunk
+    assert msg(d) == f"invalid trunk name {trunk!r}"
+
+
+def test_trunk_name_100_chars_ok_and_unknown_valid_trunk_is_a_different_error():
+    d = base(); d["trunk"] = "t" * 100; d["branches"][0]["name"] = "t" * 100
+    assert analyze_trunk(d)["trunk"]["name"] == "t" * 100
+    d = base(); d["trunk"] = "release/1.x_y-z"
+    assert msg(d) == "trunk branch release/1.x_y-z not in branches"
+
+
+def test_required_checks_cap_exact_with_message():
+    n = mod.MAX_REQUIRED
+    d = base(); d["required_checks"] = [f"r{i}" for i in range(n)]; d["checks"] = []
+    assert len(analyze_trunk(d)["trunk"]["required_checks"]) == n
+    d["required_checks"].append("rX")
+    assert msg(d) == f"required_checks exceed {n}"
+    d["required_checks"] = [f"r{i}" for i in range(n)] + [5]
+    assert msg(d) == f"required_checks exceed {n}"  # the cap is checked before element validation
+
+
+def test_malformed_branch_and_check_objects_have_specific_diagnostics():
+    for bad in (None, "main", 5, ["main"]):
+        d = base(); d["branches"].append(bad)
+        assert msg(d) == "branch must be an object"
+        d = base(); d["checks"].append(bad)
+        assert msg(d) == "check must be an object"
+        d = base(); d["commits"].append(bad)
+        assert msg(d).startswith("commit ") and msg(d).endswith("must be an object")
+
+
+@pytest.mark.parametrize("name", [None, 5, "", "a" * 101, "bad\nname", "bad;name", ["ci"]])
+def test_invalid_check_record_name_diagnostic(name):
+    d = base(); d["checks"][0]["name"] = name
+    assert msg(d) == f"invalid check name {name!r}"
+
+
+def test_check_name_100_chars_ok_and_spaces_allowed_in_checks_not_branches():
+    d = base(); d["checks"][0]["name"] = "c" * 100
+    analyze_trunk(d)
+    d = base(); d["checks"][0]["name"] = "ci job"
+    analyze_trunk(d)
+    d = base(); d["branches"][1]["name"] = "feat x"
+    assert msg(d) == "invalid branch name 'feat x'"
+
+
+@pytest.mark.parametrize("tz", ["+00:60", "+05:60", "+10:99", "-00:60", "-23:75", "+24:00", "-24:00", "+23:60", "+99:00"])
+def test_timezone_offset_components_out_of_range_refused(tz):
+    d = base(); d["reference_time"] = "2026-10-11T12:00:00" + tz
+    assert msg(d) == "timestamp reference_time must be ISO-8601 with explicit UTC offset"
+    d = base(); d["commits"][0]["committed_at"] = "2026-07-01T00:00:00" + tz
+    assert msg(d) == f"timestamp commit {S(1)} committed_at must be ISO-8601 with explicit UTC offset"
+
+
+@pytest.mark.parametrize("ref,utc", [("2026-10-12T12:00:00+23:59", "2026-10-11T12:01:00Z"), ("2026-10-11T12:00:00-23:59", "2026-10-12T11:59:00Z"),
+                                     ("2026-10-11T12:00:00+00:59", "2026-10-11T11:01:00Z"), ("2026-10-11T12:00:00-00:00", "2026-10-11T12:00:00Z"),
+                                     ("2026-10-11T20:00:00+14:00", "2026-10-11T06:00:00Z")])
+def test_timezone_offset_component_edges_accepted(ref, utc):
+    d = base(); d["reference_time"] = ref
+    assert analyze_trunk(d)["reference_time"] == utc
+
+
+def age_case(ts):
+    """feature branch whose only unique commit is stamped `ts`; reference time is 06:30:00Z."""
+    d = base()
+    d["commits"] = [C(1, [], 100), C(2, [1], 90), C(3, [2], 30), {"sha": S(4), "parents": [S(2)], "committed_at": ts}]
+    d["branches"] = [{"name": "main", "tip": S(3)}, {"name": "feat", "tip": S(4)}]
+    d["checks"] = []
+    d["max_branch_age_hours"] = 8760
+    return br(analyze_trunk(d), "feat")
+
+
+@pytest.mark.parametrize("ts,age", [("2026-10-11T06:30:00Z", 0), ("2026-10-11T06:29:59Z", 1), ("2026-10-11T05:30:00Z", 3600),
+                                    ("2026-10-09T03:29:55Z", 2 * 86400 + 3 * 3600 + 5)])
+def test_whole_second_ages_are_integers(ts, age):
+    got = age_case(ts)["age_seconds"]
+    assert got == age and type(got) is int
+
+
+@pytest.mark.parametrize("ts,age", [("2026-10-11T06:29:59.750000Z", 0.25), ("2026-10-11T06:29:59.999999Z", 0.000001),
+                                    ("2026-10-11T06:29:58.999999Z", 1.000001), ("2026-10-11T06:29:59.5Z", 0.5),
+                                    ("2026-10-09T03:29:55.5Z", 2 * 86400 + 3 * 3600 + 4.5), ("2026-10-11T06:29:59.000001Z", 0.999999),
+                                    ("2026-10-10T06:29:59.000001Z", 86400.999999)])
+def test_fractional_ages_keep_microsecond_precision_as_float(ts, age):
+    got = age_case(ts)["age_seconds"]
+    assert type(got) is float and got == age
+
+
+def test_fractional_age_beyond_a_second_is_not_truncated_or_rounded():
+    got = age_case("2026-10-11T06:00:00.123456Z")["age_seconds"]
+    assert got == 1799.876544 and got != 1799 and got != 1800
+
+
+def test_trunk_summary_comes_from_the_trunk_branch_not_another_branch():
+    d = base()  # main: ci passed, lint missing; feat: ci and lint passed
+    r = analyze_trunk(d)
+    assert r["trunk"]["required_checks_covered"] is False
+    assert r["trunk"]["required_checks"] == br(r, "main")["required_checks"]
+    assert r["trunk"]["required_checks"]["ci"]["status"] == "passed" and r["trunk"]["required_checks"]["lint"]["status"] == "missing"
+    assert r["trunk"]["required_checks"] != br(r, "feat")["required_checks"]
+    assert r["trunk"]["tip"] == S(3) and r["trunk"]["commit_count"] == 3
+    d = base(); d["checks"] += [{"name": "lint", "sha": S(3), "conclusion": "success"}, {"name": "ci", "sha": S(5), "conclusion": "failure"}]
+    d["checks"] = [c for c in d["checks"] if not (c["name"] == "ci" and c["sha"] == S(5) and c["conclusion"] == "success")]
+    r = analyze_trunk(d)
+    assert r["trunk"]["required_checks_covered"] is True and br(r, "feat")["required_checks_covered"] is False
+    # trunk name sorting after other branches and before them
+    for tname in ("aaa-trunk", "zzz-trunk"):
+        d = base(); d["trunk"] = tname; d["branches"][0]["name"] = tname
+        r = analyze_trunk(d)
+        assert r["trunk"]["name"] == tname and r["trunk"]["required_checks"] == br(r, tname)["required_checks"]
+        assert r["trunk"]["tip"] == S(3) and br(r, tname)["state"] == "trunk"
