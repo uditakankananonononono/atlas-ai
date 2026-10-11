@@ -156,5 +156,38 @@ class TestPatternListContract(unittest.TestCase):
         self.assertEqual(PROHIBITED_PATTERNS, DOCUMENTED_PATTERNS)
 
 
+
+
+
+
+class TestOffsetOriginalCoordinates(unittest.TestCase):
+    def test_u0130_expansion_offset_is_in_original_text(self):
+        # 'İ'.lower() expands to two codepoints (i + U+0307); the returned
+        # offset must index the caller's original text, not the lowered copy.
+        out = screen(doc('İ centrifuge'))
+        self.assertEqual(out['verdict'], 'blocked:wet_lab_protocol')
+        self.assertEqual(out['offset'], 2)
+        self.assertEqual('İ centrifuge'[out['offset']:], 'centrifuge')
+
+    def test_repeated_expanding_chars_accumulate_correctly(self):
+        text = 'İİ centrifuge'
+        out = screen(doc(text))
+        self.assertEqual(out['offset'], 3)
+        self.assertEqual(text[out['offset']:], 'centrifuge')
+        text = 'İn İstanbul we incubate at 37C.'
+        out = screen(doc(text))
+        self.assertEqual(out['matched_pattern'], 'incubate at')
+        self.assertEqual(text[out['offset']:], 'incubate at 37C.')
+
+    def test_casefold_only_expansions_do_not_match(self):
+        # Matching follows lower() semantics: 'ſ' (U+017F) casefolds to 's' but
+        # lowercases to itself, so it is not an 's' for this screen.
+        self.assertEqual(screen(doc('how to ſynthesize cells'))['verdict'], 'clear')
+
+    def test_ascii_offsets_unchanged(self):
+        out = screen(doc('We incubate at 37C overnight.'))
+        self.assertEqual(out['offset'], 3)
+
+
 if __name__ == '__main__':
     unittest.main()
