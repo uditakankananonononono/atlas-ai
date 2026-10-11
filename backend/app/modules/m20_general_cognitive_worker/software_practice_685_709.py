@@ -51,8 +51,19 @@ def _semver(d):
  return {'current_version':cur,'bump':level,'next_version':nxt,'changes':d['changes']}
 def _changelog(d):
  groups={k:[] for k in ('added','changed','deprecated','removed','fixed','security')}
- for x in d['changes']:groups.setdefault(x.get('category','changed').lower(),[]).append(x.get('description'))
- return {'version':d['version'],'sections':groups,'unreleased':bool(d.get('unreleased')),'source_change_ids':[x.get('id') for x in d['changes']]}
+ changes=d.get('changes')
+ if type(changes) is not list or not changes:raise ValueError('nonempty changes list required')
+ for x in changes:
+  if type(x) is not dict:raise ValueError('change entry must be a dict')
+  category=x.get('category')
+  if type(category) is not str:raise ValueError('category must name a changelog bucket')
+  category=category.strip().casefold()
+  if category not in groups:raise ValueError('category must name a changelog bucket')
+  description=x.get('description')
+  if type(description) is not str or not description.strip():raise ValueError('description must be a nonempty string')
+  groups[category].append(description)
+ return {'version':d['version'],'sections':groups,'unreleased':bool(d.get('unreleased')),'source_change_ids':[x.get('id') for x in changes]}
+
 def _release(d):return {'version':d['version'],'audience':d['audience'],'highlights':[x for x in d['changes'] if x.get('user_visible')],'breaking_changes':[x for x in d['changes'] if x.get('breaking')],'upgrade_steps':d.get('upgrade_steps',[]),'known_issues':d.get('known_issues',[]),'generated_from_change_ids':[x.get('id') for x in d['changes']]}
 def _docs(d):
  rows=[]
