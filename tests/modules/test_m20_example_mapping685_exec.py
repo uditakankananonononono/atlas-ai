@@ -3,7 +3,7 @@ from copy import deepcopy
 from itertools import product
 import math
 import pytest
-from app.modules.m20_general_cognitive_worker.example_mapping_executor import evaluate_example_mapping, LIMITS
+from app.modules.m20_general_cognitive_worker.example_mapping_executor import evaluate_example_mapping
 
 
 def packet():
@@ -90,27 +90,28 @@ def test_strict_scalar_inputs(kind,value):
     with pytest.raises(ValueError):evaluate_example_mapping(p)
 
 
-@pytest.mark.parametrize('key',['fields','rules','examples','questions'])
-def test_exact_collection_bounds(key):
-    p=packet();n=LIMITS[key]
+@pytest.mark.parametrize('key,n',[('fields',32),('rules',64),('examples',128),('questions',64)])
+def test_exact_collection_bounds(key,n):
+    p=packet()
     if key=='fields':p[key]=[{'id':f'f{i}','type':'integer'} for i in range(n)];p['rules'][0]['predicate']['field']='f0';p['examples'][0]['inputs']={f'f{i}':18 for i in range(n)}
     elif key=='rules':p[key]=[{**deepcopy(p['rules'][0]),'id':f'r{i}'} for i in range(n)];p['examples'][0]['expected']={'r0':True}
     elif key=='examples':p[key]=[{**deepcopy(p['examples'][0]),'id':f'e{i}'} for i in range(n)]
     else:p[key]=[{'id':f'q{i}','text':'x','source_ids':['x']} for i in range(n)]
     evaluate_example_mapping(p)
     p[key].append({**deepcopy(p[key][0]),'id':'overflow'})
+    if key=='fields':p['examples'][0]['inputs']['overflow']=18
     with pytest.raises(ValueError):evaluate_example_mapping(p)
 
 
 def test_depth_node_and_text_bounds():
-    p=packet();p['story']='x'*LIMITS['text'];evaluate_example_mapping(p);p['story']+='x'
+    p=packet();p['story']='x'*2000;evaluate_example_mapping(p);p['story']+='x'
     with pytest.raises(ValueError):evaluate_example_mapping(p)
     p=packet();leaf=p['rules'][0]['predicate'];pred=leaf
-    for _ in range(LIMITS['depth']-1):pred={'op':'not','arg':pred}
+    for _ in range(8-1):pred={'op':'not','arg':pred}
     p['rules'][0]['predicate']=pred;evaluate_example_mapping(p)
     p['rules'][0]['predicate']={'op':'not','arg':pred}
     with pytest.raises(ValueError):evaluate_example_mapping(p)
-    p=packet();p['rules'][0]['predicate']={'op':'and','args':[leaf]*(LIMITS['nodes']-1)};evaluate_example_mapping(p)
+    p=packet();p['rules'][0]['predicate']={'op':'and','args':[leaf]*(64-1)};evaluate_example_mapping(p)
     p['rules'][0]['predicate']['args'].append(leaf)
     with pytest.raises(ValueError):evaluate_example_mapping(p)
 
@@ -146,13 +147,13 @@ def test_number_bounds_and_non_scalars(place,value):
 
 
 def test_source_and_id_exact_bounds():
-    p=packet();p['rules'][0]['source_ids']=[str(i) for i in range(LIMITS['sources'])]
-    p['examples'][0]['id']='x'*LIMITS['id'];evaluate_example_mapping(p)
+    p=packet();p['rules'][0]['source_ids']=[str(i) for i in range(16)]
+    p['examples'][0]['id']='x'*128;evaluate_example_mapping(p)
     p['rules'][0]['source_ids'].append('overflow')
     with pytest.raises(ValueError):evaluate_example_mapping(p)
-    p=packet();p['examples'][0]['id']='x'*(LIMITS['id']+1)
+    p=packet();p['examples'][0]['id']='x'*(128+1)
     with pytest.raises(ValueError):evaluate_example_mapping(p)
-    p=packet();p['rules'][0]['source_ids']=['x'*LIMITS['id']];evaluate_example_mapping(p)
+    p=packet();p['rules'][0]['source_ids']=['x'*128];evaluate_example_mapping(p)
     p['rules'][0]['source_ids'][0]+='x'
     with pytest.raises(ValueError):evaluate_example_mapping(p)
 
@@ -175,3 +176,118 @@ def test_output_mutation_does_not_touch_input():
     p=packet();o=evaluate_example_mapping(p);o['fields'][0]['id']='mutated';o['rules'][0]['predicate']['value']=0
     o['examples'][0]['inputs']['age']=0;o['rules'][0]['source_ids'].append('mutated')
     assert p==packet()
+
+
+def test_mismatch_is_the_only_resolution_factor():
+    p=packet();p['examples'][0]['expected']['r']=False
+    o=evaluate_example_mapping(p)
+    assert o['mismatches'] and not o['uncovered_rule_ids'] and not o['unresolved_questions']
+    assert o['mapping_satisfied'] is False and o['status']=='needs_resolution'
+
+
+def test_uncovered_is_the_only_resolution_factor():
+    p=packet();p['rules'].append({'id':'z','predicate':{'op':'eq','field':'age','value':18},'source_ids':['z']})
+    o=evaluate_example_mapping(p)
+    assert not o['mismatches'] and o['uncovered_rule_ids']==['z'] and not o['unresolved_questions']
+    assert o['mapping_satisfied'] is False and o['status']=='needs_resolution'
+
+
+def test_question_is_the_only_resolution_factor():
+    p=packet();p['questions']=[{'id':'q','text':'Why 18?','source_ids':['q']}]
+    o=evaluate_example_mapping(p)
+    assert not o['mismatches'] and not o['uncovered_rule_ids'] and o['unresolved_questions']
+    assert o['mapping_satisfied'] is False and o['status']=='needs_resolution'
+
+
+def test_empty_examples_without_mismatch_or_questions():
+    p=packet();p['examples']=[];o=evaluate_example_mapping(p)
+    assert o['examples']==[] and not o['mismatches'] and not o['unresolved_questions']
+    assert o['uncovered_rule_ids']==['r'] and o['mapping_satisfied'] is False
+    # Empty examples necessarily leave nonempty rules uncovered under this schema.
+
+
+class DictSubclass(dict):
+    pass
+
+
+@pytest.mark.parametrize('place',['packet','field','rule','predicate','example','inputs','expected','question'])
+def test_dict_subclasses_refused(place):
+    p=packet()
+    if place=='packet':p=DictSubclass(p)
+    elif place=='field':p['fields'][0]=DictSubclass(p['fields'][0])
+    elif place=='rule':p['rules'][0]=DictSubclass(p['rules'][0])
+    elif place=='predicate':p['rules'][0]['predicate']=DictSubclass(p['rules'][0]['predicate'])
+    elif place=='example':p['examples'][0]=DictSubclass(p['examples'][0])
+    elif place=='inputs':p['examples'][0]['inputs']=DictSubclass(p['examples'][0]['inputs'])
+    elif place=='expected':p['examples'][0]['expected']=DictSubclass(p['examples'][0]['expected'])
+    else:p['questions']=[DictSubclass(id='q',text='why',source_ids=['q'])]
+    with pytest.raises(ValueError):evaluate_example_mapping(p)
+
+
+def test_source_union_and_expected_order_are_canonical():
+    p=packet();p['rules'][0]['source_ids']=['z','shared','a']
+    p['rules'].append({'id':'a','predicate':{'op':'eq','field':'age','value':18},'source_ids':['z','shared','a']})
+    p['examples'][0]['source_ids']=['z','shared','b']
+    p['examples'][0]['expected']={'r':False,'a':False}
+    p['questions']=[{'id':'q','text':'why','source_ids':['z','a']}]
+    o=evaluate_example_mapping(p)
+    assert list(o['examples'][0]['expected'])==['a','r']
+    assert list(o['examples'][0]['actual'])==['a','r']
+    assert [m['rule_id'] for m in o['mismatches']]==['a','r']
+    for m in o['mismatches']:assert m['source_ids']==['a','b','shared','z']
+    assert o['rules'][0]['source_ids']==['a','shared','z']
+    assert o['examples'][0]['source_ids']==['b','shared','z']
+    assert o['unresolved_questions'][0]['source_ids']==['a','z']
+    q=deepcopy(p);q['rules'].reverse();q['examples'][0]['expected']={'a':False,'r':False}
+    for r in q['rules']:r['source_ids'].reverse()
+    q['examples'][0]['source_ids'].reverse();q['questions'][0]['source_ids'].reverse()
+    other=evaluate_example_mapping(q)
+    assert o==other and list(other['examples'][0]['expected'])==['a','r']
+
+
+@pytest.mark.parametrize('place',['input','literal','question'])
+def test_fixed_2000_character_string_cap(place):
+    p=packet();p['fields'][0]['type']='string';p['rules'][0]['predicate']={'op':'eq','field':'age','value':'x'}
+    p['examples'][0]['inputs']['age']='x'
+    if place=='input':p['examples'][0]['inputs']['age']='x'*2000
+    elif place=='literal':p['rules'][0]['predicate']['value']='x'*2000
+    else:p['questions']=[{'id':'q','text':'x'*2000,'source_ids':['q']}]
+    evaluate_example_mapping(p)
+    if place=='input':p['examples'][0]['inputs']['age']+='x'
+    elif place=='literal':p['rules'][0]['predicate']['value']+='x'
+    else:p['questions'][0]['text']+='x'
+    with pytest.raises(ValueError):evaluate_example_mapping(p)
+
+
+@pytest.mark.parametrize('op',['and','or'])
+def test_fixed_depth_8_and_9_through_boolean_args(op):
+    p=packet();pred=p['rules'][0]['predicate']
+    for _ in range(7):pred={'op':op,'args':[pred]}
+    p['rules'][0]['predicate']=pred;evaluate_example_mapping(p)
+    p['rules'][0]['predicate']={'op':op,'args':[pred]}
+    with pytest.raises(ValueError):evaluate_example_mapping(p)
+
+
+@pytest.mark.parametrize('op',['and','or'])
+def test_boolean_args_65_refused_without_short_circuit(op):
+    p=packet();leaf=p['rules'][0]['predicate']
+    # At most 63 leaves plus a root fits the 64-node rule budget.
+    p['rules'][0]['predicate']={'op':op,'args':[deepcopy(leaf) for _ in range(63)]}
+    evaluate_example_mapping(p)
+    for n in [64,65]:
+        p['rules'][0]['predicate']={'op':op,'args':[deepcopy(leaf) for _ in range(n)]}
+        with pytest.raises(ValueError):evaluate_example_mapping(p)
+
+
+@pytest.mark.parametrize('collection',['fields','rules'])
+def test_nonempty_declarations_independently_refused(collection):
+    p=packet();p[collection]=[]
+    with pytest.raises(ValueError,match='collection bound'):evaluate_example_mapping(p)
+
+
+@pytest.mark.parametrize('kind,value',[('string','a'),('boolean',True)])
+@pytest.mark.parametrize('op',['lt','le','gt','ge'])
+def test_well_typed_non_numeric_ordering_is_still_refused(kind,value,op):
+    p=packet();p['fields'][0]['type']=kind;p['rules'][0]['predicate']={'op':op,'field':'age','value':value}
+    p['examples'][0]['inputs']['age']=value
+    with pytest.raises(ValueError,match='ordering requires numeric'):evaluate_example_mapping(p)
