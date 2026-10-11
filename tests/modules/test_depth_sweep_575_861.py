@@ -88,11 +88,11 @@ def test_learning_rows_have_evaluation_and_uncertainty(row):
         if row == 847: payload["memberships"] = {"x": .5}
     else:
         payload["problem"] = "solve this"
-    if row in {810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,839,842,843,844,845,847,848,849,850,851,852,853}:
+    if row in {810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,839,842,843,844,845,847,848,849,850,851,852,853}:
         # These rebuilt operators require real observations/formulas/problems;
         # a source label and objective alone cannot establish execution.
         from app.modules.m20_general_cognitive_worker.learning_reasoning_810_859 import LearningReasoningError
-        with pytest.raises(LearningReasoningError,match='explanation_target' if row in (813,814) else 'concepts' if row in (815,816) else 'arithmetic_task' if row in (817,818) else 'learning_goal' if row==824 else 'plan_goal' if row in (820,825) else 'artifact_id' if row in (827,828) else 'activation_concepts' if row==832 else 'transfer_rule' if row==833 else 'transfer_schema' if row in (834,835) else None):execute(name,payload)
+        with pytest.raises(LearningReasoningError,match='explanation_target' if row in (813,814) else 'concepts' if row in (815,816) else 'arithmetic_task' if row in (817,818) else 'learning_goal' if row==824 else 'plan_goal' if row in (820,825) else 'artifact_id' if row in (827,828) else 'activation_concepts' if row==832 else 'transfer_rule' if row==833 else 'transfer_schema' if row in (834,835) else 'analogy_source_features' if row==836 else 'case_feature_weights' if row==837 else None):execute(name,payload)
         return
     response = execute(name, payload)
     assert response["row_id"] == row

@@ -53,3 +53,24 @@ def test_mounted_auth_minimal_refusal_tenant(monkeypatch,oidc_auth_headers):
   assert c.post(path,headers=h,json={'payload':p}).status_code==200
   assert c.post(path,headers=h,json={'payload':{'source':SRC}}).status_code==422
   assert c.post(path,headers=h,json={'payload':{**p,'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
+
+def test_inference_source_mismatch_and_mixed_checks():
+ p=analogy();p['candidate_inferences'][0]['value']='blue';r=run('analogical_reasoning',p);assert r['inference_reports'][0]['source_value_matches'] is False and r['inference_reports'][0]['supported'] is False
+ p=case();p['case_target_checks']={'selected_case_id':'z','checks':[{'check_id':'yes','passed':True,'source':'fixture'},{'check_id':'no','passed':False,'source':'fixture'}]};r=run('case_based_reasoning',p);assert r['checks_passed'] is False and r['adapted_action'] is None
+
+def test_exact_case_cap_weights_and_sources():
+ p=case();p['case_bank']=[{**p['case_bank'][0],'case_id':str(i)}for i in range(256)];assert len(run('case_based_reasoning',p)['ranked_cases'])==256
+ p['case_bank'].append({**p['case_bank'][0],'case_id':'256'})
+ with pytest.raises(LearningReasoningError):run('case_based_reasoning',p)
+ for weight in [True,float('nan'),1000.1]:
+  p=case();p['case_feature_weights']['color']=weight
+  with pytest.raises(LearningReasoningError):run('case_based_reasoning',p)
+ for key in ['case_id','source','proposed_action']:
+  p=case();p['case_bank'][0][key]=''
+  with pytest.raises(LearningReasoningError):run('case_based_reasoning',p)
+
+def test_full_boundaries_checks_echo_and_no_autoeffect():
+ p=case();p['case_target_checks']={'selected_case_id':'z','checks':[{'check_id':'c','passed':True,'source':'fixture'}]};r=run('case_based_reasoning',p)
+ assert r['checks']==p['case_target_checks']['checks'] and r['source_truth_verified'] is False and r['target_source']=='fixture:target'
+ assert r['boundary']=='Declared weighted exact feature case retrieval and supplied action reuse only after caller-recorded target checks. No invented adaptation, execution, semantic similarity or general case learning.'
+ assert run('analogical_reasoning',analogy())['boundary']=='Explicit supplied symbolic correspondences and target allowed-value constraints only. Mapping gaps/many-to-one preserved; no semantic analogy discovery or independently verified inferences.'

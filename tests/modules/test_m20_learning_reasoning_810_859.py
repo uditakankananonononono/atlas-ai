@@ -45,8 +45,10 @@ def T(n,**x):
 @pytest.mark.parametrize('n,t',[('near_transfer','near'),('far_transfer','far')])
 def test_833_835_transfer_deep_structure_and_independent_performance(n,t):
  with pytest.raises(LearningReasoningError,match='transfer_schema'):T(n)
-def test_836_analogy_rejects_surface_similarity():assert T('analogical_reasoning')['analogy']['surface_similarity_is_insufficient']
-def test_837_case_reasoning_retrieve_reuse_revise_retain():assert len(T('case_based_reasoning')['case_reasoning_cycle'])==4
+def test_836_analogy_rejects_surface_similarity():
+ with pytest.raises(LearningReasoningError,match='analogy_source_features'):T('analogical_reasoning')
+def test_837_case_reasoning_retrieve_reuse_revise_retain():
+ with pytest.raises(LearningReasoningError,match='case_feature_weights'):T('case_based_reasoning')
 def R(n,**x):
  p={'source':SRC};p.update(x);return execute(n,p)['result']
 def test_838_rules_have_forward_trace():assert R('rule_based_reasoning',facts=['a'],rules=[{'id':'r','if':['a'],'then':'b'}])['rule_trace']==[{'rule':'r','fact':'b'}]
