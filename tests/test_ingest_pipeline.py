@@ -206,3 +206,54 @@ def test_job_refusals():
     with pytest.raises(TypeError):
         ResumableIngestJob(object())
     store.close()
+
+
+# --- audit pins on tip e47c4a31 (runtime frozen; pins only) ---
+
+def test_stored_payload_json_is_canonical_sorted_key_serialization(tmp_path):
+    import sqlite3
+    db = str(tmp_path / "ingest.sqlite")
+    store = IngestStore(db)
+    payload = {"zeta": 1, "alpha": [1, 2], "mid": {"b": 2, "a": 1}}
+    store.commit_batch("job", "rss_atom", [item("e1", payload=payload)], None)
+    store.close()
+    raw = sqlite3.connect(db).execute(
+        "SELECT payload_json FROM ingest_items WHERE source = 'rss_atom' AND external_id = 'e1'").fetchone()[0]
+    assert raw == json.dumps(payload, sort_keys=True, default=str)
+    assert raw.index("alpha") < raw.index("mid") < raw.index("zeta")
+
+
+class CountingCollector:
+    """Collector-protocol double that only counts invocations."""
+
+    def __init__(self):
+        self.calls = 0
+
+    async def collect(self, config):
+        self.calls += 1
+        return CollectionBatch([item("e1")], requests=1, cursor=None)
+
+
+def test_invalid_names_refuse_before_collector_is_invoked():
+    store = IngestStore(":memory:")
+    job = ResumableIngestJob(store)
+    for override in ({"job_key": "  "}, {"job_key": ""}, {"source_name": ""},
+                     {"source_name": "   "}, {"max_batches": 0}, {"max_batches": -3},
+                     {"max_batches": 1.5}, {"max_batches": "2"}):
+        collector = CountingCollector()
+        kwargs = {"job_key": "rss", "source_name": "rss_atom", "collector": collector, "config": {}}
+        kwargs.update(override)
+        with pytest.raises(ValueError):
+            asyncio.run(job.run(**kwargs))
+        assert collector.calls == 0, f"collector invoked despite invalid {override}"
+    store.close()
+
+
+def test_optional_config_none_accepted():
+    collector = CountingCollector()
+    store = IngestStore(":memory:")
+    report = asyncio.run(ResumableIngestJob(store).run(
+        job_key="rss", source_name="rss_atom", collector=collector, config=None))
+    assert report["status"] == "completed" and collector.calls == 1
+    assert report["items_new"] == 1
+    store.close()

@@ -5,8 +5,11 @@ Candidate SCOPED unit. The doc line asks for continuous ingestion of
 platform terms barring scraping, paid services in the examples). This unit
 builds only the cleared bounded mechanism: a continuous-ingestion framework
 with a pluggable source, dedupe, a storage schema, and a resumable batch
-job, with one RSS source wired in. No scraping, no account or bot
-deployment, no paid services, no universal-internet ingestion.
+job, exercised through one RSS source: the existing FeedCollector supplied
+by the caller standalone. It is not mounted, not scheduled, and its wiring
+is unapplied and untested. No scraping, no account or bot deployment, no
+paid services, no universal-internet ingestion. Literal fulfilment of the
+doc line is unverified; this unit claims only the bounded mechanism here.
 
 Pluggable source: any object implementing the repo's existing Collector
 protocol (async collect(config) returning CollectionBatch). The RSS source
@@ -22,6 +25,8 @@ JSON, first/last seen timestamps and a seen count; ingest_checkpoints
 keyed on job_key carrying the last committed cursor and cumulative batch
 and item counters. Each batch commit writes its items and the checkpoint
 in one transaction, so the checkpoint never points past committed items.
+That guarantee is normal SQLite transaction atomicity against exceptions and
+process interruption; it is NOT OS- or power-loss crash durability.
 
 Dedupe: re-seen (source, external_id) pairs never duplicate a row; they
 update last_seen_at, seen_count, content hash and payload, and are counted
@@ -50,3 +55,5 @@ closed and reopened on-disk store), resume after a transient source
 failure, cursor-without-progress refusal, fresh pass after completion, and
 typed job refusals. ScriptedSource in the test file is an interface-level
 test double for cursor paging, not a feature.
+
+Disclosed slip: early-write gate order is a permanent disclosed slip.
