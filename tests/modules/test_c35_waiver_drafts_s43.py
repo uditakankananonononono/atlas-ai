@@ -2,8 +2,8 @@
 
 Prep only: the module drafts text and exposes no function that sends,
 registers, submits, pays or logs in. Cross-category check ORDER (forbidden
-keys vs types vs fee) is awaiting a peer ruling and is deliberately NOT
-asserted here: every refusal test below triggers exactly one category.
+keys vs types vs fee) was left open in the original test block: every
+refusal test in that block triggers exactly one category. Later classes pin order.
 """
 import ast
 import copy
@@ -466,7 +466,7 @@ class Validation(unittest.TestCase):
 
 
 class CheckOrder(unittest.TestCase):
-    """Peer-stated order (17:00): 1 request dict, 2 forbidden keys, 3 top-level,
+    """Earlier order pins: 1 request dict, 2 forbidden keys, 3 top-level,
     4 per-opportunity types + duplicate ids, 5 fee, 6 template, 7 recipient."""
 
     def test_1_before_2(self):
@@ -638,7 +638,7 @@ class Boundaries(unittest.TestCase):
 
 
 class SchemaKeys(unittest.TestCase):
-    """Repair-2 (peer text 17:20) plus my four builder choices: UNKNOWN:<parent>, BAD_TYPE:key."""
+    """Schema repair choices: UNKNOWN:<parent>, BAD_TYPE:key."""
 
     def test_unknown_top_level_key(self):
         refused(self, req(zzz=1), "APPLY_REFUSED_UNKNOWN:request")
@@ -721,7 +721,7 @@ class SchemaKeys(unittest.TestCase):
 
 
 class FullOrder(unittest.TestCase):
-    """Peer full order (17:23): 1 dict; 2 forbidden; 3 non-str key; 4 unknown allowlists (top, profile,
+    """Full order: 1 dict; 2 forbidden; 3 non-str key; 4 unknown allowlists (top, profile,
     opportunities in order); 5 top types; 6 top caps; 7 clean_text; 8 per-opp types, caps, clean, then
     duplicate ids; 9 fee; 10 placeholders; 11 strict recipient. Earlier step wins; first item wins."""
 
@@ -785,7 +785,7 @@ class FullOrder(unittest.TestCase):
 
     def test_7_clean_text_before_per_opportunity(self):
         refused(self, req(as_of="", opportunities=[op("o1", "5", title=None)]), "APPLY_REFUSED_BAD_TYPE:as_of")
-        # peer 2b85fb24: ISO shape is checked after the caps and BEFORE clean_text
+        # Validation order: ISO shape is checked after the caps and BEFORE clean_text
         refused(self, req(as_of="\x00" * 65), "APPLY_REFUSED_OVERSIZE:as_of")
         refused(self, req(as_of="x\x01", profile={"name": "a\x01", "school": "S"}), "APPLY_REFUSED_BAD_TYPE:as_of")
         refused(self, req(as_of="bad", profile={"name": "a" * 201, "school": "S"}), "APPLY_REFUSED_OVERSIZE:profile")
@@ -881,7 +881,7 @@ class NoEffects(unittest.TestCase):
                   "ssl", "email", "ftplib", "imaplib", "poplib", "webbrowser", "asyncio", "time",
                   "datetime", "random", "sqlite3", "shutil", "pathlib", "builtins"}
         self.assertEqual(names & banned, set())
-        self.assertTrue(names <= {"__future__", "hashlib", "json", "re", "decimal", "app"}, names)
+        self.assertTrue(names <= {"__future__", "hashlib", "json", "re", "decimal", "unicodedata", "app"}, names)
 
     def test_no_open_or_eval_calls(self):
         tree = ast.parse(_P.read_text(encoding="utf-8"))

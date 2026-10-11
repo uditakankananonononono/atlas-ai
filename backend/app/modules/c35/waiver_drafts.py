@@ -1,6 +1,6 @@
 """S4.3 / c35.waiver_drafts - fee-waiver draft queue (PREP ONLY).
 
-Owner spec pin (verbatim): "if there is fee, emails for fee waivers".
+Supplied requirement excerpt: "if there is fee, emails for fee waivers".
 
 Fills a supplied waiver template for opportunities that carry a fee and
 returns DRAFTS with recipient, subject and a content-hash id. There is no
@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import unicodedata
 from decimal import Decimal
 
 from app.modules.c30 import policy
@@ -105,7 +106,7 @@ def _valid_date(value):
     if not match:
         return False
     year, month, day = (int(g) for g in match.groups())
-    if not 1 <= month <= 12 or day < 1:
+    if year < 1 or not 1 <= month <= 12 or day < 1:
         return False
     leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
     days = (31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)[month - 1]
@@ -153,7 +154,7 @@ def _recipient(value):
     text = value.strip()
     if not text:
         return None, True, False
-    if _EMAIL_RE.fullmatch(text) and not any(ord(c) < 32 or ord(c) == 127 for c in text):
+    if _EMAIL_RE.fullmatch(text) and not any(unicodedata.category(c) in ('Cc', 'Zl', 'Zp') for c in value):
         return text, False, False
     return None, True, True
 
@@ -202,7 +203,7 @@ def run(request):
     _cap(as_of, "as_of", 64)
     for key in sorted(profile):
         _cap(profile[key], "profile", 200)
-    # ISO shape of as_of: after the caps, before clean_text (peer 2b85fb24)
+    # ISO shape of as_of: after the caps, before clean_text
     if not _valid_date(as_of):
         _bad("as_of")
     # 7. clean_text on as_of, profile name/school, template
