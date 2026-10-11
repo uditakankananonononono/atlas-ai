@@ -387,12 +387,37 @@ def test_scalar_arithmetic_and_isolation_receipt_counts():
 
 # --- Advisory pin round (auditor-4 specification); tests-only, core unchanged. ---
 
-def test_advisory_integer_assignment_boundary_pair():
-    ok = scenario(given=[{"op": "assign", "var": "x", "value": INT_LIMIT}],
-                  then=[{"assert": "equals", "var": "x", "value": INT_LIMIT}])
+@pytest.mark.parametrize("value", [INT_LIMIT, -INT_LIMIT])
+def test_advisory_integer_assignment_boundary_acceptance(value):
+    ok = scenario(given=[{"op": "assign", "var": "x", "value": value}],
+                  then=[{"assert": "equals", "var": "x", "value": value}])
     assert execute_scenarios({"scenarios": [ok]})["status"] == "all_passed"
+
+
+@pytest.mark.parametrize("value", [INT_LIMIT + 1, -(INT_LIMIT + 1)])
+def test_advisory_integer_assignment_boundary_refusal(value):
     with pytest.raises(ValueError, match="integer outside"):
-        execute_scenarios({"scenarios": [scenario(given=[{"op": "assign", "var": "x", "value": INT_LIMIT + 1}])]})
+        execute_scenarios({"scenarios": [scenario(given=[{"op": "assign", "var": "x", "value": value}])]})
+
+
+def test_advisory_increment_by_exactly_int_limit_accepted_both_directions():
+    # Pins abs(by) > INT_LIMIT against the >= mutant: by = +/-2^62 must pass validation.
+    pos = scenario(given=[{"op": "assign", "var": "x", "value": 0}],
+                   when=[{"op": "increment", "var": "x", "by": INT_LIMIT}],
+                   then=[{"assert": "equals", "var": "x", "value": INT_LIMIT}])
+    assert execute_scenarios({"scenarios": [pos]})["status"] == "all_passed"
+    neg = scenario(given=[{"op": "assign", "var": "x", "value": 0}],
+                   when=[{"op": "increment", "var": "x", "by": -INT_LIMIT}],
+                   then=[{"assert": "equals", "var": "x", "value": -INT_LIMIT}])
+    assert execute_scenarios({"scenarios": [neg]})["status"] == "all_passed"
+
+
+@pytest.mark.parametrize("bad_by", [INT_LIMIT + 1, -(INT_LIMIT + 1)])
+def test_advisory_increment_by_beyond_int_limit_refused(bad_by):
+    with pytest.raises(ValueError, match="within"):
+        execute_scenarios({"scenarios": [scenario(
+            given=[{"op": "assign", "var": "x", "value": 0}],
+            when=[{"op": "increment", "var": "x", "by": bad_by}])]})
 
 
 def test_advisory_scalar_string_length_boundary_pair():

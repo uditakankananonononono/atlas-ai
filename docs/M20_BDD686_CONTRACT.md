@@ -68,9 +68,10 @@ live in the separate wiring patch.
 
 ## Advisory disclosures (auditor pin round)
 
-- Exact acceptance/refusal pairs are pinned: assignment integers accept +/-2^62
-  and refuse 2^62+1; scalar strings accept 256 characters and refuse 257;
-  variable names accept 64 characters and refuse 65.
+- Exact acceptance/refusal pairs are pinned, both directions: assignment integers
+  and increment amounts accept +2^62 and -2^62 and refuse +/-(2^62+1); scalar
+  strings accept 256 characters and refuse 257; variable names accept 64
+  characters and refuse 65.
 - `provenance.input_sha256` binds the WHOLE caller packet: top-level JSON keys
   the executor does not use are ignored for execution but still change the hash.
 - Status priority: an assertion failure in an earlier scenario followed by the
