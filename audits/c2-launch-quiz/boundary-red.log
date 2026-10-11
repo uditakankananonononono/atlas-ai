@@ -1,0 +1,46 @@
+...........F..F....                                                      [100%]
+=================================== FAILURES ===================================
+______________ LaunchQuizTests.test_malformed_inputs_are_refusals ______________
+
+self = <test_launch_quiz_c2.LaunchQuizTests testMethod=test_malformed_inputs_are_refusals>
+
+    def test_malformed_inputs_are_refusals(self):
+        sid = self.complete()
+        for fn, args in ((self.engine.edit, ([], 'x')), (self.engine.plan, ('Task',))):
+            with self.assertRaises(QuizError):
+                if fn == self.engine.plan:
+                    fn(self.owner, sid, *args, action=[])
+                else:
+>                   fn(self.owner, sid, *args)
+
+tests/modules/test_launch_quiz_c2.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def edit(self, owner, sid, key, value):
+        s = self._get(owner, sid)
+        options = {k: choices for k, _, choices in BASE}
+>       if key not in s['preferences'] or value not in options.get(key, ()):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: unhashable type: 'list'
+
+backend/app/modules/m20_general_cognitive_worker/launch_quiz_c2.py:102: TypeError
+______________ LaunchQuizTests.test_policy_hook_can_only_restrict ______________
+
+self = <test_launch_quiz_c2.LaunchQuizTests testMethod=test_policy_hook_can_only_restrict>
+
+    def test_policy_hook_can_only_restrict(self):
+        calls = []
+        engine = LaunchQuiz(policy_hook=lambda action: calls.append(action) or False)
+        sid = engine.start('a', consent=True)['session_id']
+        for option in ('accuracy', 'evidence', 'compare', 'detailed'):
+            q = engine.question('a', sid)
+            engine.answer('a', sid, q['id'], option, 'Example.')
+>       with self.assertRaisesRegex(QuizError, 'POLICY_REFUSED_SHARED'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: QuizError not raised
+
+tests/modules/test_launch_quiz_c2.py:152: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_launch_quiz_c2.py::LaunchQuizTests::test_malformed_inputs_are_refusals
+FAILED tests/modules/test_launch_quiz_c2.py::LaunchQuizTests::test_policy_hook_can_only_restrict
+2 failed, 17 passed in 1.86s

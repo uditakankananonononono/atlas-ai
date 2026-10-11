@@ -1,0 +1,30 @@
+{
+  "unit": "C2",
+  "status": "IMPLEMENTED-BOUNDED",
+  "integration_status": "unmounted additive candidate",
+  "tests": {
+    "python": "3.12.14",
+    "real_conftest": true,
+    "passed": 21,
+    "failed": 0
+  },
+  "external_validation": {
+    "status": "NOT_RUN",
+    "reason": "independent validation delegated to integration gate"
+  },
+  "limits": [
+    "lexical style cues only",
+    "in-memory only",
+    "not a copy of mind",
+    "no main-app launch integration",
+    "shared policy mapping pending"
+  ],
+  "mutation_battery": {
+    "selected": 20,
+    "killed": 20,
+    "assertion_kills": 19,
+    "error_kills": 1,
+    "survived": 0,
+    "independent": false
+  }
+}

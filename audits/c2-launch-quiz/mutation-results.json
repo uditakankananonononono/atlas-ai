@@ -1,0 +1,102 @@
+[
+  {
+    "name": "shared hook bypass",
+    "killed": true,
+    "output": "..............F....\n======================================================================\nFAIL: test_policy_hook_can_only_restrict (test_launch_quiz.LaunchQuizTests.test_policy_hook_can_only_restrict)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpc7popihk/test_launch_quiz.py\", line 152, in test_policy_hook_can_only_restrict\n    with self.assertRaisesRegex(QuizError, 'POLICY_REFUSED_SHARED'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "consent bypass",
+    "killed": true,
+    "output": "....F..............\n======================================================================\nFAIL: test_consent_strict (test_launch_quiz.LaunchQuizTests.test_consent_strict)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp7yb2d5q5/test_launch_quiz.py\", line 24, in test_consent_strict\n    with self.assertRaisesRegex(QuizError, 'NOCONSENT'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "owner bypass",
+    "killed": true,
+    "output": ".....F.............\n======================================================================\nFAIL: test_cross_owner_denied (test_launch_quiz.LaunchQuizTests.test_cross_owner_denied)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpk_20h634/test_launch_quiz.py\", line 73, in test_cross_owner_denied\n    with self.assertRaisesRegex(QuizError, 'OWNER'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "capacity bypass",
+    "killed": true,
+    "output": "...F...............\n======================================================================\nFAIL: test_capacity_no_evict (test_launch_quiz.LaunchQuizTests.test_capacity_no_evict)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp1h5z8bq1/test_launch_quiz.py\", line 133, in test_capacity_no_evict\n    with self.assertRaisesRegex(QuizError, 'LIMIT'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "question guard bypass",
+    "killed": true,
+    "output": ".................F.\n======================================================================\nFAIL: test_question_options_and_progress (test_launch_quiz.LaunchQuizTests.test_question_options_and_progress)\n----------------------------------------------------------------------\napp.modules.m20_general_cognitive_worker.launch_quiz_c2.QuizError: FLEET_REFUSED_CHOICE\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/tmp/tmpexsefm9n/test_launch_quiz.py\", line 33, in test_question_options_and_progress\n    with self.assertRaisesRegex(QuizError, 'QUESTION'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"QUESTION\" does not match \"FLEET_REFUSED_CHOICE\"\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "choice bypass",
+    "killed": true,
+    "output": ".F.................\n======================================================================\nFAIL: test_bad_choice_and_text_atomic (test_launch_quiz.LaunchQuizTests.test_bad_choice_and_text_atomic)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmplvsz9nye/test_launch_quiz.py\", line 39, in test_bad_choice_and_text_atomic\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "blank/oversize bypass",
+    "killed": true,
+    "output": ".FF.....F...F......\n======================================================================\nFAIL: test_bad_choice_and_text_atomic (test_launch_quiz.LaunchQuizTests.test_bad_choice_and_text_atomic)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp2geomot2/test_launch_quiz.py\", line 39, in test_bad_choice_and_text_atomic\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n======================================================================\nFAIL: test_blank_owner_and_unknown_session (test_launch_quiz.LaunchQuizTests.test_blank_owner_and_unknown_session)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp2geomot2/test_launch_quiz.py\", line 177, in test_blank_owner_and_unknown_session\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n======================================================================\nFAIL: test_documents_explicit_consent_and_limits (test_launch_quiz.LaunchQuizTests.test_documents_explicit_consent_and_limits)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp2geomot2/test_launch_quiz.py\", line 82, in test_documents_explicit_consent_and_limits\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n======================================================================\nFAIL: test_plan_missing_profile_and_task_limits (test_launch_quiz.LaunchQuizTests.test_plan_missing_profile_and_task_limits)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp2geomot2/test_launch_quiz.py\", line 127, in test_plan_missing_profile_and_task_limits\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.004s\n\nFAILED (failures=4)"
+  },
+  {
+    "name": "doc consent bypass",
+    "killed": true,
+    "output": "........F..........\n======================================================================\nFAIL: test_documents_explicit_consent_and_limits (test_launch_quiz.LaunchQuizTests.test_documents_explicit_consent_and_limits)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp2djvd2n4/test_launch_quiz.py\", line 82, in test_documents_explicit_consent_and_limits\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "doc capacity bypass",
+    "killed": true,
+    "output": "........F..........\n======================================================================\nFAIL: test_documents_explicit_consent_and_limits (test_launch_quiz.LaunchQuizTests.test_documents_explicit_consent_and_limits)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpgdqy0fnb/test_launch_quiz.py\", line 82, in test_documents_explicit_consent_and_limits\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "duplicate doc bypass",
+    "killed": true,
+    "output": "........F..........\n======================================================================\nFAIL: test_documents_explicit_consent_and_limits (test_launch_quiz.LaunchQuizTests.test_documents_explicit_consent_and_limits)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpfjzaaw0m/test_launch_quiz.py\", line 82, in test_documents_explicit_consent_and_limits\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "no profile copy",
+    "killed": true,
+    "output": "................F..\n======================================================================\nFAIL: test_profile_return_isolation (test_launch_quiz.LaunchQuizTests.test_profile_return_isolation)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpk2tfklxu/test_launch_quiz.py\", line 68, in test_profile_return_isolation\n    self.assertEqual(self.engine.profile(self.owner, sid)['preferences']['values']['value'], 'accuracy')\nAssertionError: 'speed' != 'accuracy'\n- speed\n+ accuracy\n\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "policy hook removed",
+    "killed": true,
+    "output": "...........F.FF....\n======================================================================\nFAIL: test_malformed_inputs_are_refusals (test_launch_quiz.LaunchQuizTests.test_malformed_inputs_are_refusals)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp5vcktov6/test_launch_quiz.py\", line 162, in test_malformed_inputs_are_refusals\n    with self.assertRaises(QuizError):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n======================================================================\nFAIL: test_policy_all_side_effects_denied (test_launch_quiz.LaunchQuizTests.test_policy_all_side_effects_denied)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp5vcktov6/test_launch_quiz.py\", line 118, in test_policy_all_side_effects_denied\n    with self.assertRaisesRegex(QuizError, 'POLICY_REFUSED_' + code):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n======================================================================\nFAIL: test_policy_hook_can_only_restrict (test_launch_quiz.LaunchQuizTests.test_policy_hook_can_only_restrict)\n----------------------------------------------------------------------\napp.modules.m20_general_cognitive_worker.launch_quiz_c2.QuizError: POLICY_REFUSED_SHARED\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/tmp/tmp5vcktov6/test_launch_quiz.py\", line 155, in test_policy_hook_can_only_restrict\n    with self.assertRaisesRegex(QuizError, 'POLICY_REFUSED_SPEND'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"POLICY_REFUSED_SPEND\" does not match \"POLICY_REFUSED_SHARED\"\n\n----------------------------------------------------------------------\nRan 19 tests in 0.005s\n\nFAILED (failures=3)"
+  },
+  {
+    "name": "policy refusal removed",
+    "killed": true,
+    "output": ".............FF....\n======================================================================\nFAIL: test_policy_all_side_effects_denied (test_launch_quiz.LaunchQuizTests.test_policy_all_side_effects_denied)\n----------------------------------------------------------------------\napp.modules.m20_general_cognitive_worker.launch_quiz_c2.QuizError: POLICY_REFUSED_UNSUPPORTED\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/tmp/tmp50svkv90/test_launch_quiz.py\", line 118, in test_policy_all_side_effects_denied\n    with self.assertRaisesRegex(QuizError, 'POLICY_REFUSED_' + code):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"POLICY_REFUSED_SPEND\" does not match \"POLICY_REFUSED_UNSUPPORTED\"\n\n======================================================================\nFAIL: test_policy_hook_can_only_restrict (test_launch_quiz.LaunchQuizTests.test_policy_hook_can_only_restrict)\n----------------------------------------------------------------------\napp.modules.m20_general_cognitive_worker.launch_quiz_c2.QuizError: POLICY_REFUSED_UNSUPPORTED\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/tmp/tmp50svkv90/test_launch_quiz.py\", line 155, in test_policy_hook_can_only_restrict\n    with self.assertRaisesRegex(QuizError, 'POLICY_REFUSED_SPEND'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"POLICY_REFUSED_SPEND\" does not match \"POLICY_REFUSED_UNSUPPORTED\"\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=2)"
+  },
+  {
+    "name": "incomplete guard bypass",
+    "killed": true,
+    "output": "............E......\n======================================================================\nERROR: test_plan_missing_profile_and_task_limits (test_launch_quiz.LaunchQuizTests.test_plan_missing_profile_and_task_limits)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp2wwlnflp/test_launch_quiz.py\", line 124, in test_plan_missing_profile_and_task_limits\n    self.engine.plan(self.owner, sid, 'test')\n  File \"/tmp/tmp2wwlnflp/app/modules/m20_general_cognitive_worker/launch_quiz_c2.py\", line 141, in plan\n    pref = s['preferences'][key]\n           ~~~~~~~~~~~~~~~~^^^^^\nKeyError: 'values'\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (errors=1)"
+  },
+  {
+    "name": "delete no purge",
+    "killed": true,
+    "output": "......F............\n======================================================================\nFAIL: test_delete_and_revoke (test_launch_quiz.LaunchQuizTests.test_delete_and_revoke)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpv41vw82y/test_launch_quiz.py\", line 111, in test_delete_and_revoke\n    with self.assertRaisesRegex(QuizError, 'NOTFOUND'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: QuizError not raised\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "mind claim",
+    "killed": true,
+    "output": "...............F...\n======================================================================\nFAIL: test_profile_provenance_coverage (test_launch_quiz.LaunchQuizTests.test_profile_provenance_coverage)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpdwm34wp8/test_launch_quiz.py\", line 60, in test_profile_provenance_coverage\n    self.assertFalse(result['claims_mind_copy'])\nAssertionError: True is not false\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "edit source false",
+    "killed": true,
+    "output": ".........F.........\n======================================================================\nFAIL: test_edit_changes_plan (test_launch_quiz.LaunchQuizTests.test_edit_changes_plan)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp782aejp1/test_launch_quiz.py\", line 103, in test_edit_changes_plan\n    self.assertEqual(self.engine.profile(self.owner, sid)['preferences']['decision']['source'], 'user-edit')\nAssertionError: 'inferred' != 'user-edit'\n- inferred\n+ user-edit\n\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "document cue disabled",
+    "killed": true,
+    "output": ".......F...........\n======================================================================\nFAIL: test_document_markers_and_untrusted_instruction (test_launch_quiz.LaunchQuizTests.test_document_markers_and_untrusted_instruction)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpun742hn5/test_launch_quiz.py\", line 90, in test_document_markers_and_untrusted_instruction\n    self.assertEqual(p['documents'][0]['signals'], ['compare', 'verify'])\nAssertionError: Lists differ: [] != ['compare', 'verify']\n\nSecond list contains 2 additional elements.\nFirst extra element 0:\n'compare'\n\n- []\n+ ['compare', 'verify']\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "answer text lost",
+    "killed": true,
+    "output": "..................F\n======================================================================\nFAIL: test_storage_answer_capture_and_determinism (test_launch_quiz.LaunchQuizTests.test_storage_answer_capture_and_determinism)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmpbscf8laa/test_launch_quiz.py\", line 142, in test_storage_answer_capture_and_determinism\n    self.assertEqual(p['answers'][0]['explanation'], 'I compare evidence before choosing.')\nAssertionError: '' != 'I compare evidence before choosing.'\n+ I compare evidence before choosing.\n\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+    "name": "profile count lies",
+    "killed": true,
+    "output": "...............F...\n======================================================================\nFAIL: test_profile_provenance_coverage (test_launch_quiz.LaunchQuizTests.test_profile_provenance_coverage)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/tmp5qh9u2y5/test_launch_quiz.py\", line 57, in test_profile_provenance_coverage\n    self.assertEqual(result['answered_count'], 4)\nAssertionError: 99 != 4\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nFAILED (failures=1)"
+  }
+]

@@ -1,0 +1,17 @@
+E
+======================================================================
+ERROR: test_launch_quiz (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_launch_quiz
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/unittest/loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+  File "/home/sandbox/c2prep/test_launch_quiz.py", line 4, in <module>
+    from app.modules.c31_agent_fleet.launch_quiz import LaunchQuiz, QuizError
+ModuleNotFoundError: No module named 'app'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
