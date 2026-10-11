@@ -15,8 +15,9 @@ def test_814_self_explanation_checks_steps():assert 'Why is this step valid?' in
 @pytest.mark.parametrize('method',['dual_coding','concrete_examples'])
 def test_815_816_minimal_payload_is_not_execution(method):
  with pytest.raises(LearningReasoningError,match='concepts'):L(method)
-def test_817_worked_example_requires_rationales_and_completion():assert L('worked_examples')['worked_example']['completion_problem_next']
-def test_818_problem_solving_represents_then_verifies():assert L('problem_solving')['problem_cycle']==['represent problem','identify constraints','generate strategies','execute','verify','reflect']
+@pytest.mark.parametrize('method',['worked_examples','problem_solving'])
+def test_817_818_minimal_payload_refused(method):
+ with pytest.raises(LearningReasoningError,match='arithmetic_task'):L(method)
 def test_819_deliberate_targets_subskill_feedback_rest():
  o=L('deliberate_practice',scored_attempts=[{'evidence_id':'e','skill':'addition','succeeded':False,'feedback':'incorrect sum'}],exercise_catalog=[{'id':'1','skill':'addition','task':'2+2'}])['practice_plan'];assert o['target_subskills']==['addition'] and o['selected_exercises'][0]['id']=='1'
 def test_820_chunking_preserves_principle():assert L('chunking',chunks=[{'label':'x','elements':[1,2],'principle':'cause'}])['chunks'][0]['organizing_principle']=='cause'

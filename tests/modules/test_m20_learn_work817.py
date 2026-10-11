@@ -27,14 +27,14 @@ def test_goal_wrong_or_incomplete_and_completion_reachability():
  r=run(completion_task=None);assert r['completion_problem'] is None and r['completion_status']=='not_supplied'
 
 def test_problem_solver_shortest_trace_and_exact_rational_math():
- r=run('problem_solving');assert r['status']=='solved' and r['solution']==trace() and r['final_value']=='6' and r['solution_depth']==2
+ r=run('problem_solving');assert r['status']=='solved' and [(s['pre'],s['operation_id'],s['post'])for s in r['solution']]==[('1','add','3'),('3','mul','6')] and r['final_value']=='6' and r['solution_depth']==2
  t={'initial':'1/3','goal':'1','operations':[{'id':'add','kind':'add','operand':'1/3','source':'fixture:add'}],'max_depth':2,'state_bound':'10'}
  r=run('problem_solving',arithmetic_task=t);assert r['solution_depth']==2 and r['final_value']=='1'
  assert r['solution'][0]['post']=='2/3'
 
 def test_solver_no_solution_and_explicit_bounds():
  r=run('problem_solving',arithmetic_task={**task(),'max_depth':1});assert r['status']=='no_solution_within_bounds' and r['solution'] is None
- r=run('problem_solving',arithmetic_task={**task(),'state_bound':'2'});assert r['status']=='no_solution_within_bounds'
+ with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task={**task(),'state_bound':'2'})
  t={**task(),'goal':'1'};r=run('problem_solving',arithmetic_task=t);assert r['solution']==[] and r['solution_depth']==0
 
 @pytest.mark.parametrize('change',[{'initial':True},{'initial':'nan'},{'goal':'1/0'},{'max_depth':True},{'max_depth':9},{'state_bound':'0'},{'operations':[]},{'operations':[{'id':'x','kind':'divide','operand':'0','source':'fixture'}]},{'operations':[{'id':'x','kind':'eval','operand':'2','source':'fixture'}]}])
@@ -67,3 +67,20 @@ def test_mounted_auth_and_declared_break(monkeypatch,oidc_auth_headers):
   r=c.post(path,headers=h,json={'payload':payload()});assert r.status_code==200 and r.json()['tenant_id']=='a'
   assert c.post(path,headers=h,json={'payload':{'objective':'x','source':SRC}}).status_code==422
   assert c.post(path,headers=h,json={'payload':{**payload(),'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
+
+def test_shortest_deterministic_operation_ties_and_allsteps_conjunction():
+ t={**task(),'goal':'3','operations':[{'id':'z','kind':'add','operand':'2','source':'fixture:z'},{'id':'a','kind':'add','operand':'2','source':'fixture:a'}]}
+ r=run('problem_solving',arithmetic_task=t);assert r['solution_depth']==1 and r['solution'][0]['operation_id']=='a' and r['solution'][0]['operation_source']=='fixture:a'
+ rows=trace()+[{'pre':'6','operation_id':'unknown','post':'6','rationale':'apply:add','source':'fixture:invalid'}]
+ r=run(worked_trace=rows);assert r['goal_reached'] is True and r['trace_valid'] is False and r['completion_problem'] is None
+
+def test_exact_depth_operations_rational_limits():
+ for depth in [0,8]:
+  t={**task(),'max_depth':depth,'goal':'1'};assert run('problem_solving',arithmetic_task=t)['status']=='solved'
+ for depth in [-1,9,1.5]:
+  with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task={**task(),'max_depth':depth})
+ rows=[{'id':str(i),'kind':'add','operand':'0','source':'fixture'}for i in range(8)]
+ assert run('problem_solving',arithmetic_task={**task(),'operations':rows})['status']=='no_solution_within_bounds'
+ with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task={**task(),'operations':rows+[{'id':'8','kind':'add','operand':'0','source':'fixture'}]})
+ for value in [1.5,'1'*65,str(10**12+1),'1/'+str(10**12+1)]:
+  with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task={**task(),'initial':value})
