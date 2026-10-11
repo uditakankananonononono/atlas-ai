@@ -42,3 +42,9 @@ Canonical guard: `app.modules.c30.policy` (auditor-4 canonical surface, landed
     `missing_preconditions` - both keep their existing shapes.
   - no compat shim: every c30.policy importer on main uses check/check_account/
     clean_text/scope, all present in the landed guard.
+
+## Explicit registrar limit
+
+This gate is honour-system. The default effect_class is None, so every existing
+tool bypasses the new policy call until its registrar declares an effect class.
+It does not infer effects from a tool's handler, arguments, name or runtime behavior.
