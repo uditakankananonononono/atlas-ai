@@ -415,3 +415,14 @@ def test_r2_cycle_message_lists_involved_ids_sorted():
             "budget_hours": 5}
     with pytest.raises(ValueError, match=re.escape("dependency cycle detected involving: a, b, c")):
         schedule_debt(data)
+
+
+def test_r3_negative_budget_refused_with_exact_message():
+    # Bare ValueError elsewhere leaks "min() iterable argument is empty" on a
+    # minimum-flip mutant; pin the real validation message and the zero boundary.
+    for bad in (-1, -0.5):
+        with pytest.raises(ValueError, match=re.escape("budget_hours requires a value >= 0")):
+            schedule_debt({"items": [{"id": "a", "benefit": 1, "cost": 1}], "budget_hours": bad})
+    for ok in (0, -0, -0.0):
+        r = schedule_debt({"items": [{"id": "a", "benefit": 1, "cost": 0}], "budget_hours": ok})
+        assert r["status"] == "optimal_selection_certified" and r["budget_hours"] == 0
