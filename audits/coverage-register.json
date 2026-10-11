@@ -25710,7 +25710,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1960,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_graph_shortest_path. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: supplied_graph_shortest_path. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -25731,7 +25731,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1961,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_answer_plurality. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: supplied_answer_plurality. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -25752,7 +25752,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1962,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_vector_context_selection_only. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: supplied_vector_context_selection_only. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -25773,7 +25773,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1963,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: in_memory_supplied_vector_scan. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: in_memory_supplied_vector_scan. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -25794,7 +25794,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1964,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: character_hash_vectors. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: character_hash_vectors. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -25815,7 +25815,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1965,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_vector_cosine_ranking. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: supplied_vector_cosine_ranking. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -25927,7 +25927,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1973,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification.",
+        "ledger_scope": "Reference substitute only: supplied_rule_weight_score_propagation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -25948,7 +25948,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1974,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification.",
+        "ledger_scope": "Reference substitute only: supplied_rule_weight_score_propagation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -25969,7 +25969,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1975,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+        "ledger_scope": "Supplied-data operator only: supplied_scored_attempt_brier_calibration. Original named capability remains unverified; caller inputs are not independently verified. Brier calibration over caller-supplied scored attempts with exact boolean outcomes; no cognition, metacognition or outcome truth is verified.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "supplied-operator"
       }
@@ -25990,7 +25990,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1976,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+        "ledger_scope": "Supplied-data operator only: supplied_valence_arousal_quadrant_rubric. Original named capability remains unverified; caller inputs are not independently verified. Hand-written quadrant rubric over caller-supplied valence and arousal; no emotion recognition or trained affective model.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "supplied-operator"
       }
@@ -26011,7 +26011,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1977,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+        "ledger_scope": "Supplied-data operator only: supplied_valence_arousal_quadrant_rubric. Original named capability remains unverified; caller inputs are not independently verified. Hand-written quadrant rubric over caller-supplied valence and arousal; no emotion recognition or trained affective model.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "supplied-operator"
       }
@@ -26032,7 +26032,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1978,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification.",
+        "ledger_scope": "Reference substitute only: literal_lexicon_token_count. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26053,7 +26053,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1979,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification.",
+        "ledger_scope": "Reference substitute only: literal_lexicon_token_count. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26126,7 +26126,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1984,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26147,7 +26147,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1985,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26168,7 +26168,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1986,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26189,7 +26189,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1987,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_polynomial_candidate_selection. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: supplied_polynomial_candidate_selection. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26210,7 +26210,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1988,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26231,7 +26231,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1989,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_series_residual_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: supplied_series_residual_diagnostics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26278,7 +26278,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1992,
         "ledger_status": "SCOPED",
-        "ledger_scope": "Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research.",
+        "ledger_scope": "Supplied-data operator only: finite_binary_knapsack_enumeration_max_20_items. Original named capability remains unverified; caller inputs are not independently verified. Exact finite 0/1 subset enumeration of at most 20 nonnegative items in supplied floating-point arithmetic; not general optimization or operations research.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "supplied-operator"
       }
@@ -26299,7 +26299,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1993,
         "ledger_status": "SCOPED",
-        "ledger_scope": "Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research.",
+        "ledger_scope": "Supplied-data operator only: finite_binary_knapsack_enumeration_max_20_items. Original named capability remains unverified; caller inputs are not independently verified. Exact finite 0/1 subset enumeration of at most 20 nonnegative items in supplied floating-point arithmetic; not general optimization or operations research.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "supplied-operator"
       }
@@ -26333,7 +26333,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1995,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_graph_degree_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: supplied_graph_degree_diagnostics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26354,7 +26354,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1996,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: supplied_graph_degree_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: supplied_graph_degree_diagnostics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26414,7 +26414,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2000,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26435,7 +26435,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2001,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26456,7 +26456,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2002,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26477,7 +26477,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2003,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26498,7 +26498,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2004,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26519,7 +26519,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2005,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26540,7 +26540,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2006,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26574,7 +26574,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2008,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Reference substitute only: hand_written_gain_adjustment_simulation. No execution of original named capability, learned/generative model or deployed integration.",
+        "ledger_scope": "Reference substitute only: hand_written_gain_adjustment_simulation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "reference-substitute"
       }
@@ -26595,7 +26595,7 @@
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 2009,
         "ledger_status": "PARTIAL",
-        "ledger_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+        "ledger_scope": "Supplied-data operator only: supplied_scored_attempt_brier_calibration. Original named capability remains unverified; caller inputs are not independently verified. Brier calibration over caller-supplied scored attempts with exact boolean outcomes; no cognition, metacognition or outcome truth is verified.",
         "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
         "scope_kind": "supplied-operator"
       }
