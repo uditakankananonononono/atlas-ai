@@ -1,0 +1,182 @@
+F......F.F..FF...........F..........................                     [100%]
+=================================== FAILURES ===================================
+________________________ AuditRepair.test_action_shape _________________________
+
+self = <test_audit_repair.AuditRepair testMethod=test_action_shape>
+
+    def test_action_shape(self):
+        for action in [None,[],True,{'nested':{'spend':True}},{'spend':[True]}]:
+>           with self.subTest(action=action),self.assertRaises(m.Refusal):self.engine.run('T1',{'records':[self.record],'action':action})
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Refusal not raised
+
+tests/t_units/test_audit_repair.py:37: AssertionError
+_____________ AuditRepair.test_permit_positive_and_invalid_origin ______________
+
+self = <test_audit_repair.AuditRepair testMethod=test_permit_positive_and_invalid_origin>
+
+    def test_permit_positive_and_invalid_origin(self):
+        for license in ['CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted']:
+            dataclasses.replace(self.permit,license=license).allows(self.record['url'])
+        for p in [dataclasses.replace(self.permit,origin='http://example.org'),dataclasses.replace(self.permit,terms_url='http://example.org/terms'),dataclasses.replace(self.permit,terms_allowed='yes')]:
+>           with self.subTest(p=p),self.assertRaises(m.Refusal):p.allows(self.record['url'])
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Refusal not raised
+
+tests/t_units/test_audit_repair.py:47: AssertionError
+____________________ AuditRepair.test_policy_return_strict _____________________
+
+self = <test_audit_repair.AuditRepair testMethod=test_policy_return_strict>
+
+    def test_policy_return_strict(self):
+        for result in [0,1,'yes',[],{}, {'allowed':1},{'allowed':'true'}, {'allowed':False}]:
+>           with self.subTest(result=result),self.assertRaises(m.Refusal):m.TrainingUnits({'fixture':self.permit},policy=lambda p:result).run('T1',{'records':[self.record]})
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Refusal not raised
+
+tests/t_units/test_audit_repair.py:33: AssertionError
+__________________ AuditRepair.test_t2_rights_security_flags ___________________
+
+self = <test_audit_repair.AuditRepair testMethod=test_t2_rights_security_flags>
+
+    def test_t2_rights_security_flags(self):
+        for patch_ in [{'source_id':'unknown'},{'url':'https://other.org/rss'},{'as_of':'invalid'},{'paywalled':True},{'piracy':True},{'credentials':'x'},{'logged_in':True}]:
+>           with self.subTest(patch_=patch_),self.assertRaises(m.Refusal):self.engine.run('T2',dict(self.search,**patch_))
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Refusal not raised
+
+tests/t_units/test_audit_repair.py:11: AssertionError
+___________________ AuditRepair.test_url_exact_and_boundary ____________________
+
+self = <test_audit_repair.AuditRepair testMethod=test_url_exact_and_boundary>
+
+    def test_url_exact_and_boundary(self):
+        for url in [None,42,'https://example.org:abc','https://single','https://foo.local','https://foo.internal','https://foo.localhost','https://example.org.','https://127.1/','https://example.org/\n','https://example.org/'+'x'*4077]:
+>           with self.subTest(url=url),self.assertRaises(m.Refusal):m.public_url(url)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Refusal not raised
+
+tests/t_units/test_audit_repair.py:40: AssertionError
+________________ RouteTests.test_plain_policy_valueerror_is_422 ________________
+
+self = <test_routes.RouteTests testMethod=test_plain_policy_valueerror_is_422>
+
+    def test_plain_policy_valueerror_is_422(self):
+        def deny(action):raise ValueError('POLICY_REFUSED_SPEND')
+        bind_training_units('deny',TrainingUnits({'fixture':self.permit},policy=deny));self.tenant('deny')
+        payload={'records':[{'source_id':'fixture','url':'https://example.org/book','text':'Advice','as_of':'2026-10-11'}]}
+>       self.assertEqual(self.client.post('/api/v1/c32/books/run',json=payload).status_code,422)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/t_units/test_routes.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/tmp/tunits312/lib/python3.12/site-packages/starlette/testclient.py:538: in post
+    return super().post(
+/tmp/tunits312/lib/python3.12/site-packages/httpx/_client.py:1157: in post
+    return self.request(
+/tmp/tunits312/lib/python3.12/site-packages/starlette/testclient.py:437: in request
+    return super().request(
+/tmp/tunits312/lib/python3.12/site-packages/httpx/_client.py:837: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/tunits312/lib/python3.12/site-packages/httpx/_client.py:926: in send
+    response = self._send_handling_auth(
+/tmp/tunits312/lib/python3.12/site-packages/httpx/_client.py:954: in _send_handling_auth
+    response = self._send_handling_redirects(
+/tmp/tunits312/lib/python3.12/site-packages/httpx/_client.py:991: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/tunits312/lib/python3.12/site-packages/httpx/_client.py:1027: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/tunits312/lib/python3.12/site-packages/starlette/testclient.py:340: in handle_request
+    raise exc
+/tmp/tunits312/lib/python3.12/site-packages/starlette/testclient.py:337: in handle_request
+    portal.call(self.app, scope, receive, send)
+/tmp/tunits312/lib/python3.12/site-packages/anyio/from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/tmp/tunits312/lib/python3.12/site-packages/anyio/from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/tunits312/lib/python3.12/site-packages/fastapi/applications.py:1054: in __call__
+    await super().__call__(scope, receive, send)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/applications.py:112: in __call__
+    await self.middleware_stack(scope, receive, send)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/middleware/errors.py:187: in __call__
+    raise exc
+/tmp/tunits312/lib/python3.12/site-packages/starlette/middleware/errors.py:165: in __call__
+    await self.app(scope, receive, _send)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/middleware/exceptions.py:62: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/tmp/tunits312/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/routing.py:714: in __call__
+    await self.middleware_stack(scope, receive, send)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/routing.py:734: in app
+    await route.handle(scope, receive, send)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/routing.py:288: in handle
+    await self.app(scope, receive, send)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/routing.py:76: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+/tmp/tunits312/lib/python3.12/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+/tmp/tunits312/lib/python3.12/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+/tmp/tunits312/lib/python3.12/site-packages/fastapi/routing.py:301: in app
+    raw_response = await run_endpoint_function(
+/tmp/tunits312/lib/python3.12/site-packages/fastapi/routing.py:214: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/tunits312/lib/python3.12/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/tunits312/lib/python3.12/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+/tmp/tunits312/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+/tmp/tunits312/lib/python3.12/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/training_data_routes.py:27: in run
+    try:report=store['engine'].run(unit,payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/app/modules/m20_general_cognitive_worker/training_data_units.py:149: in run
+    self._policy(payload.get('action',{}))
+backend/app/modules/m20_general_cognitive_worker/training_data_units.py:115: in _policy
+    result=self.policy(action)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+action = {}
+
+>   def deny(action):raise ValueError('POLICY_REFUSED_SPEND')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: POLICY_REFUSED_SPEND
+
+tests/t_units/test_routes.py:40: ValueError
+=============================== warnings summary ===============================
+../../../tmp/tunits312/lib/python3.12/site-packages/starlette/testclient.py:37
+  /tmp/tunits312/lib/python3.12/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/t_units/test_audit_repair.py::AuditRepair::test_action_shape - A...
+FAILED tests/t_units/test_audit_repair.py::AuditRepair::test_permit_positive_and_invalid_origin
+FAILED tests/t_units/test_audit_repair.py::AuditRepair::test_policy_return_strict
+FAILED tests/t_units/test_audit_repair.py::AuditRepair::test_t2_rights_security_flags
+FAILED tests/t_units/test_audit_repair.py::AuditRepair::test_url_exact_and_boundary
+FAILED tests/t_units/test_routes.py::RouteTests::test_plain_policy_valueerror_is_422
+6 failed, 46 passed, 1 warning in 0.52s

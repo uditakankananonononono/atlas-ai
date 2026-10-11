@@ -1,0 +1,4274 @@
+{
+  "total_generated": 480,
+  "start": 0,
+  "end": 999,
+  "results": [
+    {
+      "number": 0,
+      "line": 1,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "\"\"\"T1-T4 bounded ingestion and advice preparation. No sending or training runtime.\"\"\""
+    },
+    {
+      "number": 1,
+      "line": 20,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "    if not isinstance(url,str) or len(url)>4096 or any(c.isspace() for c in url):"
+    },
+    {
+      "number": 2,
+      "line": 25,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "    if p.scheme!='https' or not p.hostname or p.username or p.password or port not in (None,443):"
+    },
+    {
+      "number": 3,
+      "line": 28,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "    if host.endswith('.') or re.fullmatch(r'[0-9.]+',host) and host.count('.')!=3:"
+    },
+    {
+      "number": 4,
+      "line": 30,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "    if '.' not in host or host.endswith(('.local','.internal','.localhost')):"
+    },
+    {
+      "number": 5,
+      "line": 37,
+      "mutation": "return None",
+      "killed": true,
+      "exit": 1,
+      "source": "    return url"
+    },
+    {
+      "number": 6,
+      "line": 98,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "    p=_Text();p.feed(text);return ''.join(p.parts).strip()"
+    },
+    {
+      "number": 7,
+      "line": 98,
+      "mutation": "return None",
+      "killed": true,
+      "exit": 1,
+      "source": "    p=_Text();p.feed(text);return ''.join(p.parts).strip()"
+    },
+    {
+      "number": 8,
+      "line": 104,
+      "mutation": "return None",
+      "killed": true,
+      "exit": 1,
+      "source": "    return {'college_candidate_sites':len({urlsplit(x['url']).hostname for x in cases}), 'college_verified_sites':sum(x['status']=='verified' for x in cases),"
+    },
+    {
+      "number": 9,
+      "line": 113,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "    check(action,prefix)"
+    },
+    {
+      "number": 10,
+      "line": 20,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "    if not isinstance(url,str) or len(url)>4096 or any(c.isspace() for c in url):"
+    },
+    {
+      "number": 11,
+      "line": 21,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 12,
+      "line": 25,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "    if p.scheme!='https' or not p.hostname or p.username or p.password or port not in (None,443):"
+    },
+    {
+      "number": 13,
+      "line": 26,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 14,
+      "line": 28,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "    if host.endswith('.') or re.fullmatch(r'[0-9.]+',host) and host.count('.')!=3:"
+    },
+    {
+      "number": 15,
+      "line": 29,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 16,
+      "line": 30,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "    if '.' not in host or host.endswith(('.local','.internal','.localhost')):"
+    },
+    {
+      "number": 17,
+      "line": 31,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 18,
+      "line": 34,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not ip.is_global: raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 19,
+      "line": 48,
+      "mutation": "delete call",
+      "killed": false,
+      "exit": 0,
+      "source": "        public_url(url);public_url(self.origin);public_url(self.terms_url)"
+    },
+    {
+      "number": 20,
+      "line": 48,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        public_url(url);public_url(self.origin);public_url(self.terms_url)"
+    },
+    {
+      "number": 21,
+      "line": 48,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        public_url(url);public_url(self.origin);public_url(self.terms_url)"
+    },
+    {
+      "number": 22,
+      "line": 49,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 23,
+      "line": 51,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if urlsplit(url).netloc.lower()!=urlsplit(self.origin).netloc.lower():raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 24,
+      "line": 60,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    \"\"\"Caller supplies a bounded, no-redirect transport. No credentials accepted."
+    },
+    {
+      "number": 25,
+      "line": 66,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 26,
+      "line": 69,
+      "mutation": "delete call",
+      "killed": false,
+      "exit": 0,
+      "source": "        public_url(url)"
+    },
+    {
+      "number": 27,
+      "line": 71,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if permit is None:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 28,
+      "line": 72,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        permit.allows(url)"
+    },
+    {
+      "number": 29,
+      "line": 74,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if now-self.last.get(host,float('-inf'))<self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 30,
+      "line": 77,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if robots.status!=200 or len(robots.text.encode())>self.limit:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 31,
+      "line": 78,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        rp=RobotFileParser();rp.parse(robots.text.splitlines())"
+    },
+    {
+      "number": 32,
+      "line": 79,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not rp.can_fetch('AtlasPublicCorpus',url):raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 33,
+      "line": 81,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if delay>self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 34,
+      "line": 83,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if reply.status!=200:raise Refusal('TREND_REFUSED_FETCH')"
+    },
+    {
+      "number": 35,
+      "line": 84,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if len(reply.text.encode())>self.limit:raise Refusal('TREND_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 36,
+      "line": 85,
+      "mutation": "return None",
+      "killed": true,
+      "exit": 1,
+      "source": "        return reply.text"
+    },
+    {
+      "number": 37,
+      "line": 88,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "    def __init__(self):super().__init__();self.parts=[];self.hidden=0"
+    },
+    {
+      "number": 38,
+      "line": 90,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden+=1"
+    },
+    {
+      "number": 39,
+      "line": 92,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden=max(0,self.hidden-1)"
+    },
+    {
+      "number": 40,
+      "line": 93,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 41,
+      "line": 95,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not self.hidden:self.parts.append(data)"
+    },
+    {
+      "number": 42,
+      "line": 119,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(action,dict) or any(not isinstance(k,str) or isinstance(v,(dict,list,tuple,set)) for k,v in action.items()):"
+    },
+    {
+      "number": 43,
+      "line": 123,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 44,
+      "line": 127,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(records,list) or len(records)>500:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 45,
+      "line": 146,
+      "mutation": "return None",
+      "killed": true,
+      "exit": 1,
+      "source": "        return out"
+    },
+    {
+      "number": 46,
+      "line": 148,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 47,
+      "line": 149,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T2':return self._search(payload)"
+    },
+    {
+      "number": 48,
+      "line": 153,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T4':"
+    },
+    {
+      "number": 49,
+      "line": 156,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._policy(payload.get('action',{}),prefix)"
+    },
+    {
+      "number": 50,
+      "line": 160,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T1':"
+    },
+    {
+      "number": 51,
+      "line": 173,
+      "mutation": "return None",
+      "killed": true,
+      "exit": 1,
+      "source": "        return result"
+    },
+    {
+      "number": 52,
+      "line": 176,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 53,
+      "line": 177,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 54,
+      "line": 178,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._policy(p.get('action',{}),'TREND');rows=[]"
+    },
+    {
+      "number": 55,
+      "line": 180,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(query,str) or len(query)>1000:raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 56,
+      "line": 209,
+      "mutation": "return None",
+      "killed": true,
+      "exit": 1,
+      "source": "        return {'unit':'T2','kind':kind,'results':accepted[:100],'matched_in_input':len(accepted),"
+    },
+    {
+      "number": 57,
+      "line": 20,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "    if not isinstance(url,str) or len(url)>4096 or any(c.isspace() for c in url):"
+    },
+    {
+      "number": 58,
+      "line": 24,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "    except ValueError: raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 59,
+      "line": 25,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "    if p.scheme!='https' or not p.hostname or p.username or p.password or port not in (None,443):"
+    },
+    {
+      "number": 60,
+      "line": 25,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "    if p.scheme!='https' or not p.hostname or p.username or p.password or port not in (None,443):"
+    },
+    {
+      "number": 61,
+      "line": 28,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "    if host.endswith('.') or re.fullmatch(r'[0-9.]+',host) and host.count('.')!=3:"
+    },
+    {
+      "number": 62,
+      "line": 30,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "    if '.' not in host or host.endswith(('.local','.internal','.localhost')):"
+    },
+    {
+      "number": 63,
+      "line": 34,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not ip.is_global: raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 64,
+      "line": 36,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        if isinstance(exc,Refusal):raise"
+    },
+    {
+      "number": 65,
+      "line": 49,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 66,
+      "line": 50,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 67,
+      "line": 51,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if urlsplit(url).netloc.lower()!=urlsplit(self.origin).netloc.lower():raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 68,
+      "line": 51,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if urlsplit(url).netloc.lower()!=urlsplit(self.origin).netloc.lower():raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 69,
+      "line": 39,
+      "mutation": "bool flip",
+      "killed": true,
+      "exit": 1,
+      "source": "@dataclass(frozen=True)"
+    },
+    {
+      "number": 70,
+      "line": 53,
+      "mutation": "bool flip",
+      "killed": true,
+      "exit": 1,
+      "source": "@dataclass(frozen=True)"
+    },
+    {
+      "number": 71,
+      "line": 65,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "    def __init__(self, permits, transport, clock=time.monotonic, interval=60, limit=100000):"
+    },
+    {
+      "number": 72,
+      "line": 65,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "    def __init__(self, permits, transport, clock=time.monotonic, interval=60, limit=100000):"
+    },
+    {
+      "number": 73,
+      "line": 66,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 74,
+      "line": 66,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 75,
+      "line": 71,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if permit is None:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 76,
+      "line": 71,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if permit is None:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 77,
+      "line": 74,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if now-self.last.get(host,float('-inf'))<self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 78,
+      "line": 74,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if now-self.last.get(host,float('-inf'))<self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 79,
+      "line": 77,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if robots.status!=200 or len(robots.text.encode())>self.limit:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 80,
+      "line": 77,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if robots.status!=200 or len(robots.text.encode())>self.limit:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 81,
+      "line": 79,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not rp.can_fetch('AtlasPublicCorpus',url):raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 82,
+      "line": 80,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        delay=rp.crawl_delay('AtlasPublicCorpus') or rp.crawl_delay('*') or 0"
+    },
+    {
+      "number": 83,
+      "line": 81,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if delay>self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 84,
+      "line": 81,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if delay>self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 85,
+      "line": 83,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if reply.status!=200:raise Refusal('TREND_REFUSED_FETCH')"
+    },
+    {
+      "number": 86,
+      "line": 83,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if reply.status!=200:raise Refusal('TREND_REFUSED_FETCH')"
+    },
+    {
+      "number": 87,
+      "line": 84,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if len(reply.text.encode())>self.limit:raise Refusal('TREND_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 88,
+      "line": 84,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if len(reply.text.encode())>self.limit:raise Refusal('TREND_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 89,
+      "line": 88,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "    def __init__(self):super().__init__();self.parts=[];self.hidden=0"
+    },
+    {
+      "number": 90,
+      "line": 90,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden+=1"
+    },
+    {
+      "number": 91,
+      "line": 92,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden=max(0,self.hidden-1)"
+    },
+    {
+      "number": 92,
+      "line": 93,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 93,
+      "line": 93,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 94,
+      "line": 95,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not self.hidden:self.parts.append(data)"
+    },
+    {
+      "number": 95,
+      "line": 101,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    root=Path(__file__).resolve().parents[4]/'config/training_sources'"
+    },
+    {
+      "number": 96,
+      "line": 104,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    return {'college_candidate_sites':len({urlsplit(x['url']).hostname for x in cases}), 'college_verified_sites':sum(x['status']=='verified' for x in cases),"
+    },
+    {
+      "number": 97,
+      "line": 104,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    return {'college_candidate_sites':len({urlsplit(x['url']).hostname for x in cases}), 'college_verified_sites':sum(x['status']=='verified' for x in cases),"
+    },
+    {
+      "number": 98,
+      "line": 105,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            'book_collections':len(books),'book_independent_domains':len({urlsplit(x['url']).hostname for x in books}), 'ingested_records':0}"
+    },
+    {
+      "number": 99,
+      "line": 105,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            'book_collections':len(books),'book_independent_domains':len({urlsplit(x['url']).hostname for x in books}), 'ingested_records':0}"
+    },
+    {
+      "number": 100,
+      "line": 105,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            'book_collections':len(books),'book_independent_domains':len({urlsplit(x['url']).hostname for x in books}), 'ingested_records':0}"
+    },
+    {
+      "number": 101,
+      "line": 105,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "            'book_collections':len(books),'book_independent_domains':len({urlsplit(x['url']).hostname for x in books}), 'ingested_records':0}"
+    },
+    {
+      "number": 102,
+      "line": 110,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "    except ImportError as exc:raise Refusal(prefix+'_REFUSED_UNAVAILABLE') from exc"
+    },
+    {
+      "number": 103,
+      "line": 119,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(action,dict) or any(not isinstance(k,str) or isinstance(v,(dict,list,tuple,set)) for k,v in action.items()):"
+    },
+    {
+      "number": 104,
+      "line": 120,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            raise Refusal(prefix+'_REFUSED_ACTION_SHAPE')"
+    },
+    {
+      "number": 105,
+      "line": 124,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            raise Refusal(prefix+'_REFUSED_ACTION')"
+    },
+    {
+      "number": 106,
+      "line": 127,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(records,list) or len(records)>500:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 107,
+      "line": 127,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(records,list) or len(records)>500:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 108,
+      "line": 130,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(r,dict):raise Refusal(prefix+'_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 109,
+      "line": 131,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('paywalled'):raise Refusal(prefix+'_REFUSED_PAYWALL')"
+    },
+    {
+      "number": 110,
+      "line": 132,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('piracy'):raise Refusal('TREND_REFUSED_PIRACY')"
+    },
+    {
+      "number": 111,
+      "line": 133,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 112,
+      "line": 135,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if permit is None:raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 113,
+      "line": 139,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(text,str) or len(text.encode())>100000:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 114,
+      "line": 140,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')"
+    },
+    {
+      "number": 115,
+      "line": 142,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if (r['source_id'],digest) in seen:continue"
+    },
+    {
+      "number": 116,
+      "line": 143,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "            seen.add((r['source_id'],digest))"
+    },
+    {
+      "number": 117,
+      "line": 144,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "            out.append({'source_id':r['source_id'],'url':r['url'],'license':permit.license,'terms_url':permit.terms_url,"
+    },
+    {
+      "number": 118,
+      "line": 148,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 119,
+      "line": 148,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 120,
+      "line": 149,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T2':return self._search(payload)"
+    },
+    {
+      "number": 121,
+      "line": 149,
+      "mutation": "return None",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T2':return self._search(payload)"
+    },
+    {
+      "number": 122,
+      "line": 153,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T4':"
+    },
+    {
+      "number": 123,
+      "line": 154,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not records:raise Refusal('FLEET_REFUSED_NOADVICE')"
+    },
+    {
+      "number": 124,
+      "line": 155,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.append({'stage':'advice','sources':[r['url'] for r in records],'summaries':[r['text'][:500] for r in records]})"
+    },
+    {
+      "number": 125,
+      "line": 160,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T1':"
+    },
+    {
+      "number": 126,
+      "line": 167,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "        elif unit=='T3':"
+    },
+    {
+      "number": 127,
+      "line": 176,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 128,
+      "line": 176,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 129,
+      "line": 180,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(query,str) or len(query)>1000:raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 130,
+      "line": 180,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(query,str) or len(query)>1000:raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 131,
+      "line": 182,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if kind=='git':"
+    },
+    {
+      "number": 132,
+      "line": 207,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not r.get('url') and not r.get('transcript_url'):continue"
+    },
+    {
+      "number": 133,
+      "line": 208,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if all(term in (str(r['title'])+' '+str(r['summary'])).lower() for term in query.lower().split()):accepted.append(r)"
+    },
+    {
+      "number": 134,
+      "line": 20,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "    if not isinstance(url,str) or len(url)>4096 or any(c.isspace() for c in url):"
+    },
+    {
+      "number": 135,
+      "line": 21,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 136,
+      "line": 25,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    if p.scheme!='https' or not p.hostname or p.username or p.password or port not in (None,443):"
+    },
+    {
+      "number": 137,
+      "line": 26,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 138,
+      "line": 28,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    if host.endswith('.') or re.fullmatch(r'[0-9.]+',host) and host.count('.')!=3:"
+    },
+    {
+      "number": 139,
+      "line": 28,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "    if host.endswith('.') or re.fullmatch(r'[0-9.]+',host) and host.count('.')!=3:"
+    },
+    {
+      "number": 140,
+      "line": 29,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 141,
+      "line": 30,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    if '.' not in host or host.endswith(('.local','.internal','.localhost')):"
+    },
+    {
+      "number": 142,
+      "line": 31,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 143,
+      "line": 36,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        if isinstance(exc,Refusal):raise"
+    },
+    {
+      "number": 144,
+      "line": 49,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 145,
+      "line": 49,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 146,
+      "line": 66,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 147,
+      "line": 77,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if robots.status!=200 or len(robots.text.encode())>self.limit:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 148,
+      "line": 77,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if robots.status!=200 or len(robots.text.encode())>self.limit:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 149,
+      "line": 80,
+      "mutation": "integer +1",
+      "killed": false,
+      "exit": 0,
+      "source": "        delay=rp.crawl_delay('AtlasPublicCorpus') or rp.crawl_delay('*') or 0"
+    },
+    {
+      "number": 150,
+      "line": 83,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if reply.status!=200:raise Refusal('TREND_REFUSED_FETCH')"
+    },
+    {
+      "number": 151,
+      "line": 90,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden+=1"
+    },
+    {
+      "number": 152,
+      "line": 101,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "    root=Path(__file__).resolve().parents[4]/'config/training_sources'"
+    },
+    {
+      "number": 153,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 154,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 155,
+      "line": 117,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        self.permits=dict(permits or {});self.policy=policy"
+    },
+    {
+      "number": 156,
+      "line": 122,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "        except ValueError as exc:raise Refusal(str(exc)) from exc"
+    },
+    {
+      "number": 157,
+      "line": 123,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 158,
+      "line": 126,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        records=payload.get('records',[])"
+    },
+    {
+      "number": 159,
+      "line": 127,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(records,list) or len(records)>500:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 160,
+      "line": 130,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(r,dict):raise Refusal(prefix+'_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 161,
+      "line": 131,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('paywalled'):raise Refusal(prefix+'_REFUSED_PAYWALL')"
+    },
+    {
+      "number": 162,
+      "line": 132,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('piracy'):raise Refusal('TREND_REFUSED_PIRACY')"
+    },
+    {
+      "number": 163,
+      "line": 133,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 164,
+      "line": 133,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 165,
+      "line": 135,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "            if permit is None:raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 166,
+      "line": 135,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if permit is None:raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 167,
+      "line": 136,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "            try:permit.allows(r.get('url'))"
+    },
+    {
+      "number": 168,
+      "line": 139,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(text,str) or len(text.encode())>100000:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 169,
+      "line": 139,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(text,str) or len(text.encode())>100000:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 170,
+      "line": 140,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')"
+    },
+    {
+      "number": 171,
+      "line": 140,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')"
+    },
+    {
+      "number": 172,
+      "line": 142,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "            if (r['source_id'],digest) in seen:continue"
+    },
+    {
+      "number": 173,
+      "line": 142,
+      "mutation": "continue to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if (r['source_id'],digest) in seen:continue"
+    },
+    {
+      "number": 174,
+      "line": 148,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 175,
+      "line": 149,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T2':return self._search(payload)"
+    },
+    {
+      "number": 176,
+      "line": 153,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T4':"
+    },
+    {
+      "number": 177,
+      "line": 154,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not records:raise Refusal('FLEET_REFUSED_NOADVICE')"
+    },
+    {
+      "number": 178,
+      "line": 157,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        result={'unit':unit,'scope':{'implemented':'bounded supplied-source normalization and preparation',"
+    },
+    {
+      "number": 179,
+      "line": 157,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        result={'unit':unit,'scope':{'implemented':'bounded supplied-source normalization and preparation',"
+    },
+    {
+      "number": 180,
+      "line": 159,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'data_source':'supplied licensed documents','as_of':max((r['as_of'] for r in records),default=None)},'records':records}"
+    },
+    {
+      "number": 181,
+      "line": 160,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit=='T1':"
+    },
+    {
+      "number": 182,
+      "line": 167,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        elif unit=='T3':"
+    },
+    {
+      "number": 183,
+      "line": 171,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 184,
+      "line": 172,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "            result.update(status='prepared_only',log=log,task=payload.get('task',''))"
+    },
+    {
+      "number": 185,
+      "line": 175,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        kind=p.get('kind');content=p.get('content')"
+    },
+    {
+      "number": 186,
+      "line": 175,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        kind=p.get('kind');content=p.get('content')"
+    },
+    {
+      "number": 187,
+      "line": 176,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 188,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 189,
+      "line": 178,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._policy(p.get('action',{}),'TREND');rows=[]"
+    },
+    {
+      "number": 190,
+      "line": 179,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        query=p.get('query','')"
+    },
+    {
+      "number": 191,
+      "line": 180,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(query,str) or len(query)>1000:raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 192,
+      "line": 182,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "            if kind=='git':"
+    },
+    {
+      "number": 193,
+      "line": 186,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 194,
+      "line": 199,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "            if isinstance(exc,Refusal):raise"
+    },
+    {
+      "number": 195,
+      "line": 200,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            raise Refusal('TREND_REFUSED_PARSE') from exc"
+    },
+    {
+      "number": 196,
+      "line": 204,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "                if r.get(field):"
+    },
+    {
+      "number": 197,
+      "line": 207,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not r.get('url') and not r.get('transcript_url'):continue"
+    },
+    {
+      "number": 198,
+      "line": 207,
+      "mutation": "continue to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not r.get('url') and not r.get('transcript_url'):continue"
+    },
+    {
+      "number": 199,
+      "line": 208,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "            if all(term in (str(r['title'])+' '+str(r['summary'])).lower() for term in query.lower().split()):accepted.append(r)"
+    },
+    {
+      "number": 200,
+      "line": 209,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        return {'unit':'T2','kind':kind,'results':accepted[:100],'matched_in_input':len(accepted),"
+    },
+    {
+      "number": 201,
+      "line": 209,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        return {'unit':'T2','kind':kind,'results':accepted[:100],'matched_in_input':len(accepted),"
+    },
+    {
+      "number": 202,
+      "line": 209,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        return {'unit':'T2','kind':kind,'results':accepted[:100],'matched_in_input':len(accepted),"
+    },
+    {
+      "number": 203,
+      "line": 209,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        return {'unit':'T2','kind':kind,'results':accepted[:100],'matched_in_input':len(accepted),"
+    },
+    {
+      "number": 204,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 205,
+      "line": 209,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        return {'unit':'T2','kind':kind,'results':accepted[:100],'matched_in_input':len(accepted),"
+    },
+    {
+      "number": 206,
+      "line": 24,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    except ValueError: raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 207,
+      "line": 25,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "    if p.scheme!='https' or not p.hostname or p.username or p.password or port not in (None,443):"
+    },
+    {
+      "number": 208,
+      "line": 28,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    if host.endswith('.') or re.fullmatch(r'[0-9.]+',host) and host.count('.')!=3:"
+    },
+    {
+      "number": 209,
+      "line": 28,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "    if host.endswith('.') or re.fullmatch(r'[0-9.]+',host) and host.count('.')!=3:"
+    },
+    {
+      "number": 210,
+      "line": 30,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    if '.' not in host or host.endswith(('.local','.internal','.localhost')):"
+    },
+    {
+      "number": 211,
+      "line": 30,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    if '.' not in host or host.endswith(('.local','.internal','.localhost')):"
+    },
+    {
+      "number": 212,
+      "line": 30,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    if '.' not in host or host.endswith(('.local','.internal','.localhost')):"
+    },
+    {
+      "number": 213,
+      "line": 34,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not ip.is_global: raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 214,
+      "line": 49,
+      "mutation": "bool flip",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 215,
+      "line": 50,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 216,
+      "line": 51,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if urlsplit(url).netloc.lower()!=urlsplit(self.origin).netloc.lower():raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 217,
+      "line": 66,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 218,
+      "line": 66,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 219,
+      "line": 71,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if permit is None:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 220,
+      "line": 74,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if now-self.last.get(host,float('-inf'))<self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 221,
+      "line": 76,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        robots=self.transport(permit.origin.rstrip('/')+'/robots.txt',self.limit)"
+    },
+    {
+      "number": 222,
+      "line": 77,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if robots.status!=200 or len(robots.text.encode())>self.limit:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 223,
+      "line": 77,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if robots.status!=200 or len(robots.text.encode())>self.limit:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 224,
+      "line": 79,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not rp.can_fetch('AtlasPublicCorpus',url):raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 225,
+      "line": 79,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not rp.can_fetch('AtlasPublicCorpus',url):raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 226,
+      "line": 80,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        delay=rp.crawl_delay('AtlasPublicCorpus') or rp.crawl_delay('*') or 0"
+    },
+    {
+      "number": 227,
+      "line": 80,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        delay=rp.crawl_delay('AtlasPublicCorpus') or rp.crawl_delay('*') or 0"
+    },
+    {
+      "number": 228,
+      "line": 81,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if delay>self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 229,
+      "line": 83,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if reply.status!=200:raise Refusal('TREND_REFUSED_FETCH')"
+    },
+    {
+      "number": 230,
+      "line": 84,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if len(reply.text.encode())>self.limit:raise Refusal('TREND_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 231,
+      "line": 90,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden+=1"
+    },
+    {
+      "number": 232,
+      "line": 90,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden+=1"
+    },
+    {
+      "number": 233,
+      "line": 92,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden=max(0,self.hidden-1)"
+    },
+    {
+      "number": 234,
+      "line": 92,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden=max(0,self.hidden-1)"
+    },
+    {
+      "number": 235,
+      "line": 92,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('script','style'):self.hidden=max(0,self.hidden-1)"
+    },
+    {
+      "number": 236,
+      "line": 93,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 237,
+      "line": 93,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 238,
+      "line": 93,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 239,
+      "line": 93,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 240,
+      "line": 93,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 241,
+      "line": 93,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 242,
+      "line": 93,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if tag in ('p','div','br','li','h1','h2'):self.parts.append('\\n')"
+    },
+    {
+      "number": 243,
+      "line": 104,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "    return {'college_candidate_sites':len({urlsplit(x['url']).hostname for x in cases}), 'college_verified_sites':sum(x['status']=='verified' for x in cases),"
+    },
+    {
+      "number": 244,
+      "line": 121,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        try:result=self.policy(action) if self.policy is not None else shared_policy(action,prefix)"
+    },
+    {
+      "number": 245,
+      "line": 123,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 246,
+      "line": 123,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 247,
+      "line": 123,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 248,
+      "line": 127,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(records,list) or len(records)>500:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 249,
+      "line": 131,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('paywalled'):raise Refusal(prefix+'_REFUSED_PAYWALL')"
+    },
+    {
+      "number": 250,
+      "line": 132,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('piracy'):raise Refusal('TREND_REFUSED_PIRACY')"
+    },
+    {
+      "number": 251,
+      "line": 137,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            except Refusal as exc:raise Refusal(prefix+'_REFUSED_SCRAPE') from exc"
+    },
+    {
+      "number": 252,
+      "line": 138,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            text=r.get('text')"
+    },
+    {
+      "number": 253,
+      "line": 139,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(text,str) or len(text.encode())>100000:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 254,
+      "line": 148,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 255,
+      "line": 150,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        prefix={'T1':'APPLY','T3':'TREND','T4':'FLEET'}[unit]"
+    },
+    {
+      "number": 256,
+      "line": 150,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        prefix={'T1':'APPLY','T3':'TREND','T4':'FLEET'}[unit]"
+    },
+    {
+      "number": 257,
+      "line": 150,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        prefix={'T1':'APPLY','T3':'TREND','T4':'FLEET'}[unit]"
+    },
+    {
+      "number": 258,
+      "line": 150,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        prefix={'T1':'APPLY','T3':'TREND','T4':'FLEET'}[unit]"
+    },
+    {
+      "number": 259,
+      "line": 150,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        prefix={'T1':'APPLY','T3':'TREND','T4':'FLEET'}[unit]"
+    },
+    {
+      "number": 260,
+      "line": 150,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        prefix={'T1':'APPLY','T3':'TREND','T4':'FLEET'}[unit]"
+    },
+    {
+      "number": 261,
+      "line": 156,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._policy(payload.get('action',{}),prefix)"
+    },
+    {
+      "number": 262,
+      "line": 157,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        result={'unit':unit,'scope':{'implemented':'bounded supplied-source normalization and preparation',"
+    },
+    {
+      "number": 263,
+      "line": 158,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'not_implemented':['model training','live accounts','automatic online actions','complete internet coverage'],"
+    },
+    {
+      "number": 264,
+      "line": 159,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'data_source':'supplied licensed documents','as_of':max((r['as_of'] for r in records),default=None)},'records':records}"
+    },
+    {
+      "number": 265,
+      "line": 159,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'data_source':'supplied licensed documents','as_of':max((r['as_of'] for r in records),default=None)},'records':records}"
+    },
+    {
+      "number": 266,
+      "line": 157,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        result={'unit':unit,'scope':{'implemented':'bounded supplied-source normalization and preparation',"
+    },
+    {
+      "number": 267,
+      "line": 159,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'data_source':'supplied licensed documents','as_of':max((r['as_of'] for r in records),default=None)},'records':records}"
+    },
+    {
+      "number": 268,
+      "line": 165,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['summary_method']='bounded extractive excerpt, not generative';r['outcome_verified']=False"
+    },
+    {
+      "number": 269,
+      "line": 165,
+      "mutation": "bool flip",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['summary_method']='bounded extractive excerpt, not generative';r['outcome_verified']=False"
+    },
+    {
+      "number": 270,
+      "line": 166,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['ingested_sites']=len({urlsplit(r['url']).hostname for r in records})"
+    },
+    {
+      "number": 271,
+      "line": 167,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        elif unit=='T3':"
+    },
+    {
+      "number": 272,
+      "line": 169,
+      "mutation": "bool flip",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['model_trained']=False"
+    },
+    {
+      "number": 273,
+      "line": 176,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 274,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 275,
+      "line": 178,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._policy(p.get('action',{}),'TREND');rows=[]"
+    },
+    {
+      "number": 276,
+      "line": 180,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(query,str) or len(query)>1000:raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 277,
+      "line": 180,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not isinstance(query,str) or len(query)>1000:raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 278,
+      "line": 182,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if kind=='git':"
+    },
+    {
+      "number": 279,
+      "line": 184,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 280,
+      "line": 186,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 281,
+      "line": 186,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 282,
+      "line": 189,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "                    if item.tag.split('}')[-1] not in ('item','entry'):continue"
+    },
+    {
+      "number": 283,
+      "line": 197,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "                    rows.append(row)"
+    },
+    {
+      "number": 284,
+      "line": 199,
+      "mutation": "raise to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "            if isinstance(exc,Refusal):raise"
+    },
+    {
+      "number": 285,
+      "line": 203,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            for field in ('url','transcript_url'):"
+    },
+    {
+      "number": 286,
+      "line": 203,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            for field in ('url','transcript_url'):"
+    },
+    {
+      "number": 287,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 288,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 289,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 290,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 291,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 292,
+      "line": 28,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    if host.endswith('.') or re.fullmatch(r'[0-9.]+',host) and host.count('.')!=3:"
+    },
+    {
+      "number": 293,
+      "line": 49,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 294,
+      "line": 49,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 295,
+      "line": 49,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 296,
+      "line": 49,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 297,
+      "line": 49,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if self.terms_allowed is not True or not self.checked_at or self.license not in ('CC0','CC-BY-4.0','CC-BY-SA-4.0','public-domain','permission-granted'):"
+    },
+    {
+      "number": 298,
+      "line": 66,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 299,
+      "line": 66,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 300,
+      "line": 76,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        robots=self.transport(permit.origin.rstrip('/')+'/robots.txt',self.limit)"
+    },
+    {
+      "number": 301,
+      "line": 92,
+      "mutation": "integer +1",
+      "killed": false,
+      "exit": 0,
+      "source": "        if tag in ('script','style'):self.hidden=max(0,self.hidden-1)"
+    },
+    {
+      "number": 302,
+      "line": 102,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    cases=json.loads((root/'college_candidates.json').read_text())"
+    },
+    {
+      "number": 303,
+      "line": 103,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    books=json.loads((root/'book_collections.json').read_text())"
+    },
+    {
+      "number": 304,
+      "line": 104,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    return {'college_candidate_sites':len({urlsplit(x['url']).hostname for x in cases}), 'college_verified_sites':sum(x['status']=='verified' for x in cases),"
+    },
+    {
+      "number": 305,
+      "line": 110,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    except ImportError as exc:raise Refusal(prefix+'_REFUSED_UNAVAILABLE') from exc"
+    },
+    {
+      "number": 306,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 307,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 308,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 309,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 310,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 311,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 312,
+      "line": 119,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not isinstance(action,dict) or any(not isinstance(k,str) or isinstance(v,(dict,list,tuple,set)) for k,v in action.items()):"
+    },
+    {
+      "number": 313,
+      "line": 120,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            raise Refusal(prefix+'_REFUSED_ACTION_SHAPE')"
+    },
+    {
+      "number": 314,
+      "line": 123,
+      "mutation": "bool flip",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 315,
+      "line": 123,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 316,
+      "line": 124,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            raise Refusal(prefix+'_REFUSED_ACTION')"
+    },
+    {
+      "number": 317,
+      "line": 127,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not isinstance(records,list) or len(records)>500:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 318,
+      "line": 132,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if r.get('piracy'):raise Refusal('TREND_REFUSED_PIRACY')"
+    },
+    {
+      "number": 319,
+      "line": 133,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 320,
+      "line": 133,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 321,
+      "line": 134,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            permit=self.permits.get(r.get('source_id'))"
+    },
+    {
+      "number": 322,
+      "line": 139,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(text,str) or len(text.encode())>100000:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 323,
+      "line": 144,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            out.append({'source_id':r['source_id'],'url':r['url'],'license':permit.license,'terms_url':permit.terms_url,"
+    },
+    {
+      "number": 324,
+      "line": 144,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            out.append({'source_id':r['source_id'],'url':r['url'],'license':permit.license,'terms_url':permit.terms_url,"
+    },
+    {
+      "number": 325,
+      "line": 144,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            out.append({'source_id':r['source_id'],'url':r['url'],'license':permit.license,'terms_url':permit.terms_url,"
+    },
+    {
+      "number": 326,
+      "line": 144,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            out.append({'source_id':r['source_id'],'url':r['url'],'license':permit.license,'terms_url':permit.terms_url,"
+    },
+    {
+      "number": 327,
+      "line": 145,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        'rights_checked_at':permit.checked_at,'as_of':r['as_of'],'sha256':digest,'text':plain(text)})"
+    },
+    {
+      "number": 328,
+      "line": 145,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        'rights_checked_at':permit.checked_at,'as_of':r['as_of'],'sha256':digest,'text':plain(text)})"
+    },
+    {
+      "number": 329,
+      "line": 145,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        'rights_checked_at':permit.checked_at,'as_of':r['as_of'],'sha256':digest,'text':plain(text)})"
+    },
+    {
+      "number": 330,
+      "line": 145,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        'rights_checked_at':permit.checked_at,'as_of':r['as_of'],'sha256':digest,'text':plain(text)})"
+    },
+    {
+      "number": 331,
+      "line": 148,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 332,
+      "line": 148,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 333,
+      "line": 148,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 334,
+      "line": 148,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 335,
+      "line": 154,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if not records:raise Refusal('FLEET_REFUSED_NOADVICE')"
+    },
+    {
+      "number": 336,
+      "line": 155,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.append({'stage':'advice','sources':[r['url'] for r in records],'summaries':[r['text'][:500] for r in records]})"
+    },
+    {
+      "number": 337,
+      "line": 155,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.append({'stage':'advice','sources':[r['url'] for r in records],'summaries':[r['text'][:500] for r in records]})"
+    },
+    {
+      "number": 338,
+      "line": 155,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.append({'stage':'advice','sources':[r['url'] for r in records],'summaries':[r['text'][:500] for r in records]})"
+    },
+    {
+      "number": 339,
+      "line": 155,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.append({'stage':'advice','sources':[r['url'] for r in records],'summaries':[r['text'][:500] for r in records]})"
+    },
+    {
+      "number": 340,
+      "line": 158,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'not_implemented':['model training','live accounts','automatic online actions','complete internet coverage'],"
+    },
+    {
+      "number": 341,
+      "line": 158,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'not_implemented':['model training','live accounts','automatic online actions','complete internet coverage'],"
+    },
+    {
+      "number": 342,
+      "line": 158,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'not_implemented':['model training','live accounts','automatic online actions','complete internet coverage'],"
+    },
+    {
+      "number": 343,
+      "line": 158,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'not_implemented':['model training','live accounts','automatic online actions','complete internet coverage'],"
+    },
+    {
+      "number": 344,
+      "line": 162,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                text=r.pop('text');r['stats']=dict(re.findall(r'(?im)^(SAT|ACT|GPA):\\s*([^\\n]+)',text))"
+    },
+    {
+      "number": 345,
+      "line": 162,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                text=r.pop('text');r['stats']=dict(re.findall(r'(?im)^(SAT|ACT|GPA):\\s*([^\\n]+)',text))"
+    },
+    {
+      "number": 346,
+      "line": 163,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['outcomes']=re.findall(r'(?im)^Outcome:\\s*([^\\n]+)',text)"
+    },
+    {
+      "number": 347,
+      "line": 163,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['outcomes']=re.findall(r'(?im)^Outcome:\\s*([^\\n]+)',text)"
+    },
+    {
+      "number": 348,
+      "line": 164,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['essay_summary']=(' '.join(text.split())[:500] if text else '')"
+    },
+    {
+      "number": 349,
+      "line": 165,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['summary_method']='bounded extractive excerpt, not generative';r['outcome_verified']=False"
+    },
+    {
+      "number": 350,
+      "line": 165,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['summary_method']='bounded extractive excerpt, not generative';r['outcome_verified']=False"
+    },
+    {
+      "number": 351,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 352,
+      "line": 169,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['model_trained']=False"
+    },
+    {
+      "number": 353,
+      "line": 176,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 354,
+      "line": 176,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 355,
+      "line": 176,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 356,
+      "line": 184,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 357,
+      "line": 186,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 358,
+      "line": 186,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 359,
+      "line": 189,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "                    if item.tag.split('}')[-1] not in ('item','entry'):continue"
+    },
+    {
+      "number": 360,
+      "line": 189,
+      "mutation": "continue to pass",
+      "killed": true,
+      "exit": 1,
+      "source": "                    if item.tag.split('}')[-1] not in ('item','entry'):continue"
+    },
+    {
+      "number": 361,
+      "line": 193,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='title':row['title']=c.text or ''"
+    },
+    {
+      "number": 362,
+      "line": 194,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='link':row['url']=c.get('href') or c.text or ''"
+    },
+    {
+      "number": 363,
+      "line": 195,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag in ('description','summary'):row['summary']=plain(c.text or '')[:500]"
+    },
+    {
+      "number": 364,
+      "line": 196,
+      "mutation": "negate if",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='transcript':row.update(transcript_url=c.get('url'),transcript_ingested=False)"
+    },
+    {
+      "number": 365,
+      "line": 200,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            raise Refusal('TREND_REFUSED_PARSE') from exc"
+    },
+    {
+      "number": 366,
+      "line": 205,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "                    try:public_url(r[field])"
+    },
+    {
+      "number": 367,
+      "line": 208,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "            if all(term in (str(r['title'])+' '+str(r['summary'])).lower() for term in query.lower().split()):accepted.append(r)"
+    },
+    {
+      "number": 368,
+      "line": 209,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "        return {'unit':'T2','kind':kind,'results':accepted[:100],'matched_in_input':len(accepted),"
+    },
+    {
+      "number": 369,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 370,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 371,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 372,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 373,
+      "line": 210,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'scope':{'implemented':'RSS/Atom and GitHub public-search-response adapters over supplied payloads','not_implemented':['live GitHub credentials','automatic transcri"
+    },
+    {
+      "number": 374,
+      "line": 74,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if now-self.last.get(host,float('-inf'))<self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 375,
+      "line": 104,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    return {'college_candidate_sites':len({urlsplit(x['url']).hostname for x in cases}), 'college_verified_sites':sum(x['status']=='verified' for x in cases),"
+    },
+    {
+      "number": 376,
+      "line": 123,
+      "mutation": "bool flip",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 377,
+      "line": 130,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if not isinstance(r,dict):raise Refusal(prefix+'_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 378,
+      "line": 131,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if r.get('paywalled'):raise Refusal(prefix+'_REFUSED_PAYWALL')"
+    },
+    {
+      "number": 379,
+      "line": 133,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 380,
+      "line": 135,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if permit is None:raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 381,
+      "line": 136,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            try:permit.allows(r.get('url'))"
+    },
+    {
+      "number": 382,
+      "line": 139,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if not isinstance(text,str) or len(text.encode())>100000:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 383,
+      "line": 140,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')"
+    },
+    {
+      "number": 384,
+      "line": 140,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')"
+    },
+    {
+      "number": 385,
+      "line": 142,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if (r['source_id'],digest) in seen:continue"
+    },
+    {
+      "number": 386,
+      "line": 143,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            seen.add((r['source_id'],digest))"
+    },
+    {
+      "number": 387,
+      "line": 144,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            out.append({'source_id':r['source_id'],'url':r['url'],'license':permit.license,'terms_url':permit.terms_url,"
+    },
+    {
+      "number": 388,
+      "line": 144,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            out.append({'source_id':r['source_id'],'url':r['url'],'license':permit.license,'terms_url':permit.terms_url,"
+    },
+    {
+      "number": 389,
+      "line": 145,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        'rights_checked_at':permit.checked_at,'as_of':r['as_of'],'sha256':digest,'text':plain(text)})"
+    },
+    {
+      "number": 390,
+      "line": 162,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                text=r.pop('text');r['stats']=dict(re.findall(r'(?im)^(SAT|ACT|GPA):\\s*([^\\n]+)',text))"
+    },
+    {
+      "number": 391,
+      "line": 168,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 392,
+      "line": 172,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result.update(status='prepared_only',log=log,task=payload.get('task',''))"
+    },
+    {
+      "number": 393,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 394,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 395,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 396,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 397,
+      "line": 186,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 398,
+      "line": 186,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 399,
+      "line": 186,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 400,
+      "line": 190,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                    row={'title':'','url':'','summary':''}"
+    },
+    {
+      "number": 401,
+      "line": 190,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                    row={'title':'','url':'','summary':''}"
+    },
+    {
+      "number": 402,
+      "line": 190,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                    row={'title':'','url':'','summary':''}"
+    },
+    {
+      "number": 403,
+      "line": 193,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='title':row['title']=c.text or ''"
+    },
+    {
+      "number": 404,
+      "line": 194,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='link':row['url']=c.get('href') or c.text or ''"
+    },
+    {
+      "number": 405,
+      "line": 195,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag in ('description','summary'):row['summary']=plain(c.text or '')[:500]"
+    },
+    {
+      "number": 406,
+      "line": 196,
+      "mutation": "comparison",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='transcript':row.update(transcript_url=c.get('url'),transcript_ingested=False)"
+    },
+    {
+      "number": 407,
+      "line": 196,
+      "mutation": "delete call",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='transcript':row.update(transcript_url=c.get('url'),transcript_ingested=False)"
+    },
+    {
+      "number": 408,
+      "line": 207,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not r.get('url') and not r.get('transcript_url'):continue"
+    },
+    {
+      "number": 409,
+      "line": 207,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not r.get('url') and not r.get('transcript_url'):continue"
+    },
+    {
+      "number": 410,
+      "line": 104,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "    return {'college_candidate_sites':len({urlsplit(x['url']).hostname for x in cases}), 'college_verified_sites':sum(x['status']=='verified' for x in cases),"
+    },
+    {
+      "number": 411,
+      "line": 105,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            'book_collections':len(books),'book_independent_domains':len({urlsplit(x['url']).hostname for x in books}), 'ingested_records':0}"
+    },
+    {
+      "number": 412,
+      "line": 123,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        if not (result is None or result is True or isinstance(result,dict) and result.get('allowed') is True):"
+    },
+    {
+      "number": 413,
+      "line": 137,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            except Refusal as exc:raise Refusal(prefix+'_REFUSED_SCRAPE') from exc"
+    },
+    {
+      "number": 414,
+      "line": 140,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')"
+    },
+    {
+      "number": 415,
+      "line": 140,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')"
+    },
+    {
+      "number": 416,
+      "line": 155,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.append({'stage':'advice','sources':[r['url'] for r in records],'summaries':[r['text'][:500] for r in records]})"
+    },
+    {
+      "number": 417,
+      "line": 159,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                'data_source':'supplied licensed documents','as_of':max((r['as_of'] for r in records),default=None)},'records':records}"
+    },
+    {
+      "number": 418,
+      "line": 164,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['essay_summary']=(' '.join(text.split())[:500] if text else '')"
+    },
+    {
+      "number": 419,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 420,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 421,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 422,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 423,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 424,
+      "line": 171,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 425,
+      "line": 171,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 426,
+      "line": 171,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 427,
+      "line": 171,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 428,
+      "line": 171,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 429,
+      "line": 171,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 430,
+      "line": 171,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 431,
+      "line": 172,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result.update(status='prepared_only',log=log,task=payload.get('task',''))"
+    },
+    {
+      "number": 432,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 433,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 434,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 435,
+      "line": 184,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 436,
+      "line": 184,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 437,
+      "line": 184,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 438,
+      "line": 184,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 439,
+      "line": 189,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                    if item.tag.split('}')[-1] not in ('item','entry'):continue"
+    },
+    {
+      "number": 440,
+      "line": 189,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                    if item.tag.split('}')[-1] not in ('item','entry'):continue"
+    },
+    {
+      "number": 441,
+      "line": 193,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='title':row['title']=c.text or ''"
+    },
+    {
+      "number": 442,
+      "line": 193,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='title':row['title']=c.text or ''"
+    },
+    {
+      "number": 443,
+      "line": 194,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='link':row['url']=c.get('href') or c.text or ''"
+    },
+    {
+      "number": 444,
+      "line": 194,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='link':row['url']=c.get('href') or c.text or ''"
+    },
+    {
+      "number": 445,
+      "line": 196,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='transcript':row.update(transcript_url=c.get('url'),transcript_ingested=False)"
+    },
+    {
+      "number": 446,
+      "line": 155,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.append({'stage':'advice','sources':[r['url'] for r in records],'summaries':[r['text'][:500] for r in records]})"
+    },
+    {
+      "number": 447,
+      "line": 155,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.append({'stage':'advice','sources':[r['url'] for r in records],'summaries':[r['text'][:500] for r in records]})"
+    },
+    {
+      "number": 448,
+      "line": 164,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                r['essay_summary']=(' '.join(text.split())[:500] if text else '')"
+    },
+    {
+      "number": 449,
+      "line": 166,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['ingested_sites']=len({urlsplit(r['url']).hostname for r in records})"
+    },
+    {
+      "number": 450,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 451,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 452,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 453,
+      "line": 171,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            log.extend([{'stage':'policy','status':'passed'},{'stage':'prepared','action':payload.get('action',{})}])"
+    },
+    {
+      "number": 454,
+      "line": 184,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 455,
+      "line": 184,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 456,
+      "line": 189,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                    if item.tag.split('}')[-1] not in ('item','entry'):continue"
+    },
+    {
+      "number": 457,
+      "line": 189,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "                    if item.tag.split('}')[-1] not in ('item','entry'):continue"
+    },
+    {
+      "number": 458,
+      "line": 192,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        tag=c.tag.split('}')[-1]"
+    },
+    {
+      "number": 459,
+      "line": 192,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "                        tag=c.tag.split('}')[-1]"
+    },
+    {
+      "number": 460,
+      "line": 193,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='title':row['title']=c.text or ''"
+    },
+    {
+      "number": 461,
+      "line": 194,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='link':row['url']=c.get('href') or c.text or ''"
+    },
+    {
+      "number": 462,
+      "line": 195,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag in ('description','summary'):row['summary']=plain(c.text or '')[:500]"
+    },
+    {
+      "number": 463,
+      "line": 195,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag in ('description','summary'):row['summary']=plain(c.text or '')[:500]"
+    },
+    {
+      "number": 464,
+      "line": 195,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag in ('description','summary'):row['summary']=plain(c.text or '')[:500]"
+    },
+    {
+      "number": 465,
+      "line": 168,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 466,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 467,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 468,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 469,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 470,
+      "line": 184,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                for x in data.get('items',[]):rows.append({'title':x.get('name',''),'url':x.get('html_url',''),'summary':x.get('description') or ''})"
+    },
+    {
+      "number": 471,
+      "line": 194,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='link':row['url']=c.get('href') or c.text or ''"
+    },
+    {
+      "number": 472,
+      "line": 195,
+      "mutation": "boolean operator",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag in ('description','summary'):row['summary']=plain(c.text or '')[:500]"
+    },
+    {
+      "number": 473,
+      "line": 195,
+      "mutation": "integer +1",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag in ('description','summary'):row['summary']=plain(c.text or '')[:500]"
+    },
+    {
+      "number": 474,
+      "line": 196,
+      "mutation": "bool flip",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='transcript':row.update(transcript_url=c.get('url'),transcript_ingested=False)"
+    },
+    {
+      "number": 475,
+      "line": 168,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            result['concept_candidates']=[{'technique':line.strip()[:500],'source_url':r['url'],'source_sha256':r['sha256'],'status':'candidate_not_installed'} for r in records for"
+    },
+    {
+      "number": 476,
+      "line": 196,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "                        if tag=='transcript':row.update(transcript_url=c.get('url'),transcript_ingested=False)"
+    },
+    {
+      "number": 477,
+      "line": 208,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if all(term in (str(r['title'])+' '+str(r['summary'])).lower() for term in query.lower().split()):accepted.append(r)"
+    },
+    {
+      "number": 478,
+      "line": 208,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if all(term in (str(r['title'])+' '+str(r['summary'])).lower() for term in query.lower().split()):accepted.append(r)"
+    },
+    {
+      "number": 479,
+      "line": 208,
+      "mutation": "string +X",
+      "killed": true,
+      "exit": 1,
+      "source": "            if all(term in (str(r['title'])+' '+str(r['summary'])).lower() for term in query.lower().split()):accepted.append(r)"
+    }
+  ],
+  "killed": 427,
+  "survivors": [
+    {
+      "number": 0,
+      "line": 1,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "\"\"\"T1-T4 bounded ingestion and advice preparation. No sending or training runtime.\"\"\""
+    },
+    {
+      "number": 19,
+      "line": 48,
+      "mutation": "delete call",
+      "killed": false,
+      "exit": 0,
+      "source": "        public_url(url);public_url(self.origin);public_url(self.terms_url)"
+    },
+    {
+      "number": 24,
+      "line": 60,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    \"\"\"Caller supplies a bounded, no-redirect transport. No credentials accepted."
+    },
+    {
+      "number": 26,
+      "line": 69,
+      "mutation": "delete call",
+      "killed": false,
+      "exit": 0,
+      "source": "        public_url(url)"
+    },
+    {
+      "number": 135,
+      "line": 21,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 137,
+      "line": 26,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 140,
+      "line": 29,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 142,
+      "line": 31,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 149,
+      "line": 80,
+      "mutation": "integer +1",
+      "killed": false,
+      "exit": 0,
+      "source": "        delay=rp.crawl_delay('AtlasPublicCorpus') or rp.crawl_delay('*') or 0"
+    },
+    {
+      "number": 153,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 154,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 188,
+      "line": 177,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        self._records({'records':[{'source_id':p.get('source_id'),'url':p.get('url'),'text':content,'as_of':p.get('as_of'), **{flag:p.get(flag) for flag in ('paywalled','piracy','c"
+    },
+    {
+      "number": 206,
+      "line": 24,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    except ValueError: raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 213,
+      "line": 34,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not ip.is_global: raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 215,
+      "line": 50,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 216,
+      "line": 51,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if urlsplit(url).netloc.lower()!=urlsplit(self.origin).netloc.lower():raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 218,
+      "line": 66,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if interval<60 or not 1<=limit<=100000:raise Refusal('TREND_REFUSED_LIMIT')"
+    },
+    {
+      "number": 219,
+      "line": 71,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if permit is None:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 220,
+      "line": 74,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if now-self.last.get(host,float('-inf'))<self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 223,
+      "line": 77,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if robots.status!=200 or len(robots.text.encode())>self.limit:raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 224,
+      "line": 79,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not rp.can_fetch('AtlasPublicCorpus',url):raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 225,
+      "line": 79,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not rp.can_fetch('AtlasPublicCorpus',url):raise Refusal('TREND_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 226,
+      "line": 80,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        delay=rp.crawl_delay('AtlasPublicCorpus') or rp.crawl_delay('*') or 0"
+    },
+    {
+      "number": 227,
+      "line": 80,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        delay=rp.crawl_delay('AtlasPublicCorpus') or rp.crawl_delay('*') or 0"
+    },
+    {
+      "number": 228,
+      "line": 81,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if delay>self.interval:raise Refusal('TREND_REFUSED_RATELIMIT')"
+    },
+    {
+      "number": 229,
+      "line": 83,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if reply.status!=200:raise Refusal('TREND_REFUSED_FETCH')"
+    },
+    {
+      "number": 230,
+      "line": 84,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if len(reply.text.encode())>self.limit:raise Refusal('TREND_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 254,
+      "line": 148,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if unit not in ('T1','T2','T3','T4') or not isinstance(payload,dict):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 273,
+      "line": 176,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if kind not in ('blog','podcast','git') or not isinstance(content,str):raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 277,
+      "line": 180,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not isinstance(query,str) or len(query)>1000:raise Refusal('TREND_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 300,
+      "line": 76,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        robots=self.transport(permit.origin.rstrip('/')+'/robots.txt',self.limit)"
+    },
+    {
+      "number": 301,
+      "line": 92,
+      "mutation": "integer +1",
+      "killed": false,
+      "exit": 0,
+      "source": "        if tag in ('script','style'):self.hidden=max(0,self.hidden-1)"
+    },
+    {
+      "number": 305,
+      "line": 110,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    except ImportError as exc:raise Refusal(prefix+'_REFUSED_UNAVAILABLE') from exc"
+    },
+    {
+      "number": 307,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 308,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 309,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 310,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 311,
+      "line": 112,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "    action=next((name for name in ('spend','outreach','fakeacct','autopost','scrape','trade') if payload.get(name)),payload.get('type','analyze'))"
+    },
+    {
+      "number": 313,
+      "line": 120,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            raise Refusal(prefix+'_REFUSED_ACTION_SHAPE')"
+    },
+    {
+      "number": 316,
+      "line": 124,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            raise Refusal(prefix+'_REFUSED_ACTION')"
+    },
+    {
+      "number": 317,
+      "line": 127,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "        if not isinstance(records,list) or len(records)>500:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 318,
+      "line": 132,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if r.get('piracy'):raise Refusal('TREND_REFUSED_PIRACY')"
+    },
+    {
+      "number": 335,
+      "line": 154,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if not records:raise Refusal('FLEET_REFUSED_NOADVICE')"
+    },
+    {
+      "number": 365,
+      "line": 200,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            raise Refusal('TREND_REFUSED_PARSE') from exc"
+    },
+    {
+      "number": 377,
+      "line": 130,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if not isinstance(r,dict):raise Refusal(prefix+'_REFUSED_SCHEMA')"
+    },
+    {
+      "number": 378,
+      "line": 131,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if r.get('paywalled'):raise Refusal(prefix+'_REFUSED_PAYWALL')"
+    },
+    {
+      "number": 379,
+      "line": 133,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 380,
+      "line": 135,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if permit is None:raise Refusal(prefix+'_REFUSED_SCRAPE')"
+    },
+    {
+      "number": 382,
+      "line": 139,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if not isinstance(text,str) or len(text.encode())>100000:raise Refusal(prefix+'_REFUSED_OVERSIZE')"
+    },
+    {
+      "number": 384,
+      "line": 140,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')"
+    },
+    {
+      "number": 399,
+      "line": 186,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "                if '<!DOCTYPE' in content.upper() or '<!ENTITY' in content.upper():raise Refusal('TREND_REFUSED_XML')"
+    },
+    {
+      "number": 413,
+      "line": 137,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            except Refusal as exc:raise Refusal(prefix+'_REFUSED_SCRAPE') from exc"
+    },
+    {
+      "number": 477,
+      "line": 208,
+      "mutation": "string +X",
+      "killed": false,
+      "exit": 0,
+      "source": "            if all(term in (str(r['title'])+' '+str(r['summary'])).lower() for term in query.lower().split()):accepted.append(r)"
+    }
+  ]
+}

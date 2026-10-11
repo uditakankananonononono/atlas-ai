@@ -1,0 +1,2102 @@
+[
+  {
+    "name": "Adventure",
+    "path": "/ebooks/bookshelf/82",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/82",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Africa",
+    "path": "/ebooks/bookshelf/5",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/5",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "African American Writers",
+    "path": "/ebooks/bookshelf/6",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/6",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Ainslee's",
+    "path": "/ebooks/bookshelf/195",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/195",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "American Revolutionary War",
+    "path": "/ebooks/bookshelf/196",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/196",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Anarchism",
+    "path": "/ebooks/bookshelf/7",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/7",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Animal",
+    "path": "/ebooks/bookshelf/150",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/150",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Animals-Domestic",
+    "path": "/ebooks/bookshelf/151",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/151",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Animals-Wild-Birds",
+    "path": "/ebooks/bookshelf/154",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/154",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Animals-Wild-Insects",
+    "path": "/ebooks/bookshelf/155",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/155",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Animals-Wild-Mammals",
+    "path": "/ebooks/bookshelf/156",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/156",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Animals-Wild-Reptiles and Amphibians",
+    "path": "/ebooks/bookshelf/157",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/157",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Animals-Wild-Trapping",
+    "path": "/ebooks/bookshelf/153",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/153",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Animals-Wild",
+    "path": "/ebooks/bookshelf/152",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/152",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Anthropology",
+    "path": "/ebooks/bookshelf/8",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/8",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Archaeology",
+    "path": "/ebooks/bookshelf/9",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/9",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Architecture",
+    "path": "/ebooks/bookshelf/10",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/10",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Argentina",
+    "path": "/ebooks/bookshelf/112",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/112",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Armour's Monthly Cook Book",
+    "path": "/ebooks/bookshelf/197",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/197",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Art",
+    "path": "/ebooks/bookshelf/11",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/11",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Arthurian Legends",
+    "path": "/ebooks/bookshelf/160",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/160",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Astounding Stories",
+    "path": "/ebooks/bookshelf/198",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/198",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Astronomy",
+    "path": "/ebooks/bookshelf/101",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/101",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Atheism",
+    "path": "/ebooks/bookshelf/199",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/199",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Australia",
+    "path": "/ebooks/bookshelf/113",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/113",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Bah\u00e1'\u00ed Faith",
+    "path": "/ebooks/bookshelf/114",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/114",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Banned Books List from the American Library Association",
+    "path": "/ebooks/bookshelf/422",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/422",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Banned Books from Anne Haight's list",
+    "path": "/ebooks/bookshelf/336",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/336",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Barnav\u00e4nnen",
+    "path": "/ebooks/bookshelf/200",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/200",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Bestsellers, American, 1895-1923",
+    "path": "/ebooks/bookshelf/159",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/159",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Best Books Ever Listings",
+    "path": "/ebooks/bookshelf/13",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/13",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Best Loved Spanish Literary Classics",
+    "path": "/ebooks/bookshelf/420",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/420",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Bibliomania",
+    "path": "/ebooks/bookshelf/15",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/15",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Biographies",
+    "path": "/ebooks/bookshelf/16",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/16",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Biology",
+    "path": "/ebooks/bookshelf/201",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/201",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Bird-Lore",
+    "path": "/ebooks/bookshelf/202",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/202",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Birds, Illustrated by Color Photography",
+    "path": "/ebooks/bookshelf/203",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/203",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Blackwood's Edinburgh Magazine",
+    "path": "/ebooks/bookshelf/204",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/204",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Boer War",
+    "path": "/ebooks/bookshelf/137",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/137",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Botany",
+    "path": "/ebooks/bookshelf/115",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/115",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "British Law",
+    "path": "/ebooks/bookshelf/205",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/205",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Buchanan's Journal of Man",
+    "path": "/ebooks/bookshelf/206",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/206",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Buddhism",
+    "path": "/ebooks/bookshelf/116",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/116",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Bulgaria",
+    "path": "/ebooks/bookshelf/117",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/117",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Bulletin de Lille",
+    "path": "/ebooks/bookshelf/207",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/207",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "CIA World Factbooks",
+    "path": "/ebooks/bookshelf/181",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/181",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Camping",
+    "path": "/ebooks/bookshelf/148",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/148",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Canada",
+    "path": "/ebooks/bookshelf/118",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/118",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Canon Law",
+    "path": "/ebooks/bookshelf/208",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/208",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Celtic Magazine",
+    "path": "/ebooks/bookshelf/209",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/209",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Chambers's Edinburgh Journal",
+    "path": "/ebooks/bookshelf/210",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/210",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Chemistry",
+    "path": "/ebooks/bookshelf/211",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/211",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Child's Own Book of Great Musicians",
+    "path": "/ebooks/bookshelf/212",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/212",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Anthologies",
+    "path": "/ebooks/bookshelf/213",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/213",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Biography",
+    "path": "/ebooks/bookshelf/214",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/214",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Book Series",
+    "path": "/ebooks/bookshelf/17",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/17",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Fiction",
+    "path": "/ebooks/bookshelf/18",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/18",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's History",
+    "path": "/ebooks/bookshelf/19",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/19",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Instructional Books",
+    "path": "/ebooks/bookshelf/215",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/215",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Literature",
+    "path": "/ebooks/bookshelf/20",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/20",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Myths, Fairy Tales, etc.",
+    "path": "/ebooks/bookshelf/216",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/216",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Picture Books",
+    "path": "/ebooks/bookshelf/22",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/22",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Religion",
+    "path": "/ebooks/bookshelf/217",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/217",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Children's Verse",
+    "path": "/ebooks/bookshelf/218",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/218",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Christianity",
+    "path": "/ebooks/bookshelf/119",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/119",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Christmas",
+    "path": "/ebooks/bookshelf/23",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/23",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Classical Antiquity",
+    "path": "/ebooks/bookshelf/24",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/24",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Contemporary Reviews",
+    "path": "/ebooks/bookshelf/25",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/25",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Continental Monthly",
+    "path": "/ebooks/bookshelf/219",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/219",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Cookbooks and Cooking",
+    "path": "/ebooks/bookshelf/419",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/419",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Crafts",
+    "path": "/ebooks/bookshelf/27",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/27",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Crime Fiction",
+    "path": "/ebooks/bookshelf/28",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/28",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Crime Nonfiction",
+    "path": "/ebooks/bookshelf/29",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/29",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Current History",
+    "path": "/ebooks/bookshelf/220",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/220",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Czech",
+    "path": "/ebooks/bookshelf/120",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/120",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Detective Fiction",
+    "path": "/ebooks/bookshelf/30",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/30",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Dew Drops",
+    "path": "/ebooks/bookshelf/222",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/222",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "De Aarde en haar Volken",
+    "path": "/ebooks/bookshelf/221",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/221",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Donahoe's Magazine",
+    "path": "/ebooks/bookshelf/223",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/223",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Early English Text Society",
+    "path": "/ebooks/bookshelf/31",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/31",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Ecology",
+    "path": "/ebooks/bookshelf/224",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/224",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Education",
+    "path": "/ebooks/bookshelf/138",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/138",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Egypt",
+    "path": "/ebooks/bookshelf/121",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/121",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Engineering",
+    "path": "/ebooks/bookshelf/32",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/32",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "English Civil War",
+    "path": "/ebooks/bookshelf/139",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/139",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Erotic Fiction",
+    "path": "/ebooks/bookshelf/33",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/33",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Esperanto",
+    "path": "/ebooks/bookshelf/34",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/34",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Beaux-Arts",
+    "path": "/ebooks/bookshelf/406",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/406",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Biographie, M\u00e9moires, Journal intime, Correspondance",
+    "path": "/ebooks/bookshelf/382",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/382",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Chansons",
+    "path": "/ebooks/bookshelf/306",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/306",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Chroniques",
+    "path": "/ebooks/bookshelf/408",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/408",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Contes",
+    "path": "/ebooks/bookshelf/392",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/392",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Droit et Justice",
+    "path": "/ebooks/bookshelf/387",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/387",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Education et Enseignement",
+    "path": "/ebooks/bookshelf/380",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/380",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Femmes",
+    "path": "/ebooks/bookshelf/307",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/307",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Guerres",
+    "path": "/ebooks/bookshelf/390",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/390",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Histoire",
+    "path": "/ebooks/bookshelf/309",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/309",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Humour",
+    "path": "/ebooks/bookshelf/385",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/385",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Illustrateurs",
+    "path": "/ebooks/bookshelf/310",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/310",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Jeunesse",
+    "path": "/ebooks/bookshelf/311",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/311",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Langues",
+    "path": "/ebooks/bookshelf/384",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/384",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - La Premi\u00e8re Guerre Mondiale, 1914-1918",
+    "path": "/ebooks/bookshelf/407",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/407",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Litt\u00e9rature",
+    "path": "/ebooks/bookshelf/313",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/313",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Litt\u00e9rature francophone",
+    "path": "/ebooks/bookshelf/337",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/337",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Livres, Collections et Bibliophilie",
+    "path": "/ebooks/bookshelf/416",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/416",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Musique",
+    "path": "/ebooks/bookshelf/315",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/315",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - M\u00e9tiers et Artisanat",
+    "path": "/ebooks/bookshelf/417",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/417",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Nouveaut\u00e9s",
+    "path": "/ebooks/bookshelf/395",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/395",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Nouvelles",
+    "path": "/ebooks/bookshelf/317",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/317",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Occultisme",
+    "path": "/ebooks/bookshelf/383",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/383",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Peinture",
+    "path": "/ebooks/bookshelf/318",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/318",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Peuples et Soci\u00e9t\u00e9s",
+    "path": "/ebooks/bookshelf/386",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/386",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Philosophie, Religion et Morale",
+    "path": "/ebooks/bookshelf/381",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/381",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Politique",
+    "path": "/ebooks/bookshelf/388",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/388",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Po\u00e9sie",
+    "path": "/ebooks/bookshelf/35",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/35",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Presse",
+    "path": "/ebooks/bookshelf/319",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/319",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Prix Nobel",
+    "path": "/ebooks/bookshelf/320",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/320",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Sciences et Techniques",
+    "path": "/ebooks/bookshelf/322",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/322",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Science fiction",
+    "path": "/ebooks/bookshelf/321",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/321",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Services publics",
+    "path": "/ebooks/bookshelf/391",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/391",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Sports et loisirs",
+    "path": "/ebooks/bookshelf/393",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/393",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - S\u00e9duction et libertinage",
+    "path": "/ebooks/bookshelf/396",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/396",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Th\u00e9\u00e2tre",
+    "path": "/ebooks/bookshelf/323",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/323",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Villes",
+    "path": "/ebooks/bookshelf/394",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/394",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "French - Voyages et pays",
+    "path": "/ebooks/bookshelf/397",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/397",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Famous Scots Series",
+    "path": "/ebooks/bookshelf/400",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/400",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Fantasy",
+    "path": "/ebooks/bookshelf/36",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/36",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Folklore",
+    "path": "/ebooks/bookshelf/37",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/37",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Forestry",
+    "path": "/ebooks/bookshelf/145",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/145",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "France",
+    "path": "/ebooks/bookshelf/122",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/122",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Garden and Forest",
+    "path": "/ebooks/bookshelf/226",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/226",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "General Fiction",
+    "path": "/ebooks/bookshelf/411",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/411",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Geology",
+    "path": "/ebooks/bookshelf/227",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/227",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "German - Drama",
+    "path": "/ebooks/bookshelf/377",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/377",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "German - Kinderbuch",
+    "path": "/ebooks/bookshelf/376",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/376",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "German - Lyrik",
+    "path": "/ebooks/bookshelf/375",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/375",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "German - Prosa",
+    "path": "/ebooks/bookshelf/374",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/374",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "German - Sachbuch",
+    "path": "/ebooks/bookshelf/378",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/378",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Germany",
+    "path": "/ebooks/bookshelf/123",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/123",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "German Language Books",
+    "path": "/ebooks/bookshelf/38",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/38",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Godey's Lady's Book",
+    "path": "/ebooks/bookshelf/228",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/228",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Golden Days for Boys and Girls",
+    "path": "/ebooks/bookshelf/229",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/229",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Gothic Fiction",
+    "path": "/ebooks/bookshelf/39",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/39",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Graham's Magazine",
+    "path": "/ebooks/bookshelf/230",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/230",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Greece",
+    "path": "/ebooks/bookshelf/124",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/124",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Harper's New Monthly Magazine",
+    "path": "/ebooks/bookshelf/231",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/231",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Harper's Young People",
+    "path": "/ebooks/bookshelf/232",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/232",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Harvard Classics",
+    "path": "/ebooks/bookshelf/40",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/40",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Hinduism",
+    "path": "/ebooks/bookshelf/125",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/125",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Historical Fiction",
+    "path": "/ebooks/bookshelf/41",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/41",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Horror",
+    "path": "/ebooks/bookshelf/42",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/42",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Horticulture",
+    "path": "/ebooks/bookshelf/43",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/43",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Humor",
+    "path": "/ebooks/bookshelf/44",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/44",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Agraria",
+    "path": "/ebooks/bookshelf/418",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/418",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Archeologia e Storia dell'arte",
+    "path": "/ebooks/bookshelf/410",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/410",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Architettura",
+    "path": "/ebooks/bookshelf/409",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/409",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Arte varia",
+    "path": "/ebooks/bookshelf/342",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/342",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Biografie",
+    "path": "/ebooks/bookshelf/343",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/343",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Botanica",
+    "path": "/ebooks/bookshelf/344",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/344",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Cucina",
+    "path": "/ebooks/bookshelf/345",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/345",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Discorsi e Orazioni",
+    "path": "/ebooks/bookshelf/346",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/346",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Economia",
+    "path": "/ebooks/bookshelf/347",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/347",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Filosofia",
+    "path": "/ebooks/bookshelf/348",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/348",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Folklore",
+    "path": "/ebooks/bookshelf/349",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/349",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Geografia",
+    "path": "/ebooks/bookshelf/350",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/350",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Legge",
+    "path": "/ebooks/bookshelf/351",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/351",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Letteratura",
+    "path": "/ebooks/bookshelf/352",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/352",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Letteratura per ragazzi",
+    "path": "/ebooks/bookshelf/353",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/353",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Linguistica",
+    "path": "/ebooks/bookshelf/354",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/354",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Miscellanea",
+    "path": "/ebooks/bookshelf/399",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/399",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Musica",
+    "path": "/ebooks/bookshelf/355",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/355",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Narrativa varia",
+    "path": "/ebooks/bookshelf/356",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/356",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Numismatica",
+    "path": "/ebooks/bookshelf/357",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/357",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Poesia",
+    "path": "/ebooks/bookshelf/358",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/358",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Psicologia e Sociologia",
+    "path": "/ebooks/bookshelf/359",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/359",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Racconti",
+    "path": "/ebooks/bookshelf/360",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/360",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Religione e Spiritualit\u00e0",
+    "path": "/ebooks/bookshelf/361",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/361",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Romanzi",
+    "path": "/ebooks/bookshelf/362",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/362",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Romanzi storici",
+    "path": "/ebooks/bookshelf/363",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/363",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Salute",
+    "path": "/ebooks/bookshelf/364",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/364",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Scienza",
+    "path": "/ebooks/bookshelf/365",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/365",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Scienze militari",
+    "path": "/ebooks/bookshelf/398",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/398",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Scienze politiche",
+    "path": "/ebooks/bookshelf/366",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/366",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Storia",
+    "path": "/ebooks/bookshelf/367",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/367",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Teatro dialettale",
+    "path": "/ebooks/bookshelf/368",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/368",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Teatro in prosa",
+    "path": "/ebooks/bookshelf/369",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/369",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Teatro in versi",
+    "path": "/ebooks/bookshelf/370",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/370",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Tecnologia",
+    "path": "/ebooks/bookshelf/371",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/371",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Umorismo",
+    "path": "/ebooks/bookshelf/372",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/372",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italian - Viaggi",
+    "path": "/ebooks/bookshelf/373",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/373",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Illustrators",
+    "path": "/ebooks/bookshelf/327",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/327",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "India",
+    "path": "/ebooks/bookshelf/45",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/45",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Islam",
+    "path": "/ebooks/bookshelf/126",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/126",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Italy",
+    "path": "/ebooks/bookshelf/127",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/127",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Judaism",
+    "path": "/ebooks/bookshelf/128",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/128",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Journal of Entomology and Zoology",
+    "path": "/ebooks/bookshelf/234",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/234",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "L'Illustration",
+    "path": "/ebooks/bookshelf/235",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/235",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Language Education",
+    "path": "/ebooks/bookshelf/46",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/46",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Latter Day Saints",
+    "path": "/ebooks/bookshelf/404",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/404",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Lippincott's Magazine",
+    "path": "/ebooks/bookshelf/236",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/236",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Little Folks",
+    "path": "/ebooks/bookshelf/237",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/237",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "London Medical Gazette",
+    "path": "/ebooks/bookshelf/414",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/414",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Love",
+    "path": "/ebooks/bookshelf/47",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/47",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Manufacturing",
+    "path": "/ebooks/bookshelf/146",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/146",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Maps and Cartography",
+    "path": "/ebooks/bookshelf/415",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/415",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Masterpieces in Colour",
+    "path": "/ebooks/bookshelf/402",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/402",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Mathematics",
+    "path": "/ebooks/bookshelf/102",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/102",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "McClure's Magazine",
+    "path": "/ebooks/bookshelf/239",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/239",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Medicine",
+    "path": "/ebooks/bookshelf/48",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/48",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  },
+  {
+    "name": "Medi\u00e6val Town Series",
+    "path": "/ebooks/bookshelf/401",
+    "url": "https://www.gutenberg.org/ebooks/bookshelf/401",
+    "kind": "collection",
+    "status": "candidate",
+    "license": "per-book verification required",
+    "evidence_url": "https://www.gutenberg.org/ebooks/bookshelf/",
+    "as_of": "2026-10-11"
+  }
+]

@@ -21,6 +21,7 @@ from app.modules.m20_general_cognitive_worker.agi_routes import router as agi_ru
 from app.modules.m20_general_cognitive_worker.product_orchestrator_routes import router as product_orchestrator_router
 from app.core.model_routes import router as model_catalog_router
 from app.self_improve.routes import router as self_improve_router
+from app.modules.m20_general_cognitive_worker.training_data_routes import mount_training_routes
 
 configure_telemetry()
 app = FastAPI(title="Atlas AI", version="0.1.0")
@@ -43,6 +44,7 @@ app.include_router(agi_runtime_router,prefix="/api/v1",dependencies=[Depends(req
 app.include_router(product_orchestrator_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(model_catalog_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(self_improve_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
+mount_training_routes(app)
 for module_spec in IMPLEMENTED_SPECS:
     app.include_router(module_spec.router, prefix="/api/v1", dependencies=[Depends(require_tenant)])
 

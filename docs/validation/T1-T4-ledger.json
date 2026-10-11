@@ -1,0 +1,30 @@
+[
+  {
+    "unit": "T1",
+    "status": "SUBSTITUTE",
+    "scope": "bounded offline preparation implemented; live source licensing and integration pending",
+    "external_validation": "PENDING",
+    "candy_eligible": false
+  },
+  {
+    "unit": "T2",
+    "status": "SUBSTITUTE",
+    "scope": "bounded offline preparation implemented; live source licensing and integration pending",
+    "external_validation": "PENDING",
+    "candy_eligible": false
+  },
+  {
+    "unit": "T3",
+    "status": "SUBSTITUTE",
+    "scope": "bounded offline preparation implemented; live source licensing and integration pending",
+    "external_validation": "PENDING",
+    "candy_eligible": false
+  },
+  {
+    "unit": "T4",
+    "status": "SUBSTITUTE",
+    "scope": "bounded offline preparation implemented; live source licensing and integration pending",
+    "external_validation": "PENDING",
+    "candy_eligible": false
+  }
+]

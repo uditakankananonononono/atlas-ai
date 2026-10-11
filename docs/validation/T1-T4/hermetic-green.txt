@@ -1,0 +1,44 @@
+/tmp/tunits-venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_auth_wall_and_type (test_extra_guards.ExtraGuards.test_auth_wall_and_type) ... ok
+test_feed_limit_and_query (test_extra_guards.ExtraGuards.test_feed_limit_and_query) ... ok
+test_https_independent (test_extra_guards.ExtraGuards.test_https_independent) ... ok
+test_parse_guards (test_extra_guards.ExtraGuards.test_parse_guards) ... ok
+test_policy_false_denies (test_extra_guards.ExtraGuards.test_policy_false_denies) ... ok
+test_policy_on_search (test_extra_guards.ExtraGuards.test_policy_on_search) ... ok
+test_record_count_independent (test_extra_guards.ExtraGuards.test_record_count_independent) ... ok
+test_robots_status_independent (test_extra_guards.ExtraGuards.test_robots_status_independent) ... ok
+test_terms_and_license (test_extra_guards.ExtraGuards.test_terms_and_license) ... ok
+test_transport_oversize_status_delay (test_extra_guards.ExtraGuards.test_transport_oversize_status_delay) ... ok
+test_auth (test_routes.RouteTests.test_auth) ... ok
+test_route_paths (test_routes.RouteTests.test_route_paths) ... ok
+test_tenant_isolation (test_routes.RouteTests.test_tenant_isolation) ... ok
+test_unbound_and_no_client_grant (test_routes.RouteTests.test_unbound_and_no_client_grant) ... ok
+test_advice_first (test_training_units.TrainingTests.test_advice_first) ... ok
+test_advice_missing_refused (test_training_units.TrainingTests.test_advice_missing_refused) ... ok
+test_books_extract (test_training_units.TrainingTests.test_books_extract) ... ok
+test_cases (test_training_units.TrainingTests.test_cases) ... ok
+test_client_permission_does_not_authorize (test_training_units.TrainingTests.test_client_permission_does_not_authorize) ... ok
+test_feed (test_training_units.TrainingTests.test_feed) ... ok
+test_feed_private_link_excluded (test_training_units.TrainingTests.test_feed_private_link_excluded) ... ok
+test_fetch_guard_robots_limits (test_training_units.TrainingTests.test_fetch_guard_robots_limits) ... ok
+test_fetch_redirect_denied (test_training_units.TrainingTests.test_fetch_redirect_denied) ... ok
+test_github (test_training_units.TrainingTests.test_github) ... ok
+test_limits (test_training_units.TrainingTests.test_limits) ... ok
+test_no_fake_outcome (test_training_units.TrainingTests.test_no_fake_outcome) ... ok
+test_no_rights (test_training_units.TrainingTests.test_no_rights) ... ok
+test_paywall (test_training_units.TrainingTests.test_paywall) ... ok
+test_piracy (test_training_units.TrainingTests.test_piracy) ... ok
+test_podcast (test_training_units.TrainingTests.test_podcast) ... ok
+test_policy_missing_fail_closed (test_training_units.TrainingTests.test_policy_missing_fail_closed) ... ok
+test_policy_refusal_propagates (test_training_units.TrainingTests.test_policy_refusal_propagates) ... ok
+test_rate_and_success (test_training_units.TrainingTests.test_rate_and_success) ... ok
+test_registry_counts_honest (test_training_units.TrainingTests.test_registry_counts_honest) ... ok
+test_scope_and_dedupe (test_training_units.TrainingTests.test_scope_and_dedupe) ... ok
+test_url_guard (test_training_units.TrainingTests.test_url_guard) ... ok
+test_wrong_host (test_training_units.TrainingTests.test_wrong_host) ... ok
+
+----------------------------------------------------------------------
+Ran 37 tests in 0.124s
+
+OK

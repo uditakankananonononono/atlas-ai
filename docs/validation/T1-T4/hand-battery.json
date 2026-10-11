@@ -1,0 +1,150 @@
+{
+  "registry": {
+    "college_candidate_sites": 20,
+    "college_verified_sites": 0,
+    "book_collections": 210,
+    "book_independent_domains": 1,
+    "ingested_records": 0
+  },
+  "T1": {
+    "unit": "T1",
+    "scope": {
+      "implemented": "bounded supplied-source normalization and preparation",
+      "not_implemented": [
+        "model training",
+        "live accounts",
+        "automatic online actions",
+        "complete internet coverage"
+      ],
+      "data_source": "supplied licensed documents",
+      "as_of": "2026-10-11"
+    },
+    "records": [
+      {
+        "source_id": "demo",
+        "url": "https://example.org/case",
+        "license": "CC0",
+        "terms_url": "https://example.org/terms",
+        "rights_checked_at": "2026-10-11",
+        "as_of": "2026-10-11",
+        "sha256": "87d7a6d90683333cdf7b7f7b0eaf189fcebccbea64794ef3334bde0b6c8a9f36",
+        "stats": {
+          "SAT": "1480"
+        },
+        "outcomes": [
+          "admitted (source claim)"
+        ],
+        "essay_summary": "SAT: 1480 Outcome: admitted (source claim) Always test claims before adopting them.",
+        "summary_method": "bounded extractive excerpt, not generative",
+        "outcome_verified": false
+      }
+    ],
+    "ingested_sites": 1
+  },
+  "T2": {
+    "unit": "T2",
+    "kind": "git",
+    "results": [
+      {
+        "title": "Corpus tools",
+        "url": "https://github.com/demo/corpus",
+        "summary": "public metadata"
+      }
+    ],
+    "matched_in_input": 1,
+    "scope": {
+      "implemented": "RSS/Atom and GitHub public-search-response adapters over supplied payloads",
+      "not_implemented": [
+        "live GitHub credentials",
+        "automatic transcript retrieval",
+        "unbounded crawling"
+      ],
+      "data_source": "https://example.org/api",
+      "as_of": "2026-10-11"
+    }
+  },
+  "T3": {
+    "unit": "T3",
+    "scope": {
+      "implemented": "bounded supplied-source normalization and preparation",
+      "not_implemented": [
+        "model training",
+        "live accounts",
+        "automatic online actions",
+        "complete internet coverage"
+      ],
+      "data_source": "supplied licensed documents",
+      "as_of": "2026-10-11"
+    },
+    "records": [
+      {
+        "source_id": "demo",
+        "url": "https://example.org/case",
+        "license": "CC0",
+        "terms_url": "https://example.org/terms",
+        "rights_checked_at": "2026-10-11",
+        "as_of": "2026-10-11",
+        "sha256": "87d7a6d90683333cdf7b7f7b0eaf189fcebccbea64794ef3334bde0b6c8a9f36",
+        "text": "SAT: 1480\nOutcome: admitted (source claim)\nAlways test claims before adopting them."
+      }
+    ],
+    "concept_candidates": [
+      {
+        "technique": "Always test claims before adopting them.",
+        "source_url": "https://example.org/case",
+        "source_sha256": "87d7a6d90683333cdf7b7f7b0eaf189fcebccbea64794ef3334bde0b6c8a9f36",
+        "status": "candidate_not_installed"
+      }
+    ],
+    "model_trained": false
+  },
+  "T4": {
+    "unit": "T4",
+    "scope": {
+      "implemented": "bounded supplied-source normalization and preparation",
+      "not_implemented": [
+        "model training",
+        "live accounts",
+        "automatic online actions",
+        "complete internet coverage"
+      ],
+      "data_source": "supplied licensed documents",
+      "as_of": "2026-10-11"
+    },
+    "records": [
+      {
+        "source_id": "demo",
+        "url": "https://example.org/case",
+        "license": "CC0",
+        "terms_url": "https://example.org/terms",
+        "rights_checked_at": "2026-10-11",
+        "as_of": "2026-10-11",
+        "sha256": "87d7a6d90683333cdf7b7f7b0eaf189fcebccbea64794ef3334bde0b6c8a9f36",
+        "text": "SAT: 1480\nOutcome: admitted (source claim)\nAlways test claims before adopting them."
+      }
+    ],
+    "status": "prepared_only",
+    "log": [
+      {
+        "stage": "advice",
+        "sources": [
+          "https://example.org/case"
+        ],
+        "summaries": [
+          "SAT: 1480\nOutcome: admitted (source claim)\nAlways test claims before adopting them."
+        ]
+      },
+      {
+        "stage": "policy",
+        "status": "passed"
+      },
+      {
+        "stage": "prepared",
+        "action": {
+          "type": "research"
+        }
+      }
+    ],
+    "task": "prepare research plan"
+  }
+}

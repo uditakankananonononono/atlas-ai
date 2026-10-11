@@ -1,0 +1,136 @@
+{
+  "mutants": [
+    {
+      "mutant": "skip_policy",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "skip_search_policy",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "permit_missing",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "ignore_paywall",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "ignore_piracy",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "ignore_auth_wall",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "disable_terms",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "cross_origin",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "remove_url_check",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "remove_text_limit",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "remove_record_limit",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "remove_date",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "no_advice",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "fake_training",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "dedupe",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "robots",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "rate_limit",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "crawl_delay",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "robots_status",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "reply_size",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "xml_dtd",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "result_limit",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "query_filter",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "private_ip",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "url_scheme",
+      "killed": true,
+      "exit": 1
+    },
+    {
+      "mutant": "fetch_config_limit",
+      "killed": true,
+      "exit": 1
+    }
+  ],
+  "killed": 26,
+  "total": 26
+}
