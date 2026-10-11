@@ -38,10 +38,11 @@ def test_827_828_assessment_requires_evidence_and_bias_check(n):
  with pytest.raises(LearningReasoningError,match='artifact_id'):L(n,criteria=['reasoning'],ratings={'reasoning':3})
 @pytest.mark.parametrize('n,purpose',[('formative_assessment','feedback during learning'),('summative_assessment','judgment after instruction'),('diagnostic_assessment','prerequisite and misconception diagnosis')])
 def test_829_831_assessment_purposes(n,purpose):assert L(n,assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']==purpose
-def test_832_prior_knowledge_not_graded():assert 'flag misconceptions without grading' in L('prior_knowledge_activation')['activation']
+def test_832_prior_knowledge_not_graded():
+ with pytest.raises(LearningReasoningError,match='activation_concepts'):L('prior_knowledge_activation')
 def T(n,**x):
  p={'source_case':{'features':['structure','red']},'target_case':{'features':['structure','blue']},'source':SRC};p.update(x);return execute(n,p)['result']
-@pytest.mark.parametrize('n,t',[('transfer','unspecified'),('near_transfer','near'),('far_transfer','far')])
+@pytest.mark.parametrize('n,t',[('near_transfer','near'),('far_transfer','far')])
 def test_833_835_transfer_deep_structure_and_independent_performance(n,t):assert T(n)['transfer_type']==t and T(n)['requires_independent_target_performance']
 def test_836_analogy_rejects_surface_similarity():assert T('analogical_reasoning')['analogy']['surface_similarity_is_insufficient']
 def test_837_case_reasoning_retrieve_reuse_revise_retain():assert len(T('case_based_reasoning')['case_reasoning_cycle'])==4
@@ -93,7 +94,8 @@ def test_828_peer_assessment_requires_evidence():
 def test_829_formative_assessment_purpose(): assert L('formative_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='feedback during learning'
 def test_830_summative_assessment_purpose(): assert L('summative_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='judgment after instruction'
 def test_831_diagnostic_assessment_purpose(): assert L('diagnostic_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='prerequisite and misconception diagnosis'
-def test_833_transfer_requires_independent_target_performance(): assert T('transfer')['transfer_type']=='unspecified' and T('transfer')['requires_independent_target_performance']
+def test_833_transfer_requires_independent_target_performance():
+ with pytest.raises(LearningReasoningError,match='transfer_rule'):T('transfer')
 def test_834_near_transfer_requires_independent_target_performance(): assert T('near_transfer')['transfer_type']=='near' and T('near_transfer')['requires_independent_target_performance']
 def test_835_far_transfer_requires_independent_target_performance(): assert T('far_transfer')['transfer_type']=='far' and T('far_transfer')['requires_independent_target_performance']
 def test_848_default_reasoning_is_revisable(): assert R('default_reasoning',facts=['bird'],defaults=[{'if':['bird'],'unless':['abnormal'],'then':'flies'}])['defaults']['beliefs_revisable']

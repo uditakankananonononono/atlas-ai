@@ -63,3 +63,28 @@ def test_mounted_auth_refusal_tenant(monkeypatch,oidc_auth_headers):
   assert c.post(path,headers=h,json={'payload':p}).status_code==200
   assert c.post(path,headers=h,json={'payload':{**p,'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
   assert c.post(path,headers=h,json={'payload':{'source':SRC,'objective':'x','source_case':{},'target_case':{}}}).status_code==422
+
+def test_known_target_fact_zero_premise_and_full_boundaries():
+ p=transfer();p['transfer_rule']['if']=[];p['feature_correspondences']=p['feature_correspondences'][-1:];p['target_task']['facts']=[]
+ assert run('transfer',p)['expected_target_entailment'] is True
+ p=transfer();p['target_task']['facts']=['target_done'];assert run('transfer',p)['expected_target_entailment'] is True
+ assert run('transfer',p)['boundary']=='One explicit supplied positive Horn rule mapped bijectively to a symbolic target task; independent response is caller-declared, exact boolean entailment scoring only, not general cross-domain learning or verified truth.'
+ assert run('prior_knowledge_activation',activation())['boundary']=='Exact supplied concept-key comparisons of prior responses, separate from new evidence; mismatches are misconception candidates, not grades or verified beliefs/understanding.'
+
+def test_concept_and_record_caps():
+ p=activation();p['activation_concepts']=[{**p['activation_concepts'][0],'concept_id':str(i)}for i in range(64)];p['prior_responses']=[];p['new_evidence']=[];assert len(run('prior_knowledge_activation',p)['concept_reports'])==64
+ p['activation_concepts'].append({**p['activation_concepts'][0],'concept_id':'64'})
+ with pytest.raises(LearningReasoningError):run('prior_knowledge_activation',p)
+ p=activation();p['prior_responses']=[{**p['prior_responses'][0],'response_id':str(i)}for i in range(1000)];assert len(run('prior_knowledge_activation',p)['prior_reports'])==1000
+ p['prior_responses'].append({**p['prior_responses'][0],'response_id':'1000'})
+ with pytest.raises(LearningReasoningError):run('prior_knowledge_activation',p)
+
+def test_rule_task_shapes_text_and_no_negation():
+ for field in ['transfer_rule','target_task','target_response']:
+  p=transfer();p[field]=[]
+  with pytest.raises(LearningReasoningError):run('transfer',p)
+ for field,key in [('transfer_rule','rule_id'),('transfer_rule','source'),('transfer_rule','then'),('target_task','task_id'),('target_task','source'),('target_task','query')]:
+  p=transfer();p[field][key]=''
+  with pytest.raises(LearningReasoningError):run('transfer',p)
+ p=transfer();p['transfer_rule']['unless']=['x']
+ with pytest.raises(LearningReasoningError):run('transfer',p)
