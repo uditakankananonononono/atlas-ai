@@ -16,10 +16,22 @@ class ModernizeRequest(BaseModel):
 async def reject_surrogate_source(request:Request):
     try:packet=await request.json()
     except (ValueError,UnicodeError):return
-    source=packet.get('source')if isinstance(packet,dict)else None
-    if isinstance(source,str):
-        try:source.encode('utf-8')
-        except UnicodeEncodeError as e:raise HTTPException(422,'source contains invalid Unicode surrogate')from e
+    # Inspect every parsed string before Pydantic can echo rejected input.
+    # Iterative traversal avoids recursion; depth is part of this route's scope.
+    pending=[(packet,0)]
+    while pending:
+        value,depth=pending.pop()
+        if depth>64:
+            raise HTTPException(422,'legacy694 JSON nesting exceeds 64 levels')
+        if isinstance(value,str):
+            try:value.encode('utf-8')
+            except UnicodeEncodeError as e:
+                raise HTTPException(422,'source contains invalid Unicode surrogate')from e
+        elif isinstance(value,dict):
+            pending.extend((key,depth+1)for key in value)
+            pending.extend((item,depth+1)for item in value.values())
+        elif isinstance(value,list):
+            pending.extend((item,depth+1)for item in value)
 
 @router.post('/modernize',dependencies=[Depends(reject_surrogate_source)])
 def modernize_source(body:ModernizeRequest,tenant:TenantContext=Depends(require_tenant)):

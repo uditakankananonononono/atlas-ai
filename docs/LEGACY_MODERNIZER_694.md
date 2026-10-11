@@ -75,8 +75,13 @@ L422 syntax-error-after-rewrite branch untested; L262 unreachable refusal deleti
 candidate is not demonstrated by a real input. Source-vs-ledger9-row offset remains
 unresolved; source title alone does not establish full legacy modernization.
 
-Lone Unicode surrogates refuse HTTP422 before UTF-8 byte-size validation.
-The mounted surrogate guard runs before request-model validation too: Pydantic
-may reject lone surrogates and echo them in a validation error, which Starlette
-cannot UTF-8 encode. The raw JSON dependency rejects that source with an ASCII
-422 detail before this error-rendering path. The endpoint encode guard remains.
+Parsed JSON is checked iteratively before request-model validation: every string
+key and value must encode as UTF-8; traversal refuses nodes deeper than 64 levels.
+Surrogate refusals use the existing ASCII HTTP422 detail. Mounted tests cover
+surrogate source strings, source lists and dictionaries, rules strings and lists,
+top-level lists, dictionary keys, nested resource-reference values and tenant IDs.
+They also pin non-surrogate type errors as HTTP422 and valid ASCII, accented and
+emoji source strings as HTTP200. This is evidence for those shapes, not a claim
+that every possible response-encoding path is safe. The endpoint encode guard
+remains. Malformed JSON and parser limits outside these tested shapes are not
+claimed covered by this parsed-JSON check.
