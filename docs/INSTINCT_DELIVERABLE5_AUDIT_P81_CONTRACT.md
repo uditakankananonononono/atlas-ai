@@ -22,4 +22,4 @@ It also validates the input (count consistency, known kinds and statuses, no dup
 - The checker is Linux-specific (per its own contract); this module is pure and portable.
 - A neighbouring requirement-matrix audit unit was not compared.
 - No mounted auth or tenant tests, no repo-wide floor run, no wiring (none applied).
-- The namespace directory has no `__init__.py` (peer-stated: another builder owns it); the module is loaded by file path.
+- The module is loaded by file path in its tests and has no package-relative imports, so it does not depend on whether the directory carries a package marker. It neither creates nor requires that marker.

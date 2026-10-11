@@ -394,8 +394,27 @@ def test_module_imports_only_pure_stdlib():
     assert mods <= {"__future__", "copy", "hashlib", "re", "typing"}, mods
 
 
-def test_no_init_py_in_namespace_dir():
-    assert not (_PATH.parent / "__init__.py").exists()
+def test_module_has_no_package_relative_imports():
+    # Ownership-neutral: the module must work whether or not the directory has a package marker
+    # (it is loaded by file path here). This test neither requires nor forbids that marker.
+    tree = ast.parse(_PATH.read_text())
+    assert not [n for n in ast.walk(tree) if isinstance(n, ast.ImportFrom) and n.level > 0]
+
+
+def test_artifacts_empty_tuple_refused_with_exact_message():
+    r = result([])
+    r["artifacts"] = ()
+    with pytest.raises(A.AuditInputError) as ei:
+        A.audit_project(r)
+    assert str(ei.value) == "artifacts must be a list"
+
+
+def test_hidden_file_name_is_not_an_extension():
+    assert A._split(".py") == ([], ".py", ".py", "")
+    assert A._split("a/.py") == (["a"], ".py", ".py", "")
+    assert A._split("a/b.py") == (["a"], "b.py", "b", ".py")
+    cat = A.audit_project(result([art("x1", "code", ".py")]))["categories"]["code"]
+    assert cat["verdict"] == "PRESENT_UNCORROBORATED"
 
 
 # ---- declared schema of the consumed result (stub data only, no external code loaded) ----
