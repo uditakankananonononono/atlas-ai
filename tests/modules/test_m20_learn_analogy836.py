@@ -79,3 +79,114 @@ def test_source_value_mismatch_not_masked_by_constraint():
  p=analogy();p['candidate_inferences'][0]['value']='blue';p['target_constraints'][0]['allowed_values']=['blue']
  r=run('analogical_reasoning',p)['inference_reports'][0]
  assert r['source_value_matches'] is False and r['target_constraints_present'] is True and r['supported'] is False
+
+# Independent core calls preserve the exact failure, without wrapper conversion.
+from app.modules.m20_general_cognitive_worker import analogy_cases as core
+from copy import deepcopy
+
+def exact_error(fn,p,message):
+ with pytest.raises(ValueError) as exc:fn(p)
+ assert str(exc.value)==message
+
+@pytest.mark.parametrize('label',['analogy_source_features','analogy_target_features'])
+def test_r2_feature_bounds(label):
+ p=analogy();p[label]={str(i):'v' for i in range(64)}
+ p['analogy_correspondences']=[];p['target_constraints']=[];p['candidate_inferences']=[]
+ assert core.analogy(p)['status']=='mapping_gaps'
+ p[label]['overflow']='v';exact_error(core.analogy,p,label+' requires1..64 feature dictionary')
+ p[label]={};exact_error(core.analogy,p,label+' requires1..64 feature dictionary')
+
+@pytest.mark.parametrize('field,cap',[('analogy_correspondences',64),('target_constraints',64),('candidate_inferences',256)])
+def test_r2_analogy_row_caps(field,cap):
+ p=analogy()
+ if field=='analogy_correspondences':
+  p['analogy_source_features']={str(i):'v' for i in range(64)};p['analogy_target_features']={'x':'v'}
+  p[field]=[{'source_feature':str(i),'target_feature':'x'} for i in range(cap)]
+  p['candidate_inferences']=[]
+ elif field=='target_constraints':p[field]=[{'feature_id':'x','allowed_values':['red'],'source':str(i)} for i in range(cap)]
+ else:p[field]=[{'inference_id':str(i),'source_feature':'a','value':'red','source':str(i)} for i in range(cap)]
+ core.analogy(p)
+ p[field].append({**p[field][0],**({'inference_id':'overflow'} if field=='candidate_inferences' else {})})
+ exact_error(core.analogy,p,field+' requires bounded object list')
+
+def test_r2_weight_and_check_bounds():
+ p=case();p['case_feature_weights']={str(i):1 for i in range(64)};values={k:'v' for k in p['case_feature_weights']}
+ p['case_target']['features']=values;p['case_bank']=[{**p['case_bank'][0],'features':values}]
+ assert core.reuse(p)['ranked_cases'][0]['similarity']==1
+ p['case_feature_weights']['overflow']=1
+ exact_error(core.reuse,p,'case_feature_weights requires1..64 entries')
+ p=case();p['case_target_checks']={'selected_case_id':'z','checks':[{'check_id':str(i),'passed':True,'source':'fixture'} for i in range(64)]}
+ assert len(core.reuse(p)['checks'])==64
+ p['case_target_checks']['checks'].append({'check_id':'overflow','passed':True,'source':'fixture'})
+ exact_error(core.reuse,p,'checks requires bounded object list')
+ p['case_target_checks']['checks']=[];exact_error(core.reuse,p,'checks requires bounded object list')
+
+@pytest.mark.parametrize('change,message',[
+ ('feature_key','analogy_source_features key requires bounded nonempty string'),
+ ('feature_value','analogy_source_features value requires bounded nonempty string'),
+ ('unknown_mapping','known feature references and unique source mapping required'),
+ ('empty_allowed','allowed_values requires bounded text list'),
+ ('unknown_constraint','unknown constraint feature'),
+ ('duplicate_inference','unique inference IDs and known source features required'),
+ ('unknown_inference','unique inference IDs and known source features required')])
+def test_r2_analogy_validators(change,message):
+ p=analogy()
+ if change=='feature_key':p['analogy_source_features']={'':'red','b':'round'};p['analogy_correspondences'][0]['source_feature']='b'
+ elif change=='feature_value':p['analogy_source_features']['a']=''
+ elif change=='unknown_mapping':p['analogy_correspondences'][0]['source_feature']='unknown'
+ elif change=='empty_allowed':p['target_constraints'][0]['allowed_values']=[]
+ elif change=='unknown_constraint':p['target_constraints'][0]['feature_id']='unknown'
+ elif change=='duplicate_inference':p['candidate_inferences'].append(deepcopy(p['candidate_inferences'][0]))
+ else:p['candidate_inferences'][0]['source_feature']='unknown'
+ exact_error(core.analogy,p,message)
+
+@pytest.mark.parametrize('change,message',[
+ ('target_schema','target features must cover exactly weighted schema'),
+ ('duplicate_case','unique cases with exact weighted feature schema required'),
+ ('case_schema','unique cases with exact weighted feature schema required'),
+ ('target_source','target source requires bounded nonempty string'),
+ ('duplicate_check','unique check IDs and boolean passed required')])
+def test_r2_case_validators(change,message):
+ p=case()
+ if change=='target_schema':p['case_target']['features']['extra']='v'
+ elif change=='duplicate_case':p['case_bank'].append(deepcopy(p['case_bank'][0]))
+ elif change=='case_schema':p['case_bank'][0]['features']['extra']='v'
+ elif change=='target_source':p['case_target']['source']=''
+ else:p['case_target_checks']={'selected_case_id':'z','checks':[{'check_id':'dup','passed':True,'source':'fixture'},{'check_id':'dup','passed':True,'source':'fixture'}]}
+ exact_error(core.reuse,p,message)
+
+def test_r2_all_constraints_and_sorted_sources():
+ p=analogy();p['target_constraints']=[{'feature_id':'x','allowed_values':['red'],'source':'z'},{'feature_id':'x','allowed_values':['blue'],'source':'a'}]
+ r=core.analogy(p)['inference_reports'][0]
+ assert r['supported'] is False and r['constraint_sources']==['a','z']
+ p['target_constraints']=[];r=core.analogy(p)['inference_reports'][0]
+ assert r['target_constraints_present'] is False
+
+def test_r2_unmapped_target_and_many_to_one_independent():
+ p=analogy();p['analogy_target_features']['extra']='v';r=core.analogy(p)
+ assert r['mapping_complete'] is False and r['status']=='mapping_gaps' and r['unmapped_target_features']==['extra'] and r['inference_reports'][0]['supported'] is False
+ p=analogy();p['analogy_target_features']={'x':'red'};p['analogy_correspondences'][1]['target_feature']='x';r=core.analogy(p)
+ assert r['unmapped_source_features']==r['unmapped_target_features']==[]
+ assert r['mapping_complete'] is False and r['status']=='mapping_gaps' and r['many_to_one_targets']==['x'] and r['inference_reports'][0]['supported'] is False
+
+def test_r2_unsorted_mapping_outputs():
+ p=analogy();p['analogy_source_features']={'z':'v','c':'v','b':'round','a':'red'}
+ p['analogy_correspondences'].reverse();p['candidate_inferences']=[{**p['candidate_inferences'][0],'inference_id':i} for i in ['z','a']]
+ r=core.analogy(p)
+ assert r['unmapped_source_features']==['c','z']
+ assert r['correspondences']==[{'source_feature':'a','target_feature':'x'},{'source_feature':'b','target_feature':'y'}]
+ assert [i['inference_id'] for i in r['inference_reports']]==['a','z']
+
+def test_r2_awaiting_and_sorted_checks_and_matches():
+ p=case();r=core.reuse(p)
+ assert r['selected_case_id'] is None and r['checks']==[] and r['checks_passed'] is None
+ assert r['ranked_cases'][0]['matched_features']==['color','shape'] and r['ranked_cases'][1]['matched_features']==['color']
+ p['case_target_checks']={'selected_case_id':'z','checks':[{'check_id':i,'passed':True,'source':i} for i in ['z','a']]}
+ assert core.reuse(p)['checks']==[{'check_id':i,'passed':True,'source':i} for i in ['a','z']]
+
+def test_r2_unmapped_source_sort_fixed_seed():
+ import subprocess,sys,os,json
+ p=analogy();p['analogy_source_features'].update({k:'v' for k in ['z','q','m','j','h','f','d','c']})
+ code='import json;from app.modules.m20_general_cognitive_worker.analogy_cases import analogy;p=json.loads('+repr(json.dumps(p))+');assert analogy(p)["unmapped_source_features"]==["c","d","f","h","j","m","q","z"]'
+ result=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'0'},capture_output=True,text=True)
+ assert result.returncode==0,result.stderr
