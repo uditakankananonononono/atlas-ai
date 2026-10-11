@@ -22,6 +22,11 @@ PREFIX = "APPLY"
 MAX_OPPORTUNITIES = 1000
 MAX_TEMPLATE = 20000
 MAX_BODY = 20000
+MAX_CONTAINERS = 10000  # request scan budget: distinct dict/list/tuple objects
+MAX_DICT_KEYS = 32
+MAX_LIST_ITEMS = MAX_OPPORTUNITIES + 1  # 1001: the unit's own opportunities cap (1000) must still fire at 1001
+MAX_DEPTH = 32
+MAX_KEY_LEN = 200  # raw length of a request key, checked before normalization
 TOP_KEYS = frozenset({"as_of", "profile", "template", "opportunities", "strict"})
 PROFILE_KEYS = frozenset({"name", "school"})
 OPPORTUNITY_KEYS = frozenset({"id", "title", "fee", "contact_email", "contact_name", "deadline"})
@@ -66,34 +71,61 @@ def _bad(name):
     raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (PREFIX, name))
 
 
+def _oversize_request():
+    raise ValueError("%s_REFUSED_OVERSIZE:request" % PREFIX)
+
+
+_SCAN_TYPES = (dict, list, tuple)
+
+
 def _scan_keys(request):
-    """Steps 2 and 3. Recursive over dict values and list/tuple items.
+    """Steps 2 and 3. Recursive over dict values and list/tuple items, under a
+    budget that is checked BEFORE any container is read or descended into:
+    at most MAX_CONTAINERS distinct containers (exact builtin dict/list/tuple only; a
+    subclass anywhere refuses BAD_TYPE:request before it is read), MAX_DICT_KEYS keys per dict,
+    MAX_LIST_ITEMS items per list/tuple and MAX_DEPTH levels (request = 0).
+    Anything over refuses OVERSIZE:request, ahead of every content error.
     Step 2: forbidden keys (class precedence SEND > SPEND > SUBMIT > NOCREDS;
     within the winning class the alphabetically first MATCHED table key is the
     suffix; non-matching key text is never echoed). Step 3: a non-str dict key
     anywhere -> BAD_TYPE:key, only when no forbidden key was found."""
     hits = {}
     non_str = False
-    seen = set()
-    stack = [request]
+    if type(request) not in _SCAN_TYPES:
+        _bad("request")
+    seen = {id(request)}
+    stack = [(request, 0)]  # only containers are pushed; the stack never exceeds MAX_CONTAINERS
     while stack:
-        node = stack.pop()
-        if isinstance(node, (dict, list, tuple)):
-            if id(node) in seen:
-                continue
-            seen.add(id(node))
-        if isinstance(node, dict):
+        node, depth = stack.pop()
+        if type(node) is dict:
+            if len(node) > MAX_DICT_KEYS:
+                _oversize_request()
+            children = []
             for key, value in node.items():
-                if isinstance(key, str):
+                if type(key) is str:
+                    if len(key) > MAX_KEY_LEN:
+                        _oversize_request()  # raw cap, before any normalization
                     norm = key.casefold().replace("-", "_")
                     for rule, keys in _KEY_RULES:
                         if norm in keys:
                             hits.setdefault(rule, set()).add(norm)
+                elif isinstance(key, str):
+                    _bad("request")  # str subclass: its casefold/len may be overridden; refused untouched
                 else:
                     non_str = True
-                stack.append(value)
-        elif isinstance(node, (list, tuple)):
-            stack.extend(node)
+                children.append(value)
+        else:
+            if len(node) > MAX_LIST_ITEMS:
+                _oversize_request()
+            children = node
+        for child in children:
+            if isinstance(child, (dict, list, tuple)) and type(child) not in _SCAN_TYPES:
+                _bad("request")  # a subclass may lie about its size or iteration: refused unread
+            if type(child) in _SCAN_TYPES and id(child) not in seen:
+                if depth + 1 > MAX_DEPTH or len(seen) >= MAX_CONTAINERS:
+                    _oversize_request()
+                seen.add(id(child))
+                stack.append((child, depth + 1))
     for rule, _keys in _KEY_RULES:
         if rule in hits:
             raise ValueError("%s_REFUSED_%s:%s" % (PREFIX, rule, sorted(hits[rule])[0]))
