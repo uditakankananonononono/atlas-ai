@@ -245,8 +245,8 @@ def test_r2_multiunit_conservation_guard_fault_injection(monkeypatch):
  def corrupted_sum(values):
   nonlocal count
   count+=1
-  return builtins.sum(values)+(1 if count==3 else 0)
- # Verification totals call 1/2 for first unit, 3/4 for second unit.
+  return builtins.sum(values)+(1 if count==8 else 0)
+ # totals() recomputes both units twice per checked unit; call8 is initial z for the second checked unit.
  monkeypatch.setattr(core,'sum',corrupted_sum,raising=False)
  assert core.stock_flow(p)['conservation_verified'] is False
 
@@ -262,3 +262,12 @@ def test_r2_feedback_traversal_exact_budget(monkeypatch):
  assert core.stock_flow(p)['feedback_cycles']==[{'stock_ids':['a'],'sign':-1}]
  repetitions=4097
  error(core.stock_flow,p,'feedback cycle search exceeds4096 edges')
+
+
+def test_r3_lower_clamp_and_mixed_cycle_product_and_unknown_from():
+ p=qualitative();p['qualitative_variables'][1]['initial']='low';p['qualitative_influences'][0]['sign']=-1
+ assert core.qualitative(p)['states_by_step'][1][0]['b']=='low'
+ p=system();p['system_stocks'].append({'id':'c','unit':'litre','initial':0,'source':'c'});p['system_steps']=0
+ p['system_flows']=[{'id':'ab','from':'b','to':None,'rate_kind':'proportional','driver':'a','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'ab'},{'id':'bc','from':'c','to':None,'rate_kind':'proportional','driver':'b','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'bc'},{'id':'ca','from':None,'to':'a','rate_kind':'proportional','driver':'c','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'ca'}]
+ assert core.stock_flow(p)['feedback_cycles']==[{'stock_ids':['a','b','c'],'sign':1}]
+ p=system();p['system_flows'][0]['from']='unknown';error(core.stock_flow,p,'unique flows with distinct known endpoints or one external endpoint required')
