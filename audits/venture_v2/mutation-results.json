@@ -1,0 +1,717 @@
+{
+  "baseline_passed": true,
+  "mutants": 118,
+  "killed": 118,
+  "survived": 0,
+  "invalid": 0,
+  "results": [
+    {
+      "module": "policy",
+      "line": 20,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 21,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 22,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 23,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 25,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 26,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 27,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 28,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 30,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 31,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 34,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 35,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 41,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 42,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 44,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 45,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 49,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 50,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 51,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 51,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 55,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 55,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 59,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 59,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 12,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 12,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 16,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 25,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 25,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 30,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 31,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 32,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 33,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 35,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 36,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 37,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 37,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 38,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 39,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 45,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 13,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 13,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 23,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 23,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 25,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 25,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 31,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 31,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 33,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 33,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 35,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 35,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 42,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 42,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 58,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 58,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 66,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 66,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 71,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 75,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 78,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 89,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 90,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 94,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 94,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 100,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 109,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 120,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 120,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 122,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 122,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 129,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 132,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 136,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 136,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 140,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 148,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 148,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 153,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 153,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 166,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 166,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 170,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 170,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 178,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 178,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 193,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 195,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 199,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 200,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 206,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 206,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 215,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 215,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 216,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 216,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 219,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 220,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 220,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 222,
+      "mutation": "invert_guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 225,
+      "mutation": "remove_refusal",
+      "outcome": "killed"
+    }
+  ]
+}

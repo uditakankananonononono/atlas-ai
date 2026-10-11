@@ -1,0 +1,1291 @@
+[
+  {
+    "unit": "problems",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "s1",
+          "url": "https://example.org/data",
+          "kind": "supplied"
+        }
+      ],
+      "mode": "research",
+      "question": "x",
+      "evidence": [
+        {
+          "claim": "x",
+          "source_id": "s1"
+        }
+      ]
+    },
+    "output": {
+      "status": "decomposed_not_solved",
+      "verified": false,
+      "question": "x",
+      "constraints": [],
+      "steps": [
+        {
+          "goal": "Define measurable target",
+          "deliverable": {
+            "question": "x",
+            "constraints": []
+          }
+        },
+        {
+          "goal": "Reproduce observed evidence",
+          "deliverable": {
+            "evidence": [
+              {
+                "claim": "x",
+                "source_id": "s1"
+              }
+            ],
+            "test": "independent reproduction"
+          }
+        },
+        {
+          "goal": "Compare bounded alternatives",
+          "deliverable": {
+            "options": [
+              "change method",
+              "reduce one constraint with owner decision",
+              "collect missing evidence"
+            ],
+            "score_axes": [
+              "correctness",
+              "cost",
+              "feasibility"
+            ]
+          }
+        },
+        {
+          "goal": "Falsify proposed solution",
+          "deliverable": {
+            "test": "holdout acceptance check",
+            "required": "predeclared criterion and measured result"
+          }
+        }
+      ],
+      "unit": "V3",
+      "module": "c32",
+      "status_label": "IMPLEMENTED-BOUNDED",
+      "scope": {
+        "implemented": "Exact rational linear solver, least-squares trend measures, research/strategy decomposition",
+        "not_implemented": "No universal solver, unsourced factual solution, or predictive certainty",
+        "data_source": [
+          {
+            "id": "s1",
+            "url": "https://example.org/data",
+            "kind": "supplied"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  },
+  {
+    "unit": "problems",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "s1",
+          "url": "https://example.org/data",
+          "kind": "supplied"
+        }
+      ],
+      "mode": "strategy",
+      "question": "x",
+      "constraints": [
+        "owner consent"
+      ],
+      "evidence": [
+        {
+          "claim": "x",
+          "source_id": "s1"
+        }
+      ]
+    },
+    "output": {
+      "status": "decomposed_not_solved",
+      "verified": false,
+      "question": "x",
+      "constraints": [
+        "owner consent"
+      ],
+      "steps": [
+        {
+          "goal": "Define measurable target",
+          "deliverable": {
+            "question": "x",
+            "constraints": [
+              "owner consent"
+            ]
+          }
+        },
+        {
+          "goal": "Reproduce observed evidence",
+          "deliverable": {
+            "evidence": [
+              {
+                "claim": "x",
+                "source_id": "s1"
+              }
+            ],
+            "test": "independent reproduction"
+          }
+        },
+        {
+          "goal": "Compare bounded alternatives",
+          "deliverable": {
+            "options": [
+              "change method",
+              "reduce one constraint with owner decision",
+              "collect missing evidence"
+            ],
+            "score_axes": [
+              "correctness",
+              "cost",
+              "feasibility"
+            ]
+          }
+        },
+        {
+          "goal": "Falsify proposed solution",
+          "deliverable": {
+            "test": "holdout acceptance check",
+            "required": "predeclared criterion and measured result"
+          }
+        }
+      ],
+      "unit": "V3",
+      "module": "c32",
+      "status_label": "IMPLEMENTED-BOUNDED",
+      "scope": {
+        "implemented": "Exact rational linear solver, least-squares trend measures, research/strategy decomposition",
+        "not_implemented": "No universal solver, unsourced factual solution, or predictive certainty",
+        "data_source": [
+          {
+            "id": "s1",
+            "url": "https://example.org/data",
+            "kind": "supplied"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  },
+  {
+    "unit": "problems",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "s1",
+          "url": "https://example.org/data",
+          "kind": "supplied"
+        }
+      ],
+      "mode": "trends",
+      "series": [
+        {
+          "name": "z",
+          "values": [
+            5,
+            8,
+            9
+          ]
+        },
+        {
+          "name": "a",
+          "values": [
+            5,
+            8,
+            9
+          ]
+        },
+        {
+          "name": "b",
+          "values": [
+            9,
+            4
+          ]
+        }
+      ]
+    },
+    "output": {
+      "ranked": [
+        {
+          "name": "a",
+          "slope": 2.0,
+          "observations": 3,
+          "last": 9,
+          "horizon": "input cadence unspecified; no forecast"
+        },
+        {
+          "name": "z",
+          "slope": 2.0,
+          "observations": 3,
+          "last": 9,
+          "horizon": "input cadence unspecified; no forecast"
+        },
+        {
+          "name": "b",
+          "slope": -5.0,
+          "observations": 2,
+          "last": 4,
+          "horizon": "input cadence unspecified; no forecast"
+        }
+      ],
+      "status": "measured_not_predicted",
+      "verified": false,
+      "unit": "V3",
+      "module": "c32",
+      "status_label": "IMPLEMENTED-BOUNDED",
+      "scope": {
+        "implemented": "Exact rational linear solver, least-squares trend measures, research/strategy decomposition",
+        "not_implemented": "No universal solver, unsourced factual solution, or predictive certainty",
+        "data_source": [
+          {
+            "id": "s1",
+            "url": "https://example.org/data",
+            "kind": "supplied"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  },
+  {
+    "unit": "anything",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "s1",
+          "url": "https://example.org/data",
+          "kind": "supplied"
+        }
+      ],
+      "kind": "device",
+      "title": "Humidity sensor",
+      "requirements": [
+        "measure humidity",
+        "avoid false readings"
+      ],
+      "bom": [
+        {
+          "part": "sensor",
+          "quantity": 2,
+          "unit_cost": 3,
+          "source_id": "s1"
+        },
+        {
+          "part": "controller",
+          "quantity": 1,
+          "unit_cost": 7,
+          "source_id": "s1"
+        }
+      ]
+    },
+    "output": {
+      "title": "Humidity sensor",
+      "kind": "device",
+      "requirements": [
+        "measure humidity",
+        "avoid false readings"
+      ],
+      "bom": [
+        {
+          "part": "sensor",
+          "quantity": 2,
+          "unit_cost_estimate": 3,
+          "extended_estimate": 6,
+          "source_url": "https://example.org/data"
+        },
+        {
+          "part": "controller",
+          "quantity": 1,
+          "unit_cost_estimate": 7,
+          "extended_estimate": 7,
+          "source_url": "https://example.org/data"
+        }
+      ],
+      "bom_total_estimate": 13,
+      "manufactured": false,
+      "engineering_review_required": true,
+      "verification_plan": [
+        {
+          "requirement": "measure humidity",
+          "test": "define calibrated bench measurement before manufacturing"
+        },
+        {
+          "requirement": "avoid false readings",
+          "test": "define calibrated bench measurement before manufacturing"
+        }
+      ],
+      "unit": "V5",
+      "module": "c34",
+      "status_label": "SUBSTITUTE",
+      "scope": {
+        "implemented": "Runnable record-processing software artifact or supplied-parts device BOM/spec",
+        "not_implemented": "No arbitrary software synthesis, CAD, validated hardware safety, purchases or physical production",
+        "data_source": [
+          {
+            "id": "s1",
+            "url": "https://example.org/data",
+            "kind": "supplied"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  },
+  {
+    "unit": "hustles",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "fixture",
+          "url": "https://example.org/owner-supplied-fixture",
+          "kind": "synthetic test fixture; no fetched facts"
+        }
+      ],
+      "occupations": [
+        {
+          "code": "15-1252.00",
+          "title": "Software Developer",
+          "tasks": [
+            {
+              "id": "clean",
+              "text": "Clean a lawful customer-provided record sample",
+              "source_id": "fixture"
+            }
+          ]
+        }
+      ],
+      "results": [
+        {
+          "task_id": "clean",
+          "attempts": 1,
+          "successes": 1
+        }
+      ]
+    },
+    "output": {
+      "catalog": [
+        {
+          "task_id": "clean",
+          "occupation_code": "15-1252.00",
+          "career": "Software Developer",
+          "source_id": "fixture",
+          "test_plan": {
+            "budget": 0,
+            "human_execution_required": true,
+            "steps": [
+              "Use an owner-supplied anonymized sample",
+              "Produce a sample: Clean a lawful customer-provided record sample",
+              "Have the owner score correctness and usefulness",
+              "Record attempts, successes, minutes and observed revenue"
+            ],
+            "success_criteria": "Owner review approves useful deliverable; no income claim"
+          },
+          "deliverable": {
+            "title": "Software Developer: Clean a lawful customer-provided record sample",
+            "body": "Work brief\nTask: Clean a lawful customer-provided record sample\nAudience: owner review only\nInput: owner supplies lawful anonymized sample\nAcceptance: accuracy and usefulness measured by owner\nSource: https://example.org/owner-supplied-fixture"
+          }
+        }
+      ],
+      "catalog_count": 1,
+      "occupation_count": 1,
+      "results": [
+        {
+          "task_id": "clean",
+          "attempts": 1,
+          "successes": 1,
+          "success_rate": 1.0,
+          "net_revenue": 0,
+          "minutes": 0,
+          "evidence_status": "supplied_not_independently_verified"
+        }
+      ],
+      "income_guaranteed": false,
+      "unit": "V1",
+      "module": "c36",
+      "status_label": "SUBSTITUTE",
+      "scope": {
+        "implemented": "O*NET-shaped supplied occupation/task catalog and no-spend experiment briefs",
+        "not_implemented": "No exhaustive O*NET import, live tests, outreach, employment impersonation or income guarantee",
+        "data_source": [
+          {
+            "id": "fixture",
+            "url": "https://example.org/owner-supplied-fixture",
+            "kind": "synthetic test fixture; no fetched facts"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  },
+  {
+    "unit": "patents",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "fixture",
+          "url": "https://example.org/owner-supplied-fixture",
+          "kind": "synthetic test fixture; no fetched facts"
+        }
+      ],
+      "inventor": "owner",
+      "invention": {
+        "title": "Humidity-adaptive irrigation controller",
+        "features": [
+          "humidity sensor",
+          "adaptive valve hysteresis"
+        ]
+      },
+      "prior_art": [
+        {
+          "id": "synthetic-P1",
+          "text": "humidity sensor with fixed valve schedule",
+          "source_id": "fixture"
+        }
+      ]
+    },
+    "output": {
+      "title": "Humidity-adaptive irrigation controller",
+      "inventor": "owner",
+      "claims": [
+        {
+          "number": 1,
+          "type": "independent",
+          "text": "A Humidity-adaptive irrigation controller comprising: humidity sensor; adaptive valve hysteresis.",
+          "basis": [
+            "humidity sensor",
+            "adaptive valve hysteresis"
+          ]
+        },
+        {
+          "number": 2,
+          "type": "dependent",
+          "text": "The Humidity-adaptive irrigation controller of claim 1, wherein the humidity sensor is configured as described by the owner.",
+          "basis": [
+            "humidity sensor"
+          ],
+          "requires_owner_detail": true
+        },
+        {
+          "number": 3,
+          "type": "dependent",
+          "text": "The Humidity-adaptive irrigation controller of claim 1, wherein the adaptive valve hysteresis is configured as described by the owner.",
+          "basis": [
+            "adaptive valve hysteresis"
+          ],
+          "requires_owner_detail": true
+        }
+      ],
+      "sections": {
+        "abstract": "Humidity-adaptive irrigation controller uses humidity sensor, adaptive valve hysteresis.",
+        "description": {
+          "features": [
+            "humidity sensor",
+            "adaptive valve hysteresis"
+          ],
+          "missing": [
+            "drawings",
+            "specific embodiments",
+            "enablement details"
+          ]
+        }
+      },
+      "prior_art": [
+        {
+          "id": "synthetic-P1",
+          "title": "",
+          "source_id": "fixture",
+          "source_url": "https://example.org/owner-supplied-fixture",
+          "shared_features": [
+            "humidity sensor"
+          ],
+          "feature_overlap": 0.5
+        }
+      ],
+      "novelty_report": {
+        "not_matched_in_supplied_corpus": [
+          "adaptive valve hysteresis"
+        ],
+        "legal_novelty_determined": false,
+        "method": "literal feature overlap; not semantic or exhaustive search"
+      },
+      "search_queries": {
+        "google_patents": "humidity sensor adaptive valve hysteresis",
+        "patentsview": {
+          "feature_terms": [
+            "humidity sensor",
+            "adaptive valve hysteresis"
+          ]
+        },
+        "epo_ops": {
+          "title_terms": "Humidity-adaptive irrigation controller"
+        }
+      },
+      "filing_performed": false,
+      "unit": "V2",
+      "module": "c37",
+      "status_label": "SUBSTITUTE",
+      "scope": {
+        "implemented": "Prior-art corpus ranking and owner-invention claim draft with source mapping",
+        "not_implemented": "No live patent-provider search, legal novelty opinion, application completeness or filing",
+        "data_source": [
+          {
+            "id": "fixture",
+            "url": "https://example.org/owner-supplied-fixture",
+            "kind": "synthetic test fixture; no fetched facts"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  },
+  {
+    "unit": "redirect",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "fixture",
+          "url": "https://example.org/owner-supplied-fixture",
+          "kind": "synthetic test fixture; no fetched facts"
+        }
+      ],
+      "project": "Offline records",
+      "failures": [
+        {
+          "id": "timeout",
+          "source_id": "fixture",
+          "expected": "1000 records finish",
+          "observed": "external dependency timeout",
+          "reproduce": "disconnect dependency and rerun supplied fixture"
+        }
+      ],
+      "files": {
+        "example.py": "def sum_records(rows):\n    return sum(r[\"score\"] for r in rows)\n"
+      }
+    },
+    "output": {
+      "packet": {
+        "project": "Offline records",
+        "failures": [
+          {
+            "id": "timeout",
+            "source_id": "fixture",
+            "expected": "1000 records finish",
+            "observed": "external dependency timeout",
+            "reproduce": "disconnect dependency and rerun supplied fixture"
+          }
+        ],
+        "files": {
+          "example.py": {
+            "content": "def sum_records(rows):\n    return sum(r[\"score\"] for r in rows)\n",
+            "sha256": "aa2b4c06ebfc78d099be775dce22fa73fc8a6da05af96856dd7e2e3e87fb3859"
+          }
+        },
+        "review_request": "Review measured failures vs supplied code; suggest falsifiable alternatives. Do not claim success without passing reproduction."
+      },
+      "reviews": [],
+      "tickets": [],
+      "external_validation_completed": false,
+      "unit": "V7",
+      "module": "c31",
+      "status_label": "IMPLEMENTED-BOUNDED",
+      "scope": {
+        "implemented": "Failure packet with code hashes, verbatim review storage and verification tickets",
+        "not_implemented": "No external-model contact, automatic execution of reviews, or validation verdict based on opinion",
+        "data_source": [
+          {
+            "id": "fixture",
+            "url": "https://example.org/owner-supplied-fixture",
+            "kind": "synthetic test fixture; no fetched facts"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  },
+  {
+    "unit": "news-create",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "s1",
+          "url": "https://example.org/data",
+          "kind": "supplied"
+        }
+      ],
+      "feeds": [
+        {
+          "source_id": "s1",
+          "xml": "<rss><item><title>water</title><link>http://example.org/0</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/1</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/2</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/3</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/4</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/5</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/6</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/7</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/8</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/9</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/10</link><summary>sensor</summary></item><item><title>water</title><link>http://example.org/11</link><summary>sensor</summary></item></rss>"
+        }
+      ],
+      "interests": [
+        "water",
+        "sensor",
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ]
+    },
+    "output": {
+      "ingested_count": 12,
+      "selected_count": 10,
+      "ranked": [
+        {
+          "title": "water",
+          "url": "http://example.org/0",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/1",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/10",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/11",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/2",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/3",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/4",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/5",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/6",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        },
+        {
+          "title": "water",
+          "url": "http://example.org/7",
+          "summary": "sensor",
+          "source_id": "s1",
+          "interest_matches": [
+            "sensor",
+            "water"
+          ],
+          "new_concepts": [],
+          "score": 6
+        }
+      ],
+      "briefs": [
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/0"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/1"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/10"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/11"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/2"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/3"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/4"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/5"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/6"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "water",
+          "source_urls": [
+            "http://example.org/7"
+          ],
+          "supplied_summary": "sensor",
+          "research_questions": [
+            "Can the reported mechanism in water be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        }
+      ],
+      "tickets": [
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/0"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/1"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/10"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/11"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/2"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/3"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/4"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/5"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/6"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: water",
+          "source_urls": [
+            "http://example.org/7"
+          ],
+          "idea": {
+            "seed": "water",
+            "connection": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        }
+      ],
+      "unit": "V8",
+      "module": "c37",
+      "status_label": "IMPLEMENTED-BOUNDED",
+      "scope": {
+        "implemented": "RSS/Atom intake, URL dedupe, interest/novelty heuristic, research briefs and experiment tickets",
+        "not_implemented": "No live news fetch, peer-review verification, autonomous invention or hardware creation",
+        "data_source": [
+          {
+            "id": "s1",
+            "url": "https://example.org/data",
+            "kind": "supplied"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  },
+  {
+    "unit": "news-create",
+    "input": {
+      "as_of": "2026-10-11",
+      "sources": [
+        {
+          "id": "s1",
+          "url": "https://example.org/data",
+          "kind": "supplied"
+        }
+      ],
+      "feeds": [
+        {
+          "source_id": "s1",
+          "xml": "<rss><item><title>sensor</title><link>https://example.org/content</link><content>water</content></item><item><title>empty</title><link>https://example.org/empty</link></item></rss>"
+        }
+      ]
+    },
+    "output": {
+      "ingested_count": 2,
+      "selected_count": 2,
+      "ranked": [
+        {
+          "title": "sensor",
+          "url": "https://example.org/content",
+          "summary": "water",
+          "source_id": "s1",
+          "interest_matches": [],
+          "new_concepts": [
+            "sensor",
+            "water"
+          ],
+          "score": 2
+        },
+        {
+          "title": "empty",
+          "url": "https://example.org/empty",
+          "summary": "",
+          "source_id": "s1",
+          "interest_matches": [],
+          "new_concepts": [
+            "empty"
+          ],
+          "score": 1
+        }
+      ],
+      "briefs": [
+        {
+          "title": "sensor",
+          "source_urls": [
+            "https://example.org/content"
+          ],
+          "supplied_summary": "water",
+          "research_questions": [
+            "Can the reported mechanism in sensor be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        },
+        {
+          "title": "empty",
+          "source_urls": [
+            "https://example.org/empty"
+          ],
+          "supplied_summary": "",
+          "research_questions": [
+            "Can the reported mechanism in empty be reproduced?",
+            "What independently sourced prior work exists?",
+            "What falsifies the proposed application?"
+          ],
+          "evidence_status": "Unverified supplied feed text, not an established scientific result"
+        }
+      ],
+      "tickets": [
+        {
+          "title": "Test an application of: sensor",
+          "source_urls": [
+            "https://example.org/content"
+          ],
+          "idea": {
+            "seed": "sensor",
+            "connection": [],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        },
+        {
+          "title": "Test an application of: empty",
+          "source_urls": [
+            "https://example.org/empty"
+          ],
+          "idea": {
+            "seed": "empty",
+            "connection": [],
+            "hypothesis": "Transfer the reported mechanism to one owner-selected use case"
+          },
+          "acceptance": [
+            "verify primary paper or source",
+            "find counterexamples and prior art",
+            "build smallest reproducible software experiment",
+            "compare measured outcome to predeclared baseline"
+          ],
+          "status": "research_required_not_built"
+        }
+      ],
+      "unit": "V8",
+      "module": "c37",
+      "status_label": "IMPLEMENTED-BOUNDED",
+      "scope": {
+        "implemented": "RSS/Atom intake, URL dedupe, interest/novelty heuristic, research briefs and experiment tickets",
+        "not_implemented": "No live news fetch, peer-review verification, autonomous invention or hardware creation",
+        "data_source": [
+          {
+            "id": "s1",
+            "url": "https://example.org/data",
+            "kind": "supplied"
+          }
+        ],
+        "as_of": "2026-10-11"
+      }
+    }
+  }
+]

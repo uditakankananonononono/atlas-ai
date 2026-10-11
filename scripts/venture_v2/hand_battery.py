@@ -1,0 +1,31 @@
+"""Reproducible supplied-data hand runs, including generated executable artifact."""
+import json,sys,subprocess,tempfile
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/'backend'))
+from app.modules.m20_general_cognitive_worker.venture_v2.engines import run
+from app.modules.m20_general_cognitive_worker.venture_v2.policy import Refusal
+META={'as_of':'2026-10-11','sources':[{'id':'fixture','url':'https://example.org/owner-supplied-fixture','kind':'synthetic test fixture; no fetched facts'}]}
+payloads={
+'hustles':dict(occupations=[{'code':'15-1252.00','title':'Software Developer','tasks':[{'id':'clean','text':'Clean a lawful customer-provided record sample','source_id':'fixture'}]}],results=[{'task_id':'clean','attempts':30,'successes':24,'minutes':90,'revenue':0,'cost':0}]),
+'patents':dict(inventor='owner',invention={'title':'Humidity-adaptive irrigation controller','features':['humidity sensor','adaptive valve hysteresis']},prior_art=[{'id':'synthetic-P1','title':'Fixture prior art','text':'humidity sensor with fixed valve schedule','source_id':'fixture'}]),
+'problems':dict(mode='linear',matrix=[[3,2,-1],[2,-2,4],[-1,.5,-1]],rhs=[1,-2,0]),
+'rewrite':dict(tool={'name':'Owner-supplied record filter behavior','license':'MIT','author':'Synthetic fixture author','source_id':'fixture'},behavior={'operations':[{'op':'filter','field':'score','cmp':'gte','value':70},{'op':'project','fields':['name','score']},{'op':'sort','field':'score'}]},cases=[{'input':[{'name':'a','score':82,'private':'removed'},{'name':'b','score':45},{'name':'c','score':70}],'expected':[{'name':'c','score':70},{'name':'a','score':82}]}]),
+'anything':dict(title='Offline sample-score summarizer',kind='software',behavior={'operations':[{'op':'aggregate','field':'score','function':'mean'}]},sample=[{'score':70},{'score':90}]),
+'worldclass':dict(suite_id='exact-output-smoke-v1',tasks=[{'id':'rational','expected':['1','-2','-2']},{'id':'mean','expected':{'mean':80}}],candidate={'name':'Atlas supplied execution outputs','outputs':{'rational':['1','-2','-2'],'mean':{'mean':80}}},baselines=[{'name':'synthetic comparison fixture, not competitor claim','source_id':'fixture','outputs':{'rational':['0','0','0'],'mean':{'mean':80}}}]),
+'redirect':dict(project='Offline records',failures=[{'id':'timeout','source_id':'fixture','expected':'1000 records finish','observed':'external dependency timeout','reproduce':'disconnect dependency and rerun supplied fixture'}],files={'example.py':'def sum_records(rows):\n    return sum(r["score"] for r in rows)\n'},reviews=[{'failure_id':'timeout','source_id':'fixture','model':'synthetic fixture opinion, no model called','response':'Compare a local streaming sum with the remote dependency on identical inputs.'}]),
+'news-create':dict(feeds=[{'source_id':'fixture','xml':'<rss><channel><item><title>Fictional humidity sensor research</title><link>https://example.org/fictional-paper</link><description>Synthetic test text: use adaptive sensing for water efficiency.</description></item></channel></rss>'}],interests=['water','sensor'],prior_concepts=['humidity'])}
+results={name:run(name,dict(META,**p)) for name,p in payloads.items()}
+with tempfile.TemporaryDirectory() as temp:
+    artifact=Path(temp)/'prototype.py';artifact.write_text(results['anything']['files']['prototype.py'])
+    import os
+    env=dict(os.environ,PYTHONPATH=str(ROOT/'backend'))
+    execution=subprocess.run([sys.executable,str(artifact)],input='[{"score": 10}, {"score": 30}]',text=True,capture_output=True,env=env,check=True)
+    results['artifact_execution']={'process_returncode':execution.returncode,'stdout':execution.stdout.strip(),'expected':{'mean':20},'verified':json.loads(execution.stdout)=={'mean':20}}
+assert results['problems']['solution']==['1','-2','-2']
+assert results['artifact_execution']['verified']
+results['refusals']={}
+for action in ['spend','outreach','file','install']:
+    try:run('hustles',dict(META,action=action))
+    except Refusal as exc:results['refusals'][action]=exc.code
+output=ROOT/'audits/venture_v2/hand-results.json';output.write_text(json.dumps(results,indent=2)+'\n')
+print(json.dumps({'units':len(payloads),'verified_exact_solution':results['problems']['solution'],'generated_artifact':results['artifact_execution'],'refusals':results['refusals']},indent=2))

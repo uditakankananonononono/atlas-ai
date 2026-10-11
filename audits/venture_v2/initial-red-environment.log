@@ -1,0 +1,33 @@
+E
+======================================================================
+ERROR: test_engines (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_engines
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/unittest/loader.py", line 436, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib/python3.10/unittest/loader.py", line 377, in _get_module_from_name
+    __import__(name)
+  File "/home/sandbox/atlas-ai/tests/venture_v2/test_engines.py", line 4, in <module>
+    from app.modules.m20_general_cognitive_worker.venture_v2 import engines as e
+  File "/home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/__init__.py", line 6, in <module>
+    from .routes import bind_service, router
+  File "/home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/routes.py", line 1588, in <module>
+    from .specialized_domain_routes import router as specialized_domain_router
+  File "/home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/specialized_domain_routes.py", line 9, in <module>
+    from .specialized_domain import SpecializedDomainError, analyze_specialized_domain
+  File "/home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/specialized_domain.py", line 13, in <module>
+    from app.modules.m12_ai_research_lab.education_support import (
+  File "/home/sandbox/atlas-ai/backend/app/modules/m12_ai_research_lab/__init__.py", line 3, in <module>
+    from .service import Service
+  File "/home/sandbox/atlas-ai/backend/app/modules/m12_ai_research_lab/service.py", line 5, in <module>
+    from .workflow import DagEngine, Workflow, WorkflowValidationError
+  File "/home/sandbox/atlas-ai/backend/app/modules/m12_ai_research_lab/workflow.py", line 5, in <module>
+    import yaml
+ModuleNotFoundError: No module named 'yaml'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

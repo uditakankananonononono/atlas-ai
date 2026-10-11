@@ -1,0 +1,24 @@
+/tmp/venture312/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_atom_intake (test_edges.Edges.test_atom_intake) ... ok
+test_declared_transform_guards (test_edges.Edges.test_declared_transform_guards) ... ok
+test_engine_rejection_edges (test_edges.Edges.test_engine_rejection_edges) ... ok
+test_input_policy_and_limit (test_edges.Edges.test_input_policy_and_limit) ... ok
+test_all_units_policy_and_honesty (test_engines.Engines.test_all_units_policy_and_honesty) ... ok
+test_benchmark_comparable_measured_only (test_engines.Engines.test_benchmark_comparable_measured_only) ... ok
+test_hustles_generated_and_measured (test_engines.Engines.test_hustles_generated_and_measured) ... ok
+test_news_rss_rank_and_ticket (test_engines.Engines.test_news_rss_rank_and_ticket) ... ok
+test_patents_prior_art_and_claims (test_engines.Engines.test_patents_prior_art_and_claims) ... ok
+test_prototype_runnable_artifact_and_bom (test_engines.Engines.test_prototype_runnable_artifact_and_bom) ... ok
+test_redirect_preserves_external_text_as_data (test_engines.Engines.test_redirect_preserves_external_text_as_data) ... ok
+test_rewrite_generates_real_python_and_parity (test_engines.Engines.test_rewrite_generates_real_python_and_parity) ... ok
+test_solver_exact_verified_and_unsolved (test_engines.Engines.test_solver_exact_verified_and_unsolved) ... ok
+test_exact_limits_and_refusals (test_mutation_edges.MutationEdges.test_exact_limits_and_refusals) ... ok
+test_exact_policy_codes (test_policy.Policy.test_exact_policy_codes) ... ok
+test_routes_auth_refusal_report_isolation_and_restart (test_routes.Routes.test_routes_auth_refusal_report_isolation_and_restart) ... ok
+test_unconfigured_store_fails_closed (test_routes.Routes.test_unconfigured_store_fails_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.180s
+
+OK

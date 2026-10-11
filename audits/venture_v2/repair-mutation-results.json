@@ -1,0 +1,6752 @@
+{
+  "baseline_passed": true,
+  "mutants": 959,
+  "killed": 937,
+  "survived": 22,
+  "invalid": 0,
+  "results": [
+    {
+      "module": "policy",
+      "line": 1,
+      "column": 0,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Docstring-only mutation."
+    },
+    {
+      "module": "policy",
+      "line": 22,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 40,
+      "column": 14,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 1,
+      "column": 0,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Docstring-only mutation."
+    },
+    {
+      "module": "transforms",
+      "line": 16,
+      "column": 17,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 91,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 35,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 13,
+      "column": 37,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 286,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 36,
+      "column": 41,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 21,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 71,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 458,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 71,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 82,
+      "column": 18,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 95,
+      "column": 50,
+      "kind": "arithmetic",
+      "outcome": "survived",
+      "review_note": "Algebraic invariant on centered x: adding instead of subtracting y mean leaves numerator unchanged because sum(x-xmean)=0. Raw survivor retained."
+    },
+    {
+      "module": "engines",
+      "line": 104,
+      "column": 25,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 108,
+      "column": 70,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 121,
+      "column": 73,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 128,
+      "column": 43,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 137,
+      "column": 50,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 148,
+      "column": 25,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 53,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 173,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 98,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 195,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 172,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 102,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 222,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 6,
+      "column": 36,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Runner limitation: Refusal class identity preserved for existing assertRaises bindings, constructor mutation therefore not represented. Needs subprocess auditor."
+    },
+    {
+      "module": "policy",
+      "line": 23,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 43,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 99,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 36,
+      "column": 16,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 13,
+      "column": 92,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 28,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 36,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 39,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 99,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 475,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 71,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 82,
+      "column": 57,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 96,
+      "column": 18,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 104,
+      "column": 49,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 108,
+      "column": 97,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 121,
+      "column": 89,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 129,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 138,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 148,
+      "column": 49,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 85,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 173,
+      "column": 46,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 229,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 195,
+      "column": 33,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 204,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 79,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 113,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 222,
+      "column": 27,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 8,
+      "column": 25,
+      "kind": "arithmetic",
+      "outcome": "survived",
+      "review_note": "Runner limitation: Refusal class identity preserved for existing assertRaises bindings, constructor mutation therefore not represented. Needs subprocess auditor."
+    },
+    {
+      "module": "policy",
+      "line": 24,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 43,
+      "column": 36,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 29,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "column": 37,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 105,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 36,
+      "column": 21,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 19,
+      "column": 41,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 28,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 36,
+      "column": 79,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 46,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 142,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 494,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 71,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 83,
+      "column": 17,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 96,
+      "column": 22,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 104,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 108,
+      "column": 108,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 121,
+      "column": 101,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 129,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 138,
+      "column": 44,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 148,
+      "column": 63,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 107,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 174,
+      "column": 28,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 247,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 195,
+      "column": 39,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 204,
+      "column": 29,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 87,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 118,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 225,
+      "column": 69,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 8,
+      "column": 33,
+      "kind": "arithmetic",
+      "outcome": "survived",
+      "review_note": "Runner limitation: Refusal class identity preserved for existing assertRaises bindings, constructor mutation therefore not represented. Needs subprocess auditor."
+    },
+    {
+      "module": "policy",
+      "line": 24,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 43,
+      "column": 47,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "column": 63,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 114,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 36,
+      "column": 25,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 20,
+      "column": 33,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 28,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 36,
+      "column": 89,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 154,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 509,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 73,
+      "column": 49,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 83,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 96,
+      "column": 23,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 104,
+      "column": 66,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 109,
+      "column": 10,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 122,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 129,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 138,
+      "column": 53,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 150,
+      "column": 58,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 129,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 174,
+      "column": 43,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 265,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 195,
+      "column": 50,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 204,
+      "column": 29,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 95,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 133,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 225,
+      "column": 83,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 8,
+      "column": 33,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Runner limitation: Refusal class identity preserved for existing assertRaises bindings, constructor mutation therefore not represented. Needs subprocess auditor."
+    },
+    {
+      "module": "policy",
+      "line": 24,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 44,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 50,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "column": 76,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 128,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 37,
+      "column": 16,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 20,
+      "column": 69,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 28,
+      "column": 63,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 36,
+      "column": 100,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 70,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 178,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 535,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 75,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 84,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 96,
+      "column": 34,
+      "kind": "arithmetic",
+      "outcome": "survived",
+      "review_note": "Algebraic invariant: adding y mean instead of subtracting leaves centered-x numerator unchanged because sum(x-xmean)=0. Raw survivor retained."
+    },
+    {
+      "module": "engines",
+      "line": 104,
+      "column": 86,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 109,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 122,
+      "column": 17,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 130,
+      "column": 36,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 138,
+      "column": 68,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 150,
+      "column": 73,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "allow_nan=False mutation redundant under run() initial JSON NaN rejection."
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 145,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 176,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 297,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 195,
+      "column": 57,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 204,
+      "column": 50,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 104,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 145,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 56,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 8,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Runner limitation: Refusal class identity preserved for existing assertRaises bindings, constructor mutation therefore not represented. Needs subprocess auditor."
+    },
+    {
+      "module": "policy",
+      "line": 24,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 44,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 55,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "column": 83,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 25,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 37,
+      "column": 33,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 21,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 28,
+      "column": 72,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 37,
+      "column": 45,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 74,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 52,
+      "column": 40,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 546,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 75,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 84,
+      "column": 21,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 96,
+      "column": 79,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 104,
+      "column": 112,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 110,
+      "column": 18,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 122,
+      "column": 46,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 130,
+      "column": 63,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 138,
+      "column": 94,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 152,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 158,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 176,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 304,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 198,
+      "column": 36,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 204,
+      "column": 56,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 113,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 150,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 72,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 11,
+      "column": 4,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 24,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 46,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 71,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "column": 94,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 25,
+      "column": 39,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 37,
+      "column": 47,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 22,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 28,
+      "column": 101,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 37,
+      "column": 76,
+      "kind": "arithmetic",
+      "outcome": "survived",
+      "review_note": "Equivalent under enforced cost=0: revenue+cost equals revenue-cost."
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 90,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 568,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 76,
+      "column": 40,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 84,
+      "column": 47,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Unverified-solution branch cannot occur after exact full-rank Gaussian elimination plus exact residual arithmetic. Not counted killed."
+    },
+    {
+      "module": "engines",
+      "line": 96,
+      "column": 90,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 105,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 110,
+      "column": 112,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 122,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Error detail string not pinned, refusal code pinned. Test gap, not equivalence."
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 138,
+      "column": 121,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 152,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 166,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 177,
+      "column": 38,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 388,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 198,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 204,
+      "column": 63,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 145,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 166,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 81,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 11,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 25,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 46,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 75,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "column": 99,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 25,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 38,
+      "column": 16,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 22,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 28,
+      "column": 251,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 37,
+      "column": 121,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 110,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 587,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 76,
+      "column": 42,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 84,
+      "column": 58,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 98,
+      "column": 27,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 105,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 114,
+      "column": 15,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 123,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 138,
+      "column": 141,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 153,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 183,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 177,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 185,
+      "column": 46,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 198,
+      "column": 58,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 204,
+      "column": 63,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 148,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 180,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 86,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 11,
+      "column": 36,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 25,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 46,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 92,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 17,
+      "column": 113,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 25,
+      "column": 107,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 38,
+      "column": 21,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 23,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 30,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 117,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 37,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 595,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 77,
+      "column": 39,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 84,
+      "column": 96,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 98,
+      "column": 47,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 105,
+      "column": 47,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 114,
+      "column": 45,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 123,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 153,
+      "column": 43,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 193,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 178,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 185,
+      "column": 102,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 199,
+      "column": 16,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 206,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 161,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 185,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 91,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 11,
+      "column": 44,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 27,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 46,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 97,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 18,
+      "column": 28,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 25,
+      "column": 121,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 38,
+      "column": 25,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 23,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 30,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 142,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 45,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 675,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 78,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 84,
+      "column": 134,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 98,
+      "column": 56,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 105,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 123,
+      "column": 66,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 51,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 153,
+      "column": 67,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 207,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 178,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 186,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 199,
+      "column": 19,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 206,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 227,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 203,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 96,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 12,
+      "column": 4,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 28,
+      "column": 12,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 47,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 113,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 18,
+      "column": 56,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 29,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 38,
+      "column": 39,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 23,
+      "column": 27,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 31,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 59,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 48,
+      "column": 160,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 61,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 57,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 78,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 84,
+      "column": 154,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 98,
+      "column": 70,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 105,
+      "column": 82,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 123,
+      "column": 87,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 80,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 153,
+      "column": 81,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 219,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 178,
+      "column": 19,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 186,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 199,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 206,
+      "column": 29,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 241,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 215,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 101,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 12,
+      "column": 15,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 29,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 47,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 117,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 19,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 30,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 39,
+      "column": 16,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 23,
+      "column": 41,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 31,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 88,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 49,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 73,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 57,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 78,
+      "column": 18,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 84,
+      "column": 163,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 98,
+      "column": 87,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 106,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 123,
+      "column": 105,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 122,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Sample JSON allow_nan admission redundant under run() initial JSON NaN rejection."
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 70,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 154,
+      "column": 18,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 233,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 178,
+      "column": 45,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 199,
+      "column": 55,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 206,
+      "column": 35,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 274,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 220,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 112,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 12,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 29,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 50,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 8,
+      "column": 134,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 19,
+      "column": 41,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 30,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 39,
+      "column": 21,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 25,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 31,
+      "column": 19,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 126,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 49,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 84,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 57,
+      "column": 76,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 78,
+      "column": 33,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 88,
+      "column": 15,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 98,
+      "column": 102,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 106,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 123,
+      "column": 112,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 129,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 80,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 154,
+      "column": 25,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 286,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 178,
+      "column": 59,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "column": 66,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 200,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 206,
+      "column": 49,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 311,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 236,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 142,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 12,
+      "column": 49,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 29,
+      "column": 64,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 50,
+      "column": 54,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 11,
+      "column": 21,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 30,
+      "column": 21,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 39,
+      "column": 25,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 25,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 31,
+      "column": 42,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 144,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 84,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 57,
+      "column": 91,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 78,
+      "column": 41,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 89,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 98,
+      "column": 105,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 106,
+      "column": 50,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 43,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 143,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 107,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 154,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 312,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 179,
+      "column": 38,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "column": 66,
+      "kind": "comparison:1",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 201,
+      "column": 35,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 207,
+      "column": 53,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 361,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 251,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 168,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 13,
+      "column": 4,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 30,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 51,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 11,
+      "column": 69,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Non-dict sentinel mutation still rejected by operations type guard."
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 30,
+      "column": 71,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 45,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 25,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 31,
+      "column": 56,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 164,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 93,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 58,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 78,
+      "column": 44,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 89,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 98,
+      "column": 115,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 106,
+      "column": 65,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 58,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 21,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 152,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 122,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 154,
+      "column": 40,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 319,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "column": 66,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 201,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 207,
+      "column": 64,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 413,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 256,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 202,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 13,
+      "column": 14,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 30,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 52,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 12,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 17,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 30,
+      "column": 84,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 45,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 25,
+      "column": 30,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 32,
+      "column": 32,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 172,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 101,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 58,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 78,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 89,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 99,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 106,
+      "column": 85,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 75,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 317,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 128,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 154,
+      "column": 50,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 400,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 41,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "column": 76,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 201,
+      "column": 89,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 422,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 214,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 239,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 13,
+      "column": 39,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 31,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 53,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 12,
+      "column": 46,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 31,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 30,
+      "column": 97,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 50,
+      "column": 12,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 25,
+      "column": 44,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 32,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 38,
+      "column": 252,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 121,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 58,
+      "column": 30,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 79,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 90,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 99,
+      "column": 56,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 106,
+      "column": 92,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 89,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 68,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 355,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 158,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 154,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 163,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 55,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "column": 81,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 201,
+      "column": 114,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 210,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 215,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 226,
+      "column": 255,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 13,
+      "column": 54,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 32,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 53,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 12,
+      "column": 55,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 38,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 31,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 50,
+      "column": 12,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 26,
+      "column": 28,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 32,
+      "column": 81,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 42,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 45,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 125,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 58,
+      "column": 44,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 79,
+      "column": 25,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 90,
+      "column": 9,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 99,
+      "column": 67,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 115,
+      "column": 116,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "License refusal detail text not pinned; code pinned. Test gap, not equivalence."
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 101,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 131,
+      "column": 368,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 163,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 154,
+      "column": 104,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 163,
+      "column": 64,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 70,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 187,
+      "column": 95,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 201,
+      "column": 135,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 32,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 210,
+      "column": 43,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 215,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 1,
+      "column": 0,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Docstring-only mutation."
+    },
+    {
+      "module": "policy",
+      "line": 14,
+      "column": 4,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 32,
+      "column": 55,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 53,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 12,
+      "column": 59,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 67,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 31,
+      "column": 17,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 50,
+      "column": 12,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 26,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 32,
+      "column": 102,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 42,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 52,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 140,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 79,
+      "column": 36,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 90,
+      "column": 15,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 99,
+      "column": 77,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 116,
+      "column": 45,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 120,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 132,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 185,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 155,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 165,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 83,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 189,
+      "column": 35,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 201,
+      "column": 145,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 49,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 210,
+      "column": 72,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 215,
+      "column": 26,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 12,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 14,
+      "column": 15,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 32,
+      "column": 68,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 53,
+      "column": 31,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 12,
+      "column": 73,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 67,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 31,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 50,
+      "column": 12,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 26,
+      "column": 65,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 33,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 42,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 52,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 160,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 79,
+      "column": 45,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 92,
+      "column": 38,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 99,
+      "column": 86,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 51,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 116,
+      "column": 76,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 127,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 132,
+      "column": 9,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 201,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 155,
+      "column": 28,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 166,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 85,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 189,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 202,
+      "column": 33,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 57,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 210,
+      "column": 88,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 215,
+      "column": 40,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 13,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 14,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 33,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 53,
+      "column": 46,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 87,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 31,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 50,
+      "column": 12,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 26,
+      "column": 80,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 33,
+      "column": 76,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 42,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 54,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 171,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "column": 41,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 79,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 92,
+      "column": 56,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 99,
+      "column": 111,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 66,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 117,
+      "column": 32,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 137,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 132,
+      "column": 15,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 139,
+      "column": 208,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 155,
+      "column": 46,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 166,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 94,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 190,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 202,
+      "column": 47,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 78,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 210,
+      "column": 104,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 216,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 19,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 14,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 33,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 56,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 38,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 20,
+      "column": 101,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 32,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 50,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 33,
+      "column": 96,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 42,
+      "column": 35,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 63,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 182,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "column": 48,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 79,
+      "column": 71,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 93,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 99,
+      "column": 122,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 77,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 118,
+      "column": 35,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 146,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 133,
+      "column": 58,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 140,
+      "column": 10,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 155,
+      "column": 57,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 166,
+      "column": 23,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 123,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 190,
+      "column": 61,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 202,
+      "column": 47,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 89,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 210,
+      "column": 123,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 216,
+      "column": 37,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 19,
+      "column": 125,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 15,
+      "column": 4,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 36,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 56,
+      "column": 47,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 45,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 32,
+      "column": 17,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 51,
+      "column": 14,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 29,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 33,
+      "column": 110,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 42,
+      "column": 49,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 79,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 205,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "column": 75,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 93,
+      "column": 78,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 100,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 93,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 118,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 151,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 133,
+      "column": 91,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 140,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 155,
+      "column": 76,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 166,
+      "column": 37,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 136,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 202,
+      "column": 53,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 113,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 210,
+      "column": 221,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 216,
+      "column": 51,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 22,
+      "column": 36,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 15,
+      "column": 18,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 36,
+      "column": 68,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 57,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 59,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 32,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 51,
+      "column": 73,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Generated OPERATIONS JSON allow_nan flag redundant under run() NaN rejection for public entry; direct generate() seam not pinned for NaN."
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 38,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 34,
+      "column": 28,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 43,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 99,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 229,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "column": 80,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 94,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 100,
+      "column": 9,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 137,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 119,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 167,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 134,
+      "column": 38,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 141,
+      "column": 18,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 155,
+      "column": 94,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 168,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 242,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 21,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 146,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 7,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 218,
+      "column": 45,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 25,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 15,
+      "column": 47,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 36,
+      "column": 93,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 57,
+      "column": 57,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 68,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 17,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 32,
+      "column": 66,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 51,
+      "column": 83,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 40,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 34,
+      "column": 35,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 43,
+      "column": 62,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 50,
+      "column": 103,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 246,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 62,
+      "column": 94,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 94,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 100,
+      "column": 18,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 165,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 120,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 175,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 135,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 141,
+      "column": 99,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 156,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 168,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 267,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "column": 11,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 35,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 155,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 18,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 219,
+      "column": 42,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 26,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 15,
+      "column": 66,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 36,
+      "column": 102,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 57,
+      "column": 75,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 78,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 34,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 33,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 52,
+      "column": 14,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 67,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 34,
+      "column": 46,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 44,
+      "column": 27,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 19,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 264,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 66,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "column": 39,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 94,
+      "column": 27,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 100,
+      "column": 29,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 179,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 120,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 201,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 135,
+      "column": 72,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 145,
+      "column": 21,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 157,
+      "column": 39,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 168,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 299,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "column": 41,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 45,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 173,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 219,
+      "column": 56,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 28,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 19,
+      "column": 25,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 36,
+      "column": 109,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 61,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 85,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 37,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 33,
+      "column": 17,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 53,
+      "column": 14,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 72,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 35,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 44,
+      "column": 69,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 28,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 321,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 66,
+      "column": 39,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "column": 50,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 94,
+      "column": 30,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 101,
+      "column": 28,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 193,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 120,
+      "column": 11,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 213,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 135,
+      "column": 96,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 145,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 157,
+      "column": 63,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 169,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 180,
+      "column": 358,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "column": 41,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "ENTITY rejection string mutation falls through to parser refusal same code. Raw survivor retained."
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 61,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 222,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 38,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 220,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 29,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 19,
+      "column": 35,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 37,
+      "column": 12,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 61,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 99,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 46,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 33,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 1,
+      "column": 0,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Docstring-only mutation."
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 81,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 35,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 44,
+      "column": 89,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 336,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 66,
+      "column": 52,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "column": 59,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 94,
+      "column": 44,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 101,
+      "column": 91,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 107,
+      "column": 200,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 120,
+      "column": 35,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 219,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 135,
+      "column": 117,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 145,
+      "column": 77,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Task limit constant 10000->10001 not pinned. Remaining test gap, no equivalence claim. Independent boundary audit needed."
+    },
+    {
+      "module": "engines",
+      "line": 157,
+      "column": 79,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 170,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "column": 68,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 67,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 266,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 49,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 220,
+      "column": 7,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 29,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 20,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 37,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 61,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 14,
+      "column": 113,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 51,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 34,
+      "column": 36,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 12,
+      "column": 28,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 125,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 35,
+      "column": 17,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 46,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 32,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 363,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 66,
+      "column": 66,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "column": 77,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 95,
+      "column": 34,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 101,
+      "column": 121,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 108,
+      "column": 13,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 120,
+      "column": 49,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 236,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 136,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 147,
+      "column": 26,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 158,
+      "column": 104,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 170,
+      "column": 37,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 191,
+      "column": 82,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 83,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 208,
+      "column": 284,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 54,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 220,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 29,
+      "column": 18,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 21,
+      "column": 8,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 38,
+      "column": 32,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 61,
+      "column": 45,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 15,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 58,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 34,
+      "column": 69,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 12,
+      "column": 57,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 156,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 35,
+      "column": 20,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 46,
+      "column": 52,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 39,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 369,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 67,
+      "column": 17,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 80,
+      "column": 88,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 95,
+      "column": 35,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 102,
+      "column": 36,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 108,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 121,
+      "column": 15,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 322,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 136,
+      "column": 40,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 148,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 158,
+      "column": 127,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 170,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 40,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 193,
+      "column": 37,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 126,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 14,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 69,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 220,
+      "column": 29,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 29,
+      "column": 39,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 21,
+      "column": 22,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 38,
+      "column": 38,
+      "kind": "constant",
+      "outcome": "survived",
+      "review_note": "Missing URL fallback string mutation still rejected by URL validator."
+    },
+    {
+      "module": "policy",
+      "line": 61,
+      "column": 59,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 16,
+      "column": 8,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 78,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 35,
+      "column": 16,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 12,
+      "column": 74,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 206,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 35,
+      "column": 34,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 47,
+      "column": 47,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 51,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 378,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 68,
+      "column": 42,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 81,
+      "column": 20,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 95,
+      "column": 37,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 103,
+      "column": 59,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 108,
+      "column": 48,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 121,
+      "column": 28,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 124,
+      "column": 405,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 136,
+      "column": 54,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 148,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 12,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 170,
+      "column": 53,
+      "kind": "refusal",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 193,
+      "column": 51,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 148,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 24,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 81,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 220,
+      "column": 43,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "store",
+      "line": 30,
+      "column": 30,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 22,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 39,
+      "column": 23,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "policy",
+      "line": 62,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 16,
+      "column": 11,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 21,
+      "column": 84,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "transforms",
+      "line": 35,
+      "column": 19,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 13,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 27,
+      "column": 267,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 36,
+      "column": 31,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 47,
+      "column": 99,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 51,
+      "column": 60,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 53,
+      "column": 440,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 70,
+      "column": 64,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 82,
+      "column": 14,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 95,
+      "column": 40,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 104,
+      "column": 16,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 108,
+      "column": 63,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 121,
+      "column": 57,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 128,
+      "column": 21,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 137,
+      "column": 26,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 148,
+      "column": 25,
+      "kind": "comparison:0",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 159,
+      "column": 29,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 170,
+      "column": 67,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 181,
+      "column": 81,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 195,
+      "column": 12,
+      "kind": "guard",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 203,
+      "column": 148,
+      "kind": "arithmetic",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 209,
+      "column": 51,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 212,
+      "column": 86,
+      "kind": "constant",
+      "outcome": "killed"
+    },
+    {
+      "module": "engines",
+      "line": 222,
+      "column": 4,
+      "kind": "guard",
+      "outcome": "killed"
+    }
+  ],
+  "baseline_test_count_at_battery": 33,
+  "latest_test_count": 34,
+  "runner_limitations": [
+    "Preserved Refusal identity means constructor mutants are not effective.",
+    "Constant mutations are v+1 or string suffix; not every operator/constant choice.",
+    "Frozen outputs are regression pins from known hand fixtures, not external validation.",
+    "34th HTTP malformed-input test added after full 959 battery; this strengthens tests without changing product source."
+  ]
+}

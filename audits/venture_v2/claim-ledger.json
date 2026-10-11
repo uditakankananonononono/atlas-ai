@@ -1,0 +1,90 @@
+[
+  {
+    "unit": "V1",
+    "route_name": "hustles",
+    "status": "SUBSTITUTE",
+    "implemented": "O*NET-shaped supplied occupation/task catalog and no-spend experiment briefs",
+    "limits": "No exhaustive O*NET import, live tests, outreach, employment impersonation or income guarantee",
+    "external_validation": "PENDING",
+    "test_evidence": "tests/venture_v2",
+    "mutation_evidence": "audits/venture_v2/mutation-results.json",
+    "hand_evidence": "audits/venture_v2/hand-results.json"
+  },
+  {
+    "unit": "V2",
+    "route_name": "patents",
+    "status": "SUBSTITUTE",
+    "implemented": "Prior-art corpus ranking and owner-invention claim draft with source mapping",
+    "limits": "No live patent-provider search, legal novelty opinion, application completeness or filing",
+    "external_validation": "PENDING",
+    "test_evidence": "tests/venture_v2",
+    "mutation_evidence": "audits/venture_v2/mutation-results.json",
+    "hand_evidence": "audits/venture_v2/hand-results.json"
+  },
+  {
+    "unit": "V3",
+    "route_name": "problems",
+    "status": "IMPLEMENTED-BOUNDED",
+    "implemented": "Exact rational linear solver, least-squares trend measures, research/strategy decomposition",
+    "limits": "No universal solver, unsourced factual solution, or predictive certainty",
+    "external_validation": "PENDING",
+    "test_evidence": "tests/venture_v2",
+    "mutation_evidence": "audits/venture_v2/mutation-results.json",
+    "hand_evidence": "audits/venture_v2/hand-results.json"
+  },
+  {
+    "unit": "V4",
+    "route_name": "rewrite",
+    "status": "SUBSTITUTE",
+    "implemented": "Executable declared record-transform adapter with attribution and fixture parity",
+    "limits": "No arbitrary-tool rewrite, repository fetching, upstream legal verification or installation",
+    "external_validation": "PENDING",
+    "test_evidence": "tests/venture_v2",
+    "mutation_evidence": "audits/venture_v2/mutation-results.json",
+    "hand_evidence": "audits/venture_v2/hand-results.json"
+  },
+  {
+    "unit": "V5",
+    "route_name": "anything",
+    "status": "SUBSTITUTE",
+    "implemented": "Runnable record-processing software artifact or supplied-parts device BOM/spec",
+    "limits": "No arbitrary software synthesis, CAD, validated hardware safety, purchases or physical production",
+    "external_validation": "PENDING",
+    "test_evidence": "tests/venture_v2",
+    "mutation_evidence": "audits/venture_v2/mutation-results.json",
+    "hand_evidence": "audits/venture_v2/hand-results.json"
+  },
+  {
+    "unit": "V6",
+    "route_name": "worldclass",
+    "status": "SUBSTITUTE",
+    "implemented": "Exact-match reproducible task-suite scores and same-suite baseline comparisons",
+    "limits": "No live model runs, external benchmark certification, leakage audit or global world-class claim",
+    "external_validation": "PENDING",
+    "test_evidence": "tests/venture_v2",
+    "mutation_evidence": "audits/venture_v2/mutation-results.json",
+    "hand_evidence": "audits/venture_v2/hand-results.json"
+  },
+  {
+    "unit": "V7",
+    "route_name": "redirect",
+    "status": "IMPLEMENTED-BOUNDED",
+    "implemented": "Failure packet with code hashes, verbatim review storage and verification tickets",
+    "limits": "No external-model contact, automatic execution of reviews, or validation verdict based on opinion",
+    "external_validation": "PENDING",
+    "test_evidence": "tests/venture_v2",
+    "mutation_evidence": "audits/venture_v2/mutation-results.json",
+    "hand_evidence": "audits/venture_v2/hand-results.json"
+  },
+  {
+    "unit": "V8",
+    "route_name": "news-create",
+    "status": "IMPLEMENTED-BOUNDED",
+    "implemented": "RSS/Atom intake, URL dedupe, interest/novelty heuristic, research briefs and experiment tickets",
+    "limits": "No live news fetch, peer-review verification, autonomous invention or hardware creation",
+    "external_validation": "PENDING",
+    "test_evidence": "tests/venture_v2",
+    "mutation_evidence": "audits/venture_v2/mutation-results.json",
+    "hand_evidence": "audits/venture_v2/hand-results.json"
+  }
+]
