@@ -388,3 +388,521 @@ def test_ops_use_resolved_path_not_later_symlink_target(tmp_path):
     assert "feature/x" in branches(real)
     assert branches(other) == {"main"}
     assert f.path == real.resolve()
+
+
+# ---------------------------------------------------------------------------
+# Repair pins (tests only): refusal messages, return values, git side effects.
+# ---------------------------------------------------------------------------
+import re as _re
+
+
+def log_count(repo, ref):
+    return int(git(repo, "rev-list", "--count", ref))
+
+
+def tag_commit(repo, tag, ref="HEAD"):
+    git(repo, "tag", tag, ref)
+
+
+def parents(repo, ref):
+    return git(repo, "rev-list", "--parents", "-n", "1", ref).split()[1:]
+
+
+def subject(repo, ref):
+    return git(repo, "log", "-1", "--format=%s", ref)
+
+
+def test_git_failure_raises_with_command_and_git_message(flow):
+    with pytest.raises(gf.GitFlowError) as e:
+        flow._git("checkout", "-q", "no-such-branch")
+    assert str(e.value).startswith("git checkout -q no-such-branch failed: ")
+    assert "no-such-branch" in str(e.value)
+
+
+def test_git_check_false_returns_result_without_raising(flow):
+    r = flow._git("checkout", "-q", "no-such-branch", check=False)
+    assert r.returncode != 0
+
+
+def test_git_success_returns_completed_process(flow):
+    r = flow._git("rev-parse", "main")
+    assert r.returncode == 0 and len(r.stdout.strip()) == 40
+
+
+def test_init_fresh_makes_one_initial_commit_and_marker(flow):
+    assert log_count(flow.path, "main") == 1
+    assert subject(flow.path, "main") == "initial commit"
+    marker = flow.path / ".git" / gf.MARKER_NAME
+    assert marker.is_file()
+    assert _re.fullmatch(r"[0-9a-f]{32}\n", marker.read_text())
+    assert git(flow.path, "branch", "--show-current") == "develop"
+
+
+def test_init_does_not_add_commit_when_main_already_has_history(flow):
+    commit(flow.path, "a.txt")
+    flow.init()
+    assert log_count(flow.path, "main") == 1
+    assert log_count(flow.path, "develop") == 2
+
+
+def test_init_recreates_missing_develop_from_main_and_leaves_main(flow):
+    git(flow.path, "checkout", "-q", "main")
+    git(flow.path, "branch", "-D", "develop")
+    flow.init()
+    assert git(flow.path, "rev-parse", "develop") == git(flow.path, "rev-parse", "main")
+    assert git(flow.path, "branch", "--show-current") == "develop"
+
+
+def test_init_moves_off_main_to_develop(flow):
+    git(flow.path, "checkout", "-q", "main")
+    flow.init()
+    assert git(flow.path, "branch", "--show-current") == "develop"
+
+
+def test_init_keeps_other_current_branch(flow):
+    flow.start("feature", "keep")
+    flow.init()
+    assert git(flow.path, "branch", "--show-current") == "feature/keep"
+
+
+def test_init_commits_in_owned_repo_with_no_commits_yet(tmp_path):
+    repo = tmp_path / "r"
+    repo.mkdir()
+    f = gf.GitFlow(repo)
+    f.init()
+    git(repo, "checkout", "-q", "main")
+    git(repo, "branch", "-D", "develop")
+    git(repo, "update-ref", "-d", "refs/heads/main")
+    assert git(repo, "for-each-ref", "refs/heads") == ""
+    f.init()
+    assert log_count(repo, "main") == 1
+    assert subject(repo, "main") == "initial commit"
+    assert "develop" in branches(repo)
+
+
+def test_init_refuses_branches_without_main(flow):
+    git(flow.path, "checkout", "-q", "develop")
+    git(flow.path, "branch", "-m", "main", "trunk")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.init()
+    assert str(e.value) == "repository has branches but no 'main'"
+    assert "main" not in branches(flow.path)
+
+
+def test_init_refuses_nonempty_unmarked_directory(tmp_path):
+    d = tmp_path / "x"
+    d.mkdir()
+    (d / "f").write_text("1")
+    with pytest.raises(gf.GitFlowError) as e:
+        gf.GitFlow(d).init()
+    assert "is not empty and was not created by this module; refusing" in str(e.value)
+    assert not (d / ".git").exists()
+
+
+def test_init_refuses_a_file_path(tmp_path):
+    p = tmp_path / "file"
+    p.write_text("1")
+    with pytest.raises(gf.GitFlowError, match="not empty and was not created"):
+        gf.GitFlow(p).init()
+
+
+def test_init_on_marked_repo_with_remote_is_refused(flow):
+    git(flow.path, "remote", "add", "o", "https://example.invalid/x.git")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.init()
+    assert "has a remote configured" in str(e.value)
+
+
+@pytest.mark.parametrize("op", ["start", "finish", "status", "audit"])
+def test_operations_refuse_unmarked_repository(tmp_path, op):
+    repo = tmp_path / "r"
+    repo.mkdir()
+    git(repo, "init", "-q", "-b", "main")
+    f = gf.GitFlow(repo)
+    args = {"start": ("feature", "a"), "finish": ("feature", "a"), "status": (), "audit": ()}[op]
+    with pytest.raises(gf.GitFlowError) as e:
+        getattr(f, op)(*args)
+    assert "was not created by this module (no throwaway marker); refusing" in str(e.value)
+
+
+@pytest.mark.parametrize("op", ["start", "finish", "status", "audit"])
+def test_operations_refuse_repository_with_remote(flow, op):
+    git(flow.path, "remote", "add", "o", "https://example.invalid/x.git")
+    args = {"start": ("feature", "a"), "finish": ("feature", "a"), "status": (), "audit": ()}[op]
+    with pytest.raises(gf.GitFlowError, match="remote configured"):
+        getattr(flow, op)(*args)
+
+
+def test_start_existing_branch_refused_with_message(flow):
+    flow.start("feature", "a")
+    git(flow.path, "checkout", "-q", "develop")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("feature", "a")
+    assert str(e.value) == "feature/a already exists"
+
+
+def test_start_requires_clean_tree(flow):
+    commit(flow.path, "t.txt")
+    (flow.path / "t.txt").write_text("changed")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("feature", "a")
+    assert str(e.value) == "working tree is not clean"
+    assert "feature/a" not in branches(flow.path)
+
+
+def test_start_refuses_when_develop_missing(flow):
+    git(flow.path, "checkout", "-q", "main")
+    git(flow.path, "branch", "-D", "develop")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("feature", "a")
+    assert str(e.value) == "repository is not initialised for git flow"
+    assert "feature/a" not in branches(flow.path)
+
+
+def test_start_refuses_when_main_missing(flow):
+    git(flow.path, "branch", "-m", "main", "trunk")
+    assert "develop" in branches(flow.path) and "main" not in branches(flow.path)
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("feature", "a")
+    assert str(e.value) == "repository is not initialised for git flow"
+
+
+def test_start_returns_branch_name_and_checks_it_out(flow):
+    assert flow.start("feature", "a") == "feature/a"
+    assert git(flow.path, "branch", "--show-current") == "feature/a"
+    assert flow.start.__name__ == "start"
+
+
+@pytest.mark.parametrize("kind", ["release", "hotfix"])
+def test_start_refuses_existing_tag_equal_version(flow, kind):
+    tag_commit(flow.path, "v1.0.0")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start(kind, "1.0.0")
+    assert str(e.value) == "tag v1.0.0 already exists"
+    assert f"{kind}/1.0.0" not in branches(flow.path)
+
+
+@pytest.mark.parametrize("kind", ["release", "hotfix"])
+def test_start_refuses_version_below_latest_tag(flow, kind):
+    tag_commit(flow.path, "v1.2.0")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start(kind, "1.1.9")
+    assert str(e.value) == f"{kind} version 1.1.9 must be greater than latest tag v1.2.0"
+    assert f"{kind}/1.1.9" not in branches(flow.path)
+
+
+@pytest.mark.parametrize("kind", ["release", "hotfix"])
+def test_start_accepts_version_above_latest_tag_numerically(flow, kind):
+    tag_commit(flow.path, "v1.9.0")
+    tag_commit(flow.path, "v1.10.0")
+    with pytest.raises(gf.GitFlowError, match="must be greater than latest tag v1.10.0"):
+        flow.start(kind, "1.9.5")
+    assert flow.start(kind, "1.10.1") == f"{kind}/1.10.1"
+
+
+def test_start_ignores_non_semver_tags_for_ordering(flow):
+    tag_commit(flow.path, "vfoo")
+    tag_commit(flow.path, "v2.0.0")
+    assert flow._highest_tag() == "v2.0.0"
+    assert flow.start("release", "2.0.1") == "release/2.0.1"
+
+
+def test_second_release_refused_while_one_open(flow):
+    flow.start("release", "1.0.0")
+    git(flow.path, "checkout", "-q", "develop")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("release", "1.1.0")
+    assert str(e.value) == "a release branch is already open: release/1.0.0"
+    assert "release/1.1.0" not in branches(flow.path)
+
+
+def test_hotfix_and_feature_allowed_while_release_open(flow):
+    flow.start("release", "1.0.0")
+    git(flow.path, "checkout", "-q", "main")
+    assert flow.start("hotfix", "1.0.1") == "hotfix/1.0.1"
+    git(flow.path, "checkout", "-q", "develop")
+    assert flow.start("feature", "z") == "feature/z"
+
+
+def test_start_release_and_hotfix_bases(flow):
+    commit(flow.path, "d.txt")  # develop ahead of main
+    flow.start("release", "1.0.0")
+    assert git(flow.path, "rev-parse", "release/1.0.0") == git(flow.path, "rev-parse", "develop")
+    git(flow.path, "checkout", "-q", "main")
+    flow.start("hotfix", "1.0.1")
+    assert git(flow.path, "rev-parse", "hotfix/1.0.1") == git(flow.path, "rev-parse", "main")
+    assert git(flow.path, "rev-parse", "hotfix/1.0.1") != git(flow.path, "rev-parse", "develop")
+
+
+def test_finish_missing_branch_refused(flow):
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.finish("feature", "nope")
+    assert str(e.value) == "feature/nope does not exist"
+
+
+def test_finish_unknown_kind_refused(flow):
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.finish("bugfix", "x")
+    assert str(e.value) == "unknown kind: bugfix"
+
+
+def test_finish_requires_clean_tree(flow):
+    flow.start("feature", "a")
+    commit(flow.path, "t.txt")
+    (flow.path / "t.txt").write_text("dirty")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.finish("feature", "a")
+    assert str(e.value) == "working tree is not clean"
+    assert "feature/a" in branches(flow.path)
+
+
+def test_finish_feature_returns_full_dict_and_cleans_up(flow):
+    flow.start("feature", "a")
+    commit(flow.path, "a.txt")
+    res = flow.finish("feature", "a")
+    assert res == {"merged_into": ["develop"], "tag": None}
+    assert "feature/a" not in branches(flow.path)
+    assert git(flow.path, "branch", "--show-current") == "develop"
+    assert subject(flow.path, "develop") == "Merge feature/a into develop"
+    assert len(parents(flow.path, "develop")) == 2
+    assert (flow.path / "a.txt").exists()
+
+
+def test_finish_release_returns_full_dict_tag_and_merges(flow):
+    flow.start("release", "1.0.0")
+    commit(flow.path, "r.txt")
+    res = flow.finish("release", "1.0.0")
+    assert res == {"merged_into": ["main", "develop"], "tag": "v1.0.0"}
+    assert "release/1.0.0" not in branches(flow.path)
+    assert git(flow.path, "cat-file", "-t", "v1.0.0") == "tag"
+    assert git(flow.path, "tag", "-l", "--format=%(contents:subject)", "v1.0.0") == "release 1.0.0"
+    assert subject(flow.path, "main") == "Merge release/1.0.0 into main"
+    assert len(parents(flow.path, "main")) == 2
+    assert subject(flow.path, "develop") == "Merge v1.0.0 back into develop"
+    assert len(parents(flow.path, "develop")) == 2
+    assert git(flow.path, "rev-parse", "v1.0.0^{commit}") == git(flow.path, "rev-parse", "main")
+    assert git(flow.path, "branch", "--show-current") == "develop"
+
+
+def test_finish_hotfix_returns_full_dict_back_to_develop(flow):
+    git(flow.path, "checkout", "-q", "main")
+    flow.start("hotfix", "1.0.1")
+    commit(flow.path, "h.txt")
+    res = flow.finish("hotfix", "1.0.1")
+    assert res == {"merged_into": ["main", "develop"], "tag": "v1.0.1"}
+    assert "hotfix/1.0.1" not in branches(flow.path)
+    assert git(flow.path, "tag", "-l", "--format=%(contents:subject)", "v1.0.1") == "hotfix 1.0.1"
+    assert subject(flow.path, "develop") == "Merge v1.0.1 back into develop"
+
+
+def test_finish_hotfix_goes_back_into_open_release_not_develop(flow):
+    flow.start("release", "2.0.0")
+    git(flow.path, "checkout", "-q", "main")
+    flow.start("hotfix", "1.0.1")
+    commit(flow.path, "h.txt")
+    dev_before = git(flow.path, "rev-parse", "develop")
+    res = flow.finish("hotfix", "1.0.1")
+    assert res == {"merged_into": ["main", "release/2.0.0"], "tag": "v1.0.1"}
+    assert git(flow.path, "rev-parse", "develop") == dev_before
+    assert subject(flow.path, "release/2.0.0") == "Merge v1.0.1 back into release/2.0.0"
+    assert (git(flow.path, "show", "release/2.0.0:h.txt")) == "x"
+
+
+def test_finish_release_ignores_itself_as_other_release(flow):
+    flow.start("release", "1.0.0")
+    res = flow.finish("release", "1.0.0")
+    assert res["merged_into"] == ["main", "develop"]
+
+
+def test_finish_refuses_when_tag_already_exists(flow):
+    flow.start("release", "1.0.0")
+    tag_commit(flow.path, "v1.0.0")
+    main_before = git(flow.path, "rev-parse", "main")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.finish("release", "1.0.0")
+    assert str(e.value) == "tag v1.0.0 already exists"
+    assert "release/1.0.0" in branches(flow.path)
+    assert git(flow.path, "rev-parse", "main") == main_before
+
+
+def test_finish_conflict_is_aborted_with_message_and_clean_tree(flow):
+    commit(flow.path, "c.txt", "base")
+    flow.start("feature", "a")
+    commit(flow.path, "c.txt", "from feature")
+    git(flow.path, "checkout", "-q", "develop")
+    commit(flow.path, "c.txt", "from develop")
+    git(flow.path, "checkout", "-q", "feature/a")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.finish("feature", "a")
+    assert str(e.value) == "merge of feature/a into develop conflicted and was aborted"
+    assert git(flow.path, "status", "--porcelain") == ""
+    assert "feature/a" in branches(flow.path)
+    assert not (flow.path / ".git" / "MERGE_HEAD").exists()
+
+
+def test_status_rows_for_every_kind_with_ahead_and_merged(flow):
+    flow.start("feature", "a")
+    commit(flow.path, "a.txt")
+    commit(flow.path, "b.txt")
+    git(flow.path, "checkout", "-q", "develop")
+    git(flow.path, "branch", "stray")
+    rows = {r["name"]: r for r in flow.status()}
+    assert rows["main"] == {"name": "main", "kind": "main", "current": False, "base": None,
+                            "ahead_of_base": None, "merged": None}
+    assert rows["develop"]["current"] is True and rows["develop"]["base"] is None
+    assert rows["stray"]["kind"] == "other" and rows["stray"]["base"] is None
+    assert rows["stray"]["ahead_of_base"] is None and rows["stray"]["merged"] is None
+    fa = rows["feature/a"]
+    assert fa == {"name": "feature/a", "kind": "feature", "current": False, "base": "develop",
+                  "ahead_of_base": 2, "merged": False}
+
+
+def test_status_merged_and_zero_ahead_distinguished(flow):
+    flow.start("feature", "m")
+    git(flow.path, "checkout", "-q", "develop")
+    row = next(r for r in flow.status() if r["name"] == "feature/m")
+    assert row["ahead_of_base"] == 0 and row["merged"] is True
+    flow.start("feature", "n")
+    commit(flow.path, "n.txt")
+    git(flow.path, "checkout", "-q", "develop")
+    row = next(r for r in flow.status() if r["name"] == "feature/n")
+    assert row["ahead_of_base"] == 1 and row["merged"] is False
+    git(flow.path, "merge", "-q", "--no-ff", "-m", "m", "feature/n")
+    row = next(r for r in flow.status() if r["name"] == "feature/n")
+    assert row["ahead_of_base"] == 0 and row["merged"] is True
+
+
+def test_status_hotfix_base_is_main_and_release_base_develop(flow):
+    flow.start("release", "1.0.0")
+    git(flow.path, "checkout", "-q", "main")
+    flow.start("hotfix", "1.0.1")
+    commit(flow.path, "h.txt")
+    rows = {r["name"]: r for r in flow.status()}
+    assert rows["hotfix/1.0.1"]["base"] == "main" and rows["hotfix/1.0.1"]["ahead_of_base"] == 1
+    assert rows["hotfix/1.0.1"]["merged"] is False and rows["hotfix/1.0.1"]["current"] is True
+    assert rows["release/1.0.0"]["base"] == "develop" and rows["release/1.0.0"]["kind"] == "release"
+
+
+def test_status_missing_base_branch_leaves_counts_none(flow):
+    flow.start("feature", "a")
+    commit(flow.path, "a.txt")
+    git(flow.path, "branch", "-m", "develop", "dev2")
+    row = next(r for r in flow.status() if r["name"] == "feature/a")
+    assert row["base"] == "develop"
+    assert row["ahead_of_base"] is None and row["merged"] is None
+
+
+def test_highest_tag_merged_filter_distinguishes_unmerged_tags(flow):
+    tag_commit(flow.path, "v1.0.0")
+    flow.start("feature", "x")
+    commit(flow.path, "x.txt")
+    tag_commit(flow.path, "v2.0.0")
+    git(flow.path, "checkout", "-q", "develop")
+    assert flow._highest_tag() == "v2.0.0"
+    assert flow._highest_tag("develop") == "v1.0.0"
+    assert flow._highest_tag("feature/x") == "v2.0.0"
+    assert flow._highest_tag("main") == "v1.0.0"
+
+
+def test_highest_tag_none_when_no_tags(flow):
+    assert flow._highest_tag() is None
+    assert flow._highest_tag("develop") is None
+
+
+def test_audit_reports_nonconforming_and_main_ahead(flow):
+    assert flow.audit() == []
+    git(flow.path, "branch", "weird")
+    assert flow.audit() == [{"name": "weird", "problem": "nonconforming_branch_name"}]
+    git(flow.path, "branch", "-D", "weird")
+    git(flow.path, "checkout", "-q", "main")
+    commit(flow.path, "m.txt")
+    assert flow.audit() == [{"name": "main", "problem": "main_ahead_of_develop_without_release"}]
+    git(flow.path, "branch", "release/9.9.9", "develop")
+    assert flow.audit() == []
+
+
+# --- constructs named in the audit: env dict, slug rules, nested init, unknown kind, audit strings ---
+def test_clean_git_env_exact_git_settings(monkeypatch):
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "x")
+    monkeypatch.setenv("GIT_DIR", "/nowhere")
+    monkeypatch.setenv("KEEP_ME", "1")
+    env = gf.clean_git_env()
+    assert "AWS_SECRET_ACCESS_KEY" not in env and "GIT_DIR" not in env
+    assert env["KEEP_ME"] == "1"
+    import os as _os
+    assert env["GIT_CONFIG_GLOBAL"] == _os.devnull and env["GIT_CONFIG_SYSTEM"] == _os.devnull
+    assert env["GIT_AUTHOR_NAME"] == "gitflow" and env["GIT_COMMITTER_NAME"] == "gitflow"
+    assert env["GIT_AUTHOR_EMAIL"] == "gitflow@example.invalid"
+    assert env["GIT_COMMITTER_EMAIL"] == "gitflow@example.invalid"
+    assert env["GIT_TERMINAL_PROMPT"] == "0"
+
+
+@pytest.mark.parametrize("name,ok", [
+    ("login", True), ("a-b_c", True), ("v1.2", True), ("a.b", True),
+    ("-x", False), (".x", False), ("x.", False), ("x.lock", False), ("a/b", False), ("", False),
+    ("a b", False), ("a~b", False), ("a^b", False), ("a:b", False), ("a?b", False), ("a*b", False),
+    ("a[b", False), ("a\\b", False), ("a..b", False), ("a@{b", False), ("a//b", False),
+    ("a@b", True), ("lock", True), ("x.locky", True),
+])
+def test_valid_slug_each_rule(name, ok):
+    assert gf._valid_slug(name) is ok
+
+
+def test_init_creates_missing_nested_directory(tmp_path):
+    target = tmp_path / "a" / "b" / "r"
+    f = gf.GitFlow(target)
+    f.init()
+    assert target.is_dir() and (target / ".git" / gf.MARKER_NAME).is_file()
+    assert branches(target) == {"main", "develop"}
+
+
+def test_init_uses_main_as_initial_branch_name(flow):
+    roots = git(flow.path, "rev-list", "--max-parents=0", "main").split()
+    assert len(roots) == 1
+    assert git(flow.path, "rev-parse", "main") == roots[0]
+
+
+def test_start_unknown_kind_message_and_no_branch(flow):
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("bugfix", "x")
+    assert str(e.value) == "unknown kind: bugfix"
+    assert "bugfix/x" not in branches(flow.path)
+
+
+def test_semver_name_message_for_release(flow):
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("release", "1.0")
+    assert str(e.value) == "release name must be MAJOR.MINOR.PATCH semver: '1.0'"
+
+
+def test_feature_name_message(flow):
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("feature", "a b")
+    assert str(e.value) == "invalid feature name: 'a b'"
+
+
+def test_audit_finding_strings_exact(flow):
+    git(flow.path, "branch", "odd")
+    git(flow.path, "checkout", "-q", "main")
+    commit(flow.path, "m.txt")
+    out = flow.audit()
+    assert {"name": "odd", "problem": "nonconforming_branch_name"} in out
+    assert {"name": "main", "problem": "main_ahead_of_develop_without_release"} in out
+    assert len(out) == 2
+    git(flow.path, "branch", "hotfix/9.9.9", "main")
+    assert flow.audit() == [{"name": "odd", "problem": "nonconforming_branch_name"}]
+
+
+def test_marker_file_has_the_documented_literal_name(flow):
+    assert gf.MARKER_NAME == "gitflow699-throwaway"
+    assert (flow.path / ".git" / "gitflow699-throwaway").is_file()
+
+
+def test_merge_refused_for_a_non_conflict_reason_still_reports_conflict_error(flow):
+    git(flow.path, "checkout", "-q", "--orphan", "feature/orph")
+    commit(flow.path, "o.txt")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.finish("feature", "orph")
+    assert str(e.value) == "merge of feature/orph into develop conflicted and was aborted"
+    assert "feature/orph" in branches(flow.path)
+    assert git(flow.path, "status", "--porcelain") == ""
