@@ -60,3 +60,9 @@ Refused: files over `max_bytes`, ZIP or other archives (by magic bytes or suffix
 - JSON and JSONL: a mapped name with dots is a nested path (`a.url` means key `a`, then key `url`), even if a literal key `a.url` also exists in the record.
 - Derived external ids (used when no `external_id` is mapped) are computed with sorted keys, so reordering the `fields` mapping does not change them.
 - Validation errors have fixed messages for: config not an object, `mapping.url`, `mapping.external_id`, `record_path`, `mapping.fields`.
+
+## Boundary pins (tests only, added in a later test-only commit; core unchanged)
+
+`tests/modules/test_collectors_export_file_adapters_pins.py` pins: `DEFAULT_MAX_BYTES` 268435456 (256 MiB) and `DEFAULT_MAX_RECORDS` 500000; `max_bytes` exact accept and +1 refuse in both the size pre-check and the bounded post-read (`max_bytes + 1`); `max_records` exact accept and +1 refuse for CSV, JSONL and JSON; the invalid UTF-8 message; the `invalid CSV:` prefix (a field over the CSV field limit); a record with no external_id is skipped, not emitted; a list index equal to the list length is missing; `_pos_int` default minimum 1 (cursor allows 0); the exact payload key order; each of the six archive suffixes, upper case, and the ZIP magic bytes.
+The 256 MiB cap limits the RAW INPUT FILE only. It is not a memory-expansion cap: parsed objects can use several times the file size and there is no total memory cap. Pins are synthetic-file checks and prove nothing about a real export or a whole export read.
+The page slice `items[start:end] if start < len(items) else []` is equivalent to an unconditional `items[start:end]` for non-negative `start` (the slice is already empty), so no test can tell them apart.
