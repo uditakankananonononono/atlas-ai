@@ -54,3 +54,15 @@ is not evidence of live conformance. No security schemes, servers, non-JSON
 media types, format validation, or recursive/complex schemas. Examples are
 caller-supplied, not observed traffic. No persistence, model, network, spend or
 deployment. Ledger, STATUS and row857/858/859 paths untouched.
+
+## Mounted integrator boundary
+An additive authenticated `/api-documentation/openapi` endpoint binds tenant and
+actor, checks up to64 declared resource-reference metadata objects and retrieves
+no resources. Owner/actor IDs are returned alongside the unchanged core receipt.
+The raw JSON guard reused from the landed LEGACY694 boundary checks all parsed
+string keys/values for UTF-8 surrogates and refuses nodes deeper than64. Mounted
+pins cover401, two authenticated owners200, mismatched tenant/actor/reference403,
+invalid generator input422, surrogate type-error/data/key shapes422. No live API
+conformance or external source verification is added. Core is byte-frozen at R3.
+The supplied unauthenticated wiring patch is not applied unchanged; this owner
+boundary is a separate integration requiring independent review.

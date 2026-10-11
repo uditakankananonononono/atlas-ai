@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 PATH='/api/v1/api/modules/20/api-documentation/openapi'
-DATA={'info':{'title':'Example','version':'1'},'schemas':{},'operations':[]}
+DATA={'info':{'title':'Example','version':'1'},'schemas':{},'operations':[{'operation_id':'read','method':'get','path':'/read','summary':'Read','source_ref':'caller:1','responses':{'200':{'description':'ok'}}}]}
 
 def test_api704_owner_bound_mounted(monkeypatch,oidc_auth_headers):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)

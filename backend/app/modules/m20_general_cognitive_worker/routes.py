@@ -1674,3 +1674,5 @@ router.include_router(decay_survival_router)
 
 from .curiosity_investigator_routes import router as curiosity_investigator_router
 router.include_router(curiosity_investigator_router)
+from .openapi704_routes import router as openapi704_router
+router.include_router(openapi704_router)
