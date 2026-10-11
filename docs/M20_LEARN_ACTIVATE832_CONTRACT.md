@@ -12,9 +12,11 @@ responses, and does not retrospectively grade them. Unactivated concepts mean no
 prior responses, regardless of new evidence. Sources/keys are supplied, not fetched
 or semantically assessed. Grades/understanding remain None, truth unverified.
 
-833takes one sourced positive Horn rule with<=64 premises, target task with<=64
+833takes one sourced positive Horn rule with<=64 premises (effective max63
+when the conclusion is distinct from all premises), target task with<=64
 facts/query, and1..64 bijective correspondences covering exactly source rule atoms.
-Target query must equal mapped conclusion; no partial/extra/many-to-one mappings.
+Truthy unless values refuse; absent or falsey unless values ([], empty string,
+0, False) are ignored and represent no exception. Target query must equal mapped conclusion; no partial/extra/many-to-one mappings.
 Entailment means the target conclusion is already a supplied fact or all mapped
 premises are present. No source-case semantic abstraction or discovered mapping
 is claimed. Supplied legacy source_case/target_case fields are not used by this

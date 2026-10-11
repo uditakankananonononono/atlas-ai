@@ -88,3 +88,70 @@ def test_rule_task_shapes_text_and_no_negation():
   with pytest.raises(LearningReasoningError):run('transfer',p)
  p=transfer();p['transfer_rule']['unless']=['x']
  with pytest.raises(LearningReasoningError):run('transfer',p)
+
+def test_optional_activation_records_and_empty_concepts():
+ from app.modules.m20_general_cognitive_worker.activation_transfer import activate
+ p=activation();p.pop('prior_responses');p.pop('new_evidence');r=activate(p)
+ assert r['prior_reports']==r['new_evidence']==[] and r['concept_reports'][0]['unactivated'] is True
+ p['activation_concepts']=[]
+ with pytest.raises(ValueError,match='activation_concepts requires bounded object list'):activate(p)
+
+def test_activation_text_ids_values_and_unknown_new_core():
+ from app.modules.m20_general_cognitive_worker.activation_transfer import activate
+ for field,key in [('activation_concepts','concept_id'),('prior_responses','response_id'),('new_evidence','evidence_id'),('prior_responses','concept_id'),('new_evidence','concept_id'),('prior_responses','value'),('new_evidence','value')]:
+  p=activation();p[field][0][key]=[]
+  with pytest.raises(ValueError,match=key+' requires bounded nonempty string'):activate(p)
+ p=activation();p['new_evidence'][0]['concept_id']='unknown'
+ with pytest.raises(ValueError,match='unique records and known concepts required'):activate(p)
+
+def test_activation_reversed_output_and_fixed_seed_values():
+ import os,sys,subprocess
+ from app.modules.m20_general_cognitive_worker.activation_transfer import activate
+ p=activation();p['activation_concepts']=[{'concept_id':key,'accepted_values':['zebra','middle','alpha'],'source':'fixture'}for key in ['z','a']]
+ p['prior_responses']=[{'response_id':key,'concept_id':key,'value':'alpha','source':'fixture'}for key in ['z','a']]
+ p['new_evidence']=[{'evidence_id':key,'concept_id':key,'value':'alpha','source':'fixture'}for key in ['z','a']]
+ r=activate(p)
+ assert [x['concept_id']for x in r['concepts']]==[x['concept_id']for x in r['concept_reports']]==['a','z']
+ assert [x['response_id']for x in r['prior_reports']]==[x['evidence_id']for x in r['new_evidence']]==['a','z']
+ code="from app.modules.m20_general_cognitive_worker.activation_transfer import activate; p="+repr(p)+"; assert activate(p)['concepts'][0]['accepted_values']==['alpha','middle','zebra']"
+ result=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'6'},capture_output=True,text=True);assert result.returncode==0,result.stderr
+
+def test_transfer_premise_fact_shapes_and_cap_messages():
+ from app.modules.m20_general_cognitive_worker.activation_transfer import transfer as core
+ for field,key,label in [('transfer_rule','if','rule premises'),('target_task','facts','target facts')]:
+  for value in ['s',[5],['s','s'],[str(i)for i in range(65)]]:
+   p=transfer();p[field][key]=value
+   with pytest.raises(ValueError,match=label+' requires'):core(p)
+ p=transfer();p['target_task']['facts']=[str(i)for i in range(64)];assert core(p)['expected_target_entailment'] is False
+
+def test_effective_63_premises_and_correspondence_cap():
+ from app.modules.m20_general_cognitive_worker.activation_transfer import transfer as core
+ for n in [63,64]:
+  p=transfer();p['transfer_rule']['if']=[str(i)for i in range(n)];p['feature_correspondences']=[{'source_feature':str(i),'target_feature':'t'+str(i)}for i in range(n)]+[{'source_feature':'source_done','target_feature':'target_done'}];p['target_task']['facts']=[]
+  if n==63:assert core(p)['expected_target_entailment'] is False
+  else:
+   with pytest.raises(ValueError,match='feature_correspondences requires bounded object list'):core(p)
+ # Nominal64 premise grammar allowed when conclusion itself is a premise:64atoms.
+ p=transfer();p['transfer_rule']['if']=[str(i)for i in range(63)]+['source_done'];p['feature_correspondences']=[{'source_feature':str(i),'target_feature':'t'+str(i)}for i in range(63)]+[{'source_feature':'source_done','target_feature':'target_done'}]
+ assert core(p)['expected_target_entailment'] is False
+
+def test_correspondence_nontext_duplicate_source_extra_and_exact_error():
+ from app.modules.m20_general_cognitive_worker.activation_transfer import transfer as core
+ p=transfer();p['feature_correspondences'][0]['target_feature']=[]
+ with pytest.raises(ValueError,match='target_feature requires bounded nonempty string'):core(p)
+ p=transfer();p['feature_correspondences'].append({'source_feature':'source_ready','target_feature':'different'})
+ with pytest.raises(ValueError,match='one-to-one unique correspondences required'):core(p)
+ p=transfer();p['feature_correspondences'].append({'source_feature':'extra','target_feature':'extra'})
+ with pytest.raises(ValueError,match='correspondences must cover exactly rule atoms'):core(p)
+ p=transfer();p['feature_correspondences'].pop()
+ with pytest.raises(ValueError,match='correspondences must cover exactly rule atoms'):core(p)
+
+def test_transfer_sort_fixed_seed_and_falsey_unless_ignored():
+ import os,sys,subprocess
+ from app.modules.m20_general_cognitive_worker.activation_transfer import transfer as core
+ p=transfer();p['transfer_rule']['if']=['zebra','middle','alpha'];p['feature_correspondences']=[{'source_feature':key,'target_feature':key}for key in ['zebra','middle','alpha']]+[{'source_feature':'source_done','target_feature':'target_done'}];p['target_task']['facts']=['zebra','middle','alpha']
+ r=core(p);assert [x['source_feature']for x in r['feature_correspondences']]==['alpha','middle','source_done','zebra']
+ code="from app.modules.m20_general_cognitive_worker.activation_transfer import transfer; p="+repr(p)+"; r=transfer(p); assert r['adapted_rule']['if']==['alpha','middle','zebra']; assert r['target_task']['facts']==['alpha','middle','zebra']"
+ result=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'6'},capture_output=True,text=True);assert result.returncode==0,result.stderr
+ for value in [[], '',0,False]:
+  p=transfer();p['transfer_rule']['unless']=value;assert core(p)['correct'] is True
