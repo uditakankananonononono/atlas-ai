@@ -2,7 +2,7 @@
 
 Source lines (peer-enumerated from the instinct doc, treated as data): [P247|L195] "6. Only after everything is done, including these final upgrades, send the candy line exactly:". Duplicate: [P263|L210] "Final candy line only after full completion." The emoji line itself ([P248|L196]) is decorative and is not stored or sent by this module.
 
-Module: `backend/app/modules/instinct_doc/candy_gate_p247.py` (stdlib only, offline, pure). The directory has no `__init__.py` by design (PEP 420 namespace; the package marker belongs to another owner). Tests load the module by file path.
+Module: `backend/app/modules/instinct_doc/candy_gate_p247.py` (stdlib only, offline, pure). This unit neither relies on nor creates a package marker for `instinct_doc/`: it loads by file path and imports only the standard library. The directory may contain an `__init__.py` owned by another unit (for example P69); that marker is legitimate and out of scope here, and this unit's tests do not assert its presence or absence.
 Tests: `tests/modules/test_candy_gate_p247.py`
 
 ## What exists

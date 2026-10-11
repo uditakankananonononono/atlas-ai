@@ -1,7 +1,8 @@
 """Unit 9 [P247|L195]: declared-input release gate (offline, stdlib only).
 
-The module is loaded by file path: backend/app/modules/instinct_doc has no
-__init__.py (PEP 420 namespace). The gate computes each gate state from
+The module is loaded by file path and does not depend on a package marker in
+backend/app/modules/instinct_doc (another unit's __init__.py may exist there and
+is not asserted either way). The gate computes each gate state from
 supplied observations; caller labels are refused. GREEN is not proof that work
 is complete.
 """
@@ -266,8 +267,23 @@ def test_output_is_honest_and_has_no_send_action():
         assert banned not in text
 
 
-def test_no_package_marker_in_instinct_doc_dir():
-    assert not (MOD_PATH.parent / "__init__.py").exists()
+def test_module_is_standalone_and_neutral_about_the_package_marker():
+    """P247 neither relies on nor creates a package marker: it loads by file path, has no
+    relative or app imports and only stdlib imports. Whether another unit's __init__.py
+    exists in the directory is that unit's business and is not asserted here."""
+    import ast
+    tree = ast.parse(MOD_PATH.read_text())
+    roots = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            assert node.level == 0, "relative import would depend on a package marker"
+            roots.add(node.module.split(".")[0])
+        elif isinstance(node, ast.Import):
+            roots.update(a.name.split(".")[0] for a in node.names)
+    assert roots <= {"__future__", "re", "datetime", "typing"}, roots
+    standalone = _load(name="candy_gate_p247_standalone_probe")
+    assert not standalone.__package__
+    assert standalone.evaluate({"gates": []}, {})["reason"] == "no_gates_declared"
 
 
 # ---------------- independent mutants ----------------

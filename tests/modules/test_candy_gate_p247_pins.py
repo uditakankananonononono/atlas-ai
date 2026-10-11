@@ -1,6 +1,6 @@
 """P247 candy gate pins (test-only; core frozen).
 
-Loads the module by file path (instinct_doc has no __init__.py). Pins:
+Loads the module by file path (no package marker needed or asserted). Pins:
 (1) checked_at length 40 accepted / 41 INVALID, lowercase 'z' and uppercase 'Z' suffix GREEN;
 (2) max_age_days 1 and 3650 accepted, 0 and 3651 refused with the exact message;
 (3) now that is not a datetime raises the exact ValueError;
