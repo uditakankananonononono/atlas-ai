@@ -96,3 +96,8 @@ def test_shapes_caps_and_mapping_identity_guards():
 def test_example_shape_role_and_variant_guards(change):
  p=pack();p['example_items'][0].update(change)
  with pytest.raises(LearningReasoningError):execute('concrete_examples',p)
+
+def test_positive_example_invariant_violation_is_invalid():
+ p=pack();p['example_items'][0]['features']['sides']='four'
+ r=execute('concrete_examples',p)['result']['example_pack']
+ assert r['valid'] is False and r['example_reports'][0]['valid'] is False and r['example_reports'][0]['violated_invariants']==['sides']
