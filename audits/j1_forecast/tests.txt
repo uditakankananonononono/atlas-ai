@@ -1,0 +1,49 @@
+/tmp/c3venv/lib/python3.10/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_append_resolve_reload (test_forecast.LedgerTests) ... ok
+test_chain_sequence_and_header_guards (test_forecast.LedgerTests) ... ok
+test_concurrent_same_prediction_once (test_forecast.LedgerTests) ... ok
+test_fsync_append_and_event_byte_caps (test_forecast.LedgerTests) ... ok
+test_future_resolution_not_precomputed (test_forecast.LedgerTests) ... ok
+test_header_kind_version_and_fields (test_forecast.LedgerTests) ... ok
+test_idempotence_and_conflicting_resolution (test_forecast.LedgerTests) ... ok
+test_initialization_policy_no_files_on_refusal (test_forecast.LedgerTests) ... ok
+test_nonregular_path_refused (test_forecast.LedgerTests) ... ok
+test_normalized_id_content_binding (test_forecast.LedgerTests) ... ok
+test_partial_line_refuses_without_mutation (test_forecast.LedgerTests) ... ok
+test_prediction_cap_idempotence_before_limit (test_forecast.LedgerTests) ... ok
+test_read_policy_refusal (test_forecast.LedgerTests) ... ok
+test_record_policy_precedes_file_mutation (test_forecast.LedgerTests) ... ok
+test_symlink_refused (test_forecast.LedgerTests) ... ok
+test_tenant_and_tampering (test_forecast.LedgerTests) ... ok
+test_unknown_resolution_and_duplicate_chain (test_forecast.LedgerTests) ... ok
+test_valid_json_without_terminal_newline (test_forecast.LedgerTests) ... ok
+test_wrong_integer_sequence_even_if_rehashed (test_forecast.LedgerTests) ... ok
+test_aware_times_and_order (test_forecast.ScoreTests) ... ok
+test_bins_bounds_and_types (test_forecast.ScoreTests) ... ok
+test_duplicate_and_orphan (test_forecast.ScoreTests) ... ok
+test_empty_bin_is_null (test_forecast.ScoreTests) ... ok
+test_empty_unresolved_refused (test_forecast.ScoreTests) ... ok
+test_exact_probability_bin_edges (test_forecast.ScoreTests) ... ok
+test_frozen_suite (test_forecast.ScoreTests) ... ok
+test_known_brier_sharpness (test_forecast.ScoreTests) ... ok
+test_large_int_and_schema_fields (test_forecast.ScoreTests) ... ok
+test_no_horizon (test_forecast.ScoreTests) ... ok
+test_no_input_mutation (test_forecast.ScoreTests) ... ok
+test_outcomes_exact_bool (test_forecast.ScoreTests) ... ok
+test_partial_not_calibrated (test_forecast.ScoreTests) ... ok
+test_policy_called (test_forecast.ScoreTests) ... ok
+test_probabilities (test_forecast.ScoreTests) ... ok
+test_small_sample_threshold_and_wording (test_forecast.ScoreTests) ... ok
+test_supplied_data_capacity_boundary (test_forecast.ScoreTests) ... ok
+test_text_type_and_limits (test_forecast.ScoreTests) ... ok
+test_whitespace_horizon (test_forecast.ScoreTests) ... ok
+test_auth_required (test_routes.Routes) ... ok
+test_effects_refused (test_routes.Routes) ... ok
+test_end_to_end_and_tenant_isolation (test_routes.Routes) ... ok
+test_missing_horizon_and_unknown_field (test_routes.Routes) ... ok
+
+----------------------------------------------------------------------
+Ran 42 tests in 0.374s
+
+OK

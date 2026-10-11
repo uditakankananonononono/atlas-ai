@@ -1,0 +1,92 @@
+{
+  "frozen_probabilities": [
+    0,
+    0.1,
+    0.25,
+    0.5,
+    0.5,
+    0.75,
+    0.9,
+    1
+  ],
+  "frozen_outcomes": [
+    false,
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true
+  ],
+  "measured_report": {
+    "unit": "J1",
+    "status": "scored_supplied_cohort",
+    "calibrated_requested": true,
+    "scored_n": 8,
+    "calibration_label": "insufficient_sample",
+    "small_sample_caveat": "fewer than20 scored predictions; no calibration claim",
+    "brier_score": 0.143125,
+    "sharpness": 0.11812500000000001,
+    "reliability_bins": [
+      {
+        "index": 0,
+        "lower": 0.0,
+        "upper": 0.25,
+        "count": 2,
+        "mean_probability": 0.05,
+        "observed_rate": 0.0
+      },
+      {
+        "index": 1,
+        "lower": 0.25,
+        "upper": 0.5,
+        "count": 1,
+        "mean_probability": 0.25,
+        "observed_rate": 1.0
+      },
+      {
+        "index": 2,
+        "lower": 0.5,
+        "upper": 0.75,
+        "count": 2,
+        "mean_probability": 0.5,
+        "observed_rate": 0.5
+      },
+      {
+        "index": 3,
+        "lower": 0.75,
+        "upper": 1.0,
+        "count": 3,
+        "mean_probability": 0.8833333333333333,
+        "observed_rate": 1.0
+      }
+    ],
+    "coverage": {
+      "predictions": 8,
+      "resolved": 8,
+      "unresolved": 0
+    },
+    "unresolved_ids": [],
+    "scope": {
+      "implemented": [
+        "binary Brier scoring",
+        "equal-width reliability bins",
+        "sharpness",
+        "computed coverage"
+      ],
+      "not_implemented": [
+        "future predictive skill",
+        "verified outcomes",
+        "market feeds",
+        "trading"
+      ],
+      "data_source": "supplied predictions and outcomes",
+      "as_of": "2026-10-12T01:00:00Z",
+      "future_skill_proven": false
+    },
+    "honesty": "Scored supplied cohort, not proof the forecaster is calibrated or will predict well."
+  },
+  "ledger_reloaded_brier": 0.03999999999999998,
+  "unscored_refusal_verified": true
+}

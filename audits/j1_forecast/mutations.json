@@ -1,0 +1,161 @@
+{
+  "total": 31,
+  "killed": 31,
+  "results": [
+    {
+      "mutant": "policy_removed",
+      "killed": true,
+      "tail": "................................F.....\n======================================================================\nFAIL: test_policy_called (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 106, in test_policy_called\n    self.refuse([pred()],[resolved()],'POLICY_REFUSED_TEST')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 32, in refuse\n    with self.assertRaises(m.ForecastRefusal) as exc:\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.382s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "record_policy_removed",
+      "killed": true,
+      "tail": ".......F..............................\n======================================================================\nFAIL: test_initialization_policy_no_files_on_refusal (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 252, in test_initialization_policy_no_files_on_refusal\n    with self.assertRaisesRegex(m.ForecastRefusal,'POLICY_REFUSED_TEST'):\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.383s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "policy_refuse_allowed",
+      "killed": true,
+      "tail": "d\n\n======================================================================\nFAIL: test_record_policy_precedes_file_mutation (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 221, in test_record_policy_precedes_file_mutation\n    with self.assertRaisesRegex(m.ForecastRefusal,'POLICY_REFUSED_TEST'):self.append()\nAssertionError: ForecastRefusal not raised\n\n======================================================================\nFAIL: test_policy_called (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 106, in test_policy_called\n    self.refuse([pred()],[resolved()],'POLICY_REFUSED_TEST')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 32, in refuse\n    with self.assertRaises(m.ForecastRefusal) as exc:\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.310s\n\nFAILED (failures=4)\n"
+    },
+    {
+      "mutant": "horizon_guard_removed",
+      "killed": true,
+      "tail": " call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 70, in test_no_horizon\n    self.refuse([pred(horizon=horizon)],[], 'INTEL_REFUSED_NOHORIZON')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 34, in refuse\n    self.assertEqual(exc.exception.code, code)\nAssertionError: 'INTEL_REFUSED_TIME' != 'INTEL_REFUSED_NOHORIZON'\n- INTEL_REFUSED_TIME\n+ INTEL_REFUSED_NOHORIZON\n\n\n======================================================================\nFAIL: test_whitespace_horizon (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 133, in test_whitespace_horizon\n    self.refuse([pred(horizon='   ')],[],'INTEL_REFUSED_NOHORIZON')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 34, in refuse\n    self.assertEqual(exc.exception.code, code)\nAssertionError: 'INTEL_REFUSED_TIME' != 'INTEL_REFUSED_NOHORIZON'\n- INTEL_REFUSED_TIME\n+ INTEL_REFUSED_NOHORIZON\n\n\n----------------------------------------------------------------------\nRan 38 tests in 0.296s\n\nFAILED (failures=2)\n"
+    },
+    {
+      "mutant": "horizon_equal_allowed",
+      "killed": true,
+      "tail": "...................F..................\n======================================================================\nFAIL: test_aware_times_and_order (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 84, in test_aware_times_and_order\n    self.refuse([pred(horizon='2026-10-11T00:00:00Z')],[],'INTEL_REFUSED_TIME')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 34, in refuse\n    self.assertEqual(exc.exception.code, code)\nAssertionError: 'INTEL_REFUSED_UNSCORED' != 'INTEL_REFUSED_TIME'\n- INTEL_REFUSED_UNSCORED\n?               ^^^^^^ -\n+ INTEL_REFUSED_TIME\n?               ^^^\n\n\n----------------------------------------------------------------------\nRan 38 tests in 0.381s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "resolution_early_allowed",
+      "killed": true,
+      "tail": "=============================================\nFAIL: test_future_resolution_not_precomputed (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 205, in test_future_resolution_not_precomputed\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_TIME'):\nAssertionError: ForecastRefusal not raised\n\n======================================================================\nFAIL: test_aware_times_and_order (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 85, in test_aware_times_and_order\n    self.refuse([pred()],[resolved(resolved_at='2026-10-11T23:59:59Z')],'INTEL_REFUSED_TIME')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 32, in refuse\n    with self.assertRaises(m.ForecastRefusal) as exc:\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.381s\n\nFAILED (failures=2)\n"
+    },
+    {
+      "mutant": "resolution_at_deadline_denied",
+      "killed": true,
+      "tail": "OR: test_aware_times_and_order (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 86, in test_aware_times_and_order\n    r=m.score_predictions([pred(horizon='2026-10-12T05:30:00+05:30')],[resolved(resolved_at='2026-10-12T00:00:00Z')])\n  File \"/tmp/j1-mutants-ldg3p6ru/resolution_at_deadline_denied.py\", line 142, in score_predictions\n    ps, ys = banks(predictions, resolutions)\n  File \"/tmp/j1-mutants-ldg3p6ru/resolution_at_deadline_denied.py\", line 130, in banks\n    row = validate_resolution(raw, ps); ident = row['prediction_id']\n  File \"/tmp/j1-mutants-ldg3p6ru/resolution_at_deadline_denied.py\", line 114, in validate_resolution\n    refuse('TIME', 'resolution must be at or after horizon')\n  File \"/tmp/j1-mutants-ldg3p6ru/resolution_at_deadline_denied.py\", line 37, in refuse\n    raise ForecastRefusal('INTEL_REFUSED_' + reason, detail)\nj1_private.ForecastRefusal: INTEL_REFUSED_TIME: resolution must be at or after horizon\n\n----------------------------------------------------------------------\nRan 38 tests in 0.370s\n\nFAILED (errors=1)\n"
+    },
+    {
+      "mutant": "probability_lower_removed",
+      "killed": true,
+      "tail": ".................................F....\n======================================================================\nFAIL: test_probabilities (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 75, in test_probabilities\n    self.refuse([pred(probability=value)],[],'INTEL_REFUSED_SCHEMA')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 34, in refuse\n    self.assertEqual(exc.exception.code, code)\nAssertionError: 'INTEL_REFUSED_UNSCORED' != 'INTEL_REFUSED_SCHEMA'\n- INTEL_REFUSED_UNSCORED\n?               --  ^^ ^\n+ INTEL_REFUSED_SCHEMA\n?                 ^ ^^\n\n\n----------------------------------------------------------------------\nRan 38 tests in 0.306s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "probability_upper_removed",
+      "killed": true,
+      "tail": "ants-ldg3p6ru/probability_upper_removed.py\", line 125, in banks\n    row = validate_prediction(raw); ident = row['prediction_id']\n  File \"/tmp/j1-mutants-ldg3p6ru/probability_upper_removed.py\", line 94, in validate_prediction\n    if type(probability) not in (int, float) or not 0 <= probability or not math.isfinite(probability):\nOverflowError: int too large to convert to float\n\n======================================================================\nFAIL: test_probabilities (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 75, in test_probabilities\n    self.refuse([pred(probability=value)],[],'INTEL_REFUSED_SCHEMA')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 34, in refuse\n    self.assertEqual(exc.exception.code, code)\nAssertionError: 'INTEL_REFUSED_UNSCORED' != 'INTEL_REFUSED_SCHEMA'\n- INTEL_REFUSED_UNSCORED\n?               --  ^^ ^\n+ INTEL_REFUSED_SCHEMA\n?                 ^ ^^\n\n\n----------------------------------------------------------------------\nRan 38 tests in 0.325s\n\nFAILED (failures=1, errors=1)\n"
+    },
+    {
+      "mutant": "probability_bool_allowed",
+      "killed": true,
+      "tail": ".................................F....\n======================================================================\nFAIL: test_probabilities (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 75, in test_probabilities\n    self.refuse([pred(probability=value)],[],'INTEL_REFUSED_SCHEMA')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 34, in refuse\n    self.assertEqual(exc.exception.code, code)\nAssertionError: 'INTEL_REFUSED_UNSCORED' != 'INTEL_REFUSED_SCHEMA'\n- INTEL_REFUSED_UNSCORED\n?               --  ^^ ^\n+ INTEL_REFUSED_SCHEMA\n?                 ^ ^^\n\n\n----------------------------------------------------------------------\nRan 38 tests in 0.380s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "outcome_bool_guard_removed",
+      "killed": true,
+      "tail": "..............................F.......\n======================================================================\nFAIL: test_outcomes_exact_bool (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 80, in test_outcomes_exact_bool\n    for value in [0,1,'true',None]: self.refuse([pred()],[resolved(outcome=value)],'INTEL_REFUSED_SCHEMA')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 32, in refuse\n    with self.assertRaises(m.ForecastRefusal) as exc:\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.366s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "unscored_allowed",
+      "killed": true,
+      "tail": "===========================================================\nFAIL: test_future_resolution_not_precomputed (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 204, in test_future_resolution_not_precomputed\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_UNSCORED'):self.ledger.report()\nAssertionError: ForecastRefusal not raised\n\n======================================================================\nFAIL: test_empty_unresolved_refused (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 57, in test_empty_unresolved_refused\n    self.refuse([], [], 'INTEL_REFUSED_UNSCORED')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 32, in refuse\n    with self.assertRaises(m.ForecastRefusal) as exc:\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.338s\n\nFAILED (failures=2)\n"
+    },
+    {
+      "mutant": "brier_wrong",
+      "killed": true,
+      "tail": "lity_bin_edges\n    self.assertAlmostEqual(r['brier_score'],.375)\nAssertionError: 0.5 != 0.375 within 7 places (0.125 difference)\n\n======================================================================\nFAIL: test_frozen_suite (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 49, in test_frozen_suite\n    self.assertAlmostEqual(r['brier_score'], 1.145 / 8)\nAssertionError: 0.275 != 0.143125 within 7 places (0.13187500000000002 difference)\n\n======================================================================\nFAIL: test_known_brier_sharpness (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 38, in test_known_brier_sharpness\n    self.assertAlmostEqual(r['brier_score'], 0.04)\nAssertionError: 0.19999999999999996 != 0.04 within 7 places (0.15999999999999995 difference)\n\n----------------------------------------------------------------------\nRan 38 tests in 0.382s\n\nFAILED (failures=4)\n"
+    },
+    {
+      "mutant": "sharpness_wrong",
+      "killed": true,
+      "tail": "    self.assertAlmostEqual(r['sharpness'],.125)\nAssertionError: 0.135 != 0.125 within 7 places (0.010000000000000009 difference)\n\n======================================================================\nFAIL: test_frozen_suite (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 50, in test_frozen_suite\n    self.assertAlmostEqual(r['sharpness'], 0.945 / 8)\nAssertionError: 0.128125 != 0.118125 within 7 places (0.009999999999999995 difference)\n\n======================================================================\nFAIL: test_known_brier_sharpness (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 39, in test_known_brier_sharpness\n    self.assertAlmostEqual(r['sharpness'], 0.09)\nAssertionError: 0.16000000000000003 != 0.09 within 7 places (0.07000000000000003 difference)\n\n----------------------------------------------------------------------\nRan 38 tests in 0.267s\n\nFAILED (failures=3)\n"
+    },
+    {
+      "mutant": "bin_last_wrong",
+      "killed": true,
+      "tail": "=============\nFAIL: test_exact_probability_bin_edges (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 123, in test_exact_probability_bin_edges\n    self.assertEqual([b['count'] for b in r['reliability_bins']],[1,1,1,2])\nAssertionError: Lists differ: [1, 1, 1, 1] != [1, 1, 1, 2]\n\nFirst differing element 3:\n1\n2\n\n- [1, 1, 1, 1]\n?           ^\n\n+ [1, 1, 1, 2]\n?           ^\n\n\n======================================================================\nFAIL: test_frozen_suite (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 51, in test_frozen_suite\n    self.assertEqual([b['count'] for b in r['reliability_bins']], [2,1,2,3])\nAssertionError: Lists differ: [2, 1, 2, 2] != [2, 1, 2, 3]\n\nFirst differing element 3:\n2\n3\n\n- [2, 1, 2, 2]\n?           ^\n\n+ [2, 1, 2, 3]\n?           ^\n\n\n----------------------------------------------------------------------\nRan 38 tests in 0.371s\n\nFAILED (failures=2)\n"
+    },
+    {
+      "mutant": "bin_rate_wrong",
+      "killed": true,
+      "tail": ".........................F............\n======================================================================\nFAIL: test_frozen_suite (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 53, in test_frozen_suite\n    self.assertEqual(r['reliability_bins'][0]['observed_rate'], 0)\nAssertionError: 0.05 != 0\n\n----------------------------------------------------------------------\nRan 38 tests in 0.383s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "small_sample_ge",
+      "killed": true,
+      "tail": "..................................F...\n======================================================================\nFAIL: test_small_sample_threshold_and_wording (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 114, in test_small_sample_threshold_and_wording\n    self.assertEqual(r['scored_n'],n);self.assertEqual(r['calibration_label'],label)\nAssertionError: 'insufficient_sample' != 'descriptive_reliability_only'\n- insufficient_sample\n+ descriptive_reliability_only\n\n\n----------------------------------------------------------------------\nRan 38 tests in 0.374s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "future_skill_claim",
+      "killed": true,
+      "tail": "..........................F...........\n======================================================================\nFAIL: test_known_brier_sharpness (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 41, in test_known_brier_sharpness\n    self.assertFalse(r['scope']['future_skill_proven'])\nAssertionError: True is not false\n\n----------------------------------------------------------------------\nRan 38 tests in 0.268s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "bins_bool_allowed",
+      "killed": true,
+      "tail": "....................F.................\n======================================================================\nFAIL: test_bins_bounds_and_types (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 95, in test_bins_bounds_and_types\n    for bins in [0,101,True,1.5,'10']: self.refuse([pred()],[resolved()],'INTEL_REFUSED_SCHEMA',bins=bins)\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 32, in refuse\n    with self.assertRaises(m.ForecastRefusal) as exc:\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.386s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "bins_limit_wrong",
+      "killed": true,
+      "tail": "....................E.................\n======================================================================\nERROR: test_bins_bounds_and_types (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 96, in test_bins_bounds_and_types\n    for bins in [1,100]:self.assertEqual(len(m.score_predictions([pred()],[resolved()],bins=bins)['reliability_bins']),bins)\n  File \"/tmp/j1-mutants-ldg3p6ru/bins_limit_wrong.py\", line 141, in score_predictions\n    refuse('SCHEMA', 'bins must be int 1..100 and calibrated exactly bool')\n  File \"/tmp/j1-mutants-ldg3p6ru/bins_limit_wrong.py\", line 37, in refuse\n    raise ForecastRefusal('INTEL_REFUSED_' + reason, detail)\nj1_private.ForecastRefusal: INTEL_REFUSED_SCHEMA: bins must be int 1..100 and calibrated exactly bool\n\n----------------------------------------------------------------------\nRan 38 tests in 0.369s\n\nFAILED (errors=1)\n"
+    },
+    {
+      "mutant": "capacity_ge",
+      "killed": true,
+      "tail": "...................................E..\n======================================================================\nERROR: test_supplied_data_capacity_boundary (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 148, in test_supplied_data_capacity_boundary\n    self.assertEqual(m.score_predictions(ps,[],calibrated=False)['coverage']['predictions'],10000)\n  File \"/tmp/j1-mutants-ldg3p6ru/capacity_ge.py\", line 142, in score_predictions\n    ps, ys = banks(predictions, resolutions)\n  File \"/tmp/j1-mutants-ldg3p6ru/capacity_ge.py\", line 122, in banks\n    refuse('LIMIT', 'prediction/resolution cap exceeded')\n  File \"/tmp/j1-mutants-ldg3p6ru/capacity_ge.py\", line 37, in refuse\n    raise ForecastRefusal('INTEL_REFUSED_' + reason, detail)\nj1_private.ForecastRefusal: INTEL_REFUSED_LIMIT: prediction/resolution cap exceeded\n\n----------------------------------------------------------------------\nRan 38 tests in 0.111s\n\nFAILED (errors=1)\n"
+    },
+    {
+      "mutant": "duplicate_prediction_allowed",
+      "killed": true,
+      "tail": ".....................F................\n======================================================================\nFAIL: test_duplicate_and_orphan (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 90, in test_duplicate_and_orphan\n    self.refuse([pred(),pred()],[],'INTEL_REFUSED_DUPLICATE')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 34, in refuse\n    self.assertEqual(exc.exception.code, code)\nAssertionError: 'INTEL_REFUSED_UNSCORED' != 'INTEL_REFUSED_DUPLICATE'\n- INTEL_REFUSED_UNSCORED\n?                ^^ ^^ -\n+ INTEL_REFUSED_DUPLICATE\n?               + ^^^ ^^\n\n\n----------------------------------------------------------------------\nRan 38 tests in 0.295s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "duplicate_resolution_allowed",
+      "killed": true,
+      "tail": ".....................F................\n======================================================================\nFAIL: test_duplicate_and_orphan (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 91, in test_duplicate_and_orphan\n    self.refuse([pred()],[resolved(),resolved()],'INTEL_REFUSED_DUPLICATE')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 32, in refuse\n    with self.assertRaises(m.ForecastRefusal) as exc:\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.300s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "reference_guard_removed",
+      "killed": true,
+      "tail": "on'], 'horizon'):\nKeyError: 'unknown'\n\n======================================================================\nERROR: test_duplicate_and_orphan (test_forecast.ScoreTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 92, in test_duplicate_and_orphan\n    self.refuse([pred()],[resolved(prediction_id='other')],'INTEL_REFUSED_REFERENCE')\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 33, in refuse\n    m.score_predictions(predictions, resolutions, **kw)\n  File \"/tmp/j1-mutants-ldg3p6ru/reference_guard_removed.py\", line 142, in score_predictions\n    ps, ys = banks(predictions, resolutions)\n  File \"/tmp/j1-mutants-ldg3p6ru/reference_guard_removed.py\", line 130, in banks\n    row = validate_resolution(raw, ps); ident = row['prediction_id']\n  File \"/tmp/j1-mutants-ldg3p6ru/reference_guard_removed.py\", line 113, in validate_resolution\n    if resolved_at < timestamp(predictions[ident]['horizon'], 'horizon'):\nKeyError: 'other'\n\n----------------------------------------------------------------------\nRan 38 tests in 0.370s\n\nFAILED (errors=2)\n"
+    },
+    {
+      "mutant": "symlink_allowed",
+      "killed": true,
+      "tail": "..............F.......................\n======================================================================\nFAIL: test_symlink_refused (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nj1_private.ForecastRefusal: INTEL_REFUSED_INTEGRITY: missing header\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 200, in test_symlink_refused\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_PATH'):self.ledger.report(calibrated=False)\nAssertionError: \"INTEL_REFUSED_PATH\" does not match \"INTEL_REFUSED_INTEGRITY: missing header\"\n\n----------------------------------------------------------------------\nRan 38 tests in 0.237s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "partial_line_allowed",
+      "killed": true,
+      "tail": ".................F....................\n======================================================================\nFAIL: test_valid_json_without_terminal_newline (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 258, in test_valid_json_without_terminal_newline\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_INTEGRITY'):self.ledger.report(calibrated=False)\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.237s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "hash_guard_removed",
+      "killed": true,
+      "tail": ".F....................................\n======================================================================\nFAIL: test_chain_sequence_and_header_guards (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 244, in test_chain_sequence_and_header_guards\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_INTEGRITY'):self.ledger.report(calibrated=False)\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.385s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "sequence_guard_removed",
+      "killed": true,
+      "tail": "..................F...................\n======================================================================\nFAIL: test_wrong_integer_sequence_even_if_rehashed (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 265, in test_wrong_integer_sequence_even_if_rehashed\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_INTEGRITY'):self.ledger.report(calibrated=False)\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.395s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "tenant_guard_removed",
+      "killed": true,
+      "tail": "...............F......................\n======================================================================\nFAIL: test_tenant_and_tampering (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 180, in test_tenant_and_tampering\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_TENANT'):\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.404s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "conflict_allowed",
+      "killed": true,
+      "tail": "......F...............................\n======================================================================\nFAIL: test_idempotence_and_conflicting_resolution (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 175, in test_idempotence_and_conflicting_resolution\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_CONFLICT'):\nAssertionError: ForecastRefusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.420s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "id_wrong",
+      "killed": true,
+      "tail": "iction_id'],expected)\nAssertionError: '0000000000000000000000000000000000000000000000000000000000000000' != '56255ee1e8422325cf1063739807bd2296978620312c68798b5358844637ad95'\n- 0000000000000000000000000000000000000000000000000000000000000000\n+ 56255ee1e8422325cf1063739807bd2296978620312c68798b5358844637ad95\n\n\n======================================================================\nFAIL: test_unknown_resolution_and_duplicate_chain (test_forecast.LedgerTests)\n----------------------------------------------------------------------\nj1_private.ForecastRefusal: INTEL_REFUSED_INTEGRITY: duplicate or invalid content-bound prediction ID\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/j1_forecast/test_forecast.py\", line 226, in test_unknown_resolution_and_duplicate_chain\n    with self.assertRaisesRegex(m.ForecastRefusal,'INTEL_REFUSED_REFERENCE'):\nAssertionError: \"INTEL_REFUSED_REFERENCE\" does not match \"INTEL_REFUSED_INTEGRITY: duplicate or invalid content-bound prediction ID\"\n\n----------------------------------------------------------------------\nRan 38 tests in 0.369s\n\nFAILED (failures=4, errors=4)\n"
+    }
+  ]
+}
