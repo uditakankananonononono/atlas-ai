@@ -1,0 +1,327 @@
+{
+  "happy_path": {
+    "unit": "C3",
+    "goal": "Prepare a biology application draft",
+    "status": "draft_for_review",
+    "input_sha256": "0afaf9c3998d0c42fb43a69043bbcb57e7d30ec7b6fa2bfcbbee556297ecb228",
+    "requirements": [
+      {
+        "id": "r1",
+        "text": "Explain biology research experience",
+        "origin": "requirements_text"
+      },
+      {
+        "id": "r2",
+        "text": "Describe teamwork",
+        "origin": "requirements_text"
+      }
+    ],
+    "advice": [
+      {
+        "requirement_id": "r1",
+        "source_ids": [
+          "guide"
+        ],
+        "excerpts": [
+          {
+            "source_id": "guide",
+            "url": "https://example.org/guide",
+            "text": "Biology research experience should use specific evidence. Teamwork should show contributions.",
+            "as_of": "2026-10-11",
+            "untrusted_data": true
+          }
+        ],
+        "method": "token_overlap_on_supplied_text",
+        "untrusted_data": true
+      },
+      {
+        "requirement_id": "r2",
+        "source_ids": [
+          "guide"
+        ],
+        "excerpts": [
+          {
+            "source_id": "guide",
+            "url": "https://example.org/guide",
+            "text": "Biology research experience should use specific evidence. Teamwork should show contributions.",
+            "as_of": "2026-10-11",
+            "untrusted_data": true
+          }
+        ],
+        "method": "token_overlap_on_supplied_text",
+        "untrusted_data": true
+      }
+    ],
+    "tool_selection": {
+      "selected_ids": [
+        "outline-tool"
+      ],
+      "matches": {
+        "outline-tool": [
+          "r1",
+          "r2"
+        ]
+      },
+      "rejected": [],
+      "executed": false,
+      "costs_independently_verified": false
+    },
+    "outline": [
+      {
+        "requirement_id": "r1",
+        "heading": "Explain biology research experience",
+        "fact_ids": [
+          "f1"
+        ],
+        "advice_source_ids": [
+          "guide"
+        ]
+      },
+      {
+        "requirement_id": "r2",
+        "heading": "Describe teamwork",
+        "fact_ids": [
+          "f2"
+        ],
+        "advice_source_ids": [
+          "guide"
+        ]
+      }
+    ],
+    "draft": "Explain biology research experience\nI studied biology in school.\n\nDescribe teamwork\nI worked with two classmates.",
+    "authenticity": {
+      "method": "exact_fact_attribution",
+      "unsupported_claims": [],
+      "source_truth_verified": false,
+      "user_review_required": true,
+      "fact_ids_used": [
+        "f1",
+        "f2"
+      ]
+    },
+    "critique": {
+      "missing_requirements": [],
+      "requirements_without_advice": [],
+      "unused_facts": [],
+      "review_questions": [
+        "Confirm the supplied facts are true.",
+        "Check the draft against the original requirements.",
+        "Revise the extractive wording in your own voice."
+      ],
+      "limitations": [
+        "Exact attribution does not establish relevance or truth.",
+        "Advice and tool metadata were not fetched or verified."
+      ]
+    },
+    "stages": [
+      {
+        "stage": "requirements",
+        "output": [
+          {
+            "id": "r1",
+            "text": "Explain biology research experience",
+            "origin": "requirements_text"
+          },
+          {
+            "id": "r2",
+            "text": "Describe teamwork",
+            "origin": "requirements_text"
+          }
+        ],
+        "source_refs": [
+          "requirements_text"
+        ]
+      },
+      {
+        "stage": "advice_search",
+        "output": [
+          {
+            "requirement_id": "r1",
+            "source_ids": [
+              "guide"
+            ],
+            "excerpts": [
+              {
+                "source_id": "guide",
+                "url": "https://example.org/guide",
+                "text": "Biology research experience should use specific evidence. Teamwork should show contributions.",
+                "as_of": "2026-10-11",
+                "untrusted_data": true
+              }
+            ],
+            "method": "token_overlap_on_supplied_text",
+            "untrusted_data": true
+          },
+          {
+            "requirement_id": "r2",
+            "source_ids": [
+              "guide"
+            ],
+            "excerpts": [
+              {
+                "source_id": "guide",
+                "url": "https://example.org/guide",
+                "text": "Biology research experience should use specific evidence. Teamwork should show contributions.",
+                "as_of": "2026-10-11",
+                "untrusted_data": true
+              }
+            ],
+            "method": "token_overlap_on_supplied_text",
+            "untrusted_data": true
+          }
+        ],
+        "source_refs": [
+          "guide"
+        ]
+      },
+      {
+        "stage": "tool_selection",
+        "output": {
+          "selected_ids": [
+            "outline-tool"
+          ],
+          "matches": {
+            "outline-tool": [
+              "r1",
+              "r2"
+            ]
+          },
+          "rejected": [],
+          "executed": false,
+          "costs_independently_verified": false
+        },
+        "source_refs": [
+          "outline-tool"
+        ]
+      },
+      {
+        "stage": "outline",
+        "output": [
+          {
+            "requirement_id": "r1",
+            "heading": "Explain biology research experience",
+            "fact_ids": [
+              "f1"
+            ],
+            "advice_source_ids": [
+              "guide"
+            ]
+          },
+          {
+            "requirement_id": "r2",
+            "heading": "Describe teamwork",
+            "fact_ids": [
+              "f2"
+            ],
+            "advice_source_ids": [
+              "guide"
+            ]
+          }
+        ],
+        "source_refs": [
+          "f1",
+          "f2"
+        ]
+      },
+      {
+        "stage": "draft",
+        "output": {
+          "text": "Explain biology research experience\nI studied biology in school.\n\nDescribe teamwork\nI worked with two classmates.",
+          "claims": [
+            {
+              "text": "I studied biology in school.",
+              "fact_ids": [
+                "f1"
+              ]
+            },
+            {
+              "text": "I worked with two classmates.",
+              "fact_ids": [
+                "f2"
+              ]
+            }
+          ],
+          "status": "review_required"
+        },
+        "source_refs": [
+          "f1",
+          "f2"
+        ]
+      },
+      {
+        "stage": "authenticity",
+        "output": {
+          "method": "exact_fact_attribution",
+          "unsupported_claims": [],
+          "source_truth_verified": false,
+          "user_review_required": true,
+          "fact_ids_used": [
+            "f1",
+            "f2"
+          ]
+        },
+        "source_refs": [
+          "f1",
+          "f2"
+        ]
+      },
+      {
+        "stage": "critique",
+        "output": {
+          "missing_requirements": [],
+          "requirements_without_advice": [],
+          "unused_facts": [],
+          "review_questions": [
+            "Confirm the supplied facts are true.",
+            "Check the draft against the original requirements.",
+            "Revise the extractive wording in your own voice."
+          ],
+          "limitations": [
+            "Exact attribution does not establish relevance or truth.",
+            "Advice and tool metadata were not fetched or verified."
+          ]
+        },
+        "source_refs": [
+          "r1",
+          "r2"
+        ]
+      }
+    ],
+    "coverage": {
+      "requirements": 2,
+      "supported": 2,
+      "unsupported": 0
+    },
+    "scope": {
+      "implemented": [
+        "requirements",
+        "advice_search",
+        "tool_selection",
+        "outline",
+        "draft",
+        "authenticity",
+        "critique"
+      ],
+      "not_implemented": [
+        "live search",
+        "tool execution",
+        "human mind replication",
+        "generative prose",
+        "independent fact verification",
+        "sending or submission"
+      ],
+      "data_source": "caller-supplied requirements, advice, tool metadata and fact assertions",
+      "as_of": null,
+      "source_truth_verified": false,
+      "human_mind_replication": false
+    },
+    "validation": "external_validator_pending"
+  },
+  "missing_facts": {
+    "requirements": 2,
+    "supported": 0,
+    "unsupported": 2
+  },
+  "injection_stayed_data": true,
+  "submission_refused": true
+}

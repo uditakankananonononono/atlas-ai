@@ -1,0 +1,150 @@
+{
+  "total": 24,
+  "killed": 24,
+  "results": [
+    {
+      "mutant": "packet_limit_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "..........................F...........\n======================================================================\nFAIL: test_packet_limit (test_layers.LayersTests)\n----------------------------------------------------------------------\nc3_under_test.Refusal: FLEET_REFUSED_REFERENCE: r1 facts contains unknown IDs\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 187, in test_packet_limit\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_LIMIT'): m.run(p)\nAssertionError: \"FLEET_REFUSED_LIMIT\" does not match \"FLEET_REFUSED_REFERENCE: r1 facts contains unknown IDs\"\n\n----------------------------------------------------------------------\nRan 38 tests in 0.019s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "policy_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "ertionError: Refusal not raised\n\n======================================================================\nFAIL: test_external_effects (test_layers.LayersTests) (action='fake_account')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 116, in test_external_effects\n    with self.subTest(action=action), self.assertRaisesRegex(m.Refusal, 'POLICY_REFUSED_' + code): m.run(p)\nAssertionError: Refusal not raised\n\n======================================================================\nFAIL: test_external_effects (test_layers.LayersTests) (action='trade')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 116, in test_external_effects\n    with self.subTest(action=action), self.assertRaisesRegex(m.Refusal, 'POLICY_REFUSED_' + code): m.run(p)\nAssertionError: Refusal not raised\n\n======================================================================\nFAIL: test_policy_unknown_and_malformed_action (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 142, in test_policy_unknown_and_malformed_action\n    with self.assertRaisesRegex(m.Refusal, code): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.020s\n\nFAILED (failures=7)\n"
+    },
+    {
+      "mutant": "policy_effects_allowed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "draft preparation is supported\"\n\n======================================================================\nFAIL: test_external_effects (test_layers.LayersTests) (action='fake_account')\n----------------------------------------------------------------------\nc3_under_test.Refusal: FLEET_REFUSED_ACTION: only draft preparation is supported\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 116, in test_external_effects\n    with self.subTest(action=action), self.assertRaisesRegex(m.Refusal, 'POLICY_REFUSED_' + code): m.run(p)\nAssertionError: \"POLICY_REFUSED_FAKEACCT\" does not match \"FLEET_REFUSED_ACTION: only draft preparation is supported\"\n\n======================================================================\nFAIL: test_external_effects (test_layers.LayersTests) (action='trade')\n----------------------------------------------------------------------\nc3_under_test.Refusal: FLEET_REFUSED_ACTION: only draft preparation is supported\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 116, in test_external_effects\n    with self.subTest(action=action), self.assertRaisesRegex(m.Refusal, 'POLICY_REFUSED_' + code): m.run(p)\nAssertionError: \"POLICY_REFUSED_TRADE\" does not match \"FLEET_REFUSED_ACTION: only draft preparation is supported\"\n\n----------------------------------------------------------------------\nRan 38 tests in 0.018s\n\nFAILED (failures=6)\n"
+    },
+    {
+      "mutant": "unknown_action_allowed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "...........................F..........\n======================================================================\nFAIL: test_policy_unknown_and_malformed_action (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 142, in test_policy_unknown_and_malformed_action\n    with self.assertRaisesRegex(m.Refusal, code): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.018s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "text_limit_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": ".................................F....\n======================================================================\nFAIL: test_size_limit (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 102, in test_size_limit\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_LIMIT'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.018s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "row_limit_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "....F.................................\n======================================================================\nFAIL: test_collection_limit (test_layers.LayersTests)\n----------------------------------------------------------------------\nc3_under_test.Refusal: FLEET_REFUSED_REFERENCE: r1 facts contains unknown IDs\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 106, in test_collection_limit\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_LIMIT'): m.run(p)\nAssertionError: \"FLEET_REFUSED_LIMIT\" does not match \"FLEET_REFUSED_REFERENCE: r1 facts contains unknown IDs\"\n\n----------------------------------------------------------------------\nRan 38 tests in 0.018s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "requirement_limit_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "..............................F.......\n======================================================================\nFAIL: test_requirement_limit (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 110, in test_requirement_limit\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_LIMIT'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.019s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "reference_limit_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": ".............................F........\n======================================================================\nFAIL: test_reference_cap (test_layers.LayersTests)\n----------------------------------------------------------------------\nc3_under_test.Refusal: FLEET_REFUSED_DUPLICATE: r1 facts contains duplicate IDs\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 168, in test_reference_cap\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_LIMIT'): m.run(p)\nAssertionError: \"FLEET_REFUSED_LIMIT\" does not match \"FLEET_REFUSED_DUPLICATE: r1 facts contains duplicate IDs\"\n\n----------------------------------------------------------------------\nRan 38 tests in 0.018s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "reference_guard_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": ".....................................E\n======================================================================\nERROR: test_unsupported_reference (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 73, in test_unsupported_reference\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_REFERENCE'): m.run(p)\n  File \"/tmp/c3-mutants-1dljlzgr/reference_guard_removed.py\", line 173, in run\n    claims = [{'text': facts[fid]['text'], 'fact_ids': [fid]} for fid in claim_ids]\n  File \"/tmp/c3-mutants-1dljlzgr/reference_guard_removed.py\", line 173, in <listcomp>\n    claims = [{'text': facts[fid]['text'], 'fact_ids': [fid]} for fid in claim_ids]\nKeyError: 'unknown'\n\n----------------------------------------------------------------------\nRan 38 tests in 0.018s\n\nFAILED (errors=1)\n"
+    },
+    {
+      "mutant": "duplicate_reference_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": ".........F............................\n======================================================================\nFAIL: test_duplicate_reference (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 164, in test_duplicate_reference\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_DUPLICATE'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.020s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "duplicate_id_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "........F..F..........................\n======================================================================\nFAIL: test_duplicate_fact (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 77, in test_duplicate_fact\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_DUPLICATE'): m.run(p)\nAssertionError: Refusal not raised\n\n======================================================================\nFAIL: test_duplicate_source_and_tool (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 196, in test_duplicate_source_and_tool\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_DUPLICATE'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.011s\n\nFAILED (failures=2)\n"
+    },
+    {
+      "mutant": "private_access_allowed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "............................F.........\n======================================================================\nFAIL: test_private_advice (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 94, in test_private_advice\n    with self.assertRaisesRegex(m.Refusal, 'POLICY_REFUSED_SCRAPE'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.011s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "source_url_guard_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": ".....F...............F..F.............\n======================================================================\nFAIL: test_credential_url (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 200, in test_credential_url\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_SOURCE'): m.run(p)\nAssertionError: Refusal not raised\n\n======================================================================\nFAIL: test_missing_source_refused (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 150, in test_missing_source_refused\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_SOURCE'): m.run(p)\nAssertionError: Refusal not raised\n\n======================================================================\nFAIL: test_non_https_advice (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 98, in test_non_https_advice\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_SOURCE'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.026s\n\nFAILED (failures=3)\n"
+    },
+    {
+      "mutant": "fact_authenticity_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "......F..........F....F...............\n======================================================================\nFAIL: test_cross_fact_attribution (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 69, in test_cross_fact_attribution\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_FABRICATE'): m.run(p)\nAssertionError: Refusal not raised\n\n======================================================================\nFAIL: test_fabricated_claim (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 65, in test_fabricated_claim\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_FABRICATE'): m.run(p)\nAssertionError: Refusal not raised\n\n======================================================================\nFAIL: test_multiple_fact_ids_cannot_launder_claim (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 146, in test_multiple_fact_ids_cannot_launder_claim\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_FABRICATE'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.024s\n\nFAILED (failures=3)\n"
+    },
+    {
+      "mutant": "paid_tool_allowed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "..F...............F...................\n======================================================================\nFAIL: test_bool_not_free (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 90, in test_bool_not_free\n    self.assertEqual(m.run(p)['tool_selection']['selected_ids'], [])\nAssertionError: Lists differ: ['outline-tool'] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n'outline-tool'\n\n- ['outline-tool']\n+ []\n\n======================================================================\nFAIL: test_free_tool_only (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 85, in test_free_tool_only\n    r = m.run(p); self.assertEqual(r['tool_selection']['selected_ids'], [])\nAssertionError: Lists differ: ['outline-tool'] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n'outline-tool'\n\n- ['outline-tool']\n+ []\n\n----------------------------------------------------------------------\nRan 38 tests in 0.019s\n\nFAILED (failures=2)\n"
+    },
+    {
+      "mutant": "bool_cost_allowed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "..F...................................\n======================================================================\nFAIL: test_bool_not_free (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 90, in test_bool_not_free\n    self.assertEqual(m.run(p)['tool_selection']['selected_ids'], [])\nAssertionError: Lists differ: ['outline-tool'] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n'outline-tool'\n\n- ['outline-tool']\n+ []\n\n----------------------------------------------------------------------\nRan 38 tests in 0.019s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "truth_claim_flipped",
+      "killed": true,
+      "returncode": 1,
+      "tail": "...............F......................\n======================================================================\nFAIL: test_end_to_end (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 37, in test_end_to_end\n    self.assertFalse(result['authenticity']['source_truth_verified'])\nAssertionError: True is not false\n\n----------------------------------------------------------------------\nRan 38 tests in 0.019s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "mind_claim_flipped",
+      "killed": true,
+      "returncode": 1,
+      "tail": "...............F......................\n======================================================================\nFAIL: test_end_to_end (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 38, in test_end_to_end\n    self.assertFalse(result['scope']['human_mind_replication'])\nAssertionError: True is not false\n\n----------------------------------------------------------------------\nRan 38 tests in 0.018s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "untrusted_source_flag_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "...................F..................\n======================================================================\nFAIL: test_malicious_advice_never_in_draft (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 61, in test_malicious_advice_never_in_draft\n    self.assertTrue(r['advice'][0]['excerpts'][0]['untrusted_data'])\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 38 tests in 0.012s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "coverage_count_fabricated",
+      "killed": true,
+      "returncode": 1,
+      "tail": "....................F.................\n======================================================================\nFAIL: test_missing_evidence_not_invented (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 50, in test_missing_evidence_not_invented\n    self.assertEqual(r['coverage']['unsupported'], 1)\nAssertionError: 0 != 1\n\n----------------------------------------------------------------------\nRan 38 tests in 0.018s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "json_nan_allowed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "..................................F...\n======================================================================\nFAIL: test_strict_json (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 181, in test_strict_json\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_SCHEMA'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.017s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "unknown_field_guard_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "...................................F..\n======================================================================\nFAIL: test_unknown_fields_refused (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 120, in test_unknown_fields_refused\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_SCHEMA'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.012s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "empty_requirements_guard_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "..............F.......................\n======================================================================\nFAIL: test_empty_requirements (test_layers.LayersTests)\n----------------------------------------------------------------------\nc3_under_test.Refusal: FLEET_REFUSED_SCHEMA: requirements_text must be nonempty text\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 128, in test_empty_requirements\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_REQUIREMENTS'): m.run(p)\nAssertionError: \"FLEET_REFUSED_REQUIREMENTS\" does not match \"FLEET_REFUSED_SCHEMA: requirements_text must be nonempty text\"\n\n----------------------------------------------------------------------\nRan 38 tests in 0.011s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutant": "requirements_id_guard_removed",
+      "killed": true,
+      "returncode": 1,
+      "tail": "....................................F.\n======================================================================\nFAIL: test_unknown_requirement (test_layers.LayersTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py\", line 81, in test_unknown_requirement\n    with self.assertRaisesRegex(m.Refusal, 'FLEET_REFUSED_REFERENCE'): m.run(p)\nAssertionError: Refusal not raised\n\n----------------------------------------------------------------------\nRan 38 tests in 0.019s\n\nFAILED (failures=1)\n"
+    }
+  ]
+}

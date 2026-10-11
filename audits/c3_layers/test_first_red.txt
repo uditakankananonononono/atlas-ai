@@ -1,0 +1,23 @@
+test_layers (unittest.loader._FailedTest) ... ERROR
+
+======================================================================
+ERROR: test_layers (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_layers
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/unittest/loader.py", line 436, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib/python3.10/unittest/loader.py", line 377, in _get_module_from_name
+    __import__(name)
+  File "/home/sandbox/atlas-ai/tests/c3_layers/test_layers.py", line 11, in <module>
+    spec.loader.exec_module(m)
+  File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1016, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/home/sandbox/atlas-ai/backend/app/modules/m20_general_cognitive_worker/c3_layers.py'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)

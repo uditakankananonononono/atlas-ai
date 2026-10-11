@@ -1,0 +1,50 @@
+/tmp/c3venv/lib/python3.10/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_accepted_explicit_claim (test_layers.LayersTests) ... ok
+test_bad_url_parse (test_layers.LayersTests) ... ok
+test_bool_not_free (test_layers.LayersTests) ... ok
+test_caps_schema (test_layers.LayersTests) ... ok
+test_collection_limit (test_layers.LayersTests) ... ok
+test_credential_url (test_layers.LayersTests) ... ok
+test_cross_fact_attribution (test_layers.LayersTests) ... ok
+test_deterministic_no_input_mutation (test_layers.LayersTests) ... ok
+test_duplicate_fact (test_layers.LayersTests) ... ok
+test_duplicate_reference (test_layers.LayersTests) ... ok
+test_duplicate_requirement_lines_count_once (test_layers.LayersTests) ... ok
+test_duplicate_source_and_tool (test_layers.LayersTests) ... ok
+test_empty_explicit_claim_list (test_layers.LayersTests) ... ok
+test_empty_goal (test_layers.LayersTests) ... ok
+test_empty_requirements (test_layers.LayersTests) ... ok
+test_end_to_end (test_layers.LayersTests) ... ok
+test_external_effects (test_layers.LayersTests) ... ok
+test_fabricated_claim (test_layers.LayersTests) ... ok
+test_free_tool_only (test_layers.LayersTests) ... ok
+test_malicious_advice_never_in_draft (test_layers.LayersTests) ... ok
+test_missing_evidence_not_invented (test_layers.LayersTests) ... ok
+test_missing_source_refused (test_layers.LayersTests) ... ok
+test_multiple_fact_ids_cannot_launder_claim (test_layers.LayersTests) ... ok
+test_no_advice_or_tools_has_questions (test_layers.LayersTests) ... ok
+test_non_https_advice (test_layers.LayersTests) ... ok
+test_nonobject_refused (test_layers.LayersTests) ... ok
+test_packet_limit (test_layers.LayersTests) ... ok
+test_policy_unknown_and_malformed_action (test_layers.LayersTests) ... ok
+test_private_advice (test_layers.LayersTests) ... ok
+test_reference_cap (test_layers.LayersTests) ... ok
+test_requirement_limit (test_layers.LayersTests) ... ok
+test_rows_shape (test_layers.LayersTests) ... ok
+test_scope_has_mandatory_fields (test_layers.LayersTests) ... ok
+test_size_limit (test_layers.LayersTests) ... ok
+test_strict_json (test_layers.LayersTests) ... ok
+test_unknown_fields_refused (test_layers.LayersTests) ... ok
+test_unknown_requirement (test_layers.LayersTests) ... ok
+test_unsupported_reference (test_layers.LayersTests) ... ok
+test_auth_required (test_routes.RoutesTests) ... ok
+test_capacity (test_routes.RoutesTests) ... ok
+test_policy_refusal_keeps_last_good_report (test_routes.RoutesTests) ... ok
+test_run_report_and_copy_isolation (test_routes.RoutesTests) ... ok
+test_tenant_isolation (test_routes.RoutesTests) ... ok
+
+----------------------------------------------------------------------
+Ran 43 tests in 0.146s
+
+OK
