@@ -1,8 +1,7 @@
 """Tests for the Deliverable 5 (P81|L69) presence audit.
 
 The audit consumes the result dict of the per-project deliverable checker. These
-tests build such dicts by hand, and one integration test runs the real checker
-against real temporary files when ATLAS_PDC_PATH points at its source file.
+tests build such dicts by hand (stub data only); no external checker code is loaded.
 All data is fictional. Run with: pytest --noconftest <this file>
 """
 import ast
@@ -10,7 +9,6 @@ import copy
 import hashlib
 import importlib.util
 import json
-import os
 import pathlib
 import sys
 
@@ -400,44 +398,40 @@ def test_no_init_py_in_namespace_dir():
     assert not (_PATH.parent / "__init__.py").exists()
 
 
-# ---- integration with the real checker (runs only when its source path is given) ----
-PDC = os.environ.get("ATLAS_PDC_PATH")
+# ---- declared schema of the consumed result (stub data only, no external code loaded) ----
+# The audit consumes the result dict of a per-project deliverable checker. This test declares the
+# fields the audit relies on, with hand-written stub data. A comparison against the real checker
+# is deliberately NOT made here: that checker is not landed.
+STUB_RESULT_FIELDS = ("project_id", "source_lines", "artifacts", "measured_artifact_counts",
+                      "measured_artifact_count", "doc_lines_fulfilled") + UNVERIFIED_FIELDS
+STUB_ARTIFACT_FIELDS = ("id", "kind", "path", "sha256", "status")
 
 
-@pytest.mark.skipif(not PDC, reason="ATLAS_PDC_PATH not set: the deliverable checker is not in main")
-def test_with_real_checker_on_real_files(tmp_path):
-    pdc = _load(PDC, "pdc_for_integration")
-    files = {
-        "src/engine.py": "def f(x):\n    return x * 2\n",
-        "tests/test_engine.py": TEST_SRC,
-        "scripts/verify_engine.py": "import sys\nsys.exit(0)\n",
-        "docs/formulas.md": FORMULA_SRC,
-        "docs/dup.md": FORMULA_SRC,  # same bytes as formulas.md, counted once by the checker
-        "data/a.csv": "a,b\n1,2\n",
-    }
-    arts = []
-    for i, (p, text) in enumerate(files.items()):
-        fp = tmp_path / p
-        fp.parent.mkdir(parents=True, exist_ok=True)
-        fp.write_text(text)
-        kind = {"src": "code", "tests": "test", "scripts": "verification_script", "docs": "formula",
-                "data": "dataset"}[p.split("/")[0]]
-        arts.append({"id": f"a{i}", "kind": kind, "path": p, "sha256": sha(text)})
-    spec = {"project_id": "proj-real", "domain": "software", "source_lines": ["P81|L69"],
-            "repository": "https://example.invalid/r",
-            "requested_targets": {"datasets": 0, "project_tools": 0, "program_tools": 0},
-            "artifacts": arts, "benchmark": None}
-    res = pdc.check_deliverables(str(tmp_path), spec)
-    rep = A.audit_project(res, contents=files)
+def test_declared_stub_schema_is_what_the_audit_needs():
+    stub = result(full() + [art("f2", "formula", "docs/dup.md", status="DUPLICATE_CONTENT"),
+                            art("d1", "dataset", "data/a.csv")])
+    assert all(f in stub for f in STUB_RESULT_FIELDS)
+    assert all(f in a for a in stub["artifacts"] for f in STUB_ARTIFACT_FIELDS)
+    rep = A.audit_project(stub)
     assert rep["all_four_corroborated"] is True
-    assert rep["categories"]["formula"]["counted"] == 1
     assert [n["status"] for n in rep["not_counted"]] == ["DUPLICATE_CONTENT"]
     assert rep["other_kinds_counted_not_audited"] == {"dataset": 1}
-    (tmp_path / "tests/test_engine.py").write_text("tampered\n")
-    res2 = pdc.check_deliverables(str(tmp_path), spec)
-    rep2 = A.audit_project(res2)
-    assert rep2["categories"]["test"]["verdict"] == "ABSENT"
-    assert {"id": "a1", "kind": "test", "path": "tests/test_engine.py", "status": "HASH_MISMATCH"} in rep2["not_counted"]
+    for f in STUB_RESULT_FIELDS:
+        broken = {k: v for k, v in stub.items() if k != f}
+        with pytest.raises(A.AuditInputError):
+            A.audit_project(broken)
+    for f in STUB_ARTIFACT_FIELDS:
+        broken = copy.deepcopy(stub)
+        del broken["artifacts"][0][f]
+        with pytest.raises(A.AuditInputError):
+            A.audit_project(broken)
+
+
+def test_stub_hash_mismatch_status_removes_the_artifact_from_the_count():
+    arts = [a for a in full() if a["kind"] != "test"] + [
+        art("t1", "test", "tests/test_engine.py", status="HASH_MISMATCH")]
+    rep = A.audit_project(result(arts))
+    assert rep["categories"]["test"]["verdict"] == "ABSENT"
 
 
 # ---- added after the first mutant run (survivor-driven) -------------------------

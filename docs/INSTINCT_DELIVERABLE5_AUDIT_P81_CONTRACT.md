@@ -18,7 +18,7 @@ It also validates the input (count consistency, known kinds and statuses, no dup
 - Path hints and content markers are heuristics (named lists in the module). A file named test_x.py is not shown to hold working tests.
 - No threshold for "vast" exists. No vastness, quality, correctness or execution claim is made, and the doc line is never reported as fulfilled.
 - Tests are not run, formulas are not checked mathematically.
-- The checker it consumes is not in main; the integration test runs only when ATLAS_PDC_PATH points at that file, and is skipped in plain CI.
+- The checker whose result it consumes is not landed. Tests declare the consumed schema with hand-written stub data only; no comparison against the real checker has been made. That comparison belongs after the checker is repaired, audited and landed, through the repo integration, not private bytes.
 - The checker is Linux-specific (per its own contract); this module is pure and portable.
 - A neighbouring requirement-matrix audit unit was not compared.
 - No mounted auth or tenant tests, no repo-wide floor run, no wiring (none applied).
