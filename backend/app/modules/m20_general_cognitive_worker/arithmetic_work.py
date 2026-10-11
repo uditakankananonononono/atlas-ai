@@ -1,11 +1,12 @@
 """Finite one-register rational arithmetic traces and breadth-first search."""
 from fractions import Fraction
+import re
 from collections import deque
 from .calibration_predictor import text
 
 def rational(value,label):
     if type(value)is int:result=Fraction(value)
-    elif isinstance(value,str)and len(value)<=64:
+    elif isinstance(value,str)and len(value)<=64 and re.fullmatch(r'[+-]?[0-9]{1,64}(?:/[0-9]{1,64})?',value):
         try:result=Fraction(value)
         except (ValueError,ZeroDivisionError)as exc:raise ValueError(label+' requires rational string/integer')from exc
     else:raise ValueError(label+' requires rational string/integer')

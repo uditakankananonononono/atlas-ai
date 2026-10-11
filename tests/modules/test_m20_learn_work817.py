@@ -88,3 +88,64 @@ def test_exact_depth_operations_rational_limits():
 def test_invalid_step_never_advances_current_register():
  rows=trace();rows[0]['post']='4';r=run(worked_trace=rows)
  assert r['final_value']=='1' and r['step_reports'][1]['expected_post']=='2' and r['step_reports'][1]['pre_matches'] is False
+
+@pytest.mark.parametrize('value',['1e99999999999999999999','1e-999999','1_0',' 3 '])
+def test_forbidden_string_grammar_rejects_before_fraction_allocation(value):
+ import time
+ start=time.monotonic()
+ with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task={**task(),'initial':value})
+ assert time.monotonic()-start<1
+
+def test_rational_length_components_and_zero_initial_bounds():
+ assert run('problem_solving',arithmetic_task={**task(),'initial':'0'*63+'1'})['status']=='solved'
+ for value in ['0'*64+'1','1000000000001']:
+  p=payload();p['arithmetic_task']['operations'][0]['operand']=value
+  with pytest.raises(LearningReasoningError):execute('problem_solving',p)
+ for t in [{**task(),'initial':'0','goal':'0','state_bound':'0'},{**task(),'initial':'101','goal':'1'}]:
+  with pytest.raises(LearningReasoningError):run('problem_solving',arithmetic_task=t)
+
+def test_allowed_state_exact_bound_components_and_dedup_metrics():
+ from app.modules.m20_general_cognitive_worker.arithmetic_work import allowed,task as parsed
+ from fractions import Fraction
+ t=parsed(task());assert allowed(Fraction(100),t) is True and allowed(Fraction(1000001,10000),t) is False
+ # Repeated divide reaches a denominator above the component cap.
+ t={**task(),'initial':'1','goal':'1/1000000000000','operations':[{'id':'d','kind':'divide','operand':'1000000','source':'fixture'}],'max_depth':3}
+ r=run('problem_solving',arithmetic_task=t);assert r['states_seen']==3 and r['solution_depth']==2
+ t['goal']='0';r=run('problem_solving',arithmetic_task=t);assert r['states_seen']==3 and r['states_expanded']==3 and r['status']=='no_solution_within_bounds'
+ t={**task(),'initial':'1','goal':'2','operations':[{'id':'a','kind':'add','operand':'0','source':'fixture'},{'id':'b','kind':'multiply','operand':'1','source':'fixture'}]}
+ r=run('problem_solving',arithmetic_task=t);assert r['states_seen']==1 and r['states_expanded']==1
+
+def test_search_budget_path_and_full_solver_step():
+ t={'initial':'0','goal':'-1','operations':[{'id':str(i),'kind':'add','operand':str(10**i),'source':'fixture'}for i in range(6)]+[{'id':'6','kind':'multiply','operand':'2','source':'fixture'},{'id':'7','kind':'multiply','operand':'3','source':'fixture'}],'max_depth':8,'state_bound':'1000000'}
+ r=run('problem_solving',arithmetic_task=t);assert r['status']=='search_budget_exhausted' and r['states_seen']==10000 and r['solution'] is None
+ r=run('problem_solving');assert r['solution'][0]=={'pre':'1','operation_id':'add','post':'3','rationale':'apply:add','operation_source':'fixture:add'}
+
+def test_trace_depth_post_bound_status_and_unknown_expected():
+ t={**task(),'max_depth':2}
+ assert run(arithmetic_task=t,worked_trace=trace())['trace_valid'] is True
+ with pytest.raises(LearningReasoningError):run(arithmetic_task=t,worked_trace=trace()+[trace()[0]])
+ t={**task(),'initial':'1','goal':'1','state_bound':'1','operations':[{'id':'m','kind':'multiply','operand':'2','source':'fixture'}]}
+ r=run(arithmetic_task=t,worked_trace=[{'pre':'1','operation_id':'m','post':'2','rationale':'apply:multiply','source':'fixture'}]);assert r['step_reports'][0]['accepted'] is False and r['step_reports'][0]['post_matches'] is False
+ assert run(worked_trace=trace()[:1])['status']=='invalid_worked_trace'
+ rows=trace();rows[0]['operation_id']='unknown';assert run(worked_trace=rows)['step_reports'][0]['expected_post'] is None
+
+def test_dos_strings_refuse_all_numeric_positions_and_mounted_routes(monkeypatch,oidc_auth_headers):
+ import time
+ bad='1e99999999999999999999'
+ for key in ['initial','goal','state_bound']:
+  p=payload();p['arithmetic_task'][key]=bad
+  start=time.monotonic()
+  with pytest.raises(LearningReasoningError):execute('worked_examples',p)
+  assert time.monotonic()-start<1
+ p=payload();p['arithmetic_task']['operations'][0]['operand']=bad
+ with pytest.raises(LearningReasoningError):execute('worked_examples',p)
+ for key in ['pre','post']:
+  rows=trace();rows[0][key]=bad
+  with pytest.raises(LearningReasoningError):run(worked_trace=rows)
+ from app.main import app
+ from fastapi.testclient import TestClient
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app);h=oidc_auth_headers('a','owner')
+ for method in ['worked_examples','problem_solving']:
+  p=payload();p['arithmetic_task']['initial']=bad;start=time.monotonic()
+  assert c.post('/api/v1/api/modules/20/learning-reasoning-810-859/'+method,headers=h,json={'payload':p}).status_code==422
+  assert time.monotonic()-start<2

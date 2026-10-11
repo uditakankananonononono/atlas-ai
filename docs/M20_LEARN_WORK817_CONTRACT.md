@@ -7,7 +7,10 @@ No static worked-example/problem-cycle scaffold fallback remains.
 A task is a single rational register with initial/goal, explicit1..8 sourced
 operations (add, subtract, multiply, divide by nonzero rational), maximum depth
 integer0..8, and positive absolute state bound<=1e6. Numeric inputs are integers
-(not bool) or rational strings<=64chars. Rational numerator/denominator components
+(not bool) or rational strings<=64chars matching [+-]?[0-9]{1,64}(/[0-9]{1,64})?.
+Only signed decimal integers or integer fractions are parsed. Exponents, decimal
+points, underscores and whitespace refuse before Fraction allocation; leading
+zeros are allowed. Rational numerator/denominator components
 are bounded by1e12; initial and goal must lie within state bounds. Intermediate
 search values outside these bounds are skipped, so no-solution means only within
 the declared grammar/bounds. No expression parser/eval, floats, hidden model or
