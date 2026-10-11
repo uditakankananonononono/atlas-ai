@@ -71,3 +71,7 @@ isolation | meemee/isolation.py | runtime | REJECTED |  | Process-isolated tool 
 personal-model-reflection | meemee/personal_model.py+meemee/reflection.py+meemee/reflection_schedule.py | companion | DEFERRED | unit C2 (launch-quiz thinking layer) | Preference/decision profiling is C2's scope; double-booking refused.
 monitors-store | meemee/monitors.py+meemee/monitor_event_identity.py(store half) | monitors | DEFERRED | unit A5 (important-events detector) | Durable monitor registry belongs to the events unit; the pure replay decision is ported.
 webhook-dispatcher | meemee/webhooks.py(WebhookStore/Dispatcher) | webhooks | DEFERRED | host platform | Outbound delivery dispatcher needs host networking + encryption keys; security guard ported.
+
+## Mutation-test status (open, not a closure)
+
+The mutation-testing audit of the 16 meemee modules generated 1093 mutants and left 447 surviving. After the hardening tests in this change, 147 of those 447 are killed and 300 still survive. The hardening tests target five modules (approval_grants, device_protocol, rate_quota, secret_scrub, webhook_security): in those, 23 survivors remain open with no equivalence or bug claim. The other 11 modules (briefing, cancellation, checkins, checkpoints, cursors, delegation, event_identity, goal_leasing, job_queue, merge_inventory, semantic_memory) received no new tests and their 277 survivors remain open. This is test hardening only: runtime code is unchanged and no mutation-test closure is claimed.
