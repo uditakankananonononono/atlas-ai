@@ -386,6 +386,20 @@ class SubprocessCliTests(unittest.TestCase):
             empty_run = self._run(d, str(empty))
             self.assertEqual(empty_run.returncode, 2)
 
+    def test_structural_ambiguous_only_run_exits_one(self):
+        # L331: a file whose ONLY finding is one STRUCTURAL-AMBIGUOUS marker
+        # must exit 1; nothing else may mask the structural branch
+        with tempfile.TemporaryDirectory() as d:
+            self._stage(d)
+            amb = Path(d) / "amb.md"
+            amb.write_text("CLAIM: x [VERIFIED] [foo]")
+            run = self._run(d, str(amb))
+            self.assertEqual(run.returncode, 1)
+            self.assertEqual(len(run.stdout.splitlines()), 1)
+            self.assertIn(":1: STRUCTURAL-AMBIGUOUS:", run.stdout)
+            self.assertIn("'FOO'", run.stdout)
+            self.assertEqual(run.stderr, "")
+
 class ResidualPinTests(unittest.TestCase):
     """Pins for the named residual decisions (post-repair audit round).
     Each pins the committed, intended behavior; none loosens the core."""
@@ -463,16 +477,17 @@ class ResidualRound4PinTests(unittest.TestCase):
     characterizes and pins CURRENT committed behavior on the named lines."""
 
     def test_trailing_pipe_strip_is_guarded(self):
-        # L97: a row without a trailing pipe keeps its final character
-        marked = cs.check_text("| Claim | Label |\n|---|---|\n| x | VERIFIED")
-        self.assertTrue(marked["ok"])  # over-strip would grade "VERIFIE"
-        # a single-char nonempty last cell survives intact (not over-stripped to "")
-        short = cs.check_text("| Claim | Label |\n|---|---|\n| x | V")
-        self.assertFalse(short["ok"])
-        self.assertIn("'V'", short["unmarked"][0]["reason"])
-        self.assertNotIn("empty", short["unmarked"][0]["reason"])
-        # control: a real trailing pipe is still stripped
-        piped = cs.check_text("| Claim | Label |\n|---|---|\n| x | VERIFIED |")
+        # L97: tight trailing-pipe row with a single-char last cell - cells
+        # must come out exactly x,V. Spaced fixtures mask an over-strip: with
+        # a trailing space before the pipe, stripping one char too many still
+        # leaves a clean cell.
+        tight = cs.check_text("| Claim | Label |\n|---|---|\n|x|V|")
+        self.assertEqual(tight["claims"][0]["text"], "x")
+        self.assertFalse(tight["ok"])
+        self.assertIn("'V'", tight["unmarked"][0]["reason"])
+        self.assertNotIn("empty", tight["unmarked"][0]["reason"])
+        # tight control: a real trailing pipe is still stripped
+        piped = cs.check_text("| Claim | Label |\n|---|---|\n|x|VERIFIED|")
         self.assertTrue(piped["ok"])
 
     def test_multi_label_finding_emits_first_cell_text(self):
