@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import math
 import re
+import unicodedata
 
 from app.modules.c30 import policy
 
@@ -52,78 +53,142 @@ def _norm(key):
 
 
 def _scan(node, hits):
-    if isinstance(node, dict):
+    if type(node) is dict:
         for k, v in node.items():
-            if isinstance(k, str):
+            if type(k) is str:
                 nk = _norm(k)
                 for rank, (name, table) in enumerate(_CLASSES):
                     if nk in table:
                         hits.append((rank, nk, name))
             _scan(v, hits)
-    elif isinstance(node, (list, tuple)):
+    elif type(node) in (list, tuple):
         for item in node:
             _scan(item, hits)
 
 
 def _check_keys(node):
     """Non-str keys anywhere in the dict levels the schema reads."""
-    if isinstance(node, dict):
+    if type(node) is dict:
         for k, v in node.items():
-            if not isinstance(k, str):
+            if not type(k) is str:
                 _refuse("BAD_TYPE", "key")
             _check_keys(v)
-    elif isinstance(node, (list, tuple)):
+    elif type(node) in (list, tuple):
         for item in node:
             _check_keys(item)
 
 
 def _is_num(v):
-    return (not isinstance(v, bool) and isinstance(v, (int, float))
-            and math.isfinite(v) and v > 0)
+    if type(v) not in (int, float):
+        return False
+    try:
+        return math.isfinite(v) and v > 0
+    except OverflowError:
+        return False
+
+
+def _text(value, field, cap, allow_blank=False):
+    if type(value) is not str:
+        _refuse("BAD_TYPE", field)
+    if len(value) > cap:
+        _refuse("OVERSIZE", field)
+    if any(unicodedata.category(c) in {"Cc", "Cf", "Zl", "Zp"} for c in value):
+        _refuse("CONTROL_CHARS", field)
+    return policy.clean_text(value, PREFIX, field, cap, allow_blank=allow_blank)
+
+
+def _preflight(request):
+    """Count known schema lists before traversal, then bounded raw-key scan."""
+    niches = request.get("niches")
+    if type(niches) is list:
+        if len(niches) > MAX_NICHES:
+            _refuse("OVERSIZE", "niches")
+        for n in niches:
+            if type(n) is dict:
+                for field, cap in (("price_points",20),("channels",20),("worker_roles",12),("regulated_flags",10)):
+                    value=n.get(field)
+                    if type(value) is list and len(value)>cap:
+                        _refuse("OVERSIZE",field)
+    stack=[(request,0,False)]
+    active=set()
+    nodes=0
+    while stack:
+        node,depth,leaving=stack.pop()
+        if leaving:
+            active.remove(id(node));continue
+        if type(node) in (dict,list,tuple):
+            nodes+=1
+        if nodes>10000 or depth>32:
+            _refuse("OVERSIZE","request")
+        if type(node) not in (dict,list,tuple):
+            continue
+        if id(node) in active:
+            _refuse("BAD_TYPE","request")
+        active.add(id(node));stack.append((node,depth,True))
+        if type(node) is dict:
+            for key,value in reversed(list(node.items())):
+                if type(key) is str:
+                    if len(key)>200:_refuse("OVERSIZE","key")
+                    if any(unicodedata.category(c) in {"Cc","Cf","Zl","Zp"} for c in key):
+                        _refuse("CONTROL_CHARS","key")
+                stack.append((value,depth+1,False))
+        else:
+            stack.extend((v,depth+1,False) for v in reversed(node))
 
 
 def _caps(niches):
     if len(niches) > MAX_NICHES:
         _refuse("OVERSIZE", "niches")
     for n in niches:
-        if not isinstance(n, dict):
+        if not type(n) is dict:
             continue
         for f in ("id", "name", "audience", "problem"):
             v = n.get(f)
-            if isinstance(v, str) and len(v) > MAX_TEXT:
+            if type(v) is str and len(v) > MAX_TEXT:
                 _refuse("OVERSIZE", f)
         for f, cap in (("price_points", MAX_PRICES), ("channels", MAX_CHANNELS),
                        ("worker_roles", MAX_ROLES), ("regulated_flags", MAX_FLAGS)):
             v = n.get(f)
-            if isinstance(v, list) and len(v) > cap:
+            if type(v) is list and len(v) > cap:
                 _refuse("OVERSIZE", f)
+        for field in ("channels","worker_roles"):
+            values=n.get(field)
+            if type(values) is list:
+                for value in values:
+                    if type(value) is str and len(value)>200:
+                        _refuse("OVERSIZE",field)
+        currency=n.get("currency")
+        if type(currency) is str and len(currency)>3:
+            _refuse("OVERSIZE","currency")
         flags = n.get("regulated_flags")
-        if isinstance(flags, list):
+        if type(flags) is list:
             for x in flags:
-                if isinstance(x, str) and len(x) > MAX_FLAG_LEN:
+                if type(x) is str and len(x) > MAX_FLAG_LEN:
                     _refuse("OVERSIZE", "regulated_flags")
 
 
 def _text_list(value, field, limit=MAX_TEXT):
-    if not isinstance(value, list):
+    if type(value) is not list:
         _refuse("BAD_TYPE", field)
-    return [policy.clean_text(x, PREFIX, field, limit) for x in value]
+    return [_text(x, field, limit) for x in value]
 
 
 def _validate_niche(n):
-    if not isinstance(n, dict):
+    if not type(n) is dict:
         _refuse("BAD_TYPE", "niches")
-    out = {f: policy.clean_text(n.get(f), PREFIX, f, MAX_TEXT)
+    out = {f: _text(n.get(f), f, MAX_TEXT)
            for f in ("id", "name", "audience", "problem")}
     prices = n.get("price_points", [])
-    if not isinstance(prices, list) or not all(_is_num(p) for p in prices):
+    if type(prices) is not list or not all(_is_num(p) for p in prices):
         _refuse("BAD_TYPE", "price_points")
     currency = n.get("currency")
-    if currency is not None and not isinstance(currency, str):
+    if currency is not None and type(currency) is not str:
         _refuse("BAD_TYPE", "currency")
+    if currency is not None:
+        currency = _text(currency, "currency", 3, allow_blank=True)
     if prices and currency is not None and not _CUR.fullmatch(currency):
         _refuse("BAD_TYPE", "currency")
-    out["price_points"] = [round(p, 6) if isinstance(p, float) else p for p in prices]
+    out["price_points"] = [round(p, 6) if type(p) is float else p for p in prices]
     out["currency"] = currency if prices else None
     out["channels"] = _text_list(n.get("channels", []), "channels")
     out["worker_roles"] = _text_list(n.get("worker_roles", []), "worker_roles")
@@ -157,8 +222,15 @@ def _blueprint(n):
 
 def run(request):
     """Compose blueprints over supplied niches; refusals raise ValueError."""
-    if not isinstance(request, dict):
+    if type(request) is not dict:
         _refuse("BAD_TYPE", "request")
+    _preflight(request)
+    raw_niches=request.get("niches")
+    if type(raw_niches) is list:
+        _caps(raw_niches)
+    raw_as_of=request.get("as_of")
+    if type(raw_as_of) is str and len(raw_as_of)>10:
+        _refuse("OVERSIZE","as_of")
     hits = []
     _scan(request, hits)
     if hits:
@@ -168,22 +240,25 @@ def run(request):
     if set(request) - TOP_KEYS:
         _refuse("UNKNOWN", "request")
     niches = request.get("niches")
-    for n in (niches if isinstance(niches, list) else []):
-        if isinstance(n, dict) and set(n) - NICHE_KEYS:
+    for n in (niches if type(niches) is list else []):
+        if type(n) is dict and set(n) - NICHE_KEYS:
             _refuse("UNKNOWN", "niches")
     as_of = request.get("as_of")
-    if not isinstance(as_of, str) or not _DATE.fullmatch(as_of):
+    if type(as_of) is str and len(as_of)>10:
+        _refuse("OVERSIZE","as_of")
+    if type(as_of) is not str or not _DATE.fullmatch(as_of):
         _refuse("BAD_TYPE", "as_of")
     try:
         import datetime
         datetime.date.fromisoformat(as_of)
     except ValueError:
         _refuse("BAD_TYPE", "as_of")
-    if not isinstance(niches, list):
+    if not type(niches) is list:
         _refuse("BAD_TYPE", "niches")
     if not niches:
         _refuse("EMPTY", "niches")
     _caps(niches)
+    as_of = _text(as_of, "as_of", 10)
     clean = [_validate_niche(n) for n in niches]
     if len({n["id"] for n in clean}) != len(clean):
         _refuse("BAD_TYPE", "niches")

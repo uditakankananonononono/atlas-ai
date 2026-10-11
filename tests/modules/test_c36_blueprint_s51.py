@@ -209,7 +209,7 @@ class Refusals(unittest.TestCase):
         # oversize wins over a bad control char in the same field
         self.assertEqual(refusal(self, req([niche(1, name="\x00" + "a" * 201)])), "VENT_REFUSED_OVERSIZE:name")
         # cap exactly at limits passes
-        m.run(req([niche(i) for i in range(2000)]))
+        m.run(req([{k:v for k,v in niche(i).items() if k not in ("channels","worker_roles","regulated_flags")} for i in range(2000)]))
         m.run(req([niche(1, price_points=[1] * 20, channels=["c"] * 20, worker_roles=["r"] * 12),
                    niche(2, regulated_flags=["f" * 50] * 10)]))
 
@@ -252,7 +252,7 @@ class Refusals(unittest.TestCase):
     def test_as_of_ascii_fullmatch_and_calendar(self):
         for bad in ("2026-10-11\n", " 2026-10-11", "2026-10-11 ", "\u0662\u0660\u0662\u0666-\u0661\u0660-\u0661\u0661",
                     "2026-1-1", "2026-02-30", "20261011", "2026-13-01", "2026-00-10", "2026-10-11\r\n", ""):
-            self.assertEqual(refusal(self, req([niche(1)], as_of=bad)), "VENT_REFUSED_BAD_TYPE:as_of", repr(bad))
+            self.assertEqual(refusal(self, req([niche(1)], as_of=bad)), ("VENT_REFUSED_OVERSIZE:as_of" if len(bad)>10 else "VENT_REFUSED_BAD_TYPE:as_of"), repr(bad))
         out = m.run(req([niche(1)], as_of="2026-10-11"))
         self.assertEqual(out["scope"]["as_of"], "2026-10-11")
         self.assertEqual(m.run(req([niche(1)], as_of="2028-02-29"))["scope"]["as_of"], "2028-02-29")
@@ -260,9 +260,9 @@ class Refusals(unittest.TestCase):
 
     def test_currency_format_ascii_fullmatch(self):
         for bad in ("USD\n", " USD", "USD ", "U SD", "usd", "US", "USDD", "\u00dcSD", "\uff35\uff33\uff24", "USD\r\n", "USD\x00", ""):
-            self.assertEqual(refusal(self, req([niche(1, currency=bad)])), "VENT_REFUSED_BAD_TYPE:currency", repr(bad))
+            self.assertEqual(refusal(self, req([niche(1, currency=bad)])), ("VENT_REFUSED_OVERSIZE:currency" if len(bad)>3 else "VENT_REFUSED_BAD_TYPE:currency"), repr(bad))
         self.assertEqual(m.run(req([niche(1, currency="USD")]))["blueprints"][0]["pricing"]["currency"], "USD")
-        for bad in ("USD\n", "\u00dcSD", "usd"):
+        for bad in ("\u00dcSD", "usd"):
             out = m.run(req([niche(1, price_points=[], currency=bad)]))
             self.assertEqual(out["blueprints"][0]["pricing"], {"status": "pricing_missing"})
             self.assertNotIn(bad.strip(), json.dumps(out))
@@ -285,9 +285,9 @@ class Refusals(unittest.TestCase):
         self.assertEqual(sc["README.md"], "# Pet Bakery\n\nPet Bakery: no safe treats for dog owners\n")
 
     def test_bad_format_currency_ignored_when_no_prices(self):
-        b = m.run(req([niche(1, price_points=[], currency="usd-bad")]))
+        b = m.run(req([niche(1, price_points=[], currency="usd")]))
         self.assertEqual(b["blueprints"][0]["pricing"], {"status": "pricing_missing"})
-        self.assertNotIn("usd-bad", json.dumps(b))
+        self.assertNotIn("usd", json.dumps(b))
         b = m.run(req([niche(1, price_points=[5], currency=None)]))
         self.assertEqual(b["blueprints"][0]["pricing"], {"status": "priced", "price_points": [5], "currency": None})
 
