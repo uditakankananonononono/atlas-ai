@@ -1,0 +1,146 @@
+{
+  "total": 35,
+  "killed": 35,
+  "results": [
+    {
+      "mutant": "schema-guard",
+      "killed": true
+    },
+    {
+      "mutant": "string-fields",
+      "killed": true
+    },
+    {
+      "mutant": "timezone",
+      "killed": true
+    },
+    {
+      "mutant": "topic-guard",
+      "killed": true
+    },
+    {
+      "mutant": "previous-revision",
+      "killed": true
+    },
+    {
+      "mutant": "revision-newer",
+      "killed": true
+    },
+    {
+      "mutant": "revision-reason",
+      "killed": true
+    },
+    {
+      "mutant": "stop-word",
+      "killed": true
+    },
+    {
+      "mutant": "revise-validate",
+      "killed": true
+    },
+    {
+      "mutant": "history-snapshot",
+      "killed": true
+    },
+    {
+      "mutant": "history-report",
+      "killed": true
+    },
+    {
+      "mutant": "exclude-audit",
+      "killed": true
+    },
+    {
+      "mutant": "owner-guard",
+      "killed": true
+    },
+    {
+      "mutant": "duplicate-guard",
+      "killed": true
+    },
+    {
+      "mutant": "db-count",
+      "killed": true
+    },
+    {
+      "mutant": "future-guard",
+      "killed": true
+    },
+    {
+      "mutant": "digest-guard",
+      "killed": true
+    },
+    {
+      "mutant": "unknown-span",
+      "killed": true
+    },
+    {
+      "mutant": "state-guard",
+      "killed": true
+    },
+    {
+      "mutant": "implementation-proof",
+      "killed": true
+    },
+    {
+      "mutant": "later-pin",
+      "killed": true
+    },
+    {
+      "mutant": "substitute-guard",
+      "killed": true
+    },
+    {
+      "mutant": "nonrequest-review",
+      "killed": true
+    },
+    {
+      "mutant": "revision-required",
+      "killed": true
+    },
+    {
+      "mutant": "db-digest",
+      "killed": true
+    },
+    {
+      "mutant": "stopped-refusal",
+      "killed": true
+    },
+    {
+      "mutant": "unmapped-refusal",
+      "killed": true
+    },
+    {
+      "mutant": "zero-unmapped-gate",
+      "killed": true
+    },
+    {
+      "mutant": "private-report",
+      "killed": true
+    },
+    {
+      "mutant": "policy-removal",
+      "killed": true
+    },
+    {
+      "mutant": "lossless-partition",
+      "killed": true
+    },
+    {
+      "mutant": "tenant-auth",
+      "killed": true
+    },
+    {
+      "mutant": "tenant-isolation",
+      "killed": true
+    },
+    {
+      "mutant": "route-refusal",
+      "killed": true
+    },
+    {
+      "mutant": "db-unfiltered-count",
+      "killed": true
+    }
+  ]
+}

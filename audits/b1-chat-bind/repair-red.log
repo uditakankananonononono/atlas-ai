@@ -1,0 +1,26 @@
+......FF...............................
+======================================================================
+FAIL: test_invalid_db_timestamps_are_not_dropped (test_chat_bind.AuditRepairTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/atlas-b1/atlas-public-a1b859ce/tests/b1_chat_bind/test_chat_bind.py", line 262, in test_invalid_db_timestamps_are_not_dropped
+    with self.assertRaisesRegex(Refused,'PLAN_REFUSED_DB_COUNT'):ingest(db,as_of='2026-10-11T10:00:00+00:00')
+AssertionError: Refused not raised
+
+======================================================================
+FAIL: test_package_import_path (test_chat_bind.AuditRepairTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/atlas-b1/atlas-public-a1b859ce/tests/b1_chat_bind/test_chat_bind.py", line 253, in test_package_import_path
+    self.assertEqual(p.returncode,0,p.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/tmp/atlas-b1/atlas-public-a1b859ce/backend/app/modules/m20_general_cognitive_worker/c30_b1/db_chat_bind.py", line 2, in <module>
+    from chat_bind import ChatBinder, Refused, make_snapshot
+ModuleNotFoundError: No module named 'chat_bind'
+
+
+----------------------------------------------------------------------
+Ran 39 tests in 0.105s
+
+FAILED (failures=2)

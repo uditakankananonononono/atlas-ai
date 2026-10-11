@@ -1,0 +1,44 @@
+test_db_offsets (test_chat_bind.AdditionalTests) ... ok
+test_pin_must_be_stop_worded (test_chat_bind.AdditionalTests) ... ok
+test_empty_body (test_chat_bind.AuditRepairTests) ... ok
+test_exclude_twice_bound_and_audit (test_chat_bind.AuditRepairTests) ... ok
+test_execution_state_returns (test_chat_bind.AuditRepairTests) ... ok
+test_history_complete_never_true (test_chat_bind.AuditRepairTests) ... ok
+test_invalid_db_timestamps_are_not_dropped (test_chat_bind.AuditRepairTests) ... ok
+test_package_import_path (test_chat_bind.AuditRepairTests) ... ok
+test_parked_word_guard_and_revision (test_chat_bind.AuditRepairTests) ... ok
+test_positive_channels (test_chat_bind.AuditRepairTests) ... ok
+test_revise_validates_state_and_evidence (test_chat_bind.AuditRepairTests) ... ok
+test_substitute_boundaries (test_chat_bind.AuditRepairTests) ... ok
+test_time_equal_boundaries (test_chat_bind.AuditRepairTests) ... ok
+test_recomputed_from_db (test_chat_bind.DatabaseTests) ... ok
+test_naive_time (test_chat_bind.GuardTests) ... ok
+test_no_pin_or_topic (test_chat_bind.GuardTests) ... ok
+test_revision_requires_newer_pin_and_reason (test_chat_bind.GuardTests) ... ok
+test_same_pin_and_revision_missing (test_chat_bind.GuardTests) ... ok
+test_schema_guards (test_chat_bind.GuardTests) ... ok
+test_no_previous_binding (test_chat_bind.MissingRevisionTest) ... ok
+test_tenants_and_paths (test_chat_bind.RouteTests) ... ok
+test_bad_substitute (test_chat_bind.Tests) ... ok
+test_database_reconciliation (test_chat_bind.Tests) ... ok
+test_duplicate_and_count (test_chat_bind.Tests) ... ok
+test_earlier_pin_rejected (test_chat_bind.Tests) ... ok
+test_empty_history_is_not_complete (test_chat_bind.Tests) ... ok
+test_exclusion_review_is_not_automatic (test_chat_bind.Tests) ... ok
+test_existing_bind_needs_revision (test_chat_bind.Tests) ... ok
+test_implemented_requires_evidence (test_chat_bind.Tests) ... ok
+test_lossless_spans (test_chat_bind.Tests) ... ok
+test_no_snapshot_tamper (test_chat_bind.Tests) ... ok
+test_only_owner_channels (test_chat_bind.Tests) ... ok
+test_policy_rejects_side_effects (test_chat_bind.Tests) ... ok
+test_private_payload_not_public_report (test_chat_bind.Tests) ... ok
+test_resume_is_explicit (test_chat_bind.Tests) ... ok
+test_stops_pin_later_exact_span (test_chat_bind.Tests) ... ok
+test_time_and_future (test_chat_bind.Tests) ... ok
+test_unknown_span_and_state (test_chat_bind.Tests) ... ok
+test_unmapped_fails (test_chat_bind.Tests) ... ok
+
+----------------------------------------------------------------------
+Ran 39 tests in 0.040s
+
+OK

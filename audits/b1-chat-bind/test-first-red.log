@@ -1,0 +1,17 @@
+E
+======================================================================
+ERROR: test_chat_bind (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_chat_bind
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/unittest/loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+  File "/tmp/b1-stage/test_chat_bind.py", line 3, in <module>
+    from chat_bind import ChatBinder, Refused, make_snapshot, split_spans
+ModuleNotFoundError: No module named 'chat_bind'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

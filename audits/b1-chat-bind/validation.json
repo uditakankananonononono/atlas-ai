@@ -1,0 +1,18 @@
+{
+  "unit": "B1",
+  "claim": "IMPLEMENTED-BOUNDED",
+  "tests": {
+    "passed": 39,
+    "failed": 0
+  },
+  "hand_mutations": {
+    "killed": 35,
+    "total": 35
+  },
+  "test_first": "red ModuleNotFoundError before core was written; green after implementation",
+  "external_validation": "NOT_RUN: exporter/validator lane required",
+  "public_history": "NONE: fixtures synthetic, raw owner snapshot private",
+  "transport": "tree snapshot of a1b859ce, synthetic base commit; no public ancestry claim",
+  "integration": "HTTP adapter unmounted; local read-only guard must connect to shared c30.policy",
+  "repair": "Audit requested pins added, package imports fixed, lossless DB timestamp refusal fixed, stop keyword plausibility disclosed"
+}
