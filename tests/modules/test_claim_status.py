@@ -458,6 +458,73 @@ class ResidualPinTests(unittest.TestCase):
             self.assertEqual(rc, 1)  # findings-class exit, distinct from zero-aggregate exit 2
             self.assertIn("empty.md: VACUOUS: no claims found in this file", buf.getvalue())
 
+class ResidualRound4PinTests(unittest.TestCase):
+    """Test-only pins for the second audit round (core frozen). Each
+    characterizes and pins CURRENT committed behavior on the named lines."""
+
+    def test_trailing_pipe_strip_is_guarded(self):
+        # L97: a row without a trailing pipe keeps its final character
+        marked = cs.check_text("| Claim | Label |\n|---|---|\n| x | VERIFIED")
+        self.assertTrue(marked["ok"])  # over-strip would grade "VERIFIE"
+        # a single-char nonempty last cell survives intact (not over-stripped to "")
+        short = cs.check_text("| Claim | Label |\n|---|---|\n| x | V")
+        self.assertFalse(short["ok"])
+        self.assertIn("'V'", short["unmarked"][0]["reason"])
+        self.assertNotIn("empty", short["unmarked"][0]["reason"])
+        # control: a real trailing pipe is still stripped
+        piped = cs.check_text("| Claim | Label |\n|---|---|\n| x | VERIFIED |")
+        self.assertTrue(piped["ok"])
+
+    def test_multi_label_finding_emits_first_cell_text(self):
+        # L168: the ambiguous-header finding carries the row's first cell as text
+        result = cs.check_text(
+            "| Claim | Label | Status |\n|---|---|---|\n| Exact claim text | VERIFIED | UNVERIFIED |"
+        )
+        self.assertEqual(result["structural_ambiguous"][0]["text"], "Exact claim text")
+        self.assertEqual(result["claims"][0]["text"], "Exact claim text")
+
+    def test_backtick_info_opener_hides_following_claim_current(self):
+        # declared-loose residual: a backtick fence opens even when its info
+        # string contains a backtick (differs from strict CM; characterization only)
+        text = "``` `x`\nCLAIM: hidden [VERIFIED]\n```\nCLAIM: after [UNVERIFIED]"
+        self.assertEqual([c.text for c in cs.extract_claims(text)], ["after [UNVERIFIED]"])
+
+    def test_four_space_indented_closer_closes_current(self):
+        # conservative residual: closer indentation is unlimited (differs from
+        # strict CM, where 4+ spaces would make the line content)
+        text = "```\nCLAIM: hidden [VERIFIED]\n    ```\nCLAIM: after [UNVERIFIED]"
+        self.assertEqual([c.text for c in cs.extract_claims(text)], ["after [UNVERIFIED]"])
+
+
+class MixedVacuousBranchTests(unittest.TestCase):
+    """L331: isolate the per-file vacuous CLI branch in a real subprocess."""
+
+    def _stage(self, root):
+        pkg = Path(root) / "app" / "reports"
+        pkg.mkdir(parents=True)
+        (Path(root) / "app" / "__init__.py").write_text("")
+        (pkg / "__init__.py").write_text("")
+        (pkg / "claim_status.py").write_text(MODULE_PATH.read_text())
+
+    def test_all_marked_plus_claim_free_exits_one_with_exact_line(self):
+        with tempfile.TemporaryDirectory() as d:
+            self._stage(d)
+            good = Path(d) / "good.md"
+            good.write_text(LEDGER)
+            empty = Path(d) / "empty.md"
+            empty.write_text("# nothing\n")
+            env = dict(os.environ, PYTHONPATH=str(d))
+            run = subprocess.run(
+                [sys.executable, "-m", "app.reports.claim_status", str(good), str(empty)],
+                cwd=d, env=env, capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(run.returncode, 1)
+            self.assertEqual(
+                run.stdout.splitlines(),
+                [f"{empty}: VACUOUS: no claims found in this file"],
+            )  # exactly one stdout line, nothing else
+            self.assertEqual(run.stderr, "")
+
 
 if __name__ == "__main__":
     unittest.main()
