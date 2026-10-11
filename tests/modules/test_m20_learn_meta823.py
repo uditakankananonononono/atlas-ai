@@ -146,3 +146,9 @@ def test_full_cycle_calibration_reflection_tie_outputs_and_choice_errors():
 def test_duplicate_attempt_id_distinct_evidence_refused():
  p=base();p['attempts'][1]['id']=p['attempts'][0]['id']
  with pytest.raises(LearningReasoningError,match='attempt ids and evidence ids must be unique'):run(p=p)
+
+@pytest.mark.parametrize('ids',[{'e1':1,'e2':1,'e3':1},'e1'])
+def test_reflection_ids_dictionary_and_string_refuse_before_iteration(ids):
+ from app.modules.m20_general_cognitive_worker.regulated_learning import cycle as core
+ p=cycle();p['reflection']['evidence_ids']=ids
+ with pytest.raises(ValueError,match='^reflection evidence IDs required$'):core(p)
