@@ -80,15 +80,16 @@ def test_857_minimal_refuses():
  with pytest.raises(LearningReasoningError,match='design_brief'):I('design_thinking')
 def test_858_minimal_refuses():
  with pytest.raises(LearningReasoningError,match='algorithm_inputs'):I('computational_thinking')
-def test_859_science_is_falsifiable_and_replicable():
- o=I('scientific_thinking')['science'];assert 'falsification_condition' in o and o['replication_and_open_materials']
+def test_859_minimal_refuses():
+ with pytest.raises(LearningReasoningError,match='scientific_protocol'):I('scientific_thinking')
+
 def test_validation_and_route():
  with pytest.raises(LearningReasoningError):execute('nope',{})
  with pytest.raises(LearningReasoningError):L('probabilistic_reasoning',prior=2)
  app=FastAPI();app.include_router(router,prefix='/m20');c=TestClient(app);assert len(c.get('/m20/learning-reasoning-810-859/capabilities').json())==50;assert c.post('/m20/learning-reasoning-810-859/spaced_repetition',json={'payload':{}}).status_code==422
 
 def test_evaluation_and_tenant_are_explicit():
- o=execute('scientific_thinking',{'tenant_id':'lab-a','problem':'p','source':SRC,'evidence':['e']})
+ o=execute('quantitative_reasoning',{'tenant_id':'lab-a','values':[1,2],'source':SRC,'evidence':['e']})
  assert o['tenant_id']=='lab-a' and 0 <= o['evaluation']['input_completeness'] <= 1
 
 def test_learning_reasoning_rejects_cross_tenant_reference():

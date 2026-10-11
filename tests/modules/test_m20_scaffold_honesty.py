@@ -4,10 +4,7 @@ from app.modules.m20_general_cognitive_worker.learning_reasoning_810_859 import 
 
 def test_static_scientific_template_never_claims_executed_thinking():
  p={'source':{'title':'label','url':'https://example.org'},'problem':'x','question':'x','hypothesis':'y','evidence':['unverified']}
- r=execute('scientific_thinking',p)
- assert r['evaluation']['status']=='planning_scaffold_only'
- assert not r['evaluation']['capability_executed'] and 'not executed' in r['boundary']
- assert r['evaluation']['input_completeness']==1
+ with pytest.raises(LearningReasoningError,match='scientific_protocol'):execute('scientific_thinking',p)
 
 
 def test_adding_nonempty_junk_fields_does_not_upgrade_scaffold():
@@ -19,4 +16,4 @@ def test_adding_nonempty_junk_fields_does_not_upgrade_scaffold():
 def test_catalog_distinguishes_real_restricted_computation_from_scaffold():
  catalog={c['row_id']:c for c in capabilities()}
  assert catalog[853]['execution_kind']=='restricted_computation'
- assert catalog[859]['execution_kind']=='planning_scaffold'
+ assert catalog[859]['execution_kind']=='restricted_computation'
