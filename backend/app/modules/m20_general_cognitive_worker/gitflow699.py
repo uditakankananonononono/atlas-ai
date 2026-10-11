@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 import re
 import subprocess
+import tempfile
 from pathlib import Path
 
 MAIN = "main"
@@ -71,6 +72,11 @@ def _semver_tuple(v: str):
 
 class GitFlow:
     def __init__(self, path):
+        # Guard: only throwaway repositories strictly inside the temp directory.
+        p = Path(path).resolve()
+        root = Path(tempfile.gettempdir()).resolve()
+        if root not in p.parents:
+            raise GitFlowError(f"refusing {p}: GitFlow only operates on repositories inside the temporary directory {root}")
         self.path = Path(path)
 
     # -- git plumbing -------------------------------------------------

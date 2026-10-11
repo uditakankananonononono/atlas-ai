@@ -266,3 +266,41 @@ def test_clean_env_strips_aws(monkeypatch):
     monkeypatch.setenv("GIT_DIR", "/nope")
     e = gf.clean_git_env()
     assert not any(k.startswith("AWS_") for k in e) and "GIT_DIR" not in e
+
+
+# --- throwaway-repo guard (added in second commit) ---
+_REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def test_guard_refuses_the_atlas_repo_itself():
+    with pytest.raises(gf.GitFlowError, match="temporary"):
+        gf.GitFlow(_REPO_ROOT)
+
+
+def test_guard_refuses_non_temp_path_without_creating_it():
+    target = pathlib.Path.home() / "gitflow699_must_not_exist"
+    with pytest.raises(gf.GitFlowError, match="temporary"):
+        gf.GitFlow(target)
+    assert not target.exists()
+
+
+def test_guard_refuses_symlink_from_temp_to_non_temp(tmp_path):
+    link = tmp_path / "link"
+    link.symlink_to(_REPO_ROOT)
+    with pytest.raises(gf.GitFlowError, match="temporary"):
+        gf.GitFlow(link)
+
+
+def test_guard_refuses_dotdot_escape(tmp_path):
+    with pytest.raises(gf.GitFlowError, match="temporary"):
+        gf.GitFlow(tmp_path.joinpath(*[".."] * 12) / "nonexistent_gitflow699")
+
+
+def test_guard_refuses_temp_root_itself():
+    import tempfile
+    with pytest.raises(gf.GitFlowError, match="temporary"):
+        gf.GitFlow(tempfile.gettempdir())
+
+
+def test_guard_allows_path_inside_temp(tmp_path):
+    assert gf.GitFlow(tmp_path / "ok").path.name == "ok"

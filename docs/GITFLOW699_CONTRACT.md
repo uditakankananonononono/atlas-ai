@@ -20,3 +20,10 @@ This package adds an engine that runs real `git` on a repository. Module: `gitfl
 - A release or hotfix finish that fails at a later step (for example the back-merge conflicts) can leave `main` merged and tagged. The error names the failing merge. This is not rolled back.
 - A tag check against `main` ancestry is not done; "highest tag" means the highest semver `v` tag in the repository.
 - Not wired into any router. Existing `git_flow` method is untouched.
+
+## Qualification (added 2026-10-11, second commit; the first commit's text above is unchanged)
+Operations are confined to throwaway/temporary repos. `GitFlow(path)` refuses any path that does not resolve (after symlinks and `..`) to a location strictly inside the system temporary directory, including the temp directory itself. It never operates on the Atlas repo or any non-temporary repo. Before this commit the class accepted any path.
+
+Material risks, stated verbatim:
+- backmerge failure can leave main merged+TAGGED without transactional rollback
+- highest-tag selection is repo-wide not main-ancestry
