@@ -189,5 +189,78 @@ class UnicodeText(unittest.TestCase):
             self.assertEqual(r["unit"], text)
 
 
+class CapFirst(unittest.TestCase):
+    """The first operation after the isinstance check is the raw length check (no strip, regex or scan before it)."""
+    BIG = 10 * 1024 * 1024
+    PRE = "QUALC1534:"
+
+    def _peak(self, fn):
+        import tracemalloc
+        tracemalloc.start()
+        try:
+            fn()
+            return tracemalloc.get_traced_memory()[1]
+        finally:
+            tracemalloc.stop()
+
+    def test_text_raw_cap_n_and_n_plus_1(self):
+        self.assertEqual(m._text("a" * m.MAX_TEXT, "id"), "a" * m.MAX_TEXT)
+        for bad in ("a" * (m.MAX_TEXT + 1), " " + "a" * m.MAX_TEXT, "a" * m.MAX_TEXT + " "):   # raw length, not stripped length
+            with self.assertRaises(ValueError) as cm:
+                m._text(bad, "id")
+            self.assertEqual(str(cm.exception), self.PRE + "invalid_text:id")
+
+    def test_text_10mb_refused_without_strip_allocation(self):
+        big = " a" + "b" * self.BIG       # strip() of this would allocate about 10 MB
+        def call():
+            with self.assertRaises(ValueError) as cm:
+                m._text(big, "id")
+            self.assertEqual(str(cm.exception), self.PRE + "invalid_text:id")
+        self.assertLess(self._peak(call), 100000)
+
+    def test_text_oversize_refused_before_any_scan(self):
+        def boom(char):
+            raise AssertionError("scanned an oversize value")
+        old = m._hidden
+        m._hidden = boom
+        try:
+            with self.assertRaises(ValueError):
+                m._text("a" * (m.MAX_TEXT + 1), "id")
+        finally:
+            m._hidden = old
+
+    def test_text_oversize_through_public_entry(self):
+        big = " a" + "b" * self.BIG
+        def call():
+            with self.assertRaises(ValueError) as cm:
+                run(packet(measurements=[meas(big, "1")]))
+            self.assertTrue(str(cm.exception).startswith(self.PRE + "invalid_text:"))
+        self.assertLess(self._peak(call), 100000)
+
+    def test_number_cap_n_and_n_plus_1_and_10mb_before_regex(self):
+        class Spy:
+            def fullmatch(self, text):
+                raise AssertionError("regex ran on an oversize value")
+        olds = {name: getattr(m, name) for name in ("_SIGNED", "_UNSIGNED") if hasattr(m, name)}
+        for name in olds:
+            setattr(m, name, Spy())
+        try:
+            for bad in ("1" * (m.MAX_NUMBER_CHARS + 1), "1" * self.BIG, " " + "1" * m.MAX_NUMBER_CHARS):
+                for signed in [None]:
+                    with self.assertRaises(ValueError) as cm:
+                        m._micro(bad, "f")
+                    self.assertEqual(str(cm.exception), "QUALC1534:invalid_number:f")
+        finally:
+            for name, value in olds.items():
+                setattr(m, name, value)
+
+    def test_number_cap_equals_longest_valid_form(self):
+        self.assertEqual(m.MAX_NUMBER_CHARS, len("-" + "9" * 12 + "." + "9" * 6))
+        self.assertEqual(m._micro("-" + "9" * 12 + "." + "9" * 6, "f"), -999999999999999999)
+        with self.assertRaises(ValueError):
+            m._micro("-" + "9" * 12 + "." + "9" * 7, "f")
+
+
+
 if __name__ == "__main__":
     unittest.main()

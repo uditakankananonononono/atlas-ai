@@ -8,6 +8,7 @@ import unicodedata
 
 MAX_ITEMS = 256
 MAX_TEXT = 128
+MAX_NUMBER_CHARS = 20
 MAX_UNIT = 16
 _SIGNED = re.compile(r'(-?)([0-9]{1,12})(?:\.([0-9]{1,6}))?')
 _FIELDS = {'id', 'value'}
@@ -38,7 +39,9 @@ def _text(value, field, limit=MAX_TEXT):
 
 
 def _micro(value, field):
-    match = _SIGNED.fullmatch(value) if type(value) is str else None
+    if type(value) is not str or len(value) > MAX_NUMBER_CHARS:
+        _fail('invalid_number:' + field)
+    match = _SIGNED.fullmatch(value)
     if match is None:
         _fail('invalid_number:' + field)
     sign, whole, frac = match.groups()

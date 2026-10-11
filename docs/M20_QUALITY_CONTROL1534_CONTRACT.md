@@ -36,3 +36,7 @@ Bookkeeping over declared values only. No statistical process control, capabilit
 
 ## Text characters (child update)
 Text fields refuse any character that is a Unicode control, line or paragraph separator, or bidi or format character: categories Cc (including DEL, U+0085), Zl (U+2028), Zp (U+2029) and the ranges U+200B-U+200F, U+202A-U+202E, U+2066-U+2069 and U+FEFF. In short: no Unicode control, line/paragraph separator or bidi/format characters. Ordinary spaces and printable non-ASCII text stay allowed. The helper is `_hidden`, applied inside `_text` after the type, length cap and blank checks.
+
+## Child update: cap-first helpers
+- `_text` was checked and is already cap-first: after `type(value) is str` the first operation is `len(value) > limit` (raw length), then `strip`, then the Unicode scan. No change to `_text`; new pins prove it (cap, cap+1, space-padded raw length, a 10 MB string refused with a tracemalloc peak under 100 KB, and a spy showing the Unicode scan is not reached).
+- `_micro` had no length check before its regex. It now checks `len(value) > MAX_NUMBER_CHARS` (20, the longest string the grammar can accept) first after the type check. No accepted or refused input changes; the regex never sees an oversize string.
