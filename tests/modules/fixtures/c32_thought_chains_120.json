@@ -1,0 +1,798 @@
+[
+ {
+  "id": "f001",
+  "labels": [
+   "analogy"
+  ],
+  "text": "The market is like a living garden that needs pruning"
+ },
+ {
+  "id": "f002",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Learning to code felt as if I were learning a second language"
+ },
+ {
+  "id": "f003",
+  "labels": [
+   "analogy"
+  ],
+  "text": "A startup is similar to a small boat in a storm"
+ },
+ {
+  "id": "f004",
+  "labels": [
+   "analogy"
+  ],
+  "text": "That plan reminds me of how bees organize a hive"
+ },
+ {
+  "id": "f005",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Memory works like an old library with moving shelves"
+ },
+ {
+  "id": "f006",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Her argument is like a bridge built from loose stones"
+ },
+ {
+  "id": "f007",
+  "labels": [
+   "analogy"
+  ],
+  "text": "It was as if the whole room held its breath"
+ },
+ {
+  "id": "f008",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Debt is similar to a slow leak in a tire"
+ },
+ {
+  "id": "f009",
+  "labels": [
+   "analogy"
+  ],
+  "text": "The song reminded him of a childhood kitchen"
+ },
+ {
+  "id": "f010",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Trust acts like a bank account you must keep funded"
+ },
+ {
+  "id": "f011",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Think of attention as a spotlight on a dark stage"
+ },
+ {
+  "id": "f012",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Consider the heart a pump and the veins its pipes"
+ },
+ {
+  "id": "f013",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Grief is akin to carrying a stone in your pocket"
+ },
+ {
+  "id": "f014",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Her voice was like an open window in winter"
+ },
+ {
+  "id": "f015",
+  "labels": [
+   "analogy"
+  ],
+  "text": "The merger felt as if two rivers were forced into one bed"
+ },
+ {
+  "id": "f016",
+  "labels": [
+   "inversion"
+  ],
+  "text": "Instead of asking how to win, ask how to avoid losing"
+ },
+ {
+  "id": "f017",
+  "labels": [
+   "inversion"
+  ],
+  "text": "Try the opposite of what the crowd is doing"
+ },
+ {
+  "id": "f018",
+  "labels": [
+   "inversion"
+  ],
+  "text": "Read the argument backwards to find its weak step"
+ },
+ {
+  "id": "f019",
+  "labels": [
+   "inversion"
+  ],
+  "text": "Run the process in reverse and see what breaks"
+ },
+ {
+  "id": "f020",
+  "labels": [
+   "inversion"
+  ],
+  "text": "Instead of adding features we removed three"
+ },
+ {
+  "id": "f021",
+  "labels": [
+   "inversion"
+  ],
+  "text": "The opposite of fear is not courage but curiosity"
+ },
+ {
+  "id": "f022",
+  "labels": [
+   "inversion"
+  ],
+  "text": "He worked backwards from the finished bridge"
+ },
+ {
+  "id": "f023",
+  "labels": [
+   "inversion"
+  ],
+  "text": "Flip the question and ask who would be hurt by success"
+ },
+ {
+  "id": "f024",
+  "labels": [
+   "inversion"
+  ],
+  "text": "To find the cause start from the broken result and trace it back"
+ },
+ {
+  "id": "f025",
+  "labels": [
+   "inversion"
+  ],
+  "text": "Invert the goal and list what would guarantee failure"
+ },
+ {
+  "id": "f026",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "Let us rebuild the idea from first principles"
+ },
+ {
+  "id": "f027",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "The fundamental question is what people actually need"
+ },
+ {
+  "id": "f028",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "She built the model from scratch to understand it"
+ },
+ {
+  "id": "f029",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "Why is the sky dark at night if stars fill it"
+ },
+ {
+  "id": "f030",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "Fundamentals matter more than tools"
+ },
+ {
+  "id": "f031",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "Why are prices sticky when costs change daily"
+ },
+ {
+  "id": "f032",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "We went back to first principles and dropped the old design"
+ },
+ {
+  "id": "f033",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "A fundamental limit comes from the speed of light"
+ },
+ {
+  "id": "f034",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "He started from scratch after the fire"
+ },
+ {
+  "id": "f035",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "Why is this step needed at all"
+ },
+ {
+  "id": "f036",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "Strip the problem down to what must be true"
+ },
+ {
+  "id": "f037",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "What are the basic physical facts here"
+ },
+ {
+  "id": "f038",
+  "labels": [
+   "narrative"
+  ],
+  "text": "Once there was a fisherman who never caught a fish"
+ },
+ {
+  "id": "f039",
+  "labels": [
+   "narrative"
+  ],
+  "text": "The story begins in a small town by the sea"
+ },
+ {
+  "id": "f040",
+  "labels": [
+   "narrative"
+  ],
+  "text": "Her journey took her across three continents"
+ },
+ {
+  "id": "f041",
+  "labels": [
+   "narrative"
+  ],
+  "text": "In chapter two the hero loses everything"
+ },
+ {
+  "id": "f042",
+  "labels": [
+   "narrative"
+  ],
+  "text": "Stories help us remember what facts cannot"
+ },
+ {
+  "id": "f043",
+  "labels": [
+   "narrative"
+  ],
+  "text": "The journey mattered more than the arrival"
+ },
+ {
+  "id": "f044",
+  "labels": [
+   "narrative"
+  ],
+  "text": "He told a story about his first job"
+ },
+ {
+  "id": "f045",
+  "labels": [
+   "narrative"
+  ],
+  "text": "Once the doors closed the train left"
+ },
+ {
+  "id": "f046",
+  "labels": [
+   "narrative"
+  ],
+  "text": "Chapters of her life blurred together"
+ },
+ {
+  "id": "f047",
+  "labels": [
+   "narrative"
+  ],
+  "text": "Long ago a king lost his crown in a river"
+ },
+ {
+  "id": "f048",
+  "labels": [
+   "narrative"
+  ],
+  "text": "She remembered the night her father left and what followed"
+ },
+ {
+  "id": "f049",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "A good rule of thumb is to double the estimate"
+ },
+ {
+  "id": "f050",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "People usually choose the first option they see"
+ },
+ {
+  "id": "f051",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "Complex projects tend to run late"
+ },
+ {
+  "id": "f052",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "As a rule I avoid meetings before ten"
+ },
+ {
+  "id": "f053",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "The mind tends to fill gaps with familiar patterns"
+ },
+ {
+  "id": "f054",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "Rules of thumb save time but hide edge cases"
+ },
+ {
+  "id": "f055",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "Prices usually fall after the holidays"
+ },
+ {
+  "id": "f056",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "Teams tend to copy the loudest voice"
+ },
+ {
+  "id": "f057",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "It tended to rain on weekends"
+ },
+ {
+  "id": "f058",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "When in doubt choose the simpler option"
+ },
+ {
+  "id": "f059",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "Most of the time the cheap fix works"
+ },
+ {
+  "id": "f060",
+  "labels": [
+   "systems"
+  ],
+  "text": "A feedback loop keeps the thermostat stable"
+ },
+ {
+  "id": "f061",
+  "labels": [
+   "systems"
+  ],
+  "text": "The system adapts when its parts interact"
+ },
+ {
+  "id": "f062",
+  "labels": [
+   "systems"
+  ],
+  "text": "Order emerges from many small local choices"
+ },
+ {
+  "id": "f063",
+  "labels": [
+   "systems"
+  ],
+  "text": "The network of suppliers is fragile"
+ },
+ {
+  "id": "f064",
+  "labels": [
+   "systems"
+  ],
+  "text": "Reinforcing loops can explode and balancing loops hold things steady"
+ },
+ {
+  "id": "f065",
+  "labels": [
+   "systems"
+  ],
+  "text": "Cities are complex systems with many feedback paths"
+ },
+ {
+  "id": "f066",
+  "labels": [
+   "systems"
+  ],
+  "text": "Behavior emerges from the network of interactions"
+ },
+ {
+  "id": "f067",
+  "labels": [
+   "systems"
+  ],
+  "text": "The loop closes when the output feeds the input"
+ },
+ {
+  "id": "f068",
+  "labels": [
+   "systems"
+  ],
+  "text": "Our whole system depends on one server"
+ },
+ {
+  "id": "f069",
+  "labels": [
+   "systems"
+  ],
+  "text": "Every part affects every other part in ways no one planned"
+ },
+ {
+  "id": "f070",
+  "labels": [
+   "systems"
+  ],
+  "text": "Small causes cascade through connected pieces"
+ },
+ {
+  "id": "f071",
+  "labels": [
+   "analogy",
+   "heuristic",
+   "narrative"
+  ],
+  "text": "The story is like a river and usually flows downhill"
+ },
+ {
+  "id": "f072",
+  "labels": [
+   "first_principles",
+   "inversion",
+   "systems"
+  ],
+  "text": "Instead of patching the system, rebuild it from scratch"
+ },
+ {
+  "id": "f073",
+  "labels": [
+   "first_principles",
+   "systems"
+  ],
+  "text": "From first principles the network is a feedback machine"
+ },
+ {
+  "id": "f074",
+  "labels": [
+   "heuristic",
+   "narrative",
+   "systems"
+  ],
+  "text": "Once the loop starts it tends to repeat"
+ },
+ {
+  "id": "f075",
+  "labels": [
+   "first_principles",
+   "heuristic",
+   "inversion"
+  ],
+  "text": "The opposite of a rule of thumb is a fundamental proof"
+ },
+ {
+  "id": "f076",
+  "labels": [
+   "analogy",
+   "narrative",
+   "systems"
+  ],
+  "text": "Her journey reminds me of a system that learns"
+ },
+ {
+  "id": "f077",
+  "labels": [],
+  "text": "What would guarantee failure here? Avoid that"
+ },
+ {
+  "id": "f078",
+  "labels": [],
+  "text": "I once ate lunch at noon"
+ },
+ {
+  "id": "f079",
+  "labels": [],
+  "text": "He wrote the chapter heading in blue ink"
+ },
+ {
+  "id": "f080",
+  "labels": [],
+  "text": "The loop of tape was in the drawer"
+ },
+ {
+  "id": "f081",
+  "labels": [],
+  "text": "Our telephone system was installed on Monday"
+ },
+ {
+  "id": "f082",
+  "labels": [],
+  "text": "This is the opposite lane"
+ },
+ {
+  "id": "f083",
+  "labels": [],
+  "text": "The fundamental frequency of the string is 440"
+ },
+ {
+  "id": "f084",
+  "labels": [],
+  "text": "It is not like a machine at all"
+ },
+ {
+  "id": "f085",
+  "labels": [],
+  "text": "That is never a rule of thumb I would trust"
+ },
+ {
+  "id": "f086",
+  "labels": [],
+  "text": "This does not remind anyone of the old plan and we did not use a feedback loop"
+ },
+ {
+  "id": "f087",
+  "labels": [],
+  "text": "There is no story here"
+ },
+ {
+  "id": "f088",
+  "labels": [],
+  "text": "We don't usually do that"
+ },
+ {
+  "id": "f089",
+  "labels": [],
+  "text": "It isn't a system"
+ },
+ {
+  "id": "f090",
+  "labels": [],
+  "text": "She said \"once upon a time\" and stopped"
+ },
+ {
+  "id": "f091",
+  "labels": [],
+  "text": "The sign read “feedback welcome”"
+ },
+ {
+  "id": "f092",
+  "labels": [],
+  "text": "He quoted \"the opposite of love\" from the book"
+ },
+ {
+  "id": "f093",
+  "labels": [],
+  "text": "The meeting starts at nine"
+ },
+ {
+  "id": "f094",
+  "labels": [],
+  "text": "Please send the invoice by Friday"
+ },
+ {
+  "id": "f095",
+  "labels": [],
+  "text": "The coffee here is excellent"
+ },
+ {
+  "id": "f096",
+  "labels": [],
+  "text": "Two plus two equals four"
+ },
+ {
+  "id": "f097",
+  "labels": [],
+  "text": "The bus was late again"
+ },
+ {
+  "id": "f098",
+  "labels": [],
+  "text": "She painted the fence green"
+ },
+ {
+  "id": "f099",
+  "labels": [],
+  "text": "We ordered pizza for dinner"
+ },
+ {
+  "id": "f100",
+  "labels": [],
+  "text": "The report has twelve pages"
+ },
+ {
+  "id": "f101",
+  "labels": [],
+  "text": "He plays guitar on weekends"
+ },
+ {
+  "id": "f102",
+  "labels": [],
+  "text": "Rain is expected tomorrow afternoon"
+ },
+ {
+  "id": "f103",
+  "labels": [],
+  "text": "The train arrives at platform four"
+ },
+ {
+  "id": "f104",
+  "labels": [],
+  "text": "They moved to a bigger apartment"
+ },
+ {
+  "id": "f105",
+  "labels": [],
+  "text": "The dog barked at the mailman"
+ },
+ {
+  "id": "f106",
+  "labels": [],
+  "text": "Lunch is on the table"
+ },
+ {
+  "id": "f107",
+  "labels": [],
+  "text": "The window faces east"
+ },
+ {
+  "id": "f108",
+  "labels": [],
+  "text": "He bought a new blue coat"
+ },
+ {
+  "id": "f109",
+  "labels": [],
+  "text": "Turn left at the second light"
+ },
+ {
+  "id": "f110",
+  "labels": [],
+  "text": "The movie runs two hours"
+ },
+ {
+  "id": "f111",
+  "labels": [],
+  "text": "Her phone battery died"
+ },
+ {
+  "id": "f112",
+  "labels": [],
+  "text": "It snowed all night"
+ },
+ {
+  "id": "f113",
+  "labels": [
+   "analogy"
+  ],
+  "text": "I would not say it is like a machine but it is similar to a garden"
+ },
+ {
+  "id": "f114",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Taxes are similar to a toll road with many exits"
+ },
+ {
+  "id": "f115",
+  "labels": [
+   "analogy"
+  ],
+  "text": "Her mood was like a kite in changing wind"
+ },
+ {
+  "id": "f116",
+  "labels": [
+   "inversion"
+  ],
+  "text": "Instead of arguing, he listened"
+ },
+ {
+  "id": "f117",
+  "labels": [
+   "narrative"
+  ],
+  "text": "A chapter of the diary was torn out"
+ },
+ {
+  "id": "f118",
+  "labels": [
+   "narrative"
+  ],
+  "text": "Her story changed every time she told it"
+ },
+ {
+  "id": "f119",
+  "labels": [
+   "heuristic"
+  ],
+  "text": "Rain usually follows that kind of sky"
+ },
+ {
+  "id": "f120",
+  "labels": [
+   "systems"
+  ],
+  "text": "The network goes down when the system overloads"
+ },
+ {
+  "id": "f121",
+  "labels": [
+   "first_principles"
+  ],
+  "text": "From scratch means without borrowed assumptions"
+ },
+ {
+  "id": "f122",
+  "labels": [],
+  "text": "The score was three to one"
+ },
+ {
+  "id": "f123",
+  "labels": [],
+  "text": "A cat slept on the sofa"
+ }
+]
