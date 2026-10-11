@@ -1,0 +1,22 @@
+test_each_prompt_uses_idea_and_disclaimer_exact (test_lenses.GuardEdges) ... ok
+test_policy_action_is_read (test_lenses.GuardEdges) ... ok
+test_types_and_limits (test_lenses.GuardEdges) ... ok
+test_falsey_nonbool_clinical_flag (test_lenses.MutationRepair) ... ok
+test_selected_lens_has_its_own_strategy (test_lenses.MutationRepair) ... ok
+test_package_import_guard (test_lenses.PackageTests) ... ok
+test_route_tenant_and_guard (test_lenses.RoutesTests) ... ok
+test_as_of_required (test_lenses.Tests) ... ok
+test_clinical_refusal (test_lenses.Tests) ... ok
+test_each_definition_executed (test_lenses.Tests) ... ok
+test_idea_limits (test_lenses.Tests) ... ok
+test_invalid_lens (test_lenses.Tests) ... ok
+test_lenses_distinct_deterministic (test_lenses.Tests) ... ok
+test_nonclinical_not_medical_claim (test_lenses.Tests) ... ok
+test_policy_called (test_lenses.Tests) ... ok
+test_policy_failure_prevents_run (test_lenses.Tests) ... ok
+test_schema (test_lenses.Tests) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.030s
+
+OK

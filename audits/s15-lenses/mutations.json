@@ -1,0 +1,112 @@
+{
+  "total": 21,
+  "killed": 21,
+  "survivors": [],
+  "results": [
+    {
+      "mutant": "policy-removal",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "clinical-flag",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "diagnosis-refusal",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "imitation-refusal",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "schema-keys",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "idea-length",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "empty-idea",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "clinical-type",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "lens-lower",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "lens-upper",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "lens-dedupe",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "asof",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "angle-count",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "disclaimer",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "idea-interpolation",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "question-count",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "lens-selected",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "next-step",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "route-tenant",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "route-get-policy",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    },
+    {
+      "mutant": "route-unknown",
+      "killed": true,
+      "analysis": "behavioral test failure"
+    }
+  ]
+}

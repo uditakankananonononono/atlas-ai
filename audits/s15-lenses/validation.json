@@ -1,0 +1,29 @@
+{
+  "unit": "S1.5",
+  "claim": "SUBSTITUTE-X13 / IMPLEMENTED-BOUNDED",
+  "tests_passed": 17,
+  "hand_mutations_killed": 21,
+  "hand_mutations_total": 21,
+  "external_validation": "NOT_RUN",
+  "shared_guard": "B1 read-only policy reused; c30.policy not present on base",
+  "route": "adapter only, not mounted",
+  "survivor_analysis": "clinical-type survivor fixed with falsey nonbool flags; tenant survivor fixed with valid payload under blank tenant; final zero survivors",
+  "auditor_verdict": "bounded X13 substitute; offline fixed-template only",
+  "source": "authenticated owner WhatsApp message Oct 11 15:01:13 and subsequent S1.5 scope decisions independently checked",
+  "base": "2d9005e9a4f49610a009bf79f85965438b369d3c",
+  "candidate": "860ffea44d5432171eaec5ca2ce7bc811de94213",
+  "pytest_real_conftest": "17 passed",
+  "independent_unittest": "17 passed",
+  "independent_mutations": "21/21 targeted hand mutations killed",
+  "clinical_evasion_examples": [
+    "simulate PTSD",
+    "simulate symptoms of psychosis",
+    "think like someone with schizophrenia",
+    "mimic manic episodes",
+    "thinking process inspired by mental illness",
+    "simulate a person with OCD"
+  ],
+  "clinical_guard": "regex plausibility only; passing does not imply clinical clearance",
+  "full_suite": "UNVERIFIED",
+  "ancestry": "not fully verified: candidate bundle depends on unavailable 6d5b0c2a; audited files transplanted and checked against current main"
+}
