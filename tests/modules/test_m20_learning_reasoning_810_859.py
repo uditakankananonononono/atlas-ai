@@ -12,8 +12,9 @@ def test_811_interleaving_mixes_skills():assert len(set(L('interleaving',practic
 def test_812_retrieval_is_closed_book_feedback_retry():assert L('retrieval_practice',recall_items=[{'id':'1','question':'2+2','accepted_answers':['4'],'skill':'addition'}])['recall']['unattempted_items'][0]['question']=='2+2'
 def test_813_elaborative_why_and_conditions():assert 'under what conditions' in L('elaborative_interrogation',claims=['x'],explanation_facts=[{'atom':'x','source':'fixture:x'}],explanation_rules=[{'id':'r','if':['x'],'then':'y','source':'fixture:r'}],explanation_target='y')['prompts'][0]
 def test_814_self_explanation_checks_steps():assert 'Why is this step valid?' in L('self_explanation',explanation_facts=[{'atom':'x','source':'fixture:x'}],explanation_rules=[{'id':'r','if':['x'],'then':'y','source':'fixture:r'}],explanation_target='y')['self_explanation_prompts']
-def test_815_dual_coding_requires_mapping_not_decoration():assert L('dual_coding')['representations']['decorative_visuals_rejected']
-def test_816_examples_mark_boundary_cases():assert L('concrete_examples',examples=[{'feature':'f','boundary_case':True}])['examples'][0]['boundary_case']
+@pytest.mark.parametrize('method',['dual_coding','concrete_examples'])
+def test_815_816_minimal_payload_is_not_execution(method):
+ with pytest.raises(LearningReasoningError,match='concepts'):L(method)
 def test_817_worked_example_requires_rationales_and_completion():assert L('worked_examples')['worked_example']['completion_problem_next']
 def test_818_problem_solving_represents_then_verifies():assert L('problem_solving')['problem_cycle']==['represent problem','identify constraints','generate strategies','execute','verify','reflect']
 def test_819_deliberate_targets_subskill_feedback_rest():

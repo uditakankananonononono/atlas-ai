@@ -65,3 +65,34 @@ def test_mounted_auth_tenant_and_minimal_payload_refusal(monkeypatch,oidc_auth_h
   r=c.post(path,headers=h,json={'payload':pack()});assert r.status_code==200 and r.json()['tenant_id']=='a' and r.json()['evaluation']['capability_executed'] is True
   assert c.post(path,headers=h,json={'payload':{'source':SRC,'objective':'x'}}).status_code==422
   assert c.post(path,headers=h,json={'payload':{**pack(),'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
+
+def test_unmapped_decorative_visual_and_invalid_matching_values():
+ p=pack();p['visual_elements'].append({**p['visual_elements'][0],'id':'decorative'})
+ r=execute('dual_coding',p)['result']['representation_pack'];assert r['unmapped_visual_ids']==['decorative'] and r['valid'] is False
+ p=pack()
+ for field in ['verbal_propositions','visual_elements']:p[field][0]['features']['sides']='four'
+ r=execute('dual_coding',p)['result']['representation_pack'];assert r['mapping_reports'][0]['conflicting_features']==['sides'] and r['valid'] is False
+
+def test_shapes_caps_and_mapping_identity_guards():
+ for field in ['concepts','verbal_propositions','visual_elements']:
+  p=pack();rows=[]
+  for i in range(64):
+   row=deepcopy(p[field][0]);row['concept_id'if field=='concepts'else 'id']=str(i);rows.append(row)
+  p[field]=rows
+  if field=='concepts':
+   # Keep original references valid by renaming first definition.
+   p[field][0]['concept_id']='triangle'
+  else:p['representation_mappings']=[]
+  execute('dual_coding',p)
+  extra=deepcopy(rows[-1]);extra['concept_id'if field=='concepts'else 'id']='extra';p[field]=rows+[extra]
+  with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+ p=pack();p['representation_mappings']*=2
+ with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+ p=pack();p['concepts'][0]['invariants']={str(i):'value'for i in range(32)};execute('dual_coding',p)
+ p['concepts'][0]['invariants']['extra']='value'
+ with pytest.raises(LearningReasoningError):execute('dual_coding',p)
+
+@pytest.mark.parametrize('change',[{'role':'boundary'},{'variant_features':'color'},{'variant_features':['color','color']},{'variant_features':['missing']},{'features':[]}])
+def test_example_shape_role_and_variant_guards(change):
+ p=pack();p['example_items'][0].update(change)
+ with pytest.raises(LearningReasoningError):execute('concrete_examples',p)
