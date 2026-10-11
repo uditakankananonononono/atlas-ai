@@ -53,7 +53,8 @@ def R(n,**x):
  p={'source':SRC};p.update(x);return execute(n,p)['result']
 def test_838_rules_have_forward_trace():assert R('rule_based_reasoning',facts=['a'],rules=[{'id':'r','if':['a'],'then':'b'}])['rule_trace']==[{'rule':'r','fact':'b'}]
 def test_839_model_checks_finite_assignments():assert R('model_based_reasoning',model_domains={'a':[0,1]},model_constraints=[])['model']['feasible_model_count']==2
-def test_840_qualitative_preserves_ambiguous_successors():assert R('qualitative_reasoning')['qualitative_states']['ambiguous_successors_preserved']
+def test_840_minimal_refuses():
+ with pytest.raises(LearningReasoningError,match='qualitative_variables'):R('qualitative_reasoning')
 def test_841_quantitative_computes_mean_range_units():assert R('quantitative_reasoning',values=[1,3],units='m')['quantitative']['mean']==2
 def test_842_spatial_requires_frame_and_scale():assert 'frame_of_reference' in R('spatial_reasoning',frame_of_reference='Cartesian',spatial_objects=[{'id':'a','bounds':[[0,1],[0,1]]}],spatial_relations=[])['spatial']
 def test_843_temporal_computes_gap_bounds():assert R('temporal_reasoning',temporal_events=['a','b'],time_unit='hours',time_constraints=[{'from':'a','to':'b','minimum_gap':2,'maximum_gap':3}],time_queries=[{'from':'a','to':'b'}])['temporal']['queries'][0]['minimum_implied_gap']==2
@@ -71,7 +72,8 @@ def test_854_dialectic_keeps_unresolved_conflict():assert R('dialectical_reasoni
 def test_855_integration_keeps_tradeoffs():assert R('integrative_thinking')['integration']['tradeoffs_visible']
 def I(n,**x):
  p={'problem':'Improve access','source':SRC};p.update(x);return execute(n,p)['result']
-def test_856_systems_has_stocks_flows_feedback_delays():assert set(I('systems_thinking')['system'])>={'stocks','flows','feedback_loops','delays'}
+def test_856_minimal_refuses():
+ with pytest.raises(LearningReasoningError,match='system_stocks'):I('systems_thinking')
 def test_857_design_thinking_tests_with_participants():assert 'test with participants' in I('design_thinking')['design_cycle']
 def test_858_computational_has_decomposition_algorithm_tests_complexity():assert set(I('computational_thinking')['computational'])>={'decomposition','algorithm','test_cases','complexity'}
 def test_859_science_is_falsifiable_and_replicable():
