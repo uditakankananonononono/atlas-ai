@@ -1,6 +1,6 @@
 # Module self-evaluation loop (self_eval): contract
 
-Status: unreviewed build, local branch only. Not accepted, not landed, not wired.
+Status: reviewed and landed in commit `11e9ab84`. Not wired.
 
 ## What it is
 `backend/app/self_improve/self_eval.py` measures a module's own behaviour with

@@ -1,6 +1,6 @@
 # Self-improvement change gate (improvement_gate): contract
 
-Status: unreviewed build, local branch only. Not accepted, not landed, not wired.
+Status: reviewed and landed in commit `11e9ab84`. Not wired.
 Child of the self_eval commit. Adds new files only. Defines NO c30 module, route or landing logic.
 
 ## What it is
