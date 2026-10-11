@@ -46,6 +46,23 @@ def capability_scope(method):
          "original_capability_status":"unverified",
          "verification_boundary":"Supplied-data reference operator only; not verification of the original named capability."}
 
+SUPPLIED_OPERATORS={
+ 'cognitive_computing':'supplied_scored_attempt_brier_calibration',
+ 'metacognition':'supplied_scored_attempt_brier_calibration',
+ 'affective_computing':'supplied_valence_arousal_quadrant_rubric',
+ 'emotion_recognition':'supplied_valence_arousal_quadrant_rubric',
+ 'optimization':'finite_binary_knapsack_enumeration_max_20_items',
+ 'operations_research':'finite_binary_knapsack_enumeration_max_20_items',
+}
+
+def supplied_scope(method):
+ if method not in ROWS:raise ValueError(f"unsupported cognitive method {method}")
+ if method not in SUPPLIED_OPERATORS:return {}
+ return {"supplied_operator":SUPPLIED_OPERATORS[method],
+         "named_capability_executed":False,"scope_status":"supplied_operator_only",
+         "original_capability_status":"unverified",
+         "verification_boundary":"Supplied-data operator only; not verification or execution of the original named capability, no cognition, emotion recognition or general optimization demonstrated."}
+
 def _validate_reference_input(method,data):
  if not isinstance(data,dict):raise ValueError("data must be an object")
  def finite(value):
@@ -319,5 +336,6 @@ def run(method,data,seed=0):
  if method in REFERENCE_SUBSTITUTES:
   out.update(capability_scope(method))
   limits.append('Named cognitive/AI/life-science capability is not implemented by this reference substitute. Caller inputs are not independently verified; no generation, learned model or deployed integration demonstrated.')
+ if method in SUPPLIED_OPERATORS:out.update(supplied_scope(method))
  out["method_limits"]=limits
  return {"method":method,"feature_row":ROWS[method],"inputs":data,"seed":seed,"output":out}

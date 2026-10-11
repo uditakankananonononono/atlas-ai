@@ -33595,7 +33595,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Supplied-data operator only: supplied_scored_attempt_brier_calibration. Original named capability remains unverified; caller inputs are not independently verified. Brier calibration over caller-supplied scored attempts with exact boolean outcomes; no cognition, metacognition or outcome truth is verified.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33608,6 +33608,12 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "supplied_scope": {
+        "method": "cognitive_computing",
+        "supplied_operator": "supplied_scored_attempt_brier_calibration",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false
       }
     },
     {
@@ -33622,7 +33628,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Supplied-data operator only: supplied_valence_arousal_quadrant_rubric. Original named capability remains unverified; caller inputs are not independently verified. Hand-written quadrant rubric over caller-supplied valence and arousal; no emotion recognition or trained affective model.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33635,6 +33641,12 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "supplied_scope": {
+        "method": "affective_computing",
+        "supplied_operator": "supplied_valence_arousal_quadrant_rubric",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false
       }
     },
     {
@@ -33649,7 +33661,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Supplied-data operator only: supplied_valence_arousal_quadrant_rubric. Original named capability remains unverified; caller inputs are not independently verified. Hand-written quadrant rubric over caller-supplied valence and arousal; no emotion recognition or trained affective model.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33662,6 +33674,12 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "supplied_scope": {
+        "method": "emotion_recognition",
+        "supplied_operator": "supplied_valence_arousal_quadrant_rubric",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false
       }
     },
     {
@@ -34038,7 +34056,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Supplied-data operator only: finite_binary_knapsack_enumeration_max_20_items. Original named capability remains unverified; caller inputs are not independently verified. Exact finite 0/1 subset enumeration of at most 20 nonnegative items in supplied floating-point arithmetic; not general optimization or operations research.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34051,6 +34069,12 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "supplied_scope": {
+        "method": "optimization",
+        "supplied_operator": "finite_binary_knapsack_enumeration_max_20_items",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false
       }
     },
     {
@@ -34065,7 +34089,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Supplied-data operator only: finite_binary_knapsack_enumeration_max_20_items. Original named capability remains unverified; caller inputs are not independently verified. Exact finite 0/1 subset enumeration of at most 20 nonnegative items in supplied floating-point arithmetic; not general optimization or operations research.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34078,6 +34102,12 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "supplied_scope": {
+        "method": "operations_research",
+        "supplied_operator": "finite_binary_knapsack_enumeration_max_20_items",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false
       }
     },
     {
@@ -34502,7 +34532,7 @@
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
       },
-      "boundary": "Transparent cognitive and reasoning support with inspectable decision inputs, evidence and uncertainty while withholding hidden chain-of-thought. Humans review consequential decisions; no claim of consciousness, mind-reading or unverified completion.",
+      "boundary": "Supplied-data operator only: supplied_scored_attempt_brier_calibration. Original named capability remains unverified; caller inputs are not independently verified. Brier calibration over caller-supplied scored attempts with exact boolean outcomes; no cognition, metacognition or outcome truth is verified.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34515,6 +34545,12 @@
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
         "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+      },
+      "supplied_scope": {
+        "method": "metacognition",
+        "supplied_operator": "supplied_scored_attempt_brier_calibration",
+        "original_capability_status": "unverified",
+        "named_capability_executed": false
       }
     },
     {
