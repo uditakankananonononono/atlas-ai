@@ -74,6 +74,12 @@ def _source_problem(raw: Any) -> str | None:
         return 'source_url_invalid'
     if '@' in parts.netloc:
         return 'source_url_invalid'
+    try:
+        port = parts.port
+    except ValueError:
+        return 'source_url_invalid'
+    if port is not None and not 1 <= port <= 65535:
+        return 'source_url_invalid'
     return None
 
 

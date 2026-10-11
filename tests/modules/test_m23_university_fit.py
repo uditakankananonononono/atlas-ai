@@ -305,43 +305,76 @@ def _mutant(name, old, new):
     return _load(d / "university_fit.py", f"uf_mut_{name}")
 
 
-def _killed(m):
+def _kill_checks(m):
+    """Independent checks, each run on its own. Each returns True when it detects a mismatch."""
     def e(rows, profile=None, now=NOW, **kw):
         return m.evaluate(rows, PROFILE if profile is None else profile, now, **kw)
-    try:
-        # oracle sweep
+
+    def r0(rows, **kw):
+        return e(rows, **kw)["rows"][0]
+
+    def oracle_sweep():
         for aid, written, sat, acc, has_sat, ielts in itertools.product(
                 ["full", "partial", "none"], ["yes", "no"], ["required", "optional", "not_considered"],
                 ["yes", "no"], [True, False], ["yes", "no", "maybe"]):
-            r = e([row(intl_ug_aid=aid, additional_written_test=written, sat=sat, ielts_accepted=acc)], {"has_sat": has_sat, "ielts": ielts})["rows"][0]
+            r = r0([row(intl_ug_aid=aid, additional_written_test=written, sat=sat, ielts_accepted=acc)], profile={"has_sat": has_sat, "ielts": ielts})
             if (r["verdict"], r["reasons"]) != oracle(aid, written, sat, acc, has_sat, ielts):
                 return True
-        exactly = (NOW - timedelta(days=180)).isoformat()
-        if e([row(checked_at=exactly)])["rows"][0]["verdict"] != "fits": return True
-        if e([row(checked_at=(NOW - timedelta(days=180, seconds=1)).isoformat())])["rows"][0]["reasons"] != ["stale"]: return True
-        if e([row(checked_at=NOW.isoformat())])["rows"][0]["verdict"] != "fits": return True
-        if e([row(checked_at=(NOW + timedelta(seconds=1)).isoformat())])["rows"][0]["reasons"] != ["checked_at_future"]: return True
-        if e([row(checked_at="2026-10-01T00:00:00")])["rows"][0]["reasons"] != ["checked_at_naive"]: return True
-        if e([row(source_url="http://example.edu/")])["rows"][0]["reasons"] != ["source_url_invalid"]: return True
-        if e([row(source_url="https://u:p@example.edu/")])["rows"][0]["reasons"] != ["source_url_invalid"]: return True
-        if e([row(source_url=None, checked_at=None, intl_ug_aid="none")])["rows"][0]["verdict"] != "unverified": return True
-        if e([row(rank=1)])["rows"][0]["reasons"] != ["unsupported_field:rank"]: return True
-        if e([row(name="B"), row(name="A")])["rows"][0]["university"] != "A": return True
-        for bad in (lambda: e([row(name=f"U{i}") for i in range(2001)]),
-                    lambda: e([row(), row()]),
-                    lambda: e([row()], max_age_days=3651),
-                    lambda: e([row()], now=datetime(2026, 10, 11)),
-                    lambda: e([row()], {"has_sat": True, "gpa": 3}),
-                    lambda: e([row()], {"has_sat": "yes"})):
-            try:
-                bad()
-            except ValueError:
-                continue
-            return True
-        if len(e([row(name=f"U{i}") for i in range(2000)])["rows"]) != 2000: return True
         return False
-    except Exception:
+
+    def raises(fn):
+        try:
+            fn()
+        except ValueError:
+            return False
         return True
+
+    ts = lambda **kw: (NOW - timedelta(**kw)).isoformat()
+    checks = {
+        "oracle_sweep": oracle_sweep,
+        "age_exact_fresh": lambda: r0([row(checked_at=ts(days=180))])["verdict"] != "fits",
+        "age_plus_1s_stale": lambda: r0([row(checked_at=ts(days=180, seconds=1))])["reasons"] != ["stale"],
+        "now_exact_fresh": lambda: r0([row(checked_at=NOW.isoformat())])["verdict"] != "fits",
+        "future_1s": lambda: r0([row(checked_at=(NOW + timedelta(seconds=1)).isoformat())])["reasons"] != ["checked_at_future"],
+        "naive_old": lambda: r0([row(checked_at="2026-10-01T00:00:00")])["reasons"] != ["checked_at_naive"],
+        "naive_recent": lambda: r0([row(checked_at="2026-10-11T11:00:00")])["reasons"] != ["checked_at_naive"],
+        "http_scheme": lambda: r0([row(source_url="http://example.edu/")])["reasons"] != ["source_url_invalid"],
+        "userinfo": lambda: r0([row(source_url="https://u:p@example.edu/")])["reasons"] != ["source_url_invalid"],
+        "port_bad_text": lambda: r0([row(source_url="https://example.edu:bad/path")])["reasons"] != ["source_url_invalid"],
+        "port_too_big": lambda: r0([row(source_url="https://example.edu:99999/path")])["reasons"] != ["source_url_invalid"],
+        "port_65536": lambda: r0([row(source_url="https://example.edu:65536/")])["reasons"] != ["source_url_invalid"],
+        "port_zero": lambda: r0([row(source_url="https://example.edu:0/")])["reasons"] != ["source_url_invalid"],
+        "port_65535_ok": lambda: r0([row(source_url="https://example.edu:65535/")])["verdict"] != "fits",
+        "port_1_ok": lambda: r0([row(source_url="https://example.edu:1/")])["verdict"] != "fits",
+        "unverified_priority": lambda: r0([row(source_url=None, checked_at=None, intl_ug_aid="none")])["verdict"] != "unverified",
+        "unverified_bad_field_priority": lambda: r0([row(intl_ug_aid="maybe")])["verdict"] != "unverified",
+        "unsupported_field": lambda: r0([row(rank=1)])["reasons"] != ["unsupported_field:rank"],
+        "sorted": lambda: e([row(name="B"), row(name="A")])["rows"][0]["university"] != "A",
+        "rows_2001": lambda: raises(lambda: e([row(name=f"U{i}") for i in range(2001)])),
+        "rows_2000_ok": lambda: len(e([row(name=f"U{i}") for i in range(2000)])["rows"]) != 2000,
+        "dup": lambda: raises(lambda: e([row(), row()])),
+        "max_age_3651": lambda: raises(lambda: e([row()], max_age_days=3651)),
+        "now_naive": lambda: raises(lambda: e([row()], now=datetime(2026, 10, 11))),
+        "profile_gpa": lambda: raises(lambda: e([row()], {"has_sat": True, "gpa": 3})),
+        "profile_has_sat_str": lambda: raises(lambda: e([row()], {"has_sat": "yes"})),
+    }
+    return checks
+
+
+def _kill_kind(m):
+    """'assert' if any check detects a behavioural mismatch; else 'error:<Type>' if only crashes; else None."""
+    errors = []
+    for name, fn in _kill_checks(m).items():
+        try:
+            if fn():
+                return "assert"
+        except Exception as exc:  # a crash proves error detection, not an assertion
+            errors.append(type(exc).__name__)
+    return ("error:" + sorted(set(errors))[0]) if errors else None
+
+
+def _killed(m):
+    return _kill_kind(m) is not None
 
 
 MUTANTS = [
@@ -364,6 +397,9 @@ MUTANTS = [
     ("dup_allowed", "if key in seen:", "if False:"),
     ("age_ceiling_off", "or not 1 <= max_age_days <= MAX_AGE_DAYS_CEILING", "or not 1 <= max_age_days <= MAX_AGE_DAYS_CEILING + 1"),
     ("fits_when_reasons", "'fits' if not reasons else 'does_not_fit'", "'fits'"),
+    ("port_range_unchecked", "if port is not None and not 1 <= port <= 65535:", "if False:"),
+    ("port_valueerror_ignored", "    try:\n        port = parts.port\n    except ValueError:\n        return 'source_url_invalid'\n", "    port = None\n"),
+    ("port_zero_ok", "not 1 <= port <= 65535", "not 0 <= port <= 65535"),
 ]
 
 
@@ -374,3 +410,46 @@ def test_mutant_is_killed(name, old, new):
 
 def test_negative_control_unmutated_not_killed():
     assert _killed(uf) is False
+
+
+# =====================================================================
+# R2: URL port validation (peer audit defect) and honest kill classes.
+# =====================================================================
+BAD_PORT_URLS = [
+    "https://example.edu:bad/path", "https://example.edu:99999/path", "https://example.edu:65536/",
+    "https://example.edu:0/", "https://example.edu:-1/", "https://example.edu:80a/",
+    "https://example.edu:+80/", "https://[::1]:99999/", "https://[::1/",
+]
+GOOD_PORT_URLS = ["https://example.edu:443/aid", "https://example.edu:1/", "https://example.edu:65535/",
+                  "https://example.edu:8443/a?b=c#d", "https://[::1]:8443/", "https://example.edu/"]
+
+
+@pytest.mark.parametrize("url", BAD_PORT_URLS)
+def test_r2_bad_port_row_is_unverified_through_full_evaluate(url):
+    res = ev([row(source_url=url)])
+    r = only(res)
+    assert r["verdict"] == "unverified" and r["reasons"] == ["source_url_invalid"]
+    assert res["counts"] == {"rows": 1, "fits": 0, "does_not_fit": 0, "unverified": 1}
+
+
+@pytest.mark.parametrize("url", GOOD_PORT_URLS)
+def test_r2_valid_port_row_still_fits(url):
+    r = only(ev([row(source_url=url)]))
+    assert r["verdict"] == "fits" and r["reasons"] == [] and r["source_url"] == url
+
+
+def test_r2_bad_port_does_not_hide_a_criteria_failure_as_fit():
+    r = only(ev([row(source_url="https://example.edu:99999/", intl_ug_aid="none")]))
+    assert r["verdict"] == "unverified"  # unverified takes priority; never judged
+
+
+def test_r2_every_mutant_is_killed_by_an_assertion_not_a_crash():
+    kinds = {name: _kill_kind(_mutant(name, old, new)) for name, old, new in MUTANTS}
+    assert {k: v for k, v in kinds.items() if v != "assert"} == {}
+    assert _kill_kind(uf) is None
+
+
+def test_r2_equivalent_mutant_noted():
+    # upper-bound 65535 -> 65536 is equivalent here: urllib's parts.port already raises for 65536.
+    r = only(ev([row(source_url="https://example.edu:65536/")]))
+    assert r["reasons"] == ["source_url_invalid"]
