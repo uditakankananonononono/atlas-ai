@@ -26,7 +26,7 @@ def schedule_reviews(p):
         except (KeyError,TypeError,ValueError) as exc:raise ValueError('ISO reviewed_at required') from exc
         if at.tzinfo is None:raise ValueError('reviewed_at must have timezone')
         next_ease=max(1.3,ease+.1-(5-q)*(.08+(5-q)*.02))
-        if q<3:next_n=0;days=1
+        if q<3:next_n=0;days=1;next_ease=ease
         else:
             next_n=n+1
             days=1 if next_n==1 else 6 if next_n==2 else math.ceil(interval*ease)

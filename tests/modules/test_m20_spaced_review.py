@@ -14,9 +14,9 @@ def test_actual_sm2_first_second_third_interval_and_prior_ease():
  assert third['due_at']=='2026-10-24T00:00:00+05:30'
 
 
-def test_lapse_resets_count_preserves_evidence_and_floors_ease():
+def test_lapse_resets_count_preserves_evidence_and_keeps_ease():
  r=review(quality=0,repetitions=8,interval_days=100,ease=1.4)
- assert r['interval_days']==1 and r['repetitions']==0 and r['ease']==1.3
+ assert r['interval_days']==1 and r['repetitions']==0 and r['ease']==1.4
  assert r['lapse'] and r['same_session_retry_required'] and r['evidence_id']=='r1'
  assert r['due_at']=='2026-10-08T00:00:00+05:30'
 
@@ -35,3 +35,15 @@ def test_later_interval_depends_on_both_prior_state_values(interval,ease,expecte
  assert r['interval_days']==expected
  assert r['previous_state']['interval_days']==interval
  assert r['previous_state']['ease']==ease
+
+
+@pytest.mark.parametrize('quality',[0,1,2])
+@pytest.mark.parametrize('ease',[1.3,1.4,2.5,4.75])
+def test_lapse_preserves_prior_ease_exactly(quality,ease):
+ r=review(quality=quality,repetitions=8,interval_days=100,ease=ease)
+ assert r['ease']==ease
+ assert r['repetitions']==0 and r['interval_days']==1 and r['lapse'] is True
+
+@pytest.mark.parametrize('quality,ease,expected',[(3,2.5,2.36),(4,2.5,2.5),(5,2.5,2.6),(3,1.3,1.3)])
+def test_success_ease_formula_not_keep_ease(quality,ease,expected):
+ assert review(quality=quality,ease=ease)['ease']==pytest.approx(expected)
