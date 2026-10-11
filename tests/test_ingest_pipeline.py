@@ -273,3 +273,123 @@ def test_duplicate_update_stores_canonical_sorted_serialization(tmp_path):
         "SELECT payload_json FROM ingest_items WHERE source = 'rss_atom' AND external_id = 'e1'").fetchone()[0]
     assert raw == json.dumps(reordered, sort_keys=True, default=str)
     assert raw.index("alpha") < raw.index("mid") < raw.index("zeta")
+
+
+# --- second-audit (R4) pins on tip fe0c8036 (runtime frozen; pins only) ---
+
+def test_same_external_id_coexists_across_sources():
+    store = IngestStore(":memory:")
+    store.commit_batch("job", "rss_atom", [item("e1", payload={"title": "A"})], None,
+                       now="2026-10-11T00:00:00+00:00")
+    store.commit_batch("job", "blog", [item("e1", payload={"title": "B"})], None,
+                       now="2026-10-11T01:00:00+00:00")
+    store.commit_batch("job", "rss_atom", [item("e1", payload={"title": "A"})], None,
+                       now="2026-10-11T02:00:00+00:00")
+    a = store.get_item("rss_atom", "e1")
+    b = store.get_item("blog", "e1")
+    assert a["payload"] == {"title": "A"} and b["payload"] == {"title": "B"}
+    assert a["seen_count"] == 2 and b["seen_count"] == 1
+    assert a["last_seen_at"] == "2026-10-11T02:00:00+00:00"
+    assert b["first_seen_at"] == b["last_seen_at"] == "2026-10-11T01:00:00+00:00"
+    assert store.count_items() == 2
+    assert store.count_items("rss_atom") == 1 and store.count_items("blog") == 1
+    store.close()
+
+
+def test_canonical_url_kept_from_first_insert_after_duplicate_update():
+    store = IngestStore(":memory:")
+    store.commit_batch("job", "rss_atom", [item("e1", url="https://example.com/original")], None,
+                       now="2026-10-11T00:00:00+00:00")
+    store.commit_batch("job", "rss_atom", [item("e1", url="https://example.com/moved")], None,
+                       now="2026-10-12T00:00:00+00:00")
+    row = store.get_item("rss_atom", "e1")
+    assert row["canonical_url"] == "https://example.com/original"
+    assert row["seen_count"] == 2
+    assert row["last_seen_at"] == "2026-10-12T00:00:00+00:00"
+    store.close()
+
+
+def test_checkpoint_items_duplicate_cumulative_across_commits():
+    store = IngestStore(":memory:")
+    assert store.commit_batch("job", "rss_atom", [item("e1"), item("e2")], "c1") == (2, 0)
+    assert store.commit_batch("job", "rss_atom", [item("e1"), item("e3")], "c2") == (1, 1)
+    assert store.commit_batch("job", "rss_atom", [item("e1"), item("e2")], "c3") == (0, 2)
+    checkpoint = store.load_checkpoint("job")
+    assert checkpoint["batches_committed"] == 3
+    assert checkpoint["items_new"] == 3
+    assert checkpoint["items_duplicate"] == 3
+    assert checkpoint["cursor"] == "c3"
+    store.close()
+
+
+def test_store_refuses_blank_source_and_job_key_exact_text():
+    store = IngestStore(":memory:")
+    for blank in ("", "   "):
+        with pytest.raises(ValueError) as e:
+            store.commit_batch("job", blank, [item("e1")], None)
+        assert str(e.value) == "source requires nonempty string"
+        with pytest.raises(ValueError) as e:
+            store.commit_batch(blank, "rss_atom", [item("e1")], None)
+        assert str(e.value) == "job_key requires nonempty string"
+    assert store.count_items() == 0
+    assert store.load_checkpoint("job") is None
+    store.close()
+
+
+class CountedRequestsSource:
+    """Collector-protocol double with a distinct request count per page."""
+
+    def __init__(self, requests_per_page):
+        self.requests_per_page = requests_per_page
+        self.calls = 0
+
+    async def collect(self, config):
+        items, cursor = [([item("e1")], "c1"), ([item("e2")], "c2"), ([item("e3")], None)][self.calls]
+        requests = self.requests_per_page[self.calls]
+        self.calls += 1
+        return CollectionBatch(items, requests=requests, cursor=cursor)
+
+
+def test_requests_total_sums_across_batches():
+    source = CountedRequestsSource([2, 3, 4])
+    store = IngestStore(":memory:")
+    report = asyncio.run(ResumableIngestJob(store).run(
+        job_key="rss", source_name="rss_atom", collector=source, config={}))
+    assert report["status"] == "completed" and report["batches_committed"] == 3
+    assert report["requests"] == 9
+    store.close()
+
+
+def test_config_initial_cursor_used_when_no_checkpoint():
+    source = ScriptedSource([([item("e1")], "c1"), ([item("e2")], None)])
+    store = IngestStore(":memory:")
+    report = asyncio.run(ResumableIngestJob(store).run(
+        job_key="rss", source_name="rss_atom", collector=source, config={"cursor": "seed0"}))
+    assert source.received_cursors == ["seed0", "c1"]
+    assert report["resumed_from_cursor"] is None
+    assert report["status"] == "completed"
+    store.close()
+
+
+def test_checkpoint_cursor_wins_over_config_cursor(tmp_path):
+    db = str(tmp_path / "ingest.sqlite")
+    source = ScriptedSource(three_pages())
+    store = IngestStore(db)
+    asyncio.run(ResumableIngestJob(store).run(
+        job_key="rss", source_name="rss_atom", collector=source, config={}, max_batches=1))
+    store.close()
+    store = IngestStore(db)
+    report = asyncio.run(ResumableIngestJob(store).run(
+        job_key="rss", source_name="rss_atom", collector=source, config={"cursor": "ignored"}))
+    assert report["resumed_from_cursor"] == "c1"
+    assert "ignored" not in source.received_cursors
+    store.close()
+
+
+def test_report_source_label_echoes_source_name():
+    store = IngestStore(":memory:")
+    report = asyncio.run(ResumableIngestJob(store).run(
+        job_key="rss", source_name="custom_source_label", collector=CountingCollector(), config={}))
+    assert report["source"] == "custom_source_label"
+    assert report["job_key"] == "rss"
+    store.close()
