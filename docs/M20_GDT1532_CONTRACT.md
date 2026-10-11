@@ -65,3 +65,18 @@ Shared dispatcher patch is unapplied and uncommitted. Integrator must resolve
 legacy feature_control_frames payload compatibility, diagnostic metadata, mounted
 route authentication and cross-tenant tests before integration/publication. Main
 and audit ledger remain unchanged. Passing core tests is not audit acceptance.
+
+## Integration compatibility and mounted boundary
+
+Legacy `feature_control_frames` payloads are not converted to 1D dimensional
+chains: frame-field presence cannot supply missing geometry/dimensions. They
+refuse with `GDT1532:unknown_fields:packet` (mounted HTTP422). The old frame
+presence diagnostic is intentionally replaced, not certified or silently coerced.
+The mounted engineering route binds authenticated owner/actor and rejects
+cross-owner/actor metadata. GDT strips validated transport metadata only before
+the strict pure-core packet check. It does not resolve any resource reference.
+Pure-core implementation is unchanged from the reviewed R2. Existing engineering
+route responses now carry tenant/actor identity; all methods on that route use
+the same owner boundary. Public full-GD&T/physical-inspection/release claims stay
+false. Permanent audit provenance caveats: R1 local-main branch was misnamed;
+the original rename command had no raw receipt.

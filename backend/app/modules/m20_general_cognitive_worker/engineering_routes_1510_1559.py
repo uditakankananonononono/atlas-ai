@@ -1,5 +1,7 @@
 from typing import Any, Literal
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.auth.context import TenantContext, require_tenant
+from .computation_boundary import owner_payload
 from pydantic import BaseModel, Field
 from .engineering_1510_1559 import engineering_support_1510_1559
 
@@ -9,6 +11,8 @@ class EngineeringRequest1510_1559(BaseModel):
     data: dict[str,Any]=Field(default_factory=dict)
 router=APIRouter(prefix='/engineering/1510-1559',tags=['engineering-1510-1559'])
 @router.post('/analyze')
-def analyze(body:EngineeringRequest1510_1559):
-    try:return engineering_support_1510_1559(body.method,body.data)
+def analyze(body:EngineeringRequest1510_1559,tenant:TenantContext=Depends(require_tenant)):
+    data=owner_payload(body.data,tenant)
+    if body.method=='gdt':data={k:v for k,v in data.items()if k not in ('tenant_id','actor_id','resource_refs')}
+    try:return {**engineering_support_1510_1559(body.method,data),'tenant_id':tenant.tenant_id,'actor_id':tenant.actor_id}
     except (ValueError,KeyError,TypeError,ZeroDivisionError) as e: raise HTTPException(422,str(e)) from e

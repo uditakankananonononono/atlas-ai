@@ -5,6 +5,7 @@ are returned with the result. The workbench never represents a simulation or phy
 test as performed merely because a calculation or plan was generated.
 """
 from __future__ import annotations
+from .datum_stack1532 import evaluate_stack
 import math
 from statistics import fmean, pstdev
 from typing import Any
@@ -149,7 +150,7 @@ def _tol(d):
     ts=[abs(float(x)) for x in d.get('component_tolerances',[])]; nominal=sum(float(x) for x in d.get('component_nominals',[])); return {'nominal_stack':nominal,'worst_case_plus_minus':sum(ts),'rss_plus_minus':math.sqrt(sum(x*x for x in ts)),'distribution_assumption':'independent centered components for RSS only'}
 
 def _gdt(d):
-    frames=d.get('feature_control_frames',[]); return {'datum_reference_frame':d.get('datums',[]),'feature_control_frames':frames,'invalid_frames':[x.get('id') for x in frames if not x.get('characteristic') or not x.get('tolerance') or (x.get('requires_datum') and not x.get('datum_references'))],'standard_edition':d.get('standard_edition')}
+    return evaluate_stack(d)
 
 def _metrology(d):
     us=[float(x) for x in d.get('standard_uncertainties',[])]; uc=math.sqrt(sum(x*x for x in us)); k=float(d.get('coverage_factor',2)); return {'standard_uncertainty':uc,'expanded_uncertainty':k*uc,'coverage_factor':k,'traceability_chain':d.get('traceability_chain',[]),'equation':'root-sum-square independent standard uncertainties'}
@@ -275,7 +276,6 @@ REFERENCE_DIAGNOSTICS={
  'ergonomics':'supplied_assessment_fields',
  'industrial_design':'supplied_concept_template',
  'design_for_six_sigma':'supplied_CTQ_verification_plan',
- 'gdt':'supplied_frame_field_presence',
  'quality_assurance':'supplied_requirement_reference_coverage',
  **{name:'supplied_test_profile_template' for name in ('environmental_testing','vibration_testing','thermal_cycling','humidity_testing')},
 }

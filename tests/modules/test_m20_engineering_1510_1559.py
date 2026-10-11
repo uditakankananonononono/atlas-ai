@@ -48,7 +48,8 @@ def test_1529_sustainability_sums_lifecycle_impacts():
 def test_1530_dfss_open_ctq(): assert E('design_for_six_sigma',{'ctqs':[{'id':'x'}]})['result']['open_ctq_ids']==['x']
 def test_1531_tolerance_wc_and_rss():
  r=E('tolerance_analysis',{'component_nominals':[2,3],'component_tolerances':[.3,.4]})['result']; assert r['nominal_stack']==5 and r['worst_case_plus_minus']==pytest.approx(.7) and r['rss_plus_minus']==pytest.approx(.5)
-def test_1532_gdt_invalid_frame(): assert E('gdt',{'feature_control_frames':[{'id':'f','characteristic':'position','tolerance':.1,'requires_datum':True}]})['result']['invalid_frames']==['f']
+def test_1532_legacy_frame_refuses_unsupported_payload():
+ with pytest.raises(ValueError,match='GDT1532:unknown_fields:packet'):E('gdt',{'feature_control_frames':[{'id':'f','characteristic':'position','tolerance':.1,'requires_datum':True}]})
 def test_1533_metrology_uncertainty(): assert E('metrology',{'standard_uncertainties':[3,4],'coverage_factor':2})['result']['expanded_uncertainty']==10
 def test_1534_quality_control_yield(): assert E('quality_control',{'measurements':[1,2,9],'lower_spec':0,'upper_spec':3})['result']['yield_fraction']==pytest.approx(2/3)
 def test_1535_quality_assurance_traceability():
