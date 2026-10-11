@@ -5,6 +5,7 @@ File hashes establish bytes only, never dataset reality, tool runs or SOTA.
 from __future__ import annotations
 import copy
 import hashlib
+import ipaddress
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -38,8 +39,23 @@ def validate_spec(spec: dict) -> dict:
     for ref in spec['source_lines']:
         if not isinstance(ref,str) or not re.fullmatch(r'P\d+\|L\d+',ref):raise ContractError('Invalid source reference')
     _text(spec['repository'])
-    u=urlsplit(spec['repository'])
-    if u.scheme!='https' or not u.hostname or u.username or u.password or u.query or u.fragment:raise ContractError('Invalid declared repository URL')
+    raw_url=spec['repository']
+    if any(c.isspace() for c in raw_url) or '\\' in raw_url:
+        raise ContractError('Invalid declared repository URL')
+    try:
+        u=urlsplit(raw_url)
+        host=u.hostname
+        port=u.port
+    except ValueError as exc:
+        raise ContractError('Invalid declared repository URL') from exc
+    if u.scheme!='https' or not host or u.username or u.password or u.query or u.fragment or (port is not None and not 1<=port<=65535) or u.netloc.endswith(':'):
+        raise ContractError('Invalid declared repository URL')
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        labels=host.split('.')
+        if len(host)>253 or any(not re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?',label) for label in labels):
+            raise ContractError('Invalid declared repository URL')
     targets=spec['requested_targets']
     if not isinstance(targets,dict) or set(targets)!={'datasets','project_tools','program_tools'}:raise ContractError('Invalid target schema')
     if any(type(n)is not int or not 0<=n<=1000000 for n in targets.values()):raise ContractError('Invalid requested target')

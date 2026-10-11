@@ -207,4 +207,40 @@ class AuditRepairTests(unittest.TestCase):
         with self.assertRaises(m.ContractError):m.check_deliverables(self.root/'link',s)
 
 
+
+
+declaration = spec_data
+
+class NextPins(unittest.TestCase):
+ def test_root_close_success_and_exception(self):
+  with mock.patch.object(m.os,'open',return_value=10),mock.patch.object(m.os,'close') as close:
+   result=m.check_deliverables('/controlled',declaration());close.assert_called_once_with(10)
+  claims=['repository_created','dataset_use','real_life_data','tool_execution','test_execution','external_validation','benchmark_execution','sota']
+  self.assertEqual({k:result[k] for k in claims},{k:'UNVERIFIED' for k in claims});self.assertIs(result['doc_lines_fulfilled'],False)
+  d=declaration();d['artifacts']=[{'id':'a','kind':'code','path':'out','sha256':'a'*64}]
+  with mock.patch.object(m.os,'open',return_value=10),mock.patch.object(m.os,'close') as close,mock.patch.object(m,'_measure',side_effect=RuntimeError('injected')):
+   with self.assertRaises(RuntimeError):m.check_deliverables('/controlled',d)
+   close.assert_called_once_with(10)
+ def test_root_open_failure(self):
+  with mock.patch.object(m.os,'open',side_effect=OSError('private detail')),mock.patch.object(m.os,'close') as close:
+   with self.assertRaises(m.ContractError) as cm:m.check_deliverables('/controlled',declaration())
+   self.assertEqual(str(cm.exception),'Root must be a readable nonsymlink directory');close.assert_not_called()
+ def test_chunk_cap(self):
+  st=SimpleNamespace(st_mode=stat.S_IFREG,st_size=70000,st_mtime_ns=1,st_ctime_ns=1,st_dev=1,st_ino=2)
+  payload=b'x'*70000;row={'path':'out','sha256':hashlib.sha256(payload).hexdigest()}
+  with mock.patch.object(m.os,'dup',return_value=20),mock.patch.object(m.os,'open',return_value=30),mock.patch.object(m.os,'close'),mock.patch.object(m.os,'fstat',return_value=st),mock.patch.object(m.os,'read',side_effect=[payload[:65536],payload[65536:],b'']) as read:
+   self.assertEqual(m._measure(10,row,70000)[0],'FILE_HASH_MATCH')
+   self.assertEqual(read.call_args_list,[mock.call(30,65536),mock.call(30,4465),mock.call(30,1)])
+
+
+
+class URLFixTests(unittest.TestCase):
+ def test_bad_declared_repository_urls_refused(self):
+  for url in ['https://bad host.invalid/rules','https://example.invalid/bad path','https://example.invalid:abc/rules','https://example.invalid:99999/rules','https://example.invalid:0/rules','https://example.invalid:-1/rules','https://-bad.invalid/rules','https://bad..invalid/rules','https://example.invalid\\evil/rules','https://example.invalid:/rules','http://example.invalid/rules','https:///rules','https://user@example.invalid/rules','https://user:pass@example.invalid/rules','https://example.invalid/rules?q=1','https://example.invalid/rules#frag']:
+   d=spec_data();d['repository']=url
+   with self.subTest(url=url),self.assertRaises(m.ContractError):m.validate_spec(d)
+ def test_valid_declared_repository_urls(self):
+  for url in ['https://example.invalid/rules','https://example.invalid:443/rules','https://example.invalid:8443/rules','https://[2001:db8::1]:443/rules','https://127.0.0.1/rules']:
+   d=spec_data();d['repository']=url
+   self.assertEqual(m.validate_spec(d)['repository'],url)
 if __name__ == '__main__':unittest.main()
