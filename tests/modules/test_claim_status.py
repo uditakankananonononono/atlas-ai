@@ -15,9 +15,11 @@ from __future__ import annotations
 
 import ast
 import contextlib
+import dataclasses
 import importlib.util
 import io
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -191,6 +193,198 @@ class ModuleShapeTests(unittest.TestCase):
                 roots.add(node.module.split(".")[0])
         roots.discard("__future__")
         self.assertLessEqual(roots, sys.stdlib_module_names)
+
+CONFLICT_ONLY = "- CLAIM: cache flush works [VERIFIED] but also [UNVERIFIED]\n"
+
+
+class FencePairingTests(unittest.TestCase):
+    """CommonMark fence pairing: same delimiter char, run at least as long
+    as the opener; info string allowed on the opener only."""
+
+    def test_mismatched_fence_char_does_not_close(self):
+        text = "````python\n~~~\nCLAIM: hidden [VERIFIED]\n````\nCLAIM: outside [UNVERIFIED]"
+        self.assertEqual([c.text for c in cs.extract_claims(text)], ["outside [UNVERIFIED]"])
+
+    def test_shorter_fence_run_does_not_close(self):
+        text = "````\n```\nCLAIM: hidden [VERIFIED]\n````\nCLAIM: outside [UNVERIFIED]"
+        self.assertEqual([c.text for c in cs.extract_claims(text)], ["outside [UNVERIFIED]"])
+
+    def test_opener_info_string_allowed(self):
+        text = "```python\nCLAIM: hidden [VERIFIED]\n```\nCLAIM: seen [VERIFIED]"
+        self.assertEqual([c.text for c in cs.extract_claims(text)], ["seen [VERIFIED]"])
+
+    def test_longer_closer_closes(self):
+        text = "```\nCLAIM: hidden [VERIFIED]\n`````\nCLAIM: seen [UNVERIFIED]"
+        self.assertEqual([c.text for c in cs.extract_claims(text)], ["seen [UNVERIFIED]"])
+
+    def test_tilde_fence_hides_backtick_runs(self):
+        text = "~~~\n```\nCLAIM: hidden [VERIFIED]\n~~~\nCLAIM: seen [VERIFIED]"
+        self.assertEqual([c.text for c in cs.extract_claims(text)], ["seen [VERIFIED]"])
+
+    def test_pathological_fence_table_mix_terminates(self):
+        # unclosed/mismatched fences and a truncated table run at EOF: the
+        # single-pass scan must terminate and grade the visible claims
+        text = (
+            "````\n| Claim | Label |\n|---|---|\n| trapped | VERIFIED |\n"
+            "~~~\n```\nCLAIM: trapped too [VERIFIED]\n"
+            "````\nCLAIM: free [UNVERIFIED]\n| Claim | Label |\n"
+        )
+        claims = cs.extract_claims(text)
+        self.assertEqual([c.text for c in claims], ["free [UNVERIFIED]"])
+        result = cs.check_text(text)
+        self.assertFalse(result["ok"])  # trailing truncated label table
+        self.assertEqual(result["structural_ambiguous"][0]["line"], 10)
+
+
+class StructuralHeaderTests(unittest.TestCase):
+    def test_two_label_columns_fail_with_typed_finding(self):
+        result = cs.check_text("| Claim | Label | Status |\n|---|---|---|\n| x | VERIFIED | UNVERIFIED |")
+        self.assertFalse(result["ok"])
+        self.assertEqual(len(result["structural_ambiguous"]), 1)
+        self.assertIn("2 label columns", result["structural_ambiguous"][0]["reason"])
+        self.assertEqual(result["structural_ambiguous"][0]["line"], 3)
+
+    def test_short_label_table_run_one_line_fails_closed(self):
+        result = cs.check_text("| Claim | Label |")
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["structural_ambiguous"][0]["line"], 1)
+        self.assertIn("truncated claim table", result["structural_ambiguous"][0]["reason"])
+
+    def test_short_label_table_run_two_lines_fails_closed(self):
+        result = cs.check_text("| Claim | Label |\n|---|---|")
+        self.assertFalse(result["ok"])
+        self.assertIn("truncated claim table", result["structural_ambiguous"][0]["reason"])
+
+    def test_short_pipe_run_without_label_column_ignored(self):
+        result = cs.check_text("| Name | Value |\n| a | 1 |")
+        self.assertEqual(result["structural_ambiguous"], [])
+        self.assertTrue(result["vacuous"])  # zero claims: still not ok
+        self.assertFalse(result["ok"])
+
+    def test_short_row_missing_label_cell_is_typed_unmarked(self):
+        result = cs.check_text("| Claim | Label | Note |\n|---|---|---|\n| x |\n")
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["unmarked"][0]["reason"], "missing label cell in row")
+
+
+class MarkerAmbiguityTests(unittest.TestCase):
+    def test_unknown_token_alongside_recognized_is_structural_ambiguous(self):
+        result = cs.check_text("CLAIM: x [UNKNOWN] [VERIFIED]")
+        self.assertFalse(result["ok"])
+        self.assertEqual(len(result["structural_ambiguous"]), 1)
+        self.assertIn("UNKNOWN", result["structural_ambiguous"][0]["reason"])
+
+    def test_unknown_only_marker_is_unmarked_with_required_wording(self):
+        result = cs.check_text("CLAIM: x [UNKNOWN]")
+        self.assertFalse(result["ok"])
+        self.assertEqual(len(result["unmarked"]), 1)
+        self.assertIn("no recognized token present", result["unmarked"][0]["reason"])
+
+    def test_recognized_only_marker_still_marked(self):
+        result = cs.check_text("CLAIM: x [VERIFIED]")
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["structural_ambiguous"], [])
+
+
+class VacuityTests(unittest.TestCase):
+    def test_empty_document_is_vacuous_not_ok(self):
+        result = cs.check_text("")
+        self.assertFalse(result["ok"])
+        self.assertTrue(result["vacuous"])
+
+    def test_prose_only_document_is_vacuous_not_ok(self):
+        result = cs.check_text("# report\n\njust prose\n")
+        self.assertFalse(result["ok"])
+        self.assertTrue(result["vacuous"])
+
+    def test_document_with_claims_is_not_vacuous(self):
+        result = cs.check_text(LEDGER)
+        self.assertFalse(result["vacuous"])
+        self.assertTrue(result["ok"])
+
+    def test_zero_claim_file_fails_closed(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "empty.md"
+            path.write_text("# no claims\n")
+            result = cs.check_file(path)
+            self.assertFalse(result["ok"])
+            self.assertTrue(result["vacuous"])
+
+
+class GuardPinTests(unittest.TestCase):
+    def test_empty_labels_refused(self):
+        with self.assertRaisesRegex(ValueError, "at least one accepted label"):
+            cs.check_text(LEDGER, labels=[])
+
+    def test_claim_is_frozen(self):
+        claim = cs.extract_claims(LEDGER)[0]
+        with self.assertRaises(dataclasses.FrozenInstanceError):
+            claim.status = "UNVERIFIED"
+
+    def test_conflicting_only_cli_run_exits_nonzero(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "conflict.md"
+            path.write_text(CONFLICT_ONLY)
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rc = cs.main([str(path)])
+            self.assertEqual(rc, 1)
+            self.assertIn("CONFLICTING", buf.getvalue())
+
+    def test_mixed_run_with_vacuous_file_exits_nonzero(self):
+        with tempfile.TemporaryDirectory() as d:
+            good = Path(d) / "good.md"
+            good.write_text(LEDGER)
+            empty = Path(d) / "empty.md"
+            empty.write_text("# nothing\n")
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rc = cs.main([str(good), str(empty)])
+            self.assertEqual(rc, 1)
+            self.assertIn("VACUOUS", buf.getvalue())
+
+
+class SubprocessCliTests(unittest.TestCase):
+    """Runs `python -m app.reports.claim_status` in a real subprocess against
+    a staged copy of MODULE_PATH, so mutation runs exercise the mutated file
+    and the __main__ guard is pinned by execution, not by import."""
+
+    def _stage(self, root):
+        pkg = Path(root) / "app" / "reports"
+        pkg.mkdir(parents=True)
+        (Path(root) / "app" / "__init__.py").write_text("")
+        (pkg / "__init__.py").write_text("")
+        (pkg / "claim_status.py").write_text(MODULE_PATH.read_text())
+
+    def _run(self, root, *args):
+        env = dict(os.environ, PYTHONPATH=str(root))
+        return subprocess.run(
+            [sys.executable, "-m", "app.reports.claim_status", *args],
+            cwd=root, env=env, capture_output=True, text=True, timeout=30,
+        )
+
+    def test_module_cli_exit_codes_and_stdout(self):
+        with tempfile.TemporaryDirectory() as d:
+            self._stage(d)
+            good = Path(d) / "good.md"
+            good.write_text(LEDGER)
+            bad = Path(d) / "bad.md"
+            bad.write_text(LEDGER_BAD)
+            conflict = Path(d) / "conflict.md"
+            conflict.write_text(CONFLICT_ONLY)
+            empty = Path(d) / "empty.md"
+            empty.write_text("# no claims\n")
+            ok_run = self._run(d, str(good))
+            self.assertEqual(ok_run.returncode, 0, ok_run.stderr)
+            self.assertIn("all marked", ok_run.stdout)
+            bad_run = self._run(d, str(bad))
+            self.assertEqual(bad_run.returncode, 1)
+            self.assertIn("UNMARKED", bad_run.stdout)
+            conflict_run = self._run(d, str(conflict))
+            self.assertEqual(conflict_run.returncode, 1)
+            self.assertIn("CONFLICTING", conflict_run.stdout)
+            empty_run = self._run(d, str(empty))
+            self.assertEqual(empty_run.returncode, 2)
 
 
 if __name__ == "__main__":
