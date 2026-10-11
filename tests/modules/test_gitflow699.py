@@ -906,3 +906,68 @@ def test_merge_refused_for_a_non_conflict_reason_still_reports_conflict_error(fl
     assert str(e.value) == "merge of feature/orph into develop conflicted and was aborted"
     assert "feature/orph" in branches(flow.path)
     assert git(flow.path, "status", "--porcelain") == ""
+
+
+# --- required groups from the landing review (test-only) ---
+def test_git_failure_message_has_command_prefix_and_real_git_stderr_for_newline_version(flow):
+    # Observed with the installed git: a version with a trailing newline passes the SEMVER regex
+    # (the "$" anchor matches before a final newline) and git then refuses the branch name.
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("release", "1.0.0\n")
+    msg = str(e.value)
+    assert msg.startswith("git checkout -q -b release/1.0.0\n develop failed: ")
+    stderr_part = msg[len("git checkout -q -b release/1.0.0\n develop failed: "):]
+    assert "is not a valid branch name" in stderr_part
+    assert "release/1.0.0" in stderr_part
+    assert "release/1.0.0\n" not in branches(flow.path)
+
+
+def test_git_failure_message_includes_stderr_text_of_the_actual_failure(flow):
+    with pytest.raises(gf.GitFlowError) as e:
+        flow._git("checkout", "-q", "missing-branch-xyz")
+    msg = str(e.value)
+    assert msg.startswith("git checkout -q missing-branch-xyz failed: ")
+    tail = msg.split("failed: ", 1)[1]
+    assert tail.strip() != "" and "missing-branch-xyz" in tail
+
+
+def test_newline_version_with_existing_tag_reports_version_not_greater(flow):
+    tag_commit(flow.path, "v1.0.0")
+    with pytest.raises(gf.GitFlowError) as e:
+        flow.start("release", "1.0.0\n")
+    assert str(e.value) == "release version 1.0.0\n must be greater than latest tag v1.0.0"
+
+
+def test_audit_with_missing_develop_returns_empty_list(flow):
+    git(flow.path, "checkout", "-q", "main")
+    commit(flow.path, "m.txt")
+    git(flow.path, "branch", "-D", "develop")
+    assert "develop" not in branches(flow.path) and "main" in branches(flow.path)
+    assert flow.audit() == []
+
+
+def test_audit_with_missing_main_returns_empty_list(flow):
+    commit(flow.path, "d.txt")
+    git(flow.path, "branch", "-D", "main")
+    assert "main" not in branches(flow.path) and "develop" in branches(flow.path)
+    assert flow.audit() == []
+
+
+def test_audit_with_missing_develop_still_reports_nonconforming_names(flow):
+    git(flow.path, "checkout", "-q", "main")
+    git(flow.path, "branch", "odd")
+    git(flow.path, "branch", "-D", "develop")
+    assert flow.audit() == [{"name": "odd", "problem": "nonconforming_branch_name"}]
+
+
+def test_finish_hotfix_with_two_open_releases_merges_into_first_sorted_release(flow):
+    git(flow.path, "branch", "release/2.0.0", "develop")
+    git(flow.path, "branch", "release/1.5.0", "develop")
+    git(flow.path, "checkout", "-q", "main")
+    flow.start("hotfix", "1.0.1")
+    commit(flow.path, "h.txt")
+    res = flow.finish("hotfix", "1.0.1")
+    assert res == {"merged_into": ["main", "release/1.5.0"], "tag": "v1.0.1"}
+    assert git(flow.path, "show", "release/1.5.0:h.txt") == "x"
+    assert subprocess.run(["git", "-C", str(flow.path), "cat-file", "-e", "release/2.0.0:h.txt"],
+                          capture_output=True).returncode != 0
