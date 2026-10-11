@@ -68,11 +68,12 @@ def test_large_int_is_bad_type_not_overflow():
 
 
 def test_container_node_budget_n_and_n_plus_one():
- # root + extra list + child empty lists; no scalar nodes counted.
- r={'extra':[[] for _ in range(9998)]}
- refuse('VENT_REFUSED_UNKNOWN:request',r)
- r={'extra':[[] for _ in range(9999)]}
- refuse('VENT_REFUSED_OVERSIZE:request',r)
+ def tree(nodes):
+  if nodes==1:return []
+  children=min(64,nodes-1);q,rem=divmod(nodes-1,children)
+  return [tree(q+(i<rem))for i in range(children)]
+ refuse('VENT_REFUSED_UNKNOWN:request',{'extra':tree(9999)})
+ refuse('VENT_REFUSED_OVERSIZE:request',{'extra':tree(10000)})
 
 
 def test_depth32_and33():
@@ -201,3 +202,59 @@ def test_sequence_branch_depth_real_worker_roles(container):
   return [node]
  refuse('VENT_REFUSED_BAD_TYPE:worker_roles',req(niches=[niche(worker_roles=roles(29))]))
  refuse('VENT_REFUSED_OVERSIZE:request',req(niches=[niche(worker_roles=roles(30))]))
+
+
+@pytest.mark.parametrize('kind,limit',[(dict,32),(list,64),(tuple,64)])
+def test_generic_cardinality_boundaries(kind,limit):
+ def node(n):return {str(i):0 for i in range(n)} if kind is dict else kind(range(n))
+ refuse('VENT_REFUSED_UNKNOWN:request',{'extra':node(limit)})
+ refuse('VENT_REFUSED_OVERSIZE:request',{'extra':node(limit+1)})
+
+
+def test_root_cardinality_boundary():
+ refuse('VENT_REFUSED_UNKNOWN:request',{str(i):0 for i in range(32)})
+ refuse('VENT_REFUSED_OVERSIZE:request',{str(i):0 for i in range(33)})
+
+
+@pytest.mark.parametrize('kind',[dict,list,tuple])
+def test_hostile_cardinality_before_materialization(monkeypatch,kind):
+ import builtins
+ hostile={str(i):0 for i in range(100000)} if kind is dict else kind(range(100000))
+ request=hostile if kind is dict else {'extra':hostile}
+ visited=[]
+ def spy(value):
+  assert len(value)<=64,'oversized node reached materialization/traversal'
+  visited.append(len(value));return builtins.reversed(value)
+ monkeypatch.setattr(m,'reversed',spy,raising=False)
+ refuse('VENT_REFUSED_OVERSIZE:request',request)
+ assert visited==([] if kind is dict else [1])
+
+
+def _node(kind,n):return {str(i):0 for i in range(n)} if kind is dict else kind(range(n))
+
+
+@pytest.mark.parametrize('kind,limit',[(dict,32),(list,64),(tuple,64)])
+@pytest.mark.parametrize('wrap',['list','tuple','deep'])
+def test_cardinality_boundary_for_elements_inside_sequences(kind,limit,wrap):
+ def put(n):
+  v=_node(kind,n)
+  return {'extra':[v] if wrap=='list' else (v,) if wrap=='tuple' else [[v]]}
+ refuse('VENT_REFUSED_UNKNOWN:request',put(limit))
+ refuse('VENT_REFUSED_OVERSIZE:request',put(limit+1))
+
+
+@pytest.mark.parametrize('shape',['nested_dict','in_list','in_niche','root_tuple'])
+def test_only_root_niches_list_uses_declared_cap(shape):
+ big=[0]*65
+ r={'nested_dict':{'extra':{'niches':big}},'in_list':{'extra':[{'niches':big}]},'in_niche':{'niches':[{'niches':big}]},'root_tuple':{'niches':tuple(range(65))}}[shape]
+ refuse('VENT_REFUSED_OVERSIZE:request',r)
+
+
+import tracemalloc
+@pytest.mark.parametrize('kind',[dict,list,tuple])
+def test_hostile_cardinality_peak_allocation_bounded(kind):
+ hostile=_node(kind,200000);request=hostile if kind is dict else {'extra':hostile}
+ tracemalloc.start()
+ try:refuse('VENT_REFUSED_OVERSIZE:request',request);peak=tracemalloc.get_traced_memory()[1]
+ finally:tracemalloc.stop()
+ assert peak<100_000,peak

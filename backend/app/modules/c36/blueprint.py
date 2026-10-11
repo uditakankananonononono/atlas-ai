@@ -109,11 +109,11 @@ def _preflight(request):
                     value=n.get(field)
                     if type(value) is list and len(value)>cap:
                         _refuse("OVERSIZE",field)
-    stack=[(request,0,False)]
+    stack=[(request,0,False,32)]
     active=set()
     nodes=0
     while stack:
-        node,depth,leaving=stack.pop()
+        node,depth,leaving,cardinality=stack.pop()
         if leaving:
             active.remove(id(node));continue
         if type(node) in (dict,list,tuple):
@@ -122,18 +122,20 @@ def _preflight(request):
             _refuse("OVERSIZE","request")
         if type(node) not in (dict,list,tuple):
             continue
+        if len(node)>cardinality:
+            _refuse("OVERSIZE","request")
         if id(node) in active:
             _refuse("BAD_TYPE","request")
-        active.add(id(node));stack.append((node,depth,True))
+        active.add(id(node));stack.append((node,depth,True,cardinality))
         if type(node) is dict:
             for key,value in reversed(list(node.items())):
                 if type(key) is str:
                     if len(key)>200:_refuse("OVERSIZE","key")
                     if any(unicodedata.category(c) in {"Cc","Cf","Zl","Zp"} for c in key):
                         _refuse("CONTROL_CHARS","key")
-                stack.append((value,depth+1,False))
+                stack.append((value,depth+1,False,MAX_NICHES if depth==0 and key=="niches" and type(value) is list else (32 if type(value) is dict else 64)))
         else:
-            stack.extend((v,depth+1,False) for v in reversed(node))
+            stack.extend((v,depth+1,False,32 if type(v) is dict else 64) for v in reversed(node))
 
 
 def _caps(niches):
