@@ -89,3 +89,7 @@ The full production application import and whole repository suite are outside th
 package's verified result. Base/wider comparison must report intentional legacy
 row1458 failures separately from any other regression. No package evidence changes
 the shared ledger's SCOPED status automatically.
+
+Unicode text-helper boundary: no Unicode control, line/paragraph separator or bidi/format characters. The length cap is checked before Unicode scanning; refusals name the field, never its value. Cc, Zl, Zp, DEL, U+200B-200F, U+202A-202E, U+2066-2069 and U+FEFF are refused. Ordinary internal spaces and printable non-ASCII are allowed. Existing blank-text and outer-whitespace rules are unchanged.
+
+Unicode text-helper boundary: no Unicode control, line/paragraph separator or bidi/format characters. After the string-type guard, raw length is checked before strip, Unicode scan or copying. RAW length is the cap; oversize raw strings are refused, including a 10MB probe, without calling strip. This order changes oversize error precedence but does not widen the cap. Cc/Zl/Zp and the named bidi/format ranges are refused. Internal spaces and printable non-ASCII are allowed; existing outer-whitespace rules remain unchanged.

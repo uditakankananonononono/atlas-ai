@@ -9,6 +9,7 @@ for this row lives in legal_support_1260_1309.py and is neither used nor replace
 """
 from __future__ import annotations
 
+import unicodedata
 from datetime import datetime
 
 SCOPE = "EVID1282 custody completeness only"
@@ -37,7 +38,7 @@ def _fail(msg):
 
 
 def _text(v, where, limit=MAX_TEXT):
-    if not isinstance(v, str) or not v.strip() or len(v) > limit or any(ord(c) < 32 or ord(c) == 127 for c in v):
+    if not isinstance(v, str) or len(v) > limit or not v.strip() or any(unicodedata.category(c) in ('Cc', 'Zl', 'Zp') or 0x200B <= ord(c) <= 0x200F or 0x202A <= ord(c) <= 0x202E or 0x2066 <= ord(c) <= 0x2069 or ord(c) == 0xFEFF for c in v):
         _fail(f"{where} must be a non-empty single-line string of at most {limit} characters")
     return v
 

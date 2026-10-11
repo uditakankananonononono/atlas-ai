@@ -7,6 +7,7 @@ must bind tenant_id and actor_id from its authenticated principal.
 from __future__ import annotations
 
 from copy import deepcopy
+import unicodedata
 from datetime import datetime, timezone
 import math
 import re
@@ -24,9 +25,9 @@ class KnowledgeTraceError(ValueError):
 
 
 def _text(value: Any, field: str, limit: int = MAX_ID_LENGTH) -> str:
-    if type(value) is not str or not value.strip() or len(value) > limit:
+    if type(value) is not str or len(value) > limit or not value.strip():
         raise KnowledgeTraceError(f'{field} requires non-empty text <= {limit} characters')
-    if value != value.strip() or any(ord(c) < 32 for c in value):
+    if value != value.strip() or any(unicodedata.category(c) in ('Cc', 'Zl', 'Zp') or 0x200B <= ord(c) <= 0x200F or 0x202A <= ord(c) <= 0x202E or 0x2066 <= ord(c) <= 0x2069 or ord(c) == 0xFEFF for c in value):
         raise KnowledgeTraceError(f'{field} has whitespace or control characters')
     return value
 
