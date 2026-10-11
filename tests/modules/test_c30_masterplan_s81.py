@@ -1,7 +1,22 @@
 import copy
 import json
+import unicodedata
 import pytest
 from app.modules.c30 import masterplan as m
+
+
+_REFUSED_CATS = ("Cc", "Zl", "Zp", "Cf")  # categories c30.policy.clean_text refuses
+
+
+def uni(n, base=0x10000):
+    """n distinct code points starting at base, skipping those the shared text screen refuses."""
+    out, cp = [], base
+    while len(out) < n:
+        c = chr(cp)
+        if unicodedata.category(c) not in _REFUSED_CATS:
+            out.append(c)
+        cp += 1
+    return ''.join(out)
 
 
 def section(i='s1', **kw):
@@ -39,7 +54,7 @@ def test_three_volumes_unfilled_and_repetition():
 @pytest.mark.parametrize('n,expected',[(1,1),(2999,1),(3000,1),(3001,2),(6000,2)])
 def test_estimate_boundaries(n,expected):
     # Unicode code points make each sampled window unique without repetition.
-    body=''.join(chr(0x10000+i) for i in range(n))
+    body=uni(n)
     r=m.run(request([volume(sections=[section(body='  '+body+'\n')])],target_pages=4))
     assert r['estimated_text_pages']==expected and r['estimate_basis_chars']==3000
     assert r['accepted_body_chars']==n and r['estimated_shortfall']==max(0,4-expected)
@@ -71,7 +86,7 @@ def test_nonstring_fields(field,value):refuses(request([volume(sections=[section
 
 
 def test_cross_section_repetition_four_not_three():
-    b=''.join(chr(0x10000+i) for i in range(200))
+    b=uni(200)
     ss=[section('s'+str(i),body=b) for i in range(3)]
     assert m.run(request([volume(sections=ss)]))['excluded_count']==0
     ss.append(section('s3',body=b));ss.append(section('safe',body='distinct body'))
@@ -153,20 +168,18 @@ def test_exact_markdown_order():
 
 
 def test_shortfall_never_negative():
-    body=''.join(chr(0x10000+i) for i in range(3001))
+    body=uni(3001)
     r=m.run(request([volume(sections=[section(body=body)])],target_pages=1))
     assert r['estimated_text_pages']==2 and r['estimated_shortfall']==0
 
 
 def test_repetition_at_offset50_not100():
-    shared=''.join(chr(0x10000+i) for i in range(200))
+    shared=uni(200)
     ss=[section(str(i),body=chr(0x11000+i)*50+shared) for i in range(4)]+[section('safe')]
     r=m.run(request([volume(sections=ss)]));assert r['excluded_count']==4
 
 
-# ---- test-only pins for the peer's S8.1 mutation survivors (core masterplan.py unchanged) ----
-def uni(n, base=0x10000):
-    return ''.join(chr(base + i) for i in range(n))
+# ---- Additional S8.1 boundary pins (core masterplan.py unchanged) ----
 
 
 def refusal(x):

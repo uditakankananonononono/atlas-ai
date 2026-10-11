@@ -20,7 +20,7 @@ RULES = {
     "trade": "TRADE",          # no real-money trading
 }
 
-FORBIDDEN_CATEGORIES = ("Cc", "Zl", "Zp")
+FORBIDDEN_CATEGORIES = ("Cc", "Zl", "Zp", "Cf")  # Cf: format chars (soft hyphen, word joiner, zero-width, bidi)
 MESSAGE_WS = frozenset({"\n", "\r", "\t"})  # ordinary message bytes, permitted with allow_ws
 
 
@@ -56,20 +56,22 @@ def check_account(platform, existing, prefix: str) -> dict:
 
 def clean_text(value, prefix: str, name: str, limit: int, allow_blank: bool = False,
                allow_ws: bool = False) -> str:
-    """Shared text hygiene for caller-supplied fields: type, blank, control
-    characters (Unicode Cc/Zl/Zp) and length. Raises ValueError with the
-    unit's prefix. allow_ws permits the ordinary message bytes LF, CR and
-    TAB (approved text is preserved byte-exact, never normalized); every
-    other Cc/Zl/Zp character is still refused."""
-    if isinstance(value, bool) or not isinstance(value, str):
+    """Shared text hygiene for caller-supplied fields: exact type, raw length
+    cap, blank, and forbidden characters (Unicode Cc/Zl/Zp/Cf). Order is
+    fixed: type, then the raw length cap, then blank, then the character
+    scan, so an oversized value is refused before any per-character work.
+    Raises ValueError with the unit's prefix. allow_ws permits the ordinary
+    message bytes LF, CR and TAB (approved text is preserved byte-exact,
+    never normalized); every other forbidden character is still refused."""
+    if type(value) is not str:  # bool, subclasses of str and non-str all refuse
         raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (prefix, name))
+    if len(value) > limit:
+        raise ValueError("%s_REFUSED_TEXT_TOO_LONG:%s" % (prefix, name))
     if not allow_blank and not value.strip():
         raise ValueError("%s_REFUSED_EMPTY:%s" % (prefix, name))
     if any(unicodedata.category(c) in FORBIDDEN_CATEGORIES
            and not (allow_ws and c in MESSAGE_WS) for c in value):
         raise ValueError("%s_REFUSED_CONTROL_CHARS:%s" % (prefix, name))
-    if len(value) > limit:
-        raise ValueError("%s_REFUSED_TEXT_TOO_LONG:%s" % (prefix, name))
     return value
 
 
