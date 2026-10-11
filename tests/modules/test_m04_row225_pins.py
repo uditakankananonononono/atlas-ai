@@ -193,3 +193,15 @@ def test_reference_enumeration_known_values():
     assert _enumerate([0, 0], [1, 1], [[-1, 1], [-1, 1]], []) == 0
     assert _enumerate([0, 0], [1, 1], [[-1, 1], [-1, 1]], [{'coefficients': [1, 1], 'rhs': -5}]) is None
     assert _enumerate([1, -2], [.5, .5], [[-1, 2], [-1, 3]], [{'coefficients': [1, 1], 'rhs': 2}]) == pytest.approx(-5)
+
+
+@pytest.mark.parametrize('objective', ['robust', 'rosenbrock'])
+def test_caller_objective_key_is_overridden_not_validated(objective):
+    """Row 225 builds its own linear objective internally; a caller-supplied 'objective' value
+    (even one the generic solver would reject, like 'robust') must not change the result."""
+    base = go()
+    r = go(objective=objective)
+    assert r['best_value'] == base['best_value'] == 0.0
+    assert r['best_point'] == base['best_point'] == [0.0, 0.0]
+    assert r['worst_case_value'] == 0.0
+    assert r['search'] == 'exact_vertices_edge_kinks_interior'
