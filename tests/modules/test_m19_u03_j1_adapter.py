@@ -322,7 +322,7 @@ def test_pin_bind_ids_shape_refusals():
 
 
 def test_pin_resolutions_from_posts_shape_refusals():
-    assert "bound" in err(lambda: ad.resolutions_from_posts("x", [], resolved_at="2026-04-07T00:00:00+00:00"))
+    assert "bound must be a non-empty list" in err(lambda: ad.resolutions_from_posts("x", [], resolved_at="2026-04-07T00:00:00+00:00"))
     assert "bound 0 must be an object" in err(
         lambda: ad.resolutions_from_posts([42], [], resolved_at="2026-04-07T00:00:00+00:00"))
 
