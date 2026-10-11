@@ -22,7 +22,12 @@ This package adds an engine that runs real `git` on a repository. Module: `gitfl
 - Not wired into any router. Existing `git_flow` method is untouched.
 
 ## Qualification (added 2026-10-11, second commit; the first commit's text above is unchanged)
-Operations are confined to throwaway/temporary repos. `GitFlow(path)` refuses any path that does not resolve (after symlinks and `..`) to a location strictly inside the system temporary directory, including the temp directory itself. It never operates on the Atlas repo or any non-temporary repo. Before this commit the class accepted any path.
+Operations are meant for throwaway/temporary repos only. Being inside the temp directory is NOT treated as proof of that. What the guard does (third commit, 2026-10-11, superseding the sentence from the second commit):
+- `GitFlow(path)` resolves the path once (symlinks and `..`) and refuses anything not strictly inside the system temporary directory. All later operations use that resolved path, so retargeting a symlink afterwards does not redirect them.
+- `init()` only creates a repository: the target must not exist or must be an empty directory. It writes a marker file inside `.git`. An existing non-empty directory, an existing clone (including a clone of the Atlas checkout placed in temp) or an existing unmarked repo is refused.
+- `start`, `finish`, `status`, `audit` and a repeat `init` refuse any repository without that marker, and any repository that has a remote configured.
+
+What it does NOT guarantee: it cannot tell a throwaway repo from a real one by itself. Anyone who can write into a repository's `.git` directory can add the marker to a real repo in temp, and a remote-less marked repo is accepted whatever its history. It does not detect the Atlas repo by name or content, it refuses it because it lacks the marker and is outside temp. It does not stop git operations you run yourself outside this class. Temp location alone is not a safety condition; the marker and no-remote checks are.
 
 Material risks, stated verbatim:
 - backmerge failure can leave main merged+TAGGED without transactional rollback

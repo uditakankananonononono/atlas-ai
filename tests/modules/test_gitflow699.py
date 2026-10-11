@@ -304,3 +304,87 @@ def test_guard_refuses_temp_root_itself():
 
 def test_guard_allows_path_inside_temp(tmp_path):
     assert gf.GitFlow(tmp_path / "ok").path.name == "ok"
+
+
+# --- round 3: marker, no remotes, resolved path (added in third commit) ---
+def _preexisting_clone(tmp_path, with_remote=True):
+    src = tmp_path / "src"
+    src.mkdir()
+    git(src, "init", "-q", "-b", "main")
+    commit(src, "a.txt")
+    dst = tmp_path / "clone"
+    subprocess.run(["git", "clone", "-q", str(src), str(dst)], check=True, env=gf.clean_git_env())
+    git(dst, "branch", "develop")
+    return dst
+
+
+def test_marker_lives_in_git_dir_and_tree_stays_clean(flow):
+    assert (flow.path / ".git" / gf.MARKER_NAME).is_file()
+    assert git(flow.path, "status", "--porcelain") == ""
+
+
+def test_init_refuses_preexisting_clone_inside_temp(tmp_path):
+    dst = _preexisting_clone(tmp_path)
+    before = set(branches(dst))
+    f = gf.GitFlow(dst)
+    with pytest.raises(gf.GitFlowError, match="not created by this module"):
+        f.init()
+    assert set(branches(dst)) == before
+    assert not (dst / ".git" / gf.MARKER_NAME).exists()
+
+
+@pytest.mark.parametrize("op", ["start", "finish", "status", "audit"])
+def test_ops_refuse_unmarked_repo(tmp_path, op):
+    dst = _preexisting_clone(tmp_path)
+    f = gf.GitFlow(dst)
+    with pytest.raises(gf.GitFlowError, match="not created by this module"):
+        if op in ("start", "finish"):
+            getattr(f, op)("feature", "x")
+        else:
+            getattr(f, op)()
+    assert "feature/x" not in branches(dst)
+
+
+def test_init_refuses_clone_of_the_atlas_checkout_inside_temp(tmp_path):
+    dst = tmp_path / "atlas_clone"
+    subprocess.run(["git", "clone", "-q", "--no-checkout", "--local", str(_REPO_ROOT), str(dst)],
+                   check=True, env=gf.clean_git_env())
+    with pytest.raises(gf.GitFlowError, match="not created by this module"):
+        gf.GitFlow(dst).init()
+
+
+def test_init_refuses_nonempty_plain_directory(tmp_path):
+    d = tmp_path / "d"
+    d.mkdir()
+    (d / "file.txt").write_text("x")
+    with pytest.raises(gf.GitFlowError, match="not created by this module"):
+        gf.GitFlow(d).init()
+    assert not (d / ".git").exists()
+
+
+def test_marked_repo_with_remote_is_refused(flow):
+    git(flow.path, "remote", "add", "origin", "https://example.invalid/x.git")
+    for call in (lambda: flow.start("feature", "x"), flow.status, flow.audit, flow.init):
+        with pytest.raises(gf.GitFlowError, match="remote"):
+            call()
+
+
+def test_ops_use_resolved_path_not_later_symlink_target(tmp_path):
+    real = tmp_path / "real"
+    other = tmp_path / "other"
+    other.mkdir()
+    git(other, "init", "-q", "-b", "main")
+    commit(other, "o.txt")
+    link = tmp_path / "link"
+    link.symlink_to(real.parent / "real_placeholder_missing")
+    real.mkdir()
+    link.unlink()
+    link.symlink_to(real)
+    f = gf.GitFlow(link)
+    f.init()
+    link.unlink()
+    link.symlink_to(other)  # retarget after construction
+    f.start("feature", "x")
+    assert "feature/x" in branches(real)
+    assert branches(other) == {"main"}
+    assert f.path == real.resolve()

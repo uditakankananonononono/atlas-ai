@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import os
 import re
+import secrets
 import subprocess
 import tempfile
 from pathlib import Path
@@ -16,6 +17,7 @@ DEVELOP = "develop"
 KINDS = ("feature", "release", "hotfix")
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 TAG_PREFIX = "v"
+MARKER_NAME = "gitflow699-throwaway"
 
 # (source kind, target branch kind) pairs git flow permits.
 _MERGES = {
@@ -77,7 +79,7 @@ class GitFlow:
         root = Path(tempfile.gettempdir()).resolve()
         if root not in p.parents:
             raise GitFlowError(f"refusing {p}: GitFlow only operates on repositories inside the temporary directory {root}")
-        self.path = Path(path)
+        self.path = p  # resolved once; every operation uses this, never the caller's path
 
     # -- git plumbing -------------------------------------------------
     def _git(self, *args, check=True):
@@ -120,9 +122,24 @@ class GitFlow:
         return max(vals, key=lambda t: _semver_tuple(t[len(TAG_PREFIX):]), default=None)
 
     # -- operations ---------------------------------------------------
+    def _marker(self):
+        return self.path / ".git" / MARKER_NAME
+
+    def _require_owned(self):
+        if not self._marker().is_file():
+            raise GitFlowError(f"{self.path} was not created by this module (no throwaway marker); refusing")
+        if self._out("remote"):
+            raise GitFlowError("repository has a remote configured; throwaway repositories have none; refusing")
+
     def init(self):
-        if not (self.path / ".git").exists():
+        if self._marker().is_file():
+            self._require_owned()
+        else:
+            if self.path.exists() and (not self.path.is_dir() or any(self.path.iterdir())):
+                raise GitFlowError(f"{self.path} is not empty and was not created by this module; refusing")
+            self.path.mkdir(parents=True, exist_ok=True)
             self._git("init", "-q", "-b", MAIN)
+            self._marker().write_text(secrets.token_hex(16) + "\n")
         brs = self._branches()
         if MAIN not in brs:
             if brs:
@@ -143,6 +160,7 @@ class GitFlow:
             raise GitFlowError(f"{kind} name must be MAJOR.MINOR.PATCH semver: {name!r}")
 
     def start(self, kind, name):
+        self._require_owned()
         self._check_name(kind, name)
         branch = f"{kind}/{name}"
         self._require_clean()
@@ -171,6 +189,7 @@ class GitFlow:
             raise GitFlowError(f"merge of {source} into {target} conflicted and was aborted")
 
     def finish(self, kind, name):
+        self._require_owned()
         self._check_name(kind, name)
         branch = f"{kind}/{name}"
         if branch not in self._branches():
@@ -194,6 +213,7 @@ class GitFlow:
         return {"merged_into": targets, "tag": tag}
 
     def status(self):
+        self._require_owned()
         cur = self._current()
         out = []
         for b in self._branches():
@@ -208,6 +228,7 @@ class GitFlow:
         return out
 
     def audit(self):
+        self._require_owned()
         findings = []
         for b in self._branches():
             if classify_branch(b)[0] == "other":
