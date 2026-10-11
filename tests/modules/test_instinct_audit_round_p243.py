@@ -227,5 +227,33 @@ class InjectionGuard(Base):
             self.assertEqual(len(lines), 1 + active + excluded + unmatched)
 
 
+class PinDebtLane2(Base):
+    def test_items_function_retains_excluded_rows_mixed(self):
+        # Kills lane-2 survivor drop_excluded_items: m.items must return the
+        # excluded rows too, flagged, with their marks and refs intact.
+        led = build(E("a", "p1", "req-1", "pass", "ev1"), E("b", "p2", "req-2", "fail", "ev2"),
+                    E("c", "p1", "doc200", "pass", "ev0"), E("d", "p1", "doc230", "pending", "ev9"))
+        rows = m.items(led, exclusions=("doc200", "doc230"))
+        self.assertEqual([r["id"] for r in rows], ["a", "b", "c", "d"])
+        self.assertEqual([r["excluded"] for r in rows], [False, False, True, True])
+        self.assertEqual(rows[2], {"id": "c", "project_id": "p1", "requirement_ref": "doc200",
+                                   "mark": "pass", "evidence_ref": "ev0", "excluded": True,
+                                   "verification": "UNVERIFIED"})
+        self.assertEqual(rows[3]["mark"], "pending")
+
+    def test_counts_cover_whole_ledger_including_excluded(self):
+        # Kills lane-2 survivor counting marks over active entries only:
+        # passed/failed/pending are computed over the whole ledger.
+        led = build(E("a", "p1", "req-1", "pass", "ev1"),
+                    E("c", "p1", "doc200", "pass", "ev0"),
+                    E("d", "p1", "doc230", "fail", "ev9"),
+                    E("e", "p1", "portfolio", "pending", "ev8"))
+        rep = m.report(led, exclusions=("doc200", "doc230", "portfolio"))
+        self.assertEqual(rep["counts"],
+                         {"entries": 4, "active": 1, "excluded": 3, "passed": 2,
+                          "failed": 1, "pending": 1, "unmatched_exclusions": 0})
+        self.assertEqual(rep["verdict"], "pass")
+
+
 if __name__ == "__main__":
     unittest.main()
