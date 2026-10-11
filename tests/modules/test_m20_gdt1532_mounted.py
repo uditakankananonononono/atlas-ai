@@ -24,3 +24,8 @@ def test_owner_transport_context_and_actor_refusal(monkeypatch,oidc_auth_headers
  assert r.status_code==200 and r.json()['tenant_id']=='a' and r.json()['actor_id']=='owner'
  for field,value in [('tenant_id','b'),('actor_id','other')]:
   assert c.post(path,headers=h,json={'method':'gdt','data':{**packet(),field:value}}).status_code==403
+
+def test_second_owner_response_identity(monkeypatch,oidc_auth_headers):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app)
+ r=c.post('/api/v1/api/modules/20/engineering/1510-1559/analyze',headers=oidc_auth_headers('second','second-actor'),json={'method':'gdt','data':packet()})
+ assert r.status_code==200 and r.json()['tenant_id']=='second' and r.json()['actor_id']=='second-actor'
