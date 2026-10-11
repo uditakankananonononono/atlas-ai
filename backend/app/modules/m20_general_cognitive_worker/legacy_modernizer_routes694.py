@@ -1,5 +1,5 @@
 from typing import Optional, Any
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
 from .computation_boundary import owner_payload
@@ -13,7 +13,15 @@ class ModernizeRequest(BaseModel):
     actor_id: Optional[str] = None
     resource_refs: list[dict[str,Any]] = Field(default_factory=list,max_length=64)
 
-@router.post('/modernize')
+async def reject_surrogate_source(request:Request):
+    try:packet=await request.json()
+    except (ValueError,UnicodeError):return
+    source=packet.get('source')if isinstance(packet,dict)else None
+    if isinstance(source,str):
+        try:source.encode('utf-8')
+        except UnicodeEncodeError as e:raise HTTPException(422,'source contains invalid Unicode surrogate')from e
+
+@router.post('/modernize',dependencies=[Depends(reject_surrogate_source)])
 def modernize_source(body:ModernizeRequest,tenant:TenantContext=Depends(require_tenant)):
     owner_payload(body.model_dump(exclude_none=True),tenant)
     try:encoded=body.source.encode('utf-8')

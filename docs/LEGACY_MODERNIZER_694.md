@@ -76,3 +76,7 @@ candidate is not demonstrated by a real input. Source-vs-ledger9-row offset rema
 unresolved; source title alone does not establish full legacy modernization.
 
 Lone Unicode surrogates refuse HTTP422 before UTF-8 byte-size validation.
+The mounted surrogate guard runs before request-model validation too: Pydantic
+may reject lone surrogates and echo them in a validation error, which Starlette
+cannot UTF-8 encode. The raw JSON dependency rejects that source with an ASCII
+422 detail before this error-rendering path. The endpoint encode guard remains.
