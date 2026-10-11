@@ -27002,10 +27002,11 @@
           "evidence_kind": "exact-distinctive-engineering-calculation-and-boundary-node"
         }
       },
-      "current_scope": "Supplied diagnostics/templates only: supplied_frame_field_presence. Not execution of original engineering capability, CAD/solver or physical test.",
+      "current_scope": "Bounded 1D datum tolerance chain (GDT1532): signed linear datum-stack computation over supplied datums/components/fit_limits with explicit units, closed absolute intervals, no conversion. Legacy frame-field-only payloads refuse 422. Not arbitrary geometry, full GD&T, CAD/solver or physical test.",
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/engineering_1510_1559.py",
-        "test_path": "tests/modules/test_m20_engineering_1510_1559.py"
+        "test_path": "tests/modules/test_m20_gdt1532_stack.py",
+        "mounted_test_path": "tests/modules/test_m20_gdt1532_mounted.py"
       }
     },
     {
