@@ -192,3 +192,66 @@ def test_hermetic_source_and_no_j1_import():
     for banned in ("import socket", "import subprocess", "import requests", "urllib", "open(", "os.environ", "random",
                    "time.time", "datetime.now", "utcnow", "j1_forecast", "ForecastLedger", "m20_general"):
         assert banned not in src
+
+
+# ---- timestamp fix (child): the ledger returns UTC as '...Z'; bind_ids must compare parsed instants, not text ----
+def _returned_with(pending, fmt):
+    out = []
+    for i, j in enumerate(pending["j1_predictions"]):
+        d = dict(j, prediction_id=f"{i + 5:064x}")
+        d["made_at"] = fmt(datetime.fromisoformat(j["made_at"]))
+        d["horizon"] = fmt(datetime.fromisoformat(j["horizon"]))
+        out.append(d)
+    return out
+
+
+def _z(d):
+    return d.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _plus_0530(d):
+    return d.astimezone(timezone(timedelta(hours=5, minutes=30))).isoformat()
+
+
+def test_ts_bind_ids_accepts_ledger_z_timestamps():
+    pending = ad.to_j1_predictions(u03_predictions(), source="s")
+    bound = ad.bind_ids(pending, _returned_with(pending, _z))
+    assert [b["j1_id"] for b in bound] == [f"{5:064x}", f"{6:064x}"]
+    assert bound[0]["made_at"] == "2026-03-31T00:00:00+00:00"          # bound keeps the adapter's own form
+
+
+def test_ts_bind_ids_accepts_same_instant_in_another_offset():
+    pending = ad.to_j1_predictions(u03_predictions(), source="s")
+    assert len(ad.bind_ids(pending, _returned_with(pending, _plus_0530))) == 2
+
+
+def test_ts_bind_ids_still_matches_plus_zero_form():
+    pending = ad.to_j1_predictions(u03_predictions(), source="s")
+    assert len(ad.bind_ids(pending, _returned_with(pending, lambda d: d.isoformat()))) == 2
+
+
+def test_ts_a_different_instant_does_not_match():
+    pending = ad.to_j1_predictions(u03_predictions(), source="s")
+    ret = _returned_with(pending, _z)
+    ret[0]["horizon"] = "2026-04-08T00:00:00Z"
+    assert "no returned prediction" in err(lambda: ad.bind_ids(pending, ret))
+    ret = _returned_with(pending, _z)
+    ret[0]["made_at"] = "2026-03-31T00:00:01Z"
+    assert "no returned prediction" in err(lambda: ad.bind_ids(pending, ret))
+
+
+def test_ts_unparseable_or_naive_returned_timestamp_is_a_refusal_not_a_crash():
+    pending = ad.to_j1_predictions(u03_predictions(), source="s")
+    for bad in ("not a time", "2026-04-07T00:00:00", 5, None):
+        ret = _returned_with(pending, _z)
+        ret[1]["horizon"] = bad
+        msg = err(lambda ret=ret: ad.bind_ids(pending, ret))
+        assert "returned 1" in msg and "horizon" in msg
+
+
+def test_ts_text_fields_still_compared_exactly():
+    pending = ad.to_j1_predictions(u03_predictions(), source="s")
+    for key, val in (("claim", "other"), ("source", "other"), ("probability", 0.71)):
+        ret = _returned_with(pending, _z)
+        ret[0][key] = val
+        assert "no returned prediction" in err(lambda ret=ret: ad.bind_ids(pending, ret))

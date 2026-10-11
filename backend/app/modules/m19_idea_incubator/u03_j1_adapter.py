@@ -98,9 +98,27 @@ def bind_ids(pending_result, returned):
     for i, r in enumerate(returned):
         if not isinstance(r, dict) or not isinstance(r.get("prediction_id"), str) or not r["prediction_id"]:
             _fail(f"returned {i} must carry a non-empty prediction_id")
+    when = []
+    for i, r in enumerate(returned):
+        pair = {}
+        for k in ("made_at", "horizon"):
+            v = r.get(k)
+            if not isinstance(v, str):
+                _fail(f"returned {i} {k} must be timezone-aware ISO text")
+            try:
+                d = datetime.fromisoformat(v.replace("Z", "+00:00"))
+            except ValueError:
+                _fail(f"returned {i} {k} must be timezone-aware ISO text")
+            if d.tzinfo is None or d.utcoffset() is None:
+                _fail(f"returned {i} {k} must be timezone-aware ISO text")
+            pair[k] = d.astimezone(timezone.utc)
+        when.append(pair)
     bound = []
     for i, e in enumerate(pending_result["pending"]):
-        hits = [r for r in returned if all(r.get(k) == e[k] for k in _KEYS)]
+        mine = {k: _utc(e[k], f"pending {i} {k}") for k in ("made_at", "horizon")}
+        hits = [r for r, w in zip(returned, when)
+                if all(r.get(k) == e[k] for k in ("claim", "probability", "source"))
+                and w["made_at"] == mine["made_at"] and w["horizon"] == mine["horizon"]]
         if not hits:
             _fail(f"no returned prediction matches pending {i}")
         if len(hits) > 1:
