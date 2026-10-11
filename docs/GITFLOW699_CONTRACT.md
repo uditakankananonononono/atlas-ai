@@ -32,3 +32,8 @@ What it does NOT guarantee: it cannot tell a throwaway repo from a real one by i
 Material risks, stated verbatim:
 - backmerge failure can leave main merged+TAGGED without transactional rollback
 - highest-tag selection is repo-wide not main-ancestry
+
+## Dated note (2026-10-11, fourth commit; appended only, earlier text unchanged)
+Admission: literal NEVER-Atlas is not guaranteed, temp is not proof of throwaway.
+The guard (marker, no remote, init only into an empty or new directory) reduces the chance of touching a real repository. It does not prove a repository is throwaway and does not guarantee the Atlas repo is never touched.
+Heading slip: the section above titled "Qualification (added 2026-10-11, second commit ...)" also contains text added in the third commit (e11457fb). The heading was not edited.
