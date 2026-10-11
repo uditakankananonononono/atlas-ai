@@ -1,0 +1,28 @@
+F............F......................                                     [100%]
+=================================== FAILURES ===================================
+__________________ test_25_links_two_templates_and_duplicates __________________
+
+    def test_25_links_two_templates_and_duplicates():
+        out=m.run(req(fixture()))
+>       assert out['coverage']=={'links_found':25,'duplicates_dropped':3,'unknown_kind':1}
+E       AssertionError: assert {'duplicates_...nown_kind': 0} == {'duplicates_...nown_kind': 1}
+E
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'unknown_kind': 0} != {'unknown_kind': 1}
+E         Use -v to get more diff
+
+tests/modules/test_c35_docs_ingest_s42.py:26: AssertionError
+_______________________ test_unknown_kind_is_not_guessed _______________________
+
+    def test_unknown_kind_is_not_guessed():
+        out=m.run(req('Scholarship contest label https://unknown.example'))
+        assert out['index'][0]['kind']=='unknown'
+>       assert out['coverage']['unknown_kind']==1
+E       assert 0 == 1
+
+tests/modules/test_c35_docs_ingest_s42.py:81: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_25_links_two_templates_and_duplicates
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_unknown_kind_is_not_guessed
+2 failed, 34 passed in 0.44s

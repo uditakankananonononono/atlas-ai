@@ -1,0 +1,23 @@
+..................................F.                                     [100%]
+=================================== FAILURES ===================================
+____________________ test_controls_and_cap_use_real_policy _____________________
+
+    def test_controls_and_cap_use_real_policy():
+        refuse('APPLY_REFUSED_CONTROL_CHARS:text',lambda:m.run(req('bad\x00text')))
+>       refuse('APPLY_REFUSED_TEXT_TOO_LONG:text',lambda:m.run(req('x'*2_000_001)))
+
+tests/modules/test_c35_docs_ingest_s42.py:136:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'APPLY_REFUSED_TEXT_TOO_LONG:text'
+f = <function test_controls_and_cap_use_real_policy.<locals>.<lambda> at 0x7fca8188f600>
+
+    def refuse(code,f):
+>       with pytest.raises(ValueError)as e:f()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_c35_docs_ingest_s42.py:15: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_controls_and_cap_use_real_policy
+1 failed, 35 passed in 0.52s

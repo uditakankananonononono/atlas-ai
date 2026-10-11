@@ -1,0 +1,38 @@
+F.........F.........................                                     [100%]
+=================================== FAILURES ===================================
+__________________ test_25_links_two_templates_and_duplicates __________________
+
+    def test_25_links_two_templates_and_duplicates():
+        out=m.run(req(fixture()))
+        assert out['coverage']=={'links_found':25,'duplicates_dropped':3,'unknown_kind':1}
+        assert len(out['index'])==22
+        assert out['index'][0]['url']=='https://sciencefair.example/program/0'
+        assert out['index'][0]['label']=='Opportunity 0 https://sciencefair.example/program/0'
+        assert out['index'][0]['kind']=='competition'
+        assert out['index'][-1]['kind']=='grant'
+        assert out['index'][-1]['url']=='https://grants.example/call?year=2026'
+>       assert len(out['waiver_templates'])==2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = len([{'doc_url': 'https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0', 'placehol...uest\nDear {school}, I am {name}. Please waive fees for {opportunity}.\n\nwaiver request\nAsk {school} for {name}.\n'}])
+
+tests/modules/test_c35_docs_ingest_s42.py:33: AssertionError
+_________ test_template_casefold_blank_delimiter_and_exact_whitespace __________
+
+    def test_template_casefold_blank_delimiter_and_exact_whitespace():
+        text='prefix\nFEE WAIVER details\r\n  Dear {name},  \r\n\tApply {other} and {school}\r\n\r\nnot a template\n'
+        out=m.run(req(text))
+>       assert out['waiver_templates'][0]['text']=='FEE WAIVER details\r\n  Dear {name},  \r\n\tApply {other} and {school}'
+E       AssertionError: assert 'FEE WAIVER d...ot a template' == 'FEE WAIVER d... and {school}'
+E
+E         Skipping 54 identical leading characters in diff, use -v to show
+E         - nd {school}
+E         + nd {school}
+E         ?            ++
+E         +
+E         + not a template
+
+tests/modules/test_c35_docs_ingest_s42.py:69: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_25_links_two_templates_and_duplicates
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_template_casefold_blank_delimiter_and_exact_whitespace
+2 failed, 34 passed in 0.39s

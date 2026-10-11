@@ -1,0 +1,18 @@
+.......F............................                                     [100%]
+=================================== FAILURES ===================================
+_____________________ test_cross_doc_dedupe_and_provenance _____________________
+
+    def test_cross_doc_dedupe_and_provenance():
+        r={'as_of':'d','docs':[{'doc_url':BOOKMARK,'text':'One https://X.example/path/'},{'doc_url':WAIVER,'text':'Two https://x.example/path#part'}]}
+        out=m.run(r)
+        assert out['coverage']['duplicates_dropped']==1
+>       assert out['index']==[{'url':'https://x.example/path','label':'One https://X.example/path/','kind':'unknown','doc_urls':[BOOKMARK,WAIVER]}]
+E       AssertionError: assert [{'doc_urls':...xample/path'}] == [{'doc_urls':...xample/path'}]
+E
+E         At index 0 diff: {'url': 'https://x.example/path', 'label': 'One https://X.example/path/', 'kind': 'unknown', 'doc_urls': ['https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0']} != {'url': 'https://x.example/path', 'label': 'One https://X.example/path/', 'kind': 'unknown', 'doc_urls': ['https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0', 'https://docs.google.com/document/d/1egtDk7S8I0srRFYgWCUwY_veBpXuw8VCutCTF1wsVzU/edit?usp=sharing']}
+E         Use -v to get more diff
+
+tests/modules/test_c35_docs_ingest_s42.py:51: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_cross_doc_dedupe_and_provenance
+1 failed, 35 passed in 0.39s

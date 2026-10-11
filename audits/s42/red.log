@@ -1,0 +1,17 @@
+
+==================================== ERRORS ====================================
+__________ ERROR collecting tests/modules/test_c35_docs_ingest_s42.py __________
+tests/modules/test_c35_docs_ingest_s42.py:9: in <module>
+    m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1190: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/sandbox/atlas-s42/backend/app/modules/c35/docs_ingest.py'
+=========================== short test summary info ============================
+ERROR tests/modules/test_c35_docs_ingest_s42.py - FileNotFoundError: [Errno 2...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.28s

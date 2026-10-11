@@ -1,0 +1,17 @@
+...............................F....                                     [100%]
+=================================== FAILURES ===================================
+_________________________ test_label_byte_preservation _________________________
+
+    def test_label_byte_preservation():
+        line='  title\t https://a.example/p  '
+>       assert m.run(req(line))['index'][0]['label']==line
+E       AssertionError: assert 'title\t https://a.example/p' == '  title\t ht...a.example/p  '
+E
+E         -   title	 https://a.example/p
+E         ? --     	                    --
+E         + title	 https://a.example/p
+
+tests/modules/test_c35_docs_ingest_s42.py:122: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_label_byte_preservation
+1 failed, 35 passed in 0.57s

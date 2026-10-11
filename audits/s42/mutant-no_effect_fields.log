@@ -1,0 +1,36 @@
+............................F.......                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_refusals[data8-APPLY_REFUSED_BAD_TYPE:request] ______________
+
+data = {'action': 'send', 'as_of': 'd', 'docs': [{'doc_url': 'https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0', 'text': 'x'}]}
+code = 'APPLY_REFUSED_BAD_TYPE:request'
+
+    @pytest.mark.parametrize('data,code',[
+    (None,'APPLY_REFUSED_BAD_TYPE:request'),
+    ({},'APPLY_REFUSED_NOSOURCE'),
+    ({'as_of':'d','docs':[]},'APPLY_REFUSED_NOSOURCE'),
+    ({'as_of':'d','docs':True},'APPLY_REFUSED_BAD_TYPE:docs'),
+    ({'as_of':'d','docs':[None]},'APPLY_REFUSED_BAD_TYPE:doc'),
+    ({'as_of':'d','docs':[{'doc_url':BOOKMARK,'text':''}]},'APPLY_REFUSED_EMPTY:text'),
+    ({'as_of':'','docs':[{'doc_url':BOOKMARK,'text':'x'}]},'APPLY_REFUSED_EMPTY:as_of'),
+    ({'as_of':'d','docs':[{'doc_url':BOOKMARK,'text':False}]},'APPLY_REFUSED_BAD_TYPE:text'),
+    ({'as_of':'d','docs':[{'doc_url':BOOKMARK,'text':'x'}],'action':'send'},'APPLY_REFUSED_BAD_TYPE:request'),
+    ])
+>   def test_refusals(data,code):refuse(code,lambda:m.run(data))
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_c35_docs_ingest_s42.py:108:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'APPLY_REFUSED_BAD_TYPE:request'
+f = <function test_refusals.<locals>.<lambda> at 0x7f79a8db1b20>
+
+    def refuse(code,f):
+>       with pytest.raises(ValueError)as e:f()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/modules/test_c35_docs_ingest_s42.py:15: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_refusals[data8-APPLY_REFUSED_BAD_TYPE:request]
+1 failed, 35 passed in 0.41s

@@ -1,0 +1,23 @@
+..........F.F.......................                                     [100%]
+=================================== FAILURES ===================================
+_________ test_template_casefold_blank_delimiter_and_exact_whitespace __________
+
+    def test_template_casefold_blank_delimiter_and_exact_whitespace():
+        text='prefix\nFEE WAIVER details\r\n  Dear {name},  \r\n\tApply {other} and {school}\r\n\r\nnot a template\n'
+        out=m.run(req(text))
+>       assert out['waiver_templates'][0]['text']=='FEE WAIVER details\r\n  Dear {name},  \r\n\tApply {other} and {school}'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests/modules/test_c35_docs_ingest_s42.py:69: IndexError
+___________________________ test_template_final_eof ____________________________
+
+>   def test_template_final_eof():assert m.run(req('Waiver request\nHello {opportunity}'))['waiver_templates'][0]['text']=='Waiver request\nHello {opportunity}'
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+
+tests/modules/test_c35_docs_ingest_s42.py:75: IndexError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_template_casefold_blank_delimiter_and_exact_whitespace
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_template_final_eof - I...
+2 failed, 34 passed in 0.40s

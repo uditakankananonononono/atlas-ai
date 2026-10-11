@@ -1,0 +1,154 @@
+{
+  "mutants": 21,
+  "killed": 20,
+  "survived": 1,
+  "results": [
+    {
+      "name": "pin_check",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "host_lower",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "drop_fragment",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "trailing_slash",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "utm_filter",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "utm_casefold",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "keep_blank_query",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "dedupe",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "dup_counter",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "source_provenance",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "template_trigger",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "template_delimiter",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "template_verbatim",
+      "outcome": "SURVIVED",
+      "killed": false,
+      "exit_code": 0,
+      "disposition": "OPEN: needs test or equivalence justification"
+    },
+    {
+      "name": "placeholder_list",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "template_casefold",
+      "outcome": "error",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "classification",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "unknown_count",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "label_whitespace",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "policy_allow_ws",
+      "outcome": "error",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "text_cap",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    },
+    {
+      "name": "no_effect_fields",
+      "outcome": "assertion",
+      "killed": true,
+      "exit_code": 1,
+      "disposition": "Test rejects behavioral change"
+    }
+  ]
+}

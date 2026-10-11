@@ -1,0 +1,40 @@
+F......FF...........................                                     [100%]
+=================================== FAILURES ===================================
+__________________ test_25_links_two_templates_and_duplicates __________________
+
+    def test_25_links_two_templates_and_duplicates():
+        out=m.run(req(fixture()))
+>       assert out['coverage']=={'links_found':25,'duplicates_dropped':3,'unknown_kind':1}
+E       AssertionError: assert {'duplicates_...nown_kind': 1} == {'duplicates_...nown_kind': 1}
+E
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'duplicates_dropped': 2} != {'duplicates_dropped': 3}
+E         Use -v to get more diff
+
+tests/modules/test_c35_docs_ingest_s42.py:26: AssertionError
+_____________________ test_cross_doc_dedupe_and_provenance _____________________
+
+    def test_cross_doc_dedupe_and_provenance():
+        r={'as_of':'d','docs':[{'doc_url':BOOKMARK,'text':'One https://X.example/path/'},{'doc_url':WAIVER,'text':'Two https://x.example/path#part'}]}
+        out=m.run(r)
+>       assert out['coverage']['duplicates_dropped']==1
+E       assert 0 == 1
+
+tests/modules/test_c35_docs_ingest_s42.py:50: AssertionError
+_______________ test_normalization_preserves_query_and_path_case _______________
+
+    def test_normalization_preserves_query_and_path_case():
+        out=m.run(req('https://EXAMPLE.org/Path/?b=2&utm_source=x&a=1#x\nhttps://example.org/path/?b=2&a=1'))
+>       assert [r['url']for r in out['index']]==['https://example.org/Path?b=2&a=1','https://example.org/path?b=2&a=1']
+E       AssertionError: assert ['https://EXA...path?b=2&a=1'] == ['https://exa...path?b=2&a=1']
+E
+E         At index 0 diff: 'https://EXAMPLE.org/Path?b=2&a=1' != 'https://example.org/Path?b=2&a=1'
+E         Use -v to get more diff
+
+tests/modules/test_c35_docs_ingest_s42.py:56: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_25_links_two_templates_and_duplicates
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_cross_doc_dedupe_and_provenance
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_normalization_preserves_query_and_path_case
+3 failed, 33 passed in 0.50s

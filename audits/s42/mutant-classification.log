@@ -1,0 +1,99 @@
+F.............FFFFF...........F.....                                     [100%]
+=================================== FAILURES ===================================
+__________________ test_25_links_two_templates_and_duplicates __________________
+
+    def test_25_links_two_templates_and_duplicates():
+        out=m.run(req(fixture()))
+>       assert out['coverage']=={'links_found':25,'duplicates_dropped':3,'unknown_kind':1}
+E       AssertionError: assert {'duplicates_...own_kind': 22} == {'duplicates_...nown_kind': 1}
+E
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'unknown_kind': 22} != {'unknown_kind': 1}
+E         Use -v to get more diff
+
+tests/modules/test_c35_docs_ingest_s42.py:26: AssertionError
+__________ test_host_keyword_table[scholarships.example-scholarship] ___________
+
+host = 'scholarships.example', kind = 'scholarship'
+
+    @pytest.mark.parametrize('host,kind',[('scholarships.example','scholarship'),('competitions.example','competition'),('grants.example','grant'),('admissions.example','admissions'),('jobs.example','job')])
+>   def test_host_keyword_table(host,kind):assert m.run(req('https://'+host))['index'][0]['kind']==kind
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert 'unknown' == 'scholarship'
+E
+E     - scholarship
+E     + unknown
+
+tests/modules/test_c35_docs_ingest_s42.py:85: AssertionError
+__________ test_host_keyword_table[competitions.example-competition] ___________
+
+host = 'competitions.example', kind = 'competition'
+
+    @pytest.mark.parametrize('host,kind',[('scholarships.example','scholarship'),('competitions.example','competition'),('grants.example','grant'),('admissions.example','admissions'),('jobs.example','job')])
+>   def test_host_keyword_table(host,kind):assert m.run(req('https://'+host))['index'][0]['kind']==kind
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert 'unknown' == 'competition'
+E
+E     - competition
+E     + unknown
+
+tests/modules/test_c35_docs_ingest_s42.py:85: AssertionError
+________________ test_host_keyword_table[grants.example-grant] _________________
+
+host = 'grants.example', kind = 'grant'
+
+    @pytest.mark.parametrize('host,kind',[('scholarships.example','scholarship'),('competitions.example','competition'),('grants.example','grant'),('admissions.example','admissions'),('jobs.example','job')])
+>   def test_host_keyword_table(host,kind):assert m.run(req('https://'+host))['index'][0]['kind']==kind
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert 'unknown' == 'grant'
+E
+E     - grant
+E     + unknown
+
+tests/modules/test_c35_docs_ingest_s42.py:85: AssertionError
+____________ test_host_keyword_table[admissions.example-admissions] ____________
+
+host = 'admissions.example', kind = 'admissions'
+
+    @pytest.mark.parametrize('host,kind',[('scholarships.example','scholarship'),('competitions.example','competition'),('grants.example','grant'),('admissions.example','admissions'),('jobs.example','job')])
+>   def test_host_keyword_table(host,kind):assert m.run(req('https://'+host))['index'][0]['kind']==kind
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert 'unknown' == 'admissions'
+E
+E     - admissions
+E     + unknown
+
+tests/modules/test_c35_docs_ingest_s42.py:85: AssertionError
+__________________ test_host_keyword_table[jobs.example-job] ___________________
+
+host = 'jobs.example', kind = 'job'
+
+    @pytest.mark.parametrize('host,kind',[('scholarships.example','scholarship'),('competitions.example','competition'),('grants.example','grant'),('admissions.example','admissions'),('jobs.example','job')])
+>   def test_host_keyword_table(host,kind):assert m.run(req('https://'+host))['index'][0]['kind']==kind
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert 'unknown' == 'job'
+E
+E     - job
+E     + unknown
+
+tests/modules/test_c35_docs_ingest_s42.py:85: AssertionError
+_______________ test_first_kind_priority_when_two_host_keywords ________________
+
+    def test_first_kind_priority_when_two_host_keywords():
+>       assert m.run(req('https://scholarship-contest.example'))['index'][0]['kind']=='scholarship'
+E       AssertionError: assert 'unknown' == 'scholarship'
+E
+E         - scholarship
+E         + unknown
+
+tests/modules/test_c35_docs_ingest_s42.py:117: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_25_links_two_templates_and_duplicates
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_host_keyword_table[scholarships.example-scholarship]
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_host_keyword_table[competitions.example-competition]
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_host_keyword_table[grants.example-grant]
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_host_keyword_table[admissions.example-admissions]
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_host_keyword_table[jobs.example-job]
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_first_kind_priority_when_two_host_keywords
+7 failed, 29 passed in 0.47s

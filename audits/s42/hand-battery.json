@@ -1,0 +1,48 @@
+{
+  "checks_passed": 4,
+  "report": {
+    "coverage": {
+      "duplicates_dropped": 1,
+      "links_found": 2,
+      "unknown_kind": 1
+    },
+    "index": [
+      {
+        "doc_urls": [
+          "https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0"
+        ],
+        "kind": "unknown",
+        "label": "A https://EXAMPLE.org/path/?utm_source=a#x",
+        "url": "https://example.org/path"
+      }
+    ],
+    "scope": {
+      "as_of": "2026-10-11",
+      "data_source": "supplied exports of two owner-pinned Docs",
+      "implemented": [
+        "supplied pinned-Doc link index",
+        "URL normalization and dedupe",
+        "host-keyword classification",
+        "verbatim waiver blocks and known placeholders"
+      ],
+      "not_implemented": [
+        "fetching",
+        "live verification",
+        "dead-link detection",
+        "opportunity selection",
+        "submission or outreach"
+      ]
+    },
+    "waiver_templates": [
+      {
+        "doc_url": "https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0",
+        "placeholders": [
+          "name",
+          "opportunity",
+          "school"
+        ],
+        "text": "Fee waiver request\nHi {name} from {school} for {opportunity}."
+      }
+    ]
+  }
+}

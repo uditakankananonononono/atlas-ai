@@ -1,0 +1,17 @@
+.............................F......                                     [100%]
+=================================== FAILURES ===================================
+________________ test_blank_query_kept_and_utm_casefold_dropped ________________
+
+    def test_blank_query_kept_and_utm_casefold_dropped():
+        out=m.run(req('https://a.example/x?blank=&UTM_source=a&b=2#gone'))
+>       assert out['index'][0]['url']=='https://a.example/x?blank=&b=2'
+E       AssertionError: assert 'https://a.example/x?b=2' == 'https://a.ex.../x?blank=&b=2'
+E
+E         - https://a.example/x?blank=&b=2
+E         ?                      -------
+E         + https://a.example/x?b=2
+
+tests/modules/test_c35_docs_ingest_s42.py:113: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_blank_query_kept_and_utm_casefold_dropped
+1 failed, 35 passed in 0.38s

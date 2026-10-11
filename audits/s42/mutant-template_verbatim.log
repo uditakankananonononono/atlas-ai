@@ -1,0 +1,20 @@
+...................................F                                     [100%]
+=================================== FAILURES ===================================
+_________________ test_template_boundary_spaces_are_preserved __________________
+
+    def test_template_boundary_spaces_are_preserved():
+        text='  Fee waiver request  \nDear {name}, keep these spaces.  '
+>       assert m.run(req(text))['waiver_templates'][0]['text']==text
+E       AssertionError: assert 'Fee waiver r...these spaces.' == '  Fee waiver...ese spaces.  '
+E
+E         -   Fee waiver request
+E         ? --
+E         + Fee waiver request
+E         - Dear {name}, keep these spaces.
+E         ?                                --
+E         + Dear {name}, keep these spaces.
+
+tests/modules/test_c35_docs_ingest_s42.py:141: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_template_boundary_spaces_are_preserved
+1 failed, 35 passed in 0.41s

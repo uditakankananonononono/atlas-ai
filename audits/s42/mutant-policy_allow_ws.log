@@ -1,0 +1,214 @@
+F.......F.F.F..................F...F                                     [100%]
+=================================== FAILURES ===================================
+__________________ test_25_links_two_templates_and_duplicates __________________
+
+    def test_25_links_two_templates_and_duplicates():
+>       out=m.run(req(fixture()))
+            ^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_c35_docs_ingest_s42.py:25:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/app/modules/c35/docs_ingest.py:78: in run
+    text=policy.clean_text(doc['text'],PREFIX,'text',2_000_000,allow_ws=False)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = 'Opportunity 0 https://sciencefair.example/program/0\nOpportunity 1 https://sciencefair.example/program/1\nOpportunity...uest\nDear {school}, I am {name}. Please waive fees for {opportunity}.\n\nwaiver request\nAsk {school} for {name}.\n\n'
+prefix = 'APPLY', name = 'text', limit = 2000000, allow_blank = False
+allow_ws = False
+
+    def clean_text(value, prefix: str, name: str, limit: int, allow_blank: bool = False,
+                   allow_ws: bool = False) -> str:
+        """Shared text hygiene for caller-supplied fields: type, blank, control
+        characters (Unicode Cc/Zl/Zp) and length. Raises ValueError with the
+        unit's prefix. allow_ws permits the ordinary message bytes LF, CR and
+        TAB (approved text is preserved byte-exact, never normalized); every
+        other Cc/Zl/Zp character is still refused."""
+        if isinstance(value, bool) or not isinstance(value, str):
+            raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (prefix, name))
+        if not allow_blank and not value.strip():
+            raise ValueError("%s_REFUSED_EMPTY:%s" % (prefix, name))
+        if any(unicodedata.category(c) in FORBIDDEN_CATEGORIES
+               and not (allow_ws and c in MESSAGE_WS) for c in value):
+>           raise ValueError("%s_REFUSED_CONTROL_CHARS:%s" % (prefix, name))
+E           ValueError: APPLY_REFUSED_CONTROL_CHARS:text
+
+backend/app/modules/c30/policy.py:70: ValueError
+_______________ test_normalization_preserves_query_and_path_case _______________
+
+    def test_normalization_preserves_query_and_path_case():
+>       out=m.run(req('https://EXAMPLE.org/Path/?b=2&utm_source=x&a=1#x\nhttps://example.org/path/?b=2&a=1'))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_c35_docs_ingest_s42.py:55:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/app/modules/c35/docs_ingest.py:78: in run
+    text=policy.clean_text(doc['text'],PREFIX,'text',2_000_000,allow_ws=False)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = 'https://EXAMPLE.org/Path/?b=2&utm_source=x&a=1#x\nhttps://example.org/path/?b=2&a=1'
+prefix = 'APPLY', name = 'text', limit = 2000000, allow_blank = False
+allow_ws = False
+
+    def clean_text(value, prefix: str, name: str, limit: int, allow_blank: bool = False,
+                   allow_ws: bool = False) -> str:
+        """Shared text hygiene for caller-supplied fields: type, blank, control
+        characters (Unicode Cc/Zl/Zp) and length. Raises ValueError with the
+        unit's prefix. allow_ws permits the ordinary message bytes LF, CR and
+        TAB (approved text is preserved byte-exact, never normalized); every
+        other Cc/Zl/Zp character is still refused."""
+        if isinstance(value, bool) or not isinstance(value, str):
+            raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (prefix, name))
+        if not allow_blank and not value.strip():
+            raise ValueError("%s_REFUSED_EMPTY:%s" % (prefix, name))
+        if any(unicodedata.category(c) in FORBIDDEN_CATEGORIES
+               and not (allow_ws and c in MESSAGE_WS) for c in value):
+>           raise ValueError("%s_REFUSED_CONTROL_CHARS:%s" % (prefix, name))
+E           ValueError: APPLY_REFUSED_CONTROL_CHARS:text
+
+backend/app/modules/c30/policy.py:70: ValueError
+_________ test_template_casefold_blank_delimiter_and_exact_whitespace __________
+
+    def test_template_casefold_blank_delimiter_and_exact_whitespace():
+        text='prefix\nFEE WAIVER details\r\n  Dear {name},  \r\n\tApply {other} and {school}\r\n\r\nnot a template\n'
+>       out=m.run(req(text))
+            ^^^^^^^^^^^^^^^^
+
+tests/modules/test_c35_docs_ingest_s42.py:68:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/app/modules/c35/docs_ingest.py:78: in run
+    text=policy.clean_text(doc['text'],PREFIX,'text',2_000_000,allow_ws=False)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = 'prefix\nFEE WAIVER details\r\n  Dear {name},  \r\n\tApply {other} and {school}\r\n\r\nnot a template\n'
+prefix = 'APPLY', name = 'text', limit = 2000000, allow_blank = False
+allow_ws = False
+
+    def clean_text(value, prefix: str, name: str, limit: int, allow_blank: bool = False,
+                   allow_ws: bool = False) -> str:
+        """Shared text hygiene for caller-supplied fields: type, blank, control
+        characters (Unicode Cc/Zl/Zp) and length. Raises ValueError with the
+        unit's prefix. allow_ws permits the ordinary message bytes LF, CR and
+        TAB (approved text is preserved byte-exact, never normalized); every
+        other Cc/Zl/Zp character is still refused."""
+        if isinstance(value, bool) or not isinstance(value, str):
+            raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (prefix, name))
+        if not allow_blank and not value.strip():
+            raise ValueError("%s_REFUSED_EMPTY:%s" % (prefix, name))
+        if any(unicodedata.category(c) in FORBIDDEN_CATEGORIES
+               and not (allow_ws and c in MESSAGE_WS) for c in value):
+>           raise ValueError("%s_REFUSED_CONTROL_CHARS:%s" % (prefix, name))
+E           ValueError: APPLY_REFUSED_CONTROL_CHARS:text
+
+backend/app/modules/c30/policy.py:70: ValueError
+___________________________ test_template_final_eof ____________________________
+
+>   def test_template_final_eof():assert m.run(req('Waiver request\nHello {opportunity}'))['waiver_templates'][0]['text']=='Waiver request\nHello {opportunity}'
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_c35_docs_ingest_s42.py:75:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/app/modules/c35/docs_ingest.py:78: in run
+    text=policy.clean_text(doc['text'],PREFIX,'text',2_000_000,allow_ws=False)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = 'Waiver request\nHello {opportunity}', prefix = 'APPLY', name = 'text'
+limit = 2000000, allow_blank = False, allow_ws = False
+
+    def clean_text(value, prefix: str, name: str, limit: int, allow_blank: bool = False,
+                   allow_ws: bool = False) -> str:
+        """Shared text hygiene for caller-supplied fields: type, blank, control
+        characters (Unicode Cc/Zl/Zp) and length. Raises ValueError with the
+        unit's prefix. allow_ws permits the ordinary message bytes LF, CR and
+        TAB (approved text is preserved byte-exact, never normalized); every
+        other Cc/Zl/Zp character is still refused."""
+        if isinstance(value, bool) or not isinstance(value, str):
+            raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (prefix, name))
+        if not allow_blank and not value.strip():
+            raise ValueError("%s_REFUSED_EMPTY:%s" % (prefix, name))
+        if any(unicodedata.category(c) in FORBIDDEN_CATEGORIES
+               and not (allow_ws and c in MESSAGE_WS) for c in value):
+>           raise ValueError("%s_REFUSED_CONTROL_CHARS:%s" % (prefix, name))
+E           ValueError: APPLY_REFUSED_CONTROL_CHARS:text
+
+backend/app/modules/c30/policy.py:70: ValueError
+_________________________ test_label_byte_preservation _________________________
+
+    def test_label_byte_preservation():
+        line='  title\t https://a.example/p  '
+>       assert m.run(req(line))['index'][0]['label']==line
+               ^^^^^^^^^^^^^^^^
+
+tests/modules/test_c35_docs_ingest_s42.py:122:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/app/modules/c35/docs_ingest.py:78: in run
+    text=policy.clean_text(doc['text'],PREFIX,'text',2_000_000,allow_ws=False)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = '  title\t https://a.example/p  ', prefix = 'APPLY', name = 'text'
+limit = 2000000, allow_blank = False, allow_ws = False
+
+    def clean_text(value, prefix: str, name: str, limit: int, allow_blank: bool = False,
+                   allow_ws: bool = False) -> str:
+        """Shared text hygiene for caller-supplied fields: type, blank, control
+        characters (Unicode Cc/Zl/Zp) and length. Raises ValueError with the
+        unit's prefix. allow_ws permits the ordinary message bytes LF, CR and
+        TAB (approved text is preserved byte-exact, never normalized); every
+        other Cc/Zl/Zp character is still refused."""
+        if isinstance(value, bool) or not isinstance(value, str):
+            raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (prefix, name))
+        if not allow_blank and not value.strip():
+            raise ValueError("%s_REFUSED_EMPTY:%s" % (prefix, name))
+        if any(unicodedata.category(c) in FORBIDDEN_CATEGORIES
+               and not (allow_ws and c in MESSAGE_WS) for c in value):
+>           raise ValueError("%s_REFUSED_CONTROL_CHARS:%s" % (prefix, name))
+E           ValueError: APPLY_REFUSED_CONTROL_CHARS:text
+
+backend/app/modules/c30/policy.py:70: ValueError
+_________________ test_template_boundary_spaces_are_preserved __________________
+
+    def test_template_boundary_spaces_are_preserved():
+        text='  Fee waiver request  \nDear {name}, keep these spaces.  '
+>       assert m.run(req(text))['waiver_templates'][0]['text']==text
+               ^^^^^^^^^^^^^^^^
+
+tests/modules/test_c35_docs_ingest_s42.py:141:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/app/modules/c35/docs_ingest.py:78: in run
+    text=policy.clean_text(doc['text'],PREFIX,'text',2_000_000,allow_ws=False)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = '  Fee waiver request  \nDear {name}, keep these spaces.  '
+prefix = 'APPLY', name = 'text', limit = 2000000, allow_blank = False
+allow_ws = False
+
+    def clean_text(value, prefix: str, name: str, limit: int, allow_blank: bool = False,
+                   allow_ws: bool = False) -> str:
+        """Shared text hygiene for caller-supplied fields: type, blank, control
+        characters (Unicode Cc/Zl/Zp) and length. Raises ValueError with the
+        unit's prefix. allow_ws permits the ordinary message bytes LF, CR and
+        TAB (approved text is preserved byte-exact, never normalized); every
+        other Cc/Zl/Zp character is still refused."""
+        if isinstance(value, bool) or not isinstance(value, str):
+            raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (prefix, name))
+        if not allow_blank and not value.strip():
+            raise ValueError("%s_REFUSED_EMPTY:%s" % (prefix, name))
+        if any(unicodedata.category(c) in FORBIDDEN_CATEGORIES
+               and not (allow_ws and c in MESSAGE_WS) for c in value):
+>           raise ValueError("%s_REFUSED_CONTROL_CHARS:%s" % (prefix, name))
+E           ValueError: APPLY_REFUSED_CONTROL_CHARS:text
+
+backend/app/modules/c30/policy.py:70: ValueError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_25_links_two_templates_and_duplicates
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_normalization_preserves_query_and_path_case
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_template_casefold_blank_delimiter_and_exact_whitespace
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_template_final_eof - V...
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_label_byte_preservation
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_template_boundary_spaces_are_preserved
+6 failed, 30 passed in 0.49s
