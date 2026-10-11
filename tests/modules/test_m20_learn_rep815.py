@@ -249,3 +249,16 @@ def test_unmapped_visual_top_status_and_invalid_counterexample_coverage():
  r=execute('dual_coding',p)['result']['representation_pack'];assert r['unmapped_visual_ids']==['unmapped'] and r['valid'] is False and r['status']=='gaps_or_conflicts'
  p=pack();p['example_items'][1]['features']['sides']='three'
  r=execute('concrete_examples',p)['result']['example_pack'];assert r['example_reports'][1]['valid'] is False and r['concept_reports'][0]['valid_counterexample_ids']==[] and r['concept_reports'][0]['coverage_complete'] is False
+
+def test_missing_verbal_invariant_alone_invalidates_mapping():
+ p=pack();p['verbal_propositions'][0]['features'].pop('closed')
+ r=execute('dual_coding',p)['result']['representation_pack']
+ assert r['mapping_reports'][0]['missing_verbal_invariants']==['closed']
+ assert r['mapping_reports'][0]['conflicting_features']==[] and r['mapping_reports'][0]['missing_visual_invariants']==[]
+ assert r['mapping_reports'][0]['valid'] is False and r['valid'] is False
+
+def test_unmapped_verbal_only_gap_invalidates_pack():
+ p=pack();p['verbal_propositions'].append({**p['verbal_propositions'][0],'id':'x'})
+ r=execute('dual_coding',p)['result']['representation_pack']
+ assert r['unmapped_verbal_ids']==['x'] and r['unmapped_visual_ids']==[]
+ assert r['mapping_reports'][0]['valid'] is True and r['valid'] is False and r['status']=='gaps_or_conflicts'
