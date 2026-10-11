@@ -386,6 +386,78 @@ class SubprocessCliTests(unittest.TestCase):
             empty_run = self._run(d, str(empty))
             self.assertEqual(empty_run.returncode, 2)
 
+class ResidualPinTests(unittest.TestCase):
+    """Pins for the named residual decisions (post-repair audit round).
+    Each pins the committed, intended behavior; none loosens the core."""
+
+    def test_info_string_on_closer_does_not_close(self):
+        # a fence line with trailing text after the run is content, not a closer
+        text = "```\nCLAIM: hidden [VERIFIED]\n``` info\nCLAIM: also hidden [UNVERIFIED]"
+        self.assertEqual(cs.extract_claims(text), [])
+        result = cs.check_text(text)
+        self.assertFalse(result["ok"])
+        self.assertTrue(result["vacuous"])
+
+    def test_numbered_list_prefixes_paren_and_dot(self):
+        for prefix in ("1)", "1.", "12)"):
+            result = cs.check_text(f"{prefix} CLAIM: n [VERIFIED]")
+            self.assertTrue(result["ok"], prefix)
+            self.assertEqual(result["claims"][0]["status"], "VERIFIED")
+
+    def test_three_label_columns_flag_every_body_row(self):
+        text = (
+            "| Claim | Label | Status | LABEL |\n|---|---|---|---|\n"
+            "| a | VERIFIED | UNVERIFIED | VERIFIED |\n| b | VERIFIED | VERIFIED | VERIFIED |"
+        )
+        result = cs.check_text(text)
+        self.assertFalse(result["ok"])
+        self.assertEqual(len(result["structural_ambiguous"]), 2)
+        for finding in result["structural_ambiguous"]:
+            self.assertIn("3 label columns", finding["reason"])
+        self.assertEqual([f["line"] for f in result["structural_ambiguous"]], [3, 4])
+
+    def test_empty_brackets_are_ignored_by_design(self):
+        # [] and [ ] carry no token, so the marker grades on [VERIFIED] alone
+        for text in ("CLAIM: [VERIFIED] []", "CLAIM: x [VERIFIED] [ ]"):
+            result = cs.check_text(text)
+            self.assertTrue(result["ok"], text)
+            self.assertEqual(result["claims"][0]["status"], "VERIFIED")
+            self.assertEqual(result["structural_ambiguous"], [])
+
+    def test_structural_ambiguous_sorted_by_line_across_shapes(self):
+        # without the sort, shape-3 (truncated) findings lead the merged list
+        text = "CLAIM: m [UNKNOWN] [VERIFIED]\n\n\n\n| Claim | Label |"
+        result = cs.check_text(text)
+        self.assertEqual([f["line"] for f in result["structural_ambiguous"]], [1, 5])
+        self.assertIn("unrecognized marker", result["structural_ambiguous"][0]["reason"])
+        self.assertIn("truncated claim table", result["structural_ambiguous"][1]["reason"])
+
+    def test_table_edge_cell_splitting(self):
+        # no escaping: pipes always split; one outer pipe per side is stripped
+        ok = cs.check_text("| Claim | Label |\n|---|---|\n| x | VERIFIED ||\n")
+        self.assertTrue(ok["ok"])  # trailing empty edge cell dropped
+        ok2 = cs.check_text("| Claim | Label |\n|---|---|\n| x | VERIFIED |||\n")
+        self.assertTrue(ok2["ok"])
+        empty_first = cs.check_text("| Claim | Label |\n|---|---|\n|| VERIFIED |\n")
+        self.assertTrue(empty_first["ok"])
+        self.assertEqual(empty_first["claims"][0]["text"], "")
+        inner_pipe = cs.check_text("| Claim | Label |\n|---|---|\n| a|b | VERIFIED |\n")
+        self.assertFalse(inner_pipe["ok"])  # 'a|b' splits: claim 'a', label cell 'b'
+        self.assertEqual(inner_pipe["claims"][0]["text"], "a")
+        self.assertIn("'b'", inner_pipe["unmarked"][0]["reason"])
+
+    def test_mixed_run_vacuous_exit_one_not_two(self):
+        with tempfile.TemporaryDirectory() as d:
+            good = Path(d) / "good.md"
+            good.write_text(LEDGER)
+            empty = Path(d) / "empty.md"
+            empty.write_text("# nothing\n")
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rc = cs.main([str(good), str(empty)])
+            self.assertEqual(rc, 1)  # findings-class exit, distinct from zero-aggregate exit 2
+            self.assertIn("empty.md: VACUOUS: no claims found in this file", buf.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

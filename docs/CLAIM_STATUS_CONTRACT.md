@@ -21,7 +21,7 @@ Anything not matching this grammar is prose, not a claim.
    optional bullet or numbered-list prefix allowed) whose body carries a
    bracketed `[LABEL]` marker.
 
-Fenced code blocks are skipped entirely, with CommonMark fence pairing: an
+Fenced code blocks are skipped entirely, with delimiter-matched fence pairing: an
 opening fence is a run of three or more backticks or tildes (an info string
 is allowed on the opener); the fence closes only on a line whose run uses
 the SAME delimiter character and is at least as long as the opener. A
@@ -48,6 +48,25 @@ empty accepted-label set is refused with `ValueError`.
   unmarked, no conflicting, and no structural-ambiguous findings. A
   zero-claim document is **vacuous**: `ok` is false and `vacuous` is true.
   A check that finds nothing proves nothing.
+
+## Residuals and precedence (named, none blocking)
+
+- Empty bracket pairs carry no token: `[]` and `[ ]` are ignored by design,
+  so `CLAIM: [VERIFIED] []` is marked (S04, declared behavior).
+- Precedence: two DIFFERENT recognized labels on one marker stay
+  **conflicting** even when an unrecognized token is also present; one
+  recognized label plus an unrecognized token is exactly one
+  structural-ambiguous finding. A truncated claim table yields a finding
+  only (never a claim), so a document containing nothing else is vacuous.
+- Fence looseness, declared: a backtick fence opens even when its info
+  string contains a backtick (fail-open; differs from strict CM), and a
+  closing fence is accepted at any indentation (conservative about what
+  hides claims; differs from strict CM, where 4+ spaces make it content).
+- Ignored shapes (pre-existing, named): a pipe-run of three or more lines
+  whose header names label columns but has no valid separator row is not a
+  table and is ignored, including when it names two or more label columns.
+- Table cells have no escaping: a pipe inside a cell always splits, and one
+  leading/trailing pipe per row is stripped (edge-cell behavior pinned).
 
 ## CLI
 
