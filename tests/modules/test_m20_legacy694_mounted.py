@@ -70,6 +70,7 @@ def test_deep_json_refuses_before_validation(monkeypatch,oidc_auth_headers):
 @pytest.mark.parametrize('source,status,detail',[
  ('x'*100000,200,None),('x'*100001,422,'string_too_long'),
  ('é'*50000,200,None),('é'*50001,422,'source exceeds 100000 UTF-8 bytes'),
+ ('é'*50000+'x',422,'source exceeds 100000 UTF-8 bytes'),
 ])
 def test_source_character_and_utf8_edges(monkeypatch,oidc_auth_headers,source,status,detail):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
