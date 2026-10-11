@@ -23,11 +23,11 @@ and arity, nested error path/index, all-child depth eight, seed/rule-source 128,
 load the exact pure module by path. They do not wire dispatcher, auth, tenant,
 rollout, deployment, persistence or network. No science/discovery claim.
 
-All new tests were actually run before commit. This lane did not retain a
-historical RED, because tests are added to a correctly executing frozen runtime
-and no baseline assertion failure was seen. Mutation RED logs are actual
+All new tests were actually run before commit. No historical RED was retained,
+because tests are added to a correctly executing frozen runtime and no baseline
+assertion failure was seen. Mutation RED logs are actual
 copy-only runs, not reconstructed build logs. Counts and environment are in the
-independent evidence package. Peer-reported old mutation counts are not credited.
+separate evidence package. Mutation counts reported earlier are not credited.
 
 The independent token campaign distinguishes assertion kills, runtime/collection
 errors, timeout, noncompile and survivors. An empty-ID lower-bound `1 -> 0`
@@ -36,7 +36,7 @@ rejects empty string. This is an equivalent guard-redundancy survivor, not a
 hidden test kill. Schema-error classification survivors were exposed by adding
 a real invalid-context / legal-schema test and rerunning; original result passes.
 
-Reservation: parent confirmed this lane alone owns the two new files
+Scope: this change adds only the two new files
 `tests/modules/test_m20_flag697_boundary_pins.py` and this note. Existing core,
-original tests and contract remain unmodified. Any integration/release verdict
-belongs to independent review, not these test pins.
+original tests and contract remain unmodified. These test pins make no
+integration or release claim.

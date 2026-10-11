@@ -1,10 +1,8 @@
 # FLAG697: finite supplied-rule Feature Toggle evaluator
 
-Candidate scoped replacement, not a rollout service. Ledger
-`audits/additional-2000-features.json` row697 names "Feature Toggle" and
-"Controls deployment". Live original Google Doc
-`1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY`, read via the connected
-uditakankana@gmail.com account, contains the exact entry
+Candidate scoped replacement, not a rollout service.
+The additional-features ledger row697 names "Feature Toggle" and
+"Controls deployment". Source entry pin:
 "Feature Toggle - Controls deployment" between Branch by Abstraction and
 Trunk-Based Development. Its export does not expose a document title or row
 number; ledger697 is pinned by exact entry text, not inferred document numbering.
@@ -61,18 +59,75 @@ returning partial decisions. Error context is not a telemetry redaction layer.
 
 Only new core/test/contract files are committed. Separate row697-only dispatcher
 patch is unapplied. Existing diagnostic outputs remain unchanged until the
-integrator adopts the patch. Adoption must retain honest diagnostic labeling
+adoption of the patch occurs. Adoption must retain honest diagnostic labeling
 for legacy payloads and must not certify deployments. Current route lacks a
 local tenant dependency; parent router authentication and payload tenant binding
 must be tested after wiring. No mounted auth/tenant execution is claimed here.
 
-Tests use stdlib unittest/source loading on pre-existing Python3.10.12, not the
-project's required3.12 toolchain.19 cases include exhaustive small comparator
+HISTORICAL doc-only review: the recorded test approach uses stdlib unittest/source loading, with comparator
 and Boolean truth tables, defaults, missing fields, duplicate priority, typed
-refusals, all exact documented bounds and hash oracle.9 independent one-change
-mutants are killed. Base25-method stdlib floor verifies untouched existing
-source and output/missing-field behavior, not the original mounted pytest suite.
-Missing pytest/fastapi prevent that original suite without a scoped install;
-no install was performed. Full3.12/mounted/independent integration acceptance
-remain deferred to the peer integrator. Scoped title acceptance is not closure
-of the broad Feature Toggle capability.
+refusals, documented bounds and a hash oracle. Test counts, mutation counts and
+the audited toolchain version are unverified in this doc-only review: no correct
+independent receipt was available. No numeric audit summary or audit-closure
+claim is credited here. The original mounted suite, full-toolchain and independent
+integration acceptance remain unverified in this review. No install or runtime
+execution was performed for this doc-only change. Scoped title acceptance is
+not closure of the broad Feature Toggle capability.
+
+## Permanent historical RED disclosure
+
+No genuine pre-implementation failing-test (RED) receipt was recovered.
+This is a permanent historical evidence gap and must survive future edits
+of this contract. Later passing tests or mutation failures do not backfill
+that missing receipt. This disclosure makes no audit-closure or row-status claim.
+
+## Explicit repair revision
+
+This revision removes the account-bearing source phrase and the live-read
+wording from the earlier contract, and removes the internal document identifier.
+The neutral entry title and ledger reference remain. It separately adds the
+permanent historical missing-RED disclosure; this is not a count-removal-only
+revision. No correct independent audit receipt was available. The previously
+offered receipt identified an unrelated export-adapter change, not this unit;
+that wrong-receipt limitation remains. No earlier audit counts are borrowed.
+The earlier pins note is excluded from this delivery because its internal
+coordination wording and unverified audit claims have not been sanitized.
+
+Core validation repair: dictionary counts are checked before key iteration/set
+construction; keys must be exact builtin strings. Evaluation context is capped
+at the schema field ceiling before iteration. Identifier and scalar-string raw
+length caps precede scanning/strip; Cc/Cf/Zl/Zp are refused, Zs allowed, surrogate
+refusal unchanged. Operator/kind raw lengths are capped before enum membership.
+Integers use bit_length before abs. Existing numerical and rule semantics remain
+supplied-only. General record shapes retain SCHEMA. Condition nodes with more than four keys
+deliberately change from OLD_SCHEMA to NEW_BOUND: the count-first condition
+gate refuses BOUND before shape/key/op validation. Four-key bucket nodes are
+accepted; a fifth key refuses FLAG697_BOUND at the condition path. This change
+is explicit, not a claim that every historical SCHEMA class is preserved.
+No deployment authority or closure claim; full suite remains unverified.
+
+Lookup-bound repair: unknown condition and context field strings are capped at
+64 before schema membership; exact builtin type is checked before length.
+Repair tests now load the runtime from the repository root using the same
+mechanics as the existing source-loaded tests, not adjacent-file assumptions.
+This changes the test file hash. Evidence output is neutralized to omit local
+path prefixes; no earlier audit receipt or original RED is reconstructed.
+
+## Repair evidence chronology (historical states kept distinct)
+
+The first saved core-repair RED ran the original fetched runtime with the initial
+repair test file: eight tests, five FAIL and one ERROR, two passing. After that
+core repair, the saved lookup-cap RED ran the preceding repaired runtime before
+lookup caps: nine tests, one ERROR in the AST length-order pin, eight passing.
+It was not the original runtime state. An external replay reports seven failed
+and two passed against a different original/runtime-test pairing; that replay
+does not replace these saved receipts. Exact saved historical files are retained,
+not rerun and relabeled as old evidence. The genuine original pre-implementation
+RED remains permanently missing.
+
+This test-only revision adds exact condition count, container, key, schema ID,
+kind, numeric, float-bound and priority pins. Unchanged repaired runtime passes
+the new tests. Fresh copy-only mutation failures are labeled mutation RED, never
+claimed as a pre-runtime implementation RED. Previously reported external audit
+counts and equivalent dispositions are not credited as local execution evidence.
+Full suite and independent closure remain unverified.

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import unicodedata
 
 KINDS = {'bool', 'int', 'number', 'string'}
 COMPARATORS = {'eq', 'ne', 'lt', 'le', 'gt', 'ge'}
@@ -12,20 +13,36 @@ def _fail(code, path):
     raise ValueError('FLAG697_' + code + ': ' + path)
 
 def _shape(value, required, optional, path):
-    if type(value) is not dict or not required <= value.keys() or value.keys() - required - optional:
+    if type(value) is not dict:
+        _fail('SCHEMA', path)
+    if len(value) > len(required) + len(optional):
+        _fail('SCHEMA', path)
+    if any(type(k) is not str for k in value):
+        _fail('SCHEMA', path)
+    keys = set(value)
+    if not required <= keys or keys - required - optional:
         _fail('SCHEMA', path)
 
+def _unsafe_text(value):
+    return any(unicodedata.category(c) in ('Cc', 'Cf', 'Zl', 'Zp', 'Cs') for c in value)
+
 def _id(value, path, limit=64):
-    if type(value) is not str or not 1 <= len(value) <= limit or not value.strip() or any(0xD800 <= ord(c) <= 0xDFFF for c in value):
+    if type(value) is not str or not 1 <= len(value) <= limit:
+        _fail('ID', path)
+    if _unsafe_text(value) or not value.strip():
         _fail('ID', path)
 
 def _typed(value, kind, path):
-    valid = ((kind == 'bool' and type(value) is bool)
-             or (kind == 'int' and type(value) is int and abs(value) <= MAX_INTEGER)
-             or (kind == 'number' and type(value) in (int, float)
-                 and abs(value) <= MAX_INTEGER and math.isfinite(value))
-             or (kind == 'string' and type(value) is str and len(value) <= 256
-                 and not any(0xD800 <= ord(c) <= 0xDFFF for c in value)))
+    valid = False
+    if kind == 'bool':
+        valid = type(value) is bool
+    elif kind in ('int', 'number'):
+        if type(value) is int:
+            valid = value.bit_length() <= 53 and abs(value) <= MAX_INTEGER
+        elif kind == 'number' and type(value) is float:
+            valid = abs(value) <= MAX_INTEGER and math.isfinite(value)
+    elif kind == 'string':
+        valid = type(value) is str and len(value) <= 256 and not _unsafe_text(value)
     if not valid:
         _fail('TYPE', path)
 
@@ -35,9 +52,17 @@ def _condition(node, schema, path, depth=1, counter=None):
     counter[0] += 1
     if depth > 8 or counter[0] > 128:
         _fail('BOUND', path)
-    if type(node) is not dict or type(node.get('op')) is not str:
+    if type(node) is not dict:
+        _fail('SCHEMA', path)
+    if len(node) > 4:
+        _fail('BOUND', path)
+    if any(type(k) is not str for k in node):
+        _fail('SCHEMA', path)
+    if type(node.get('op')) is not str:
         _fail('SCHEMA', path)
     op = node['op']
+    if len(op) > 6:
+        _fail('OPERATOR', path + '.op')
     if op in ('all', 'any'):
         _shape(node, {'op', 'args'}, set(), path)
         if type(node['args']) is not list or not 1 <= len(node['args']) <= 127:
@@ -50,7 +75,7 @@ def _condition(node, schema, path, depth=1, counter=None):
     elif op in COMPARATORS or op == 'bucket':
         _shape(node, {'op', 'field', 'seed', 'percent'} if op == 'bucket' else {'op', 'field', 'value'}, set(), path)
         field = node['field']
-        if type(field) is not str or field not in schema:
+        if type(field) is not str or len(field) > 64 or field not in schema:
             _fail('FIELD', path + '.field')
         kind = schema[field]
         if op == 'bucket':
@@ -101,14 +126,16 @@ def evaluate_flags697(data):
     """Validate entire request before evaluation; lowest integer priority wins."""
     _shape(data, {'context_schema', 'evaluation_context', 'flags'}, set(), 'request')
     schema, context, flags = data['context_schema'], data['evaluation_context'], data['flags']
-    if type(schema) is not dict or len(schema) > 64 or type(context) is not dict:
-        _fail('BOUND' if type(schema) is dict and len(schema) > 64 else 'SCHEMA', 'context')
+    if type(schema) is not dict or type(context) is not dict:
+        _fail('SCHEMA', 'context')
+    if len(schema) > 64 or len(context) > 64:
+        _fail('BOUND', 'context')
     for field, kind in schema.items():
         _id(field, 'schema.field')
-        if type(kind) is not str or kind not in KINDS:
+        if type(kind) is not str or len(kind) > 6 or kind not in KINDS:
             _fail('TYPE', 'schema.' + field)
     for field, value in context.items():
-        if type(field) is not str or field not in schema:
+        if type(field) is not str or len(field) > 64 or field not in schema:
             _fail('FIELD', 'context.field')
         _typed(value, schema[field], 'context.' + field)
     if type(flags) is not list or len(flags) > 32:
