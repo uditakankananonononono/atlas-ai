@@ -51,18 +51,55 @@ def _refuse(reason: str, field: str = '') -> str:
     return PREFIX + '_REFUSED_' + reason + (':' + field if field else '')
 
 
+def _children(node):
+    return node.items() if type(node) is dict else enumerate(node)
+
+
+def _admit(node, field, depth, active, budget):
+    if depth > 32:
+        raise ValueError(_refuse('OVERSIZE', field))
+    if type(node) not in (dict, list):
+        if isinstance(node, (dict, list)):
+            raise ValueError(_refuse('BAD_TYPE', field))
+        return
+    budget[0] += 1
+    if budget[0] > 10000:
+        raise ValueError(_refuse('OVERSIZE', field))
+    identity = id(node)
+    if identity in active:
+        raise ValueError(_refuse('BAD_TYPE', 'request'))
+    cap = (500 if field in ('runs', 'baselines') else 200) if type(node) is list else 200
+    if len(node) > cap:
+        raise ValueError(_refuse('OVERSIZE', field))
+    if type(node) is dict:
+        for key in node:
+            if type(key) is not str:
+                raise ValueError(_refuse('BAD_TYPE', 'key'))
+            if len(key) > 200:
+                raise ValueError(_refuse('OVERSIZE', 'key'))
+    active.add(identity)
+    for key, value in _children(node):
+        child_field = key if type(node) is dict and key in ('runs', 'baselines') else field
+        _admit(value, child_field, depth + 1, active, budget)
+    active.remove(identity)
+
+
 def _scan_forbidden(node, matches):
-    if isinstance(node, dict):
-        for key, value in node.items():
-            if isinstance(key, str):
+    # Admit the complete tree before normalization or collecting any keys.
+    # Iterator recursion is depth-bounded and creates no child-copy/list.
+    _admit(node, 'request', 0, set(), [0])
+    def collect(value):
+        if type(value) is dict:
+            for key, child in value.items():
                 norm = key.casefold().replace('-', '_')
                 for cls, table in _FORBIDDEN:
                     if norm in table:
                         matches[cls].add(norm)
-            _scan_forbidden(value, matches)
-    elif isinstance(node, list):
-        for item in node:
-            _scan_forbidden(item, matches)
+                collect(child)
+        elif type(value) is list:
+            for child in value:
+                collect(child)
+    collect(node)
 
 
 def _strict_date(value, field):
@@ -128,7 +165,7 @@ def _https_ok(url: str) -> bool:
 
 
 def _validate(request):
-    if not isinstance(request, dict):
+    if type(request) is not dict:
         raise ValueError(_refuse('BAD_TYPE', 'request'))
     matches = {cls: set() for cls, _ in _FORBIDDEN}
     _scan_forbidden(request, matches)

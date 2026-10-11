@@ -40,6 +40,10 @@ def _run(coro):
         return pool.submit(asyncio.run, coro).result()
 
 
+def _json_children(value):
+    return value.values() if isinstance(value, dict) else value
+
+
 def extract_json(text: str) -> Any:
     if not isinstance(text,str) or len(text)>100000:
         raise ValueError("model output must be bounded text")
@@ -68,10 +72,11 @@ def extract_json(text: str) -> Any:
         count += 1
         if depth > 64 or count > 20000:
             raise ValueError("model JSON exceeds depth64/node20000 boundary")
-        if isinstance(value, dict):
-            stack.extend((item, depth + 1) for item in value.values())
-        elif isinstance(value, list):
-            stack.extend((item, depth + 1) for item in value)
+        if isinstance(value, (dict, list)):
+            # Pending entries count too: reject before child iterator/extend.
+            if count + len(stack) + len(value) > 20000 or (value and depth >= 64):
+                raise ValueError("model JSON exceeds depth64/node20000 boundary")
+            stack.extend((item, depth + 1) for item in _json_children(value))
     return result
 
 
