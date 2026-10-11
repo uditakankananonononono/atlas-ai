@@ -145,6 +145,13 @@ class TestBatch(unittest.TestCase):
             screen_batch([doc('clean text', 'z'), doc('', 'a'), doc('pipette 5 ul', 'm')])
         self.assertEqual(str(caught.exception), 'P69:empty_field:text')
 
+    def test_batch_non_dict_member_refused_with_exact_code(self):
+        # Pins the sort-guard AND: an AND->OR mutant would call int.get and
+        # raise AttributeError instead of the promised ValueError code.
+        with self.assertRaises(ValueError) as caught:
+            screen_batch([1])
+        self.assertEqual(str(caught.exception), 'P69:bad_type:document')
+
     def test_batch_type_refusal(self):
         with self.assertRaises(ValueError) as caught:
             screen_batch('not-a-list')
