@@ -120,6 +120,13 @@ class Refusals(Base):
         for bad in (True, 1.5, "10", None):
             self.refuses("bad_type:records", m.add_entry, reg, E(records=bad))
 
+    def test_int_subclass_refused_exact_type(self):
+        class MyInt(int):
+            pass
+        reg = m.create_register()
+        self.refuses("bad_type:records", m.add_entry, reg, E(records=MyInt(3)))
+        self.refuses("bad_type:records", m.add_entry, reg, E(records=MyInt(0)))
+
     def test_duplicate_id_exact(self):
         reg = build(E("dup"))
         self.refuses("duplicate_id:dup", m.add_entry, reg, E("dup", "p9"))

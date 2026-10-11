@@ -61,7 +61,7 @@ def _validate(entry) -> tuple:
             raise _err("empty_field:" + name)
     row = tuple(_text(entry, name) for name in TEXT_LIMITS)
     records = entry["records"]
-    if isinstance(records, bool) or not isinstance(records, int):
+    if type(records) is not int:
         raise _err("bad_type:records")
     if records < 0 or records > RECORDS_LIMIT:
         raise _err("count_out_of_range:records")

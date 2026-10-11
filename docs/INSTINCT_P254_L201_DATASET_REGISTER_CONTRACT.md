@@ -11,7 +11,7 @@ Module: `backend/app/modules/instinct_doc/dataset_register_p254.py`. Pure stdlib
 - `render(register, project_id=None)` returns text (below).
 
 ## Entry
-Exactly six fields: id (<=64, unique in the whole register), project_id (<=64), dataset (<=128), records (strict int, bool refused, 0..10**15), source (<=256), source_ref (<=256; recorded verbatim, never resolved). Text fields must be nonblank (whitespace-only counts as blank). No unknown or missing fields, no truncation, no coercion.
+Exactly six fields: id (<=64, unique in the whole register), project_id (<=64), dataset (<=128), records (strict int, exact type; bool and int subclasses refused, 0..10**15), source (<=256), source_ref (<=256; recorded verbatim, never resolved). Text fields must be nonblank (whitespace-only counts as blank). No unknown or missing fields, no truncation, no coercion.
 
 ## Injection defense (mandatory)
 Every interpolated text field (id, project_id, dataset, source, source_ref) rejects any character whose Unicode category is Cc, Zl or Zp, refused as `P254:unsafe_chars:<name>`. No accepted entry can forge, split or hide a render line. Render line-count invariant: the rendered output for a non-empty selection is exactly (projects rendered) + (entries rendered) lines, joined by `\n`, no trailing newline, no carriage returns. An empty selection renders as `""`.
