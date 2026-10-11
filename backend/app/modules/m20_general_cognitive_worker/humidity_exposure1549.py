@@ -26,7 +26,10 @@ _TIME_UNITS = {'seconds': 1.0, 'minutes': 60.0, 'hours': 3600.0}
 def _finite(value, name):
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError(f'{name} must be a numeric value')
-    v = float(value)
+    try:
+        v = float(value)
+    except OverflowError as exc:
+        raise ValueError(f'{name} must be finite') from exc
     if not math.isfinite(v):
         raise ValueError(f'{name} must be finite')
     return v
@@ -125,6 +128,8 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     excursion_count = 0
     in_run = False
     for interval in intervals:
+        if interval['duration_seconds'] == 0:
+            continue
         if interval['state'] == 'above':
             run += interval['duration_seconds']
             if not in_run:
