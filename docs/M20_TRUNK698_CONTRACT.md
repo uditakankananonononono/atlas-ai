@@ -5,8 +5,7 @@ frequently"; ledger status PARTIAL) for SCOPED acceptance only, not full title
 closure. The existing `software_practice_685_709._trunk` only compares a caller
 `age_hours` to a threshold and returns a hard-coded `direct_push_protected:true`;
 this unit derives age, divergence and check coverage from supplied graph records.
-Row title/description were confirmed against the live source doc
-1kCtzves_4OGVKUdFUPC0bkvY3jQGnfpeeEJWe1mQ3xY ("Trunk-Based Development - Integrates frequently").
+Row title/description: Trunk-Based Development - Integrates frequently.
 
 Function: `trunk_graph698.analyze_trunk(data) -> dict` (stdlib only, ValueError on
 refusal -> 422 when wired by the separate patch). No route is mounted here.
@@ -32,7 +31,7 @@ tip), sorted `source_trace`, `reference_time` in UTC, `branch_protection_verifie
 
 ## Coverage rule
 A check covers a tip only if a record with the same name AND the exact tip SHA is
-`success`. Passes on ancestors are reported as `stale_ancestor_shas` and never count;
+`success`. Records on ancestors of any conclusion are reported as `stale_ancestor_shas` and never count;
 a failing tip record is `failed` even if an ancestor passed; absent record is `missing`.
 
 ## Refusals (exact messages tested)
@@ -53,3 +52,10 @@ branch protection, required-status settings, signatures, authorship or runner
 trust, and never mutates protected main. Branch age is oldest-unique-commit age,
 not branch creation or PR age. Timestamps are caller claims. Not a merge-readiness
 or release decision. Ledger, STATUS and rows 857/858/859 untouched.
+
+## Input-boundary repair
+
+SHA/name/timestamp patterns use fullmatch, so trailing LF is refused rather
+than accepted as an end-anchor exception. Timestamp digits are ASCII-only.
+Ancestor records of any conclusion remain listed, not only successful passes.
+This is supplied-data validation, not approval or authority to mutate a branch.

@@ -33,7 +33,7 @@ LIMITS = [
 _SHA = re.compile(r"^[0-9a-f]{40}$")
 _BRANCH = re.compile(rf"^[A-Za-z0-9._/-]{{1,{MAX_NAME}}}$")
 _CHECK = re.compile(rf"^[A-Za-z0-9._/ -]{{1,{MAX_NAME}}}$")
-_TS = re.compile(r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?(Z|[+-]\d{2}:\d{2})$")
+_TS = re.compile(r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?(Z|[+-]\d{2}:\d{2})$", re.ASCII)
 _CONCLUSIONS = {"success": "passed", "failure": "failed", "cancelled": "failed", "timed_out": "failed",
                 "skipped": "not_success", "neutral": "not_success", "pending": "pending"}
 
@@ -44,7 +44,7 @@ def _fail(msg: str):
 
 def _ts(v, label):
     err = f"timestamp {label} must be ISO-8601 with explicit UTC offset"
-    m = _TS.match(v) if isinstance(v, str) else None
+    m = _TS.fullmatch(v) if isinstance(v, str) else None
     if not m:
         _fail(err)
     y, mo, d, h, mi, s, frac, tz = m.groups()
@@ -95,7 +95,7 @@ def _list(v, label, nonempty):
 
 
 def _sha(v):
-    if not isinstance(v, str) or not _SHA.match(v):
+    if not isinstance(v, str) or not _SHA.fullmatch(v):
         _fail(f"invalid sha {v!r}")
     return v
 
@@ -111,7 +111,7 @@ def analyze_trunk(data: Any) -> dict[str, Any]:
                  "commits", "branches", "checks"}, "request")
     top_ref = _text(data.get("source_ref"), "source_ref")
     trunk = data.get("trunk")
-    if not isinstance(trunk, str) or not _BRANCH.match(trunk):
+    if not isinstance(trunk, str) or not _BRANCH.fullmatch(trunk):
         _fail(f"invalid trunk name {trunk!r}")
     ref = _ts(data.get("reference_time"), "reference_time")
     thr = data.get("max_branch_age_hours")
@@ -123,7 +123,7 @@ def analyze_trunk(data: Any) -> dict[str, Any]:
     if len(req) > MAX_REQUIRED:
         _fail(f"required_checks exceed {MAX_REQUIRED}")
     for n in req:
-        if not isinstance(n, str) or not _CHECK.match(n):
+        if not isinstance(n, str) or not _CHECK.fullmatch(n):
             _fail(f"invalid check name {n!r}")
     if len(set(req)) != len(req):
         dup = next(n for n in req if req.count(n) > 1)
@@ -215,7 +215,7 @@ def analyze_trunk(data: Any) -> dict[str, Any]:
             _fail("branch must be an object")
         name = b.get("name")
         _keys(b, {"name", "tip", "source_ref"}, f"branch {name}")
-        if not isinstance(name, str) or not _BRANCH.match(name):
+        if not isinstance(name, str) or not _BRANCH.fullmatch(name):
             _fail(f"invalid branch name {name!r}")
         if name in branches:
             _fail(f"duplicate branch {name}")
@@ -237,7 +237,7 @@ def analyze_trunk(data: Any) -> dict[str, Any]:
         name, sha = c.get("name"), c.get("sha")
         label = f"check {name}@{sha}"
         _keys(c, {"name", "sha", "conclusion", "completed_at", "source_ref"}, label)
-        if not isinstance(name, str) or not _CHECK.match(name):
+        if not isinstance(name, str) or not _CHECK.fullmatch(name):
             _fail(f"invalid check name {name!r}")
         _sha(sha)
         if sha not in commits:

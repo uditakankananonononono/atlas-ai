@@ -576,3 +576,36 @@ def test_trunk_summary_comes_from_the_trunk_branch_not_another_branch():
         r = analyze_trunk(d)
         assert r["trunk"]["name"] == tname and r["trunk"]["required_checks"] == br(r, tname)["required_checks"]
         assert r["trunk"]["tip"] == S(3) and br(r, tname)["state"] == "trunk"
+
+
+@pytest.mark.parametrize('field',['sha','parent','tip','branch','trunk','required_check','check_name','check_sha','reference_time','committed_at','completed_at'])
+def test_trailing_newline_rejected_at_field(field):
+ d=base()
+ if field=='sha':d['commits'][0]['sha']+='\n';prefix='invalid sha '
+ elif field=='parent':d['commits'][1]['parents'][0]+='\n';prefix='invalid sha '
+ elif field=='tip':d['branches'][1]['tip']+='\n';prefix='invalid sha '
+ elif field=='branch':d['branches'][1]['name']+='\n';prefix='invalid branch name '
+ elif field=='trunk':d['trunk']+='\n';prefix='invalid trunk name '
+ elif field=='required_check':d['required_checks'][0]+='\n';prefix='invalid check name '
+ elif field=='check_name':d['checks'][0]['name']+='\n';prefix='invalid check name '
+ elif field=='check_sha':d['checks'][0]['sha']+='\n';prefix='invalid sha '
+ elif field=='reference_time':d['reference_time']+='\n';prefix='timestamp reference_time '
+ elif field=='committed_at':d['commits'][0]['committed_at']+='\n';prefix='timestamp commit '+S(1)+' committed_at '
+ else:d['checks'][0]['completed_at']=T(1)+'\n';prefix='timestamp check ci@'+S(5)+' completed_at '
+ assert msg(d).startswith(prefix)
+
+
+@pytest.mark.parametrize('field',['reference_time','committed_at','completed_at'])
+@pytest.mark.parametrize('zero',['\u0660','\uff10'])
+def test_timestamp_ascii_digits_only(field,zero):
+ d=base();value=T(1).replace('0',zero)
+ if field=='reference_time':d[field]=value;prefix='timestamp reference_time '
+ elif field=='committed_at':d['commits'][0][field]=value;prefix='timestamp commit '+S(1)+' committed_at '
+ else:d['checks'][0][field]=value;prefix='timestamp check ci@'+S(5)+' completed_at '
+ assert msg(d).startswith(prefix)
+
+
+def test_stale_ancestor_records_include_any_conclusion():
+ d=base();d['checks'].append({'name':'ci','sha':S(2),'conclusion':'failure'})
+ result=analyze_trunk(d)
+ assert S(2) in br(result,'feat')['required_checks']['ci']['stale_ancestor_shas']
