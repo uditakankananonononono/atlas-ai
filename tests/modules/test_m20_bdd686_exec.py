@@ -333,3 +333,53 @@ def test_domain_floor_engine_never_passes_what_naive_fails():
         elif not engine_passed:
             strict_extra_catches += 1  # isolation / all-of-then caught what naive missed
     assert strict_extra_catches > 0
+
+
+# ---- R2 pins (auditor-identified survivors) ----
+def _counter(v=1):
+    return scenario(given=[{"op": "assign", "var": "x", "value": v}],
+                    when=[{"op": "increment", "var": "x", "by": 2}],
+                    then=[{"assert": "equals", "var": "x", "value": v + 2}])
+
+
+@pytest.mark.parametrize("section", ["given", "when", "then"])
+@pytest.mark.parametrize("bad_step", [1, "assign", None, [], True])
+def test_nonobject_step_is_refused_with_valueerror(section, bad_step):
+    s = _counter()
+    s[section] = [bad_step]
+    with pytest.raises(ValueError, match=rf"^{section}\[0\] must be an object$"):
+        execute_scenarios({"scenarios": [s]})
+
+
+@pytest.mark.parametrize("bad", [1, "", None, ["n"], True])
+def test_invalid_scenario_name_is_refused(bad):
+    s = _counter()
+    s["name"] = bad
+    with pytest.raises(ValueError, match=r"^scenarios\[0\]\.name requires a non-empty string$"):
+        execute_scenarios({"scenarios": [s]})
+
+
+def test_cap_marks_incomplete_then_skips_all_later_scenarios_unrun():
+    r = execute_scenarios({"scenarios": [_counter(), _counter(), _counter()], "max_steps": 1})
+    assert [x["status"] for x in r["scenarios"]] == ["incomplete", "not_run", "not_run"]
+    assert [x["failure"] for x in r["scenarios"]] == [None, None, None]
+    assert r["status"] == "inconclusive_step_cap_exceeded"
+    assert r["steps_executed"] == 1
+    # a later scenario that would FAIL is never executed once the cap is hit
+    failing = scenario(given=[{"op": "assign", "var": "x", "value": 1}], then=[{"assert": "equals", "var": "x", "value": 9}])
+    r = execute_scenarios({"scenarios": [_counter(), failing], "max_steps": 2})
+    assert [x["status"] for x in r["scenarios"]] == ["incomplete", "not_run"]
+    assert r["status"] == "inconclusive_step_cap_exceeded"
+
+
+def test_human_review_required_is_always_true():
+    for data in ({"scenarios": [_counter()]},
+                 {"scenarios": [scenario(given=[{"op": "assign", "var": "x", "value": 1}],
+                                         then=[{"assert": "equals", "var": "x", "value": 2}])]},
+                 {"scenarios": [_counter(), _counter()], "max_steps": 1}):
+        assert execute_scenarios(data)["human_review_required"] is True
+
+
+def test_scalar_arithmetic_and_isolation_receipt_counts():
+    r = execute_scenarios({"scenarios": [_counter(1), _counter(-1)]})
+    assert r["status"] == "all_passed" and r["steps_executed"] == 6 and r["human_review_required"] is True
