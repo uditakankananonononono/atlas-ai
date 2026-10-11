@@ -156,8 +156,9 @@ class P65Composition(Base):
 class Validation(Base):
     def test_bad_types(self):
         h = build(E("a"))
-        for fn in (m.add_entry, m.render, m.report, m.items):
+        for fn in (m.add_entry, m.render, m.report):
             self.refuses("bad_type:harness", fn, "x", E() if fn is m.add_entry else ())
+        self.refuses("bad_type:harness", m.items, "x")
         for bad in (None, True, 1, "s", [], ()):  # bool before int/str
             self.refuses("bad_type:entry", m.add_entry, h, bad)
         for field in ("id", "project_id", "kind", "ref"):
@@ -214,7 +215,7 @@ class Validation(Base):
         h = m.create_harness()
         for i in range(m.MAX_ENTRIES):
             h = m.add_entry(h, E(id="e%d" % i, project_id="p%d" % i))
-        self.refuses("limit_exceeded:entries", m.add_entry, h, E(id="one-more"))
+        self.refuses("limit_exceeded:entries", m.add_entry, h, E(id="one-more", project_id="px"))
 
 
 class InjectionGuard(Base):
