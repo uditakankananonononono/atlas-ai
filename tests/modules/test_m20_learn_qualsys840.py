@@ -268,6 +268,6 @@ def test_r3_lower_clamp_and_mixed_cycle_product_and_unknown_from():
  p=qualitative();p['qualitative_variables'][1]['initial']='low';p['qualitative_influences'][0]['sign']=-1
  assert core.qualitative(p)['states_by_step'][1][0]['b']=='low'
  p=system();p['system_stocks'].append({'id':'c','unit':'litre','initial':0,'source':'c'});p['system_steps']=0
- p['system_flows']=[{'id':'ab','from':'b','to':None,'rate_kind':'proportional','driver':'a','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'ab'},{'id':'bc','from':'c','to':None,'rate_kind':'proportional','driver':'b','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'bc'},{'id':'ca','from':None,'to':'a','rate_kind':'proportional','driver':'c','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'ca'}]
+ p['system_flows']=[{'id':'ab','from':'b','to':None,'rate_kind':'proportional','driver':'a','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'ab'},{'id':'bc','from':None,'to':'c','rate_kind':'proportional','driver':'b','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'bc'},{'id':'ca','from':'a','to':None,'rate_kind':'proportional','driver':'c','rate':1,'delay_steps':0,'stock_unit':'litre','time_unit':'day','source':'ca'}]
  assert core.stock_flow(p)['feedback_cycles']==[{'stock_ids':['a','b','c'],'sign':1}]
  p=system();p['system_flows'][0]['from']='unknown';error(core.stock_flow,p,'unique flows with distinct known endpoints or one external endpoint required')
