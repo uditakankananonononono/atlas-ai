@@ -4,7 +4,6 @@ from pathlib import Path
 
 AUDIT = json.loads(Path('audits/expanded-owner-spec.json').read_text())
 EXPECTED = Counter({'M1': 131, 'M2': 48, 'M3': 31, 'M4': 48, 'Tools': 20, 'Claire': 51})
-SOURCE = 'wamid.HBgMOTE4MTM0MDk4NTcxFQIAEhggQUNDRUZGNEMyOEM5ODc2Q0E4MTlFRUZBRThERTYxQ0UA'
 
 
 def test_expanded_owner_spec_is_fully_rowized():
@@ -20,7 +19,8 @@ def test_rows_are_complete_unique_and_source_linked():
     requirements = [row['requirement'].strip().casefold() for row in rows]
     assert len(requirements) == len(set(requirements))
     assert all(row['requirement'] and row['description'] and row['boundary'] for row in rows)
-    assert all(row['source_message_ids'] == [SOURCE] for row in rows)
+    assert AUDIT['source_message_ids'] == []
+    assert all(row['source_message_ids'] == [] for row in rows)
     assert {row['status'] for row in rows} <= {'verified-pushed', 'thin', 'missing'}
 
 
