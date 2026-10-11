@@ -11,9 +11,10 @@ def test_owner_additional_doc_is_fully_rowized():
  assert Counter(x['category_id'] for x in AUDIT['rows'])==Counter({0:10,1:100,2:150,3:100,4:146,5:200,6:100,7:100,8:100,9:100,10:900})
 def test_feature_counts_match_current_verified_evidence():
  expected=dict(Counter(x['status'] for x in AUDIT['rows']))
- expected.update(removed=len(AUDIT['removed_rows']),thin=expected.get('thin',0),missing=expected.get('missing',0))
+ # Current counts cover active row labels only; removed rows live separately.
  assert AUDIT['counts']==expected
- assert sum(expected.values())==2010
+ assert sum(expected.values())==len(AUDIT['rows'])==2006
+ assert sum(expected.values())+len(AUDIT['removed_rows'])==2010
  assert AUDIT['historical_counts']=={'verified-pushed':2006,'thin':0,'missing':0,'removed':4}
  assert all(x['requirement'] and x['boundary'] for x in AUDIT['rows'])
  assert {x['status'] for x in AUDIT['rows']} <= {'verified-pushed','thin','missing','SCOPED','PARTIAL'}
