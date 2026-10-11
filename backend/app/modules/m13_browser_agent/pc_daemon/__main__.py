@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import os
 import sys
 from pathlib import Path
 
 from .config import DEFAULT_STATE_DIR, DaemonConfig
-from .daemon import Daemon, DeviceIdentity, pair_with_server
+from .daemon import Daemon, DeviceIdentity, PairingRefusedError, pair_with_server
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -26,6 +27,8 @@ def main(argv: list[str] | None = None) -> int:
     pair.add_argument("--capabilities", nargs="+",
                       default=["navigate", "extract", "screenshot", "read_values", "social_read"])
     pair.add_argument("--pacing-seconds", type=float, default=None)
+    pair.add_argument("--token", default=None,
+                      help="bearer token for the Atlas API (or set ATLAS_PAIR_TOKEN)")
 
     run = sub.add_parser("run", help="connect to Atlas and serve commands")
     run.add_argument("--cdp-url", default=None,
@@ -34,10 +37,15 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     if args.command == "pair":
-        config = pair_with_server(args.server, args.nonce, args.code, name=args.name,
-                                  capabilities=args.capabilities, pacing_seconds=args.pacing_seconds,
-                                  key_path=Path(DEFAULT_STATE_DIR / "device_key.pem"),
-                                  config_path=Path(DEFAULT_STATE_DIR / "config.json"))
+        try:
+            config = pair_with_server(args.server, args.nonce, args.code, name=args.name,
+                                      capabilities=args.capabilities, pacing_seconds=args.pacing_seconds,
+                                      key_path=Path(DEFAULT_STATE_DIR / "device_key.pem"),
+                                      config_path=Path(DEFAULT_STATE_DIR / "config.json"),
+                                      token=args.token or os.environ.get("ATLAS_PAIR_TOKEN"))
+        except PairingRefusedError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
         print(f"Paired as device {config.device_id}. Credentials stored in {DEFAULT_STATE_DIR}.")
         return 0
     config = DaemonConfig.load(Path(args.config))

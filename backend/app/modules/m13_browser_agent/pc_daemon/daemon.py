@@ -245,18 +245,35 @@ class Daemon:
             await self.browser.stop()
 
 
+class PairingRefusedError(RuntimeError):
+    """The server refused pairing (auth or policy); the CLI surfaces it cleanly."""
+
+
 def pair_with_server(server_url: str, nonce: str, code: str, *, name: str,
                      capabilities: list[str], pacing_seconds: float | None,
-                     key_path: Path, config_path: Path) -> DaemonConfig:
-    """One-time pairing: create the device key, prove the code, store credentials."""
+                     key_path: Path, config_path: Path,
+                     token: str | None = None) -> DaemonConfig:
+    """One-time pairing: create the device key, prove the code, store credentials.
+
+    The bridge router is mounted behind require_tenant, so the request must
+    carry a bearer token (supplied by the caller - CLI flag or environment,
+    never hardcoded). A 401/403 is raised as PairingRefusedError so the CLI
+    can refuse cleanly instead of surfacing an httpx stack trace.
+    """
     import httpx
     identity = DeviceIdentity.load_or_create(key_path)
+    headers = {"Authorization": f"Bearer {token}"} if token else {}
     response = httpx.post(
         f"{server_url.rstrip('/')}/api/v1/browser-agent/bridge/pair",
         json={"server_nonce": nonce, "code": code, "name": name,
               "public_key": identity.public_key_pem(), "capabilities": capabilities,
               "pacing_seconds": pacing_seconds},
+        headers=headers,
         timeout=30.0)
+    if response.status_code in (401, 403):
+        raise PairingRefusedError(
+            f"pairing refused: HTTP {response.status_code}; "
+            "pass --token or set ATLAS_PAIR_TOKEN")
     response.raise_for_status()
     data = response.json()
     config = DaemonConfig(server_url=server_url, device_id=data["device_id"],
