@@ -298,3 +298,120 @@ def test_budget_and_item_shape_validation():
         schedule_debt({"items": "nope", "budget_hours": 1})
     with pytest.raises(ValueError):
         schedule_debt("nope")
+
+
+# --- R2 mutation pins (audit survivors); runtime unchanged, pins only. ---
+
+import re
+
+
+def test_r2_tie_winner_cost_is_the_lexicographic_winners_cost():
+    # "a" and "b" tie on benefit; lexicographic winner "a" costs MORE than "b".
+    # Pins total_cost/optimal_cost to the winner's cost, not the cheapest tied optimum.
+    data = {"items": [{"id": "a", "benefit": 5, "cost": 8},
+                      {"id": "b", "benefit": 5, "cost": 3}], "budget_hours": 10}
+    r = schedule_debt(data)
+    assert r["selected_ids"] == ["a"]
+    assert r["total_cost"] == 8 and r["certificate"]["optimal_cost"] == 8
+
+
+def test_r2_closure_cost_exactly_budget_is_tradeoff_not_infeasible():
+    # x's prerequisite closure costs exactly the budget: feasible, so its
+    # unselected reason must be not_selected_optimal_tradeoff (pins > vs >=).
+    data = {"items": [{"id": "x", "benefit": 1, "cost": 5, "depends_on": ["y"]},
+                      {"id": "y", "benefit": 0, "cost": 5},
+                      {"id": "z", "benefit": 10, "cost": 10}], "budget_hours": 10}
+    r = schedule_debt(data)
+    assert r["selected_ids"] == ["z"]
+    reasons = {u["id"]: (u["reason"], u["closure_cost_hours"]) for u in r["unselected"]}
+    assert reasons["x"] == ("not_selected_optimal_tradeoff", 10)
+    assert reasons["y"] == ("not_selected_optimal_tradeoff", 5)
+
+
+def test_r2_full_receipt_field_by_field():
+    data = fixture()
+    r = schedule_debt(data)
+    canonical = json.dumps({"items": data["items"], "budget_hours": data["budget_hours"]},
+                           sort_keys=True, separators=(",", ":"))
+    expected = {
+        "row": 693,
+        "capability": "Technical Debt Management",
+        "scope": "bounded_exact_scheduling_over_supplied_graph",
+        "status": "optimal_selection_certified",
+        "selected_ids": ["b", "c", "d"],
+        "unselected": [{"id": "a", "reason": "not_selected_optimal_tradeoff", "closure_cost_hours": 7}],
+        "total_benefit": 13,
+        "total_cost": 9,
+        "budget_hours": 10,
+        "certificate": {
+            "algorithm": "bounded_exhaustive_subset_search",
+            "items": 4,
+            "subsets_enumerated": 16,
+            "state_cap": 4096,
+            "optimal_benefit": 13,
+            "optimal_cost": 9,
+            "prerequisite_closure_required": True,
+            "tie_break": "lexicographically smallest sorted selected-id tuple among benefit-maximal feasible subsets",
+            "independently_reproducible": True,
+        },
+        "item_trace": [
+            {"id": "a", "input_index": 0, "benefit": 9, "cost": 7, "depends_on": []},
+            {"id": "b", "input_index": 1, "benefit": 8, "cost": 4, "depends_on": ["d"]},
+            {"id": "c", "input_index": 2, "benefit": 5, "cost": 4, "depends_on": []},
+            {"id": "d", "input_index": 3, "benefit": 0, "cost": 1, "depends_on": []},
+        ],
+        "provenance": {
+            "input_sha256": hashlib.sha256(canonical.encode()).hexdigest(),
+            "benefit_source": "caller_declared",
+            "cost_source": "caller_declared",
+            "benefits_are_predicted_savings": False,
+            "repository_edits": False,
+            "learned_prioritization": False,
+            "external_task_scheduled": False,
+        },
+        "human_review_required": True,
+    }
+    assert r == expected
+
+
+def test_r2_integral_totals_stay_int_and_fractional_round_trip_float():
+    r = schedule_debt({"items": [{"id": "a", "benefit": 5, "cost": 2}], "budget_hours": 3})
+    assert type(r["total_benefit"]) is int and r["total_benefit"] == 5
+    assert type(r["total_cost"]) is int and r["total_cost"] == 2
+    assert type(r["budget_hours"]) is int and r["budget_hours"] == 3
+    assert type(r["certificate"]["optimal_benefit"]) is int
+    assert type(r["item_trace"][0]["benefit"]) is int and type(r["item_trace"][0]["cost"]) is int
+    rf = schedule_debt({"items": [{"id": "a", "benefit": 0.5, "cost": 0.25}], "budget_hours": 0.5})
+    assert type(rf["total_benefit"]) is float and rf["total_benefit"] == 0.5
+    assert type(rf["total_cost"]) is float and rf["total_cost"] == 0.25
+    assert type(rf["budget_hours"]) is float and rf["budget_hours"] == 0.5
+    assert type(rf["item_trace"][0]["benefit"]) is float and rf["item_trace"][0]["cost"] == 0.25
+    assert rf["unselected"] == []
+
+
+def test_r2_non_string_dependency_entry_rejected():
+    with pytest.raises(ValueError, match="depends_on"):
+        schedule_debt({"items": [{"id": "a", "benefit": 1, "cost": 1, "depends_on": [5]}],
+                       "budget_hours": 1})
+
+
+def test_r2_duplicate_dependency_entries_dedup_identically():
+    base = {"items": [{"id": "a", "benefit": 3, "cost": 2, "depends_on": ["d"]},
+                      {"id": "d", "benefit": 1, "cost": 1}], "budget_hours": 5}
+    dup = {"items": [{"id": "a", "benefit": 3, "cost": 2, "depends_on": ["d", "d"]},
+                     {"id": "d", "benefit": 1, "cost": 1}], "budget_hours": 5}
+    r1, r2 = schedule_debt(base), schedule_debt(dup)
+    assert r1["selected_ids"] == r2["selected_ids"] == ["a", "d"]
+    assert r1["certificate"] == r2["certificate"]
+    assert [(t["id"], t["depends_on"]) for t in r1["item_trace"]] == \
+           [(t["id"], t["depends_on"]) for t in r2["item_trace"]]
+    assert r2["item_trace"][0]["depends_on"] == ["d"]  # dedup preserved order, dropped repeat
+
+
+def test_r2_cycle_message_lists_involved_ids_sorted():
+    data = {"items": [{"id": "c", "benefit": 1, "cost": 1, "depends_on": ["a"]},
+                      {"id": "a", "benefit": 1, "cost": 1, "depends_on": ["b"]},
+                      {"id": "b", "benefit": 1, "cost": 1, "depends_on": ["a"]}],
+            "budget_hours": 5}
+    with pytest.raises(ValueError, match=re.escape("dependency cycle detected involving: a, b, c")):
+        schedule_debt(data)
