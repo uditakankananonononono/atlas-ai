@@ -56,3 +56,21 @@ Recorded by the second commit. The module bytes did not change in that commit.
 - Declared unreachable or untested, not pretended tested: the `could not locate the method name in source` refusal in the unittest rule (the defect above raises before it can be reached, and ASCII names never mismatch); the `source if not res.changes else text` choice in the syntax-error branch (it would need a rewrite that produces unparsable text, and no input is known); the second `compile()` in `_finish` (a repeat of the check made in `modernize`).
 - One hand-written mutant survived: changing the overlap test from `start < last_end` to `start <= last_end`. No input is known where two edits touch end to start. It is not claimed equivalent.
 - Collections ABC names in the module: 25 (the earlier note of 26 was a miscount).
+
+## Mounted integration (additive boundary, not a core repair)
+
+The separate `/legacy-modernization/694/modernize` route binds authenticated
+owner/actor, checks declared resource-reference metadata and returns identity.
+It retrieves no referenced data. Source is at most100000 characters and100000
+UTF-8 bytes; at most7 rule names and64 reference records. No characterization
+callback is accepted or passed, so the route compiles but never executes source.
+Core bytes stay frozen from the reviewed R2. Fullwidth identifier UnicodeDecodeError
+is contained as explicit HTTP422; the core defect is NOT fixed and the strict
+xfail stays. Parser RecursionError/MemoryError are also HTTP422 refusals, not
+successful transformations. Wrapper limits do not create sandboxing for direct
+core callers. The existing row694 diagnostic endpoint remains unchanged.
+
+Named audit residuals remain: L378 collections_abc rule-subset selection untested;
+L422 syntax-error-after-rewrite branch untested; L262 unreachable refusal deletion
+candidate is not demonstrated by a real input. Source-vs-ledger9-row offset remains
+unresolved; source title alone does not establish full legacy modernization.

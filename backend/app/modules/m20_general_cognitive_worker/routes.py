@@ -1537,6 +1537,8 @@ router.include_router(negotiation_behavior_router_0085_0109)
 
 from .software_practice_routes_685_709 import router as software_practice_router_685_709
 router.include_router(software_practice_router_685_709)
+from .legacy_modernizer_routes694 import router as legacy_modernizer_router_694
+router.include_router(legacy_modernizer_router_694)
 
 # Technical-spec semantic workbench, source rows 133-165.
 from .technical_spec_routes_0133_0165 import router as technical_spec_router_0133_0165
