@@ -125,3 +125,47 @@ def test_constraint_value_cap_and_reference_caps_unmasked():
  p=payload();p['reasoning_claims']=[{'id':str(i),'feature':'color','value':'red','frame_id':'f1','source':str(i)}for i in range(128)];r=p['reasoning_resolutions'][0];r['resolves_claim_ids']=[str(i)for i in range(128)];r['premise_ids']=[str(i)for i in range(64)];core.check('integrative_thinking',p)
  r['premise_ids'].append('64');error(p,'premise_ids requires bounded text list')
  r['premise_ids']=['0'];r['resolves_claim_ids'].append('overflow');error(p,'resolves_claim_ids requires bounded text list')
+
+
+def test_r2_unrelated_same_value_neither_supports_nor_contradicts():
+ p=payload();p['reasoning_schema']['other']=['red','blue'];p['reasoning_assumptions'].append({'id':'unrelated','feature':'other','value':'red','source':'unrelated'});p['reasoning_resolutions'][0]['premise_ids']=['unrelated']
+ r=run('dialectical_reasoning',p)['resolution_reports'][0]
+ assert r['supporting_premise_ids']==[] and r['contradicting_premise_ids']==[] and r['supported'] is False
+ p['reasoning_assumptions'][-1]['value']='blue';p['reasoning_resolutions'][0]['premise_ids']=['z','unrelated']
+ r=run('dialectical_reasoning',p)['resolution_reports'][0]
+ assert r['supporting_premise_ids']==['z'] and r['contradicting_premise_ids']==[] and r['supported'] is True
+
+
+def test_r2_unrelated_frame_constraint_does_not_block():
+ p=payload();p['reasoning_frames'][1]['constraints']=[{'feature':'shape','allowed_values':['square'],'source':'shape'}]
+ r=run('integrative_thinking',p)['resolution_reports'][0]
+ assert r['violated_frames']==[] and r['supported'] is True
+
+
+def test_r2_same_value_resolutions_not_competing():
+ p=payload();p['reasoning_resolutions'].append({**deepcopy(p['reasoning_resolutions'][0]),'id':'second'})
+ r=run('dialectical_reasoning',p)
+ assert r['status']=='supported_resolution' and r['competing_resolution_features']==r['unresolved_features']==[]
+
+
+def test_r2_different_features_resolved_independently_conflicts_sorted():
+ p=payload();p['reasoning_schema']={'shape':['round','square'],'color':['red','blue']};p['reasoning_claims'].append({'id':'shape_other','feature':'shape','value':'square','frame_id':'f2','source':'shape_other'});p['reasoning_resolutions'].append({'id':'shape','feature':'shape','value':'square','premise_ids':['shape_other'],'resolves_claim_ids':['s','shape_other'],'source':'shape'})
+ r=run('dialectical_reasoning',p)
+ assert [c['feature']for c in r['contradictions']]==['color','shape'] and r['status']=='supported_resolution'
+ assert r['competing_resolution_features']==r['unresolved_features']==[]
+
+
+def test_r2_schema_and_constraint_source_exact_validation_frame_source():
+ p=payload();p['reasoning_schema']['']=['fresh'];error(p,'schema feature requires bounded nonempty string')
+ p=payload();p['reasoning_frames'][0]['constraints'][0]['source']='';error(p,'constraint source requires bounded nonempty string')
+ assert [(f['id'],f['source'])for f in run('dialectical_reasoning',payload())['frames']]==[('f1','f1'),('f2','f2')]
+
+
+def test_r2_allowed_values_fixed_seed():
+ import subprocess,os,sys
+ code='''from app.modules.m20_general_cognitive_worker.claim_integration import check
+p={'reasoning_schema':{'f':['z','q','m','j','h','f','d','c']},'reasoning_frames':[{'id':'frame','constraints':[{'feature':'f','allowed_values':['z','q','m','j','h','f','d','c'],'source':'constraint'}],'source':'frame-source'}],'reasoning_claims':[{'id':'claim','frame_id':'frame','feature':'f','value':'z','source':'claim'}],'reasoning_assumptions':[],'reasoning_resolutions':[]}
+r=check('integrative_thinking',p)
+assert r['frames'][0]['constraints'][0]['allowed_values']==['c','d','f','h','j','m','q','z']
+'''
+ r=subprocess.run([sys.executable,'-c',code],env={**os.environ,'PYTHONHASHSEED':'0'},capture_output=True,text=True);assert r.returncode==0,r.stderr
