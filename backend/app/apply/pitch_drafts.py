@@ -19,15 +19,22 @@ MAX_PITCH_WORDS = 200
 MAX_JOURNAL_WORDS = 1000
 MAX_BODY = 5000
 MAX_SUBJECT = 300
+MAX_CONTAINERS = 256
+MAX_DICT_KEYS = 32
+MAX_LIST_ITEMS = 64
+MAX_KEY_CHARS = 64
+MAX_RAW_STR = 10000
+MAX_DEPTH = 6
 MAX_QUEUE = 50
 MAX_KEYWORDS = 50
 MAX_STR = 200
 MAX_SUMMARY = 1200
+MAX_ADDR = 254
 MAX_INT = 10 ** 7
 WEIGHTS = (("scope", 3), ("length", 2), ("format", 1), ("sections", 2), ("fee", 1))
 TOTAL_WEIGHT = 9
 HONESTY = {"semantic_fit_judged": False, "acceptance_predicted": False, "sent": False}
-_FORBIDDEN = ("Cc", "Zl", "Zp")
+_FORBIDDEN = ("Cc", "Zl", "Zp", "Cf")
 _TEXT_WS = "\n\r\t"
 _LEAF = (str, int, bool, type(None))
 _DRAFT_KEYS = ("draft_id", "kind", "status", "recipient", "subject", "body", "text_sha256",
@@ -59,9 +66,57 @@ def _bad(value, allow_ws=False):
     return False
 
 
-def _scan(value, field, depth=0, text_keys=()):
-    if depth > 6:
+def _pre(value, field, depth, budget):
+    if depth > MAX_DEPTH:
         raise _err("too_deep")
+    t = type(value)
+    if t is dict or t is list:
+        budget[0] += 1
+        if budget[0] > MAX_CONTAINERS:
+            raise _err("oversize:" + field)
+        if len(value) > (MAX_DICT_KEYS if t is dict else MAX_LIST_ITEMS):
+            raise _err("oversize:" + field)
+        if t is dict:
+            for k, v in value.items():
+                if type(k) is str and len(k) > MAX_KEY_CHARS:
+                    raise _err("oversize:" + field)
+                _pre(v, field, depth + 1, budget)
+        else:
+            for v in value:
+                _pre(v, field, depth + 1, budget)
+    elif t is str and len(value) > MAX_RAW_STR:
+        raise _err("oversize:" + field)
+
+
+def _preflight(value, field):
+    """Cardinality first: container counts, key lengths and raw string lengths, no per-character work."""
+    _pre(value, field, 0, [0])
+
+
+def _cap(field, key, in_list):
+    """The field's own semantic raw cap and the declared code for exceeding it."""
+    if field == "queue":
+        if key == "body":
+            return MAX_BODY, "bad_draft"
+        if key == "subject":
+            return MAX_SUBJECT, "bad_draft"
+        if key == "recipient":
+            return MAX_ADDR, "bad_recipient"
+        return MAX_STR, "bad_draft"
+    if field == "author" and key == "summary":
+        return MAX_SUMMARY, "too_long_field:author"
+    return MAX_STR, ("bad_item:" if in_list else "too_long_field:") + field
+
+
+def _text(value, field, key, in_list, allow_ws):
+    limit, code = _cap(field, key, in_list)
+    if len(value) > limit:
+        raise _err(code)
+    if _bad(value, allow_ws):
+        raise _err("control_chars:" + field)
+
+
+def _scan(value, field, text_keys=(), key=None, in_list=False):
     t = type(value)
     if t is dict:
         for k, v in value.items():
@@ -69,17 +124,12 @@ def _scan(value, field, depth=0, text_keys=()):
                 raise _err("bad_type:" + field)
             if _bad(k):
                 raise _err("control_chars:" + field)
-            if type(v) is str and k in text_keys:
-                if _bad(v, True):
-                    raise _err("control_chars:" + field)
-            else:
-                _scan(v, field, depth + 1, text_keys)
+            _scan(v, field, text_keys, k, False)
     elif t is list:
         for v in value:
-            _scan(v, field, depth + 1, text_keys)
+            _scan(v, field, text_keys, key, True)
     elif t is str:
-        if _bad(value):
-            raise _err("control_chars:" + field)
+        _text(value, field, key, in_list, key in text_keys)
     elif t not in _LEAF:
         raise _err("bad_type:" + field)
 
@@ -87,6 +137,7 @@ def _scan(value, field, depth=0, text_keys=()):
 def _keys(d, field, allowed, required):
     if type(d) is not dict:
         raise _err("bad_type:" + field)
+    _preflight(d, field)
     _scan(d, field)
     if any(k not in allowed for k in d):
         raise _err("unknown_field:" + field)
@@ -94,14 +145,12 @@ def _keys(d, field, allowed, required):
         raise _err("missing_field:" + field)
 
 
-def _str(d, key, field, limit=MAX_STR):
+def _str(d, key, field):
     v = d[key]
     if type(v) is not str:
         raise _err("bad_type:" + field)
     if v == "":
         raise _err("empty:" + field)
-    if len(v) > limit:
-        raise _err("too_long_field:" + field)
     return v
 
 
@@ -124,7 +173,7 @@ def _strlist(d, key, field, lo, hi):
     for s in v:
         if type(s) is not str:
             raise _err("bad_type:" + field)
-        if s == "" or len(s) > MAX_STR:
+        if s == "":
             raise _err("bad_item:" + field)
         out.append(s.lower())
     return out
@@ -248,7 +297,7 @@ def _check_fit(fit, m):
 def _recipient(addr):
     if "," in addr or ";" in addr:
         raise _policy(BULK)
-    if len(addr) > 254 or addr.count("@") != 1 or " " in addr:
+    if addr.count("@") != 1 or " " in addr:
         raise _err("bad_recipient")
     local, domain = addr.split("@")
     if local == "" or "." not in domain or domain.startswith(".") or domain.endswith(".") \
@@ -270,7 +319,7 @@ def _author(a, journal):
     flag = a.get("not_under_review_elsewhere", False)
     if type(flag) is not bool:
         raise _err("bad_type:author")
-    return _str(a, "name", "author"), _str(a, "summary", "author", MAX_SUMMARY), flag
+    return _str(a, "name", "author"), _str(a, "summary", "author"), flag
 
 
 def _draft(kind, target_name, recipient, subject, body):
@@ -303,9 +352,13 @@ def make_org_pitch_draft(target, author, ask):
     aname, summary, _flag = _author(author, False)
     if type(ask) is not str:
         raise _err("bad_type:ask")
+    if len(ask) > MAX_RAW_STR:
+        raise _err("oversize:ask")
+    if len(ask) > MAX_STR:
+        raise _err("too_long_field:ask")
     if _bad(ask):
         raise _err("control_chars:ask")
-    if ask == "" or len(ask) > MAX_STR:
+    if ask == "":
         raise _err("too_long_field:ask")
     body = ("Dear %s team,\n\nMy name is %s. %s\n\nI would like to ask for %s.\n\n"
             "Thank you for your time.\n\n%s" % (tname, aname, summary, ask, aname))
@@ -323,7 +376,8 @@ def _check_draft(d, statuses):
     """One complete validation for a draft, whether it came from a builder or from a caller."""
     if type(d) is not dict:
         raise _err("bad_type:queue")
-    _scan(d, "queue", 0, ("body",))
+    _preflight(d, "queue")
+    _scan(d, "queue", ("body",))
     if sorted(d) != sorted(_DRAFT_KEYS):
         raise _err("bad_draft")
     for k in _STR_FIELDS:
@@ -333,8 +387,7 @@ def _check_draft(d, statuses):
             or d["status"] not in statuses:
         raise _err("bad_draft")
     _recipient(d["recipient"])
-    if len(d["recipient"]) > MAX_STR or not 0 < len(d["subject"]) <= MAX_SUBJECT \
-            or not 0 < len(d["target_name"]) <= MAX_STR or not 0 < len(d["body"]) <= MAX_BODY:
+    if len(d["recipient"]) > MAX_STR or not d["subject"] or not d["target_name"] or not d["body"]:
         raise _err("bad_draft")
     cap = MAX_PITCH_WORDS if d["kind"] == "org_pitch" else MAX_JOURNAL_WORDS
     if len(d["body"].split()) > cap:
@@ -347,6 +400,7 @@ def _check_draft(d, statuses):
 def _queue(q):
     if type(q) is not list:
         raise _err("bad_type:queue")
+    _preflight(q, "queue")
     if len(q) > MAX_QUEUE:
         raise _err("queue_full")
     for d in q:
