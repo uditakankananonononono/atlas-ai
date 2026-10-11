@@ -207,3 +207,56 @@ def test_envelope_keys_exact():
                       'balanced_rotation', 'shared_understanding_aligned', 'gaps',
                       'status', 'collaboration_observed', 'code_changes_made',
                       'source_truth_verified', 'boundary'}
+
+
+# --- second-audit pins round 2 (peer-corrected mapping; tests only, runtime frozen) ---
+
+def test_task_refusal_exact_text():
+    p = payload(); del p['task']
+    exact_refusal(p, 'task requires bounded nonempty string')
+
+def test_rotations_refusal_exact_text():
+    p = payload(); del p['rotations']
+    exact_refusal(p, 'rotations requires bounded object list')
+
+def test_handoff_note_type_refusal_exact_text():
+    p = payload(); p['rotations'][1]['handoff_note'] = 123
+    exact_refusal(p, 'handoff_note requires bounded nonempty string')
+
+def test_balanced_rotation_dominant_set_never_empty_is_unbalanced():
+    # AND half 1 FALSE: dominant driver set, nobody idle -> not balanced
+    p = payload(); p['rotations'] = [
+        {'driver_id': 'asha', 'duration_minutes': 45},
+        {'driver_id': 'biren', 'duration_minutes': 15, 'handoff_note': 'x'}]
+    r = collaborate(p)
+    assert r['dominant_driver'] == 'asha' and r['never_drove'] == []
+    assert r['balanced_rotation'] is False
+
+def test_balanced_rotation_no_dominant_but_never_drove_is_unbalanced(monkeypatch):
+    # AND half 2 FALSE: no dominant driver, but a participant never drove.
+    # Unreachable with the 0.75 threshold and exactly 2 participants, so the
+    # threshold constant is raised to pin the half deterministically.
+    import app.modules.m20_general_cognitive_worker.pair_programming691 as pp691
+    monkeypatch.setattr(pp691, 'DOMINANT_SHARE', 1.1)
+    p = payload(); p['rotations'] = [
+        {'driver_id': 'asha', 'duration_minutes': 30},
+        {'driver_id': 'asha', 'duration_minutes': 30}]
+    r = collaborate(p)
+    assert r['dominant_driver'] is None and r['never_drove'] == ['biren']
+    assert r['balanced_rotation'] is False
+    assert 'driver_never_rotated' in r['gaps']
+
+def test_participants_sorted_contract_seed_independent(monkeypatch):
+    # Patch the module's own keys() binding (imported at module line 12 from
+    # .anchored_assessment) to return a deterministic unsorted LIST, so the
+    # sorted() output contract is checked without set-hash involvement.
+    import app.modules.m20_general_cognitive_worker.pair_programming691 as pp691
+    monkeypatch.setattr(pp691, 'keys', lambda *a, **kw: ['zed', 'amy'])
+    p = payload(); p['participants'] = ['zed', 'amy']
+    p['rotations'] = [
+        {'driver_id': 'zed', 'duration_minutes': 30},
+        {'driver_id': 'amy', 'duration_minutes': 30, 'handoff_note': 'x'}]
+    r = collaborate(p)
+    assert r['participants'] == ['amy', 'zed']
+    assert list(r['drive_minutes']) == ['amy', 'zed']
+    assert list(r['drive_share']) == ['amy', 'zed']
