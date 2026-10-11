@@ -64,3 +64,24 @@ def test_mounted_auth_minimal_refusal_tenant(monkeypatch,oidc_auth_headers):
   assert c.post(path,headers=h,json={'payload':p}).status_code==200
   assert c.post(path,headers=h,json={'payload':{'objective':'x','source':SRC}}).status_code==422
   assert c.post(path,headers=h,json={'payload':{**p,'resource_refs':[{'tenant_id':'b'}]}}).status_code==403
+
+def test_full_rubric_evidence_echo_order_zero_anchor_missing():
+ p=payload();r=run(p=p);assert r['rubric']==p['assessment_rubric'] and r['evidence']==p['assessment_evidence'] and r['controls']==p['assessment_controls']
+ p['assessment_ratings'][0].update(level=0,evidence_ids=[]);r=run(p=p);assert r['rating_reports'][0]['missing_required_features']==[] and r['rating_reports'][0]['supported'] is False
+ assert r['boundary']=='Declared observable-feature rubric anchors and supplied artifact evidence only; self/peer identity/control declarations are not independently verified. Disagreement retained without averaging, no mastery, psychometrics or credential decision.'
+
+@pytest.mark.parametrize('field,value',[('anonymized',1),('conflict_checked',1),('conflicted_rater_ids','peer'),('author_response','')])
+def test_controls_literal_types_and_text(field,value):
+ p=payload();p['assessment_controls'][field]=value
+ with pytest.raises(LearningReasoningError):run(p=p)
+
+def test_caps_and_duplicate_pair():
+ p=payload();p['assessment_rubric']=[{**p['assessment_rubric'][0],'criterion_id':str(i)}for i in range(32)];p['assessment_ratings']=[]
+ assert len(run(p=p)['criterion_reports'])==32
+ p['assessment_rubric'].append({**p['assessment_rubric'][0],'criterion_id':'32'})
+ with pytest.raises(LearningReasoningError):run(p=p)
+ p=payload();p['assessment_ratings'].append({**p['assessment_ratings'][0],'rating_id':'different'})
+ with pytest.raises(LearningReasoningError):run(p=p)
+ p=payload();p['assessment_rubric'][0]['anchors']=[{'level':i,'description':'observable','required_features':[]}for i in range(16)];p['assessment_ratings']=[];assert len(run(p=p)['rubric'][0]['anchors'])==16
+ p['assessment_rubric'][0]['anchors'].append({'level':16,'description':'observable','required_features':[]})
+ with pytest.raises(LearningReasoningError):run(p=p)

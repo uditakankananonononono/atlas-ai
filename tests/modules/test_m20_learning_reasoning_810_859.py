@@ -34,7 +34,8 @@ def test_825_goal_setting_minimal_payload_refuses():
  with pytest.raises(LearningReasoningError,match='plan_goal'):L('goal_setting')
 def test_826_progress_monitoring_computes_change():assert L('progress_monitoring',unit='points',records=[{'value':1,'evidence_id':'p1','observed_at':'2026-10-01T00:00:00+00:00'},{'value':4,'evidence_id':'p2','observed_at':'2026-10-02T00:00:00+00:00'}])['progress']['change']==3
 @pytest.mark.parametrize('n',['self_assessment','peer_assessment'])
-def test_827_828_assessment_requires_evidence_and_bias_check(n):assert L(n,criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
+def test_827_828_assessment_requires_evidence_and_bias_check(n):
+ with pytest.raises(LearningReasoningError,match='artifact_id'):L(n,criteria=['reasoning'],ratings={'reasoning':3})
 @pytest.mark.parametrize('n,purpose',[('formative_assessment','feedback during learning'),('summative_assessment','judgment after instruction'),('diagnostic_assessment','prerequisite and misconception diagnosis')])
 def test_829_831_assessment_purposes(n,purpose):assert L(n,assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']==purpose
 def test_832_prior_knowledge_not_graded():assert 'flag misconceptions without grading' in L('prior_knowledge_activation')['activation']
@@ -85,8 +86,10 @@ def test_learning_reasoning_rejects_cross_tenant_reference():
   execute('retrieval_practice',{'tenant_id':'a','resource_refs':[{'tenant_id':'b'}],'objective':'x','source':SRC})
 def test_821_scaffolding_support_fades_on_evidence(): assert L('scaffolding',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['support_levels'][-1]['support']==0 and L('scaffolding',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['fade_on_evidence_not_time']
 def test_822_fading_support_fades_on_evidence(): assert L('fading',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['support_levels'][-1]['support']==0 and L('fading',support_catalog=[{'id':'1','task':'example','support_level':'model'}],support_attempts=[])['fade_on_evidence_not_time']
-def test_827_self_assessment_requires_evidence(): assert L('self_assessment',criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
-def test_828_peer_assessment_requires_evidence(): assert L('peer_assessment',criteria=['reasoning'],ratings={'reasoning':3})['assessment'][0]['missing_evidence']
+def test_827_self_assessment_requires_evidence():
+ with pytest.raises(LearningReasoningError,match='artifact_id'):L('self_assessment')
+def test_828_peer_assessment_requires_evidence():
+ with pytest.raises(LearningReasoningError,match='artifact_id'):L('peer_assessment')
 def test_829_formative_assessment_purpose(): assert L('formative_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='feedback during learning'
 def test_830_summative_assessment_purpose(): assert L('summative_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='judgment after instruction'
 def test_831_diagnostic_assessment_purpose(): assert L('diagnostic_assessment',assessment_items=[{'id':'one','objective_id':'o','accepted_answers':['4']}],assessment_responses=[])['assessment_design']['purpose']=='prerequisite and misconception diagnosis'
