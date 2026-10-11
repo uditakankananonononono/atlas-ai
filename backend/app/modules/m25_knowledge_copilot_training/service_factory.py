@@ -9,6 +9,13 @@ UNAVAILABLE='knowledge service unavailable'
 class ServiceUnavailable(KnowledgeError):pass
 class OwnerMismatch(KnowledgeError):pass
 
+def _asr_profile(config):
+    from app.ingest.offline_asr import ASRConfig,ASRError
+    try:
+        if type(config) is not ASRConfig:raise ASRError("config required")
+        return "deterministic-embedder-v1+offline-whisper-v1:"+config.identity()
+    except (ASRError,OSError,ValueError):raise ServiceUnavailable(UNAVAILABLE) from None
+
 def _segment(value):
     if type(value) is not str or not 1<=len(value)<=120 or value in ('.','..') or not re.fullmatch(r'[A-Za-z0-9_.-]+',value):raise ServiceUnavailable(UNAVAILABLE)
     return value
@@ -26,10 +33,13 @@ def _root(value,allow_test_scratch):
 
 def _registry(root,tenant):return root/('.m25-owner-'+hashlib.sha256(tenant.encode()).hexdigest()+'.json')
 
-def provision(root,tenant_id,owner_actor,*,known_new=False,profile=PROFILE,allow_test_scratch=False):
+def provision(root,tenant_id,owner_actor,*,known_new=False,profile=PROFILE,allow_test_scratch=False,asr_config=None):
     """Administrative known-new decision only. Crash residue is never auto-reset."""
+    if asr_config is not None:
+        if profile!=PROFILE:raise ServiceUnavailable(UNAVAILABLE)
+        profile=_asr_profile(asr_config)
     root=_root(root,allow_test_scratch);tenant=_segment(tenant_id)
-    if known_new is not True or type(owner_actor) is not str or not 1<=len(owner_actor)<=120 or profile!=PROFILE:raise ServiceUnavailable(UNAVAILABLE)
+    if known_new is not True or type(owner_actor) is not str or not 1<=len(owner_actor)<=120 or (asr_config is None and profile!=PROFILE):raise ServiceUnavailable(UNAVAILABLE)
     registry=_registry(root,tenant);workspace=root/tenant
     if os.path.lexists(registry) or os.path.lexists(workspace):raise ServiceUnavailable(UNAVAILABLE)
     workspace.mkdir(mode=0o700)
@@ -41,7 +51,9 @@ def provision(root,tenant_id,owner_actor,*,known_new=False,profile=PROFILE,allow
     finally:os.close(fd)
 
 class KnowledgeServiceFactory:
-    def __init__(self,root,*,allow_test_scratch=False):
+    def __init__(self,root,*,allow_test_scratch=False,asr_config=None):
+        self.asr_config=asr_config
+        self.profile=_asr_profile(asr_config) if asr_config is not None else PROFILE
         self.root=_root(root,allow_test_scratch);self._lock=RLock();self._services={};self._locks={}
     def _owner(self,tenant):
         try:
@@ -54,7 +66,7 @@ class KnowledgeServiceFactory:
             raw=LocalKnowledgePipeline._read_bounded_file(_registry(self.root,tenant),4096,UNAVAILABLE,'registry','exceeds bound')
             data=json.loads(raw,object_pairs_hook=unique)
             if type(data) is not dict or set(data)!={'version','tenant_id','owner_actor','profile'}:raise ValueError()
-            if type(data['version']) is not int or data['version']!=1 or data['tenant_id']!=tenant or data['profile']!=PROFILE:raise ValueError()
+            if type(data['version']) is not int or data['version']!=1 or data['tenant_id']!=tenant or data['profile']!=self.profile:raise ValueError()
             if type(data['owner_actor']) is not str or not 1<=len(data['owner_actor'])<=120:raise ValueError()
             workspace=self.root/tenant
             if workspace.is_symlink() or not workspace.is_dir() or workspace.stat().st_mode & 0o077:raise ValueError()
@@ -72,7 +84,12 @@ class KnowledgeServiceFactory:
                 with self._lock:
                     service=self._services.get(tenant)
                     if service is None:
-                        service=LocalKnowledgePipeline(self.root,tenant,owner,embedder=DeterministicEmbedder(),transcriber=UnavailableTranscriber())
+                        transcriber=UnavailableTranscriber()
+                        if self.asr_config is not None:
+                            from app.ingest.offline_asr import OfflineWhisper,KnowledgeTranscriber
+                            if _asr_profile(self.asr_config)!=self.profile:raise ServiceUnavailable(UNAVAILABLE)
+                            transcriber=KnowledgeTranscriber(OfflineWhisper(self.asr_config))
+                        service=LocalKnowledgePipeline(self.root,tenant,owner,embedder=DeterministicEmbedder(),transcriber=transcriber)
                         service.restore_verified(same_adapters_attested=True)
                         self._services[tenant]=service
                 for record in service.records.values():service._check_consent(record.source)

@@ -53,11 +53,17 @@ class SensoryLayer:
         *,
         allowed_sources: set[str] | None = None,
         transcriber: Transcriber | None = None,
+        asr_config=None,
         vision: VisionModel | None = None,
         document_parser: DocumentParser | None = None,
         max_rows_preview: int = 50,
     ) -> None:
         self.allowed_sources = allowed_sources
+        if transcriber is not None and asr_config is not None:
+            raise ValueError("choose transcriber or ASR config")
+        if asr_config is not None:
+            from app.ingest.offline_asr import OfflineWhisper, TextTranscriber
+            transcriber = TextTranscriber(OfflineWhisper(asr_config))
         self.transcriber = transcriber
         self.vision = vision
         self.document_parser = document_parser
@@ -104,11 +110,17 @@ class SensoryLayer:
             return None
         if self.transcriber is None:
             raise RuntimeError("no transcriber bound for audio ingestion")
-        text = self.transcriber.transcribe(audio_bytes, media_type=media_type)
+        asr_metadata = {}
+        if hasattr(self.transcriber, "transcribe_with_provenance"):
+            result = self.transcriber.transcribe_with_provenance(audio_bytes, media_type=media_type)
+            text = result.text
+            asr_metadata = {"asr": result.provenance()}
+        else:
+            text = self.transcriber.transcribe(audio_bytes, media_type=media_type)
         event = CognitiveEvent(
             modality=Modality.AUDIO, text=text, source=source,
             external_id=external_id, content_hash=hashlib.sha256(audio_bytes).hexdigest(),
-            metadata={**(metadata or {}), "media_type": media_type},
+            metadata={**(metadata or {}), "media_type": media_type, **asr_metadata},
         )
         return self._accept(event)
 

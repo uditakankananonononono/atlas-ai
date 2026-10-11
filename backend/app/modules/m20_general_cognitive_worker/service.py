@@ -111,6 +111,7 @@ class CognitiveWorkerService:
         embedder: EmbeddingProvider | None = None,
         attention: AttentionController | None = None,
         transcriber: Transcriber | None = None,
+        asr_config=None,
         vision: VisionModel | None = None,
         document_parser: DocumentParser | None = None,
         sandbox: SandboxPolicy | None = None,
@@ -123,7 +124,7 @@ class CognitiveWorkerService:
         self.meta_tenant_id = meta_repository.tenant_id if meta_repository is not None else None
         self.embedder = embedder
         self.sensory = SensoryLayer(
-            transcriber=transcriber, vision=vision, document_parser=document_parser,
+            transcriber=transcriber, asr_config=asr_config, vision=vision, document_parser=document_parser,
         )
         self.working_memory = WorkingMemory(
             capacity=working_memory_capacity, attention=attention,
