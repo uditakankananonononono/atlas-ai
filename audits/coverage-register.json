@@ -25702,10 +25702,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1960 Graph-of-Thought: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_graph_shortest_path. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_graph_shortest_path. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1960. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1960,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_graph_shortest_path. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1961,
@@ -25715,10 +25723,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1961 Self-Consistency: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_answer_plurality. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_answer_plurality. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1961. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1961,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_answer_plurality. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1962,
@@ -25728,10 +25744,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1962 Retrieval-Augmented Generation: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_vector_context_selection_only. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_vector_context_selection_only. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1962. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1962,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_vector_context_selection_only. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1963,
@@ -25741,10 +25765,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1963 Vector Databases: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: in_memory_supplied_vector_scan. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: in_memory_supplied_vector_scan. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1963. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1963,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: in_memory_supplied_vector_scan. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1964,
@@ -25754,10 +25786,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1964 Embeddings: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: character_hash_vectors. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: character_hash_vectors. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1964. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1964,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: character_hash_vectors. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1965,
@@ -25767,10 +25807,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1965 Semantic Search: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_vector_cosine_ranking. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_vector_cosine_ranking. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1965. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1965,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_vector_cosine_ranking. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1966,
@@ -25871,10 +25919,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1973 Neuro-Symbolic AI: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification. Scope/status source: audits/additional-2000-features.json row 1973. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1973,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1974,
@@ -25884,10 +25940,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1974 Hybrid AI: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification. Scope/status source: audits/additional-2000-features.json row 1974. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1974,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_rule_weight_score_propagation. No execution of original named capability, neural model or independent evidence verification.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1975,
@@ -25897,10 +25961,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1975 Cognitive Computing: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+      "depth_sweep_status": "PARTIAL-supplied-operator",
+      "depth_evidence": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1975. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1975,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "supplied-operator"
+      }
     },
     {
       "row": 1976,
@@ -25910,10 +25982,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1976 Affective Computing: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+      "depth_sweep_status": "PARTIAL-supplied-operator",
+      "depth_evidence": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1976. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1976,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "supplied-operator"
+      }
     },
     {
       "row": 1977,
@@ -25923,10 +26003,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1977 Emotion Recognition: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+      "depth_sweep_status": "PARTIAL-supplied-operator",
+      "depth_evidence": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 1977. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1977,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "supplied-operator"
+      }
     },
     {
       "row": 1978,
@@ -25936,10 +26024,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1978 Sentiment Analysis: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification. Scope/status source: audits/additional-2000-features.json row 1978. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1978,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1979,
@@ -25949,10 +26045,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1979 Opinion Mining: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification. Scope/status source: audits/additional-2000-features.json row 1979. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1979,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: literal_lexicon_token_count. No execution of original named capability, neural model or independent evidence verification.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1980,
@@ -26014,10 +26118,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1984 Swarm Intelligence: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1984. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1984,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1985,
@@ -26027,10 +26139,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1985 Evolutionary Computation: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1985. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1985,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1986,
@@ -26040,10 +26160,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1986 Genetic Algorithms: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1986. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1986,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1987,
@@ -26053,10 +26181,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1987 Genetic Programming: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_polynomial_candidate_selection. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_polynomial_candidate_selection. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1987. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1987,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_polynomial_candidate_selection. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1988,
@@ -26066,10 +26202,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1988 Artificial Life: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1988. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1988,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1989,
@@ -26079,10 +26223,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1989 Digital Twins: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_series_residual_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_series_residual_diagnostics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1989. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1989,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_series_residual_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1990,
@@ -26118,10 +26270,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1992 Optimization: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "SCOPED",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research.",
+      "depth_sweep_status": "SCOPED-supplied-operator",
+      "depth_evidence": "Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research. Scope/status source: audits/additional-2000-features.json row 1992. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1992,
+        "ledger_status": "SCOPED",
+        "ledger_scope": "Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "supplied-operator"
+      }
     },
     {
       "row": 1993,
@@ -26131,10 +26291,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1993 Operations Research: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "SCOPED",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research.",
+      "depth_sweep_status": "SCOPED-supplied-operator",
+      "depth_evidence": "Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research. Scope/status source: audits/additional-2000-features.json row 1993. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1993,
+        "ledger_status": "SCOPED",
+        "ledger_scope": "Exact finite binary knapsack subset enumeration, at most20 nonnegative items/costs and budget, supplied floating-point arithmetic. Not general optimization/operations research.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "supplied-operator"
+      }
     },
     {
       "row": 1994,
@@ -26157,10 +26325,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1995 Systems Science: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_graph_degree_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_graph_degree_diagnostics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1995. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1995,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_graph_degree_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1996,
@@ -26170,10 +26346,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 1996 Complexity Science: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: supplied_graph_degree_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: supplied_graph_degree_diagnostics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 1996. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 1996,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: supplied_graph_degree_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 1997,
@@ -26222,10 +26406,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2000 Self-Organization: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 2000. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2000,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 2001,
@@ -26235,10 +26427,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2001 Emergence: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 2001. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2001,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 2002,
@@ -26248,10 +26448,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2002 Adaptation: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 2002. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2002,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 2003,
@@ -26261,10 +26469,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2003 Evolution: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 2003. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2003,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 2004,
@@ -26274,10 +26490,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2004 Co-evolution: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 2004. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2004,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 2005,
@@ -26287,10 +26511,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2005 Symbiosis: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 2005. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2005,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 2006,
@@ -26300,10 +26532,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2006 Autopoiesis: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 2006. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2006,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 2007,
@@ -26326,10 +26566,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2008 Second-Order Cybernetics: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Reference substitute only: hand_written_gain_adjustment_simulation. No execution of original named capability, learned/generative model or deployed integration.",
+      "depth_sweep_status": "PARTIAL-reference-substitute",
+      "depth_evidence": "Reference substitute only: hand_written_gain_adjustment_simulation. No execution of original named capability, learned/generative model or deployed integration. Scope/status source: audits/additional-2000-features.json row 2008. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2008,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Reference substitute only: hand_written_gain_adjustment_simulation. No execution of original named capability, learned/generative model or deployed integration.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "reference-substitute"
+      }
     },
     {
       "row": 2009,
@@ -26339,10 +26587,18 @@
       "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
       "test_path": "tests/modules/test_m20_cognitive_1960_2009.py",
       "test_case": null,
-      "post_semantic_status": "verified",
-      "implementation_details": "Functions: run. Boundaries: unsupported cognitive method; review_tasks; review_threshold; Adaptive controller is a second-order cybernetics illustration, not evidence of consciousness.",
-      "depth_sweep_status": "verified-practitioner-depth",
-      "depth_evidence": "Row 2009 Metacognition: row-keyed domain computation in backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py; focused band test supplies row-relevant inputs, asserts its distinctive computed output and exercises typed invalid-input/insufficient-evidence behavior; mounted tenant/actor route boundary is verified."
+      "post_semantic_status": "PARTIAL",
+      "implementation_details": "Scoped supplied-input bookkeeping/computation only. Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+      "depth_sweep_status": "PARTIAL-supplied-operator",
+      "depth_evidence": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence. Scope/status source: audits/additional-2000-features.json row 2009. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "scope_provenance": {
+        "ledger_path": "audits/additional-2000-features.json",
+        "ledger_row": 2009,
+        "ledger_status": "PARTIAL",
+        "ledger_scope": "Supplied scored-attempt Brier calibration only (1975/2009), or hand-written supplied valence/arousal quadrant rubric (1976/1977). No cognition/emotion-recognition model or independent outcome verification. Exact booleans required, no default unscored outcome, no fabricated emotion confidence.",
+        "source_commit": "8798cff8d609e0f5cc40a43c56b0f277c41250d6",
+        "scope_kind": "supplied-operator"
+      }
     },
     {
       "row": 2010,
