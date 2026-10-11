@@ -207,7 +207,7 @@ class ForecastLedger:
             refuse('INTEGRITY', 'incomplete trailing ledger event')
         try:
             events = [json.loads(line) for line in raw.splitlines()]
-        except (ValueError, UnicodeDecodeError):
+        except (ValueError, UnicodeDecodeError, RecursionError):  # deep nesting is a bad ledger, not a crash
             refuse('INTEGRITY', 'invalid ledger JSON')
         if len(events) > MAX_EVENTS:
             refuse('LIMIT', 'ledger event cap exceeded')
