@@ -1,0 +1,213 @@
+{
+  "collection": {
+    "posts": [
+      {
+        "post_id": "50051501",
+        "author": "nityanandmathur",
+        "text": "Show HN: TensorViz \u2013 Explore PyTorch models inside VS Code",
+        "posted_at": "2026-10-12T04:49:06Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50051501"
+      },
+      {
+        "post_id": "50045494",
+        "author": "lazyweb",
+        "text": "Ask HN: What to do with lots of spare compute in colocation?",
+        "posted_at": "2026-10-11T17:19:40Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50045494"
+      },
+      {
+        "post_id": "50043309",
+        "author": "mdp2021",
+        "text": "Tensordyne is making AI compute more efficient using logarithms",
+        "posted_at": "2026-10-11T13:51:59Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50043309"
+      },
+      {
+        "post_id": "50041999",
+        "author": "jmoosh34",
+        "text": "Ask HN: How do you differentiate yourself at a software engineer nowadays?",
+        "posted_at": "2026-10-11T11:22:42Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50041999"
+      },
+      {
+        "post_id": "50039697",
+        "author": "giuliomagnifico",
+        "text": "A Programmable Readout Pixel Image Sensor",
+        "posted_at": "2026-10-11T04:03:12Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50039697"
+      },
+      {
+        "post_id": "50038673",
+        "author": "suopspaces",
+        "text": "Sensor Fusion",
+        "posted_at": "2026-10-11T00:52:40Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50038673"
+      },
+      {
+        "post_id": "50036439",
+        "author": "MechanicusMagus",
+        "text": "Mspep \u2013 Encryption from physical sensor entropy (defensive publication)",
+        "posted_at": "2026-10-10T19:44:02Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50036439"
+      },
+      {
+        "post_id": "50006646",
+        "author": "laybak",
+        "text": "Garlic-peel sensor powers low-cost home-security sensor",
+        "posted_at": "2026-10-08T15:00:06Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50006646"
+      },
+      {
+        "post_id": "50004678",
+        "author": "dnetesn",
+        "text": "Romain Sordello: Sensory Pollution and the Ecology of Odor Landscapes",
+        "posted_at": "2026-10-08T11:46:53Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=50004678"
+      },
+      {
+        "post_id": "49980565",
+        "author": "adithkb",
+        "text": "Senior Software Engineer",
+        "posted_at": "2026-10-06T16:10:42Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49980565"
+      },
+      {
+        "post_id": "49950653",
+        "author": "walrus01",
+        "text": "Best-selling Zigbee temperature sensors tested and compared",
+        "posted_at": "2026-10-04T04:30:46Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49950653"
+      },
+      {
+        "post_id": "49940133",
+        "author": "senor_digimon",
+        "text": "Everything Is a Ralph Loop",
+        "posted_at": "2026-10-03T00:06:08Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49940133"
+      },
+      {
+        "post_id": "49934037",
+        "author": "ruffrey",
+        "text": "Ask HN: Is anybody producing good code with coding agents?",
+        "posted_at": "2026-10-02T14:38:35Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49934037"
+      },
+      {
+        "post_id": "49932912",
+        "author": "lazyweb",
+        "text": "Ask HN: What to do with lots of spare compute in colocation?",
+        "posted_at": "2026-10-02T12:47:01Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49932912"
+      },
+      {
+        "post_id": "49928960",
+        "author": "senor_digimon",
+        "text": "Ask HN: Programming Codex/Claude to code for a duration",
+        "posted_at": "2026-10-02T01:28:38Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49928960"
+      },
+      {
+        "post_id": "49900802",
+        "author": "senorcarbone",
+        "text": "Reliable AI Automation done right (it's not a model this time)",
+        "posted_at": "2026-09-29T21:22:23Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49900802"
+      },
+      {
+        "post_id": "49894951",
+        "author": "buildwithdennis",
+        "text": "Show HN: Sensored \u2013 streaming-first PII/PHI redaction",
+        "posted_at": "2026-09-29T15:25:56Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49894951"
+      },
+      {
+        "post_id": "49890707",
+        "author": "gvuksic",
+        "text": "Show HN: JBR-001 \u2013 An open-source 3D printable desktop robot",
+        "posted_at": "2026-09-29T10:05:56Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49890707"
+      },
+      {
+        "post_id": "49885387",
+        "author": "senorcarbone",
+        "text": "Reliable AI automation done right (not with a model)",
+        "posted_at": "2026-09-28T22:31:53Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49885387"
+      },
+      {
+        "post_id": "49885197",
+        "author": "JumpCrisscross",
+        "text": "Ukrainian forces advance in key eastern battlefield",
+        "posted_at": "2026-09-28T22:13:33Z",
+        "platform": "hacker_news",
+        "source_url": "https://news.ycombinator.com/item?id=49885197"
+      }
+    ],
+    "response_sha256": "f8beff78d85ba2c4e38b9e6506f45c127498ee0d7373918eab9fff14ae2edf90",
+    "request_url": "https://hn.algolia.com/api/v1/search_by_date?query=sensor&tags=story&hitsPerPage=20&numericFilters=created_at_i%3C%3D1791791674&page=0",
+    "docs_url": "https://hn.algolia.com/api",
+    "sample_limit": 20,
+    "exhaustive": false,
+    "claim": "source-reported HN story titles, not validated business outcomes"
+  },
+  "measurement": {
+    "scope": "TREND_U03 measured post frequency only",
+    "boundary": "Measured term frequency in the supplied posts only. It does not predict markets, prices or business outcomes, is not investment advice, and no accuracy is promised. Results depend on which posts the caller collected; sampling bias and bots are not detected. A rising term is a measurement, not a recommendation.",
+    "as_of": "2026-10-12T07:54:34.530220+00:00",
+    "posts_used": 20,
+    "status": "TRENDS_MEASURED",
+    "parameters": {
+      "recent_days": 7,
+      "baseline_days": 28,
+      "min_recent_posts": 3,
+      "min_authors": 2,
+      "top_n": 20
+    },
+    "excluded": {
+      "future": 0,
+      "future_post_ids": [],
+      "out_of_window": 0
+    },
+    "trends": [
+      {
+        "term": "sensor",
+        "recent_posts": 4,
+        "baseline_posts": 0,
+        "recent_authors": 4,
+        "growth_ratio": 16.0,
+        "recent_days": 7,
+        "baseline_days": 28,
+        "formula": "growth_ratio = (recent_posts / recent_days) / ((baseline_posts + 1) / baseline_days)",
+        "metric": "posts containing the term (each post counted once)",
+        "evidence_post_ids": [
+          "50006646",
+          "50036439",
+          "50038673",
+          "50039697"
+        ],
+        "rank": 1
+      }
+    ]
+  },
+  "learned_model": false,
+  "external_actions_executed": false
+}
