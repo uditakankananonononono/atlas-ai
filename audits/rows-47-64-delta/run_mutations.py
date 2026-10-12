@@ -50,6 +50,9 @@ MUT = [
  ("R15 date format check dropped", T, "if not isinstance(r.get('as_of'),str) or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',r['as_of']):raise Refusal(prefix+'_REFUSED_DATE')", "pass", UT),
  ("R16 rate limit global instead of per host", T, "host=urlsplit(url).netloc;now=self.clock()", "host='*';now=self.clock()", UT),
  ("R17 record dedup removed", T, "if (r['source_id'],digest) in seen:continue", "pass", UT),
+ ("R18 piracy flag ignored", T, "if r.get('piracy'):raise Refusal('TREND_REFUSED_PIRACY')", "pass", UT),
+ ("R19 credentials flag ignored", T, "if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')", "if r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')", UT),
+ ("R20 logged_in flag ignored", T, "if r.get('credentials') or r.get('logged_in'):raise Refusal(prefix+'_REFUSED_SCRAPE')", "if r.get('credentials'):raise Refusal(prefix+'_REFUSED_SCRAPE')", UT),
 ]
 ENV =dict(os.environ, ATLAS_DEV_NO_AUTH="1", ATLAS_ENV="development", PYTHONPATH="backend")
 TIMEOUT_S = 120

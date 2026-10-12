@@ -17,6 +17,19 @@ receipt file is named; the receipt files are in this directory and the runners a
   the server finishes). It holds no result and nothing waits on it; a test asserts it ends once the server finishes. Refusals carry no chained exception, so the sitekey in the request URL is not
   reachable from `__cause__`/`__context__`/tracebacks. The sitekey is in the query string because the documented API
   takes it there. The result `request.url` is the URL actually hit (no query).
+- Residuals, each assessed against the current source (`execute_stats_request` uses `ThreadPoolExecutor(max_workers=1)` and
+  `pool.shutdown(wait=False)`); all are documented here and none is fixed:
+  - Interpreter exit: `concurrent.futures` worker threads are joined at interpreter exit, so a stalled worker can delay
+    process exit up to its own bounds. Not tested.
+  - Header phase: the worker has no deadline check while reading headers. A server that drips headers just inside the
+    per-operation timeout keeps the worker alive until http.client's header limits (about 100 headers) or the server ends,
+    so "until the per-operation timeout" understates it. The caller is still bounded by the outer timeout. The residue
+    test only covers a ~2s server that finishes.
+  - Residue probe: the test finds the worker by thread name prefix `ThreadPoolExecutor`, which also matches other pools in
+    the process, so it can pass or fail because of unrelated threads.
+  - Key retention: the worker holds the request URL, including the sitekey, until it ends. No result is retained and the
+    refusals carry no chained exception.
+  - Connect/DNS stall: bounded by the outer timeout only; no dedicated test and no DNS test at all.
 - Tests: `tests/modules/test_c31_clicky_transport.py` runs it against a loopback ThreadingHTTPServer behind an autouse
   socket guard that fails the test on any non-loopback connect.
 
@@ -26,9 +39,16 @@ receipt file is named; the receipt files are in this directory and the runners a
   content-type, Location header, byte count and SHA-256). `verify_row56_receipts.py` re-checks it offline.
 - This run HONORS per-host robots Crawl-delay (spacing = max(1s, Crawl-delay); above 30s the link is not fetched). Hamilton
   declares 5s, Dartmouth and CollegeTransitions 10s; recorded gaps respect them (0 violations across 20 hosts).
-  An EARLIER d1/d3 run, and the existing helper `fetch_case_metadata_bounded`, used 1s spacing and ignored Crawl-delay;
-  `row56_link_liveness_2026-10-12.json` is from that earlier helper run and should be read as such (recorded local run,
-  Crawl-delay not honored). The helper in production code still ignores Crawl-delay (not changed here).
+  An EARLIER d1/d3 run used 1s spacing and ignored Crawl-delay; `row56_link_liveness_2026-10-12.json` is from that earlier
+  run. It is NOT repaired and stands as-is on purpose: it is a historical recorded local run, kept so the earlier
+  non-compliance stays visible. Repairing it would mean fabricating timing it never had or making a new live run, which was
+  not authorized. `row56_receipts.json` replaces it as the Crawl-delay-honoring record; do not cite the older file for
+  compliance. The production helper `fetch_case_metadata_bounded` is separate from this runner and was changed later (see
+  audits/m23-crawl-delay/README.md and audits/m23-host-pacing/README.md); this runner is not that code.
+- What the receipts prove: `verify_row56_receipts.py` re-checks spacing against the `requested_at` stamps the runner wrote
+  itself. That shows the recorded file is internally consistent. It does not show that the servers observed those gaps, and
+  it skips the robots re-hash for non-UTF-8 bodies by design. The file records 39 requests (20 robots plus 19 page
+  requests, recounted from `row56_receipts.json`).
 - Result of this run: 16 page_reachable; jhu 403, collegeessayguy 403, cornell 308 redirect (Location recorded),
   admitraven robots.txt 307 redirect (robots_unverified, page not requested). Nothing was bypassed.
 - page_reachable now requires a 200 text/html page whose bytes were actually read; an over-size page is recorded as
@@ -51,7 +71,10 @@ unrelated chunks (noisy, fail-closed). Not a 200-real-source corpus; no learning
 followed) over a loopback server via a test-authored transport, then T3 and T4. Each candidate hash is bound to its own page
 URL; the candidate list is compared exactly; T3 flags (paywalled, piracy, credentials, logged_in), dedup, the 500-candidate
 cap, bad date and oversize text are refused or applied as coded; policy-denial asserts the exact `FLEET_REFUSED_OUTREACH`
-and a separate test the `FLEET_REFUSED_UNAVAILABLE` path. UNTESTED: non-UTF-8 response decoding (it belongs to the caller-
+and a separate test the `FLEET_REFUSED_UNAVAILABLE` path. UNVERIFIED TIERS (no test, not claimed): the second host in the rate-limit test goes to the same loopback port through the
+test-authored transport, so independence is of the fetcher's bookkeeping, not of real hosts; a 302 test shows the fetcher
+refuses a redirect reply it is handed, not that the production transport refuses redirects; DNS resolution and TLS are not
+exercised; non-UTF-8 response decoding (it belongs to the caller-
 supplied transport), TLS/DNS pinning, real advice sources, T1 and T2 beyond the existing t_units tests. Advice becoming
 training or a created artifact is not shown; row 63 stays PARTIAL.
 
@@ -62,4 +85,8 @@ KeyError/RuntimeError, not just assertions; mixed FAILED plus SKIP is not reject
 ERROR/collection/internal/fatal screening is implemented beyond rc and FAILED-ID presence. Timeout,
 other nonzero rc, or rc1 without FAILED IDs is INVALID; rc0 is SURVIVED, including rc0 with skips. Restore is verified by SHA-256 of every mutated file against its pre-run content.
 The last run's counts and any SURVIVED or INVALID entries are in `mutation_receipts.txt` and are stated in the delivery
-message. Prior versions of this harness counted any non-zero exit as a catch; that is why the counts below were re-run.
+message. The 35 results (32 earlier plus R18-R20 added here) are recorded local harness runs, not independently re-run. Only the first three failing test ids per mutant are
+recorded, so a mutant killed by 1 of 16 malformed-plan cases looks the same as one killed by all 16. The summary line is
+parsed by splitting on ' - ', so a test id containing that text would be cut (cosmetic). T3 flag coverage: R13 (paywall),
+R18 (piracy), R19 (credentials) and R20 (logged_in) each have a mutant.
+Prior versions of this harness counted any non-zero exit as a catch; that is why the counts below were re-run.
