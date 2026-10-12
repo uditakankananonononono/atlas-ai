@@ -57,9 +57,49 @@ def _scan(node):
             _scan(v)
 
 
+_ID_RE = re.compile(r"pkt-[0-9a-f]{12}\Z")
+_HASH_RE = re.compile(r"[0-9a-f]{64}\Z")
+_PACKET_KEYS = frozenset({"id", "state", "as_of", "olympiad", "checklist",
+                          "waiver_draft", "review", "boundary", "artifact_hash",
+                          "handoff_files"})
+
+
 def _packet_id(olympiad_name, profile_name):
     blob = json.dumps([olympiad_name, profile_name], sort_keys=True)
     return "pkt-" + hashlib.sha256(blob.encode("utf-8")).hexdigest()[:12]
+
+
+def _digest(checklist):
+    return hashlib.sha256(json.dumps(checklist, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def _valid_packet(packet):
+    """Strict structural validation of anything read back from the store.
+    Store content is DATA, not proof: every field is re-verified before any
+    action is taken on it."""
+    if not isinstance(packet, dict) or not _PACKET_KEYS >= set(packet) \
+            or not {"id", "state", "olympiad", "checklist", "review",
+                    "artifact_hash"} <= set(packet):
+        _err("STORE", "packet-shape")
+    if not isinstance(packet["id"], str) or not _ID_RE.fullmatch(packet["id"]):
+        _err("STORE", "packet-id")  # also the path-traversal guard
+    if packet["state"] not in STATES:
+        _err("STORE", "packet-state")
+    if not isinstance(packet["artifact_hash"], str) \
+            or not _HASH_RE.fullmatch(packet["artifact_hash"]):
+        _err("STORE", "packet-hash")
+    if not isinstance(packet["olympiad"], dict) \
+            or not isinstance(packet["checklist"], dict) \
+            or not isinstance(packet["review"], dict):
+        _err("STORE", "packet-fields")
+    review = packet["review"]
+    if set(review) - {"reviewed_by", "decision", "exact_artifact_hash"}:
+        _err("STORE", "review-shape")
+    if review.get("exact_artifact_hash") is not None \
+            and (not isinstance(review["exact_artifact_hash"], str)
+                 or not _HASH_RE.fullmatch(review["exact_artifact_hash"])):
+        _err("STORE", "review-hash")
+    return packet
 
 
 def build_packet(request):
@@ -113,8 +153,7 @@ def build_packet(request):
         "boundary": ("Preparation only. Atlas does not register, submit, email, pay or log "
                      "in. The terminal state is a local handoff bundle for the owner."),
     }
-    packet["artifact_hash"] = hashlib.sha256(
-        json.dumps(packet["checklist"], sort_keys=True).encode("utf-8")).hexdigest()
+    packet["artifact_hash"] = _digest(packet["checklist"])
     return packet
 
 
@@ -124,11 +163,14 @@ def review(store, packet_id, decision, reviewer):
     packet's CURRENT artifact hash (exact-draft approval)."""
     if not isinstance(store, dict):
         raise ValueError("%s_REFUSED_BAD_TYPE:store" % PREFIX)
-    packet = store.get(packet_id)
-    if not isinstance(packet, dict):
-        _err("NOTFOUND", "packet")
+    packet = _valid_packet(store.get(packet_id))
     if packet["state"] != "pending_review":
         _err("STATE", packet["state"])
+    # recompute the artifact digest from CURRENT store content; a store row
+    # mutated since build is data, not proof, and must not be approvable
+    current = _digest(packet["checklist"])
+    if current != packet["artifact_hash"]:
+        _err("TAMPERED", "artifact")
     reviewer = policy.clean_text(reviewer, PREFIX, "reviewer", 120)
     if decision == "reject":
         packet["state"] = "draft"
@@ -139,7 +181,7 @@ def review(store, packet_id, decision, reviewer):
         raise ValueError("%s_REFUSED_BAD_TYPE:decision" % PREFIX)
     packet["state"] = "owner_approved"
     packet["review"] = {"reviewed_by": reviewer, "decision": "approve",
-                        "exact_artifact_hash": packet["artifact_hash"]}
+                        "exact_artifact_hash": current}
     return packet
 
 
@@ -148,36 +190,54 @@ def export_handoff(store, packet_id, out_dir):
     owner_approved packet exports. Returns the written file paths."""
     if not isinstance(store, dict):
         raise ValueError("%s_REFUSED_BAD_TYPE:store" % PREFIX)
-    packet = store.get(packet_id)
-    if not isinstance(packet, dict):
-        _err("NOTFOUND", "packet")
+    packet = _valid_packet(store.get(packet_id))
     if packet["state"] != "owner_approved":
         _err("STATE", packet["state"])
+    approved = packet["review"].get("exact_artifact_hash")
+    if not approved:
+        _err("STATE", "not-approved")
+    # recompute the artifact digest from CURRENT store content and require it
+    # to equal what the owner approved; a post-review mutation refuses export
+    if _digest(packet["checklist"]) != approved:
+        _err("TAMPERED", "artifact")
     out_dir = policy.clean_text(out_dir, PREFIX, "out_dir", MAX_OUT_PATH)
     root = os.path.realpath(out_dir)
     if os.path.exists(root) and not os.path.isdir(root):
         _err("PATH")
     os.makedirs(root, exist_ok=True)
-    files = []
-    packet_path = os.path.join(root, packet["id"] + ".packet.json")
-    with open(packet_path, "w", encoding="utf-8") as fh:
-        json.dump(packet, fh, indent=2, sort_keys=True)
-    files.append(packet_path)
+    # packet["id"] is already pinned to ^pkt-[0-9a-f]{12}$ by _valid_packet;
+    # still resolve every target and prove it stays under root before writing
+    targets = {"packet": packet["id"] + ".packet.json",
+               "readme": packet["id"] + ".README.txt"}
     waiver = packet.get("waiver_draft")
-    if waiver and waiver.get("drafts"):
-        wpath = os.path.join(root, packet["id"] + ".waiver.txt")
+    if waiver and isinstance(waiver, dict) and waiver.get("drafts"):
+        targets["waiver"] = packet["id"] + ".waiver.txt"
+    paths = {}
+    for kind, fname in targets.items():
+        full = os.path.realpath(os.path.join(root, fname))
+        if os.path.commonpath((root, full)) != root or full == root:
+            _err("PATH", kind)
+        if os.path.lexists(full):
+            # lexists, not exists: a DANGLING symlink must not be followed to
+            # create a file outside root; any pre-existing entry refuses
+            _err("OVERWRITE", kind)
+        paths[kind] = full
+    files = []
+    with open(paths["packet"], "x", encoding="utf-8") as fh:
+        json.dump(packet, fh, indent=2, sort_keys=True)
+    files.append(paths["packet"])
+    if "waiver" in paths:
         body = waiver["drafts"][0].get("body") or json.dumps(waiver["drafts"][0], indent=2)
-        with open(wpath, "w", encoding="utf-8") as fh:
+        with open(paths["waiver"], "x", encoding="utf-8") as fh:
             fh.write(body)
-        files.append(wpath)
-    readme = os.path.join(root, packet["id"] + ".README.txt")
-    with open(readme, "w", encoding="utf-8") as fh:
+        files.append(paths["waiver"])
+    with open(paths["readme"], "x", encoding="utf-8") as fh:
         fh.write("Handoff bundle for %s (%s).\n" % (packet["olympiad"]["name"], packet["id"]))
         fh.write("Approved by: %s\n" % packet["review"]["reviewed_by"])
         fh.write("Atlas prepared these materials; it did not register, submit, email or pay.\n")
         fh.write("Next step is yours: register through the official site and send the waiver "
                  "request yourself.\n")
-    files.append(readme)
+    files.append(paths["readme"])
     packet["state"] = "handoff_exported"
     packet["handoff_files"] = files
     return {"packet_id": packet["id"], "state": packet["state"], "files": files,

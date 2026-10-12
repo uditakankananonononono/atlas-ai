@@ -186,3 +186,25 @@ servers). Test counts are from `python3 -m pytest` on the listed files.
 - Exhaustive competition coverage or universal knowledge coverage (bounded
   discovery/ingestion with explicit coverage counts landed).
 - Any send/register/submit/charge execution (all such paths are refusals).
+
+## Follow-up hardening (gate feedback, patch 0014)
+
+- c30.public_http: implicit redirect following DISABLED (no-redirect
+  opener); every 3xx Location target is allow-list + public-IP validated
+  BEFORE contact, chain capped at 5. robots.txt fail-CLOSED: only explicit
+  404/410 means "no restrictions"; 401/403/429/5xx/DNS/timeout all deny.
+  Public-IP validation on resolved addresses (loopback/private/link-local/
+  reserved refuse in production; the allow_http test seam relaxes it).
+  14 adversarial tests added (off-list redirect to a metadata endpoint
+  refused before contact, redirect loop cap, robots-error denial matrix,
+  dangling-symlink-independent IP refusals, real 304 flow).
+- c35.registration_pipeline: export recomputes the artifact digest from
+  CURRENT store content and requires equality with the owner-approved hash
+  (post-review mutation refuses TAMPERED); review recomputes before
+  approving (pre-review mutation or forged hash refuses); packet ids pinned
+  to ^pkt-[0-9a-f]{12}$ (traversal impossible); every export target
+  realpath-confined under the output root; lexists (not exists) so dangling
+  symlinks refuse; files opened with "x" (never overwrite); strict store
+  re-validation (_valid_packet) before any action on loaded data.
+  8 adversarial tests added.
+- New-suite total after hardening: 105 tests, all passing.
