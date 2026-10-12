@@ -120,7 +120,7 @@ def test_687_refusals_and_caps(call):
     assert call(P687, {'data': {'as_of': 'now', 'cycles': [cyc, cyc]}}, 422) == 'TESTDR687:duplicate:cycle_id'
     many = [dict(cyc, id='c%d' % i) for i in range(64)]
     assert call(P687, {'data': {'as_of': 'now', 'cycles': many}})['consistent_cycles'] == 64
-    assert call(P687, {'data': {'as_of': 'now', 'cycles': many + [dict(cyc, id='c64')]}}, 422).startswith('TESTDR687:')
+    assert call(P687, {'data': {'as_of': 'now', 'cycles': many + [dict(cyc, id='c64')]}}, 422) == 'TESTDR687:limit:cycles'
 
 
 # ------------------------------------------------------------------ 688
@@ -368,7 +368,7 @@ def test_690_route_caps_exact(call):
     assert _is_model_error(call(P690, {'diff': clean, 'review_checklist': ['q'] * 65, 'author': 'a'}, 422))
 
 
-def test_resource_refs_cap_exact_on_every_route(monkeypatch, oidc_auth_headers):
+def test_resource_refs_cap_exact_on_three_representative_routes(monkeypatch, oidc_auth_headers):
     monkeypatch.setenv('ATLAS_ENV', 'production')
     client = TestClient(app, raise_server_exceptions=False)
     bodies = {P686: {'data': A686}, P689: {'source': SRC689, 'old': 't', 'new': 'u'},
@@ -435,4 +435,4 @@ def test_687_receipt_count_is_exactly_three(call):
     two = call(P687, {'data': {'as_of': 'now', 'cycles': [cyc]}}, 422)
     four = call(P687, {'data': {'as_of': 'now', 'cycles': [dict(cyc, receipts=cyc['receipts'] * 2)]}}, 422)
     assert two == 'TESTDR687:count:receipts'
-    assert four != two and four.startswith('TESTDR687:')
+    assert four == 'TESTDR687:limit:receipts'
