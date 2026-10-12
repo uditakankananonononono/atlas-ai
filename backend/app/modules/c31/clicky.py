@@ -217,3 +217,66 @@ def plan_stats_request(site_id, types, *, date="last-7-days", limit=FREE_MAX_LIM
     return {"method": "GET", "url": DOCUMENTED_API_BASE, "params": params,
             "headers": {"Accept": "application/json"}, "live_verified": False,
             "docs_url": DOCUMENTED_DOCS_URL}
+
+
+# --- Real transport for the documented stats GET (never called live by the repo's tests) ---
+# execute_stats_request performs the HTTP GET itself with the stdlib. It needs the owner's
+# sitekey supplied by the caller (never stored here). Tests exercise it only against a
+# loopback server (allow_loopback=True); a live call to api.clicky.com needs her approval.
+import http.client as _http_client
+import urllib.error as _urlerr
+import urllib.request as _urlreq
+from urllib.parse import urlsplit as _urlsplit
+
+TRANSPORT_TIMEOUT_S = 10.0
+
+
+class _NoRedirect(_urlreq.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):  # a redirect could carry the sitekey elsewhere
+        return None
+
+
+def execute_stats_request(plan, sitekey, *, timeout=TRANSPORT_TIMEOUT_S, base_url=None, allow_loopback=False):
+    """Run a plan from plan_stats_request. Returns parse_response output plus the redacted URL.
+
+    Refusals are ValueError('APPLY_REFUSED_*'); the sitekey never appears in a result, an error
+    message or the returned request URL. base_url overrides the host only when allow_loopback
+    is True and the host is 127.0.0.1/localhost (hermetic tests)."""
+    if not isinstance(plan, dict) or plan.get("method") != "GET" or plan.get("url") != DOCUMENTED_API_BASE:
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:plan")
+    if not isinstance(sitekey, str) or not re.fullmatch(r"[A-Za-z0-9]{6,64}", sitekey):
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:sitekey")
+    if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not 0 < timeout <= 30:
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:timeout")
+    url = plan["url"]
+    if base_url is not None:
+        parts = _urlsplit(base_url)
+        if not allow_loopback or parts.scheme != "http" or parts.hostname not in {"127.0.0.1", "localhost"}:
+            raise ValueError("APPLY_REFUSED_BAD_TYPE:base_url")
+        url = base_url
+    params = dict(plan["params"])
+    if params.get("sitekey") != "${CLICKY_SITEKEY}":
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:plan")
+    params["sitekey"] = sitekey
+    req = _urlreq.Request(url + "?" + urlencode(params), headers=dict(plan["headers"]), method="GET")
+    opener = _urlreq.build_opener(_NoRedirect)
+    try:
+        with opener.open(req, timeout=timeout) as resp:
+            status = resp.status
+            raw = resp.read(MAX_BODY + 1)
+    except _urlerr.HTTPError as exc:
+        raise ValueError("APPLY_REFUSED_HTTP:%d" % exc.code) from None
+    except (_urlerr.URLError, TimeoutError, OSError, _http_client.HTTPException):
+        raise ValueError("APPLY_REFUSED_TRANSPORT") from None  # no str(exc): it can echo the URL
+    if len(raw) > MAX_BODY:
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:body")
+    try:
+        body = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        raise ValueError("APPLY_REFUSED_BAD_JSON") from None
+    redacted = dict(plan, url=DOCUMENTED_API_BASE)
+    out = parse_response(redacted, status, body)
+    out["request"] = {"method": "GET", "url": DOCUMENTED_API_BASE}
+    out["scope"] = policy.scope(["one GET to the documented stats endpoint"], ["spend", "auto-submission", "writes"],
+                                "real transport; live use needs the owner's sitekey and approval")
+    return out

@@ -1,0 +1,166 @@
+{
+ "run_at": "2026-10-12T21:55:51+05:30",
+ "method": "existing fetch_case_metadata_bounded: robots.txt first, no redirects, bounded bodies, 1s spacing; metadata only, no essay text stored",
+ "results": [
+  {
+   "id": "olin",
+   "publisher": "Olin College",
+   "url": "https://www.olin.edu/blogs/voices-olins-class-2028-college-essay-snippets",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "The Voices of Olin's Class of 2028: College Essay Snippets | Olin College of Engineering"
+  },
+  {
+   "id": "hamilton",
+   "publisher": "Hamilton College",
+   "url": "https://www.hamilton.edu/admission/apply/college-essays-that-worked",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "Essays that Worked - Essays That Worked - Home - Hamilton College"
+  },
+  {
+   "id": "conncoll",
+   "publisher": "Connecticut College",
+   "url": "https://www.conncoll.edu/admission/apply/essays-that-worked/edie-banovic-25/",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "Edie Banovic '25 \u00b7 Connecticut College"
+  },
+  {
+   "id": "jhu",
+   "publisher": "Johns Hopkins University",
+   "url": "https://apply.jhu.edu/hopkins-insider/queens-gambit/",
+   "live_status": "unavailable",
+   "http_status": 403,
+   "page_title": null
+  },
+  {
+   "id": "mit",
+   "publisher": "MIT",
+   "url": "https://mitadmissions.org/blogs/entry/my_college_essay/",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "My College Essay | MIT Admissions"
+  },
+  {
+   "id": "tufts",
+   "publisher": "Tufts University",
+   "url": "https://admissions.tufts.edu/blogs/jumbo-talk/post/how-i-wrote-my-college-essay/",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "How I Wrote my College Essay \u00b7 Jumbo Talk | Tufts Admissions"
+  },
+  {
+   "id": "emory",
+   "publisher": "Emory University",
+   "url": "https://blog.emoryadmission.com/2025/10/strong-personal-statement-selected-exceptional-essays/",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "Strong Personal Statement: Selected Exceptional Essays | Blog: Inside Emory Undergraduate Admission"
+  },
+  {
+   "id": "pomona",
+   "publisher": "Pomona College",
+   "url": "https://sagehenstories.pomona.edu/2026/04/my-admissions-journey-to-pomona/",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "My Admissions Journey to Pomona \u2013 Sagehen Stories"
+  },
+  {
+   "id": "princeton",
+   "publisher": "Princeton University",
+   "url": "https://admission.princeton.edu/blogs/application-story",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "An Application Story | Princeton Admission"
+  },
+  {
+   "id": "dartmouth",
+   "publisher": "Dartmouth College",
+   "url": "https://admissions.dartmouth.edu/follow/blog/julia-cappio/my-dartmouth-acceptance-one-year-later",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "My Dartmouth Acceptance, One Year Later | Dartmouth Admissions"
+  },
+  {
+   "id": "collegevine",
+   "publisher": "CollegeVine",
+   "url": "https://blog.collegevine.com/vanderbilt-essay-examples",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "A Strong Vanderbilt Essay Example from an Accepted Student | CollegeVine Blog"
+  },
+  {
+   "id": "prepscholar",
+   "publisher": "PrepScholar",
+   "url": "https://blog.prepscholar.com/successful-harvard-application-common-application-harvard-supplement",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "My Successful Harvard Application: Complete Common App and Supplement"
+  },
+  {
+   "id": "collegeessayguy",
+   "publisher": "College Essay Guy",
+   "url": "https://www.collegeessayguy.com/blog/college-essay-examples",
+   "live_status": "unavailable",
+   "http_status": 403,
+   "page_title": null
+  },
+  {
+   "id": "collegeraptor",
+   "publisher": "College Raptor",
+   "url": "https://www.collegeraptor.com/getting-in/articles/college-applications/application-essays-that-got-students-accepted-into-impressive-schools/",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "College Application Essays that Work - 10 Examples"
+  },
+  {
+   "id": "collegetransitions",
+   "publisher": "College Transitions",
+   "url": "https://www.collegetransitions.com/blog/college-transitions-case-study-bethlehem-central/",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "How One Bethlehem Central Student Built a Standout Profile and Earned Admission to Cornell University: A College Transitions Case Study - College Transitions"
+  },
+  {
+   "id": "admitraven",
+   "publisher": "AdmitRaven",
+   "url": "https://admitraven.com/en/case-studies/cdd76171-e4ae-44be-bd7f-c3fb7d747074",
+   "live_status": "robots_unverified",
+   "http_status": 307,
+   "page_title": null
+  },
+  {
+   "id": "admitsee",
+   "publisher": "AdmitSee",
+   "url": "https://www.admitsee.com/profile-detail/123956",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "College application profile detail for Stanford123956, admitted to Stanford University (Stanford, CA) includes college essays, test scores, school admission information."
+  },
+  {
+   "id": "borderless",
+   "publisher": "Borderless",
+   "url": "https://borderless.so/stories/how-my-tripod-of-family-faith-and-voice-led-me-to-the-university-of-notre-dame",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "How My \"tripod\" of family, faith, and voice Led Me to the University of Notre Dame | Borderless"
+  },
+  {
+   "id": "cornell",
+   "publisher": "Cornell University",
+   "url": "https://business.cornell.edu/hub/2018/11/19/college-application-process-led-me-to-cornell/",
+   "live_status": "unavailable",
+   "http_status": 308,
+   "page_title": null
+  },
+  {
+   "id": "crimson",
+   "publisher": "The Harvard Crimson",
+   "url": "https://business.thecrimson.com/10-successful-harvard-essays-2025",
+   "live_status": "page_reachable",
+   "http_status": null,
+   "page_title": "10 Successful Harvard Essays | 2025 | Crimson Business"
+  }
+ ]
+}
