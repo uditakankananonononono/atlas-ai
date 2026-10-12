@@ -28,3 +28,19 @@ UNTESTED: Owner-recorded payment arithmetic only. No outreach, charging, real co
 and hostile-process containment untested. Direct pytest timeout is not an
 escaped-descendant guarantee. Declared source hashes are not semantic truth.
 Literal row remains PARTIAL; no admission/award/virality/revenue/coverage victory.
+
+## Historical invalid-site disclosure
+
+There were two initial INVALID-SITE operators in rows98-108: row99 approver
+and row108 total. Row108 total attempted
+`sum(e["amount_cents"] for e in ledger)` -> `0`, which has zero sites in
+the initial `bc034bf0` source. Its original full config and hash-bound site
+check are retained here. This is not a historical pytest replay. The later
+corrected total operator uses `sum(per_client.values())`; its CAUGHT result
+does not replace or credit the initial INVALID-SITE.
+
+The existing Udita reviewer and Udita Builds brand labels in the row99/108
+tests predate this deepening: all occurrences match the original bc034bf0
+files. They are fixture labels, not a real owner's review, identity proof,
+or approval. New fixtures use neutral labels. No personal-name change is
+made here, so historical test hashes are not silently rewritten.

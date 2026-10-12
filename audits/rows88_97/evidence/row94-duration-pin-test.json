@@ -1,0 +1,7 @@
+{
+  "source_commit": "3964e8af3dbd0569d2be559ba1a51e8f578271eb",
+  "source_path": "tests/modules/test_group94_isolated_workforce.py",
+  "retained_path": "row94-duration-pin-test.txt",
+  "sha256": "4afd2b48577594ec9b3e548b52e5d94f6acb1e2f7f7f1d0080e8412744d94919",
+  "scope": "Retained committed historical test bytes only; not bound by original mutation receipts and not proof of historical test execution or chronology-label recovery."
+}

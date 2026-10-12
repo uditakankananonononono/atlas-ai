@@ -76,3 +76,24 @@ The latter must produce INVALID despite a FAILED test ID and must restore
 source bytes. It also checks persisted HEAD/tree/status and exact tracked
 source/test/spec hashes. Status records the untracked output directory;
 recorded identity is not a cleanliness gate or environment attestation.
+
+## Version boundaries
+
+The distinct split49 receipt is on `fc71886b`, tree
+`c4048f36` (use the full tree in its receipt). That commit is the direct
+parent of `81145546`, which is the landing base for the reconciliation
+patch; landing tip is `ce68d6d2`. These relations were checked from git
+objects, not inferred from labels. The split49 run remains on its own
+recorded checkout, not a run on the landing base or tip.
+
+`evidence/row94-duration-pin-test.txt` retains the committed test bytes from
+`3964e8af`; its adjacent JSON binds their SHA256. This makes the added body
+inspectable but does not retrofit test identities into historical receipts,
+prove historical execution, or authenticate the private-original matching
+used to recover phase labels.
+
+The real-pytest fixture assumes trusted local git config, available git and
+pytest, compatible hooks/signing settings, bytecode behavior and pytest
+output formatting. It does not disable host hooks/signing or certify those
+settings. The exact recorded passing environment is narrower than universal
+fixture portability. Checkout hashes remain recorded, not security gates.

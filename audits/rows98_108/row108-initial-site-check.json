@@ -1,0 +1,8 @@
+{
+  "initial_base": "bc034bf034ca65b5e092bdcb561b50769dffcef4",
+  "spec_sha256": "e0de16081150a943004c82628771e5cebaa5a578ec6f8fe0b3a343fdbd6fff89",
+  "recorded_spec_hash_matches": true,
+  "source_sha256": "13f7449e2bfc97cc0907e74e4c881e728fb0f53aed0d2067ccc5b56599817c3a",
+  "old_site_count": 0,
+  "scope": "Exact historical config/source check only, not a historical pytest rerun. INVALID-SITE caused no replacement and no mutation log."
+}
