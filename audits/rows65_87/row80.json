@@ -1,0 +1,49 @@
+{
+  "row": 80,
+  "selectors": [
+    "tests/mission_build/test_math_strategy.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "exact supplied rational polynomial computation only",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "evaluate",
+      "path": "backend/app/mission_build/exact_math.py",
+      "old": "value = value * x + coefficient",
+      "new": "value = value + coefficient"
+    },
+    {
+      "id": "derivative",
+      "path": "backend/app/mission_build/exact_math.py",
+      "old": "p[i] * i",
+      "new": "p[i]"
+    },
+    {
+      "id": "integral",
+      "path": "backend/app/mission_build/exact_math.py",
+      "old": "c / (i + 1)",
+      "new": "c"
+    },
+    {
+      "id": "root",
+      "path": "backend/app/mission_build/exact_math.py",
+      "old": "'is_root': residue == 0",
+      "new": "'is_root': True"
+    },
+    {
+      "id": "certificate",
+      "path": "backend/app/mission_build/exact_math.py",
+      "old": "certificate == analyze(payload)",
+      "new": "True"
+    }
+  ]
+}
