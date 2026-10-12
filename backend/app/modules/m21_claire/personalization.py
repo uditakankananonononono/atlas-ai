@@ -143,3 +143,37 @@ class ScopedPersonalizationRepository(PersonalizationRepository):
     rows=list(db.scalars(self._owned(cls)));counts[cls.__tablename__]=len(rows)
     for row in rows:db.delete(row)
   return {'deleted':counts,'tenant_id':self.tenant_id,'actor_id':self.actor_id}
+
+ def add_decision_outcome(self,decision_id,data):
+  """Bind an outcome to the authenticated actor's decision, not just tenant."""
+  if data.get('rating') not in {'better','worse','unknown'}:raise ValueError('rating must be better, worse or unknown')
+  if not all(isinstance(data.get(k),str) and data[k].strip() for k in ('outcome','lesson')):raise ValueError('outcome and lesson required')
+  if set(data)-{'outcome','rating','lesson','evidence'}:raise ValueError('unknown outcome fields')
+  if not isinstance(data.get('evidence',{}),dict):raise ValueError('evidence must be an object')
+  with self.sessions.begin() as db:
+   decision=db.scalar(self._owned(DecisionRow).where(DecisionRow.id==decision_id))
+   if decision is None:raise KeyError('decision not found')
+   row=DecisionOutcomeRow(tenant_id=self.tenant_id,actor_id=self.actor_id,decision_id=decision_id,**data)
+   db.add(row);db.flush();return row.id
+
+ def decision_history(self,decision_id):
+  with self.sessions() as db:
+   decision=db.scalar(self._owned(DecisionRow).where(DecisionRow.id==decision_id))
+   if decision is None:raise KeyError('decision not found')
+   outcomes=list(db.scalars(self._owned(DecisionOutcomeRow).where(DecisionOutcomeRow.decision_id==decision_id).order_by(DecisionOutcomeRow.observed_at,DecisionOutcomeRow.id)))
+   return {'decision':_public(decision),'outcomes':[_public(x) for x in outcomes]}
+
+ def growth_report(self):
+  """Measured owner feedback over recorded decisions, never inferred learning."""
+  with self.sessions() as db:
+   decisions=list(db.scalars(self._owned(DecisionRow)))
+   outcomes=list(db.scalars(self._owned(DecisionOutcomeRow).order_by(DecisionOutcomeRow.observed_at,DecisionOutcomeRow.id)))
+   owned_ids={r.id for r in decisions};latest={}
+   for row in outcomes:
+    if row.decision_id in owned_ids:latest[row.decision_id]=row
+   ratings={k:sum(r.rating==k for r in latest.values()) for k in ('better','worse','unknown')}
+   known=ratings['better']+ratings['worse']
+   return {'decision_count':len(decisions),'decisions_with_outcome':len(latest),'latest_ratings':ratings,
+           'owner_reported_improvement_rate':ratings['better']/known if known else None,
+           'correction_count':len(list(db.scalars(self._owned(CorrectionRow)))),
+           'learned_model_improvement_verified':False,'source':'actor-scoped owner feedback; not independent causal evidence'}
