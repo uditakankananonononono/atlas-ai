@@ -137,5 +137,102 @@ def test_ledger_rejects_forged_authority_acceptance():
     payload = json.dumps({"seq": 0, "record": rec, "prev_hash": prev},
                          sort_keys=True, separators=(",", ":"))
     forged[-1]["record_hash"] = hashlib.sha256(payload.encode()).hexdigest()
-    with pytest.raises(ValueError, match="OUTGATE:.*without a reference"):
+    with pytest.raises(ValueError, match="OUTGATE:.*without check and reference"):
+        g.check_ledger(forged)
+
+
+# ---- hook-mutation and forged-ledger regressions ---------------------------
+
+def _forged_entry(ledger, record):
+    import hashlib, json
+    seq = len(ledger)
+    prev = ledger[-1]["record_hash"] if ledger else "0" * 64
+    payload = json.dumps({"seq": seq, "record": record, "prev_hash": prev},
+                         sort_keys=True, separators=(",", ":"))
+    return ledger + [{"seq": seq, "record": record, "prev_hash": prev,
+                      "record_hash": hashlib.sha256(payload.encode()).hexdigest()}]
+
+
+def test_authority_hook_mutating_action_is_caught():
+    def mutating_hook(ref, digest):
+        action_ref["count"] = 999  # mutate the caller's dict after digesting
+        return True
+    action_ref = act("m1")
+    ran = []
+    with pytest.raises(ValueError, match="OUTGATE:action_mutated"):
+        g.dispatch(action_ref, DECL, effect=ran.append, now=T0,
+                   authority_ref="m00-1", authority_check=mutating_hook)
+    assert ran == []
+
+
+def test_review_hook_mutating_action_is_caught():
+    decl = dict(DECL, review_kinds=["read"])
+
+    def mutating_review(action_copy):
+        action_ref["kind"] = "post"  # the copy is isolated; the ORIGINAL is the attack surface
+        return True
+    action_ref = act("m2", kind="read")
+    ran = []
+    with pytest.raises(ValueError, match="OUTGATE:action_mutated"):
+        g.dispatch(action_ref, decl, effect=ran.append, now=T0,
+                   review_check=mutating_review)
+    assert ran == []
+
+
+def test_hooks_and_effect_get_isolated_copies():
+    seen = []
+    action_ref = act("m3")
+
+    def hook(ref, digest):
+        return True
+
+    def effect(a):
+        seen.append(a["count"])
+        a["count"] = 555  # effect mutation must not touch the caller's dict
+        return "ok"
+    ledger, result = g.dispatch(action_ref, DECL, effect=effect, now=T0,
+                                authority_ref="m00-1", authority_check=hook)
+    assert result == "ok"
+    assert action_ref["count"] == 1
+    assert seen == [1]
+
+
+def test_forged_dispatched_effect_kind_without_authority_rejected():
+    ledger, _ = g.dispatch(act("f1", kind="read"), DECL, effect=lambda a: None, now=T0)
+    rec = dict(ledger[-1]["record"])
+    rec.update({"action_id": "f2", "action_kind": "post", "verdict": "dispatched",
+                "authority_checked": False, "authority_accepted": False,
+                "authority_ref": None})
+    forged = _forged_entry(ledger[:-1], rec)  # valid chain, invalid semantics
+    with pytest.raises(ValueError,
+                       match="OUTGATE:.*effect kind without validated authority"):
+        g.check_ledger(forged)
+
+
+def test_forged_after_review_without_review_pass_rejected():
+    ledger, _ = g.dispatch(act("f3", kind="read"), DECL, effect=lambda a: None, now=T0)
+    rec = dict(ledger[-1]["record"])
+    rec.update({"action_id": "f4", "verdict": "dispatched:after_review",
+                "review_checked": False, "review_accepted": False})
+    forged = _forged_entry(ledger[:-1], rec)
+    with pytest.raises(ValueError, match="OUTGATE:.*did not pass"):
+        g.check_ledger(forged)
+
+
+def test_forged_acceptance_without_check_rejected():
+    ledger, _ = g.dispatch(act("f5"), DECL, effect=lambda a: None, now=T0,
+                           authority_ref="m00-1", authority_check=OK)
+    rec = dict(ledger[-1]["record"])
+    rec["authority_checked"] = False  # accepted stays True
+    forged = _forged_entry(ledger[:-1], rec)
+    with pytest.raises(ValueError, match="OUTGATE:.*without check and reference"):
+        g.check_ledger(forged)
+
+
+def test_forged_deny_inconsistency_rejected():
+    ledger, _ = g.dispatch(act("f6", kind="read"), DECL, effect=lambda a: None, now=T0)
+    rec = dict(ledger[-1]["record"])
+    rec.update({"verdict": "refused:denied"})  # preflight stays "allow"
+    forged = _forged_entry(ledger[:-1], rec)
+    with pytest.raises(ValueError, match="OUTGATE:.*inconsistent deny"):
         g.check_ledger(forged)

@@ -54,6 +54,15 @@ accepted-without-reference forgeries.
 - `review_check` is caller-bound: only a strict True or a verified-permit
   object accepts (truthy non-True values reject); the gate records the verdict and
   never authenticates a review.
+- The canonical action is frozen before any hook runs; hooks and the
+  effect receive isolated deep copies, and the caller's action is
+  re-checked against the ledgered digest after ALL hooks (mutation ->
+  coded OUTGATE:action_mutated, effect never runs).
+- check_ledger enforces the dispatch invariants semantically, not only
+  the chain: acceptance implies check+reference, authority checks only
+  occur on EFFECT_KINDS, review acceptance implies a passed review,
+  deny/allow/after_review verdicts must match the preflight verdict,
+  and dispatched EFFECT_KINDS require validated authority.
 - Owner effect authority covers exactly EFFECT_KINDS (send, post,
   submit, invite, account, payment); every other kind is policy admission
   only, and this gate makes no owner-gating claim about it.

@@ -28,6 +28,8 @@ full check list. Pure stdlib, no I/O, no network, no clock.
 """
 from __future__ import annotations
 
+import json
+
 from app.modules.instinct_doc import platform_conduct_p70 as p70
 
 from . import ledger as _ledger
@@ -52,6 +54,7 @@ LIMITS = (
     "EFFECT_KINDS (send, post, submit, invite, account, payment) independently require validated owner effect authority: no hook -> refused:authority_hook_required; no authority_ref -> refused:authority_required; hook rejection -> refused:authority_rejected. Every other kind (e.g. public reads) is policy admission only - the gate never claims those are owner-gated.",
     "Ledger-derived rate history covers actions that went through this gate only; actions performed outside the gate are invisible to it.",
     "The ledger is tamper-evident, not tamper-proof; safe storage of the serialized ledger is the caller's job.",
+    "The canonical action is frozen before hooks; hooks and the effect get isolated deep copies and the caller's action is re-checked against the ledgered digest after all hooks (mutation fails coded).",
 )
 
 _DECISION_KEYS = {"kind", "action_id", "platform", "action_kind", "at", "action_at", "verdict",
@@ -80,9 +83,32 @@ def _validate_content(ledger):
                 _fail(f"ledger entry {entry['seq']} has invalid content")
         if record["authority_ref"] is not None:
             text(record["authority_ref"], "authority_ref", fail=_fail, max_len=256)
-        if record["authority_accepted"] and not record["authority_ref"]:
-            _fail(f"ledger entry {entry['seq']} claims authority acceptance without a reference")
         sha256_hex(record["action_digest"], "action_digest", fail=_fail)
+        # Semantic dispatch invariants (chain validity is not enough):
+        kind = record["action_kind"]
+        verdict = record["verdict"]
+        preflight = record["preflight_verdict"]
+        ac, aa = record["authority_checked"], record["authority_accepted"]
+        rc, ra = record["review_checked"], record["review_accepted"]
+        ref = record["authority_ref"]
+        seq = entry["seq"]
+        if aa and not (ac and ref):
+            _fail(f"ledger entry {seq} claims authority acceptance without check and reference")
+        if ac and kind not in EFFECT_KINDS:
+            _fail(f"ledger entry {seq} authority-checks a policy-admission kind")
+        if ra and not rc:
+            _fail(f"ledger entry {seq} claims review acceptance without a review check")
+        if rc and preflight != "needs_review":
+            _fail(f"ledger entry {seq} review-checks a non-review preflight verdict")
+        if (verdict == "refused:denied") != (preflight == "deny"):
+            _fail(f"ledger entry {seq} has inconsistent deny verdict")
+        if verdict == "dispatched" and preflight != "allow":
+            _fail(f"ledger entry {seq} dispatches a non-allow preflight verdict")
+        if verdict == "dispatched:after_review" and not (preflight == "needs_review" and rc and ra):
+            _fail(f"ledger entry {seq} dispatches after a review it did not pass")
+        if verdict in ("dispatched", "dispatched:after_review") and kind in EFFECT_KINDS \
+                and not (ac and aa and ref):
+            _fail(f"ledger entry {seq} dispatches an effect kind without validated authority")
     return ledger
 
 
@@ -117,6 +143,11 @@ def history(ledger, platform):
             out.append({"platform": record["platform"], "kind": record["action_kind"],
                         "at": record["action_at"], "count": 1})
     return out
+
+
+def _fresh(canonical):
+    """A deep copy of the frozen canonical action for one hook/effect call."""
+    return json.loads(json.dumps(canonical))
 
 
 def _check_action(action):
@@ -158,15 +189,21 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
     check_ledger(ledger)
     at = iso(instant(now, "now", fail=_fail))
 
-    merged = dict(declarations)
-    merged["recent_actions"] = list(declarations.get("recent_actions", [])) + history(ledger, action["platform"])
-    preflight = p70.preflight({k: v for k, v in action.items() if k != "id"}, merged)
-    failed = [c["check"] for c in preflight["checks"] if not c["passed"]]
-
+    # Freeze the canonical action up front. Hooks and the effect each get
+    # their own deep copy, and the caller's action is re-checked after ALL
+    # hooks have run: a hook mutating the action cannot smuggle changed
+    # content past the ledgered digest into the effect.
     try:
-        action_digest = payload_sha256({k: v for k, v in action.items() if k != "id"})
+        canonical = json.loads(json.dumps(action))
+        action_digest = payload_sha256({k: v for k, v in canonical.items() if k != "id"})
     except (TypeError, ValueError):
         _fail("bad_payload:action")
+
+    merged = dict(declarations)
+    merged["recent_actions"] = (list(declarations.get("recent_actions", []))
+                                + history(ledger, canonical["platform"]))
+    preflight = p70.preflight({k: v for k, v in canonical.items() if k != "id"}, merged)
+    failed = [c["check"] for c in preflight["checks"] if not c["passed"]]
 
     review_checked = False
     review_accepted = False
@@ -190,7 +227,7 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
             if review_check is None:
                 verdict = "refused:review_required"
             else:
-                review_accepted = hook_accepted(review_check(action))
+                review_accepted = hook_accepted(review_check(_fresh(canonical)))
                 verdict = "dispatched:after_review" if review_accepted else "refused:review_required"
         else:
             authority_accepted = True
@@ -200,7 +237,7 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
         if review_check is None:
             verdict = "refused:review_required"
         else:
-            review_accepted = hook_accepted(review_check(action))
+            review_accepted = hook_accepted(review_check(_fresh(canonical)))
             verdict = "dispatched:after_review" if review_accepted else "refused:review_required"
     else:
         verdict = "dispatched"
@@ -223,8 +260,10 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
             details={"action_id": action["id"], "verdict": verdict,
                      "preflight_verdict": preflight["verdict"], "failed_checks": failed},
             ledger=ledger)
+    if payload_sha256({k: v for k, v in action.items() if k != "id"}) != action_digest:
+        _fail("action_mutated:action")
     try:
-        return ledger, effect(action)
+        return ledger, effect(_fresh(canonical))
     except BaseException as exc:
         # Ambiguous outcome after admission: the dispatch decision (and its
         # rate-budget consumption) was already committed via on_commit and
