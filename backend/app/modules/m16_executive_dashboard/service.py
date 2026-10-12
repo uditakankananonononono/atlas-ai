@@ -1,4 +1,5 @@
 from __future__ import annotations
+import re
 from datetime import datetime,timedelta,timezone
 from uuid import uuid4
 from .alerts import alert_message,cooldown_bucket,evaluate
@@ -10,6 +11,8 @@ from .schemas import *
 from .status import RepoCatalog,effective_state,event_module_id,module_statuses
 from .timeline import critical_path
 def _utcnow():return datetime.now(timezone.utc)
+_MUTATION_VERBS=("send","email","schedule","create","update","delete","approve","publish","submit","remove","cancel","pay","transfer","post","reset","wipe","drop","revoke","grant","deploy","execute","install","purchase","buy","charge","refund","invite","share","edit","change","merge","push","reject","archive","disable","enable","pause","resume","terminate","kill","write","overwrite","upload","order","book","reply","forward")
+_MUTATION_RE=re.compile(r"\b("+"|".join(_MUTATION_VERBS)+r")\b")
 class Service:
     def __init__(self,repository,catalog=None,parser=None,executor=None,window_hours:int=24):
         self.repository=repository;self.catalog=catalog or RepoCatalog();self.parser=parser or self._parse;self.executor=executor or self._execute_read;self.window_hours=window_hours
@@ -61,6 +64,8 @@ class Service:
         if row.executed_at:raise RuntimeError("command already executed")
         if p.expires_at<now:raise RuntimeError("command preview expired")
         if not p.read_only:
+            # Claim the preview before filing the approval so one preview yields at most one approval (ATLAS-m16.A01).
+            self.repository.mark_command(cid,now)
             a=Approval(id=str(uuid4()),module_id=16,action_type=p.intent,title=f"Command: {p.intent}",summary=p.utterance,risk="medium",evidence={"command_preview_id":p.id,"plan":p.plan},proposed_payload=p.parameters,created_at=now,expires_at=now+timedelta(hours=24));self.repository.save_approval(a);return {"status":"approval_required","approval_id":a.id}
         # Claim before running the executor: exactly one concurrent execute passes
         # this conditional mark, so the read executor runs at most once. A failed
@@ -88,8 +93,9 @@ class Service:
         return hits
     @staticmethod
     def _parse(text):
-        lowered=text.casefold();mutations=("send ","email ","schedule ","create ","update ","delete ","approve ","publish ","submit ")
-        read_only=not any(x in lowered for x in mutations)
+        lowered=text.casefold()
+        # Fail closed: any mutating verb (word-boundary match) routes to an approval request (ATLAS-m16.A02).
+        read_only=not _MUTATION_RE.search(lowered)
         if not read_only:
             return {"intent":"proposed_action","parameters":{"query":text},"plan":[{"action":"prepare_for_approval","input":text}],"read_only":False,"confidence":.55}
         keywords=(("blocker","show_blockers"),("blocked","show_blockers"),("stuck","show_blockers"),("kpi","show_kpis"),("metric","show_kpis"),("status","show_status"),("health","show_status"),("timeline","show_timeline"),("gantt","show_timeline"),("critical path","show_timeline"))

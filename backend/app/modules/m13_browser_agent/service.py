@@ -109,6 +109,13 @@ class Service:
             raise PermissionError("approval is missing, stale, denied, or for different content")
         if payload.get("form_values") != values:
             raise PermissionError("approved form values do not match")
+        # Rebind to what the owner saw: a fresh capture must match the approved snapshot (ATLAS-m13.A03).
+        approved_snapshot = payload.get("snapshot_digest")
+        if not approved_snapshot:
+            raise PermissionError("approval carries no snapshot digest")
+        current_snapshot = file_digest(await self.screenshot(tenant_id, session_id))
+        if current_snapshot != approved_snapshot:
+            raise PermissionError("page content changed since approval; a fresh approval is required")
         if await self.store.was_consumed(approval_id):
             raise PermissionError("approval was already consumed")
         # Consume before the external effect. A failed click requires a fresh approval and cannot replay.

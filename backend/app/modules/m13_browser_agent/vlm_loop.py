@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Any, Protocol
+
+from .domain import ActionType, AuditEvent
+
+_SUBMIT_WORDS = re.compile(r"\b(submit|pay|payment|buy|purchase|checkout|check out|place order|confirm order|send|apply|donate|delete)\b|type=.?submit")
 
 
 class VisionPlanner(Protocol):
@@ -31,7 +36,7 @@ class NavigationLoop:
             if kind == "done":
                 return {"status": "complete", "history": history, "result": action.get("result")}
             if kind == "click":
-                if action.get("is_submit"):
+                if action.get("is_submit") or await self._submit_like(tenant_id, session_id, action):
                     result = await self.agent.request_submit(tenant_id, actor_id, session_id, action["selector"], action.get("form_values", {}))
                     return {**result, "history": history}
                 await self.agent.click(tenant_id, session_id, action["selector"])
@@ -41,5 +46,46 @@ class NavigationLoop:
                 page = await self.agent.sessions.page(tenant_id, session_id, False)
                 amount = max(-5000, min(5000, int(action.get("pixels", 700))))
                 await page.mouse.wheel(0, amount)
+                await self._audit_scroll(tenant_id, session_id, amount)
             history.append(action)
         return {"status": "max_steps", "history": history}
+
+    async def _submit_like(self, tenant_id: str, session_id: str, action: dict[str, Any]) -> bool:
+        """Fail closed: a click that looks like a submit goes through the approval path even if the planner did not say so (ATLAS-m13.A01).
+
+        Checks the planner's own selector/label text and, when the page supports it, the element's real type.
+        """
+        text = " ".join(str(action.get(key, "")) for key in ("selector", "label", "text", "description")).lower()
+        if _SUBMIT_WORDS.search(text):
+            return True
+        # Anything we cannot positively classify as inert goes to approval.
+        try:
+            page = await self.agent.sessions.page(tenant_id, session_id, False)
+            probe = getattr(page.locator(action["selector"]), "evaluate", None)
+            if probe is None:
+                return True
+            info = await probe(
+                "e => ({tag:(e.tagName||'').toLowerCase(), type:(e.type||'').toLowerCase(), inForm:!!(e.form||e.closest('form')),"
+                " href:e.getAttribute('href')||'', handler:!!(e.getAttribute('onclick')||e.getAttribute('onsubmit')||e.getAttribute('formaction')||e.getAttribute('data-action')),"
+                " text:(e.innerText||e.value||'').toLowerCase()})"
+            )
+        except Exception:
+            return True
+        if not isinstance(info, dict):
+            return True
+        if info.get("type") in {"submit", "image", "button"} or info.get("inForm") or info.get("handler"):
+            return True
+        if _SUBMIT_WORDS.search(str(info.get("text", ""))):
+            return True
+        tag, kind = info.get("tag"), info.get("type")
+        href = str(info.get("href") or "").strip()
+        scheme = re.match(r"^([a-zA-Z][a-zA-Z0-9+.-]*):", re.sub(r"[\x00-\x20]", "", href))
+        safe_href = bool(href) and (scheme is None or scheme.group(1).lower() in {"http", "https"})
+        inert = (tag == "a" and safe_href) or tag in {"select", "textarea"} or (
+            tag == "input" and kind in {"text", "search", "email", "tel", "url", "number", "checkbox", "radio", "password", ""})
+        return not inert
+
+    async def _audit_scroll(self, tenant_id: str, session_id: str, amount: int) -> None:
+        store = getattr(self.agent, "store", None)
+        if store is not None:
+            await store.append_audit(AuditEvent(tenant_id, session_id, ActionType.SCROLL, {"pixels": amount}))

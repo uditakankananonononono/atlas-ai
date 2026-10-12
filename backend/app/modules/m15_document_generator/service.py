@@ -69,8 +69,13 @@ class Service:
     @staticmethod
     def render_latex(template:Path,content:dict)->bytes:
         from jinja2 import Environment,FileSystemLoader,StrictUndefined
+        from .delivery import latex_escape
+        def esc(value):
+            if isinstance(value,dict):return {k:esc(v) for k,v in value.items()}
+            if isinstance(value,(list,tuple)):return [esc(v) for v in value]
+            return latex_escape(value) if isinstance(value,str) else value
         env=Environment(loader=FileSystemLoader(template.parent),undefined=StrictUndefined,autoescape=False)
-        return env.get_template(template.name).render(**content).encode()
+        return env.get_template(template.name).render(**esc(content)).encode()  # ATLAS-m15.A03: values are TeX-escaped
     @staticmethod
     def render_figure(spec:FigureSpec)->bytes:
         import io
