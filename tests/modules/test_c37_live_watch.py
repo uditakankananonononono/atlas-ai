@@ -110,3 +110,7 @@ def test_classified_items_still_refused_by_diff(server, tmp_path):
                             fetcher=fetcher(), feed_hosts={"darpa": ("127.0.0.1",)})
     assert any(r["code"] == "INTEL_REFUSED_CLASSIFIED" for r in report["refused"])
     assert {i["id"] for i in report["items"]} == {"darpa-2"}
+
+def test_empty_rss_refuses_not_empty_success():
+    from app.modules.c37.live_watch import parse_feed
+    with pytest.raises(ValueError):parse_feed(b'<rss><channel></channel></rss>')

@@ -1,0 +1,44 @@
+{
+  "row": 104,
+  "selectors": [
+    "tests/modules/test_c37_live_watch.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "registry",
+      "path": "backend/app/modules/c37/live_watch.py",
+      "old": "if sid not in public_record.REGISTRY_IDS:",
+      "new": "if False:"
+    },
+    {
+      "id": "feed_host",
+      "path": "backend/app/modules/c37/live_watch.py",
+      "old": "if urlsplit_host(url) not in allowed:",
+      "new": "if False:"
+    },
+    {
+      "id": "not_modified",
+      "path": "backend/app/modules/c37/live_watch.py",
+      "old": "if result[\"not_modified\"]:",
+      "new": "if False:"
+    },
+    {
+      "id": "unparsable",
+      "path": "backend/app/modules/c37/live_watch.py",
+      "old": "if not items:\n        _err",
+      "new": "if False:\n        _err"
+    },
+    {
+      "id": "items_cap",
+      "path": "backend/app/modules/c37/live_watch.py",
+      "old": "MAX_ITEMS_PER_FEED = 500",
+      "new": "MAX_ITEMS_PER_FEED = 1"
+    }
+  ]
+}
