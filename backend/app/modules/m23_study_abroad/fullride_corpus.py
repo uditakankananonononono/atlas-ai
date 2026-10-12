@@ -394,8 +394,11 @@ EVIDENCE = {
         "full_ride": True, "requires_extra_written_test": False,
         "accepts_cbse": False, "accepts_sat": False, "accepts_ielts": False,
         "checked_url": "https://www.berea.edu/admissions/",
-        "basis": "fully funded, no-loan degree - covering 100% of tuition, housing, food, "
-                 "fees, and supplies - for every enrolled student",
+        "basis": "Starting Fall 2027, Berea College will guarantee 100% of tuition, "
+                 "housing, food, fees and supplies are covered, without loans, for all "
+                 "students",
+        "notes": "the pledge takes effect for students starting Fall 2027 - it is not a "
+                 "present guarantee for current enrollees",
         "flag_basis": {}},
     "University of Toronto": {
         "award_type": "full_cost_award",
