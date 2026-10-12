@@ -1,0 +1,9 @@
+................F                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_final_tree_drift_rejects_unchanged_source ________________
+tests/test_executed_acceptance.py:164: in test_final_tree_drift_rejects_unchanged_source
+    assert out['scoped_passing_lines']==0
+E   assert 1 == 0
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_final_tree_drift_rejects_unchanged_source
+1 failed, 16 passed in 4.76s

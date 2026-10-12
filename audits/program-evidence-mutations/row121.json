@@ -1,0 +1,45 @@
+{
+  "row": 121,
+  "tests": [
+    "tests/test_executed_acceptance.py"
+  ],
+  "tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "mutants": [
+    {
+      "id": "R121-M1",
+      "name": "source hash refusal",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "if not isinstance(check['line_id'], str) or lines.get(check['line_id']) != check['line_sha256']:",
+      "new": "if False:"
+    },
+    {
+      "id": "R121-M2",
+      "name": "per-line all",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "and all(item['run']['status'] == 'SCOPED_PASS'",
+      "new": "and any(item['run']['status'] == 'SCOPED_PASS'"
+    },
+    {
+      "id": "R121-M3",
+      "name": "source stable",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "bool(executions) and source_stable and tree_stable",
+      "new": "bool(executions) and tree_stable"
+    },
+    {
+      "id": "R121-M4",
+      "name": "final tree",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "bool(executions) and source_stable and tree_stable",
+      "new": "bool(executions) and source_stable"
+    },
+    {
+      "id": "R121-M5",
+      "name": "receipt shape",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "if type(run) is not dict or not all(isinstance(run.get(key), str) for key in ('status', 'head', 'tree_digest')):",
+      "new": "if False:"
+    }
+  ]
+}

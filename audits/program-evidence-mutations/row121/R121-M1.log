@@ -1,0 +1,10 @@
+..F..............                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_fake_semantic_label_and_stale_source_refused _______________
+tests/test_executed_acceptance.py:43: in test_fake_semantic_label_and_stale_source_refused
+    with pytest.raises(EvidenceError):audit_selected_checks(root,'source.txt',[check])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EvidenceError
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_fake_semantic_label_and_stale_source_refused
+1 failed, 16 passed in 4.84s

@@ -1,0 +1,110 @@
+{
+  "row": 121,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_executed_acceptance.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "baseline.log"
+  },
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "restored-baseline.log"
+  },
+  "mutants": [
+    {
+      "id": "R121-M1",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "67024e8b1eda4fa5e792faaa7495800cb259fe50c904031a3eacbf9986562234",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_fake_semantic_label_and_stale_source_refused"
+      ],
+      "log": "R121-M1.log"
+    },
+    {
+      "id": "R121-M2",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "add252d4577be7400e06d485f74694e389ff8393b97561d0d0a458f63143ba08",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_same_line_pass_and_fail_requires_all"
+      ],
+      "log": "R121-M2.log"
+    },
+    {
+      "id": "R121-M3",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "be45cca019c649a6baddc2cbe2d02f1fd177d789deed1efbc295605f8c2b9202",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts"
+      ],
+      "log": "R121-M3.log"
+    },
+    {
+      "id": "R121-M4",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "a9f38a501ccaec0e9d37c2aa40247f32afd4b6536fb7fb7f2c81e25e39c8d11f",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_final_tree_drift_rejects_unchanged_source"
+      ],
+      "log": "R121-M4.log"
+    },
+    {
+      "id": "R121-M5",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "906fa8a37f6f9fe38b5de8edd654b204b992606430a401f98961cd4702eae1d4",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[None]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt1]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt2]"
+      ],
+      "log": "R121-M5.log"
+    }
+  ],
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0,
+    "NOT-APPLICABLE": 0
+  },
+  "evidence_tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "portable_path_normalization": "portable-path-normalized: command[0] replaced for delivery; original private receipt retained, bytes changed"
+}

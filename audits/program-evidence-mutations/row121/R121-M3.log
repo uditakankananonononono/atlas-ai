@@ -1,0 +1,9 @@
+.......F.........                                                        [100%]
+=================================== FAILURES ===================================
+_______________ test_postrun_inventory_error_preserves_receipts ________________
+tests/test_executed_acceptance.py:99: in test_postrun_inventory_error_preserves_receipts
+    assert out['scoped_passing_lines']==0
+E   assert 1 == 0
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts
+1 failed, 16 passed in 4.30s
