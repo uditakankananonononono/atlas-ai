@@ -12,6 +12,7 @@ class FieldDescriptor:
     placeholder: str = ""
     input_type: str = "text"
     required: bool = False
+    context: str = ""  # section cues (legend, aria labels, headings). match_fields ignores it; the M01 planner uses it to exclude other-party sections and to gate unlabeled controls
 
 
 _TOKEN = re.compile(r"[a-z0-9]+")

@@ -305,7 +305,7 @@ def test_search_and_match_end_to_end_with_mock_network():
     assert out['not_covered']['ripplematch'] and out['submitted'] is False
 
 
-@pytest.mark.skipif(not os.environ.get('ATLAS_LIVE_SMOKE'), reason='opt-in live network smoke')
+@pytest.mark.skipif(os.getenv('ATLAS_M01_LIVE_SMOKE') != '1', reason='opt-in live network smoke')
 def test_live_fastweb_listing_and_one_detail_smoke():
     rows = fsm.read_fastweb_listing()
     assert rows

@@ -31,6 +31,11 @@ class Page:
             async def fill(self, value): page.values[selector] = value
             async def input_value(self): return page.values[selector]
             async def click(self): page.clicks.append(selector)
+            async def evaluate(self, script):
+                from bs4 import BeautifulSoup
+                el = BeautifulSoup(page.html, 'html.parser').select_one(selector)
+                if el is None: raise KeyError(selector)
+                return el.name + ':' + (el.get('type') or '' if el.name == 'input' else '').lower()
         return Locator()
 
 class Sessions:
@@ -70,7 +75,7 @@ def start(browser): return run(browser.start('t', 'a', 'bold', True, True))['ses
 
 
 def test_all_platforms_have_explicit_capabilities():
-    assert len(ADAPTERS) == 17
+    assert len(ADAPTERS) == 27
     assert ADAPTERS['simplify'].caveat and ADAPTERS['raiseme'].caveat
 
 @pytest.mark.parametrize('url', ['http://bold.org/x', 'https://bold.org.evil.test/x', 'https://evil.test/x', 'https://user:pass@bold.org/x', 'https://bold.org:123/x'])
@@ -148,7 +153,7 @@ def test_http_mounted_read_and_strict_inputs(browser):
         sid = result.json()['session_id']
         assert client.post(base + '/browser-sessions/' + sid + '/read').status_code == 200
         assert client.post(base + '/bold/browser-sessions', json={'owner_account_confirmed': True, 'terms_permit': True, 'password': 'rejected'}).status_code == 422
-        assert len(client.get(base + '/browser-capabilities').json()) == 17
+        assert len(client.get(base + '/browser-capabilities').json()) == 27
 
 @pytest.mark.parametrize('platform,path', [
     ('ripplematch', '/jobs/123'), ('simplify', '/p/12345'),

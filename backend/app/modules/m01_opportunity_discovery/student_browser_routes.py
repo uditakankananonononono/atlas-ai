@@ -27,6 +27,16 @@ class StartIn(BaseModel):
     terms_permit: bool
 
 
+class StageIn(ApplicationStageIn):
+    plan_token: str | None = Field(default=None, pattern=r'^[0-9a-f]{64}$')
+
+
+class PrefillPlanIn(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    profile: dict[str, str] = Field(max_length=20)
+    submit_selector: str = Field(min_length=1, max_length=300)
+
+
 class OpenIn(BaseModel):
     model_config = ConfigDict(extra='forbid')
     link_id: str = Field(min_length=24, max_length=24, pattern=r'^[0-9a-f]{24}$')
@@ -73,8 +83,15 @@ def install_routes(router):
             raise failure(exc) from exc
 
     @router.post(base + '/browser-sessions/{session_id}/stage')
-    async def stage(session_id: str, body: ApplicationStageIn, tenant: TenantContext = Depends(require_tenant), browser=Depends(get_student_browser)):
+    async def stage(session_id: str, body: StageIn, tenant: TenantContext = Depends(require_tenant), browser=Depends(get_student_browser)):
         try:
-            return await browser.stage(tenant.tenant_id, tenant.actor_id, session_id, body.fields, body.submit_selector)
+            return await browser.stage(tenant.tenant_id, tenant.actor_id, session_id, body.fields, body.submit_selector, body.plan_token)
+        except Exception as exc:
+            raise failure(exc) from exc
+
+    @router.post(base + '/browser-sessions/{session_id}/prefill-plan')
+    async def prefill_plan(session_id: str, body: PrefillPlanIn, tenant: TenantContext = Depends(require_tenant), browser=Depends(get_student_browser)):
+        try:
+            return await browser.plan_prefill(tenant.tenant_id, tenant.actor_id, session_id, body.profile, body.submit_selector)
         except Exception as exc:
             raise failure(exc) from exc

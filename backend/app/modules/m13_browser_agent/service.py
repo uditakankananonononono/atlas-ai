@@ -11,6 +11,9 @@ from .forms import FieldDescriptor, match_fields
 from .security import file_digest, validate_public_url, values_digest
 
 
+_TEXT_INPUT_TYPES = {"", "text", "email", "tel", "url", "search", "number"}
+
+
 class Service:
     def __init__(self, sessions: Any, approval_service: Any, store: Any, artifact_root: str = "/tmp/atlas-browser", allowed_hosts: set[str] | None = None):
         self.sessions = sessions
@@ -30,7 +33,23 @@ class Service:
 
     async def fill(self, tenant_id: str, session_id: str, fields: list[FieldDescriptor], data: dict[str, str]) -> dict[str, str]:
         page = await self.sessions.page(tenant_id, session_id, False)
+        from .value_guard import assert_no_forbidden_values
+        assert_no_forbidden_values(data)
         mapping = match_fields(fields, data)
+        selects = sorted(f.selector for f in fields if f.input_type == "select" and f.selector in mapping)
+        if selects:  # selects need owner handling; never attempt locator.fill on them
+            raise ValueError("select controls are not auto-filled: " + ", ".join(selects))
+        # DOM-side check: never trust the caller-supplied descriptor type. A live control that is not a
+        # plain text-like input/textarea (select, checkbox, radio, file, button...) is refused.
+        for selector in sorted(mapping):
+            locator = page.locator(selector)
+            if not hasattr(locator, "evaluate"):
+                raise ValueError("cannot verify control type at fill time; refusing " + selector)
+            kind = await locator.evaluate("el => el.tagName.toLowerCase() + ':' + String(el.type || '').toLowerCase()")
+            tag, _, typ = str(kind).partition(":")
+            if tag == "textarea" or (tag == "input" and typ in _TEXT_INPUT_TYPES):
+                continue
+            raise ValueError(f"control {selector} is {kind!r}, not a text-like input; the owner handles it")
         for selector, value in mapping.items():
             await page.locator(selector).fill(value)
         await self.store.append_audit(AuditEvent(tenant_id, session_id, ActionType.FILL, {"selectors": sorted(mapping), "count": len(mapping)}))

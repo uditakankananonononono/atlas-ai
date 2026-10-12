@@ -15,8 +15,8 @@ def fake_client(url, body, content_type='text/html', status=200):
     ))
 
 
-def test_seventeen_named_platforms_are_unique_and_capability_labeled():
-    assert len(PLATFORMS) == len(BY_ID) == 17
+def test_twentyseven_named_platforms_are_unique_and_capability_labeled():
+    assert len(PLATFORMS) == len(BY_ID) == 27
     assert {'ripplematch', 'simplify', 'raiseme', 'bold', 'fastweb', 'devpost', 'challengerocket'} <= BY_ID.keys()
     assert {p.mode for p in PLATFORMS} == {'rss', 'html', 'launch_only'}
     for p in PLATFORMS:

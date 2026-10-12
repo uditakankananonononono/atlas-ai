@@ -48,9 +48,19 @@ PLATFORMS = (
     StudentPlatform('scholarshipunion', 'Scholarship Union', 'https://scholarshipunion.com/feed/', 'rss', 'scholarship'),
     StudentPlatform('opportunitiesforyouth', 'Opportunities for Youth', 'https://opportunitiesforyouth.org/feed/', 'rss', 'program'),
     StudentPlatform('kaggle', 'Kaggle Competitions', 'https://www.kaggle.com/competitions', 'launch_only', 'competition', reason='The public page is JavaScript rendered; no anonymous listing API was validated.'),
+    StudentPlatform('opportunitydesk', 'Opportunity Desk', 'https://opportunitydesk.org/feed/', 'rss', 'program', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('fundsforngos', 'fundsforNGOs', 'https://www.fundsforngos.org/feed/', 'rss', 'grant', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('scholarshipsandgrants', 'Scholarships and Grants', 'https://scholarshipsandgrants.us/feed/', 'rss', 'scholarship', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('opportunitiescorners', 'Opportunities Corners', 'https://opportunitiescorners.com/feed/', 'rss', 'program', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('scholarshipamerica', 'Scholarship America', 'https://scholarshipamerica.org/feed/', 'rss', 'scholarship', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('nsffunding', 'NSF funding announcements', 'https://www.nsf.gov/rss/rss_www_funding_pgm_annc_inf.xml', 'rss', 'grant', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('petersons', "Peterson's blog", 'https://www.petersons.com/blog/feed/', 'rss', 'program', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('collegeconfidential', 'College Confidential', 'https://collegeconfidential.com/feed/', 'rss', 'program', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('thecollegesolution', 'The College Solution', 'https://thecollegesolution.com/feed/', 'rss', 'program', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
+    StudentPlatform('topuniversities', 'QS TopUniversities', 'https://www.topuniversities.com/rss.xml', 'rss', 'program', reason='Public RSS feed. Editorial/announcement feed, not an application API or complete listing database. Live reachability is only checked by the opt-in ATLAS_M01_LIVE_SMOKE test.'),
 )
 BY_ID = {p.id: p for p in PLATFORMS}
-assert len(BY_ID) == len(PLATFORMS) == 17
+assert len(BY_ID) == len(PLATFORMS) == 27
 
 
 class PlatformUnavailable(RuntimeError):

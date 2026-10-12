@@ -82,6 +82,13 @@ class FakeLocator:
     async def fill(self, value):
         self.page.filled[self.selector] = value
 
+    async def evaluate(self, script):
+        from bs4 import BeautifulSoup
+        el = BeautifulSoup(self.page.html, 'html.parser').select_one(self.selector)
+        if el is None:
+            raise RuntimeError(f"element not found: {self.selector}")
+        return el.name + ':' + ((el.get('type') or '') if el.name == 'input' else '').lower()
+
     async def input_value(self):
         if self.selector not in self.page.filled:
             raise RuntimeError(f"element not found: {self.selector}")

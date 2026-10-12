@@ -20,6 +20,13 @@ class ScopedLocator:
         self.page.check()
         return result
 
+    async def evaluate(self, script):
+        locator = self.page.raw.locator(self.selector)
+        self.page.check()
+        result = await locator.evaluate(script)
+        self.page.check()
+        return result
+
     async def click(self):
         locator = self.page.raw.locator(self.selector)
         self.page.check()  # Also covers M02 final-submit engine.

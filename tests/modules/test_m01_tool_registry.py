@@ -64,7 +64,7 @@ def test_all_capabilities_prepare_only(tool):
 def test_descriptor_immutable():
  with pytest.raises(dataclasses.FrozenInstanceError):r.get('simplify').free_verified=True
 def test_counts_and_candidate_status():
- p=r.registry_payload();assert p['counts']=={'spec_named':7,'unknown_stubs':3,'candidates_pending':10,'plus_more_target':10}
+ p=r.registry_payload();assert p['counts']=={'spec_named':7,'unknown_stubs':3,'candidates_pending':20,'plus_more_target':10}
  assert all(t.status==r.CANDIDATE_PENDING and not t.free_verified for t in r.CANDIDATES)
 def test_payload_not_aliased_to_registry():
  p=r.describe('simplify');p['capabilities'].append('submit');p['free_verified']=True;assert not r.get('simplify').free_verified;assert 'submit'not in r.get('simplify').capabilities

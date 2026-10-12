@@ -119,7 +119,7 @@ router.include_router(core_spec_round6_router)
 from .expanded_spec_routes_1_66 import router as expanded_spec_router_1_66
 router.include_router(expanded_spec_router_1_66)
 
-# Free student platform read-only discovery and launch routes (17 explicit sources).
+# Free student platform read-only discovery and launch routes (27 explicit sources: 17 original + 10 RSS-only editorial feeds).
 from .student_platforms import BY_ID, PLATFORMS, PlatformUnavailable, discover
 
 @router.get('/opportunity-discovery/student-platforms')

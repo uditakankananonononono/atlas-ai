@@ -210,3 +210,19 @@ class ClickyFollowup(unittest.TestCase):
         bad = dict(ident["descriptor"]); del bad["free_tier"]
         with self.assertRaisesRegex(ValueError, r"^APPLY_REFUSED_BAD_TYPE:free_tier$"):
             m.plan_request(bad, "stats", {})
+
+
+def test_documented_stats_request_shape_never_embeds_key_and_bounds_history():
+    import pytest
+    from app.modules.c31 import clicky
+    plan = clicky.plan_stats_request(32020, ["visitors", "pages"])
+    assert plan["method"] == "GET" and plan["url"] == "https://api.clicky.com/api/stats/4"
+    assert plan["params"]["type"] == "visitors,pages" and plan["params"]["sitekey"] == "${CLICKY_SITEKEY}"
+    assert "Authorization" not in plan["headers"] and plan["live_verified"] is False
+    assert clicky.plan_stats_request(1, "pages", date="last-30-days")["params"]["date"] == "last-30-days"
+    for bad in (dict(site_id=True, types="pages"), dict(site_id=0, types="pages"), dict(site_id=1, types="nope"),
+                dict(site_id=1, types=[]), dict(site_id=1, types="pages", limit=101), dict(site_id=1, types="pages", limit=0),
+                dict(site_id=1, types=[["pages"]]), dict(site_id=1, types=[{"a": 1}]), dict(site_id=1, types=[None]),
+                dict(site_id=1, types="pages", date="last-31-days"), dict(site_id=1, types="pages", date="2026-01-01"),
+                dict(site_id=1, types="pages", date="last-0-days")):
+        with pytest.raises(ValueError): clicky.plan_stats_request(**bad)

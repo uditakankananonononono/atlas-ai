@@ -138,6 +138,103 @@ def probe_captcha(html: str) -> list[str]:
     return [hint for hint in _CAPTCHA_HINTS if hint in lowered]
 
 
+_SECTIONING = {"fieldset", "section", "article", "aside", "table", "details", "form"}
+_HEADING_TAGS = ["h1", "h2", "h3", "h4", "h5", "h6"]
+_PART_CAP, _CONTEXT_CAP = 120, 600
+
+
+def _hidden(tag) -> bool:
+    for node in [tag, *tag.parents]:
+        if not getattr(node, "attrs", None):
+            continue
+        style = (node.get("style") or "").replace(" ", "").lower()
+        if node.has_attr("hidden") or str(node.get("aria-hidden", "")).lower() == "true" \
+                or "display:none" in style or "visibility:hidden" in style:
+            return True
+    return False
+
+
+def _visible_text(tag) -> str:
+    """Text of a tag excluding hidden descendants (hidden/aria-hidden/display:none/visibility:hidden)."""
+    if tag is None or _hidden(tag):
+        return ""
+    pieces = [str(t) for t in tag.find_all(string=True) if t.parent is not None and not _hidden(t.parent)]
+    return " ".join(" ".join(pieces).split())
+
+
+def _is_heading(tag) -> bool:
+    return tag.name in _HEADING_TAGS or str(tag.get("role", "")).lower() == "heading"
+
+
+def _section_ancestors(tag) -> set:
+    out = set()
+    for anc in tag.parents:
+        if getattr(anc, "name", None) in _SECTIONING or str(getattr(anc, "attrs", {}).get("role", "")).lower() in {"group", "region", "form"}:
+            out.add(id(anc))
+    return out
+
+
+def _field_context(element, soup) -> str:
+    """Section cues for a field, used by the M01 planner to EXCLUDE other-party sections and to decide
+    unlabeled-control eligibility (not for value matching). Sources: ancestors' aria-label,
+    aria-labelledby and aria-describedby; fieldset legends; table captions and row headers; the field's
+    own aria-label/labelledby/describedby; and the nearest preceding heading (h1-h6 or role=heading)
+    that is not inside a sectioning container the field is outside of, so a closed sibling section's
+    heading does not leak. Hidden text is excluded. Tradeoff: any preceding heading in the same
+    section can over-withhold an unlabeled control; that fails closed."""
+    parts: list[str] = []
+
+    def add(text):
+        text = " ".join((text or "").split())
+        if text:
+            parts.append(text[:_PART_CAP])
+
+    def refs(node, attr):
+        for ref in (node.get(attr) or "").split():
+            target = soup.find(id=ref)
+            if target is not None:
+                add(_visible_text(target))
+
+    own = element
+    if own.get("aria-label"):
+        add(own["aria-label"])
+    refs(own, "aria-labelledby")
+    refs(own, "aria-describedby")
+    for anc in element.parents:
+        if not getattr(anc, "name", None) or anc.name in {"[document]", "html", "body"}:
+            continue
+        if _hidden(anc):
+            continue
+        if anc.get("aria-label"):
+            add(anc["aria-label"])
+        refs(anc, "aria-labelledby")
+        refs(anc, "aria-describedby")
+        if anc.name == "fieldset":
+            add(_visible_text(anc.find("legend")))
+        if anc.name == "table":
+            add(_visible_text(anc.find("caption")))
+        if anc.name == "tr":
+            head = anc.find(["th", "td"])
+            if head is not None and head is not element.find_parent(["td", "th"]):
+                add(_visible_text(head))
+    mine = _section_ancestors(element)
+    for heading in element.find_all_previous(_is_heading):
+        if _hidden(heading):
+            continue
+        if _section_ancestors(heading) - mine:   # heading sits inside a closed sibling section
+            continue
+        add(_visible_text(heading))
+        break
+    seen: dict[str, None] = dict.fromkeys(parts)
+    out, used = [], 0
+    for part in seen:                    # whole parts only; nearest cues come first
+        if used + len(part) + 3 > _CONTEXT_CAP:
+            break
+        out.append(part)
+        used += len(part) + 3
+    return " | ".join(out)
+
+
 def extract_field_descriptors(html: str, max_fields: int = 200) -> list[FieldDescriptor]:
     """Ground form descriptors in the page's own HTML - never invented selectors."""
     soup = BeautifulSoup(html, "html.parser")
@@ -149,7 +246,7 @@ def extract_field_descriptors(html: str, max_fields: int = 200) -> list[FieldDes
     for element in soup.find_all(["input", "textarea", "select"]):
         if len(descriptors) >= max_fields:
             break
-        input_type = (element.get("type") or ("textarea" if element.name == "textarea" else "text")).lower()
+        input_type = "select" if element.name == "select" else (element.get("type") or ("textarea" if element.name == "textarea" else "text")).lower()
         if input_type in {"hidden", "submit", "button", "file", "image", "reset"}:
             continue
         element_id = element.get("id") or ""
@@ -170,6 +267,7 @@ def extract_field_descriptors(html: str, max_fields: int = 200) -> list[FieldDes
             placeholder=element.get("placeholder") or "",
             input_type=input_type,
             required=element.has_attr("required"),
+            context=_field_context(element, soup),
         ))
     return descriptors
 
@@ -391,6 +489,12 @@ class ApplicationFlow:
         assert_no_credentials(approved_fields)
         record = self._record(tenant_id, session_id)
         self._require_actor(record, actor_id)
+        from .stage_policy import stage_refusal
+        from .value_guard import assert_no_forbidden_values
+        reason = stage_refusal(record.opportunity_kind, record.opportunity_id)
+        if reason:
+            raise PermissionError(reason)
+        assert_no_forbidden_values(approved_fields)  # same guard as the planner: callers cannot skip it
         if record.status not in {
             WorkflowStatus.READY.value, WorkflowStatus.STAGED.value,
             WorkflowStatus.AWAITING_SUBMIT_APPROVAL.value, WorkflowStatus.FAILED.value,
@@ -414,6 +518,9 @@ class ApplicationFlow:
         # Conservative grounding: only values that mapped one-to-one are staged.
         mapping, used_keys = match_fields_detailed(fillable, approved_fields)
         unmapped = sorted(set(approved_fields) - used_keys)
+        select_hits = sorted({d.selector for d in fillable if d.input_type == "select"} & set(mapping))
+        if select_hits:  # selects need owner handling; never attempt locator.fill on them
+            raise WorkflowStateError("select controls are not auto-filled; owner handles: " + ", ".join(select_hits))
         missing = sorted(set(mapping) - known)
         if missing:
             raise WorkflowStateError(f"resolved selectors are not on the page: {missing}")

@@ -1,0 +1,102 @@
+{
+ "opportunitydesk": {
+  "source_url": "https://opportunitydesk.org/feed/",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=UTF-8",
+  "original_bytes": 15101,
+  "original_sha256": "be3faadd666f839ec02995a842b01c5bb71ff2f08f44e7179dfc2105d7a99f20",
+  "fixture_sha256": "ccec36a435c4c480f6f054a307556b1a86402abc29868127cbc3a36fc28900e6",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "fundsforngos": {
+  "source_url": "https://www.fundsforngos.org/feed/",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=UTF-8",
+  "original_bytes": 45937,
+  "original_sha256": "dae5ef0eed49371dc47a85ce9dc8594115b6d380cb087140cfd0b64a44312cd6",
+  "fixture_sha256": "acc2182ab55533eb7ac309c43cfbd84ea22fe99887404aed6280d0682a9d169c",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "scholarshipsandgrants": {
+  "source_url": "https://scholarshipsandgrants.us/feed/",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=UTF-8",
+  "original_bytes": 306016,
+  "original_sha256": "e4f776a64231daf8c24451fc876b564d4929014a9a25e62bab4005fad4237aaa",
+  "fixture_sha256": "22a073d8854dea9169e2e7971e265b3b8cdaf720fb6f36a908d1ffb1cb760ff2",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "opportunitiescorners": {
+  "source_url": "https://opportunitiescorners.com/feed/",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=UTF-8",
+  "original_bytes": 8666,
+  "original_sha256": "bb1490cd7a2d8e49cc09772b3cf449b5566e0cf73026981764c5615117cb05c3",
+  "fixture_sha256": "290a15665e4befbf891f1b5bed95ddd654a6af989fafb97893ca66a99b7d1f28",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "scholarshipamerica": {
+  "source_url": "https://scholarshipamerica.org/feed/",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=UTF-8",
+  "original_bytes": 16199,
+  "original_sha256": "0838cf6f8b16017c96c1c87dafe6717d7cfc0fa33cf5a4c740d63834da7d457c",
+  "fixture_sha256": "1b2d357203a5d9c42a2769ac14331c4eb48a588676fb5c755f436deeec84ef19",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "nsffunding": {
+  "source_url": "https://www.nsf.gov/rss/rss_www_funding_pgm_annc_inf.xml",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=utf-8",
+  "original_bytes": 13127,
+  "original_sha256": "0d56ba86d6eaba228c43f4fdcab2f9b26d884187205bd50c63672ef1d083b838",
+  "fixture_sha256": "0fdf4c5df6cae4afddfff7e2c14e2339d744c45e3971452382cd24d91105b94d",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "petersons": {
+  "source_url": "https://www.petersons.com/blog/feed/",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=UTF-8",
+  "original_bytes": 117741,
+  "original_sha256": "63fc730117dd7c2cae07fd26964e83d146835853221032adf93b2217a03d6283",
+  "fixture_sha256": "d5ce1850dbaf2e9e61d2ab0ad6d565558b6586f38187d36a07b1220138e75fef",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "collegeconfidential": {
+  "source_url": "https://collegeconfidential.com/feed/",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=UTF-8",
+  "original_bytes": 6619,
+  "original_sha256": "9d99d8dc677a062534dddbb57eb80a302f57afea3bf9a48232e7a7403bd3a4f1",
+  "fixture_sha256": "379b5d8947e13733e4ea0810bd01d6cbddf0f6a2d2d2e82a597d50d95747df0a",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "thecollegesolution": {
+  "source_url": "https://thecollegesolution.com/feed/",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=UTF-8",
+  "original_bytes": 135301,
+  "original_sha256": "8993ce5a888499dade5f32fea7e8262c473989a6f251265b536ef69d93017021",
+  "fixture_sha256": "f807ddbb8687774b4fd71a5d6b03e16818a87aa59cb452556657cfffbc52d774",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ },
+ "topuniversities": {
+  "source_url": "https://www.topuniversities.com/rss.xml",
+  "fetched_at": "2026-10-12T21:24:12+05:30",
+  "http_status": 200,
+  "content_type": "application/rss+xml; charset=utf-8",
+  "original_bytes": 13829,
+  "original_sha256": "c24d4fbe28d0f64e58e473ee5f721762cc586d68940eb545917f58ae3b85acf7",
+  "fixture_sha256": "b9820fe63023aa3d2e5b1f34ee6680754cd547bb33aab952b14fb94b79295de2",
+  "derivation": "first 2 <item> title+link pairs with https links, re-serialized; description/pubDate/namespaces dropped. Hand-trimmed, NOT the original bytes."
+ }
+}

@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from urllib.parse import urlencode
 
 from app.modules.c30 import policy
@@ -162,3 +163,57 @@ def parse_response(plan, status, body):
                 ["parsed supplied response"],
                 ["live calls", "spend", "auto-submission"],
                 "caller-supplied mock transport response")}
+
+
+# --- Documented public API shape (read from https://clicky.com/help/api on 2026-10-12) ---
+# This records what the public docs said on that date. It is NOT proof that the
+# API still behaves this way; no live call has been made (that needs her site_id
+# and sitekey and her approval). Requests are HTTP GET to the base with site_id,
+# sitekey and type query parameters, not Bearer auth, so plan_request's header
+# shape does not apply. Docs: free accounts get the last 30 days of history and
+# 100 results per request.
+DOCUMENTED_API_BASE = "https://api.clicky.com/api/stats/4"
+DOCUMENTED_DOCS_URL = "https://clicky.com/help/api"
+DOCUMENTED_TYPES = frozenset({"visitors", "pages", "pages-entrance", "pages-exit", "links",
+                              "links-domains", "searches", "searches-keywords", "countries",
+                              "cities", "goals", "campaigns", "events", "downloads"})
+FREE_MAX_LIMIT = 100
+FREE_MAX_HISTORY_DAYS = 30
+_RELATIVE_DATES = {"today", "yesterday"}
+_LAST_N_DAYS = re.compile(r"^last-([1-9][0-9]{0,2})-days$")
+
+
+def _history_days_ok(date):
+    """Free-tier history bound, enforced for the date forms we can reason about.
+    Absolute dates are refused: they cannot be bounded without a clock."""
+    if date in _RELATIVE_DATES:
+        return True
+    m = _LAST_N_DAYS.match(date)
+    return bool(m) and int(m.group(1)) <= FREE_MAX_HISTORY_DAYS
+
+
+def plan_stats_request(site_id, types, *, date="last-7-days", limit=FREE_MAX_LIMIT):
+    """Pure plan for the documented Clicky stats GET. The sitekey is never
+    embedded: it is a secret reference resolved by the caller's transport."""
+    if isinstance(site_id, bool) or not isinstance(site_id, int) or site_id <= 0:
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:site_id")
+    if isinstance(types, str):
+        types = [types]
+    if not isinstance(types, (list, tuple)) or not types or len(types) > 8:
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:types")
+    for t in types:  # type-check before any set membership: unhashable input must refuse cleanly
+        if not isinstance(t, str):
+            raise ValueError("APPLY_REFUSED_BAD_TYPE:types")
+    for t in types:
+        if t not in DOCUMENTED_TYPES:
+            raise ValueError("APPLY_REFUSED_UNKNOWN_ENDPOINT:" + t[:64])
+    if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= FREE_MAX_LIMIT:
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:limit")
+    date = policy.clean_text(date, PREFIX, "date", 64)
+    if not _history_days_ok(date):
+        raise ValueError("APPLY_REFUSED_BAD_TYPE:date")
+    params = {"site_id": site_id, "sitekey": "${CLICKY_SITEKEY}", "type": ",".join(types),
+              "date": date, "limit": limit, "output": "json"}
+    return {"method": "GET", "url": DOCUMENTED_API_BASE, "params": params,
+            "headers": {"Accept": "application/json"}, "live_verified": False,
+            "docs_url": DOCUMENTED_DOCS_URL}

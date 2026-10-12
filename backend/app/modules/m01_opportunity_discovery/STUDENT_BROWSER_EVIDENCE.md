@@ -7,7 +7,7 @@ Scope: instinct-doc groups 47-54. No push, no real applications, no secret handl
 
 Added M01 owner-browser execution path using existing M13 ApplicationFlow,
 BrowserService and durable application sessions, mounted directly on M01 router.
-All 17 sources have explicit DOM link classification and exact origin boundaries.
+The original 17 sources have explicit DOM link classification and exact origin boundaries.
 SQL checkpoints persist actor identity, observed links, new-opportunity deltas,
 read pacing and sticky site blocks. Selected links must still exist in current
 DOM; opening creates a new isolated application session. Staging performs actual
@@ -125,3 +125,26 @@ aborted and stays aborted, including future same-origin requests. Unsupported
 transport refuses session creation. Final targeted result: 71 passed, 10 skipped.
 No live Chromium/vendor navigation was run; actual browser acceptance remains an
 explicit gate, not implied by interceptor unit tests.
+
+
+Row 54 (2026-10-12) adds 10 RSS-only editorial feeds to the registry. They get adapters only so the registry and adapter tables stay in lockstep; staging is refused for them in StudentBrowser.stage (enforced, tested). start/read/open remain available, as they were for the 6 earlier editorial sources; nothing here is evidence of any application flow.
+
+## v5 notes (2026-10-12)
+
+- Editorial ban is now global: ApplicationFlow.stage (m13 stage_policy.py) raises PermissionError for rss-mode student_platform sessions, not only StudentBrowser.stage. The route schema carries the refusal.
+- Prefill plan binding: POST .../browser-sessions/{id}/prefill-plan returns a plan plus plan_token, a digest over page URL, field descriptors, planned fields and submit selector. stage(plan_token=...) recomputes it from a fresh inspect and refuses on any drift.
+- Digit guard (m13 value_guard.py): ALL non-digit characters, separators and letters, are stripped (letter-interleaved '123a45a6789' counts as 9 digits; free text such as '123 Main St Apt 4B 94110' is therefore refused under non-phone keys) after NFKC and other-script digit normalization. Non-phone keys refuse runs of exactly 9 or 12+ digits. Phone keys (key matches phone/mobile/tel/telephone/cell) use the shape rule exactly: only digits, spaces, dots, hyphens, parentheses and an optional leading '+'; 7-15 total digits, never exactly 9; 12-15 digits only with a leading '+'. So 7-8 digit values are ACCEPTED under a phone key, as are 10-11 digit values under non-phone keys; a dashed NNN-NN-NNNN pattern is refused under every key. Known false positives: any 9-digit or 12+ digit non-ID number under a non-phone key (e.g. a 9-digit grant amount) is refused; fail closed. Residuals are listed in the module docstring; digits spelled as words are not detected.
+- Field context (section headings, aria-labelledby/describedby, role=heading, captions) is captured and used for exclusion and unlabeled-control eligibility. It is not used for value matching. M13's generic fuzzy matcher ignores context entirely; no new enforcement there. Context over-withholds by design (fail closed). Hidden text is excluded; parts cap 120 chars, total 600.
+- Service.fill refuses select matches and ID-shaped values.
+
+### Scope residuals of the global editorial refusal (v7 docs)
+
+1. The refusal sits in ApplicationFlow.stage. Low-level fill/submit routes carry no editorial classification of their own. If a caller can reach them without going through stage, the editorial ban does not apply there. Whether the m13 /fill route is mounted was not verified. Service.fill does refuse select matches and ID-shaped values, but it does not check editorial status.
+2. Detection is metadata-based (rss-mode student_platform session tags). A direct-kind session on an editorial URL with no rss metadata is not caught by this helper.
+3. Sessions staged before this change are not revoked. One with a valid exact approval could still submit. No live sessions exist in the tests, so this is accepted for a code change, but it is stated here.
+
+### v8 notes
+
+- plan_token is an unkeyed SHA-256 digest over page URL, field descriptors, planned fields and submit selector. It is optional on stage, has no expiry and no session binding of its own (the stage call is already scoped to the tenant/actor/session). A token from one session can be replayed on another session only if that page is byte-identical in those respects. Accepted: it detects drift, it is not an authorization. M02 final-submit approval remains the authorization gate.
+- Service.fill now checks the live DOM control type (tag and input type through locator.evaluate) rather than trusting the caller's descriptor type. Anything other than textarea or a text-like input (text, email, tel, url, search, number, or empty type) is refused, as is a locator that cannot report its type (fail closed). Residual: contenteditable elements and custom widgets that render as div are not text-like inputs by this check and are refused.
+- The editorial ban test is parametrized over all 16 editorial_discovery adapters, on both the ApplicationFlow.stage and StudentBrowser.stage paths. Row-54 provenance is unchanged (10 feeds, PROVENANCE.json).

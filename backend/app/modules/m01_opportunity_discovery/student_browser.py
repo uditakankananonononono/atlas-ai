@@ -1,4 +1,4 @@
-"""Owner-session adapters for the 17 student platforms, composed with M13.
+"""Owner-session adapters for the registered student platforms (27: 17 original + 10 RSS-only editorial feeds added for row 54), composed with M13.
 
 Read real DOM links, never invent authenticated endpoints or selectors. Browser
 sessions and application records are durable in M13. Navigation is confined to
@@ -49,7 +49,7 @@ ADAPTERS = {
     'unigo': BrowserAdapter('unigo', ('www.unigo.com', 'unigo.com'), r'/scholarships/[^/]+', 'scholarships'),
     'kaggle': BrowserAdapter('kaggle', ('www.kaggle.com', 'kaggle.com'), r'/competitions/[^/]+', 'competition_rules_and_entry', 'Competition rules and eligibility must be reviewed before joining.'),
 }
-for _id in ('scholarships360', 'scholarshiproar', 'scholarshipregion', 'opportunitiesforafricans', 'scholarshipunion', 'opportunitiesforyouth'):
+for _id in ('scholarships360', 'scholarshiproar', 'scholarshipregion', 'opportunitiesforafricans', 'scholarshipunion', 'opportunitiesforyouth', 'opportunitydesk', 'fundsforngos', 'scholarshipsandgrants', 'opportunitiescorners', 'scholarshipamerica', 'nsffunding', 'petersons', 'collegeconfidential', 'thecollegesolution', 'topuniversities'):
     ADAPTERS[_id] = BrowserAdapter(_id, (urlsplit(BY_ID[_id].url).hostname,), r'/[^/]+', 'editorial_discovery', 'Editorial source, not an authenticated scholarship application provider.')
 assert ADAPTERS.keys() == BY_ID.keys()
 
@@ -253,11 +253,26 @@ class StudentBrowser:
             self.checkpoints.create(tenant, child.session_id, actor, adapter.platform)
             return child.public_view()
 
-    async def stage(self, tenant, actor, session, fields, selector):
+    async def plan_prefill(self, tenant, actor, session, profile, selector):
+        """Inspect the live page, plan a prefill from the owner-supplied profile, return the plan and
+        a plan_token that stage() verifies. Fills nothing and submits nothing."""
+        from .prefill_plan import plan_prefill, plan_token as make_token
         lock = self._locks.setdefault((tenant, session), asyncio.Lock())
         async with lock:
+            _, _, _, page_url, _ = await self._snapshot(tenant, actor, session)
+            inspection = await self.flow.inspect(tenant, actor, session)
+            plan = plan_prefill(profile, inspection['fields'])
+            plan['page_url'] = page_url
+            plan['plan_token'] = make_token(page_url, inspection['fields'], plan['fields'], selector)
+            return plan
+
+    async def stage(self, tenant, actor, session, fields, selector, plan_token=None):
+        lock = self._locks.setdefault((tenant, session), asyncio.Lock())
+        async with lock:
+            if ADAPTERS[self.checkpoints.get(tenant, session, actor)['platform']].account_workflow == 'editorial_discovery':
+                raise PermissionError('editorial discovery sources have no application form workflow; staging refused')
             # Origin and block checks precede any write, even if the user navigated manually.
-            _, _, _, _, html = await self._snapshot(tenant, actor, session)
+            _, _, _, page_url, html = await self._snapshot(tenant, actor, session)
             soup = BeautifulSoup(html, 'html.parser')
             try:
                 buttons = soup.select(selector)
@@ -268,6 +283,10 @@ class StudentBrowser:
             if buttons[0].name == 'input' and buttons[0].get('type', '').lower() not in {'submit', 'button'}:
                 raise WorkflowStateError('selector is not a submit control')
             inspection = await self.flow.inspect(tenant, actor, session)
+            if plan_token is not None:
+                from .prefill_plan import plan_token as make_token
+                if make_token(page_url, inspection['fields'], fields, selector) != plan_token:
+                    raise WorkflowStateError('page, fields or submit control changed since the prefill plan was made; re-plan')
             unsupported = [d['selector'] for d in inspection['fields'] if d['input_type'] in {'checkbox', 'radio', 'select', 'file'}]
             if soup.find('select') or soup.find('input', attrs={'type': 'file'}):
                 unsupported.append('select/file input')
