@@ -65,7 +65,7 @@ aggregate coverage promotion or new standing authorization is claimed.
 Inclusive bounded reproduction command from repository root (no deselection):
 
 ```sh
-PYTHONPATH=backend ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development /home/sandbox/venv312/bin/python -m pytest --noconftest tests/runtime/guardrails/test_nine_scoped_effect_refusals.py tests/modules/test_m13_pc_daemon.py tests/modules/test_m13_browser_agent.py tests/modules/test_m13_capture_bound_submit.py tests/modules/test_m10_email_assistant.py tests/modules/test_m11_calendar_intelligence.py -q
+PYTHONPATH=backend ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python -m pytest --noconftest tests/runtime/guardrails/test_nine_scoped_effect_refusals.py tests/modules/test_m13_pc_daemon.py tests/modules/test_m13_browser_agent.py tests/modules/test_m13_capture_bound_submit.py tests/modules/test_m10_email_assistant.py tests/modules/test_m11_calendar_intelligence.py -q
 ```
 
 The development-auth opt-in is test-only, replicating the existing fixture;
