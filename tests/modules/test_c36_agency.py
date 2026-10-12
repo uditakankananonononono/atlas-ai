@@ -88,3 +88,11 @@ def test_money_and_outreach_refusals(key, code):
     store = {}
     with pytest.raises(ValueError, match="AGENCY_REFUSED_%s" % code):
         agency.add_lead(store, {"name": "X", "need": "y", key: True})
+
+def test_payment_nonpositive_refused_after_invoice():
+    store={};lead=full_pipeline(store);client=store['clients'][lead['id']]
+    agency.owner_approve(store,lead['id'],'Student',client['proposal']['hash'])
+    agency.mark_delivered(store,lead['id'],'supplied delivery note')
+    agency.draft_invoice(store,lead['id'],15000,'2026-10-12')
+    with pytest.raises(ValueError,match='amount'):
+        agency.record_payment(store,lead['id'],{'amount_cents':0,'received_date':'2026-10-12'})
