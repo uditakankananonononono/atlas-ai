@@ -1812,3 +1812,12 @@ router.include_router(knowledge_management1308_router)
 
 from .legal_education1309_routes import router as legal_education1309_router
 router.include_router(legal_education1309_router)
+# Dedicated engineering engines 1520/1524/1525/1526 (wiring batch 5).
+from .failure_analysis1520_routes import router as failure_analysis1520_router
+router.include_router(failure_analysis1520_router)
+from .human_factors_engineering1524_routes import router as human_factors_engineering1524_router
+router.include_router(human_factors_engineering1524_router)
+from .ergonomics1525_routes import router as ergonomics1525_router
+router.include_router(ergonomics1525_router)
+from .industrial_design1526_routes import router as industrial_design1526_router
+router.include_router(industrial_design1526_router)
