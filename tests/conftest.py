@@ -119,3 +119,33 @@ def m24_postgres_schema():
             assert db.scalar(text("SELECT count(*) FROM pg_extension WHERE extname='vector'")) == 1
 
     return initialize
+
+
+@pytest.fixture(autouse=True)
+def m14_m15_postgres_lifecycle(request, monkeypatch):
+    """Stop per-test embedded Postgres instances instead of retaining until exit.
+
+    The bundled server's normal API starts the database; this fixture only owns
+    teardown. No SQLite substitution, import skipping or transaction bypass.
+    """
+    name = request.node.path.name
+    if not (name.startswith(('test_m14', 'test_m15')) or name == 'test_repair_m14_m15_remaining.py'):
+        yield
+        return
+    import pgserver
+    import psycopg  # required driver, fail visibly if test environment is incomplete
+    original = pgserver.get_server
+    servers = []
+
+    def tracked_server(*args, **kwargs):
+        server = original(*args, **kwargs)
+        if all(server is not other for other in servers):
+            servers.append(server)
+        return server
+
+    monkeypatch.setattr(pgserver, 'get_server', tracked_server)
+    try:
+        yield
+    finally:
+        for server in reversed(servers):
+            server.cleanup()
