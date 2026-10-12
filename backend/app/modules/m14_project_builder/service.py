@@ -36,6 +36,12 @@ def _milestone_to_domain(v:MilestoneView)->milestone_engine.Milestone:
 def _artifact_to_record(m:ArtifactManifest)->artifact_engine.ArtifactRecord:
     return artifact_engine.ArtifactRecord(id=m.id,project_id=m.project_id,task_id=m.task_id,kind=m.kind,uri=m.uri,sha256=m.sha256,provenance=m.provenance)
 
+def _report_id(kind:str,project:ProjectView,generated:datetime,body:str)->str:
+    """Digest of the complete report identity; no prefix or timestamp truncation."""
+    identity={"kind":kind,"tenant_id":project.tenant_id,"project_id":project.id,
+              "generated_at":generated.isoformat(),"body":body}
+    return sha256(json.dumps(identity,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
+
 class PlannerUnavailable(RuntimeError):
     """Configured planner runtime unavailable; no synthetic plan was substituted."""
 
@@ -247,7 +253,7 @@ class Service:
             project_id=project.id,goal=project.goal,status=project.status,progress=progress,
             milestones=milestones,slippage=slippage,artifact_validation=validation,generated_at=generated))
         # Report gate (group 142): refuses unlabeled/conflicting/vacuous claim ledgers before the report leaves.
-        self._report_gate().emit_report(f"m14-status-{project.id}-{int(generated.timestamp())}"[:64],markdown,now=generated.strftime("%Y-%m-%dT%H:%M:%SZ"))
+        self._report_gate().emit_report(_report_id("status",project,generated,markdown),markdown,now=generated.strftime("%Y-%m-%dT%H:%M:%SZ"))
         return StatusReportView(project_id=project.id,markdown=markdown,generated_at=generated)
 
     def _report_gate(self):
@@ -294,7 +300,7 @@ class Service:
             assumptions=tuple(project.plan.assumptions) if project.plan else (),risks=tuple(project.plan.risks) if project.plan else ()))
         generated=datetime.now(timezone.utc)
         # Validate exact renderer bytes even if an alternate renderer is installed.
-        self._report_gate().emit_report(uuid4().hex,readme,now=generated.strftime("%Y-%m-%dT%H:%M:%SZ"))
+        self._report_gate().emit_report(_report_id("readme",project,generated,readme),readme,now=generated.strftime("%Y-%m-%dT%H:%M:%SZ"))
         status_md=self.status_report(project).markdown
         root=(Path(base_dir) if base_dir else Path(tempfile.mkdtemp(prefix=f"atlas-m14-{project.id}-")))/project.id
         root.mkdir(parents=True,exist_ok=True)
