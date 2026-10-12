@@ -33,6 +33,10 @@ MUT = [
  ('Q16 default pacer is a fresh ledger per call', B, "ledger = DEFAULT_PACER if pacer is None else pacer", "ledger = HostPacer() if pacer is None else pacer", TESTS),
  ('Q17 busy status dropped from closed set', B, "'crawl_delay_too_long', 'host_pacing_busy',", "'crawl_delay_too_long',", TESTS),
  ('Q18 retry_after omitted', B, "return _safe(row, 'host_pacing_busy', retry_after_seconds=math.ceil(wait))", "return _safe(row, 'host_pacing_busy')", TESTS),
+ ('Q20 reset ignores in-flight hosts', B, "            if self._busy and not force:", "            if False:", TESTS),
+ ('Q21 reset refusal also blocks force', B, "            if self._busy and not force:", "            if self._busy:", TESTS),
+ ('Q22 refused reset still clears state', B, "                raise RuntimeError('HostPacer.reset refused", "                self._delay.clear(); raise RuntimeError('HostPacer.reset refused", TESTS),
+ ('Q23 reset when idle does not clear delays', B, "            self._busy.clear()\n            self._last_end.clear()\n            self._delay.clear()", "            self._busy.clear()\n            self._last_end.clear()", TESTS),
  ('Q19 refusal not honored (proceeds anyway)', B, "    if not admitted:\n        return", "    if False:\n        return", TESTS),
 ]
 ENV =dict(os.environ, ATLAS_DEV_NO_AUTH="1", ATLAS_ENV="development", PYTHONPATH="backend")

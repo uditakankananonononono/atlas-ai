@@ -280,3 +280,32 @@ def test_exception_in_the_ledger_spacing_sleep_still_releases_the_host():
     with pytest.raises(RuntimeError):
         fetch_case_metadata_bounded('hamilton', httpx.MockTransport(lambda r: httpx.Response(200, text='Allow: /')), sleep=raiser, pacer=p)
     assert HOST not in p._busy
+
+
+def test_reset_is_refused_while_a_host_is_in_flight_and_changes_nothing():
+    c = Clock(); p = HostPacer(c.now)
+    prime(p, 'idle.example', 5)
+    assert p.acquire('busy.example', 0)[0]
+    with pytest.raises(RuntimeError, match='busy.example'):
+        p.reset()
+    assert 'busy.example' in p._busy and p._delay == {'idle.example': 5.0} and 'idle.example' in p._last_end
+    # a second caller is still excluded after the refused reset
+    assert p.acquire('busy.example', 0.1)[0] is False
+    p.release('busy.example', None)
+
+
+def test_reset_when_idle_clears_everything_and_force_clears_in_flight():
+    c = Clock(); p = HostPacer(c.now)
+    prime(p, 'a.example', 5)
+    p.reset()
+    assert p._delay == {} and p._last_end == {} and p._busy == set()
+    assert p.acquire('b.example', 0)[0]
+    p.reset(force=True)
+    assert p._busy == set()
+
+
+def test_fresh_pacer_instances_do_not_share_the_ledger():
+    c = Clock(); p1 = HostPacer(c.now); p2 = HostPacer(c.now)
+    call(c, p1); c.slept.clear()
+    call(c, p2)
+    assert c.slept == [10]          # p2 knows nothing about p1: only the in-call delay, no ledger wait

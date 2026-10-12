@@ -33,8 +33,8 @@ class HostPacer:
     acquire(host, max_wait) admits one call at a time per host: while another call to the same host is in flight
     (robots + Crawl-delay sleep + page), later callers block on a condition variable for at most max_wait real
     seconds, then are refused. The admitted call must also wait until the host's last known Crawl-delay has passed
-    since the previous call FINISHED; if that remaining wait exceeds max_wait it is refused instead. Because the
-    host is held for the whole call, two calls can never overlap, and a host with no known delay gets a single-flight
+    since the previous call's NETWORK PHASE ended (release() runs before the post-fetch status, content-type and HTML parsing); if that remaining wait exceeds max_wait it is refused instead. Because the
+    host is held for the network phase (robots, Crawl-delay sleep, page), two calls can never overlap, and a host with no known delay gets a single-flight
     first robots fetch: the others queue and then use the delay it learned. release() records the finish time and
     the delay learned from robots.txt (None keeps the last known delay) and wakes waiters. Nothing is persisted or
     shared across processes."""
@@ -71,8 +71,12 @@ class HostPacer:
             self._busy.discard(host)
             self._cond.notify_all()
 
-    def reset(self):
+    def reset(self, *, force: bool = False):
+        """Trusted maintenance/test hook. Refuses (RuntimeError) while any host is in flight, because clearing a live
+        in-flight mark would admit a second caller to that host. force=True skips the check and is for tests only."""
         with self._cond:
+            if self._busy and not force:
+                raise RuntimeError('HostPacer.reset refused: host(s) in flight: ' + ', '.join(sorted(self._busy)))
             self._busy.clear()
             self._last_end.clear()
             self._delay.clear()
@@ -133,7 +137,7 @@ def fetch_case_metadata_bounded(case_id: str, transport: httpx.BaseTransport | N
     request follows one robots request per call.
     Across calls, a HostPacer (default: the process-wide DEFAULT_PACER) serializes calls per host: a call queues (real
     time, at most `max_pace_wait`, default 60s) while another call to the same host is in flight, then waits via
-    `sleep` until the host's last known Crawl-delay has passed since the previous call FINISHED. If the queue or that
+    `sleep` until the host's last known Crawl-delay has passed since the previous call's network phase ended. If the queue or that
     remaining wait would exceed `max_pace_wait` it returns host_pacing_busy with retry_after_seconds. The ledger is
     in-memory and process-local; a host never seen with a Crawl-delay is not spaced beyond serialization."""
     if isinstance(max_crawl_delay, bool) or not isinstance(max_crawl_delay, (int, float)) or not 0 <= max_crawl_delay <= 120:
