@@ -21,10 +21,18 @@ Doc source line refs in the table: 53,166. The doc text itself was not re-read f
 - evidence ids: B4 arc landed-scoped (rest staged/landed earlier per map)
 - note: doc group PARTIAL (B4 assigned doc completion 00:57); literal row PARTIAL
 
+## Tip-state update (second pass, origin/main d8668c19)
+
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 80, verbatim:
+
+> | 80 |Crack maths problems or dilemmas in any field | Exact rational polynomial evaluation, derivative, antiderivative, definite integrals, candidate-root checks and full certificate replay | PARTIAL: bounded polynomials, not unrestricted cross-field solving |
+
+The module paths in section (a) came from the Oct 12 table and may not be the mechanism that README describes. Compare the two before relying on (a). That README states it "does not change literal group verdicts to LANDED". Verdict stays PARTIAL. Tests were not run in this pass.
+
 ## (c) Verdict
 
 **PARTIAL.**
 
-Missing scope, from the audit table's Missing cell (a stale hint; tip code was not re-read file by file for this sheet): Scoped algorithms exist; unrestricted cross-field problem-solving success unverified.
+Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Scoped algorithms exist; unrestricted cross-field problem-solving success unverified.
 
 CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.

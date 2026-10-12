@@ -36,10 +36,14 @@ Doc source line refs in the table: 53,152,158,214. The doc text itself was not r
 - evidence ids: LAND-86 + GATE-20261012-232 (FINAL PASS-SCOPED)
 - note: doc group PARTIAL (B4 assigned doc completion 00:57); literal row PARTIAL
 
+## Tip-state update (second pass, origin/main d8668c19)
+
+No per-row audit directory exists on main for this row (crosswalk marks 65-76 EVIDENCE-THIN). The table cell above is the only per-row description available, it is historical, and tip code for this row was not re-read in this pass. Treat the Missing scope as unverified-stale.
+
 ## (c) Verdict
 
 **PARTIAL.**
 
-Missing scope, from the audit table's Missing cell (a stale hint; tip code was not re-read file by file for this sheet): M22 scoped installer/paired protocol exist; c31 explicitly emits NotImplementedError adapter stubs. No arbitrary tool rebuild/install acceptance.
+Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): M22 scoped installer/paired protocol exist; c31 explicitly emits NotImplementedError adapter stubs. No arbitrary tool rebuild/install acceptance.
 
 CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.

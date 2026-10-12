@@ -22,10 +22,18 @@ Doc source line refs in the table: 36,184. The doc text itself was not re-read f
 - evidence ids: LAND-85 + GATE-20261012-231 (PASS-SCOPED)
 - note: doc group PARTIAL (B4 assigned doc completion 00:57); literal row PARTIAL
 
+## Tip-state update (second pass, origin/main d8668c19)
+
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 83, verbatim:
+
+> | 83 |Additional 1000 concepts for AGI-like intelligence | Source/test-digest-bound functional acceptance-manifest checker; detects duplicate implementation aliases, stale/skipped/error receipts, and concept deficit | PARTIAL: checker is not 1000 new functional concepts; no padded inventory added |
+
+The module paths in section (a) came from the Oct 12 table and may not be the mechanism that README describes. Compare the two before relying on (a). That README states it "does not change literal group verdicts to LANDED". Verdict stays PARTIAL. Tests were not run in this pass.
+
 ## (c) Verdict
 
 **PARTIAL.**
 
-Missing scope, from the audit table's Missing cell (a stale hint; tip code was not re-read file by file for this sheet): Large concept code inventory is not a source-bound 1,000-concept functional acceptance ledger.
+Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Large concept code inventory is not a source-bound 1,000-concept functional acceptance ledger.
 
 CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.

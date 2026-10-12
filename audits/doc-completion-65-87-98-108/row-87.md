@@ -23,10 +23,18 @@ Doc source line refs in the table: 50,176. The doc text itself was not re-read f
 - evidence ids: B4 arc landed-scoped (rest staged/landed earlier per map)
 - note: doc group PARTIAL (B4 assigned doc completion 00:57); literal row PARTIAL
 
+## Tip-state update (second pass, origin/main d8668c19)
+
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 87, verbatim:
+
+> | 87 |Add info to train models from 10 websites like AdmitSee | Actually fitted multinomial naive-Bayes advice-topic model, token/class counts, serialized artifact checksums, held-out per-class coverage, training-domain count, rights receipts and owner-consent route | PARTIAL: executed on synthetic author-owned fixtures, not licensed content from ten admissions-provider sites; not LoRA/LLM training or admissions success prediction |
+
+The module paths in section (a) came from the Oct 12 table and may not be the mechanism that README describes. Compare the two before relying on (a). That README states it "does not change literal group verdicts to LANDED". Verdict stays PARTIAL. Tests were not run in this pass.
+
 ## (c) Verdict
 
 **PARTIAL.**
 
-Missing scope, from the audit table's Missing cell (a stale hint; tip code was not re-read file by file for this sheet): Public links explicitly not licensed training data; proposed datasets, not executed model training.
+Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Public links explicitly not licensed training data; proposed datasets, not executed model training.
 
 CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.

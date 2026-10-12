@@ -23,10 +23,14 @@ Doc source line refs in the table: 53,141,151,168,171,214. The doc text itself w
 - evidence ids: B4 arc landed-scoped (rest staged/landed earlier per map)
 - note: doc group PARTIAL (B4 assigned doc completion 00:57); literal row PARTIAL
 
+## Tip-state update (second pass, origin/main d8668c19)
+
+No per-row audit directory exists on main for this row (crosswalk marks 65-76 EVIDENCE-THIN). The table cell above is the only per-row description available, it is historical, and tip code for this row was not re-read in this pass. Treat the Missing scope as unverified-stale.
+
 ## (c) Verdict
 
 **PARTIAL.**
 
-Missing scope, from the audit table's Missing cell (a stale hint; tip code was not re-read file by file for this sheet): Combinatorial/template briefs and tickets; no trained creativity model or independently measured inventions/real-world problem resolution.
+Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Combinatorial/template briefs and tickets; no trained creativity model or independently measured inventions/real-world problem resolution.
 
 CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.

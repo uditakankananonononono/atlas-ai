@@ -45,3 +45,7 @@ Limits, stated plainly:
 | 106 | 2 | 0 | 27 |  |
 | 107 | 1 | 0 | 2 |  |
 | 108 | 4 | 0 | 2 | dir-level note |
+
+## Second pass (origin/main d8668c19)
+
+Every sheet now has a "Tip-state update" section. Rows 98-108 cite their per-row audit on main (`audits/rows98_108/`) with its selector and its own limits text. Rows 77-87 quote their row from `audits/instinct-groups-77-87/README.md`. Rows 65-76 have no per-row audit and are flagged unverified-stale. Section (a) file lists still come from the historical table in all rows. Test results and mutation runs were still NOT re-run in this pass.

@@ -22,10 +22,18 @@ Doc source line refs in the table: 33,186. The doc text itself was not re-read f
 - evidence ids: B4 arc landed-scoped (rest staged/landed earlier per map)
 - note: doc group PARTIAL (B4 assigned doc completion 00:57); literal row PARTIAL
 
+## Tip-state update (second pass, origin/main d8668c19)
+
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 85, verbatim:
+
+> | 85 |Merge Meemee to Claire if extra capabilities | Cross-instance SQLite private-computation jobs, authenticated-principal ownership, transactional claim, CAS settlement, restart retention, expired worker unknown holds, executed worker computation | PARTIAL: additive durable computation runtime, not full Meemee deployed parity; existing inventory/deferred capabilities unchanged |
+
+The module paths in section (a) came from the Oct 12 table and may not be the mechanism that README describes. Compare the two before relying on (a). That README states it "does not change literal group verdicts to LANDED". Verdict stays PARTIAL. Tests were not run in this pass.
+
 ## (c) Verdict
 
 **PARTIAL.**
 
-Missing scope, from the audit table's Missing cell (a stale hint; tip code was not re-read file by file for this sheet): Ported helpers plus already-present, rejected and deferred categories; complete deployed runtime parity not established.
+Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Ported helpers plus already-present, rejected and deferred categories; complete deployed runtime parity not established.
 
 CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.
