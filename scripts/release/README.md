@@ -55,3 +55,7 @@ HEAD and nonignored status checks do not bind Git metadata such as configuration
 exclude rules or hooks. Changes to .git/config, .git/info/exclude or .git/hooks
 are outside this state observation. These limits matter for hostile test code;
 the helper remains for trusted local, non-hostile tests, not a sandbox.
+
+The receipt identity field echoes the configured expected identity; it is not an
+observed identity or an independent provenance check. Source and applied commit
+metadata checks are separate.
