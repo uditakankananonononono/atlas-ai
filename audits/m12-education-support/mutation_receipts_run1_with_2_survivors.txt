@@ -1,0 +1,41 @@
+BASELINE tests/modules/test_m12_education_support_hardening.py -> rc=0 30 passed in 0.24s
+E1 high band boundary (>) | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.26s | failing: test_1460_weighted_mean_and_bands
+E2 medium band boundary (>) | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1460_weighted_mean_and_bands
+E3 engagement weights ignored | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1460_weighted_mean_and_bands
+E4 logistic sign flipped | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.26s | failing: test_1461_logistic_value_and_human_review
+E5 intercept dropped | education_support.py | CAUGHT | rc=1 | 2 failed, 28 passed in 0.25s | failing: test_1461_logistic_value_and_human_review; test_1462_linear_prediction
+E6 missing-feature check removed | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.26s | failing: test_1461_missing_feature_named_and_intercept_not_a_feature
+E7 cosine not normalized | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.34s | failing: test_1463_cosine_ranking_ties_and_zero
+E8 vector alignment check removed | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1463_misaligned_vectors_rejected
+E9 recommendation tie-break by id removed | education_support.py | SURVIVED | rc=0 | 30 passed in 0.22s | failing: -
+E10 peer complementary weight 1 not 2 | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.23s | failing: test_1465_peer_score_weights_complementary_twice_and_never_contacts
+E11 completed nodes not excluded | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1466_prerequisites_done_nodes_and_priority
+E12 prerequisite check removed | education_support.py | CAUGHT | rc=1 | 2 failed, 28 passed in 0.27s | failing: test_1466_prerequisites_done_nodes_and_priority; test_open_questions_passthrough_and_observed_outputs_skip_empty
+E13 rubric weight ignored in sum | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.26s | failing: test_1467_weighted_normalized_score_no_grade
+E14 normalized score not x100 | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.27s | failing: test_1467_weighted_normalized_score_no_grade
+E15 rubric upper range check removed | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1467_rejects_invalid_ratings
+E16 zero max_score/weight allowed | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.30s | failing: test_1467_rejects_invalid_ratings
+E17 feedback gap includes equal scores | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.25s | failing: test_1468_feedback_only_below_target_sorted_by_gap
+E18 feedback sorted smallest gap first | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1468_feedback_only_below_target_sorted_by_gap
+E19 attainment counts all objectives | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.27s | failing: test_assessment_types_timing_and_unassessed
+E20 unknown objective not rejected | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.26s | failing: test_assessment_rejects_unknown_objective_and_requires_inputs
+E21 standard 'meets' boundary (>) | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1480_standard_levels_and_status_boundary
+E22 no-evidence status wrong | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.25s | failing: test_1480_standard_levels_and_status_boundary
+E23 mastery boundary (>) | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1481_1482_mastery_boundary_and_unevidenced_default
+E24 celeration ratio inverted | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.28s | failing: test_1483_precision_teaching_rates_celeration_and_decision
+E25 aim comparison inverted | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.26s | failing: test_1483_precision_teaching_rates_celeration_and_decision
+E26 guided accuracy denominator | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1484_accuracy_and_release_flag
+E27 tutor worked-example boundary (<=) | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.25s | failing: test_1490_targets_weakest_component_with_id_tiebreak_and_threshold
+E28 identifier match case sensitive | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.25s | failing: test_direct_identifiers_rejected_at_depth_in_dicts_and_lists_case_insensitive
+E29 identifier dict recursion removed | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.25s | failing: test_direct_identifiers_rejected_at_depth_in_dicts_and_lists_case_insensitive
+E30 identifier list recursion removed | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.25s | failing: test_direct_identifiers_rejected_at_depth_in_dicts_and_lists_case_insensitive
+E31 observed_at no longer required | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_sources_required_with_both_fields
+E32 unsupported feature accepted | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_unsupported_feature_rejected
+E33 prediction flag range widened | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_envelope_flags_and_prediction_range
+E34 side_effects not empty | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_envelope_flags_and_prediction_range
+E35 cumulative review window shifted | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.24s | failing: test_1486_cumulative_progression_and_1489_weakest_item_tiebreak
+E36 need() treats empty as present | education_support.py | SURVIVED | rc=0 | 30 passed in 0.24s | failing: -
+E37 bool accepted as number | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.26s | failing: test_1460_rejects_bad_signals
+E38 weakest-item tie-break by id removed | education_support.py | CAUGHT | rc=1 | 1 failed, 29 passed in 0.25s | failing: test_1486_cumulative_progression_and_1489_weakest_item_tiebreak
+counts: CAUGHT=36, SURVIVED=2, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True
