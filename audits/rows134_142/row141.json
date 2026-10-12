@@ -1,0 +1,45 @@
+{
+  "row": 141,
+  "selectors": [
+    "tests/runtime/guardrails/test_tool_usage_bar.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "local choke-point tests only, fixture effects",
+    "no external approval/provider truth",
+    "not universal runtime adoption",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "default_bar",
+      "path": "backend/app/runtime/guardrails/tool_usage_bar.py",
+      "old": "DEFAULT_BAR = 200",
+      "new": "DEFAULT_BAR = 1"
+    },
+    {
+      "id": "project_scope",
+      "path": "backend/app/runtime/guardrails/tool_usage_bar.py",
+      "old": "record[\"kind\"] == \"tool_use_recorded\" and record[\"project_id\"] == project_id",
+      "new": "record[\"kind\"] == \"tool_use_recorded\""
+    },
+    {
+      "id": "bar_compare",
+      "path": "backend/app/runtime/guardrails/tool_usage_bar.py",
+      "old": "verdict = \"met\" if count >= bar else \"unmet\"",
+      "new": "verdict = \"met\" if count > bar else \"unmet\""
+    },
+    {
+      "id": "shortfall",
+      "path": "backend/app/runtime/guardrails/tool_usage_bar.py",
+      "old": "\"shortfall\": max(0, bar - count)",
+      "new": "\"shortfall\": 0"
+    },
+    {
+      "id": "refusal",
+      "path": "backend/app/runtime/guardrails/tool_usage_bar.py",
+      "old": "if record[\"verdict\"] != \"met\":",
+      "new": "if False:"
+    }
+  ]
+}
