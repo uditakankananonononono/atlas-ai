@@ -1,6 +1,7 @@
 """Exact single-site mutation runner for trusted local repository tests.
 
-CAUGHT means rc=1 plus FAILED test IDs, with no ERROR/collection failure.
+CAUGHT means rc=1 plus FAILED test IDs, with no ERROR/collection or skip outcome.
+This is failed-test sensitivity, not an assertion-only exception classifier.
 Timeouts, crashes, missing replacement sites, skips and collection errors are
 not caught evidence. Every source restore is checked against its byte SHA256.
 """
@@ -22,7 +23,8 @@ def digest(raw):return hashlib.sha256(raw).hexdigest()
 def classify(rc, text):
     failed=re.findall(r'^FAILED ([^\n]+?)(?: - |$)',text,re.M)
     errors=bool(re.search(r'^ERROR |collection error|ERROR collecting|Interrupted:',text,re.M))
-    if rc==1 and failed and not errors:return 'CAUGHT',failed
+    skipped=bool(re.search(r'\b\d+ skipped\b|^SKIPPED ',text,re.M))
+    if rc==1 and failed and not errors and not skipped:return 'CAUGHT',failed
     if rc==0:
         if re.search(r'\b\d+ skipped\b',text):return 'SURVIVED-WITH-SKIPS',[]
         return 'SURVIVED',[]
@@ -53,7 +55,15 @@ def execute(spec_path, output):
     baseline=run_case(spec['selectors'],spec['timeout_seconds'],env)
     baseline['status']='PASS' if baseline['returncode']==0 and baseline['status']=='SURVIVED' else 'BASELINE-NOT-RELEASED'
     (output/'baseline.log').write_text(baseline.pop('output'))
-    report={'row':spec['row'],'spec_sha256':digest(Path(spec_path).read_bytes()),'baseline':baseline,'baseline_log_sha256':digest((output/'baseline.log').read_bytes()),'mutations':[],
+    tracked=subprocess.run(['git','ls-files','-z','backend','scripts','tests','audits'],capture_output=True,check=True).stdout.split(b'\0')
+    snapshot={}
+    for entry in tracked:
+        if entry:
+            path=Path(os.fsdecode(entry))
+            if path.is_file() and not path.is_symlink():snapshot[str(path)]=digest(path.read_bytes())
+    identity={key:subprocess.check_output(['git',*args],text=True).strip() for key,args in {
+        'head':['rev-parse','HEAD'],'head_tree':['rev-parse','HEAD^{tree}'],'status':['status','--porcelain']}.items()}
+    report={'checkout':identity,'tracked_code_test_hashes':snapshot,'row':spec['row'],'spec_sha256':digest(Path(spec_path).read_bytes()),'baseline':baseline,'baseline_log_sha256':digest((output/'baseline.log').read_bytes()),'mutations':[],
             'environment':{k:env[k] for k in ['PYTHONPATH','ATLAS_DEV_NO_AUTH','ATLAS_ENV',*spec.get('environment',{})]},'limits':spec['limits']}
     if baseline['status']=='PASS':
         for mutation in spec['mutations']:

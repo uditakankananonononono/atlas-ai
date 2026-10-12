@@ -8,6 +8,8 @@ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
  (1,'FAILED tests/test_x.py::test_x - AssertionError','CAUGHT'),
  (2,'ERROR collecting tests/test_x.py','INVALID'),
  (1,'FAILED tests/test_x.py::test_x - AssertionError\nERROR collecting tests/test_y.py','INVALID'),
+ (1,'FAILED tests/test_x.py::test_x - AssertionError\n1 failed, 1 skipped','INVALID'),
+ (1,'FAILED tests/test_x.py::test_x - AssertionError\nSKIPPED tests/test_y.py','INVALID'),
  (1,'crashed process','INVALID'),(0,'1 passed','SURVIVED'),(0,'1 passed, 1 skipped','SURVIVED-WITH-SKIPS'),
  (5,'no tests ran','INVALID')])
 def test_failed_only_classification(rc,text,status):assert module.classify(rc,text)[0]==status
@@ -16,6 +18,9 @@ def test_failed_only_classification(rc,text,status):assert module.classify(rc,te
 def test_execute_restores_exact_source_sha_after_failed_mutation(tmp_path,monkeypatch):
     import hashlib,json
     monkeypatch.chdir(tmp_path)
+    import subprocess
+    subprocess.run(['git','init','-q'],check=True)
+    subprocess.run(['git','-c','user.name=Instinct','-c','user.email=agent@instinct.com','commit','--allow-empty','-qm','fixture'],check=True)
     source=tmp_path/'source.py';source.write_text('value = 1\n')
     original=source.read_bytes()
     spec={'row':0,'selectors':['tests/fixture.py'],'timeout_seconds':1,'limits':['fixture'],

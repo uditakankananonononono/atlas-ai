@@ -1,0 +1,323 @@
+[
+  {
+    "row": 92,
+    "spec_sha256": "8a86d308d6bd9d22138f08d877a44c71e40a85968dd58103c21904efd7d5e68c",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group92_reasoning_boundaries.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 1.2345286479994684
+    },
+    "mutations": [
+      {
+        "id": "medium_refusal",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.176438720999613,
+        "log_sha256": "398dde8736a6be53db46df65a8eea803d5920b7c34bae2fb4e3c5af7b1ebefcd",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      },
+      {
+        "id": "provenance",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.194041374000335,
+        "log_sha256": "73edda5d401e00c8093a0b7b1852999e373b08fe40e52d291f453bf0234c18f1",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      },
+      {
+        "id": "scope",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.1904804240002704,
+        "log_sha256": "19192355480a65ae7c0bed463baea5fdb63d4ad759575ce9a3f681b83e94123d",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      },
+      {
+        "id": "caveat",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.162644201999683,
+        "log_sha256": "111db0600b8bfc1e002f9d33b1dd09f450deceb0a023ea52428471cbae28729d",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      },
+      {
+        "id": "validity_binding",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.1486726040002395,
+        "log_sha256": "5eec693f1d174afd74ce6f6873b423a1fd2fe0ff74a4801963843989b4665ba0",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "supplied fake transcript, no new ASR execution",
+      "actual ASR model test not selected",
+      "human thinking/music/speaker inference untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 92,
+    "spec_sha256": "8a86d308d6bd9d22138f08d877a44c71e40a85968dd58103c21904efd7d5e68c",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group92_reasoning_boundaries.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 1.1532681679991583
+    },
+    "baseline_log_sha256": "76af71df60bb5f93ea635e8763126ecf98e837672c9980e80aefde989b203765",
+    "mutations": [
+      {
+        "id": "medium_refusal",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.1614360410003428,
+        "log_sha256": "511fdd894c4e52fcf4ace6d5ec65cd06ce2903b0a8184531aee381bc8ca36d0f",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      },
+      {
+        "id": "provenance",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.138686212999346,
+        "log_sha256": "906219d32d2c0b83e4a5a2e271f71b6481168d7da775b4e4506080b663786d27",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      },
+      {
+        "id": "scope",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.189156116999584,
+        "log_sha256": "897e2993af0afa5df6b0c1dfc6865fdae9b3202dd19a0219347145d684cedfcd",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      },
+      {
+        "id": "caveat",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.173388686999715,
+        "log_sha256": "7e4a22fe3d736eaecde886c2ca689ea11e7586f9be7ad2aa3369eae3c15ebf1d",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      },
+      {
+        "id": "validity_binding",
+        "path": "backend/app/modules/c32/audio_reasoning.py",
+        "source_sha256_before": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group92_reasoning_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group92_reasoning_boundaries.py::test_validation_precedes_transcription_and_retains_honest_scope"
+        ],
+        "seconds": 1.1767696819997582,
+        "log_sha256": "80531c9bb7e315ab7d82707e52d8aeac4db8f86b6e7385156336da29ca8cae63",
+        "restored_sha256": "eb7829997c2bd773bffba1a3e26940b2f24681991368ae2258c750db2d26d881",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "supplied fake transcript, no new ASR execution",
+      "actual ASR model test not selected",
+      "human thinking/music/speaker inference untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

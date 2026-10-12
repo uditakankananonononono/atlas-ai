@@ -1,0 +1,481 @@
+[
+  {
+    "row": 95,
+    "spec_sha256": "c7c3aa2d258d733e740970c2c74d348e5f01c61930da37945353f236c1e07abc",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group95_digits_execution.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 5.513761150999926
+    },
+    "mutations": [
+      {
+        "id": "split_seed",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 3.8198072989998764,
+        "log_sha256": "00a40749e327b9417c558ef233a7184d1d2d033dd1b5a2b1b580c1b34e259722",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "train_only_scaler",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 0,
+        "status": "SURVIVED",
+        "failed_tests": [],
+        "seconds": 3.8226720989996466,
+        "log_sha256": "0eb0a32ccd4cf69fdfb8d3db99d594b9b081ac7036b5a1ffa1dc3e958019384f",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "heldout_fraction",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 3.7119885140000406,
+        "log_sha256": "f0c078cb4a9e84e859a00b5dd8999bdf0f2d104ed0c0ecc0c6fa2b3022c8918e",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "comparison_accuracy",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 3.77430670800004,
+        "log_sha256": "bc2da4104d0536ec18215fd8ca52140573fbacecd5bd1f52608cbe94efea448a",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "scaling_scope",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 3.7994823950002683,
+        "log_sha256": "e96a1f2b900cca5b7a98e35571039fc2cb9e4f15347308d740d561653e7655d4",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "one fixed educational public split",
+      "no breakthrough or sector superiority",
+      "external benchmarks and broader data untested"
+    ],
+    "all_caught": false,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 95,
+    "spec_sha256": "c7c3aa2d258d733e740970c2c74d348e5f01c61930da37945353f236c1e07abc",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group95_digits_execution.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 3.9825715030001447
+    },
+    "mutations": [
+      {
+        "id": "split_seed",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 4.108852608999769,
+        "log_sha256": "dcdf14ed63d44abd61bd66e4d8bcdfa42d7bcb5e25f821ae5756ece02fbe09c1",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "train_only_scaler",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_scaler_fit_receives_only_training_rows"
+        ],
+        "seconds": 4.014878472000419,
+        "log_sha256": "fbb1750c9dec5152a4b3445c8e0ce5b783b18cbcb88dbcffa36c99c8d7415f2a",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "heldout_fraction",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 4.052701093999531,
+        "log_sha256": "234db87b1689ed2a2c4beb646abb1b9104ddf254441099def401689acc3792ae",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "comparison_accuracy",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 4.0303722669996205,
+        "log_sha256": "af9bb633020a060acce8ab1a99bc8552cd9fc5ef95ba15834caf2700714014a9",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "scaling_scope",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 4.093963780000195,
+        "log_sha256": "274427b52c3500e3057a324d1a7d4fbf9548f3edde1a34fb6bde294fa17a778d",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "one fixed educational public split",
+      "no breakthrough or sector superiority",
+      "external benchmarks and broader data untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 95,
+    "spec_sha256": "c7c3aa2d258d733e740970c2c74d348e5f01c61930da37945353f236c1e07abc",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group95_digits_execution.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 3.9244612960001177
+    },
+    "baseline_log_sha256": "c71961a775e5b48f00e5c9715c3c977d4395dd5f892b22ff331b8d5ef8f20e0c",
+    "mutations": [
+      {
+        "id": "split_seed",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 3.9642520369998238,
+        "log_sha256": "16aad37bb23aca51cab3a452caf6d709ed9aada0bb44dc3915a38de588829bc5",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "train_only_scaler",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_scaler_fit_receives_only_training_rows"
+        ],
+        "seconds": 4.052962026000387,
+        "log_sha256": "6668d947a7c1ed128bdb4b3b06a4afe16d8189709899fe8e3e452165449d09cc",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "heldout_fraction",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 3.9008690049995494,
+        "log_sha256": "010973bcdeec07f151d144f928ceab51ad37523a05acf5309df26912c0cb0c8b",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "comparison_accuracy",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 4.0800152419997175,
+        "log_sha256": "50bd0251d8c7daba5c2f7724f14df66526cb12e959e8626f298abf15e7d24d88",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      },
+      {
+        "id": "scaling_scope",
+        "path": "scripts/group95_digits.py",
+        "source_sha256_before": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group95_digits_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group95_digits_execution.py::test_digits_execution_uses_real_bundled_dataset_and_train_only_scaler"
+        ],
+        "seconds": 4.129852226999901,
+        "log_sha256": "274427b52c3500e3057a324d1a7d4fbf9548f3edde1a34fb6bde294fa17a778d",
+        "restored_sha256": "85066dfc6f2948316c4a9cd2dd0b296dad5981fca63de912afecd35e69ddfa72",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "one fixed educational public split",
+      "no breakthrough or sector superiority",
+      "external benchmarks and broader data untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

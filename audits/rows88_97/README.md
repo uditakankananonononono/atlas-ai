@@ -19,3 +19,16 @@ process, not escaped descendants. Whole-repository regressions, external
 provider effects, semantic quality and unlisted mutation sites remain UNTESTED.
 Broad literal groups stay PARTIAL; killed core mutations are scoped sensitivity
 checks, not proof of universal correctness.
+
+Mixed FAILED plus SKIP outcomes are INVALID, not CAUGHT. FAILED means a pytest
+failed-test outcome, which may include runtime exceptions within a test; this
+is not an assertion-only kill classifier. Current receipts additionally retain
+HEAD/tree/status and hashes of tracked code/test/spec files. These are local
+checkout identities, not proof that all dependencies or external state match.
+
+`evidence/row*-historical-receipts.json` publishes portable historical local
+summaries, including initial survivor provenance for attachment (97), scaler
+fit (95) and timeout forwarding (94). Exact raw logs/executable were supplied
+in the private release archive. Historical results are not rerun-current
+claims. Fresh follow-up logs/receipts are supplied separately. Row90 now pins
+nonempty record/conflict counts; row96 pins exact intended refusal diagnostics.

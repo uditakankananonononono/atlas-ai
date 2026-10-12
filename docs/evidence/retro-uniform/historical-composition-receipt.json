@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "base_commit": "d8918a7a80a0cc1342c7b4d010f7f212be759fc4",
+  "base_tree": "da7aac127661c5bdf0c82ec6ba3c1483ed1b22f8",
+  "result_commit": "afc7506377d813308482a9e82b40a0da0826fd09",
+  "result_tree": "b93da4db898eb1da8f64fa8d106b521921a4d3e7",
+  "commits": [
+    "adf231eaf7a9ca418eaa4c40555702a56a31a64e",
+    "783aadfdbc4046573e0dbe367a43370718737bec",
+    "568d664bb6c12d904edeb14503fc5bb55a25aad7",
+    "51435a9ab52c4c2a89147acdfa2d8ea2c9e4a73a",
+    "ce9707c1c186124de56f81f1b633ccafc1b008ee",
+    "228473468d2bb638b63194a3ef287741dcb6af30",
+    "1a928f59e36cb021e3704a0beb7a18fbdcc2173e",
+    "3997fece40120c258fcf6fa3ab58ad76663fcfac",
+    "7548501a7a037ee4ccfd442fdda4c59b51fd4db4",
+    "547b22f08ca0f916a3b350c29fdc0d2dde1d5e95",
+    "457d474828191a0f2761d9e0a6d9bce6282d829f",
+    "2a5b195e2f63bee91af604795103f9584e33a7d4",
+    "afc7506377d813308482a9e82b40a0da0826fd09"
+  ],
+  "mailbox_sha256": "17b3f430a5b7451b7913292a0601e414f384e35ff34d1f956426bf5e3f1c856d",
+  "selector_log_sha256": "aab3c6f0619963141c4a3a36e32259d0e115dddb2c2484bd17682d02fcba4d46",
+  "selector_argv": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "tests/release/test_package_mailbox.py",
+    "tests/modules/test_c35_sweep_s41.py",
+    "tests/modules/test_c34_site_s32.py",
+    "tests/troop/test_s3_1_prototyper.py",
+    "tests/modules/test_c32_dossier_timeline_s27.py",
+    "tests/modules/test_m06_multi_account_u07.py",
+    "tests/modules/test_m19_trend_counts_u03.py",
+    "tests/modules/test_m19_trend_pipeline_u03.py",
+    "tests/modules/test_m19_trend_pipeline_u03_pins.py",
+    "tests/modules/test_m19_u03_j1_adapter.py",
+    "tests/modules/test_m20_sentencing_grid1260.py",
+    "tests/modules/test_m23_s4_7_abroad_fullride.py",
+    "tests/modules/test_m23_polymath_roadmap.py",
+    "tests/modules/test_m02_site_application_planner.py",
+    "tests/modules/test_m20_trunk698_dag.py",
+    "tests/modules/test_m01_high_school_competitions_u37.py",
+    "-q"
+  ],
+  "selector_environment": {
+    "PYTHONPATH": "backend",
+    "ATLAS_DEV_NO_AUTH": "1",
+    "ATLAS_ENV": "development"
+  },
+  "python_version": "Python 3.12.14",
+  "test_result": "PASS",
+  "returncode": 0,
+  "timeout_seconds": 75,
+  "git_am_tree_verified": true,
+  "identity": {
+    "author": [
+      "Instinct",
+      "agent@instinct.com"
+    ],
+    "committer": [
+      "Instinct",
+      "agent@instinct.com"
+    ]
+  },
+  "untested": [
+    "historical mutation batteries not rerun",
+    "repository-wide regression",
+    "live integrations and provider effects",
+    "timeout descendants: trusted local test process only, no process-group isolation"
+  ],
+  "provenance": "Historical local execution only, not a fresh current-tree result; portable executable token substituted."
+}

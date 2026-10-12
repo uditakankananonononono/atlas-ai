@@ -30,6 +30,8 @@ def test_exact_hash_and_span_bind_each_source_without_resolving_conflict():
     pages=[{'url':'https://example.org/a','text':'Ingredients: Water. Founded by Ada in 2020.'},
            {'url':'https://example.org/b','text':'Ingredients: Salt. Founded by Ben in 2021.'}]
     result=analyze_product_evidence('Example',pages)
+    assert len(result['ingredients'])==2 and len(result['founders'])==2
+    assert {c['field'] for c in result['conflicts']}=={'founder','founding_year','ingredient_list'}
     for group in ('ingredients','founders'):
         for record in result[group]:
             page=next(p for p in pages if p['url']==record['url'])

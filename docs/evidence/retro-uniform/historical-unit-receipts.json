@@ -1,0 +1,655 @@
+[
+  {
+    "directory": "retro-helper-package",
+    "summary": "7 passed in 0.62s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "d8918a7a80a0cc1342c7b4d010f7f212be759fc4",
+      "base_tree": "da7aac127661c5bdf0c82ec6ba3c1483ed1b22f8",
+      "result_commit": "adf231eaf7a9ca418eaa4c40555702a56a31a64e",
+      "result_tree": "e9b4dd48c13acbbd39c17f6738e126c6c5a3b001",
+      "commits": [
+        "adf231eaf7a9ca418eaa4c40555702a56a31a64e"
+      ],
+      "mailbox_sha256": "9870881ca17623c3892f84d15fd1811015ec558c00fde0cb8797a403d2bfc643",
+      "selector_log_sha256": "5aca16efb287fb5b13d535f45123318879a523ba8807605bb8e3c3006ce4db0b",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/release/test_package_mailbox.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 120,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-s4-1",
+    "summary": "38 passed in 0.98s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "adf231eaf7a9ca418eaa4c40555702a56a31a64e",
+      "base_tree": "e9b4dd48c13acbbd39c17f6738e126c6c5a3b001",
+      "result_commit": "783aadfdbc4046573e0dbe367a43370718737bec",
+      "result_tree": "33ef18ad92a307ddd8f45a9725ddd795c38e257c",
+      "commits": [
+        "783aadfdbc4046573e0dbe367a43370718737bec"
+      ],
+      "mailbox_sha256": "962ce1f4905b2067384cdf20449999b8e12a64920c850a9cab5b9ed1bad9c0ee",
+      "selector_log_sha256": "84c0b64f12c5617ac88027bc5792f1f0d3fe1d412047d72b2276331025033fd2",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_c35_sweep_s41.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-s3-2",
+    "summary": "42 passed in 0.23s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "783aadfdbc4046573e0dbe367a43370718737bec",
+      "base_tree": "33ef18ad92a307ddd8f45a9725ddd795c38e257c",
+      "result_commit": "568d664bb6c12d904edeb14503fc5bb55a25aad7",
+      "result_tree": "b4df6b6c48ced36c96009c6ccaa37e9541baf33c",
+      "commits": [
+        "568d664bb6c12d904edeb14503fc5bb55a25aad7"
+      ],
+      "mailbox_sha256": "d0362df6e0493f20c259a22c6fa7ff2c88c16e23d40b51702f2ff94edd576ec2",
+      "selector_log_sha256": "c01e3cbf960774839230ac27cfd50d710e70db63e96ce60447a273601d653032",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_c34_site_s32.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-s3-1",
+    "summary": "99 passed in 0.15s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "568d664bb6c12d904edeb14503fc5bb55a25aad7",
+      "base_tree": "b4df6b6c48ced36c96009c6ccaa37e9541baf33c",
+      "result_commit": "51435a9ab52c4c2a89147acdfa2d8ea2c9e4a73a",
+      "result_tree": "d15d4672a07272a3a5f36b1486feb2e4249301d0",
+      "commits": [
+        "51435a9ab52c4c2a89147acdfa2d8ea2c9e4a73a"
+      ],
+      "mailbox_sha256": "3dea2d8be4eb306207a76ad9df626a328848dca73786ce95d895ee3b17413275",
+      "selector_log_sha256": "8517e5279d5251ba9936f7ad0a50a67c59923f7938cb34902092bd5071f31451",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/troop/test_s3_1_prototyper.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-s2-7",
+    "summary": "80 passed in 0.25s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "51435a9ab52c4c2a89147acdfa2d8ea2c9e4a73a",
+      "base_tree": "d15d4672a07272a3a5f36b1486feb2e4249301d0",
+      "result_commit": "ce9707c1c186124de56f81f1b633ccafc1b008ee",
+      "result_tree": "f991bc2dfccd3bec915bc216c23c3f5e316a4308",
+      "commits": [
+        "ce9707c1c186124de56f81f1b633ccafc1b008ee"
+      ],
+      "mailbox_sha256": "abdcf385ce0988610260330e970e466ec5ff19fa18f3475b991b91384a7c8210",
+      "selector_log_sha256": "4414681ee698d2864072d0433be04bf369766a496ecafd889ff24a4d19a396ae",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_c32_dossier_timeline_s27.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-u07",
+    "summary": "57 passed in 0.27s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "ce9707c1c186124de56f81f1b633ccafc1b008ee",
+      "base_tree": "f991bc2dfccd3bec915bc216c23c3f5e316a4308",
+      "result_commit": "228473468d2bb638b63194a3ef287741dcb6af30",
+      "result_tree": "f3cb825d1421cf2ec3dad574a2a2637603322179",
+      "commits": [
+        "228473468d2bb638b63194a3ef287741dcb6af30"
+      ],
+      "mailbox_sha256": "a77cc505750fc4ce47b1a5f5b2330974a801b407bc68e971337fe39bdd79e953",
+      "selector_log_sha256": "080c06f69c40897a3dc0388ece48e0648b63a8483be57047ef32f60ea54ebab9",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_m06_multi_account_u07.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-u03",
+    "summary": "209 passed in 2.39s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "228473468d2bb638b63194a3ef287741dcb6af30",
+      "base_tree": "f3cb825d1421cf2ec3dad574a2a2637603322179",
+      "result_commit": "1a928f59e36cb021e3704a0beb7a18fbdcc2173e",
+      "result_tree": "a160d84e73c63e6f85447f71e93ea77c79a0e0cc",
+      "commits": [
+        "1a928f59e36cb021e3704a0beb7a18fbdcc2173e"
+      ],
+      "mailbox_sha256": "5cba72f1188ee292381fdb1c7a1c6ea9d961f3e2df49a1cec37a77e06c83371b",
+      "selector_log_sha256": "d966616cfc5c07dfbc69564b06929be201627aed152c00d502c785fa94284f6c",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_m19_trend_counts_u03.py",
+        "tests/modules/test_m19_trend_pipeline_u03.py",
+        "tests/modules/test_m19_trend_pipeline_u03_pins.py",
+        "tests/modules/test_m19_u03_j1_adapter.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-sent1260",
+    "summary": "66 passed in 2.80s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "1a928f59e36cb021e3704a0beb7a18fbdcc2173e",
+      "base_tree": "a160d84e73c63e6f85447f71e93ea77c79a0e0cc",
+      "result_commit": "3997fece40120c258fcf6fa3ab58ad76663fcfac",
+      "result_tree": "73bae97907fc3a033d6d1475bc5f35bf12fb80ba",
+      "commits": [
+        "3997fece40120c258fcf6fa3ab58ad76663fcfac"
+      ],
+      "mailbox_sha256": "bcfd2580169a4de06fecb2615bb00b0ef258d035e338bde7888c93808a13beb7",
+      "selector_log_sha256": "3d3b06e904ccbdcc983c6f7fab227d3e0682b390e1589534f43be87caad35cea",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_m20_sentencing_grid1260.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-s4-7",
+    "summary": "48 passed in 0.88s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "3997fece40120c258fcf6fa3ab58ad76663fcfac",
+      "base_tree": "73bae97907fc3a033d6d1475bc5f35bf12fb80ba",
+      "result_commit": "7548501a7a037ee4ccfd442fdda4c59b51fd4db4",
+      "result_tree": "eddc5ff87233442c53d2a03ab8462dcd47ba6571",
+      "commits": [
+        "7548501a7a037ee4ccfd442fdda4c59b51fd4db4"
+      ],
+      "mailbox_sha256": "e578e176e39e2f8a8c068f273339c5de24fcaf85dc06228091c5eca30333a0c8",
+      "selector_log_sha256": "57ced8b2b7a5426c4fa6bc8fa2379f5e50225754e13e5de5f40277fbf87e4b1a",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_m23_s4_7_abroad_fullride.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-u17",
+    "summary": "181 passed in 0.80s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "7548501a7a037ee4ccfd442fdda4c59b51fd4db4",
+      "base_tree": "eddc5ff87233442c53d2a03ab8462dcd47ba6571",
+      "result_commit": "547b22f08ca0f916a3b350c29fdc0d2dde1d5e95",
+      "result_tree": "f3409613a85553c7d1b4d8d182fda4cb53edff12",
+      "commits": [
+        "547b22f08ca0f916a3b350c29fdc0d2dde1d5e95"
+      ],
+      "mailbox_sha256": "99b95ff50a60a25bff16e336a2be33b0a8f6d00660962420bf0b2e91901d5ce1",
+      "selector_log_sha256": "e4032f44c2b3780e9d3781ac8ea3fdd96332362a9e7e05af93eeda4c5eea6605",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_m23_polymath_roadmap.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-app-planner",
+    "summary": "49 passed, 129 subtests passed in 0.21s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "547b22f08ca0f916a3b350c29fdc0d2dde1d5e95",
+      "base_tree": "f3409613a85553c7d1b4d8d182fda4cb53edff12",
+      "result_commit": "457d474828191a0f2761d9e0a6d9bce6282d829f",
+      "result_tree": "3bc0593fffa1403538cde2e952744b96c7ce7d72",
+      "commits": [
+        "457d474828191a0f2761d9e0a6d9bce6282d829f"
+      ],
+      "mailbox_sha256": "9c1905f3f72ca0c4e433a33b0a68b6ae1be63f4b89e447e97d3a6d33d302a0c5",
+      "selector_log_sha256": "249432be56169c66e13dcc74b5527e4832a92574d832665d9b3ab9a8d0ed1cfd",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_m02_site_application_planner.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-trunk698",
+    "summary": "122 passed in 3.97s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "457d474828191a0f2761d9e0a6d9bce6282d829f",
+      "base_tree": "3bc0593fffa1403538cde2e952744b96c7ce7d72",
+      "result_commit": "2a5b195e2f63bee91af604795103f9584e33a7d4",
+      "result_tree": "fd3143557d6e79defae408fd1573164f1ade94f8",
+      "commits": [
+        "2a5b195e2f63bee91af604795103f9584e33a7d4"
+      ],
+      "mailbox_sha256": "da8f28ac36dba2a65bb98b34fb0d8da1696bd00d4f64aba45adf240c59043b36",
+      "selector_log_sha256": "70d3f0e2d712c8a50ec41a4259a24c8686f42ff1bdbc0ae3d53ff21015708958",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_m20_trunk698_dag.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  },
+  {
+    "directory": "retro-unit-u37",
+    "summary": "61 passed in 0.97s",
+    "receipt": {
+      "schema": 1,
+      "base_commit": "2a5b195e2f63bee91af604795103f9584e33a7d4",
+      "base_tree": "fd3143557d6e79defae408fd1573164f1ade94f8",
+      "result_commit": "afc7506377d813308482a9e82b40a0da0826fd09",
+      "result_tree": "b93da4db898eb1da8f64fa8d106b521921a4d3e7",
+      "commits": [
+        "afc7506377d813308482a9e82b40a0da0826fd09"
+      ],
+      "mailbox_sha256": "d4d7e115d1258a78f2a6d01fae505e98b1e472f1aae42317a01ff2a758452c7c",
+      "selector_log_sha256": "2bd45610fc678f2318c5061481ae016cf782e5dc681992d44c0f8c9b5692aac3",
+      "selector_argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "tests/modules/test_m01_high_school_competitions_u37.py",
+        "-q"
+      ],
+      "selector_environment": {
+        "PYTHONPATH": "backend",
+        "ATLAS_DEV_NO_AUTH": "1",
+        "ATLAS_ENV": "development"
+      },
+      "python_version": "Python 3.12.14",
+      "test_result": "PASS",
+      "returncode": 0,
+      "timeout_seconds": 25,
+      "git_am_tree_verified": true,
+      "identity": {
+        "author": [
+          "Instinct",
+          "agent@instinct.com"
+        ],
+        "committer": [
+          "Instinct",
+          "agent@instinct.com"
+        ]
+      },
+      "untested": [
+        "historical mutation batteries not rerun",
+        "repository-wide regression",
+        "live integrations and provider effects",
+        "timeout descendants: trusted local test process only, no process-group isolation"
+      ]
+    }
+  }
+]

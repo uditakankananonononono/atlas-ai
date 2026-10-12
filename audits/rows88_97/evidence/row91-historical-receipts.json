@@ -1,0 +1,323 @@
+[
+  {
+    "row": 91,
+    "spec_sha256": "b639c412bd9eb9bf51ec3021af2d734e618b78135583d78fba3f353de4590f02",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group91_metadata_boundaries.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 1.3257608080002683
+    },
+    "mutations": [
+      {
+        "id": "model_drift",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_model_drift_and_safety_refuse_before_write"
+        ],
+        "seconds": 1.3032780120001917,
+        "log_sha256": "b6ed12947f3a201d269735401250fc0ef7e2a3ae7c9056b15f556039260f121e",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      },
+      {
+        "id": "safety",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_model_drift_and_safety_refuse_before_write"
+        ],
+        "seconds": 1.2815576809998674,
+        "log_sha256": "6d2ad994c4c8f62be779c04a9fa6095d81cc844464d88f90943ee04878773c39",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      },
+      {
+        "id": "png_ai_label",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_fake_pipeline_png_metadata_hash_and_honest_review"
+        ],
+        "seconds": 1.2798423069998535,
+        "log_sha256": "aaf209ab4ffc71d80d2182383eed7ce1acaabbce29c7760021d7f575203b57fa",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      },
+      {
+        "id": "output_hash",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_fake_pipeline_png_metadata_hash_and_honest_review"
+        ],
+        "seconds": 1.3201185409998288,
+        "log_sha256": "99b1f34316c015676e43a2aad187b97d878062e2ece4f1d2058c948e6cba635d",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      },
+      {
+        "id": "realism_scope",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_fake_pipeline_png_metadata_hash_and_honest_review"
+        ],
+        "seconds": 1.2523750290001772,
+        "log_sha256": "3553a0d104ef3371dca52e92b5c81883b9c45c4da089c96cd50016caffad2d6e",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "mock pipeline only, not actual new image inference",
+      "realism fidelity and visual quality untested",
+      "full model safety quality untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 91,
+    "spec_sha256": "b639c412bd9eb9bf51ec3021af2d734e618b78135583d78fba3f353de4590f02",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group91_metadata_boundaries.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 1.2570639389996359
+    },
+    "baseline_log_sha256": "92a008925f96648e3b59dfa05639da80fb0fe814a2b8c5ac4f49c054b800fd07",
+    "mutations": [
+      {
+        "id": "model_drift",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_model_drift_and_safety_refuse_before_write"
+        ],
+        "seconds": 1.2746899730000223,
+        "log_sha256": "bafa5d1345f834483107db6148721fbcda887c0f86c9dc3d2755b2d96d1eef9c",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      },
+      {
+        "id": "safety",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_model_drift_and_safety_refuse_before_write"
+        ],
+        "seconds": 1.2625650360005238,
+        "log_sha256": "e28349cc042ccb110c9d22512465651cd4d65a2d0eeb6f86ed3afaf835e4fbae",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      },
+      {
+        "id": "png_ai_label",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_fake_pipeline_png_metadata_hash_and_honest_review"
+        ],
+        "seconds": 1.2364445370003523,
+        "log_sha256": "e1d04bc52c22670457f8da947df44ea84a01d7233d54fb4f47948c2b422d14a3",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      },
+      {
+        "id": "output_hash",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_fake_pipeline_png_metadata_hash_and_honest_review"
+        ],
+        "seconds": 1.2298835199999303,
+        "log_sha256": "0a3d7ab74ae90d32874f8c62f6604468045adb8a96cec16816a2706a97171cd5",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      },
+      {
+        "id": "realism_scope",
+        "path": "backend/app/modules/c32/product_images.py",
+        "source_sha256_before": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group91_metadata_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group91_metadata_boundaries.py::test_fake_pipeline_png_metadata_hash_and_honest_review"
+        ],
+        "seconds": 1.2666886249999152,
+        "log_sha256": "b74cff0048d11a691ab97161a6a673065e831ac54ea54384ddbae67f3a949ad6",
+        "restored_sha256": "d7825e8bdee9c1b70a3832f0ec3fc59de05142bdc8737c57f76091ad0a2e4504",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "mock pipeline only, not actual new image inference",
+      "realism fidelity and visual quality untested",
+      "full model safety quality untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

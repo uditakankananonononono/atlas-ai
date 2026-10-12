@@ -1,0 +1,327 @@
+[
+  {
+    "row": 93,
+    "spec_sha256": "ad3ec61ed2214230e83c6fabe417803df29b9f28d2b7c5e89b980d4e3ff6db00",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group93_corpus_coverage.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 1.1063696260007418
+    },
+    "mutations": [
+      {
+        "id": "text_hash",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_exact_text_hash_and_invalid_source_url_refusal"
+        ],
+        "seconds": 1.1442405130001134,
+        "log_sha256": "4010fc665b079ff5bd5fffab56bc24f7bd4af10781277830e4136d5dc86a7c45",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      },
+      {
+        "id": "duplicate_id",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_duplicate_ids_and_unlisted_category_refuse"
+        ],
+        "seconds": 1.128118445999462,
+        "log_sha256": "744af34dbd023127058781bc7f3f9e67821e419ff277f7893b77e01bbb39071e",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      },
+      {
+        "id": "url_credentials",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_exact_text_hash_and_invalid_source_url_refusal"
+        ],
+        "seconds": 1.135615850999784,
+        "log_sha256": "c91d04382c6c708f8e021ff8e22b846365d11019a1c521d5527986e9c1708bfe",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      },
+      {
+        "id": "missing_category",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_coverage_keeps_missing_categories_and_exact_provenance"
+        ],
+        "seconds": 1.150535361999573,
+        "log_sha256": "c6c2d43d4fb16fefd86211fd8f5edc36511f62432a153e5d6375d6d05f7d7b95",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      },
+      {
+        "id": "false_completeness",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_coverage_keeps_missing_categories_and_exact_provenance",
+          "tests/modules/test_group93_corpus_coverage.py::test_coverage_does_not_call_supplied_positive_labels_broad_collection"
+        ],
+        "seconds": 1.1587722210006177,
+        "log_sha256": "ddb4ecc3e0dca7f1b9e068f9e455fb913448e29ad591423eb7e85ae52eba3b88",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "caller-supplied records only",
+      "source URL not fetched",
+      "no account/publishing/category completeness",
+      "whole repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 93,
+    "spec_sha256": "ad3ec61ed2214230e83c6fabe417803df29b9f28d2b7c5e89b980d4e3ff6db00",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group93_corpus_coverage.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 1.1575355429995398
+    },
+    "baseline_log_sha256": "ce22630fc7c34a988df630b4a92fb58d299903bc888dd68e961f12bfa2af1024",
+    "mutations": [
+      {
+        "id": "text_hash",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_exact_text_hash_and_invalid_source_url_refusal"
+        ],
+        "seconds": 1.1459830650001095,
+        "log_sha256": "4010fc665b079ff5bd5fffab56bc24f7bd4af10781277830e4136d5dc86a7c45",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      },
+      {
+        "id": "duplicate_id",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_duplicate_ids_and_unlisted_category_refuse"
+        ],
+        "seconds": 1.1334559629995056,
+        "log_sha256": "744af34dbd023127058781bc7f3f9e67821e419ff277f7893b77e01bbb39071e",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      },
+      {
+        "id": "url_credentials",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_exact_text_hash_and_invalid_source_url_refusal"
+        ],
+        "seconds": 1.1399448679994748,
+        "log_sha256": "c91d04382c6c708f8e021ff8e22b846365d11019a1c521d5527986e9c1708bfe",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      },
+      {
+        "id": "missing_category",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_coverage_keeps_missing_categories_and_exact_provenance"
+        ],
+        "seconds": 1.2746811560000424,
+        "log_sha256": "d8815292ac8deef8ead1cb638fe4403f1ec2de6b0f976b2857ea025aee718f7f",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      },
+      {
+        "id": "false_completeness",
+        "path": "backend/app/modules/c33/corpus_coverage.py",
+        "source_sha256_before": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group93_corpus_coverage.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group93_corpus_coverage.py::test_coverage_keeps_missing_categories_and_exact_provenance",
+          "tests/modules/test_group93_corpus_coverage.py::test_coverage_does_not_call_supplied_positive_labels_broad_collection"
+        ],
+        "seconds": 1.1964302110000062,
+        "log_sha256": "efc6022d7e80e687bab2f82c2aa36a94ad6c375cd4673b650119c4931d01aa9a",
+        "restored_sha256": "d84ba6d855af25c03ede91982ff40daa77cb4ba8e911cf11c03a30656be43a58",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "caller-supplied records only",
+      "source URL not fetched",
+      "no account/publishing/category completeness",
+      "whole repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

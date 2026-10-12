@@ -1,0 +1,325 @@
+[
+  {
+    "row": 96,
+    "spec_sha256": "b02819755348beb4ad42fa27d241c41aa3a38c82513846df891d12f7ec5d10a4",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group96_reflow.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 3.8243864140004007
+    },
+    "mutations": [
+      {
+        "id": "future_date",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_future_evidence_and_missing_prerequisite_refuse"
+        ],
+        "seconds": 2.9112890979995427,
+        "log_sha256": "0af7702955d1331ded58133754ad843ec7ed861ee88728800b7b54dc90b27cfd",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      },
+      {
+        "id": "prerequisite",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_future_evidence_and_missing_prerequisite_refuse"
+        ],
+        "seconds": 3.1114925020001465,
+        "log_sha256": "a6e0180d494d4c4a04fc3c2b8f7ce394ba875738c1742d74f2dd42500c6094af",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      },
+      {
+        "id": "pending_filter",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_reflow_completed_hours_do_not_stay_in_pending_schedule",
+          "tests/modules/test_group96_reflow.py::test_formerly_unscheduled_step_reenters_after_completed_prerequisite"
+        ],
+        "seconds": 2.9495676769993224,
+        "log_sha256": "cfc4e815da7e4be6a3bc385f9e8f6af7df57ceb2b2723ed357ccbcb54316f0b8",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      },
+      {
+        "id": "unscheduled_reentry",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_formerly_unscheduled_step_reenters_after_completed_prerequisite"
+        ],
+        "seconds": 2.900728560999596,
+        "log_sha256": "b8d6d858a0fe4872f42be40f8a50f89349f0f3f00e5582ecdaa1782d13ff8804",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      },
+      {
+        "id": "input_detachment",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_reflow_completed_hours_do_not_stay_in_pending_schedule"
+        ],
+        "seconds": 3.028774692999832,
+        "log_sha256": "5183bd232440ca4502e2535976bc1004753c96a5b8a67c3e16bfb50a7cdf8b82",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "supplied completion evidence, artifact truth unverified",
+      "college qualification not established",
+      "whole repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 96,
+    "spec_sha256": "b02819755348beb4ad42fa27d241c41aa3a38c82513846df891d12f7ec5d10a4",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group96_reflow.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 2.91170036099993
+    },
+    "baseline_log_sha256": "322f21757ce0a9b07ce414d38787879ae6705678e46da15e27f809eb8829f0c9",
+    "mutations": [
+      {
+        "id": "future_date",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_future_evidence_and_missing_prerequisite_refuse"
+        ],
+        "seconds": 2.8681528249999246,
+        "log_sha256": "1e9b48c7998e03cb07f15ee1d4278efc556f5b4b42742110c7e0afd771180e79",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      },
+      {
+        "id": "prerequisite",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_future_evidence_and_missing_prerequisite_refuse"
+        ],
+        "seconds": 2.9851057240002774,
+        "log_sha256": "4743243f36eea04f3df237ba21246276a028d17d6173ac471f8117555569cb5b",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      },
+      {
+        "id": "pending_filter",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_reflow_completed_hours_do_not_stay_in_pending_schedule",
+          "tests/modules/test_group96_reflow.py::test_formerly_unscheduled_step_reenters_after_completed_prerequisite"
+        ],
+        "seconds": 2.9214079319999655,
+        "log_sha256": "8104ee764e16b084e1d3e550ebd477d2c9c84726feae9ec5fc4d7b99e1117fcd",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      },
+      {
+        "id": "unscheduled_reentry",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_formerly_unscheduled_step_reenters_after_completed_prerequisite"
+        ],
+        "seconds": 2.8976519879997795,
+        "log_sha256": "f8e422b38051e3c6195493d8b1d3aa3a896e747fa44ef85d564fa29e24c40b55",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      },
+      {
+        "id": "input_detachment",
+        "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+        "source_sha256_before": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group96_reflow.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group96_reflow.py::test_reflow_completed_hours_do_not_stay_in_pending_schedule"
+        ],
+        "seconds": 2.9095643300006486,
+        "log_sha256": "e0aa1dbccdbc799b725cc9727c97d95a92cfa8b17ed17a606ccb3d5a0640da5b",
+        "restored_sha256": "7e916c8f957698251afe6b679d054b226e9b0b74e6cc3c0ad3379c32973daa85",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "supplied completion evidence, artifact truth unverified",
+      "college qualification not established",
+      "whole repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

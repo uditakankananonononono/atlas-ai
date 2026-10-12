@@ -1,0 +1,487 @@
+[
+  {
+    "row": 97,
+    "spec_sha256": "5385d17a1d5c67ce9a464397429cfac2a52aed58110fbc1475d91381bbf36540",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/apply/test_pitch_execution.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 2.855652358000043
+    },
+    "mutations": [
+      {
+        "id": "descriptor_id",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_exact_hash_changes_with_descriptor_and_preserves_input"
+        ],
+        "seconds": 2.9717030850006267,
+        "log_sha256": "7d39dffd5dc1bff238eff051fef0d3c02d92f37394c84911abb674aca0ebadf6",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "wire_hash",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_exact_hash_changes_with_descriptor_and_preserves_input"
+        ],
+        "seconds": 2.8390141459994993,
+        "log_sha256": "d0cf9c48729c02fb5173c0823499f2745147889162e56a9ca8a624c103904f22",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "subject",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_gmail_transport_checks_profile_and_posts_real_mime",
+          "tests/apply/test_pitch_execution.py::test_wire_preview_has_deterministic_reconciliation_id_and_no_send"
+        ],
+        "seconds": 2.8454269760004536,
+        "log_sha256": "d49aff2fdce49822fbe3d886916031031e156fd286a783db29824e39b956d741",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "preview_scope",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_preview_has_deterministic_reconciliation_id_and_no_send"
+        ],
+        "seconds": 2.882768775000841,
+        "log_sha256": "8912f723dc5be3487f3a5fff962f6c8eca63b69d5acb552773033d07ce4b1a3f",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "attachment_refusal",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 0,
+        "status": "SURVIVED",
+        "failed_tests": [],
+        "seconds": 2.84976553100023,
+        "log_sha256": "e5f588d41999d2ba2cb3c86e95cbdb7f9671de9942972af07cf0d1e8e44fd788",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "preview is not send authority or provider delivery",
+      "live send and reconciliation untested",
+      "no manuscript attachments",
+      "whole repository untested"
+    ],
+    "all_caught": false,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 97,
+    "spec_sha256": "5385d17a1d5c67ce9a464397429cfac2a52aed58110fbc1475d91381bbf36540",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/apply/test_pitch_execution.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 2.835538985000312
+    },
+    "mutations": [
+      {
+        "id": "descriptor_id",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_exact_hash_changes_with_descriptor_and_preserves_input"
+        ],
+        "seconds": 2.897944031999941,
+        "log_sha256": "ef879c4f0a920fb4401d543aa3969c7d1b7e512ee0b981cf3f9e60fe3d06d92d",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "wire_hash",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_exact_hash_changes_with_descriptor_and_preserves_input"
+        ],
+        "seconds": 2.9303829209993637,
+        "log_sha256": "7488b213152ea2b967d3235d0e22dba13af2bed04bc41de9877fad9256424e49",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "subject",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_gmail_transport_checks_profile_and_posts_real_mime",
+          "tests/apply/test_pitch_execution.py::test_wire_preview_has_deterministic_reconciliation_id_and_no_send"
+        ],
+        "seconds": 2.880422010000075,
+        "log_sha256": "6e508db0b84eccaad7b3725f236ca337f8f9e7afe64e817c72263e6e71d56aab",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "preview_scope",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_preview_has_deterministic_reconciliation_id_and_no_send"
+        ],
+        "seconds": 3.010623869000483,
+        "log_sha256": "f7028387c60cd820566fa21955ff36ee3e304b518539185cb7a09efb438da316",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "attachment_refusal",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_preview_refuses_attachment_descriptor_even_without_transport"
+        ],
+        "seconds": 3.0570132510001713,
+        "log_sha256": "9df53043b3d6ab8a5e07b4c913945d4e8bc8e035989b2916622c2380739eab19",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "preview is not send authority or provider delivery",
+      "live send and reconciliation untested",
+      "no manuscript attachments",
+      "whole repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 97,
+    "spec_sha256": "5385d17a1d5c67ce9a464397429cfac2a52aed58110fbc1475d91381bbf36540",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/apply/test_pitch_execution.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 2.9125495960006447
+    },
+    "baseline_log_sha256": "330648670bdbf49af0633657671ace95d18ec800ce5d04fb4a2d992f97347b9f",
+    "mutations": [
+      {
+        "id": "descriptor_id",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_exact_hash_changes_with_descriptor_and_preserves_input"
+        ],
+        "seconds": 2.8184084679996886,
+        "log_sha256": "095babfbbc656583b1dbc680265974a8af215b239fe4a709c21012d201e27f7c",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "wire_hash",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_exact_hash_changes_with_descriptor_and_preserves_input"
+        ],
+        "seconds": 2.9309865479999644,
+        "log_sha256": "fa343e9d37a07deddf3a876c8a937986d91044018face8df30dad21297917c82",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "subject",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_gmail_transport_checks_profile_and_posts_real_mime",
+          "tests/apply/test_pitch_execution.py::test_wire_preview_has_deterministic_reconciliation_id_and_no_send"
+        ],
+        "seconds": 2.8773064209999575,
+        "log_sha256": "53895023ae4a7ec02bb6748e50f9b18a103a950afb1063373122e3fe582eb283",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "preview_scope",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_preview_has_deterministic_reconciliation_id_and_no_send"
+        ],
+        "seconds": 3.0671447799995804,
+        "log_sha256": "df30af6fe51c8bbb87a332c85941a4e976721a60887082a54ac8fd482899e618",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      },
+      {
+        "id": "attachment_refusal",
+        "path": "backend/app/apply/pitch_execution.py",
+        "source_sha256_before": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/apply/test_pitch_execution.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/apply/test_pitch_execution.py::test_wire_preview_refuses_attachment_descriptor_even_without_transport"
+        ],
+        "seconds": 2.9292575740000757,
+        "log_sha256": "cfcbf8327b00ca8e8871a60971079d7dc427dd7ae7000a2eba6de457ea436b62",
+        "restored_sha256": "2fb9b85303951848d2b6f563850d09ed686e632827edf1a56d7b834062ff478a",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "preview is not send authority or provider delivery",
+      "live send and reconciliation untested",
+      "no manuscript attachments",
+      "whole repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

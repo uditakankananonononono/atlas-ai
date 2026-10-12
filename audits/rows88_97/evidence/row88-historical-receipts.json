@@ -1,0 +1,323 @@
+[
+  {
+    "row": 88,
+    "spec_sha256": "ce4b5e5888c18fead9aef8ce67942a776c3cc761afd1f6236b5493b329797cab",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/troop/test_isolated_python_worker.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 4.062296632999278
+    },
+    "mutations": [
+      {
+        "id": "source_hash",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_actual_receipt_hashes_bind_exact_source_payload_and_output"
+        ],
+        "seconds": 4.205172095000307,
+        "log_sha256": "d5186e5a687bdb69a84253a93e48bf14fdb9f30d0c2485237c9d2b2c7259d757",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      },
+      {
+        "id": "input_hash",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_actual_receipt_hashes_bind_exact_source_payload_and_output"
+        ],
+        "seconds": 3.987755189999916,
+        "log_sha256": "32e9a5f8aa3e85cbda8d249304e73e693a9d3c51cb8531c63f4bfb40c0663cb9",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      },
+      {
+        "id": "receipt_cap",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_capped_receipts_and_detached_reads"
+        ],
+        "seconds": 4.054453190999993,
+        "log_sha256": "9757ff34f50c31106dd8b088e9ae9075522ae426b7fbea1acaeace586eb2b41d",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      },
+      {
+        "id": "detached_receipts",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_capped_receipts_and_detached_reads"
+        ],
+        "seconds": 3.991195876999882,
+        "log_sha256": "da4339fa361573e3483b4da60801497f275985f9ae2456cc6416e68acfeddf18",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      },
+      {
+        "id": "output_hash",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_actual_receipt_hashes_bind_exact_source_payload_and_output"
+        ],
+        "seconds": 4.065268560999357,
+        "log_sha256": "5ee8778e79ba289562fa9be3d584555aaf0414978446e934adbabb921fa12786",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "real namespace mechanics, not named competitor comparison",
+      "durable receipts untested",
+      "full repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 88,
+    "spec_sha256": "ce4b5e5888c18fead9aef8ce67942a776c3cc761afd1f6236b5493b329797cab",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/troop/test_isolated_python_worker.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 4.200062867999804
+    },
+    "baseline_log_sha256": "f8d42294697d4b007c6ffcae799c132d1c46e36540c046a800e973f6b95955ef",
+    "mutations": [
+      {
+        "id": "source_hash",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_actual_receipt_hashes_bind_exact_source_payload_and_output"
+        ],
+        "seconds": 4.008272179999949,
+        "log_sha256": "d3fdd20c5e8a51054c079a77bdcda899feeec4a8715f6e5dfb2dd61c0d30f5cb",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      },
+      {
+        "id": "input_hash",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_actual_receipt_hashes_bind_exact_source_payload_and_output"
+        ],
+        "seconds": 3.9745250019996092,
+        "log_sha256": "35f2e3a910d557e6331a28a697fd52fe583ecd15ad633455dca2b72e4956bc71",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      },
+      {
+        "id": "receipt_cap",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_capped_receipts_and_detached_reads"
+        ],
+        "seconds": 4.049320572999932,
+        "log_sha256": "42834488971d42b1f27bba5f131d244b45965a3e4995537d9641bd54be998861",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      },
+      {
+        "id": "detached_receipts",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_capped_receipts_and_detached_reads"
+        ],
+        "seconds": 4.0824951610002245,
+        "log_sha256": "7be72939114585f7a71ab437115dd35b6b24fdc8444b06c750904ea54bfebef1",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      },
+      {
+        "id": "output_hash",
+        "path": "backend/app/troop/isolated_worker.py",
+        "source_sha256_before": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/troop/test_isolated_python_worker.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/troop/test_isolated_python_worker.py::test_actual_receipt_hashes_bind_exact_source_payload_and_output"
+        ],
+        "seconds": 4.032333846999791,
+        "log_sha256": "d87db309578217f0eb4d0e927e2e1d9c5f2308323a70e115e0628f839dbf1210",
+        "restored_sha256": "6dd7b4aa6e967b5232250ebff08c80fddb09d7da32d8036fffc9c864fad96092",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "real namespace mechanics, not named competitor comparison",
+      "durable receipts untested",
+      "full repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

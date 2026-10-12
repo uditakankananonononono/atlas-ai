@@ -1,0 +1,339 @@
+[
+  {
+    "row": 90,
+    "spec_sha256": "7814f329d4d721ef9133f5adcb17330af3d4fbf9a188a6d414a317c992c02ff7",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group90_product_evidence.py",
+        "tests/release/test_scoped_mutations.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 2.0462172340003235
+    },
+    "mutations": [
+      {
+        "id": "source_hash",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_exact_hash_and_span_bind_each_source_without_resolving_conflict"
+        ],
+        "seconds": 1.1128323889997773,
+        "log_sha256": "9099e6030b4f65b4868136dd01dbaaf04f935d523c980aabc47dae74a9d1e2aa",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      },
+      {
+        "id": "span_start",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_structured_formula_founder_and_affiliate_records_have_exact_provenance",
+          "tests/modules/test_group90_product_evidence.py::test_exact_hash_and_span_bind_each_source_without_resolving_conflict"
+        ],
+        "seconds": 1.2014048399996682,
+        "log_sha256": "572b6ac41b40d566623f74ecc43a6d18bd37631cb3408c06fce4b28eceb63b64",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      },
+      {
+        "id": "conflicts",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_structured_formula_founder_and_affiliate_records_have_exact_provenance"
+        ],
+        "seconds": 1.152979587000118,
+        "log_sha256": "543d1749783ae4ba67f75e5c796cf876ecdf4e49c1573571ac0919b8af120116",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      },
+      {
+        "id": "percentage_bound",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_no_numeric_terms_invented_and_malformed_percentage_refused"
+        ],
+        "seconds": 1.1593850549998024,
+        "log_sha256": "21808e20248e8560e2a62f4d6acbe45837ceab9bf62342182b20ecfdbf7a9761",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      },
+      {
+        "id": "safety_scope",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_structured_formula_founder_and_affiliate_records_have_exact_provenance",
+          "tests/modules/test_group90_product_evidence.py::test_plain_source_instructions_do_not_cause_enrollment_or_product_claims"
+        ],
+        "seconds": 1.1798557459997028,
+        "log_sha256": "60068bbe7aec6b4a9d123706a50e2a27708e6f4111bb04f69ba8bde6f1c082d8",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "supplied-text regex extraction only",
+      "no platform retrieval, chemical safety or business outcomes",
+      "full repository regression untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 90,
+    "spec_sha256": "7814f329d4d721ef9133f5adcb17330af3d4fbf9a188a6d414a317c992c02ff7",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group90_product_evidence.py",
+        "tests/release/test_scoped_mutations.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 1.2399779369998214
+    },
+    "baseline_log_sha256": "3124d6df0c747c9c4523685d93a8d241d5d133598f93c84f9f86185b4a6eb2b7",
+    "mutations": [
+      {
+        "id": "source_hash",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_exact_hash_and_span_bind_each_source_without_resolving_conflict"
+        ],
+        "seconds": 1.265752313000121,
+        "log_sha256": "5e49d16241e1ad2799ebcc45f74eb23edb101524c04539b3ff63a87c14edfb8d",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      },
+      {
+        "id": "span_start",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_structured_formula_founder_and_affiliate_records_have_exact_provenance",
+          "tests/modules/test_group90_product_evidence.py::test_exact_hash_and_span_bind_each_source_without_resolving_conflict"
+        ],
+        "seconds": 1.22807581699999,
+        "log_sha256": "4849dc0a49ba20a34050a6d7d849226fd0234438751c1e273218222aaee61ab5",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      },
+      {
+        "id": "conflicts",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_structured_formula_founder_and_affiliate_records_have_exact_provenance"
+        ],
+        "seconds": 1.1606609889995525,
+        "log_sha256": "3a3ebfaf95389a247509f3b91a39f53fefa9d8286ed5c78d035f0add590f61a8",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      },
+      {
+        "id": "percentage_bound",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_no_numeric_terms_invented_and_malformed_percentage_refused"
+        ],
+        "seconds": 1.1650466589999269,
+        "log_sha256": "9615bebad153c80bcda388f8b605ec2b3ea76ea09509ffbd526344bc1cbbd03e",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      },
+      {
+        "id": "safety_scope",
+        "path": "backend/app/modules/c32/product_evidence.py",
+        "source_sha256_before": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group90_product_evidence.py",
+          "tests/release/test_scoped_mutations.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group90_product_evidence.py::test_structured_formula_founder_and_affiliate_records_have_exact_provenance",
+          "tests/modules/test_group90_product_evidence.py::test_plain_source_instructions_do_not_cause_enrollment_or_product_claims"
+        ],
+        "seconds": 1.2507190260002972,
+        "log_sha256": "03bba4b16ef4580d449497413811b4c52876add2112cbac6beda18f79e8d2772",
+        "restored_sha256": "0d7883f0180c1631c70fc773a48580ca2e26c225ca166141f84650607b0dd196",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "supplied-text regex extraction only",
+      "no platform retrieval, chemical safety or business outcomes",
+      "full repository regression untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

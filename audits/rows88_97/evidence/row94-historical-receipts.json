@@ -1,0 +1,487 @@
+[
+  {
+    "row": 94,
+    "spec_sha256": "736c561c555c04158de46c493b685953792c9542d0b6e7dcf3f9e81cb9c6228a",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group94_isolated_workforce.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 4.908953196000766
+    },
+    "mutations": [
+      {
+        "id": "dependency_order",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_actual_registered_sources_execute_blueprint_in_namespace",
+          "tests/modules/test_group94_isolated_workforce.py::test_hanging_source_fails_and_blocks_downstream"
+        ],
+        "seconds": 5.984609332999753,
+        "log_sha256": "39d034635f80aaf74db2737b331959156571ce8f13582b4a192fde4f9a0707eb",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "returned_receipts",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_actual_registered_sources_execute_blueprint_in_namespace",
+          "tests/modules/test_group94_isolated_workforce.py::test_hanging_source_fails_and_blocks_downstream"
+        ],
+        "seconds": 5.233283171999574,
+        "log_sha256": "41ccfffc1632882de7d5f6ed8936634597b03a46d2b13e1b4b886fac76dd6aa0",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "timeout_forward",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 0,
+        "status": "SURVIVED",
+        "failed_tests": [],
+        "seconds": 8.960887305000142,
+        "log_sha256": "4011631fab6f4eb8cdf71571c7d4756e282247d41a36e79b2b2c3db2524718f3",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "edge_guard",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_unknown_roles_and_missing_sources_refused"
+        ],
+        "seconds": 5.025668240000414,
+        "log_sha256": "8d64a2ad1966a9c945aad2cd1943027f5dcab2b0679f7e8609d0eeadae5d36de",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "source_guard",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_unknown_roles_and_missing_sources_refused"
+        ],
+        "seconds": 5.303112268999939,
+        "log_sha256": "3303f3ea966e6bec95fe07a329e81d2854df5121f29b0e22721aa00eae7181b4",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "actual offline namespace graph, no company/external operations",
+      "scale/thousands of industries untested",
+      "durability and whole repository untested"
+    ],
+    "all_caught": false,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 94,
+    "spec_sha256": "736c561c555c04158de46c493b685953792c9542d0b6e7dcf3f9e81cb9c6228a",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group94_isolated_workforce.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 5.236049817999628
+    },
+    "mutations": [
+      {
+        "id": "dependency_order",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_actual_registered_sources_execute_blueprint_in_namespace",
+          "tests/modules/test_group94_isolated_workforce.py::test_hanging_source_fails_and_blocks_downstream"
+        ],
+        "seconds": 5.58278876499935,
+        "log_sha256": "8817a029ebe4d8ccc8447c3395244b8c2f26be96036a711d4ee9cc94a61623d5",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "returned_receipts",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_actual_registered_sources_execute_blueprint_in_namespace",
+          "tests/modules/test_group94_isolated_workforce.py::test_hanging_source_fails_and_blocks_downstream"
+        ],
+        "seconds": 5.008946955999818,
+        "log_sha256": "2aceb936bf29912e63869998e0236994acc74e4614e250d88d17caaf8434bb92",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "timeout_forward",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_hanging_source_fails_and_blocks_downstream"
+        ],
+        "seconds": 9.058358733000205,
+        "log_sha256": "7e4be705abe38cc4df3d5fafb9422a4d29cd679c8cec9fe874e92f220e9dd7d1",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "edge_guard",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_unknown_roles_and_missing_sources_refused"
+        ],
+        "seconds": 4.964391088000411,
+        "log_sha256": "4d2cdd4a1f7ef4c0c7d2785cc267dfaf6ebb7eeccf7f6818f0a1fbd0f2d7dc22",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "source_guard",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_unknown_roles_and_missing_sources_refused"
+        ],
+        "seconds": 5.0301618170005895,
+        "log_sha256": "efd94c08084ec89953039ca96073653b707aa08d20c7d6e8159758d79e5087cd",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "actual offline namespace graph, no company/external operations",
+      "scale/thousands of industries untested",
+      "durability and whole repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 94,
+    "spec_sha256": "736c561c555c04158de46c493b685953792c9542d0b6e7dcf3f9e81cb9c6228a",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group94_isolated_workforce.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 4.9086727569992945
+    },
+    "baseline_log_sha256": "eaf4a628e50dce42984391813aeb2d488fa7426df26ad20ca1440c5929f4dc8a",
+    "mutations": [
+      {
+        "id": "dependency_order",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_actual_registered_sources_execute_blueprint_in_namespace",
+          "tests/modules/test_group94_isolated_workforce.py::test_hanging_source_fails_and_blocks_downstream"
+        ],
+        "seconds": 4.934752285999821,
+        "log_sha256": "514ca546d2976a82b5bac16afc4f186e5e0008e6fec75b335c91dcf0f66f2186",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "returned_receipts",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_actual_registered_sources_execute_blueprint_in_namespace",
+          "tests/modules/test_group94_isolated_workforce.py::test_hanging_source_fails_and_blocks_downstream"
+        ],
+        "seconds": 5.070257338000374,
+        "log_sha256": "db709f5d668f7f1524ba32e9ea1ffcff06aedec2ab2c4d2b0614c84e69f01156",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "timeout_forward",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_hanging_source_fails_and_blocks_downstream"
+        ],
+        "seconds": 9.376959907999662,
+        "log_sha256": "4e8a410ad1d671e2a2bf9c8e6d5f95dab1690d3d505f8ddcc897d7cd3efdda76",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "edge_guard",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_unknown_roles_and_missing_sources_refused"
+        ],
+        "seconds": 5.841461370000616,
+        "log_sha256": "59b65348a20af58f2dd88e5724a3b358fe99c6a48a8252b1a22f651aa35b1e6d",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      },
+      {
+        "id": "source_guard",
+        "path": "backend/app/modules/c36/workforce.py",
+        "source_sha256_before": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group94_isolated_workforce.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group94_isolated_workforce.py::test_unknown_roles_and_missing_sources_refused"
+        ],
+        "seconds": 5.73055296199982,
+        "log_sha256": "356d1784be5650406138121da5a00162b25656b6b15ef1c6b89b55bc38a97cba",
+        "restored_sha256": "0ed34ca047feebc9a03bdfd5bcb16827b92028b3fe45213ec78f46883cf108b9",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "actual offline namespace graph, no company/external operations",
+      "scale/thousands of industries untested",
+      "durability and whole repository untested"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]

@@ -1,0 +1,323 @@
+[
+  {
+    "row": 89,
+    "spec_sha256": "d61f89de7388ec3796412db540664a1a0d9a9b60ec019dd7a0ea7c1c0679f5f2",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group89_classifier_boundaries.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 13.886280796000392
+    },
+    "mutations": [
+      {
+        "id": "sigmoid",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.271008489999986,
+        "log_sha256": "e2bff2c98b0a83982918e6f208a3b88a102fcc46f70f2295b4973c4bbd9811b7",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      },
+      {
+        "id": "threshold",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.1947418639992975,
+        "log_sha256": "5688e4762b1be2f85aa2399df1ee80836e90bfdf5220ee7f1308a351965c3c60",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      },
+      {
+        "id": "source_hash",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.383266585999991,
+        "log_sha256": "21b5a2c62004aa84e944ed4bb7e6bed3e913db4f6c53ccd4bc007b81eb53f367",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      },
+      {
+        "id": "person_refusal",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.266705105000256,
+        "log_sha256": "d38dfe4612e29d5dae67f5848e8c9ec64dd53cb97596cf3327fbd0a38eea9a1e",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      },
+      {
+        "id": "nonperson",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.056441036999786,
+        "log_sha256": "16611e4bc78fb59f5963036bf62844e00d9d6036aa07362e437e5e02e0b098bb",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "controlled logits only; no new learned quality validation",
+      "psychology/personality/intelligence inference unsupported",
+      "actual pinned model test not run by this selector"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  },
+  {
+    "row": 89,
+    "spec_sha256": "d61f89de7388ec3796412db540664a1a0d9a9b60ec019dd7a0ea7c1c0679f5f2",
+    "baseline": {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_group89_classifier_boundaries.py",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "status": "PASS",
+      "failed_tests": [],
+      "seconds": 4.1221442619998925
+    },
+    "baseline_log_sha256": "0e18a89c487eaf4740d2aaf8627e4222c484f051655e162d849b0a2ccb5bc2fb",
+    "mutations": [
+      {
+        "id": "sigmoid",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.143864085000132,
+        "log_sha256": "d87f12de832d8397a733179f4ad57a2b0a673fa8101627e38fe25c0fd0550be8",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      },
+      {
+        "id": "threshold",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.244947662999948,
+        "log_sha256": "3145301610352c1f917badde07695f9402542c198e37f156b0fe5044386e4a86",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      },
+      {
+        "id": "source_hash",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.2434895849992245,
+        "log_sha256": "f323c172342e7a6f6dc41a7be01313e274ce614e4fc7bfa5c3b08b04b92cc344",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      },
+      {
+        "id": "person_refusal",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.2024906930000725,
+        "log_sha256": "61f61540534325900ac49b4be05045507a9dc874760b0ac35ee3a8cf52f98457",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      },
+      {
+        "id": "nonperson",
+        "path": "backend/app/modules/c32/learned_affect.py",
+        "source_sha256_before": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "--noconftest",
+          "-p",
+          "no:cacheprovider",
+          "tests/modules/test_group89_classifier_boundaries.py",
+          "-q",
+          "-rf"
+        ],
+        "returncode": 1,
+        "status": "CAUGHT",
+        "failed_tests": [
+          "tests/modules/test_group89_classifier_boundaries.py::test_controlled_logits_sigmoid_threshold_and_nonperson_scope"
+        ],
+        "seconds": 4.209902347000025,
+        "log_sha256": "20543f35fb24199c3eced230256fa40cd6d9a2f1bd7c2cd4eb38fa65a3d7973b",
+        "restored_sha256": "baf9966df6366825667c67b9e4ec9b60625b9860261bdab04549532de11e4acc",
+        "restore_verified": true
+      }
+    ],
+    "environment": {
+      "PYTHONPATH": "backend",
+      "ATLAS_DEV_NO_AUTH": "1",
+      "ATLAS_ENV": "development"
+    },
+    "limits": [
+      "controlled logits only; no new learned quality validation",
+      "psychology/personality/intelligence inference unsupported",
+      "actual pinned model test not run by this selector"
+    ],
+    "all_caught": true,
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+  }
+]
