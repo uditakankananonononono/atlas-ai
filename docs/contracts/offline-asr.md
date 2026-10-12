@@ -67,9 +67,50 @@ operator setup still have costs. Verify model distribution/license yourself.
   deterministic-embedder-v1+offline-whisper-v1:<model-hash> profile. Old unavailable
   registries keep their old profile, not auto-upgraded. Different model/profile
   refuses instead of silently restoring with another transcriber. Existing
-  ownership/root/consent/recovery checks remain. CLI/HTTP configuration and old
-  registry migration are not supplied; integrator must explicitly construct the
-  factory. Existing M25 20,000-byte ingress bound is unchanged.
+  ownership/root/consent/recovery checks remain. M25 HTTP configuration is opt-in through the environment below. Old registry
+  migration is not supplied; existing unavailable profiles are never upgraded.
+  Existing M25 20,000-byte ingress bound is unchanged.
+
+## Operator provisioning and opt-in HTTP path
+
+No asset downloader is supplied. The operator installs the optional dependency
+and supplies the local model directory described above. To verify the assets:
+
+```sh
+PYTHONPATH=backend python -m app.ingest.asr_provisioning --model-dir /absolute/models/whisper-small
+```
+
+This command hashes/validates local files and reports `assets_verified`, model
+identity, and explicit false inference/accuracy fields. It does not run inference
+or establish the authenticity, license or architecture of those files. It never
+copies model bytes into the repository or attempts a network download.
+
+For an explicitly known-new M25 tenant only, add `--m25-root /private/knowledge
+--tenant TENANT --owner ACTOR --known-new`. The root must already meet the
+factory's private durable-root rules. The command uses the existing exclusive
+registry/workspace provisioning and binds the local model identity to that
+owner. Omit all four arguments for validation only. Partial provisioning after
+an I/O failure is not automatically repaired or reset; inspect it separately.
+
+Configure the running M25 service with `ATLAS_M25_DURABLE_ROOT`,
+`ATLAS_ASR_ENABLED=1`, `ATLAS_ASR_MODEL_DIR=/absolute/models/whisper-small` and
+optional `ATLAS_ASR_MODEL_SIZE` (default `small`). Any other enable value keeps
+the old unavailable-transcriber factory profile. Enabled with missing/invalid
+assets fails closed with HTTP 503. The factory checks active configuration and
+model identity on access; changes require restart and an appropriate existing
+profile, never silent reinterpretation of persisted data.
+
+The existing mounted authenticated M25 router exposes POST
+`/knowledge-copilot-training/ingest-audio` under its host mount prefix. Supply
+`source` (the existing consent-bearing SourceRegistration), `actor_id`, and
+strict standard `audio_base64`. Decoded bytes must be nonempty and <=20,000;
+the base64 field is capped at 26,668 characters. An unavailable transcriber
+returns 503. Invalid encoding/media/results refuse without partial records.
+The factory pins tenant and authenticated owner, and the pipeline checks payload
+actor and existing source consent. Model availability grants no collection
+permission. Text ingestion and the old audio refusal stay unchanged by default.
+M20 and M17 still require their existing explicit host adapter bindings; no
+shared cross-tenant service is automatically installed.
 
 ## Boundaries and refusals
 
@@ -92,8 +133,9 @@ text refusal is converted to generic inference unavailable at the ASR boundary.
 CI uses a fake model boundary; no weights/audio accuracy claim. Tests exercise
 local-only loader flags, model identity, invalid media before inference, result
 validation, protocol bridges, source-time provenance, factory restart/profile
-mismatch, and legacy integration behavior with repository conftests. Real-model
-inference and rendered output are not tested by this contract. No deployment or
+mismatch, and legacy integration behavior with repository conftests. Provisioning and opt-in M25 HTTP ingress are tested with synthetic assets and
+a fake model boundary, including restart and legacy-profile refusal. Real-model
+inference and accuracy are not tested by this contract. No deployment or
 permission for external effects is implied.
 
 ## Upstream interface references
