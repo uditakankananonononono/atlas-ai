@@ -1,0 +1,44 @@
+{
+  "row": 96,
+  "selectors": [
+    "tests/modules/test_group96_reflow.py"
+  ],
+  "timeout_seconds": 40,
+  "limits": [
+    "supplied completion evidence, artifact truth unverified",
+    "college qualification not established",
+    "whole repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "future_date",
+      "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+      "old": "if day > today:",
+      "new": "if False:"
+    },
+    {
+      "id": "prerequisite",
+      "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+      "old": "if dep not in completed or completed[dep]['completed_at'] > item['completed_at']:",
+      "new": "if False:"
+    },
+    {
+      "id": "pending_filter",
+      "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+      "old": "if step['id'] in completed:",
+      "new": "if False:"
+    },
+    {
+      "id": "unscheduled_reentry",
+      "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+      "old": "if item['id'] not in completed: selected.add(item['id'])",
+      "new": "pass"
+    },
+    {
+      "id": "input_detachment",
+      "path": "backend/app/modules/m23_study_abroad/roadmap_progress.py",
+      "old": "result = deepcopy(roadmap)",
+      "new": "result = roadmap"
+    }
+  ]
+}

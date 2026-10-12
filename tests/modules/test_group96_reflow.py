@@ -29,3 +29,13 @@ def test_formerly_unscheduled_step_reenters_after_completed_prerequisite():
     assert out['schedule']['remaining_hours']==10
     assert out['schedule']['original_total_hours']==30
     assert 'total_hours' not in out['schedule']
+
+def test_future_evidence_and_missing_prerequisite_refuse():
+    import pytest
+    curriculum={'domains':[{'id':'math','name':'Math'}],'steps':[
+        {'id':'a','domain':'math','title':'a','hours':20,'after':[]},
+        {'id':'b','domain':'math','title':'b','hours':10,'after':['a']}]}
+    roadmap={'schedule':{'weekly_hours':10,'horizon_weeks':4,'total_hours':30,'steps':curriculum['steps']}}
+    for evidence in ([{'step_id':'a','completed_at':'2026-10-13','artifact_url':'https://example.org/a'}],
+                     [{'step_id':'b','completed_at':'2026-10-01','artifact_url':'https://example.org/b'}]):
+        with pytest.raises(ValueError):reconcile(roadmap,curriculum,evidence,today=date(2026,10,12),reflow=True)
