@@ -8,6 +8,7 @@ integrations/acceptance.py
 integrations/google_grounding.py
 market/sources.py
 modules/c30/public_http.py
+modules/c31/clicky.py
 modules/instinct_doc/g67_76/feed_ingest.py
 modules/m01_opportunity_discovery/free_source_match.py
 modules/m01_opportunity_discovery/http.py

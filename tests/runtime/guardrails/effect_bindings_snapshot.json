@@ -39,6 +39,10 @@
   "evidence": "public-source read helper with address validation; no write-method call found by static scan (not certified)",
   "status": "EXEMPT-BY-DESIGN"
  },
+ "modules/c31/clicky.py": {
+  "evidence": "write-capable calls found: ['check', 'method:POST', 'submit']; reviewed 2026-10-12: only real effect is one GET to the stats endpoint in execute_stats_request, refused unless live_approved=True AND ATLAS_CLICKY_LIVE_OWNER_APPROVED=1 (default-off guard, not M00 authority); 'check'/'POST'/'submit' hits are policy.check, descriptor method strings and docstring text, no write is made; baselined, not gated, because it is a read with its own default-off guard and no person-facing send",
+  "status": "UNGATED"
+ },
  "modules/instinct_doc/g67_76/feed_ingest.py": {
   "evidence": "feed read with address validation; no write-method call found by static scan (not certified)",
   "status": "EXEMPT-BY-DESIGN"

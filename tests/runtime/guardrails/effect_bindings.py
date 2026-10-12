@@ -59,6 +59,16 @@ EXEMPT_REASONS = (
     ("modules/m24_billing/reconciliation.py", "provider lookup reads (reconciliation evidence)"),
 )
 
+# Reviewed UNGATED modules: the note is appended to the computed evidence. A note never changes the status;
+# it records why the gap is accepted for now. A reviewed module stays UNGATED and counted as ungated.
+REVIEWED_UNGATED = {
+    "modules/c31/clicky.py": (
+        "reviewed 2026-10-12: only real effect is one GET to the stats endpoint in execute_stats_request, refused "
+        "unless live_approved=True AND ATLAS_CLICKY_LIVE_OWNER_APPROVED=1 (default-off guard, not M00 authority); "
+        "'check'/'POST'/'submit' hits are policy.check, descriptor method strings and docstring text, no write is made; "
+        "baselined, not gated, because it is a read with its own default-off guard and no person-facing send"),
+}
+
 
 def _imports(tree):
     for n in ast.walk(tree):
@@ -140,6 +150,8 @@ def classify():
                     evidence = "read-only by static scan but NO named reason: unreviewed"
             else:
                 evidence = f"write-capable calls found: {write_calls}"
+                if rel in REVIEWED_UNGATED:
+                    evidence += "; " + REVIEWED_UNGATED[rel]
         result[rel] = {"status": status, "evidence": evidence, "libs": libs, "write_calls": write_calls}
     return result
 
