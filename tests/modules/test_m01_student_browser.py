@@ -311,3 +311,88 @@ def test_playwright_interceptor_aborts_cross_origin_and_stays_aborted(browser, t
     later = Route('https://bold.org/again')
     run(sessions._guard_scoped_route(('t', 's'), later))
     assert later.events == [('abort', 'blockedbyclient')]
+
+
+def test_stage_obeys_same_session_lock_as_read_open(browser, monkeypatch):
+    sid = start(browser)
+    original = browser._snapshot
+    entered = []
+    async def snapshot(*args):
+        entered.append('stage')
+        return await original(*args)
+    monkeypatch.setattr(browser, '_snapshot', snapshot)
+    async def scenario():
+        lock = browser._locks.setdefault(('t', sid), asyncio.Lock())
+        await lock.acquire()
+        task = asyncio.create_task(browser.stage('t', 'a', sid, {'full_name': 'Student'}, '#send'))
+        await asyncio.sleep(0)
+        assert not entered and not task.done()
+        lock.release()
+        result = await task
+        assert entered == ['stage'] and not result['submitted']
+    run(scenario())
+
+
+def test_singleton_creation_serialized_across_worker_threads(monkeypatch):
+    import concurrent.futures
+    import threading
+    import time
+    from app.modules.m01_opportunity_discovery import student_browser_routes as routes
+    from app.modules.m02_competition_manager import application_routes
+    monkeypatch.setattr(routes, '_browser', None)
+    monkeypatch.setattr(application_routes, 'get_application_flow', lambda: object())
+    monkeypatch.setattr(routes, 'SQLCheckpoints', lambda: object())
+    created = []
+    def build(*args):
+        time.sleep(0.01)
+        value = object(); created.append(value); return value
+    monkeypatch.setattr(routes, 'StudentBrowser', build)
+    barrier = threading.Barrier(8)
+    def get(): barrier.wait(); return routes.get_student_browser()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(lambda _: get(), range(8)))
+    assert len(created) == 1 and all(x is created[0] for x in results)
+
+
+def test_unscoped_playwright_session_refused_before_browser_start(tmp_path, monkeypatch):
+    from app.modules.m13_browser_agent.playwright_adapter import PlaywrightSessions
+    from app.modules.m13_browser_agent.security import NavigationBlocked
+    sessions = PlaywrightSessions(root=str(tmp_path))
+    calls = []
+    async def start(): calls.append('started')
+    monkeypatch.setattr(sessions, 'start', start)
+    with pytest.raises(NavigationBlocked, match='nonempty origin scope'):
+        run(sessions.page('t', 's'))
+    assert not calls and not sessions._sessions
+
+
+def test_closed_session_clears_scope_even_without_browser(tmp_path):
+    from app.modules.m13_browser_agent.playwright_adapter import PlaywrightSessions
+    sessions = PlaywrightSessions(root=str(tmp_path))
+    sessions.set_session_allowed_hosts('t', 's', ('bold.org',))
+    assert run(sessions.close_session('t', 's')) is False
+    assert ('t', 's') not in sessions._origin_scopes
+
+
+def test_default_explicit_hosts_return_scoped_page_never_raw(tmp_path, monkeypatch):
+    from app.modules.m13_browser_agent.playwright_adapter import PlaywrightSessions
+    from app.modules.m13_browser_agent.origin_scope import ScopedPage
+    sessions = PlaywrightSessions(root=str(tmp_path), allowed_hosts={'bold.org'})
+    page = Page()
+    context = SimpleNamespace(pages=[page])
+    state = SimpleNamespace(context=context, persistent=False, aborted=False)
+    sessions._sessions[('t', 's')] = state
+    async def start(): pass
+    monkeypatch.setattr(sessions, 'start', start)
+    result = run(sessions.page('t', 's'))
+    assert isinstance(result, ScopedPage) and result.raw is page
+    assert sessions._origin_scopes[('t', 's')] == frozenset({'bold.org'})
+
+
+def test_closed_live_session_clears_scope_before_context_close(tmp_path):
+    from app.modules.m13_browser_agent.playwright_adapter import PlaywrightSessions
+    sessions = PlaywrightSessions(root=str(tmp_path))
+    sessions.set_session_allowed_hosts('t', 's', ('bold.org',))
+    async def close(): assert ('t', 's') not in sessions._origin_scopes
+    sessions._sessions[('t', 's')] = SimpleNamespace(context=SimpleNamespace(close=close), har_path=None)
+    assert run(sessions.close_session('t', 's'))

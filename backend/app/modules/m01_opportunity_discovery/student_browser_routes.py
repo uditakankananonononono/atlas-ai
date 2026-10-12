@@ -1,4 +1,5 @@
 """Mounted student account browser operations. Final submits remain M02-owned."""
+from threading import Lock
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 from app.auth.context import TenantContext, require_tenant
@@ -8,13 +9,15 @@ from .student_browser import ADAPTERS, SQLCheckpoints, StudentBrowser
 from .student_platforms import PlatformUnavailable
 
 _browser = None
+_browser_lock = Lock()
 
 
 def get_student_browser():
     global _browser
-    if _browser is None:
-        from app.modules.m02_competition_manager.application_routes import get_application_flow
-        _browser = StudentBrowser(get_application_flow(), SQLCheckpoints())
+    with _browser_lock:
+        if _browser is None:
+            from app.modules.m02_competition_manager.application_routes import get_application_flow
+            _browser = StudentBrowser(get_application_flow(), SQLCheckpoints())
     return _browser
 
 

@@ -53,6 +53,7 @@ class PlaywrightSessions:
     async def close(self) -> None:
         async with self._lock:
             sessions, self._sessions = self._sessions, {}
+            self._origin_scopes.clear()
             har_violation: ArtifactContainmentError | None = None
             for (tenant_id, session_id), session in sessions.items():
                 await session.context.close()
@@ -92,6 +93,7 @@ class PlaywrightSessions:
         key = (self._check_id(tenant_id), self._check_id(session_id))
         async with self._lock:
             session = self._sessions.pop(key, None)
+            self._origin_scopes.pop(key, None)
         if session:
             await session.context.close()
             self._verify_har_intact(key[0], key[1], session.har_path)
@@ -127,6 +129,10 @@ class PlaywrightSessions:
 
     async def page(self, tenant_id: str, session_id: str, persistent: bool = False):
         key = (self._check_id(tenant_id), self._check_id(session_id))
+        if key not in self._origin_scopes:
+            if not self.allowed_hosts:
+                raise NavigationBlocked("session creation requires an explicit nonempty origin scope")
+            self._origin_scopes[key] = frozenset(self.allowed_hosts)
         await self.start()
         async with self._lock:
             existing = self._sessions.get(key)
@@ -142,15 +148,10 @@ class PlaywrightSessions:
                 path = self._artifacts.prepare_dir(tenant_id, session_id)
                 har_path = path / "audit.har"
                 context = await self._browser.new_context(record_har_path=str(har_path), service_workers="block")
-                if key in self._origin_scopes:
-                    await context.route("**/*", lambda route: self._guard_scoped_route(key, route))
-                else:
-                    await context.route("**/*", self._guard_route)
+                await context.route("**/*", lambda route: self._guard_scoped_route(key, route))
                 existing = _Session(context=context, persistent=persistent, har_path=har_path)
                 self._sessions[key] = existing
             pages = existing.context.pages
             page = pages[0] if pages else await existing.context.new_page()
-            if key in self._origin_scopes:
-                from .origin_scope import ScopedPage
-                return ScopedPage(page, self._origin_scopes[key], lambda: existing.aborted)
-            return page
+            from .origin_scope import ScopedPage
+            return ScopedPage(page, self._origin_scopes[key], lambda: existing.aborted)

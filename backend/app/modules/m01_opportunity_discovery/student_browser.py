@@ -254,23 +254,25 @@ class StudentBrowser:
             return child.public_view()
 
     async def stage(self, tenant, actor, session, fields, selector):
-        # Origin and block checks precede any write, even if the user navigated manually.
-        _, _, _, _, html = await self._snapshot(tenant, actor, session)
-        soup = BeautifulSoup(html, 'html.parser')
-        try:
-            buttons = soup.select(selector)
-        except Exception as exc:
-            raise ValueError('invalid submit selector') from exc
-        if len(buttons) != 1 or buttons[0].name not in {'button', 'input'}:
-            raise WorkflowStateError('choose exactly one submit control observed on the live page')
-        if buttons[0].name == 'input' and buttons[0].get('type', '').lower() not in {'submit', 'button'}:
-            raise WorkflowStateError('selector is not a submit control')
-        inspection = await self.flow.inspect(tenant, actor, session)
-        unsupported = [d['selector'] for d in inspection['fields'] if d['input_type'] in {'checkbox', 'radio', 'select', 'file'}]
-        if soup.find('select') or soup.find('input', attrs={'type': 'file'}):
-            unsupported.append('select/file input')
-        if unsupported:
-            raise WorkflowStateError('this form needs owner handling for non-text controls: ' + ', '.join(unsupported))
-        result = await self.flow.stage(tenant, actor, session, fields, selector)
-        result['next_step'] = 'Review exact preview, then request individual M02 final-submit approval. No batch approval.'
-        return result
+        lock = self._locks.setdefault((tenant, session), asyncio.Lock())
+        async with lock:
+            # Origin and block checks precede any write, even if the user navigated manually.
+            _, _, _, _, html = await self._snapshot(tenant, actor, session)
+            soup = BeautifulSoup(html, 'html.parser')
+            try:
+                buttons = soup.select(selector)
+            except Exception as exc:
+                raise ValueError('invalid submit selector') from exc
+            if len(buttons) != 1 or buttons[0].name not in {'button', 'input'}:
+                raise WorkflowStateError('choose exactly one submit control observed on the live page')
+            if buttons[0].name == 'input' and buttons[0].get('type', '').lower() not in {'submit', 'button'}:
+                raise WorkflowStateError('selector is not a submit control')
+            inspection = await self.flow.inspect(tenant, actor, session)
+            unsupported = [d['selector'] for d in inspection['fields'] if d['input_type'] in {'checkbox', 'radio', 'select', 'file'}]
+            if soup.find('select') or soup.find('input', attrs={'type': 'file'}):
+                unsupported.append('select/file input')
+            if unsupported:
+                raise WorkflowStateError('this form needs owner handling for non-text controls: ' + ', '.join(unsupported))
+            result = await self.flow.stage(tenant, actor, session, fields, selector)
+            result['next_step'] = 'Review exact preview, then request individual M02 final-submit approval. No batch approval.'
+            return result

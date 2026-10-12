@@ -419,6 +419,15 @@ class ApplicationFlow:
             raise WorkflowStateError(f"resolved selectors are not on the page: {missing}")
         await self.browser.fill(tenant_id, session_id, fillable, approved_fields)
         readback = await self.browser.read_values(tenant_id, session_id, sorted(mapping))
+        mismatches = sorted(selector for selector, value in mapping.items() if readback.get(selector) != value)
+        if mismatches:
+            record.approval_id = ""
+            record.staged_values = {}
+            record.values_digest = ""
+            self._blocked(record, "form readback differs from requested values; staging refused", mismatches)
+            await self._audit(record, ActionType.FILL, {"phase": "readback_mismatch", "selectors": mismatches})
+            raise WorkflowStateError("form readback differs from requested values: " + ", ".join(mismatches))
+        record.approval_id = ""  # Any restaging invalidates the prior submit approval.
         screenshot = await self.browser.screenshot(tenant_id, session_id, mask_selectors=sorted(mapping) + skipped_password)
         record.submit_selector = submit_selector
         record.staged_values = dict(readback)
@@ -528,6 +537,8 @@ class ApplicationFlow:
         """Click the submit selector exactly once, only against an exact approval."""
         record = self._record(tenant_id, session_id)
         self._require_actor(record, actor_id)
+        if not record.approval_id or approval_id != record.approval_id:
+            raise PermissionError("approval is not the session's current exact approval")
         try:
             view = self.approvals.get(approval_id)
         except Exception as error:

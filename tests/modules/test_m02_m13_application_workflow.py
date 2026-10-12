@@ -537,3 +537,49 @@ def test_descriptors_are_grounded_in_page_html():
     assert by_selector["#f-name"].required is True
     assert by_selector["#f-essay"].placeholder == "Your essay"
     assert by_selector["#f-pass"].input_type == "password"
+
+
+def test_readback_mismatch_blocks_stage_and_invalidates_prior_approval(rig, monkeypatch):
+    sid, _ = reach_staged(rig)
+    base = f'/api/v1/competition-manager/applications/sessions/{sid}'
+    approval = rig.client.post(base + '/submit-approval').json()['approval_id']
+    approve(rig, approval)
+    original = rig.flow.browser.read_values
+    async def mismatching(*args):
+        result = await original(*args)
+        result['#f-name'] = 'site changed private value'
+        return result
+    monkeypatch.setattr(rig.flow.browser, 'read_values', mismatching)
+    response = rig.client.post(base + '/stage', json={'fields': {'full name': 'Requested Student'}, 'submit_selector': '#submit-btn'})
+    assert response.status_code == 409 and 'readback differs' in response.text
+    status = rig.client.get(base).json()
+    assert status['status'] == 'blocked' and status['approval_id'] == ''
+    assert rig.client.post(base + '/submit-approval').status_code == 409
+    assert rig.client.post(base + '/submit', json={'approval_id': approval}).status_code == 409
+    assert not rig.page.clicked
+
+
+def test_exact_current_approval_id_required_even_if_old_payload_matches(rig):
+    sid, _ = reach_staged(rig)
+    base = f'/api/v1/competition-manager/applications/sessions/{sid}'
+    old = rig.client.post(base + '/submit-approval').json()['approval_id']
+    approve(rig, old)
+    current = rig.client.post(base + '/submit-approval').json()['approval_id']
+    approve(rig, current)
+    refused = rig.client.post(base + '/submit', json={'approval_id': old})
+    assert refused.status_code == 409 and 'current exact approval' in refused.text
+    assert not rig.page.clicked and old not in rig.audit.consumed
+    assert rig.client.post(base + '/submit', json={'approval_id': current}).status_code == 200
+    assert rig.page.clicked == ['#submit-btn']
+
+
+def test_successful_restage_also_invalidates_old_approval(rig):
+    sid, _ = reach_staged(rig)
+    base = f'/api/v1/competition-manager/applications/sessions/{sid}'
+    old = rig.client.post(base + '/submit-approval').json()['approval_id']
+    approve(rig, old)
+    response = rig.client.post(base + '/stage', json={'fields': {'full name': 'Ada Lovelace'}, 'submit_selector': '#submit-btn'})
+    assert response.status_code == 200
+    assert rig.client.get(base).json()['approval_id'] == ''
+    assert rig.client.post(base + '/submit', json={'approval_id': old}).status_code == 409
+    assert not rig.page.clicked
