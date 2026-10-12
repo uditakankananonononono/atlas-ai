@@ -295,8 +295,11 @@ def execute_stats_request(plan, sitekey, *, timeout=TRANSPORT_TIMEOUT_S, base_ur
     the request URL) is not reachable from __context__/__cause__ or a traceback. `timeout` bounds the
     WHOLE call (connect, headers and body) as seen by the CALLER: the call returns within `timeout`
     (outer future timeout). Residue: urllib cannot cancel the worker, so after a refusal the worker thread may
-    outlive the call, for body reads until its next read1 (deadline check) and for connect/header stalls until the
-    per-operation timeout (`timeout`) trips or the server finishes. It holds no result and nothing waits on it. base_url overrides the
+    outlive the call. For body reads it checks the deadline at its next read1. For connect and header phases only the
+    per-operation socket timeout applies and the worker has no total deadline, so it may keep running until a
+    per-operation timeout trips or the server finishes (a server that sends header bytes just inside each
+    per-operation timeout may keep it running longer than `timeout`). Nothing waits on its result, but pool workers
+    are joined at interpreter exit, so a worker still running then can delay process exit. base_url overrides the
     host only when allow_loopback is True and the host is 127.0.0.1/localhost over http."""
     plan = _validated_plan(plan)
     if not isinstance(sitekey, str) or not re.fullmatch(r"[A-Za-z0-9]{6,64}", sitekey):

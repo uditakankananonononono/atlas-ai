@@ -1,0 +1,170 @@
+BASELINE tests/modules/test_m01_student_platforms.py tests/modules/test_m01_student_platforms_row54.py tests/modules/test_m01_student_platforms_deepening.py -> rc=0 77 passed, 30 skipped in 0.59s
+P47-a ripplematch mode launch_only->html | row 47 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 74 passed, 31 skipped in 0.64s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[ripplematch], tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[ripplematch]
+    old: "StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'launch_only', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+    new: "StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'html', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+P47-b ripplematch url host changed | row 47 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.53s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[ripplematch]
+    old: "StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'launch_only', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+    new: "StudentPlatform('ripplematch', 'RippleMatch', 'https://evil.ripplematch.com/', 'launch_only', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+P47-c ripplematch display name changed | row 47 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.63s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[ripplematch]
+    old: "StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'launch_only', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+    new: "StudentPlatform('ripplematch', 'X', 'https://ripplematch.com/', 'launch_only', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+P47-d ripplematch kind changed | row 47 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.60s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[ripplematch]
+    old: "StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'launch_only', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+    new: "StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'launch_only', 'grant', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+P47-e ripplematch reason removed | row 47 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.56s | failing: tests/modules/test_m01_student_platforms.py::test_twentyseven_named_platforms_are_unique_and_capability_labeled, tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[ripplematch]
+    old: "StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'launch_only', 'job', reason='Account matching and auto-apply require an authorized interactive account flow.'),"
+    new: "StudentPlatform('ripplematch', 'RippleMatch', 'https://ripplematch.com/', 'launch_only', 'job'),"
+P48-a simplify mode launch_only->html | row 48 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 74 passed, 31 skipped in 0.61s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[simplify], tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[simplify]
+    old: "StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'launch_only', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+    new: "StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'html', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+P48-b simplify url host changed | row 48 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.56s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[simplify]
+    old: "StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'launch_only', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+    new: "StudentPlatform('simplify', 'Simplify', 'https://evil.simplify.jobs/copilot', 'launch_only', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+P48-c simplify display name changed | row 48 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.55s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[simplify]
+    old: "StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'launch_only', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+    new: "StudentPlatform('simplify', 'X', 'https://simplify.jobs/copilot', 'launch_only', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+P48-d simplify kind changed | row 48 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.55s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[simplify]
+    old: "StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'launch_only', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+    new: "StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'launch_only', 'grant', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+P48-e simplify reason removed | row 48 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.64s | failing: tests/modules/test_m01_student_platforms.py::test_twentyseven_named_platforms_are_unique_and_capability_labeled, tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[simplify]
+    old: "StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'launch_only', 'job', reason='Copilot is a user-installed Chrome extension; Atlas does not run it or submit forms.'),"
+    new: "StudentPlatform('simplify', 'Simplify', 'https://simplify.jobs/copilot', 'launch_only', 'job'),"
+P49-a raiseme mode launch_only->html | row 49 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 74 passed, 31 skipped in 0.70s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[raiseme], tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[raiseme]
+    old: "StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'launch_only', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),"
+    new: "StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'html', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),"
+P49-b raiseme url host changed | row 49 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.58s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[raiseme]
+    old: "StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'launch_only', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),"
+    new: "StudentPlatform('raiseme', 'RaiseMe', 'https://evil.raiseme.com/', 'launch_only', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),"
+P49-c raiseme display name changed | row 49 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.58s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[raiseme]
+    old: "StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'launch_only', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),"
+    new: "StudentPlatform('raiseme', 'X', 'https://www.raiseme.com/', 'launch_only', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),"
+P49-d raiseme kind changed | row 49 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.55s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[raiseme]
+    old: "StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'launch_only', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),"
+    new: "StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'launch_only', 'job', reason='Micro-scholarship balances and school matching require the student account.'),"
+P49-e raiseme reason removed | row 49 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.59s | failing: tests/modules/test_m01_student_platforms.py::test_twentyseven_named_platforms_are_unique_and_capability_labeled, tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[raiseme]
+    old: "StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'launch_only', 'scholarship', reason='Micro-scholarship balances and school matching require the student account.'),"
+    new: "StudentPlatform('raiseme', 'RaiseMe', 'https://www.raiseme.com/', 'launch_only', 'scholarship'),"
+P50-a bold mode launch_only->html | row 50 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 74 passed, 31 skipped in 0.61s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[bold], tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[bold]
+    old: "StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'launch_only', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+    new: "StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'html', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+P50-b bold url host changed | row 50 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.53s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[bold]
+    old: "StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'launch_only', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+    new: "StudentPlatform('bold', 'Bold.org', 'https://evil.bold.org/scholarships/', 'launch_only', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+P50-c bold display name changed | row 50 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.57s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[bold]
+    old: "StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'launch_only', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+    new: "StudentPlatform('bold', 'X', 'https://bold.org/scholarships/', 'launch_only', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+P50-d bold kind changed | row 50 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.52s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[bold]
+    old: "StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'launch_only', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+    new: "StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'launch_only', 'job', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+P50-e bold reason removed | row 50 | student_platforms.py | CAUGHT | rc=1 | 3 failed, 74 passed, 30 skipped in 0.55s | failing: tests/modules/test_m01_student_platforms.py::test_twentyseven_named_platforms_are_unique_and_capability_labeled, tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[bold], tests/modules/test_m01_student_platforms_deepening.py::test_bold_reason_says_the_rate_limit_challenge_is_not_to_be_evaded
+    old: "StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'launch_only', 'scholarship', reason='The public listing returned a rate-limit challenge; do not evade it.'),"
+    new: "StudentPlatform('bold', 'Bold.org', 'https://bold.org/scholarships/', 'launch_only', 'scholarship'),"
+P52-a devpost mode launch_only->html | row 52 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 74 passed, 31 skipped in 0.64s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[devpost], tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[devpost]
+    old: "StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment"
+    new: "StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'html', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment, so au"
+P52-b devpost url host changed | row 52 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.58s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[devpost]
+    old: "StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment"
+    new: "StudentPlatform('devpost', 'Devpost', 'https://evil.devpost.com/hackathons', 'launch_only', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this enviro"
+P52-c devpost display name changed | row 52 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.59s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[devpost]
+    old: "StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment"
+    new: "StudentPlatform('devpost', 'X', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment, so a"
+P52-d devpost kind changed | row 52 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.57s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[devpost]
+    old: "StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment"
+    new: "StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'job', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment, so a"
+P52-e devpost reason removed | row 52 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.55s | failing: tests/modules/test_m01_student_platforms.py::test_twentyseven_named_platforms_are_unique_and_capability_labeled, tests/modules/test_m01_student_platforms_deepening.py::test_launch_only_rows_return_launch_url_and_no_items_without_any_request[devpost]
+    old: "StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon', reason='Official listing and linked RSS were checked; the RSS returned 403/406 from this environment"
+    new: "StudentPlatform('devpost', 'Devpost', 'https://devpost.com/hackathons', 'launch_only', 'hackathon'),"
+P50-f bold reason drops 'do not evade' | row 50 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.57s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_bold_reason_says_the_rate_limit_challenge_is_not_to_be_evaded
+    old: 'do not evade it.'
+    new: ''
+H51-a fastweb h3 filter removed | row 51 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.55s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_fastweb_keeps_only_h3_listing_links_on_host_with_clean_urls
+    old: "if source.id == 'fastweb' and not a.find_parent('h3'):"
+    new: 'if False:'
+H51-b fastweb path pattern widened | row 51 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.54s | failing: tests/modules/test_m01_student_platforms.py::test_external_redirects_and_non_https_targets_rejected, tests/modules/test_m01_student_platforms_deepening.py::test_fastweb_keeps_only_h3_listing_links_on_host_with_clean_urls
+    old: "r'^/college-scholarships/scholarships/\\d+-'"
+    new: "r'^/'"
+H53-a challengerocket card filter removed | row 53 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.52s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_challengerocket_keeps_only_real_cards_with_real_titles
+    old: "if source.id == 'challengerocket' and not a.find_parent(class_='challenge-card__title'):"
+    new: 'if False:'
+H53-b challengerocket mode html->rss | row 53 | student_platforms.py | CAUGHT | rc=1 | 3 failed, 74 passed, 30 skipped in 0.52s | failing: tests/modules/test_m01_student_platforms.py::test_html_sources_parse_actual_item_paths[challengerocket-/hackathon-future-smart-city-26], tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[challengerocket], tests/modules/test_m01_student_platforms_deepening.py::test_challengerocket_keeps_only_real_cards_with_real_titles
+    old: "'https://challengerocket.com/hackathons-and-challenges.html', 'html'"
+    new: "'https://challengerocket.com/hackathons-and-challenges.html', 'rss'"
+H51-c cross-host links accepted | row 51 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.58s | failing: tests/modules/test_m01_student_platforms.py::test_external_redirects_and_non_https_targets_rejected, tests/modules/test_m01_student_platforms_deepening.py::test_fastweb_keeps_only_h3_listing_links_on_host_with_clean_urls
+    old: 'elif parsed.hostname != urlsplit(source.url).hostname:\n        return None'
+    new: 'elif False:\n        return None'
+H51-d non-https links accepted | row 51 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.53s | failing: tests/modules/test_m01_student_platforms.py::test_external_redirects_and_non_https_targets_rejected, tests/modules/test_m01_student_platforms_deepening.py::test_fastweb_keeps_only_h3_listing_links_on_host_with_clean_urls
+    old: "if parsed.scheme != 'https' or parsed.hostname is None"
+    new: 'if parsed.hostname is None'
+H51-e query and fragment kept | row 51 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.54s | failing: tests/modules/test_m01_student_platforms.py::test_html_sources_parse_actual_item_paths[mlh-https://events.mlh.io/events/14418-hack-coms-2026?utm_source=mlh], tests/modules/test_m01_student_platforms_deepening.py::test_fastweb_keeps_only_h3_listing_links_on_host_with_clean_urls
+    old: "return parsed._replace(query='', fragment='').geturl()"
+    new: 'return parsed.geturl()'
+H53-c short title filter dropped | row 53 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.57s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_fastweb_keeps_only_h3_listing_links_on_host_with_clean_urls, tests/modules/test_m01_student_platforms_deepening.py::test_challengerocket_keeps_only_real_cards_with_real_titles
+    old: 'if len(title) < 5 or title.lower() in'
+    new: 'if title.lower() in'
+H53-d generic 'see details' titles kept | row 53 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.55s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_fastweb_keeps_only_h3_listing_links_on_host_with_clean_urls, tests/modules/test_m01_student_platforms_deepening.py::test_challengerocket_keeps_only_real_cards_with_real_titles
+    old: "{'see details', 'read more', 'apply now'}"
+    new: "{'zzz'}"
+H51-f userinfo allowed in link | row 51 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.58s | failing: tests/modules/test_m01_student_platforms.py::test_external_redirects_and_non_https_targets_rejected, tests/modules/test_m01_student_platforms_deepening.py::test_fastweb_keeps_only_h3_listing_links_on_host_with_clean_urls
+    old: "if parsed.scheme != 'https' or parsed.hostname is None or parsed.username or parsed.password:"
+    new: "if parsed.scheme != 'https' or parsed.hostname is None:"
+D54-a rss item https check removed | row 54 | student_platforms.py | CAUGHT | rc=1 | 11 failed, 66 passed, 30 skipped in 0.60s | failing: tests/modules/test_m01_student_platforms.py::test_rss_parser_ranks_and_rejects_unsafe_links, tests/modules/test_m01_student_platforms_row54.py::test_new_source_parses_and_drops_unsafe_links[opportunitydesk], tests/modules/test_m01_student_platforms_row54.py::test_new_source_parses_and_drops_unsafe_links[fundsforngos]
+    old: "if target.scheme != 'https' or not target.hostname or target.username or target.password:"
+    new: 'if False:'
+D54-b dedupe removed | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.54s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_rss_dedupes_urls_and_applies_the_limit
+    old: "if not url or url in seen or not row['title']:"
+    new: "if not url or not row['title']:"
+D54-c ranking not sorted | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.56s | failing: tests/modules/test_m01_student_platforms.py::test_rss_parser_ranks_and_rejects_unsafe_links
+    old: "items.sort(key=lambda item: item['score'], reverse=True)"
+    new: 'pass'
+D54-d limit not applied | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.59s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_rss_dedupes_urls_and_applies_the_limit
+    old: "'items': items[:limit]}"
+    new: "'items': items}"
+D54-e non-200 accepted | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.57s | failing: tests/modules/test_m01_student_platforms.py::test_block_challenge_and_malformed_payload_are_not_silent_success
+    old: 'if response.status_code != 200:'
+    new: 'if response.status_code >= 500:'
+D54-f rss content-type check removed | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.59s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_rss_refuses_html_content_type_oversize_and_bad_status
+    old: "if source.mode == 'rss' and not ('xml' in ctype or 'rss' in ctype):"
+    new: 'if False:'
+D54-g size cap removed | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.62s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_rss_refuses_html_content_type_oversize_and_bad_status
+    old: 'if len(response.content) > 2_000_000:'
+    new: 'if False:'
+D54-h empty parse not refused | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.55s | failing: tests/modules/test_m01_student_platforms.py::test_block_challenge_and_malformed_payload_are_not_silent_success
+    old: 'if not items:\n            raise PlatformUnavailable'
+    new: 'if False:\n            raise PlatformUnavailable'
+D54-i redirects followed by default client | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.59s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_default_client_does_not_follow_redirects
+    old: 'follow_redirects=False'
+    new: 'follow_redirects=True'
+D54-j launch_only fetches nothing check removed | row 54 | student_platforms.py | CAUGHT | rc=1 | 12 failed, 65 passed, 30 skipped in 0.95s | failing: tests/modules/test_m01_student_platforms.py::test_launch_only_never_calls_network[ripplematch], tests/modules/test_m01_student_platforms.py::test_launch_only_never_calls_network[simplify], tests/modules/test_m01_student_platforms.py::test_launch_only_never_calls_network[raiseme]
+    old: "if source.mode == 'launch_only':"
+    new: 'if False:'
+D54-k limit bound removed | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 1.62s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_input_bounds_and_unknown_platform
+    old: 'if not 1 <= limit <= 100 or len(query) > 200:'
+    new: 'if False:'
+D54-l unknown platform not KeyError | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.60s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_input_bounds_and_unknown_platform
+    old: 'raise KeyError(platform_id)'
+    new: 'return {}'
+D54-m atom entries ignored | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.65s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_atom_entries_are_read
+    old: "for item in root.iter(f'{ns}entry'):"
+    new: 'for item in []:'
+H53-e challengerocket url host changed | row 53 | student_platforms.py | CAUGHT | rc=1 | 2 failed, 75 passed, 30 skipped in 0.68s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_registry_entry_is_pinned_exactly[challengerocket], tests/modules/test_m01_student_platforms_deepening.py::test_challengerocket_keeps_only_real_cards_with_real_titles
+    old: "'https://challengerocket.com/hackathons-and-challenges.html', 'html'"
+    new: "'https://evil.challengerocket.com/hackathons-and-challenges.html', 'html'"
+H53-f challengerocket path pattern widened | row 53 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.64s | failing: tests/modules/test_m01_student_platforms_deepening.py::test_challengerocket_keeps_only_real_cards_with_real_titles
+    old: "r'^/(?:hackathon-|cassini"
+    new: "r'^/(?:|cassini"
+D54-n petersons mode rss->html | row 54 | student_platforms.py | CAUGHT | rc=1 | 6 failed, 71 passed, 30 skipped, 1 warning in 0.74s | failing: tests/modules/test_m01_student_platforms_row54.py::test_new_source_is_rss_https_and_labeled[petersons], tests/modules/test_m01_student_platforms_row54.py::test_new_source_parses_and_drops_unsafe_links[petersons], tests/modules/test_m01_student_platforms_row54.py::test_new_source_parses_its_captured_real_feed_shape[petersons]
+    old: "'https://www.petersons.com/blog/feed/', 'rss'"
+    new: "'https://www.petersons.com/blog/feed/', 'html'"
+D54-o opportunitydesk url host changed | row 54 | student_platforms.py | CAUGHT | rc=1 | 1 failed, 76 passed, 30 skipped in 0.56s | failing: tests/modules/test_m01_student_platforms_row54.py::test_fixture_provenance_is_recorded_and_matches_files
+    old: "'https://opportunitydesk.org/feed/'"
+    new: "'https://evil.opportunitydesk.org/feed/'"
+D54-p nsffunding kind changed | row 54 | student_platforms.py | SURVIVED | rc=0 | 77 passed, 30 skipped in 0.57s | failing: -
+    old: "'https://www.nsf.gov/rss/rss_www_funding_pgm_annc_inf.xml', 'rss', 'grant'"
+    new: "'https://www.nsf.gov/rss/rss_www_funding_pgm_annc_inf.xml', 'rss', 'program'"
+D54-q topuniversities reason removed | row 54 | student_platforms.py | INVALID | rc=2 | 3 errors in 0.49s | failing: -
+    old: "'https://www.topuniversities.com/rss.xml', 'rss', 'program', reason="
+    new: "'https://www.topuniversities.com/rss.xml', 'rss', 'program', _r="
+D54-r registry count assertion dropped | row 54 | student_platforms.py | SURVIVED | rc=0 | 77 passed, 30 skipped in 0.57s | failing: -
+    old: 'assert len(BY_ID) == len(PLATFORMS) == 27'
+    new: 'pass'
+TOTAL mutants=56 CAUGHT=53 SURVIVED=2 INVALID=1 NOT-APPLICABLE=0 | SHA restore True
