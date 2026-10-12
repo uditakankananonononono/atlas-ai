@@ -54,12 +54,17 @@ to the action's exact content.
 Reviewer / verified_by / granted_by labels are caller-supplied
 DECLARATIONS, not authentication. A record carrying `authority_ref` is
 validated through `authority_check` and ledgered as
-`authority_validated=True` only when the hook accepts it. Configuring
-`authority_check` makes the enforcer validated-only for the review and
-account flows: record_decision, grant_preauthorization, issue_permit,
-execute_reviewed and verify_account without a validated authority_ref all
-fail closed (coded ValueError at decision/grant/issuance/verification; a
-ledgered GuardrailRefusal at execution).
+`authority_validated=True` only when the hook accepts it.
+
+TWO MODES, no third path. An enforcer WITHOUT authority_check is in RECORD
+mode: it ledgers declarations and CANNOT execute effects - execute_reviewed
+and call_service refuse unconditionally (ledgered refusals). An enforcer
+WITH authority_check is in GATE mode: record_decision,
+grant_preauthorization, issue_permit, execute_reviewed and verify_account
+without a validated authority_ref all fail closed (coded ValueError at
+decision/grant/issuance/verification; a ledgered GuardrailRefusal at
+execution, effect never run). Record mode is a bookkeeping library, not an
+execution gate.
 
 ## Scope honesty
 

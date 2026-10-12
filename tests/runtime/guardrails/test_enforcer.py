@@ -29,7 +29,8 @@ REPORT = "| Claim | Status |\n|---|---|\n| Gate exists | VERIFIED |\n"
 
 def test_all_gates_fire_through_one_surface():
     e = GuardrailEnforcer(approval_check=lambda ref, digest: ref == "IRB-1",
-                          review_check=lambda a: True)
+                          review_check=lambda a: True,
+                          authority_check=lambda ref, digest: True)
     # 134+135
     assert e.run_bio_work(lambda i: "bio-ran", SILICO, now=T0) == "bio-ran"
     # 136
@@ -39,7 +40,7 @@ def test_all_gates_fire_through_one_surface():
     # 137
     e.open_review(ACTION, review_id="R1", reviewer="udita", now=T0)
     e.record_decision(review_id="R1", decision="approved", reviewer="udita",
-                      rationale="exact draft reviewed", now=T0)
+                      rationale="exact draft reviewed", now=T0, authority_ref="m00-1")
     permit = e.issue_permit(ACTION, review_id="R1", now=T0)
     assert e.execute_reviewed(ACTION, effect=lambda a: "submitted", now=T1,
                               permit_id=permit["permit_id"]) == "submitted"
@@ -48,7 +49,8 @@ def test_all_gates_fire_through_one_surface():
                        channel="ui", now=T0)["verdict"] == "emitted"
     # 139
     e.register_account("github", "uditakankananonononono", registered_by="udita", now=T0)
-    e.verify_account("github", "uditakankananonononono", verified_by="udita", now=T0)
+    e.verify_account("github", "uditakankananonononono", verified_by="udita", now=T0,
+                     authority_ref="m00-1")
     assert e.call_service("c1", "github", "uditakankananonononono",
                           effect=lambda: "api", now=T0) == "api"
     # 140
@@ -144,10 +146,11 @@ def test_persist_sink_write_ahead_and_ambiguous_reconciliation():
     permit must never be silently re-usable."""
     events = []
     e = GuardrailEnforcer(persist=lambda name, led: events.append(
-        (name, len(led), led[-1]["record"].get("kind"))))
+        (name, len(led), led[-1]["record"].get("kind"))),
+                          authority_check=lambda ref, digest: True)
     e.open_review(ACTION, review_id="R1", reviewer="udita", now=T0)
     e.record_decision(review_id="R1", decision="approved", reviewer="udita",
-                      rationale="ok", now=T0)
+                      rationale="ok", now=T0, authority_ref="m00-1")
     permit = e.issue_permit(ACTION, review_id="R1", now=T0)
 
     def flaky(action):

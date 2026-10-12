@@ -63,15 +63,14 @@ class GuardrailEnforcer:
     Hooks (all caller-bound, all fail closed when unset):
     - approval_check: bio gate approval_ref validation.
     - review_check: outbound gate needs_review confirmation.
-    - authority_check: approval-store binding for review decisions,
-      preauthorization grants, permit issuance, reviewed execution and
-      account verifications (e.g. a Module 0 approval id lookup); gates
-      treat actor labels as DECLARATIONS without it. Configuring this hook
-      makes authority validated-only: decisions, grants, permits, reviewed
-      executions and account verifications without a validated authority_ref
-      all fail closed. The hook receives (authority_ref, digest) - the
-      reviewed action's payload hash, or the (service, account) binding
-      digest for account verification.
+    - authority_check: approval-store binding (e.g. a Module 0 approval
+      id lookup). THIS HOOK SELECTS THE MODE. Without it the enforcer is in
+      RECORD mode: ledgers declarations, execute_reviewed and call_service
+      refuse unconditionally. With it (GATE mode) every decision, grant,
+      permit, reviewed execution and account verification requires a
+      validated authority_ref and fails closed without one. The hook
+      receives (authority_ref, digest) - the reviewed/granted action's
+      payload hash, or the (service, account) binding digest.
     - persist: a sink persist(ledger_name, ledger) invoked after EVERY ledger
       mutation, write-ahead: admissions and spends are committed before the
       guarded effect runs. Without a sink the ledgers are in-memory state
@@ -213,7 +212,7 @@ class GuardrailEnforcer:
     def call_service(self, call_id, service, account_identity, *, effect, now):
         return self._capture("accounts", lambda led, commit: owner_account_gate.call(
             led, call_id, service, account_identity, effect=effect, now=now,
-            on_commit=commit))
+            on_commit=commit, authority_check=self.authority_check))
 
     # ---- group 140 --------------------------------------------------------
     def register_dataset(self, project_id, dataset_id, *, name, source_ref="", now):

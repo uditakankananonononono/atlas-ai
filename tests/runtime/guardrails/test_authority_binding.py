@@ -171,7 +171,8 @@ def test_issue_permit_fails_closed_on_unvalidated_decision():
     with pytest.raises(ValueError, match="not authority-validated"):
         review_gate.issue_permit(ledger, ACTION, review_id="R1", now=T0,
                                  authority_check=OK)
-    # without a hook configured the declaration path still issues (documented)
+    # RECORD mode may still ledger the permit as bookkeeping, but it can
+    # never execute (see the record-mode tests below)
     ledger2, permit = review_gate.issue_permit(ledger, ACTION, review_id="R1", now=T0)
     assert permit["permit_id"] == "PERMIT-R1"
 
@@ -185,12 +186,8 @@ def test_execute_refuses_unvalidated_decision_permit():
                             now="2026-10-12T09:00:00Z",
                             permit_id=permit["permit_id"], authority_check=OK)
     assert "decision is not authority-validated" in held.value.details["reasons"]
-    # the effect never ran and the permit was NOT spent by the refusal:
-    # without a hook configured (the documented declaration path) it runs
-    ledger, result = review_gate.execute(ledger, ACTION, effect=lambda a: "ran",
-                                         now="2026-10-12T09:00:00Z",
-                                         permit_id=permit["permit_id"])
-    assert result == "ran"
+    # the effect never ran and the permit was NOT spent by the refusal
+    assert not any(e["record"]["kind"] == "permit_spent" for e in ledger)
 
 
 def test_execute_refuses_unvalidated_preauthorization():
@@ -214,3 +211,72 @@ def test_execute_validated_permit_still_runs():
                                          permit_id=permit["permit_id"],
                                          authority_check=OK)
     assert result == "ran"
+
+
+# ---- 0013: explicit two modes - no third path ------------------------------
+
+def test_record_mode_execute_refuses_unconditionally_with_permit():
+    """Unverified reviewer string, no hook: the effect must NOT
+    execute - record mode refuses before any permit check."""
+    from app.runtime.guardrails.errors import GuardrailRefusal
+    ran = []
+    ledger = _unvalidated_approved_ledger()  # declaration, no hook anywhere
+    ledger, permit = review_gate.issue_permit(ledger, ACTION, review_id="R1", now=T0)
+    with pytest.raises(GuardrailRefusal) as held:
+        review_gate.execute(ledger, ACTION, effect=ran.append,
+                            now="2026-10-12T09:00:00Z", permit_id=permit["permit_id"])
+    assert held.value.code == "REVGATE:authority_hook_required"
+    assert ran == []
+    assert held.value.ledger[-1]["record"]["kind"] == "execution_refused"
+
+
+def test_record_mode_execute_refuses_unconditionally_with_preauth():
+    from app.runtime.guardrails.errors import GuardrailRefusal
+    ran = []
+    ledger = review_gate.grant_preauthorization([], ACTION, preauth_id="PA1",
+                                                granted_by="udita", now=T0,
+                                                valid_hours=48, scope_note="grant")
+    with pytest.raises(GuardrailRefusal) as held:
+        review_gate.execute(ledger, ACTION, effect=ran.append,
+                            now="2026-10-12T09:00:00Z")
+    assert held.value.code == "REVGATE:authority_hook_required"
+    assert ran == []
+
+
+def test_record_mode_account_call_refuses_unconditionally():
+    from app.runtime.guardrails.errors import GuardrailRefusal
+    ran = []
+    ledger = owner_account_gate.register_binding([], "github", "owner",
+                                                 registered_by="u", now=T0)
+    ledger = owner_account_gate.verify_binding(ledger, "github", "owner",
+                                               verified_by="u", now=T0)  # declaration
+    with pytest.raises(GuardrailRefusal) as held:
+        owner_account_gate.call(ledger, "c1", "github", "owner",
+                                effect=lambda: ran.append(1), now=T0)
+    assert held.value.code == "ACCTGATE:refused:authority_hook_required"
+    assert ran == []
+    assert held.value.ledger[-1]["record"]["verdict"] == "refused:authority_hook_required"
+
+
+def test_gate_mode_account_call_refuses_unvalidated_verification():
+    from app.runtime.guardrails.errors import GuardrailRefusal
+    ledger = owner_account_gate.register_binding([], "github", "owner",
+                                                 registered_by="u", now=T0)
+    ledger = owner_account_gate.verify_binding(ledger, "github", "owner",
+                                               verified_by="u", now=T0)  # declaration
+    with pytest.raises(GuardrailRefusal) as held:
+        owner_account_gate.call(ledger, "c1", "github", "owner",
+                                effect=lambda: 1, now=T0, authority_check=OK)
+    assert held.value.code == "ACCTGATE:refused:authority_unvalidated"
+
+
+def test_gate_mode_account_call_runs_with_validated_verification():
+    ledger = owner_account_gate.register_binding([], "github", "owner",
+                                                 registered_by="u", now=T0)
+    ledger = owner_account_gate.verify_binding(ledger, "github", "owner",
+                                               verified_by="u", now=T0,
+                                               authority_ref="m00-7", authority_check=OK)
+    ledger, result = owner_account_gate.call(ledger, "c1", "github", "owner",
+                                             effect=lambda: "ok", now=T0,
+                                             authority_check=OK)
+    assert result == "ok"

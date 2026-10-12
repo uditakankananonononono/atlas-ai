@@ -26,9 +26,10 @@ _fail = make_fail(PREFIX)
 MAX_SERVICE = 64
 MAX_IDENTITY = 256
 MAX_REF = 256
-VERDICTS = ("admitted", "refused:unregistered", "refused:registered", "refused:revoked")
+VERDICTS = ("admitted", "refused:unregistered", "refused:registered", "refused:revoked",
+            "refused:authority_hook_required", "refused:authority_unvalidated")
 LIMITS = (
-    "Verification is caller-attested: the gate enforces that only bindings marked verified by a recorded verifier are usable; it cannot authenticate the account.",
+    "TWO MODES, no third path. RECORD mode (no authority_check) ledgers declarations and CANNOT place calls: call() refuses unconditionally. GATE mode (authority_check configured) places calls only under a binding whose latest verification carries a validated authority_ref; a verified_by label alone is a declaration and never admits.",
     "The gate binds (service, account_identity) pairs only; permissions inside the account are out of scope.",
     "The ledger is tamper-evident, not tamper-proof; safe storage of the serialized ledger is the caller's job.",
 )
@@ -108,6 +109,20 @@ def dumps(ledger):
 
 def loads(text_):
     return _ledger.loads(text_, validate_content=_validate_content)
+
+
+def _validated(ledger, service, account_identity):
+    """Whether the latest verification of the pair was authority-validated."""
+    validated = False
+    for entry in ledger:
+        record = entry["record"]
+        if record.get("service") != service or record.get("account_identity") != account_identity:
+            continue
+        if record["kind"] == "binding_verified":
+            validated = bool(record.get("authority_validated"))
+        elif record["kind"] == "binding_revoked":
+            validated = False
+    return validated
 
 
 def _state(ledger, service, account_identity):
@@ -192,12 +207,19 @@ def revoke_binding(ledger, service, account_identity, *, revoked_by, rationale, 
     return _ledger.append(ledger, record)
 
 
-def call(ledger, call_id, service, account_identity, *, effect, now, on_commit=None):
+def call(ledger, call_id, service, account_identity, *, effect, now, on_commit=None,
+         authority_check=None):
     """The enforcement point: run effect() only under a verified binding.
+
+    TWO MODES, no third path. RECORD mode (authority_check=None) ledgers
+    declarations and CANNOT place calls: call() refuses unconditionally.
+    GATE mode (authority_check configured) requires the binding's latest
+    verification to be authority-validated (a verified_by label alone is a
+    declaration and never admits).
 
     Returns (ledger, effect result). Raises GuardrailRefusal - and ledgers the
     refused call - when the (service, account_identity) pair is unregistered,
-    registered-but-unverified, or revoked.
+    registered-but-unverified, revoked, unvalidated, or the hook is absent.
     """
     if not callable(effect):
         _fail("bad_type:effect")
@@ -209,7 +231,14 @@ def call(ledger, call_id, service, account_identity, *, effect, now, on_commit=N
     account_identity = text(account_identity, "account_identity", fail=_fail, max_len=MAX_IDENTITY)
     at = iso(instant(now, "now", fail=_fail))
     state = _state(ledger, service, account_identity)
-    verdict = "admitted" if state == "verified" else f"refused:{state or 'unregistered'}"
+    if authority_check is None:
+        verdict = "refused:authority_hook_required"  # RECORD mode never places calls
+    elif state != "verified":
+        verdict = f"refused:{state or 'unregistered'}"
+    elif not _validated(ledger, service, account_identity):
+        verdict = "refused:authority_unvalidated"
+    else:
+        verdict = "admitted"
     record = {"kind": "service_call", "call_id": call_id, "service": service,
               "account_identity": account_identity, "at": at, "verdict": verdict, "failure": None}
     ledger = _ledger.append(ledger, record)
@@ -218,7 +247,7 @@ def call(ledger, call_id, service, account_identity, *, effect, now, on_commit=N
     if verdict != "admitted":
         raise GuardrailRefusal(
             f"{PREFIX}:{verdict}",
-            f"call {call_id!r} to {service!r} as {account_identity!r} refused: binding is {state or 'unregistered'}",
+            f"call {call_id!r} to {service!r} as {account_identity!r} refused: {verdict.removeprefix('refused:')}",
             details={"call_id": call_id, "service": service,
                      "account_identity": account_identity, "binding_state": state or "unregistered"},
             ledger=ledger)

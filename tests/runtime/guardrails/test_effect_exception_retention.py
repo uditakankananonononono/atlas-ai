@@ -21,6 +21,8 @@ DECL = {
 }
 ACTION = {"action_id": "sub-1", "category": "submission",
           "summary": "submit the reviewed form", "payload": {"form": "v1"}}
+OK = lambda ref, digest: True  # noqa: E731 - gate-mode hook
+AUTH = {"authority_ref": "m00-1", "authority_check": OK}
 
 
 def boom(_):
@@ -61,8 +63,9 @@ def test_outbound_effect_exception_keeps_admission_and_rate_budget():
 def _approved_ledger():
     ledger = review_gate.open_review([], ACTION, review_id="R1", reviewer="udita", now=T0)
     ledger = review_gate.record_decision(ledger, review_id="R1", decision="approved",
-                                         reviewer="udita", rationale="ok", now=T0)
-    return review_gate.issue_permit(ledger, ACTION, review_id="R1", now=T0)
+                                         reviewer="udita", rationale="ok", now=T0, **AUTH)
+    return review_gate.issue_permit(ledger, ACTION, review_id="R1", now=T0,
+                                    authority_check=OK)
 
 
 def test_permit_stays_spent_when_effect_raises():
@@ -70,25 +73,27 @@ def test_permit_stays_spent_when_effect_raises():
     commits = []
     with pytest.raises(RuntimeError) as held:
         review_gate.execute(ledger, ACTION, effect=boom, now="2026-10-12T09:00:00Z",
-                            permit_id=permit["permit_id"], on_commit=commits.append)
+                            permit_id=permit["permit_id"], on_commit=commits.append,
+                            authority_check=OK)
     # write-ahead: spend committed BEFORE the effect ran
     assert commits[0][-1]["record"]["kind"] == "permit_spent"
     retained = take_ledger(held.value)
     # the permit is NOT silently re-usable after the ambiguous outcome
     with pytest.raises(GuardrailRefusal) as held2:
         review_gate.execute(retained, ACTION, effect=lambda a: "replay",
-                            now="2026-10-12T09:01:00Z", permit_id=permit["permit_id"])
+                            now="2026-10-12T09:01:00Z", permit_id=permit["permit_id"],
+                            authority_check=OK)
     assert "permit already spent" in held2.value.details["reasons"]
 
 
 def test_preauthorization_use_kept_when_effect_raises():
     ledger = review_gate.grant_preauthorization([], ACTION, preauth_id="PA1",
                                                 granted_by="udita", now=T0,
-                                                valid_hours=48, scope_note="grant")
+                                                valid_hours=48, scope_note="grant", **AUTH)
     commits = []
     with pytest.raises(RuntimeError) as held:
         review_gate.execute(ledger, ACTION, effect=boom, now="2026-10-12T09:00:00Z",
-                            on_commit=commits.append)
+                            on_commit=commits.append, authority_check=OK)
     assert commits[0][-1]["record"]["kind"] == "preauthorization_used"
     retained = take_ledger(held.value)
     review_gate.check_ledger(retained)
@@ -99,7 +104,7 @@ def test_account_call_failure_record_committed_and_carried():
     ledger = owner_account_gate.register_binding([], "github", "owner",
                                                  registered_by="u", now=T0)
     ledger = owner_account_gate.verify_binding(ledger, "github", "owner",
-                                               verified_by="u", now=T0)
+                                               verified_by="u", now=T0, **AUTH)
     commits = []
 
     def boom0():
@@ -107,7 +112,7 @@ def test_account_call_failure_record_committed_and_carried():
 
     with pytest.raises(ConnectionError) as held:
         owner_account_gate.call(ledger, "c1", "github", "owner", effect=boom0,
-                                now=T0, on_commit=commits.append)
+                                now=T0, on_commit=commits.append, authority_check=OK)
     assert commits[0][-1]["record"]["verdict"] == "admitted"
     assert commits[1][-1]["record"]["failure"] == "ConnectionError"
     retained = take_ledger(held.value)

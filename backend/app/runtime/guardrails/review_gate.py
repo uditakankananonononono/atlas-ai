@@ -45,10 +45,11 @@ _PREAUTH_KEYS = {"kind", "preauth_id", "category", "payload_sha256", "granted_by
 _REVOKE_KEYS = {"kind", "preauth_id", "revoked_by", "revoked_at", "rationale"}
 _PREAUTH_USE_KEYS = {"kind", "preauth_id", "used_at", "action_id"}
 _REFUSAL_KEYS = {"kind", "action_id", "at", "reason_code", "permit_id"}
-REFUSAL_REASONS = ("review_required", "unknown_permit", "permit_invalid")
+REFUSAL_REASONS = ("review_required", "unknown_permit", "permit_invalid",
+                  "authority_hook_required")
 
 LIMITS = (
-    "Reviewer and grantor identities are caller-supplied DECLARATIONS, not authentication. When an authority_check hook is supplied, record_decision, grant_preauthorization, issue_permit and execute ALL fail closed without a validated authority_ref; the hook receives (authority_ref, payload_sha256) and must accept with a strict True or a verified-permit object. With no hook, records without authority_ref remain unvalidated declarations.",
+    "TWO MODES, no third path. RECORD mode (no authority_check) ledgers declarations and CANNOT execute effects: execute() refuses unconditionally. GATE mode (authority_check configured) requires validated authority everywhere: record_decision and grant_preauthorization need authority_ref, issue_permit needs a validated decision, and execute() runs only under a validated decision or grant; the hook receives (authority_ref, payload_sha256) and accepts only with a strict True or a verified-permit object. Reviewer and grantor labels stay DECLARATIONS even when validated - the hook output is the authentication evidence, not the label.",
     "Records live in memory until the caller persists them (on_commit write-ahead or dumps); the gate itself holds no durable store.",
     "A permit or preauthorization covers exactly one category + payload hash; it authorizes nothing outside execute() and no external system is notified.",
     "Preauthorization scope is exact-hash only: a changed payload needs a new grant; there are no wildcard scopes.",
@@ -433,6 +434,12 @@ def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None,
     submission or account action only under a valid permit or a live
     preauthorization.
 
+    TWO MODES, no third path. RECORD mode (authority_check=None) ledgers
+    declarations and CANNOT execute effects: execute() refuses
+    unconditionally. GATE mode (authority_check configured) executes only
+    under a permit whose decision, or a preauthorization, carries a
+    validated authority_ref bound to the action's payload hash.
+
     With permit_id: the permit must exist, be unspent, hash-exact for the
     presented action, issued after approval, and inside the review validity
     window; it is then spent on the chain before the effect runs (single-use).
@@ -448,6 +455,7 @@ def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None,
     check_ledger(ledger)
     checked = _check_action(action)
     at = instant(now, "now", fail=_fail)
+    record_mode = authority_check is None
 
     def refuse(reason_code, message, details, permit_ref=None):
         refused = _ledger.append(ledger, {"kind": "execution_refused",
@@ -456,6 +464,12 @@ def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None,
         if on_commit is not None:
             on_commit(refused)
         raise GuardrailRefusal(f"{PREFIX}:{reason_code}", message, details=details, ledger=refused)
+
+    if record_mode:
+        refuse("authority_hook_required",
+               "RECORD mode ledgers declarations and cannot execute effects; "
+               "configure authority_check (GATE mode) for execution",
+               {"action_id": checked["action_id"], "category": checked["category"]})
 
     if permit_id is not None:
         pid = ident(permit_id, "permit_id", fail=_fail)
@@ -475,8 +489,7 @@ def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None,
                         + timedelta(hours=opened["valid_hours"]))
             if at > deadline:
                 reasons.append("review validity window has expired")
-        if authority_check is not None and (decision is None
-                                            or not decision["authority_validated"]):
+        if decision is None or not decision["authority_validated"]:
             reasons.append("decision is not authority-validated")
         if reasons:
             refuse("permit_invalid",
@@ -495,7 +508,7 @@ def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None,
             raise attach_ledger(exc, ledger)
 
     grant = _live_preauth(ledger, checked["category"], checked["payload_sha256"], at)
-    if grant is not None and authority_check is not None and not grant["authority_validated"]:
+    if grant is not None and not grant["authority_validated"]:
         refuse("review_required",
                f"preauthorization {grant['preauth_id']!r} is not authority-validated",
                {"action_id": checked["action_id"], "preauth_id": grant["preauth_id"]})

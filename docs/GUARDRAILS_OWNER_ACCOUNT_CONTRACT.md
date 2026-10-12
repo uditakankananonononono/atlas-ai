@@ -30,9 +30,12 @@ registration; re-registration is allowed only after revocation.
   the account are out of scope.
 - The ledger is an unkeyed hash chain: tamper-evident, not tamper-proof. A rehashed edit is not detectable; safe storage of the serialized ledger is the caller's job.
 - Admission/spend records are committed write-ahead via the `on_commit` hook BEFORE the effect runs and are retained on ANY exception the effect raises; an effect that fails after admission reconciles as spent-pending-review, never silently re-usable. Without a wired `on_commit`/persist sink the ledger lives in memory only.
-- `reviewer` / `granted_by` / `verified_by` labels are caller-supplied DECLARATIONS, not authentication. A record carrying `authority_ref` (an approval-store reference) Fail-closed coverage, exactly as coded: (a) a verification carrying
-  `authority_ref` with NO hook configured fails; (b) when a hook IS configured, verification
-  requires a validated `authority_ref`; (c) the hook receives (authority_ref, binding digest) where the
-  digest binds the exact (service, account_identity) pair, and accepts only with a strict True or a
-  verified-permit object. With no hook configured, verifications without `authority_ref` remain
-  unvalidated declarations.
+- `reviewer` / `granted_by` / `verified_by` labels are caller-supplied DECLARATIONS, not authentication. A record carrying `authority_ref` (an approval-store reference) TWO MODES, no third path. RECORD mode (no authority_check hook)
+  ledgers declarations - registrations and verifications - and CANNOT place calls: call()
+  refuses unconditionally with a ledgered ACCTGATE:refused:authority_hook_required verdict.
+  Record mode is a bookkeeping library, NOT an execution gate. GATE mode (authority_check
+  configured) places calls only under a binding whose latest verification carries a validated
+  authority_ref (ACCTGATE:refused:authority_unvalidated otherwise); verify_binding itself needs
+  an authority_ref when a hook is configured. The hook receives (authority_ref, binding digest)
+  - the digest binds the exact (service, account_identity) pair - and accepts only with a
+  strict True or a verified-permit object. A verified_by label alone never admits a call.
