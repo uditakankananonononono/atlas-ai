@@ -73,3 +73,36 @@ def ingest_audio(data: AudioIngestRequest, s: LocalKnowledgePipeline = Depends(g
         return {'version':v.number,'content_hash':v.content_hash,'segments':len(v.segments)}
     except (KnowledgeError,AdapterUnavailable,ASRError) as exc:
         raise HTTPException(422,str(exc)) from None
+
+from .corpus_batch import CorpusBatch, ingest_batch, corpus_coverage, advice_packet
+
+@router.post('/corpus/batch')
+def corpus_batch(body: CorpusBatch, s: LocalKnowledgePipeline = Depends(get_service)):
+    try:
+        return ingest_batch(s, body)
+    except KnowledgeError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+@router.get('/corpus/coverage')
+def coverage(s: LocalKnowledgePipeline = Depends(get_service)):
+    return corpus_coverage(s)
+
+class AdviceRequest(BaseModel):
+    goal: str = Field(min_length=1, max_length=2000)
+    limit: int = Field(default=10, ge=1, le=25)
+
+@router.post('/advice/prepare')
+def prepare_advice(body: AdviceRequest, s: LocalKnowledgePipeline = Depends(get_service)):
+    try:
+        return advice_packet(s, body.goal, body.limit)
+    except KnowledgeError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+from app.modules.c35.editorial_workflow import EditorialRevision, revision_packet
+
+@router.post('/advice/editorial-revision')
+def editorial_revision(body: EditorialRevision, s: LocalKnowledgePipeline = Depends(get_service)):
+    try:
+        return revision_packet(body)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
