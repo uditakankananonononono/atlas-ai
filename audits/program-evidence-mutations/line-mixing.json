@@ -1,0 +1,45 @@
+{
+  "row": "line-mixing",
+  "tests": [
+    "tests/test_executed_acceptance.py"
+  ],
+  "tier": "Local offline Git/files and actual pytest subprocess tests; explicitly controlled injected receipt/error/drift cases. No external evidence.",
+  "limits": "Sensitivity to these5 named faults only; non-atomic snapshots, no aggregate sandbox/budget or semantic acceptance. Literal rows remain PARTIAL.",
+  "mutants": [
+    {
+      "id": "line-mixing-M1",
+      "name": "all-required-to-any",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "and all(item['run']['status'] == 'SCOPED_PASS'",
+      "new": "and any(item['run']['status'] == 'SCOPED_PASS'"
+    },
+    {
+      "id": "line-mixing-M2",
+      "name": "drop-failed-check",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "bindings.setdefault(check['line_id'], []).append({'id': ident, 'run': run})",
+      "new": "if run['status'] == 'SCOPED_PASS': bindings.setdefault(check['line_id'], []).append({'id': ident, 'run': run})"
+    },
+    {
+      "id": "line-mixing-M3",
+      "name": "ignore-status",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "item['run']['status'] == 'SCOPED_PASS' and item['run'].get('head')",
+      "new": "True and item['run'].get('head')"
+    },
+    {
+      "id": "line-mixing-M4",
+      "name": "discard-later-check",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "bindings.setdefault(check['line_id'], []).append({'id': ident, 'run': run})",
+      "new": "if check['line_id'] not in bindings: bindings[check['line_id']] = [{'id': ident, 'run': run}]"
+    },
+    {
+      "id": "line-mixing-M5",
+      "name": "lose-receipt-list",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'checks': executions,",
+      "new": "'checks': [],"
+    }
+  ]
+}

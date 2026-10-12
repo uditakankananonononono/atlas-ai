@@ -1,0 +1,39 @@
+......F.F.F..FFF.....                                                    [100%]
+=================================== FAILURES ===================================
+_____________________ test_actual_mixed_pass_fail_receipts _____________________
+tests/test_executed_acceptance.py:84: in test_actual_mixed_pass_fail_receipts
+    assert out['lines'][1]['checks'][0]['run']['counts']['failures']==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+_______________ test_helper_exception_and_head_drift_unverified ________________
+tests/test_executed_acceptance.py:108: in test_helper_exception_and_head_drift_unverified
+    assert out['lines'][0]['checks'][0]['run']['error']=='RuntimeError'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+__________________ test_same_line_pass_and_fail_requires_all ___________________
+tests/test_executed_acceptance.py:129: in test_same_line_pass_and_fail_requires_all
+    assert out['scoped_passing_lines']==0
+E   assert 1 == 0
+____________________ test_malformed_receipt_confined[None] _____________________
+tests/test_executed_acceptance.py:150: in test_malformed_receipt_confined
+    assert out['lines'][0]['checks'][0]['run']['status']=='UNVERIFIED'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+__________________ test_malformed_receipt_confined[receipt1] ___________________
+tests/test_executed_acceptance.py:150: in test_malformed_receipt_confined
+    assert out['lines'][0]['checks'][0]['run']['status']=='UNVERIFIED'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+__________________ test_malformed_receipt_confined[receipt2] ___________________
+tests/test_executed_acceptance.py:150: in test_malformed_receipt_confined
+    assert out['lines'][0]['checks'][0]['run']['status']=='UNVERIFIED'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts
+FAILED tests/test_executed_acceptance.py::test_helper_exception_and_head_drift_unverified
+FAILED tests/test_executed_acceptance.py::test_same_line_pass_and_fail_requires_all
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[None]
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt1]
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt2]
+6 failed, 15 passed in 4.46s

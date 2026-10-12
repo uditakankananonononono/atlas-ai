@@ -1,0 +1,52 @@
+F.....FFF.F..FFF.....                                                    [100%]
+=================================== FAILURES ===================================
+___________________ test_pass_and_missing_line_keep_blockers ___________________
+tests/test_executed_acceptance.py:27: in test_pass_and_missing_line_keep_blockers
+    assert out['lines'][0]['checks'][0]['run']['counts']['tests']==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+_____________________ test_actual_mixed_pass_fail_receipts _____________________
+tests/test_executed_acceptance.py:84: in test_actual_mixed_pass_fail_receipts
+    assert out['lines'][1]['checks'][0]['run']['counts']['failures']==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+_______________ test_postrun_inventory_error_preserves_receipts ________________
+tests/test_executed_acceptance.py:98: in test_postrun_inventory_error_preserves_receipts
+    assert out['lines'][0]['checks'][0]['run']['counts']['tests']==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+_______________ test_helper_exception_and_head_drift_unverified ________________
+tests/test_executed_acceptance.py:108: in test_helper_exception_and_head_drift_unverified
+    assert out['lines'][0]['checks'][0]['run']['error']=='RuntimeError'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+__________________ test_same_line_pass_and_fail_requires_all ___________________
+tests/test_executed_acceptance.py:130: in test_same_line_pass_and_fail_requires_all
+    assert len(out['lines'][0]['checks'])==2
+E   assert 0 == 2
+E    +  where 0 = len([])
+____________________ test_malformed_receipt_confined[None] _____________________
+tests/test_executed_acceptance.py:150: in test_malformed_receipt_confined
+    assert out['lines'][0]['checks'][0]['run']['status']=='UNVERIFIED'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+__________________ test_malformed_receipt_confined[receipt1] ___________________
+tests/test_executed_acceptance.py:150: in test_malformed_receipt_confined
+    assert out['lines'][0]['checks'][0]['run']['status']=='UNVERIFIED'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+__________________ test_malformed_receipt_confined[receipt2] ___________________
+tests/test_executed_acceptance.py:150: in test_malformed_receipt_confined
+    assert out['lines'][0]['checks'][0]['run']['status']=='UNVERIFIED'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers
+FAILED tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts
+FAILED tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts
+FAILED tests/test_executed_acceptance.py::test_helper_exception_and_head_drift_unverified
+FAILED tests/test_executed_acceptance.py::test_same_line_pass_and_fail_requires_all
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[None]
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt1]
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt2]
+8 failed, 13 passed in 4.68s

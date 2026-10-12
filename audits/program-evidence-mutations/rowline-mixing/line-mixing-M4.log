@@ -1,0 +1,9 @@
+..........F..........                                                    [100%]
+=================================== FAILURES ===================================
+__________________ test_same_line_pass_and_fail_requires_all ___________________
+tests/test_executed_acceptance.py:129: in test_same_line_pass_and_fail_requires_all
+    assert out['scoped_passing_lines']==0
+E   assert 1 == 0
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_same_line_pass_and_fail_requires_all
+1 failed, 20 passed in 4.84s

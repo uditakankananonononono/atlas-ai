@@ -1,0 +1,14 @@
+......F...F..........                                                    [100%]
+=================================== FAILURES ===================================
+_____________________ test_actual_mixed_pass_fail_receipts _____________________
+tests/test_executed_acceptance.py:83: in test_actual_mixed_pass_fail_receipts
+    assert out['scoped_passing_lines']==1
+E   assert 2 == 1
+__________________ test_same_line_pass_and_fail_requires_all ___________________
+tests/test_executed_acceptance.py:129: in test_same_line_pass_and_fail_requires_all
+    assert out['scoped_passing_lines']==0
+E   assert 1 == 0
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts
+FAILED tests/test_executed_acceptance.py::test_same_line_pass_and_fail_requires_all
+2 failed, 19 passed in 4.38s
