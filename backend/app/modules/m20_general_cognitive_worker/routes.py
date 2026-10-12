@@ -1770,3 +1770,15 @@ from .axial_fea_routes1512 import router as axial_fea_routes1512_router
 router.include_router(axial_fea_routes1512_router)
 from .flow_balance_routes1513 import router as flow_balance_routes1513_router
 router.include_router(flow_balance_routes1513_router)
+
+# Dedicated supplied-input software-practice engines, rows 697/698/700/702/703.
+from .flag697_routes import router as flag697_router
+router.include_router(flag697_router)
+from .trunk698_routes import router as trunk698_router
+router.include_router(trunk698_router)
+from .semver700_routes import router as semver700_router
+router.include_router(semver700_router)
+from .release702_routes import router as release702_router
+router.include_router(release702_router)
+from .doc703_routes import router as doc703_router
+router.include_router(doc703_router)
