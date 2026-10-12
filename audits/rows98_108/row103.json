@@ -1,0 +1,44 @@
+{
+  "row": 103,
+  "selectors": [
+    "tests/modules/test_c37_cross_field_loop.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "cross_field",
+      "path": "backend/app/modules/c37/cross_field_loop.py",
+      "old": "if p[\"field\"] == e[\"field\"]:",
+      "new": "if False:"
+    },
+    {
+      "id": "rank",
+      "path": "backend/app/modules/c37/cross_field_loop.py",
+      "old": "(-x[\"score\"], x[\"source_entity\"]",
+      "new": "(x[\"score\"], x[\"source_entity\"]"
+    },
+    {
+      "id": "cap",
+      "path": "backend/app/modules/c37/cross_field_loop.py",
+      "old": "proposals[:max_tickets]",
+      "new": "proposals"
+    },
+    {
+      "id": "nosource",
+      "path": "backend/app/modules/c37/cross_field_loop.py",
+      "old": "or not refs:\n            _err(\"NOSOURCE\", mid)",
+      "new": ":\n            _err(\"NOSOURCE\", mid)"
+    },
+    {
+      "id": "review_status",
+      "path": "backend/app/modules/c37/cross_field_loop.py",
+      "old": "\"status\": \"owner_review\"",
+      "new": "\"status\": \"built\""
+    }
+  ]
+}

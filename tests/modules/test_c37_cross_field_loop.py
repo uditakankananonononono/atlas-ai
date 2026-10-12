@@ -65,3 +65,7 @@ def test_no_automatic_build():
     out = xl.run(BODY)
     assert "automatic-build" in out["scope"]["not_implemented"]
     assert all(t["status"] == "owner_review" for t in out["tickets"])
+
+def test_one_ticket_cap_actually_truncates_multiple_proposals():
+    out=xl.run(dict(BODY,max_tickets=1))
+    assert out['proposals_considered']==2 and len(out['tickets'])==1
