@@ -79,11 +79,16 @@ def build(repo, base, head, root, target=TARGET):
         rows.append({"module": mod, "added_public_functions": n,
                      "verdict": "AT_OR_ABOVE_TARGET" if n >= target else "BELOW_TARGET",
                      "shortfall": max(0, target - n)})
+    empty = sorted(r["module"] for r in rows if r["added_public_functions"] == 0
+                   and not any(p for p in new if _module_of(p, root) == r["module"]))
+    coverage_known = bool(rows) and not (bad_old or bad_new) and not empty
     below = [r["module"] for r in rows if r["verdict"] == "BELOW_TARGET"]
     return {"base": base, "head": head, "root": root, "target": target, "rows": rows,
             "modules": len(rows), "below_target": len(below), "below_target_modules": below,
             "unparsed_files": sorted(bad_old + bad_new),
-            "complete": not below,
+            "modules_absent_at_head": empty,
+            "coverage_known": coverage_known,
+            "complete": coverage_known and not below,
             "scope": {"implemented": ["AST count of added public functions per module"],
                       "not_implemented": ["proof that an added function is a working feature",
                                           "independent per-feature acceptance",

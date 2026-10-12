@@ -14,7 +14,7 @@ SLEEP = shutil.which("sleep")
 
 
 def spec(**kw):
-    d = {"name": "cat", "executable": CAT, "reviewed": True, "args": []}
+    d = {"name": "cat", "executable": CAT, "caller_marked_reviewed": True, "args": []}
     d.update(kw)
     return d
 
@@ -26,8 +26,8 @@ class AdapterRuntime(unittest.TestCase):
 
     def test_unreviewed_refused(self):
         with self.assertRaises(ValueError) as cm:
-            m.run(spec(reviewed=False), [CAT])
-        self.assertIn("UNREVIEWED", str(cm.exception))
+            m.run(spec(caller_marked_reviewed=False), [CAT])
+        self.assertIn("NOT_MARKED_REVIEWED", str(cm.exception))
 
     def test_not_allowlisted_refused(self):
         with self.assertRaises(ValueError) as cm:
@@ -47,6 +47,17 @@ class AdapterRuntime(unittest.TestCase):
         out = m.run(spec(name="sleep", executable=SLEEP, args=["5"], timeout=0.3), [SLEEP])
         self.assertTrue(out["timed_out"])
         self.assertIsNone(out["exit_code"])
+
+    def test_output_cap_bounds_capture_and_reports_truncation(self):
+        PY = shutil.which("python3")
+        out = m.run(spec(name="py", executable=PY,
+                         args=["-c", "import sys; sys.stdout.write('x' * 500000)"], timeout=20), [PY])
+        self.assertEqual(len(out["stdout"]), m.MAX_OUT)
+        self.assertTrue(out["truncated"])
+        self.assertEqual(out["exit_code"], 0)
+
+    def test_small_output_not_truncated(self):
+        self.assertFalse(m.run(spec(), [CAT], "hi")["truncated"])
 
     def test_no_shell_metachar_expansion(self):
         out = m.run(spec(args=["/nonexistent;echo pwned"]), [CAT])

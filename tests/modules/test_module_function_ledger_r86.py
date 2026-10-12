@@ -36,6 +36,23 @@ class Ledger(unittest.TestCase):
             self.assertFalse(out["complete"])
             self.assertEqual(out["unparsed_files"], ["mods/b/bad.py"])
 
+    def test_complete_requires_known_coverage(self):
+        import os
+        with tempfile.TemporaryDirectory() as d:
+            sh(d, "init", "-q")
+            os.makedirs(d + "/mods/a")
+            open(d + "/mods/a/x.py", "w").write("def old():\n    pass\n")
+            sh(d, "add", "-A"); sh(d, "commit", "-qm", "base")
+            open(d + "/mods/a/x.py", "w").write("def old():\n    pass\ndef n1():\n    pass\n")
+            open(d + "/mods/a/bad.py", "w").write("def (:\n")
+            sh(d, "add", "-A"); sh(d, "commit", "-qm", "head")
+            out = m.build(d, "HEAD~1", "HEAD", "mods", target=1)
+            self.assertEqual(out["below_target"], 0)
+            self.assertFalse(out["coverage_known"])
+            self.assertFalse(out["complete"])  # unparsed file means unknown coverage
+        out = m.build(".", "HEAD", "HEAD", "no_such_dir", target=1)
+        self.assertFalse(out["complete"])  # zero modules is not complete
+
     def test_bad_target_refused(self):
         with self.assertRaises(ValueError):
             m.build(".", "HEAD", "HEAD", "x", target=True)
