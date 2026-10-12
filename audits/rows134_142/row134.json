@@ -1,0 +1,45 @@
+{
+  "row": 134,
+  "selectors": [
+    "tests/runtime/guardrails/test_bio_gate.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "local choke-point tests only, fixture effects",
+    "no external approval/provider truth",
+    "not universal runtime adoption",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "physical_refusal",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "elif p68_verdict == \"refused_physical_without_review\":",
+      "new": "elif False:"
+    },
+    {
+      "id": "hook_required",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "if approval_check is None:\n                verdict = \"refused:physical_approval_unverifiable\"",
+      "new": "if approval_check is not None:\n                verdict = \"refused:physical_approval_unverifiable\""
+    },
+    {
+      "id": "hook_rejection",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "approval_accepted = hook_accepted(approval_check(checked[\"approval_ref\"], action_digest))",
+      "new": "approval_accepted = True"
+    },
+    {
+      "id": "action_digest",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "action_digest = payload_sha256(checked)",
+      "new": "action_digest = '0'*64"
+    },
+    {
+      "id": "effect_refusal",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "if not verdict.startswith(\"admitted:\"):",
+      "new": "if False:"
+    }
+  ]
+}

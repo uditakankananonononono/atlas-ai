@@ -144,3 +144,8 @@ def test_p68_limits_still_pinned_underneath():
                            "execution_mode": "computational"})
     assert direct["safe_claim"] is False
     assert direct["biosafety_review_performed"] is False
+
+def test_exact_admission_digest_binds_checked_fields():
+    from app.runtime.guardrails._fields import payload_sha256
+    _,record=g.admit(SILICO,now=T0)
+    assert record['action_digest']==payload_sha256(g._check_item(SILICO))
