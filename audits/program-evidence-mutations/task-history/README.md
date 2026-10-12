@@ -34,3 +34,35 @@ are not independent acceptance or universal restoration guarantees.
 - H122-M4.log: original `0e2848c12a0d43ca3115a237018fcc241a52948aae03be7042489ae9c3b4728a`; delivered `0e2848c12a0d43ca3115a237018fcc241a52948aae03be7042489ae9c3b4728a`. Changes: none.
 - H122-M5.log: original `03459a062566a0bfce6c3f7aae3ca6adeafd0930757441b2fa858b8e1b3609c2`; delivered `03459a062566a0bfce6c3f7aae3ca6adeafd0930757441b2fa858b8e1b3609c2`. Changes: none.
 - restored-baseline.log: original `a19a7ef5b8709585198e3a47d163ea7b74e4da482d0a00e9e8c0ddae64130ba4`; delivered `a19a7ef5b8709585198e3a47d163ea7b74e4da482d0a00e9e8c0ddae64130ba4`. Changes: none.
+
+## LAND-113 chronology and selector reconciliation
+
+29d951f0 is the original run HEAD, not the landing base. LAND-113 was composed
+on a9cc5d54 and landed at a27d352f. Historical receipts retain their original
+identity; they are not relabeled as a fresh mutation run on the landing tree.
+The new test and replay were untracked at original run HEAD, so that Git object
+cannot retrospectively bind their executed bytes. The original receipt did not
+hash test files or the checkout tree; this provenance gap is not backfilled.
+`reconciliation/record.json` records local Git HEAD/tree and selected file hashes
+for the historical run HEAD, compose base, landed tip and current 27511b4a.
+Missing files are recorded as null, not guessed. Matching selected file bytes
+do not prove full dependency/environment equivalence or historical authorship.
+
+The full selector is tests/test_task_progress_evidence.py plus
+tests/test_task_history_sensitivity.py (11 tests). A new-file-only
+selector tests/test_task_history_sensitivity.py contains one test (1 test). Those
+counts refer to different selectors, not conflicting totals. A fresh full-selector
+log on 27511b4a is retained under reconciliation/; no mutation battery was rerun
+for this docs-only clarification. Its original/delivered SHA and every normalized
+line are recorded in record.json; raw original bytes remain private.
+
+Only H122-M1 gains a unique new kill from the depth-one-clone test. H122-M2..M5
+were already killed by pre-existing tests; the new test adds shallow-context
+assertions, not four newly discovered faults. M4 removes the whole truncation
+expression, not isolated shallow versus limit branches. Timestamp is pinned only
+as present, not exact value/format. No deeper shallow history, grafted merge,
+public remote or authenticated task-time acceptance follows.
+
+An initial hash-pair mismatch report was a comparison error, disproved
+by direct reads. All seven historical original/delivered pairs remain equal with
+no listed normalizations; no retained mismatch was found or silently repaired.

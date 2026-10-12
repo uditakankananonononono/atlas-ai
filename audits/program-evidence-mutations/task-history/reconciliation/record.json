@@ -1,0 +1,71 @@
+{
+  "limits": "Hash comparison is local Git evidence, not authenticated source or dependency equivalence. Untracked new test did not exist at historical run HEAD; its executed bytes were not hashed in original receipt, so no retroactive test-byte binding is claimed.",
+  "versions": [
+    {
+      "head": "29d951f020771ba6ed2e8bec6309345cd88b340d",
+      "tree": "eb11c2039fbc9ee346bb809fdb566e76b68563a0",
+      "files": {
+        "backend/app/modules/instinct_doc/repo_evidence.py": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+        "tests/test_task_progress_evidence.py": "7d53d5221cab6124247e649a5099e41e1c71db4b8d45df5ef5376dbf5fc7b6ef",
+        "tests/test_task_history_sensitivity.py": null,
+        "audits/program-evidence-mutations/task-history/replay.py": null,
+        "audits/program-evidence-mutations/task-history.json": null
+      }
+    },
+    {
+      "head": "a9cc5d542da14c0b38c01a878c1313ef3a930491",
+      "tree": "0f89584a460166ea2d4a0f105705f3533f0dc7d0",
+      "files": {
+        "backend/app/modules/instinct_doc/repo_evidence.py": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+        "tests/test_task_progress_evidence.py": "7d53d5221cab6124247e649a5099e41e1c71db4b8d45df5ef5376dbf5fc7b6ef",
+        "tests/test_task_history_sensitivity.py": null,
+        "audits/program-evidence-mutations/task-history/replay.py": null,
+        "audits/program-evidence-mutations/task-history.json": null
+      }
+    },
+    {
+      "head": "a27d352f533412ff488ef67350a4af68cfb742ab",
+      "tree": "abbbf288f6416afbd41cecae9175d3e4f4b6a3e5",
+      "files": {
+        "backend/app/modules/instinct_doc/repo_evidence.py": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+        "tests/test_task_progress_evidence.py": "7d53d5221cab6124247e649a5099e41e1c71db4b8d45df5ef5376dbf5fc7b6ef",
+        "tests/test_task_history_sensitivity.py": "69482c7f7990e9f98a23beefc9554d0a72b5405bf47db60263b23a07a664a6f3",
+        "audits/program-evidence-mutations/task-history/replay.py": "f62a8b61423414d1dd683c9d79c41bd05c57905b69e3cc738ff26956dd089900",
+        "audits/program-evidence-mutations/task-history.json": "46b758b382e365862a2db28665fdd216e36fd006877e407804602b500f9aa348"
+      }
+    },
+    {
+      "head": "27511b4aff4ffabbd05b91edc420d40d921639f3",
+      "tree": "b096d6879739d04e2fac00bb89c2fd3bac5a6126",
+      "files": {
+        "backend/app/modules/instinct_doc/repo_evidence.py": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+        "tests/test_task_progress_evidence.py": "7d53d5221cab6124247e649a5099e41e1c71db4b8d45df5ef5376dbf5fc7b6ef",
+        "tests/test_task_history_sensitivity.py": "69482c7f7990e9f98a23beefc9554d0a72b5405bf47db60263b23a07a664a6f3",
+        "audits/program-evidence-mutations/task-history/replay.py": "f62a8b61423414d1dd683c9d79c41bd05c57905b69e3cc738ff26956dd089900",
+        "audits/program-evidence-mutations/task-history.json": "46b758b382e365862a2db28665fdd216e36fd006877e407804602b500f9aa348"
+      }
+    }
+  ],
+  "current_execution": {
+    "head": "27511b4aff4ffabbd05b91edc420d40d921639f3",
+    "command": [
+      "python",
+      "-B",
+      "-m",
+      "pytest",
+      "--noconftest",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_task_progress_evidence.py",
+      "tests/test_task_history_sensitivity.py",
+      "-q",
+      "-rf",
+      "--tb=short"
+    ],
+    "returncode": 0,
+    "original_sha256": "3134c58b38712546485df398f3c9a6b8509b830827740c800a6a8367b771e226",
+    "delivered_sha256": "3134c58b38712546485df398f3c9a6b8509b830827740c800a6a8367b771e226",
+    "normalized_lines": [],
+    "disclosure": "Interpreter path normalized to python; logs intentionally trim trailing whitespace if listed. Original raw bytes privately retained. No path replacements. Current full selector only, no mutation rerun."
+  }
+}
