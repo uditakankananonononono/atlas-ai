@@ -32,3 +32,9 @@ def test_api704_65_matching_refs_refused(monkeypatch,oidc_auth_headers):
  refs=[{'tenant_id':'a','actor_id':'owner','id':str(i)}for i in range(65)]
  r=c.post(PATH,headers=oidc_auth_headers('a','owner'),json={'data':DATA,'resource_refs':refs})
  assert r.status_code==422,r.text
+
+def test_api704_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc_auth_headers):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ r=c.post(PATH,headers=oidc_auth_headers('a','owner'),json={'data':DATA,'tenant_id':None,'actor_id':None})
+ assert r.status_code==200,r.text
+ assert r.json()['tenant_id']=='a' and r.json()['actor_id']=='owner' and r.json()['implementation_verified']is False

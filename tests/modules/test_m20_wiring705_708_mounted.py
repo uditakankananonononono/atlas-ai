@@ -31,3 +31,22 @@ def test_four_mounted_engines_real_parity(monkeypatch,oidc_auth_headers,path,dat
         assert client.post(path,headers=headers,json={'data':data,**extra}).status_code==403
     assert client.post(path,headers=headers,json={'data':{}}).status_code==422
     assert client.post(path,headers={**headers,'Content-Type':'application/json'},content=json.dumps({'data':{'source':'\ud800'}})).status_code==422
+
+@pytest.mark.parametrize('path,data,engine',CASES)
+def test_resource_refs_cap_boundary(monkeypatch,oidc_auth_headers,path,data,engine):
+    monkeypatch.setenv('ATLAS_ENV','production')
+    client=TestClient(app,raise_server_exceptions=False)
+    path='/api/v1/api/modules/20'+path
+    headers=oidc_auth_headers('a','owner')
+    refs=[{'tenant_id':'a','actor_id':'owner','id':str(i)}for i in range(64)]
+    ok=client.post(path,headers=headers,json={'data':data,'resource_refs':refs})
+    assert ok.status_code==200,ok.text
+    assert client.post(path,headers=headers,json={'data':data,'resource_refs':refs+[{'tenant_id':'a','actor_id':'owner','id':'65'}]}).status_code==422
+
+@pytest.mark.parametrize('path,data,engine',CASES)
+def test_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc_auth_headers,path,data,engine):
+    monkeypatch.setenv('ATLAS_ENV','production')
+    client=TestClient(app,raise_server_exceptions=False)
+    r=client.post('/api/v1/api/modules/20'+path,headers=oidc_auth_headers('a','owner'),json={'data':data,'tenant_id':None,'actor_id':None})
+    assert r.status_code==200,r.text
+    assert r.json()['tenant_id']=='a' and r.json()['actor_id']=='owner'

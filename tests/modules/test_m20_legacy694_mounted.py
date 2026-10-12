@@ -119,3 +119,9 @@ def test_legacy_exclude_none_owner_semantic(monkeypatch,oidc_auth_headers,extra,
  r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1',**extra})
  assert r.status_code==status,r.text
  if status==200:assert r.json()['actor_id']=='owner'
+
+def test_legacy_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc_auth_headers):
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1','tenant_id':None,'actor_id':None})
+ assert r.status_code==200,r.text
+ assert r.json()['tenant_id']=='a' and r.json()['actor_id']=='owner'
