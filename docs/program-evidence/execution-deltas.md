@@ -34,3 +34,10 @@ Acceptance audit retains completed run receipts even if the post-run source read
 fails. `source_artifact_sha256` hashes actual local inventory bytes; a manifest's
 export hash is separately declared metadata, not authenticated original bytes.
 Source drift/read errors suppress scoped promotion while preserving evidence.
+
+Project initial-byte retention has a default 16 MB cap. This cap covers retained
+initial artifact bytes ONLY, not whole peak memory, later reads, subprocess
+capture or temporary disk writes. Final all-project head/tree/status rehash
+suppresses earlier scoped-pass rows if a later execution changes the tree.
+Malformed helper returns are confined per project. Before/after checks remain
+non-atomic and cannot establish absence of transient restored changes.

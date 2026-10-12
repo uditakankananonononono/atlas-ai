@@ -99,7 +99,7 @@ def test_file_drift_between_snapshot_and_read_refused(repo,monkeypatch):
         return result
     monkeypatch.setattr(evidence,'snapshot',changed)
     row=inspect_projects(root,[item])['projects'][0]
-    assert row['errors'] and row['failure_reason']=='missing_or_drifted_file'
+    assert row['errors'] and row['failure_reason']=='final_project_tree_drift'
 
 
 def test_initial_byte_budget_is_hard_cap(repo):
@@ -133,3 +133,26 @@ def test_dirty_success_not_promoted(repo):
     assert row['execution']['status']=='SCOPED_PASS'
     assert row['status']=='UNVERIFIED'
     assert row['failure_reason']=='dirty_initial_tree'
+
+
+@pytest.mark.parametrize('receipt',[None,[],{}, {'head':'x','tree_digest':'x'}])
+def test_malformed_project_receipt_keeps_all_rows(repo,monkeypatch,receipt):
+    root,item=repo
+    monkeypatch.setattr('app.modules.instinct_doc.repo_evidence.execute_tests',lambda *a:receipt)
+    out=inspect_projects(root,[item,dict(item,id='P2')],execute=True)
+    assert len(out['projects'])==2
+    assert all(row['status']=='UNVERIFIED' for row in out['projects'])
+
+
+def test_later_project_mutation_demotes_earlier_pass(repo,monkeypatch):
+    from app.modules.instinct_doc import repo_evidence as evidence
+    root,item=repo;snap=evidence.snapshot(root);calls=[]
+    def later_change(*a):
+        calls.append(1)
+        if len(calls)==2:(root/'core.py').write_text('later mutation')
+        return {'status':'SCOPED_PASS','head':snap['head'],'tree_digest':snap['tree_digest']}
+    monkeypatch.setattr(evidence,'execute_tests',later_change)
+    out=inspect_projects(root,[item,dict(item,id='P2')],execute=True)
+    assert not out['final_snapshot_stable']
+    assert all(row['status']=='UNVERIFIED' for row in out['projects'])
+    assert out['projects'][0]['failure_reason']=='final_project_tree_drift'

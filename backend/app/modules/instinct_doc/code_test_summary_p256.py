@@ -187,6 +187,8 @@ def inspect_projects(root, projects, *, execute=False, max_initial_bytes=16_000_
         if execute and item['test_paths'] and not errors:
             try:
                 run = execute_tests(root, item['test_paths'])
+                if type(run) is not dict or not all(isinstance(run.get(key), str) for key in ('status', 'head', 'tree_digest')):
+                    raise EvidenceError('malformed project execution receipt')
             except Exception as exc:
                 run = {'status': 'UNVERIFIED', 'head': None, 'tree_digest': None, 'error': type(exc).__name__}
         rows.append({'id': ident, 'files': files, 'errors': errors,
@@ -202,7 +204,20 @@ def inspect_projects(root, projects, *, execute=False, max_initial_bytes=16_000_
                      'dirty_scope': 'Top-level repository status only; nested untracked repositories not inspected',
                      'failure_reason': 'dirty_initial_tree' if snap['dirty'] else 'missing_or_drifted_file' if errors else 'not_executed' if run is None else run.get('error') or ('execution_not_passing' if run.get('status') != 'SCOPED_PASS' else 'snapshot_drift' if run.get('head') != snap['head'] or run.get('tree_digest') != snap['tree_digest'] else None),
                      'scope_declared': True})
-    return {'initial_byte_budget': max_initial_bytes, 'retained_initial_bytes': retained_bytes,
+    try:
+        final = snapshot(root)
+        final_stable = final['head'] == snap['head'] and final['tree_digest'] == snap['tree_digest'] and final['status_digest'] == snap['status_digest']
+    except Exception:
+        final_stable = False
+    if not final_stable:
+        for row in rows:
+            row['status'] = 'UNVERIFIED'
+            row['failure_reason'] = 'final_project_tree_drift'
+            if row['execution'] is not None:
+                row['snapshot_coherent'] = False
+    return {'final_snapshot_stable': final_stable,
+            'memory_budget_scope': 'Initial byte retention only; not total peak memory, subprocess capture or disk writes',
+            'initial_byte_budget': max_initial_bytes, 'retained_initial_bytes': retained_bytes,
             'byte_budget_rejected_paths': sorted(budget_rejected), 'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,
             'execution_scope': 'Trusted checkout only; up to 256 per-run bounded calls, no aggregate time/disk budget. Test code may have effects.',
             'projects': rows, 'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],
