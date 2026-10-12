@@ -9,6 +9,8 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import shutil
+import xml.etree.ElementTree as ET
 import tempfile
 
 IDENTITY = ('Instinct', 'agent@instinct.com')
@@ -45,13 +47,24 @@ def package(repo, base, head, selectors, python, output, timeout=120):
             raise ValueError('selector must be an explicit repository test file')
         if not (repo / path).is_file():
             raise ValueError('test file missing')
+        if not (repo / path).resolve().is_relative_to(repo):
+            raise ValueError('selector escapes repository')
     if git(repo, 'status', '--porcelain'):
         raise ValueError('release checkout must be clean')
     if git(repo, 'rev-parse', 'HEAD') != head:
         raise ValueError('test checkout must match release head')
+    resolved_python = shutil.which(python)
+    if resolved_python is None:
+        raise ValueError('test interpreter missing')
+    python = os.path.abspath(resolved_python)
+    interpreter_hash = sha256(python)
+    python_version = subprocess.check_output([python, '--version'], text=True).strip()
     output.mkdir(parents=True)
-    argv = [python, '-m', 'pytest', '--noconftest', *selectors, '-q']
-    env = dict(os.environ, PYTHONPATH='backend', ATLAS_DEV_NO_AUTH='1', ATLAS_ENV='development')
+    junit = output / 'selector.xml'
+    argv = [python, '-m', 'pytest', '--noconftest', *selectors, '-q', '--junitxml=' + str(junit)]
+    # Exact controlled environment; never dump inherited credentials to a receipt.
+    env = {k: os.environ[k] for k in ('PATH', 'HOME', 'LANG', 'LC_ALL', 'TMPDIR') if k in os.environ}
+    env.update(PYTHONPATH='backend', ATLAS_DEV_NO_AUTH='1', ATLAS_ENV='development', PYTEST_DISABLE_PLUGIN_AUTOLOAD='1', PYTHONDONTWRITEBYTECODE='1')
     log = output / 'selector.log'
     timed_out = False
     with log.open('wb') as stream:
@@ -61,6 +74,18 @@ def package(repo, base, head, selectors, python, output, timeout=120):
         except subprocess.TimeoutExpired:
             timed_out = True
             returncode = None
+    if git(repo, 'rev-parse', 'HEAD') != head or git(repo, 'status', '--porcelain'):
+        raise ValueError('post-test checkout drift; log retained')
+    if sha256(python) != interpreter_hash:
+        raise ValueError('test interpreter drift; log retained')
+    counts = {'tests': 0, 'skipped': 0, 'failures': 0, 'errors': 0}
+    if junit.exists():
+        suites = ET.parse(junit).getroot()
+        for suite in suites.iter('testsuite'):
+            for key in counts:
+                counts[key] += int(suite.get(key, 0))
+    non_skipped = counts['tests'] - counts['skipped']
+    passing = returncode == 0 and non_skipped > 0 and counts['failures'] == 0 and counts['errors'] == 0
     mailbox = output / 'repair.mbox'
     with mailbox.open('wb') as stream:
         subprocess.run(['git', '-C', str(repo), 'format-patch', '--stdout', '--full-index', '--binary', base + '..' + head], stdout=stream, check=True)
@@ -85,11 +110,14 @@ def package(repo, base, head, selectors, python, output, timeout=120):
         'schema': 1, 'base_commit': base, 'base_tree': git(repo, 'rev-parse', base + '^{tree}'),
         'result_commit': head, 'result_tree': actual_tree, 'commits': commits,
         'mailbox_sha256': sha256(mailbox), 'selector_log_sha256': sha256(log),
-        'selector_argv': argv, 'selector_environment': {'PYTHONPATH': 'backend', 'ATLAS_DEV_NO_AUTH': '1', 'ATLAS_ENV': 'development'},
-        'python_version': subprocess.check_output([python, '--version'], text=True).strip(),
-        'test_result': 'UNTESTED-TIMEOUT' if timed_out else ('PASS' if returncode == 0 else 'FAIL'),
+        'selector_argv': argv, 'selector_environment': env, 'environment_scope': 'Controlled allowlist only; all other inherited variables removed',
+        'python_version': python_version, 'python_executable_sha256': interpreter_hash, 'selector_counts': counts,
+        'test_result': 'UNTESTED-TIMEOUT' if timed_out else ('PASS' if passing else 'FAIL'),
         'returncode': returncode, 'timeout_seconds': timeout,
-        'git_am_tree_verified': True, 'identity': {'author': list(IDENTITY), 'committer': list(IDENTITY)},
+        'git_am_tree_verified': True, 'post_test_checkout_verified': True,
+        'identity_scope': 'Source author and committer checked; applied committer forced by packager, not independent provenance',
+        'log_hash_scope': 'Observed bytes only; surviving descendants may append after hash, including after timeout',
+        'checkout_scope': 'HEAD and nonignored tracked/untracked status only; ignored files and transient restored changes not certified', 'identity': {'author': list(IDENTITY), 'committer': list(IDENTITY)},
         'untested': ['historical mutation batteries not rerun', 'repository-wide regression', 'live integrations and provider effects', 'timeout descendants: trusted local test process only, no process-group isolation'],
     }
     (output / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')

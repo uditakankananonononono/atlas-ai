@@ -39,7 +39,7 @@ def test_git_am_round_trip_binds_mailbox_log_selector_and_trees(tmp_path):
     assert receipt['result_tree'] == git('rev-parse', 'HEAD^{tree}')
     assert receipt['mailbox_sha256'] == module.sha256(output / 'repair.mbox')
     assert receipt['selector_log_sha256'] == module.sha256(output / 'selector.log')
-    assert receipt['selector_argv'][-2:] == ['tests/test_slice.py', '-q']
+    assert receipt['selector_argv'][-3:-1] == ['tests/test_slice.py', '-q']
     assert receipt['git_am_tree_verified'] is True
     assert json.loads((output / 'receipt.json').read_text()) == receipt
     with pytest.raises(ValueError, match='overwrite'):
@@ -66,3 +66,47 @@ def test_dirty_checkout_refused(tmp_path):
     (root / 'note.txt').write_text('changed\n')
     with pytest.raises(ValueError, match='clean'):
         module.package(root, base, 'HEAD', ['tests/test_slice.py'], sys.executable, tmp_path / 'out')
+
+
+def amend(root, git, text):
+    (root/'tests/test_slice.py').write_text(text)
+    git('add', '.')
+    git('commit', '-qm', 'selector fixture')
+
+
+@pytest.mark.parametrize('change', ["Path('note.txt').write_text('changed')", "Path('new.txt').write_text('new')"])
+def test_post_test_checkout_drift_refused(tmp_path, change):
+    root,base,git=repo(tmp_path)
+    amend(root,git,'from pathlib import Path\ndef test_change():\n    '+change+'\n')
+    with pytest.raises(ValueError,match='post-test checkout drift'):
+        module.package(root,base,'HEAD',['tests/test_slice.py'],sys.executable,tmp_path/'out')
+
+
+def test_all_skipped_is_not_pass(tmp_path):
+    root,base,git=repo(tmp_path)
+    amend(root,git,"import pytest\ndef test_skip():\n    pytest.skip('fixture')\n")
+    receipt=module.package(root,base,'HEAD',['tests/test_slice.py'],sys.executable,tmp_path/'out')
+    assert receipt['test_result']=='FAIL'
+    assert receipt['selector_counts']['tests']==receipt['selector_counts']['skipped']==1
+
+
+def test_interpreter_and_controlled_environment_recorded(tmp_path,monkeypatch):
+    root,base,git=repo(tmp_path)
+    monkeypatch.setenv('PYTEST_ADDOPTS','--ignore=tests')
+    monkeypatch.setenv('PRIVATE_TEST_TOKEN','not-a-real-secret')
+    monkeypatch.setenv('PATH',str(Path(sys.executable).parent)+':'+__import__('os').environ['PATH'])
+    receipt=module.package(root,base,'HEAD',['tests/test_slice.py'],'python',tmp_path/'out')
+    assert Path(receipt['selector_argv'][0]).is_absolute()
+    assert receipt['python_executable_sha256']==module.sha256(receipt['selector_argv'][0])
+    assert 'PYTEST_ADDOPTS' not in receipt['selector_environment']
+    assert 'PRIVATE_TEST_TOKEN' not in receipt['selector_environment']
+    assert receipt['test_result']=='PASS'
+
+
+def test_external_symlink_selector_refused(tmp_path):
+    root,base,git=repo(tmp_path)
+    external=tmp_path/'outside.py';external.write_text('def test_outside(): assert True\n')
+    (root/'tests/test_link.py').symlink_to(external)
+    git('add','.');git('commit','-qm','symlink fixture')
+    with pytest.raises(ValueError,match='escapes repository'):
+        module.package(root,base,'HEAD',['tests/test_link.py'],sys.executable,tmp_path/'out')
