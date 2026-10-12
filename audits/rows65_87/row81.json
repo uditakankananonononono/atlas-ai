@@ -1,0 +1,49 @@
+{
+  "row": 81,
+  "selectors": [
+    "tests/mission_build/test_math_strategy.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "finite supplied-scenario regret optimization",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "budget",
+      "path": "backend/app/mission_build/robust_strategy.py",
+      "old": "if cost <= budget:",
+      "new": "if True:"
+    },
+    {
+      "id": "regret",
+      "path": "backend/app/mission_build/robust_strategy.py",
+      "old": "ideals[s] - values[s]",
+      "new": "values[s] - ideals[s]"
+    },
+    {
+      "id": "rank",
+      "path": "backend/app/mission_build/robust_strategy.py",
+      "old": "Fraction(r['max_regret'])",
+      "new": "-Fraction(r['max_regret'])"
+    },
+    {
+      "id": "coverage",
+      "path": "backend/app/mission_build/robust_strategy.py",
+      "old": "set(outcomes) != set(scenarios)",
+      "new": "False"
+    },
+    {
+      "id": "effect",
+      "path": "backend/app/mission_build/robust_strategy.py",
+      "old": "'scenario_ideals': {s: str(v) for s, v in ideals.items()}, 'effectiveness_verified': False",
+      "new": "'scenario_ideals': {s: str(v) for s, v in ideals.items()}, 'effectiveness_verified': True"
+    }
+  ]
+}
