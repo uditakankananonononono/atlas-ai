@@ -1,0 +1,47 @@
+BASELINE tests/modules/test_m23_admitted_cases.py -> rc=0 4 passed in 0.25s
+Z1 duplicate id check removed | row 56 | admitted_cases.py | SURVIVED | rc=0 | 4 passed in 0.22s | failing: -
+    old: "assert len(entries) == len({item['id'] for item in entries})"
+    new: 'pass'
+Z2 duplicate host check removed | row 56 | admitted_cases.py | SURVIVED | rc=0 | 4 passed in 0.21s | failing: -
+    old: "assert len(entries) == len({urlparse(item['url']).hostname for item in entries})"
+    new: 'pass'
+Z3 https-only check removed | row 56 | admitted_cases.py | SURVIVED | rc=0 | 4 passed in 0.21s | failing: -
+    old: "assert all(urlparse(item['url']).scheme == 'https' for item in entries)"
+    new: 'pass'
+Z4 search limit cap removed | row 56 | admitted_cases.py | SURVIVED | rc=0 | 4 passed in 0.23s | failing: -
+    old: '[:max(1, min(limit, 20))]'
+    new: '[:max(1, limit)]'
+Z5 search not case-folded | row 56 | admitted_cases.py | CAUGHT | rc=1 | 1 failed, 3 passed in 0.24s | failing: tests/modules/test_m23_admitted_cases.py::test_twenty_distinct_public_case_sites_with_provenance
+    old: 'needle = query.casefold().strip()'
+    new: 'needle = query.strip()'
+Z6 evidence_type filter ignored | row 56 | admitted_cases.py | SURVIVED | rc=0 | 4 passed in 0.25s | failing: -
+    old: "(not evidence_type or evidence_type == row['evidence_type']) and"
+    new: 'True and'
+Z7 search fields narrowed | row 56 | admitted_cases.py | SURVIVED | rc=0 | 4 passed in 0.22s | failing: -
+    old: "for key in ('publisher', 'title', 'evidence_type')"
+    new: "for key in ('publisher',)"
+Z8 unknown case id returns empty | row 56 | admitted_cases.py | CAUGHT | rc=1 | 1 failed, 3 passed in 0.24s | failing: tests/modules/test_m23_admitted_cases.py::test_reader_returns_source_without_touching_site
+    old: '    if row is None:\n        raise KeyError(case_id)'
+    new: '    if row is None:\n        return {}'
+Z9 reading route claims live status | row 56 | admitted_cases.py | CAUGHT | rc=1 | 1 failed, 3 passed in 0.25s | failing: tests/modules/test_m23_admitted_cases.py::test_reader_returns_source_without_touching_site
+    old: "'live_status': 'source_only'"
+    new: "'live_status': 'reachable'"
+Z10 reading route drops the no-rehost reason | row 56 | admitted_cases.py | SURVIVED | rc=0 | 4 passed in 0.21s | failing: -
+    old: "'reason': 'Open the original publisher page for personal reading; Atlas does not rehost this text.'"
+    new: "'reason': ''"
+Z11 data: olin url downgraded to http | row 56 | admitted_cases.json | CAUGHT | rc=1 | 4 failed in 0.25s | failing: tests/modules/test_m23_admitted_cases.py::test_twenty_distinct_public_case_sites_with_provenance, tests/modules/test_m23_admitted_cases.py::test_live_metadata_respects_robots_and_never_returns_essay, tests/modules/test_m23_admitted_cases.py::test_missing_robots_denied_or_redirects_do_not_fetch_page
+    old: '"id": "olin",\n    "publisher": "Olin College",\n    "url": "https://www.olin.edu/blogs/voices-olins-class-2028-college-essay-snippets",'
+    new: '"id": "olin",\n    "publisher": "Olin College",\n    "url": "http://www.olin.edu/blogs/voices-olins-class-2028-college-essay-snippets",'
+Z12 data: hamilton id duplicates olin | row 56 | admitted_cases.json | CAUGHT | rc=1 | 4 failed in 0.30s | failing: tests/modules/test_m23_admitted_cases.py::test_twenty_distinct_public_case_sites_with_provenance, tests/modules/test_m23_admitted_cases.py::test_live_metadata_respects_robots_and_never_returns_essay, tests/modules/test_m23_admitted_cases.py::test_missing_robots_denied_or_redirects_do_not_fetch_page
+    old: '"id": "hamilton",\n    "publisher": "Hamilton College",\n    "url": "https://www.hamilton.edu/'
+    new: '"id": "olin",\n    "publisher": "Hamilton College",\n    "url": "https://www.hamilton.edu/'
+Z13 data: hamilton host duplicates olin | row 56 | admitted_cases.json | CAUGHT | rc=1 | 4 failed in 0.30s | failing: tests/modules/test_m23_admitted_cases.py::test_twenty_distinct_public_case_sites_with_provenance, tests/modules/test_m23_admitted_cases.py::test_live_metadata_respects_robots_and_never_returns_essay, tests/modules/test_m23_admitted_cases.py::test_missing_robots_denied_or_redirects_do_not_fetch_page
+    old: '"id": "hamilton",\n    "publisher": "Hamilton College",\n    "url": "https://www.hamilton.edu/'
+    new: '"id": "hamilton",\n    "publisher": "Hamilton College",\n    "url": "https://www.olin.edu/'
+Z14 data: olin evidence type changed | row 56 | admitted_cases.json | SURVIVED | rc=0 | 4 passed in 0.22s | failing: -
+    old: '"evidence_type": "institution_published_essay",\n    "title": "Incoming Class of 2028 essay snippets"'
+    new: '"evidence_type": "third_party_case_study",\n    "title": "Incoming Class of 2028 essay snippets"'
+Z15 data: olin title changed | row 56 | admitted_cases.json | SURVIVED | rc=0 | 4 passed in 0.21s | failing: -
+    old: '"title": "Incoming Class of 2028 essay snippets"'
+    new: '"title": "Incoming Class of 2028 essays (full text)"'
+TOTAL mutants=15 CAUGHT=6 SURVIVED=9 INVALID=0 NOT-APPLICABLE=0 | SHA restore True
