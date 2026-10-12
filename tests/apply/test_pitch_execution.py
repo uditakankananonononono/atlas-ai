@@ -157,3 +157,19 @@ def test_transport_requires_exact_consumed_payload_and_unused_durable_claim(setu
     assert sender.send(effect,view['id'])['message_id']=='sent'
     with pytest.raises(PermissionError,match='execution claim'):sender.send(effect,view['id'])
     assert len(calls)==2
+
+def test_wire_preview_has_deterministic_reconciliation_id_and_no_send(setup):
+    from app.apply.pitch_execution import wire_preview
+    import base64
+    from email.parser import BytesParser
+    from email import policy as email_policy
+    ex,service,state,sender,view,effect=setup
+    first=wire_preview(effect);second=wire_preview(effect)
+    assert first==second
+    msg=BytesParser(policy=email_policy.default).parsebytes(base64.urlsafe_b64decode(first['raw']))
+    assert msg['Message-ID']==first['message_id']
+    assert msg['To']==effect['payload']['to'][0]
+    assert msg['Subject']==effect['payload']['subject']
+    assert msg['Message-ID'] is not None
+    assert first['status']=='preview_only_not_authority'
+    assert ex.receipts()==[]

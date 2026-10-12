@@ -28,6 +28,31 @@ def descriptor(draft: dict, *, tenant_id: str, sender: str, send_at: str) -> dic
                                cc=[], bcc=[], subject=draft['subject'], body=draft['body'])
 
 
+def wire_preview(effect: dict) -> dict:
+    """Deterministic exact MIME preview and reconciliation ID, no authority.
+
+    RFC Message-ID identifies this exact descriptor; it is not provider proof,
+    an idempotency token, or permission to retry an ambiguous dispatch.
+    """
+    effect=deepcopy(effect)
+    policy.validate_descriptor(effect)
+    payload=effect['payload']
+    if effect['class']!='outreach' or effect['module_id']!=10 or payload['channel']!='gmail' or payload['attachment_hashes']:
+        raise ValueError('attachment-free pitch outreach required')
+    digest=hashlib.sha256(json.dumps(effect,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    domain=payload['sender'].rsplit('@',1)[-1]
+    message_id='<atlas-pitch-'+digest+'@'+domain+'>'
+    message=EmailMessage()
+    message['From']=payload['sender'];message['To']=', '.join(payload['to'])
+    if payload['cc']:message['Cc']=', '.join(payload['cc'])
+    if payload['bcc']:message['Bcc']=', '.join(payload['bcc'])
+    message['Subject']=payload['subject'];message['Message-ID']=message_id
+    message.set_content(payload['body'])
+    raw=message.as_bytes()
+    return {'raw':base64.urlsafe_b64encode(raw).decode(),'message_id':message_id,
+            'wire_sha256':hashlib.sha256(raw).hexdigest(),'status':'preview_only_not_authority'}
+
+
 class GmailPitchSender:
     """Actual Gmail API transport. token_provider is trusted host config.
 
@@ -53,15 +78,7 @@ class GmailPitchSender:
         # Verify actual durable M00 consumption and atomically claim transport.
         # Caller flags, fabricated receipt objects and arbitrary payloads are not permits.
         self._approval_store._claim_transport(effect, approval_id)
-        message = EmailMessage()
-        message['From'] = payload['sender']
-        message['To'] = ', '.join(payload['to'])
-        if payload['cc']:
-            message['Cc'] = ', '.join(payload['cc'])
-        if payload['bcc']:
-            message['Bcc'] = ', '.join(payload['bcc'])
-        message['Subject'] = payload['subject']
-        message.set_content(payload['body'])
+        wire = wire_preview(effect)
         token = self.token_provider()
         profile_request = Request('https://gmail.googleapis.com/gmail/v1/users/me/profile',
                                   headers={'Authorization': 'Bearer ' + token})
@@ -69,7 +86,7 @@ class GmailPitchSender:
             profile = json.load(response)
         if profile.get('emailAddress', '').lower() != self.account.lower():
             raise ValueError('OAuth token belongs to a different sending account')
-        raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
+        raw = wire['raw']
         request = Request('https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
                           data=json.dumps({'raw': raw}).encode(), method='POST',
                           headers={'Authorization': 'Bearer ' + token,
@@ -79,7 +96,8 @@ class GmailPitchSender:
         if type(data) is not dict or type(data.get('id')) is not str or not data['id']:
             raise RuntimeError('provider returned no message id; outcome unknown')
         return {'message_id': data['id'], 'thread_id': data.get('threadId'),
-                'status': 'provider_accepted', 'delivered': 'unverified'}
+                'status': 'provider_accepted', 'delivered': 'unverified',
+                'rfc_message_id': wire['message_id'], 'wire_sha256': wire['wire_sha256']}
 
 
 class PitchExecution:
