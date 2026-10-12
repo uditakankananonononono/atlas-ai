@@ -175,7 +175,8 @@ def fetch_case_metadata_bounded(case_id: str, transport: httpx.BaseTransport | N
                 parser.parse(robots_text.splitlines())
                 if not parser.can_fetch(USER_AGENT, row['url']):
                     return _safe(row, 'robots_denied')
-                # 1b. Crawl-delay: honored or the page is skipped; never ignored.
+                # 1b. Crawl-delay: a whole-number delay the stdlib parser reads is honored (or the page is skipped above the cap).
+                # Fractional, negative or malformed values are NOT read by the stdlib parser and count as no delay.
                 delay = parser.crawl_delay(USER_AGENT)
                 seen_delay = delay or 0
                 if delay is not None and delay > max_crawl_delay:

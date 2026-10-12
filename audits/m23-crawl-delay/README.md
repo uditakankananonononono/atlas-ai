@@ -24,5 +24,22 @@ Mutated files are SHA-256 checked as restored. M12 takes ~50s because the mutant
 - One robots plus one page request per call: there is no cross-call, per-host pacing.
 - The legacy unbounded `admitted_cases.fetch_case_metadata` (used by tests/modules/test_m23_admitted_cases.py, shadowed in
   routes.py by the bounded import) still ignores Crawl-delay.
-- The sync route can block up to 30s per request (it runs in the threadpool).
+- 30s is only the DEFAULT cap on the requested Crawl-delay sleep. It is not a wall-clock bound for the route. A call also
+  spends time on the robots request, the page request and parsing (httpx timeouts are per phase, with no total deadline),
+  and `max_crawl_delay` can be set up to 120s. Nominal per-call time is about 2*T + D (T = httpx timeout per phase, 8s;
+  D = Crawl-delay actually slept, at most max_crawl_delay). No timing acceptance test exists. The sync route runs in the
+  threadpool, so a slow call holds a worker.
+- The per-call delay is not cross-call or concurrent pacing: it only spaces that call's robots request from its page
+  request. Pacing across calls to the same host is a separate mechanism (HostPacer, audits/m23-host-pacing/).
+- Only whole-number delays are honored. Fractional policies (for example `Crawl-delay: 0.5` or `2.5`), negative and
+  malformed values are not read by the stdlib `RobotFileParser` and are treated as no delay; a test pins that stdlib
+  limitation, it is not a compliant fractional-delay implementation. Do not read this as "all robots policies handled".
+- `sleep` is a trusted callable and is not validated; a non-callable or a raising callable propagates its error.
+- Tests do not cover: the upper cap boundary of 120, a non-finite `max_crawl_delay` (rejected by the range check, not
+  separately tested), or an exception inside the injected sleep.
+- `test_result_contains_no_robots_text_or_error_detail` is named more strongly than it asserts: it checks that the string
+  'User-agent' is absent and that the result is a superset of the row keys. It does not prove that no arbitrary error
+  detail can appear.
+- Harness: a mutant is CAUGHT on rc=1 plus FAILED lines. It does not distinguish an assertion failure from a setup or
+  teardown error beyond that summary, and only the first failing test ids are kept, not the full trace.
 - Crawl-delay values the stdlib `RobotFileParser` does not parse (non-digit, negative, decimal) are treated as no delay.
