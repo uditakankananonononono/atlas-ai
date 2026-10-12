@@ -136,6 +136,9 @@ def _limits():
 BENCH_ALLOWED = (("python3", "-m", "unittest"), ("python3", "-m", "pytest"), ("pytest",))
 
 
+SANDBOX_ENV = {}  # operator-extendable extra env for allowlisted runs (e.g. PYTHONUSERBASE)
+
+
 def _allowed(argv, allowlist):
     """argv must start with one of the allowlisted prefixes; no shell is ever used."""
     return any(tuple(argv[:len(a)]) == tuple(a) for a in allowlist)
@@ -149,6 +152,7 @@ def _sandbox_run(base, argv, allowlist, timeout=60, extra_env=None):
     if not _allowed(argv, allowlist):
         raise _err("command_not_allowlisted")
     env = {"PATH": "/usr/local/bin:/usr/bin:/bin", "HOME": base, "LANG": "C"}
+    env.update(SANDBOX_ENV)
     env.update(extra_env or {})
     return subprocess.run(argv, cwd=base, env=env, capture_output=True, timeout=timeout,
                           preexec_fn=_limits, stdin=subprocess.DEVNULL)

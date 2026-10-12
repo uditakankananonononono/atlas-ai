@@ -195,5 +195,39 @@ class M(unittest.TestCase):
         self.assertEqual(m["counts"]["VERIFIED"], 0)
 
 
+
+gen = load("sugarcode_evidence_gen_g16")
+
+
+class G(unittest.TestCase):
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+        w(self.d, "spec/index.json", json.dumps([{"slug": "alpha"}, {"slug": "beta"}]).encode())
+        w(self.d, "tests/data/a.csv", b"1,2\n")
+        w(self.d, "tests/data/b.csv", b"3\n")
+        w(self.d, "tests/test_alpha_x.py", b"open('tests/data/a.csv'); open('tests/data/b.csv')\n")
+        w(self.d, "tests/test_beta_x.py", b"open('tests/data/b.csv')\n")
+        w(self.d, "PROVENANCE.md", b"- tests/data/a.csv: copied from a public archive\n")
+
+    def test_only_provenance_listed_fixtures_named_in_tests(self):
+        g = gen.generate(self.d)
+        self.assertEqual(sorted(g["evidence"]), ["alpha"])
+        ds = g["evidence"]["alpha"]["module_run"]["datasets"]
+        self.assertEqual([d["path"] for d in ds], ["tests/data/a.csv"])  # b.csv is not in PROVENANCE.md
+        self.assertEqual(g["skipped"]["beta"], "no_provenance_listed_fixture_named_in_tests")
+
+    def test_no_provenance_file_means_no_entries(self):
+        os.remove(os.path.join(self.d, "PROVENANCE.md"))
+        self.assertEqual(gen.generate(self.d)["evidence"], {})
+
+    def test_generated_entry_is_not_vouched_for(self):
+        g = gen.generate(self.d)
+        fail = lambda argv: subprocess.CompletedProcess(argv, 1, b"1 failed\n", b"")
+        a = mx.build_matrix(self.d, g["evidence"], fail)["rows"]
+        self.assertTrue(all(r["columns"]["data_run"] == "UNVERIFIED" for r in a))
+        ok = lambda argv: subprocess.CompletedProcess(argv, 0, b"2 passed in 0.1s\n", b"")
+        self.assertEqual({r["slug"]: r["columns"]["data_run"] for r in mx.build_matrix(self.d, g["evidence"], ok)["rows"]}["alpha"], "VERIFIED")
+
+
 if __name__ == "__main__":
     unittest.main()
