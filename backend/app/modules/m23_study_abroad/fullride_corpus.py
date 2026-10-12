@@ -176,27 +176,37 @@ ROWS = [
 
 # Evidence captured from live official pages on 2026-10-12.
 # A route appears here ONLY when its official pages supplied the basis text
-# in this pass. Every flag that is True carries its OWN basis quote and URL
-# in flag_basis - a nonempty shared quote is never treated as proof of a
-# different flag. A False flag means NOT ESTABLISHED in this pass, never
-# "rejected": it is a statement about this pass, not about the route (for
-# example, a route may permit optional IELTS submission while this pass
-# simply captured no quote naming it).
-# - full_ride: the page states coverage of full cost (an itemized full
-#   package or 100% of demonstrated need). award_type distinguishes
-#   full_cost_award (merit/unconditional) from meets_full_demonstrated_need
-#   (conditional on assessed family finances; not a full ride for a profile
-#   without assessed need).
-# - requires_extra_written_test: True only where a program- or
-#   course-specific written exam is documented; False on verified rows means
-#   the captured testing page lists SAT/ACT + school records + English
-#   proficiency as the complete published process.
+# in this pass. Every True flag carries its OWN verbatim basis quote + URL in
+# flag_basis - no fallback: a nonempty shared quote never masquerades as a
+# flag record. Quote strings hold source text only; any reading we add sits in
+# a separate "inference" field, labeled, never blended into the quote.
+# full_ride=True projects the row's official coverage quote explicitly as its
+# own flag record (see the projection loop below). A False flag means NOT
+# ESTABLISHED in this pass, never "rejected" - except flags listed in
+# established_negative, where the official page itself contradicts the flag.
 VERIFIED_AT = "2026-10-12"
 
 
-def _fb(basis, url):
-    return {"basis": basis, "url": url}
+def _fb(basis, url, inference=None):
+    rec = {"basis": basis, "url": url}
+    if inference:
+        rec["inference"] = inference
+    return rec
 
+
+_INTL_HARVARD = "https://college.harvard.edu/admissions/apply/international-applicants"
+_YALE_INTL = "https://admissions.yale.edu/applying-yale-international-student"
+_PRINCE_TEST = "https://admission.princeton.edu/apply/standardized-testing"
+_PRINCE_INTL = "https://admission.princeton.edu/apply/international-students"
+_STANFORD_TEST = "https://admission.stanford.edu/apply/first-year/testing.html"
+_STANFORD_INTL = "https://admission.stanford.edu/apply/international/"
+_RICE_INTL = "https://admission.rice.edu/apply/first-year-international-applicants"
+_BROWN_TEST = "https://admission.brown.edu/first-year/standardized-tests"
+
+_PRINCETON_CYCLE = ("Princeton will return to requiring standardized testing for "
+                    "undergraduate admission beginning with the 2027-28 admission cycle. "
+                    "First-year and transfer applicants seeking to enroll in fall 2028 "
+                    "will need to submit either SAT or ACT scores.")
 
 EVIDENCE = {
     "Harvard University": {
@@ -209,21 +219,24 @@ EVIDENCE = {
                  "assets: Free",
         "flag_basis": {
             "requires_extra_written_test": _fb(
-                "Harvard requires the SAT or ACT to meet its standardized testing "
-                "requirement - the published testing process is SAT/ACT plus school "
-                "records, with no program-specific written exam",
-                "https://college.harvard.edu/admissions/apply/international-applicants"),
+                "Harvard requires the SAT or ACT to meet its standardized testing requirement",
+                _INTL_HARVARD,
+                "the published testing process is SAT/ACT plus school records - no "
+                "program-specific written exam"),
             "accepts_cbse": _fb(
-                "students may submit IB/A-level/other national leaving exam predictions "
-                "or results - CBSE Class X-XII is the Indian national leaving exam",
-                "https://college.harvard.edu/admissions/apply/international-applicants"),
+                "students lacking access to the SAT or ACT may submit AP or GCSE results, "
+                "IB/A-level/other national leaving exam predictions or results",
+                _INTL_HARVARD,
+                "CBSE Class X-XII is the Indian national leaving exam"),
             "accepts_sat": _fb(
                 "Harvard requires the SAT or ACT to meet its standardized testing requirement",
-                "https://college.harvard.edu/admissions/apply/international-applicants"),
+                _INTL_HARVARD),
             "accepts_ielts": _fb(
                 "you are not required to take an English proficiency exam (such as the "
                 "TOEFL, IELTS, etc.), but you may submit scores if you wish to do so",
-                "https://college.harvard.edu/admissions/apply/international-applicants"),
+                _INTL_HARVARD,
+                "the same page states English language proficiency examinations cannot "
+                "be used to meet the standardized testing requirement"),
         }},
     "Yale University": {
         "award_type": "meets_full_demonstrated_need",
@@ -234,18 +247,19 @@ EVIDENCE = {
                  "student's citizenship or immigration status - without requiring loans",
         "flag_basis": {
             "requires_extra_written_test": _fb(
-                "first-year and transfer applicants are required to include scores from "
-                "the ACT or SAT; scores from other exams, including international leaving "
-                "exams or English proficiency exams, will not fulfill the testing "
-                "requirement - the published process has no program-specific written exam",
-                "https://admissions.yale.edu/standardized-testing"),
+                "Scores from other exams, including international leaving exams or "
+                "English proficiency exams will not fulfill Yale's testing requirement",
+                _YALE_INTL,
+                "the published requirement is SAT/ACT - no program-specific written exam"),
             "accepts_sat": _fb(
-                "All first-year and transfer applicants must include scores from the ACT or SAT",
-                "https://admissions.yale.edu/standardized-testing"),
+                "International applicants fulfill the same standardized testing "
+                "requirements as domestic applicants. First-year and transfer applicants "
+                "must submit scores from the SAT or ACT.",
+                _YALE_INTL),
             "accepts_ielts": _fb(
                 "required to submit results from any of the proficiency tests below: "
-                "TOEFL, IELTS, ... (IELTS named in the proficiency list)",
-                "https://admissions.yale.edu/applying-yale-international-student"),
+                "TOEFL; IELTS; Cambridge English Qualifications; DET; InitialView",
+                _YALE_INTL),
         }},
     "Princeton University": {
         "award_type": "meets_full_demonstrated_need",
@@ -256,22 +270,27 @@ EVIDENCE = {
                  "aid; applies the same financial aid policy to international students",
         "flag_basis": {
             "requires_extra_written_test": _fb(
-                "the published standardized testing policy is SAT or ACT submission - no "
-                "program-specific written exam",
-                "https://admission.princeton.edu/apply/standardized-testing"),
+                _PRINCETON_CYCLE, _PRINCE_TEST,
+                "the published policy is SAT/ACT submission - no program-specific "
+                "written exam"),
             "accepts_cbse": _fb(
                 "achieved marks from external exams (for example: IGCSE, British A-Level, "
                 "International Baccalaureate, national leaving exams such as Std X/Std XII "
                 "in India)",
-                "https://admission.princeton.edu/apply/international-students"),
+                _PRINCE_INTL),
             "accepts_sat": _fb(
-                "applicants will need to submit either SAT or ACT scores (required from "
-                "the 2027-28 cycle; accepted in all cycles)",
-                "https://admission.princeton.edu/apply/standardized-testing"),
+                _PRINCETON_CYCLE + " For first-year and transfer applicants seeking to "
+                "enroll in fall 2027, Princeton remains test optional.",
+                _PRINCE_TEST,
+                "cycle-conditional: SAT/ACT optional for 2026-27 (fall 2027 entry), "
+                "required from 2027-28 (fall 2028 entry)"),
             "accepts_ielts": _fb(
-                "you must take the TOEFL, the IELTS Academic, the Duolingo English Test "
-                "or the PTE Academic (when English is not the language of instruction)",
-                "https://admission.princeton.edu/apply/international-students"),
+                "If English is not your native language and you are attending a school "
+                "where English is not the language of instruction, you must take the "
+                "Test of English as a Foreign Language (TOEFL), the International English "
+                "Language Testing System Academic (IELTS Academic), the Duolingo English "
+                "Test (DET) or the Pearson Test of English Academic (PTE Academic).",
+                _PRINCE_TEST),
         }},
     "Massachusetts Institute of Technology": {
         "award_type": "meets_full_demonstrated_need",
@@ -291,14 +310,16 @@ EVIDENCE = {
                  "Class of 2029",
         "flag_basis": {
             "requires_extra_written_test": _fb(
-                "Brown has returned to a policy requiring standardized test scores "
-                "(either SAT or ACT scores) - the published process has no "
-                "program-specific written exam",
-                "https://admission.brown.edu/first-year/standardized-tests"),
+                "Brown University has returned to a policy requiring standardized test "
+                "scores (either SAT or ACT scores) for first-year applicants beginning "
+                "with the 2024-25 admission cycle",
+                _BROWN_TEST,
+                "no program-specific written exam in the published policy"),
             "accepts_sat": _fb(
-                "requiring standardized test scores (either SAT or ACT scores) for "
-                "first-year applicants beginning with the 2024-25 admission cycle",
-                "https://admission.brown.edu/first-year/standardized-tests"),
+                "Brown University has returned to a policy requiring standardized test "
+                "scores (either SAT or ACT scores) for first-year applicants beginning "
+                "with the 2024-25 admission cycle",
+                _BROWN_TEST),
         }},
     "Stanford University": {
         "award_type": "meets_full_demonstrated_need",
@@ -310,21 +331,21 @@ EVIDENCE = {
                  "need of all admitted students regardless of citizenship",
         "flag_basis": {
             "requires_extra_written_test": _fb(
-                "ACT or SAT scores are required; self-report your highest scores - the "
-                "published process has no program-specific written exam",
-                "https://admission.stanford.edu/apply/first-year/testing.html"),
+                "ACT or SAT scores are required", _STANFORD_TEST,
+                "the published process lists SAT/ACT self-reporting - no "
+                "program-specific written exam"),
             "accepts_cbse": _fb(
                 "We do not have a preference for a specific curriculum (A-Level, IB, AP, "
-                "National, etc.) - CBSE is the Indian national curriculum",
-                "https://admission.stanford.edu/apply/international/"),
-            "accepts_sat": _fb(
-                "ACT or SAT scores are required",
-                "https://admission.stanford.edu/apply/first-year/testing.html"),
+                "National, etc.)",
+                _STANFORD_INTL,
+                "CBSE is the Indian national curriculum"),
+            "accepts_sat": _fb("ACT or SAT scores are required", _STANFORD_TEST),
             "accepts_ielts": _fb(
-                "we do not require any English proficiency exams; you are welcome to "
-                "self-report your scores from any English proficiency exam (IELTS is an "
-                "English proficiency exam)",
-                "https://admission.stanford.edu/apply/international/"),
+                "we do not require any English proficiency exams. If you would like to "
+                "send us one, you are welcome to self-report your scores from any English "
+                "proficiency exam",
+                _STANFORD_INTL,
+                "IELTS is an English proficiency exam"),
         }},
     "Vanderbilt University": {
         "award_type": "meets_full_demonstrated_need",
@@ -342,23 +363,24 @@ EVIDENCE = {
                  "inclusive of International Students; loan-free institution",
         "flag_basis": {
             "requires_extra_written_test": _fb(
-                "the published requirements list SAT/ACT submission windows and an "
-                "English proficiency demonstration - no program-specific written exam "
-                "(architecture/art portfolio submissions are not written tests)",
-                "https://admission.rice.edu/apply/first-year-international-applicants"),
+                "Last applicable ACT; Last applicable SAT (application requirement "
+                "submission windows)",
+                _RICE_INTL,
+                "architecture/art portfolio submissions are not written tests - no "
+                "program-specific written exam in the published requirements"),
             "accepts_cbse": _fb(
-                "Applicants studying in an international exam-based curriculum must "
-                "submit final exam results (for example IGCE/GCSE, CBSE X/AISSCE X) - "
-                "CBSE named",
-                "https://admission.rice.edu/apply/first-year-international-applicants"),
+                "Applicants studying in an international exam-based curriculum, must "
+                "submit: Final exam results (for example IGCE/GCSE, CBSE X/AISSCE X)",
+                _RICE_INTL),
             "accepts_sat": _fb(
-                "the application requirements include SAT/ACT submission windows "
-                "(Last applicable SAT / Last applicable ACT)",
-                "https://admission.rice.edu/apply/first-year-international-applicants"),
+                "Last applicable SAT (submission window listed in the application "
+                "requirements)",
+                _RICE_INTL,
+                "SAT scores are accepted through the published windows"),
             "accepts_ielts": _fb(
-                "International English Language Testing System (IELTS) | 7 (minimum "
-                "score table)",
-                "https://admission.rice.edu/apply/first-year-international-applicants"),
+                "International English Language Testing System (IELTS) | 7",
+                _RICE_INTL,
+                "from the Demonstration of English proficiency minimum-score table"),
         }},
     "University of Pennsylvania": {
         "award_type": "meets_full_demonstrated_need",
@@ -394,12 +416,20 @@ EVIDENCE = {
                  "fee, annual grant towards living costs and one return air fare per year. "
                  "Excluded from the kept plan: many Oxford courses require written "
                  "admissions tests, which the request rules out",
-        "flag_basis": {}},
+        "flag_basis": {
+            "requires_extra_written_test": _fb(
+                "Academic achievements, admissions tests, written work, interviews, "
+                "references, and personal statements are reviewed as a whole",
+                "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford",
+                "written admissions tests are course-specific and common across Oxford "
+                "courses; the request rules out routes with extra written tests"),
+        }},
     # corrections identified in the re-audit, evidence-backed
     "Hungarian Government": {
         "award_type": None,
         "full_ride": False, "requires_extra_written_test": False,
         "accepts_cbse": False, "accepts_sat": False, "accepts_ielts": False,
+        "established_negative": ["full_ride"],
         "checked_url": "https://stipendiumhungaricum.hu/",
         "basis": "all your tuition fees will be covered, and your accommodation costs will "
                  "be supported - a contribution, not a full ride; the programme FAQ states "
@@ -413,8 +443,22 @@ EVIDENCE = {
         "basis": "CSCA is a mandatory requirement for applicants to undergraduate programs "
                  "at Chinese Government Scholarship universities for the 2026 and 2027 "
                  "academic years",
-        "flag_basis": {}},
+        "flag_basis": {
+            "requires_extra_written_test": _fb(
+                "CSCA is a mandatory requirement for applicants to undergraduate programs "
+                "at Chinese Government Scholarship universities for the 2026 and 2027 "
+                "academic years",
+                "https://english.shanghai.gov.cn/en-FAQs-StudyinShanghai/20251218/134bb78943f640519e2185ff83051f5d.html"),
+        }},
 }
+
+# Explicit projection: a full_ride=True flag gets the row's official coverage
+# quote as its OWN flag record. No fallback - the entry physically exists.
+for _ev in EVIDENCE.values():
+    if _ev["full_ride"]:
+        _ev["flag_basis"]["full_ride"] = {
+            "basis": _ev["basis"], "url": _ev["checked_url"],
+            "projected_from": "row coverage quote (explicit projection)"}
 
 _FLAG_FIELDS = ("full_ride", "requires_extra_written_test", "accepts_cbse",
                 "accepts_sat", "accepts_ielts")
@@ -429,6 +473,18 @@ def flag_basis(uni, flag):
     return dict(rec) if rec else None
 
 
+def flag_status(uni, flag):
+    """evidenced_true / established_negative / not_established for one flag."""
+    ev = EVIDENCE.get(uni)
+    if ev is None or flag not in _FLAG_FIELDS:
+        return "not_established"
+    if ev[flag]:
+        return "evidenced_true"
+    if flag in ev.get("established_negative", ()):  # official page contradicts it
+        return "established_negative"
+    return "not_established"
+
+
 def _evidence_for(uni):
     return EVIDENCE.get(uni)
 
@@ -436,8 +492,10 @@ def _evidence_for(uni):
 def corpus_rows(as_of=CURATED_AT):
     """Rows in the exact s4_7_abroad_fullride schema, flags from EVIDENCE only.
 
-    Every True flag carries its own basis quote and URL in flag_basis. False
-    means NOT ESTABLISHED in the 2026-10-12 pass, never "rejected".
+    Every True flag carries its own verbatim basis quote + URL in flag_basis;
+    any reading we add sits in a labeled inference field, never blended into a
+    quote. flag_status() distinguishes established-negative from not-established
+    so consumers never conflate unknown with ruled-out.
     """
     rows = []
     for i, (country, uni, schol, url) in enumerate(ROWS, 1):
@@ -470,7 +528,7 @@ def coverage(as_of=CURATED_AT):
     verified = [r for r in rows if _evidence_for(r["university"]) is not None]
     fitting = [r for r in verified
                if r["full_ride"] and not r["requires_extra_written_test"]
-               and r["accepts_cbse"] and (r["accepts_sat"] or r["accepts_ielts"])
+               and r["accepts_cbse"] and r["accepts_sat"]
                and r["country"] != "India"]
     fitting_countries = sorted({r["country"] for r in fitting})
     need_based = [r for r in fitting
@@ -486,6 +544,40 @@ def coverage(as_of=CURATED_AT):
                 "full_cost_award": len(fitting) - len(need_based)},
             "not_established_rows": len(rows) - len(verified),
             "curated_at": CURATED_AT, "verified_at": VERIFIED_AT,
-            "verification": "every True flag carries its own official-page basis quote "
-                            "captured on verified_at; a False flag means not established "
-                            "in this pass, never rejected"}
+            "verification": "every True flag carries its own verbatim official-page basis "
+                            "quote captured on verified_at, with any reading in a labeled "
+                            "inference field; a False flag means not established in this "
+                            "pass (never rejected) unless flag_status says "
+                            "established_negative"}
+
+
+def translate_reasons(uni, reasons):
+    """Translate the pinned s4_7 reason codes at the consumer boundary.
+
+    The pinned planner emits flat codes ("not_full_ride", "cbse_not_accepted",
+    "test_credential_not_accepted") that conflate unknown with ruled-out. The
+    corpus evidence record knows which is which, so the consumer translates:
+    *_established_negative only where the official page itself contradicts the
+    flag, otherwise *_not_established. "requires_extra_written_test" is already
+    an evidenced-positive exclusion and passes through unchanged.
+    """
+    out = []
+    for reason in reasons:
+        if reason == "requires_extra_written_test":
+            out.append(reason)
+        elif reason == "not_full_ride":
+            out.append("full_ride_established_negative"
+                       if flag_status(uni, "full_ride") == "established_negative"
+                       else "full_ride_not_established")
+        elif reason == "cbse_not_accepted":
+            out.append("cbse_established_negative"
+                       if flag_status(uni, "accepts_cbse") == "established_negative"
+                       else "cbse_not_established")
+        elif reason == "test_credential_not_accepted":
+            neg = (flag_status(uni, "accepts_sat") == "established_negative"
+                   or flag_status(uni, "accepts_ielts") == "established_negative")
+            out.append("test_credential_established_negative" if neg
+                       else "test_credential_not_established")
+        else:
+            out.append(reason)
+    return out

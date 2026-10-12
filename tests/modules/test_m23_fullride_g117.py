@@ -34,21 +34,50 @@ def test_verified_and_fitting_counts_are_honest():
 
 
 def test_every_true_flag_has_its_own_basis_quote():
-    """A nonempty shared quote is never treated as proof of a different flag:
-    each True credential/testing flag carries its own basis + URL."""
+    """No fallback: EVERY True flag across all 5 flag fields, on every evidence
+    row, must physically carry its own nonempty basis entry with a URL. A
+    nonempty shared string never masquerades as a flag record."""
     for uni, ev in fc.EVIDENCE.items():
-        assert ev["basis"] and ev["checked_url"].startswith("https://")
-        for flag in ("accepts_cbse", "accepts_sat", "accepts_ielts"):
+        for flag in FLAGS:
             fb = fc.flag_basis(uni, flag)
-            if ev[flag]:
-                assert fb and fb["basis"] and fb["url"].startswith("https://"), (uni, flag)
+            if ev[flag] is True:
+                assert fb is not None, (uni, flag)
+                assert fb["basis"].strip() and fb["url"].startswith("https://"), (uni, flag)
             else:
-                # False = not established in this pass: no basis claimed
-                assert fb is None, (uni, flag)
-        if ev["requires_extra_written_test"] is False:
-            fb = fc.flag_basis(uni, "requires_extra_written_test")
-            if uni in FITTING or uni == "Yale University" or uni == "Brown University":
-                assert fb and fb["basis"] and fb["url"], (uni, flag)
+                # False flags may carry a published-process basis (e.g. a verified
+                # no-extra-test page) but never require one
+                if fb is not None:
+                    assert fb["basis"].strip() and fb["url"].startswith("https://")
+
+
+def test_full_ride_projection_is_explicit_per_row():
+    for uni, ev in fc.EVIDENCE.items():
+        fb = fc.flag_basis(uni, "full_ride")
+        if ev["full_ride"]:
+            assert fb is not None and fb["basis"] == ev["basis"]
+            assert fb["url"] == ev["checked_url"]
+        else:
+            assert fb is None, uni
+
+
+def test_quotes_are_verbatim_and_inference_is_labeled():
+    """Basis strings hold source text only; any reading we add sits in the
+    labeled inference field, never blended into the quote."""
+    harvard_cbse = fc.flag_basis("Harvard University", "accepts_cbse")
+    assert harvard_cbse["basis"].endswith("national leaving exam predictions or results")
+    assert "CBSE" not in harvard_cbse["basis"]
+    assert "CBSE" in harvard_cbse["inference"]
+    stanford_cbse = fc.flag_basis("Stanford University", "accepts_cbse")
+    assert stanford_cbse["basis"] == ("We do not have a preference for a specific "
+                                      "curriculum (A-Level, IB, AP, National, etc.)")
+    assert "CBSE" in stanford_cbse["inference"]
+    stanford_ielts = fc.flag_basis("Stanford University", "accepts_ielts")
+    assert "IELTS" not in stanford_ielts["basis"]
+    assert "IELTS" in stanford_ielts["inference"]
+    for uni, ev in fc.EVIDENCE.items():
+        for rec in ev.get("flag_basis", {}).values():
+            if "inference" in rec:
+                assert rec["inference"] not in rec["basis"]
 
 
 def test_flag_basis_matches_what_the_quote_establishes():
@@ -56,11 +85,23 @@ def test_flag_basis_matches_what_the_quote_establishes():
     assert "national leaving exam" in fc.flag_basis("Harvard University", "accepts_cbse")["basis"]
     assert "CBSE X/AISSCE X" in fc.flag_basis("Rice University", "accepts_cbse")["basis"]
     assert "Std X/Std XII in India" in fc.flag_basis("Princeton University", "accepts_cbse")["basis"]
-    assert "a preference for a specific curriculum" in fc.flag_basis("Stanford University", "accepts_cbse")["basis"]
     assert "IELTS" in fc.flag_basis("Rice University", "accepts_ielts")["basis"]
     assert "IELTS Academic" in fc.flag_basis("Princeton University", "accepts_ielts")["basis"]
     assert "IELTS" in fc.flag_basis("Yale University", "accepts_ielts")["basis"]
     assert "IELTS" in fc.flag_basis("Harvard University", "accepts_ielts")["basis"]
+    assert "2027-28" in fc.flag_basis("Princeton University", "accepts_sat")["basis"]
+    assert "remains test optional" in fc.flag_basis("Princeton University", "accepts_sat")["basis"]
+    oxford = fc.flag_basis("University of Oxford", "requires_extra_written_test")
+    assert oxford and "admissions tests" in oxford["basis"]
+    china = fc.flag_basis("Chinese Government (CSC)", "requires_extra_written_test")
+    assert china and "CSCA" in china["basis"]
+
+
+def test_flag_status_distinguishes_negative_from_not_established():
+    assert fc.flag_status("Hungarian Government", "full_ride") == "established_negative"
+    assert fc.flag_status("Hungarian Government", "accepts_cbse") == "not_established"
+    assert fc.flag_status("Yale University", "accepts_cbse") == "not_established"
+    assert fc.flag_status("Rice University", "accepts_cbse") == "evidenced_true"
 
 
 def test_yale_not_fitting_until_cbse_basis_exists():
@@ -113,11 +154,30 @@ def test_s47_keeps_only_routes_with_full_flag_evidence():
     by_uni = {r["university"]: e["reasons"]
               for e in out["excluded"]
               for r in fc.corpus_rows() if r["id"] == e["id"]}
+    # pinned planner codes (flat; conflation is translated at the consumer boundary)
     assert "requires_extra_written_test" in by_uni["Chinese Government (CSC)"]
     assert "requires_extra_written_test" in by_uni["University of Oxford"]
     assert "not_full_ride" in by_uni["Hungarian Government"]
     assert "cbse_not_accepted" in by_uni["Massachusetts Institute of Technology"]
-    assert "cbse_not_accepted" in by_uni["Yale University"]
+
+
+def test_plan_boundary_translates_reason_codes():
+    """The consumer translates the pinned flat codes: established-negative only
+    where the official page contradicts the flag, otherwise not-established."""
+    plan = fullride_plan.build_plan(PROFILE, "2026-10-12")
+    by_uni = {r["university"]: e["reasons"]
+              for e in plan["excluded"]
+              for r in fc.corpus_rows() if r["id"] == e["id"]}
+    assert "full_ride_established_negative" in by_uni["Hungarian Government"]
+    assert "not_full_ride" not in by_uni["Hungarian Government"]
+    assert "cbse_not_established" in by_uni["Yale University"]
+    assert "cbse_not_established" in by_uni["Massachusetts Institute of Technology"]
+    assert "cbse_not_accepted" not in by_uni["Yale University"]
+    assert "requires_extra_written_test" in by_uni["University of Oxford"]
+    assert fc.translate_reasons("Hungarian Government", ["not_full_ride"]) == [
+        "full_ride_established_negative"]
+    assert fc.translate_reasons("Yale University", ["cbse_not_accepted"]) == [
+        "cbse_not_established"]
 
 
 def test_plan_text_is_award_type_honest():
@@ -131,6 +191,31 @@ def test_plan_text_is_award_type_honest():
     assert any("need-based routes cover assessed need, not a fixed full ride" in g
                for g in plan["gaps"])
     assert plan["corpus_coverage"]["fitting_by_award_type"]["meets_full_demonstrated_need"] == 4
+
+
+def test_plan_never_presents_ielts_as_an_admission_exam():
+    """Standardized-test credential and English-proficiency credential are
+    separate in actions and gaps; IELTS is never offered as an SAT substitute."""
+    plan = fullride_plan.build_plan(PROFILE, "2026-10-12")
+    texts = [a for c in plan["countries"] for r in c["routes"] for a in r["actions"]]
+    texts += plan["gaps"]
+    assert not any("(or IELTS)" in t for t in texts)
+    assert not any("assumes SAT or IELTS" in t for t in texts)
+    for c in plan["countries"]:
+        for r in c["routes"]:
+            assert any(a.startswith("English proficiency:") for a in r["actions"]), r
+    princeton = next(r for c in plan["countries"] for r in c["routes"]
+                     if r["university"] == "Princeton University")
+    assert any("optional for 2026-27 (fall 2027 entry)" in a and
+               "required from 2027-28 (fall 2028 entry)" in a
+               for a in princeton["actions"])
+
+
+def test_plan_without_sat_requires_standardized_credential_not_english():
+    plan = fullride_plan.build_plan({"curriculum": "CBSE", "ielts": 8}, "2026-10-12")
+    assert any("register for the SAT or ACT" in g and "never substitute" in g
+               for g in plan["gaps"] + [a for c in plan["countries"]
+                                        for r in c["routes"] for a in r["actions"]])
 
 
 def test_no_test_credential_refuses_and_plan_deterministic():
