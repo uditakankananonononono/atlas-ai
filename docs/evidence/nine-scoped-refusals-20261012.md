@@ -34,7 +34,9 @@ raw mutation exposure are covered here.
 Python 3.12, declared Playwright package installed locally; no browser launched
 and no provider mutation or payment executed.
 
-- Bounded selector: **102 passed, 1 deselected**. Includes scoped entry tests,
+- Bounded inclusive selector: **103 passed** with explicit local development
+  auth test opt-in (`ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development`) and
+  `PYTHONPATH=backend`, Python 3.12, `--noconftest`. Includes scoped entry tests,
   imported HTTP adapters with zero MockTransport calls, imported browser
   wrapper tests with zero driver writes and preserved reads, existing daemon
   and browser-service capture/submit tests, and email/calendar offline tests.
@@ -44,8 +46,12 @@ and no provider mutation or payment executed.
   Source-entry extraction executes actual AST function bodies with isolated
   spies. This is scoped unit evidence, not full-stack endpoint execution.
 - Two previous Gmail connect/watch success tests now assert refusal.
-- The deselected pubsub auth test independently fails on the clean base with
-  the same expected 403/actual 401 mismatch; it was not changed.
+- Initial run without local auth test opt-in: 102 passed, 1 deselected.
+  The pubsub test expected 403 and got 401 on both patch and clean base in
+  that environment, because `--noconftest` disables the normal autouse
+  development-auth fixture. This is environment-specific, not a baseline
+  defect. Reinstating both fixture environment values yields 103 passed
+  inclusive. The test itself was not changed.
 - Broader billing regression attempts are incomplete: full selector stalls in
   embedded Postgres setup, no-conftest loses fixture availability, and a
   SQLite-filtered selector also exceeds its 35-second bound. No passing total
@@ -54,3 +60,14 @@ and no provider mutation or payment executed.
 
 These are scoped fail-closed paths. No live end-to-end provider evidence,
 aggregate coverage promotion or new standing authorization is claimed.
+
+Canonical bounded reproduction from repository root:
+
+```sh
+PYTHONPATH=backend ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development /home/sandbox/venv312/bin/python -m pytest --noconftest tests/runtime/guardrails/test_nine_scoped_effect_refusals.py tests/modules/test_m13_pc_daemon.py tests/modules/test_m13_browser_agent.py tests/modules/test_m13_capture_bound_submit.py tests/modules/test_m10_email_assistant.py tests/modules/test_m11_calendar_intelligence.py -q
+```
+
+The development-auth opt-in is test-only, replicating the existing fixture;
+production authentication defaults are unchanged. The local browser wrapper
+intentionally omits locator.evaluate too: a composed fill path using it
+refuses before any driver write rather than acquiring a new effect permit.
