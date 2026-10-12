@@ -236,7 +236,7 @@ def test_scope_block_and_no_effect_surface():
         sweep.run(request())
 
 
-# ---- repair pins (auditor-2 NEEDS-REPAIR; the two runtime repairs authorized)
+# ---- repair pins (two runtime repair pins)
 
 class _DictSub(dict):
     pass
@@ -278,7 +278,7 @@ def test_non_str_source_key_refused_cleanly():
     refuse(r, 'APPLY_REFUSED_BAD_TYPE:key')
 
 
-# ---- boundary pins (auditor survivors; doc LIMITS table values)
+# ---- boundary pins (boundary cases; doc LIMITS table values)
 
 def test_max_sources_200_ok_201_refused():
     mk = lambda n: [source(f's{i}', 'public_page', f'Unique Title {i}\n') for i in range(n)]
