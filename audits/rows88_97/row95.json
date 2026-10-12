@@ -1,0 +1,44 @@
+{
+  "row": 95,
+  "selectors": [
+    "tests/modules/test_group95_digits_execution.py"
+  ],
+  "timeout_seconds": 60,
+  "limits": [
+    "one fixed educational public split",
+    "no breakthrough or sector superiority",
+    "external benchmarks and broader data untested"
+  ],
+  "mutations": [
+    {
+      "id": "split_seed",
+      "path": "scripts/group95_digits.py",
+      "old": "random_state=42,stratify=",
+      "new": "random_state=7,stratify="
+    },
+    {
+      "id": "train_only_scaler",
+      "path": "scripts/group95_digits.py",
+      "old": "StandardScaler().fit([r['features'] for r in train])",
+      "new": "StandardScaler().fit([r['features'] for r in train+test])"
+    },
+    {
+      "id": "heldout_fraction",
+      "path": "scripts/group95_digits.py",
+      "old": "test_size=.25",
+      "new": "test_size=.3"
+    },
+    {
+      "id": "comparison_accuracy",
+      "path": "scripts/group95_digits.py",
+      "old": "'standardized_logistic_accuracy':float(score)",
+      "new": "'standardized_logistic_accuracy':0.0"
+    },
+    {
+      "id": "scaling_scope",
+      "path": "scripts/group95_digits.py",
+      "old": "'scaling':'fit on training only'",
+      "new": "'scaling':'fit on all data'"
+    }
+  ]
+}
