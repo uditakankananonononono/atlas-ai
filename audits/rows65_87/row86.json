@@ -1,0 +1,49 @@
+{
+  "row": 86,
+  "selectors": [
+    "tests/modules/test_module_function_ledger_r86.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "temp git-tree AST function counts, not accepted features",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "private",
+      "path": "backend/app/modules/instinct_doc/module_function_ledger_r86.py",
+      "old": "if not n.name.startswith(\"_\"):",
+      "new": "if True:"
+    },
+    {
+      "id": "added",
+      "path": "backend/app/modules/instinct_doc/module_function_ledger_r86.py",
+      "old": "funcs - old.get(path, set())",
+      "new": "funcs"
+    },
+    {
+      "id": "shortfall",
+      "path": "backend/app/modules/instinct_doc/module_function_ledger_r86.py",
+      "old": "max(0, target - n)",
+      "new": "0"
+    },
+    {
+      "id": "coverage",
+      "path": "backend/app/modules/instinct_doc/module_function_ledger_r86.py",
+      "old": "not (bad_old or bad_new)",
+      "new": "True"
+    },
+    {
+      "id": "complete",
+      "path": "backend/app/modules/instinct_doc/module_function_ledger_r86.py",
+      "old": "coverage_known and not below",
+      "new": "not below"
+    }
+  ]
+}
