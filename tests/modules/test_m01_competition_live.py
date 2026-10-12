@@ -81,3 +81,15 @@ def test_https_required_in_production(server):
     prod = public_http.Fetcher(["127.0.0.1"])  # allow_http False
     with pytest.raises(ValueError, match="HTTP_REFUSED_NONHTTPS"):
         competition_live.run(run_args(server), fetcher=prod)
+
+def test_empty_200_is_unverified_and_duplicate_links_deduped():
+    class Fetch:
+        allowed_hosts={'127.0.0.1'}
+        allow_http=True
+        def fetch(self,url):
+            if url.endswith('/listing'):
+                return {'status':200,'body':b'<a href="/contest">Science Competition</a><a href="/contest">Science Competition</a>','not_modified':False,'url':url}
+            return {'status':200,'body':b'','not_modified':False,'url':url}
+    out=competition_live.run({'as_of':'2026-10-12','listing_urls':['http://127.0.0.1/listing'],
+         'allowed_hosts':['127.0.0.1'],'existing_ids':[]},fetcher=Fetch())
+    assert out['additions']==[] and len(out['unverified_candidates'])==1

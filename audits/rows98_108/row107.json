@@ -1,0 +1,44 @@
+{
+  "row": 107,
+  "selectors": [
+    "tests/modules/test_m01_competition_live.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "existing",
+      "path": "backend/app/modules/m01_opportunity_discovery/competition_live.py",
+      "old": "if cand[\"id\"] in existing:",
+      "new": "if False:"
+    },
+    {
+      "id": "verify",
+      "path": "backend/app/modules/m01_opportunity_discovery/competition_live.py",
+      "old": "ok = check[\"status\"] == 200 and len(check[\"body\"]) > 0",
+      "new": "ok = True"
+    },
+    {
+      "id": "keyword",
+      "path": "backend/app/modules/m01_opportunity_discovery/competition_live.py",
+      "old": "if not _is_candidate(text):",
+      "new": "if False:"
+    },
+    {
+      "id": "duplicate",
+      "path": "backend/app/modules/m01_opportunity_discovery/competition_live.py",
+      "old": "if cid in seen_urls:",
+      "new": "if False:"
+    },
+    {
+      "id": "candidate_cap",
+      "path": "backend/app/modules/m01_opportunity_discovery/competition_live.py",
+      "old": "MAX_CANDIDATES = 50",
+      "new": "MAX_CANDIDATES = 1"
+    }
+  ]
+}
