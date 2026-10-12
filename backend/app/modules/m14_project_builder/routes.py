@@ -2,7 +2,8 @@ from datetime import datetime
 from fastapi import APIRouter,Depends,HTTPException,Query
 from app.auth.context import TenantContext,require_tenant
 from .schemas import *
-from .service import Service
+from .service import Service, PlannerUnavailable
+from app.core.providers import ProviderOutcomeUnknown
 router=APIRouter(prefix="/project-builder",tags=["Project Builder"])
 def get_service(tenant:TenantContext=Depends(require_tenant))->Service:
     from app.core.approvals import approvals
@@ -22,6 +23,8 @@ def get_project(project_id:str,tenant_id:str=Depends(tenant),service:Service=Dep
 async def plan(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return await service.plan(service.get(tenant_id,project_id))
     except KeyError as exc:raise HTTPException(404,str(exc)) from exc
+    except PlannerUnavailable as exc:raise HTTPException(503,{'state':'unavailable','plan_created':False,'reason':str(exc)}) from exc
+    except ProviderOutcomeUnknown as exc:raise HTTPException(409,{'state':'unknown','retry_allowed':False,'plan_created':False}) from exc
     except Exception as exc:raise HTTPException(422,str(exc)) from exc
 @router.post("/projects/{project_id}/execution-proposals",response_model=ExecutionProposal,status_code=202)
 def propose(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):

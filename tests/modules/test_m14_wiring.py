@@ -296,11 +296,13 @@ class TestRoutes:
         assert any(p["id"] == pid for p in client.get("/project-builder/projects").json())
         assert client.get("/project-builder/projects/nope").status_code == 404
 
-    def test_plan_route_422_on_stub_llm(self, client):
+    def test_plan_route_503_on_unconfigured_llm(self, client):
         pid = client.post("/project-builder/projects",
                           json={"goal": "Build an ISEF project"}).json()["id"]
         response = client.post(f"/project-builder/projects/{pid}/plan")
-        assert response.status_code == 422
+        assert response.status_code == 503
+        assert response.json()["detail"]["state"] == "unavailable"
+        assert response.json()["detail"]["plan_created"] is False
 
     def test_scope_and_milestones_routes(self, client):
         pid = client.post("/project-builder/projects",

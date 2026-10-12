@@ -1,4 +1,4 @@
-"""Production-ready planning contracts for creative rows 306-332.
+"""Planning contracts, not executed production for creative rows 306-332.
 Outputs are inspectable briefs, specifications and review gates, never false claims that
 media or regulated designs were rendered, mastered, fabricated, engineered or approved.
 """
@@ -43,7 +43,7 @@ def plan(row:int,p:dict[str,Any])->dict[str,Any]:
  if row in (313,314):safety+=['electrical/physical safety review','accessible non-interactive alternative']
  deliverables=[{'name':x,'status':'planned_not_rendered'} for x in p.get('deliverables',['design brief','review checklist'])]
  return {'row_id':row,'capability':ROWS[row],'key':slug(ROWS[row]),'family':family,'workflow':workflow,'open_stages':[x['stage'] for x in workflow if x['status']=='open'],'deliverables':deliverables,'sources':sources,'rights':p.get('rights',{'status':'review_required'}),'accessibility':p.get('accessibility',[]),'safety_reviews':safety,'status':'design_plan_for_human_review','rendered_or_fabricated':False,'side_effects':[],'evaluation':{'specified_stages':[x['stage'] for x in workflow if x['status']=='specified'],'review_checks':['source traceability','rights and consent','accessibility','technical feasibility','acceptance testing'],'open_stages':[x['stage'] for x in workflow if x['status']=='open']},'uncertainty':{'level':'not_quantified','drivers':['open design decisions','unexecuted production','physical and audience variation'],'rendered_recorded_built_or_certified_claimed':False},'boundary':'Planning and specification only. Verify rights, attribution, factual accuracy, accessibility, consent, dimensions, materials, codes, engineering, safety, manufacturing and certification with qualified humans. Never claim unrendered, unrecorded, unbuilt, untested or uncertified work is complete.'}
-def catalog():return [{'row_id':i,'capability':ROWS[i],'key':slug(ROWS[i]),'family':SPECS[i][0],'required':SPECS[i][1],'stages':SPECS[i][2]} for i in ROWS]
+def catalog():return [{'row_id':i,'capability':ROWS[i],'key':slug(ROWS[i]),'family':SPECS[i][0],'execution_scope':'planning_only','production_execution_performed':False,'required':SPECS[i][1],'stages':SPECS[i][2]} for i in ROWS]
 
 # Auditable typed measurements. Each row has its own named mechanism and metric;
 # values describe the plan supplied, never a fabricated production result.

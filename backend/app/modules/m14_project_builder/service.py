@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Awaitable,Callable,Protocol
 from uuid import uuid4
 from app.core.models import ApprovalRequest
-from app.core.providers import generate as byok_generate
+from app.core.providers import generate as byok_generate, ProviderError, ProviderOutcomeUnknown
 from . import artifacts as artifact_engine
 from . import engineering as engineering_engine
 from . import exports as export_engine
@@ -36,6 +36,9 @@ def _milestone_to_domain(v:MilestoneView)->milestone_engine.Milestone:
 def _artifact_to_record(m:ArtifactManifest)->artifact_engine.ArtifactRecord:
     return artifact_engine.ArtifactRecord(id=m.id,project_id=m.project_id,task_id=m.task_id,kind=m.kind,uri=m.uri,sha256=m.sha256,provenance=m.provenance)
 
+class PlannerUnavailable(RuntimeError):
+    """Configured planner runtime unavailable; no synthetic plan was substituted."""
+
 class Service:
     def __init__(self,approval_sink:ApprovalSink,generate_fn:GenerateFn=byok_generate,repository=None):self._approvals=approval_sink;self._generate=generate_fn;self._repository=repository;self._projects:dict[tuple[str,str],ProjectView]={};self._milestones:dict[tuple[str,str],list[MilestoneView]]={};self._artifacts:dict[tuple[str,str],list[ArtifactManifest]]={};self._artifact_payloads:dict[tuple[str,str],dict[str,bytes]]={}
     def create(self,tenant_id:str,request:CreateProjectRequest)->ProjectView:
@@ -58,7 +61,12 @@ class Service:
         prompt=("Return JSON only with tasks, assumptions, risks, quality_gates. Decompose the goal into a dependency DAG. "
                 "Every task uses exactly one specialist: literature, data, coder, analyst, writer. Include measurable acceptance criteria. "
                 f"Goal: {project.goal}\nBrief: {json.dumps(project.brief,sort_keys=True)}")
-        _,text=await self._generate(prompt,provider,None)
+        try:
+            _,text=await self._generate(prompt,provider,None)
+        except ProviderOutcomeUnknown:
+            raise
+        except ProviderError as exc:
+            raise PlannerUnavailable("Planner provider unavailable; configure a private provider or supply an authorized generation adapter") from exc
         try:raw=json.loads(text)
         except json.JSONDecodeError as exc:raise ValueError("planner returned invalid JSON") from exc
         plan=ProjectPlan(goal=project.goal,**raw)

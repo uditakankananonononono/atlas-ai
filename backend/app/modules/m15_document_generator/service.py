@@ -12,6 +12,8 @@ class ApprovalSink(Protocol):
 class Service:
     def __init__(self,approval_sink:ApprovalSink,repository=None):self._approvals=approval_sink;self._repository=repository;self._versions:dict[tuple[str,str],DocumentVersion]={};self._numbers:dict[tuple[str,str],int]={}
     def create_version(self,tenant_id:str,document_id:str,request:CreateVersionRequest)->DocumentVersion:
+        from .grounded_versions import validate_grounded_content
+        validate_grounded_content(request.content, request.citations)
         parent=self.get(tenant_id,request.parent_version_id) if request.parent_version_id else None
         if parent and parent.document_id!=document_id:raise ValueError("parent version belongs to another document")
         key=(tenant_id,document_id);number=self._repository.next_number(document_id) if self._repository else self._numbers.get(key,0)+1
@@ -60,10 +62,22 @@ class Service:
             for i,slide in enumerate(slides,1):
                 if not slide.get("title"):issues.append(f"slide {i} has no title")
                 if len(str(slide.get("body",'')))>1200:warnings.append(f"slide {i} body may overflow")
+        if version.format == 'pdf':
+            from .delivery import validate_pdf_text, RenderFailed
+            try:validate_pdf_text(version)
+            except RenderFailed as exc:issues.append(str(exc))
         figure_ids=[f.id for f in version.figures]
         if len(figure_ids)!=len(set(figure_ids)):issues.append("figure IDs must be unique")
-        return {"version_id":version.id,"ready":not issues,"issues":issues,"warnings":warnings,"content_hash":version.content_hash,"citation_count":len(version.citations),"figure_count":len(version.figures)}
+        from .grounded_versions import validate_grounded_content
+        grounding=validate_grounded_content(version.content, version.citations)
+        if grounding['status']=='ungrounded':warnings.append('No source-traceable outline supplied; content is ungrounded')
+        return {"grounding":grounding,"version_id":version.id,"ready":not issues,"issues":issues,"warnings":warnings,"content_hash":version.content_hash,"citation_count":len(version.citations),"figure_count":len(version.figures)}
     def propose_export(self,version:DocumentVersion)->ExportProposal:
+        from .grounded_versions import validate_grounded_content
+        validate_grounded_content(version.content, version.citations)
+        if version.format=='pdf':
+            from .delivery import validate_pdf_text
+            validate_pdf_text(version)
         stored=self._approvals.put(ApprovalRequest(id=str(uuid4()),module_id=15,action_type="render_document",payload={"tenant_id":version.tenant_id,"document_id":version.document_id,"version_id":version.id,"format":version.format,"template_id":version.template_id,"content_hash":version.content_hash}),user_id=version.tenant_id)
         version.status="awaiting_approval";return ExportProposal(approval_id=stored.id,version_id=version.id,status=stored.status.value)
     @staticmethod

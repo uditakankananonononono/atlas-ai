@@ -20,10 +20,12 @@ def diff(from_version_id:str,to_version_id:str,tenant_id:str=Depends(tenant),ser
 def preflight(version_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.preflight(service.get(tenant_id,version_id))
     except KeyError as exc:raise HTTPException(404,str(exc)) from exc
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.post("/versions/{version_id}/export-proposals",response_model=ExportProposal,status_code=202)
 def export(version_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.propose_export(service.get(tenant_id,version_id))
     except KeyError as exc:raise HTTPException(404,str(exc)) from exc
+    except (ValueError,_DRenderFailed) as exc:raise HTTPException(422,str(exc)) from exc
 
 from typing import Any
 from .design_support_333_359 import design_support_333_359
@@ -144,3 +146,19 @@ def download_delivered_document(token: str, service: ApprovedDeliveryService = D
     return _Response(content=data, media_type=receipt["mime_type"],
                      headers={"Content-Disposition": f'attachment; filename="{receipt["filename"]}"',
                               "X-Content-SHA256": receipt["sha256"], "Cache-Control": "private, no-store"})
+
+from pydantic import BaseModel, Field
+from typing import Any
+class GroundedVersionInput(BaseModel):
+    outline:dict[str,Any]
+    format:Format
+    template_id:str=Field(min_length=1,max_length=200)
+
+@router.post('/documents/{document_id}/grounded-versions',response_model=DocumentVersion)
+def create_grounded_version(document_id:str,request:GroundedVersionInput,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
+    from .grounded_versions import grounded_request
+    try:
+        prepared=grounded_request(request.outline,request.format,request.template_id)
+        return service.create_version(tenant_id,document_id,prepared)
+    except (ValueError,KeyError) as exc:
+        raise HTTPException(422,str(exc)) from exc

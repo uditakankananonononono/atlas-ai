@@ -171,7 +171,15 @@ def render_latex_source(version: DocumentVersion, figure_files: list[dict[str, s
     return env.get_template(template.name).render(**context).encode()
 
 
+def validate_pdf_text(version: DocumentVersion) -> None:
+    """Current pdflatex/font template is not a general Unicode renderer."""
+    text = json.dumps(version.content, ensure_ascii=False) + json.dumps(
+        [c.model_dump() for c in version.citations], ensure_ascii=False) + ''.join(f.alt_text for f in version.figures)
+    if any(ord(ch) > 127 for ch in text):
+        raise RenderFailed("Unicode PDF rendering is unsupported by the current pdflatex font template; use DOCX or configure and verify a Unicode renderer")
+
 def render_pdf(version: DocumentVersion, timeout: int = 90) -> bytes:
+    validate_pdf_text(version)
     exe = shutil.which("pdflatex")
     if not exe:
         raise RenderFailed("pdflatex is not installed")
@@ -444,6 +452,13 @@ class ApprovedDeliveryService:
                       if payload.get(k) != have]
         if mismatches:
             raise DeliveryForbidden(f"version does not match the approved request: {', '.join(mismatches)}")
+        if version.format == 'pdf':
+            validate_pdf_text(version)
+        from .grounded_versions import validate_grounded_content
+        try:
+            validate_grounded_content(version.content, version.citations)
+        except ValueError as exc:
+            raise RenderFailed(str(exc)) from exc
         consumed = any(e.get("event") == "effect_consumed" for e in self.center.audit(approval_id))
         if consumed:
             raise DeliveryConflict("approval permit was already consumed")
