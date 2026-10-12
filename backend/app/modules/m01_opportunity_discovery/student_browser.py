@@ -183,7 +183,7 @@ class StudentBrowser:
             raise KeyError(platform)
         record = await self.flow.start(tenant, actor, BY_ID[platform].url,
                                       opportunity_kind='student_platform', opportunity_id=platform,
-                                      label=BY_ID[platform].name)
+                                      label=BY_ID[platform].name, allowed_hosts=ADAPTERS[platform].hosts)
         self.checkpoints.create(tenant, record.session_id, actor, platform)
         view = record.public_view()
         view.update({'account_workflow': ADAPTERS[platform].account_workflow,
@@ -244,7 +244,7 @@ class StudentBrowser:
             # staged application's values/approval for another opportunity.
             child = await self.flow.start(tenant, actor, stored['url'],
                        opportunity_kind='student_platform', opportunity_id=adapter.platform,
-                       label=stored['title'])
+                       label=stored['title'], allowed_hosts=tuple(set(adapter.hosts) | {urlsplit(stored['url']).hostname}))
             try:
                 platform_url(adapter, child.url)
             except PermissionError:

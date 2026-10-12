@@ -295,6 +295,7 @@ class ApplicationFlow:
         opportunity_kind: str = "direct",
         opportunity_id: str = "",
         label: str = "",
+        allowed_hosts: tuple[str, ...] | None = None,
     ) -> ApplicationSession:
         """Create the paired session and navigate to the official application URL."""
         safe_url = validate_public_url(url, self.browser.allowed_hosts)
@@ -307,6 +308,11 @@ class ApplicationFlow:
             opportunity_id=opportunity_id,
             label=label,
         )
+        if allowed_hosts is not None:
+            setter = getattr(self.browser.sessions, "set_session_allowed_hosts", None)
+            if setter is None:
+                raise NavigationBlocked("browser transport does not enforce per-session origin scope")
+            setter(tenant_id, record.session_id, allowed_hosts)
         self.store.create(record)
         await self.browser.navigate(tenant_id, record.session_id, safe_url, persistent=True)
         _, final_url, auth, captcha = await self._probe_page(record)

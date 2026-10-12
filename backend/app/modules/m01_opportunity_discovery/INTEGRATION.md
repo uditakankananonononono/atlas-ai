@@ -286,3 +286,13 @@ and BrowserService with hermetic pages plus SQL checkpoints and mounted FastAPI
 routes. They prove execution mechanics and refusal paths, not live site account
 matching, vendor extension installation, scholarship earnings or submissions.
 Groups 47-54 remain PARTIAL until appropriate owner-account acceptance checks.
+
+Per-session origin scopes now install before navigation. Playwright intercepts
+requests/redirects and disables service workers. Forbidden origins permanently
+abort the session. This strict scope also blocks unlisted third-party assets or
+SSO: do not widen it merely to make a blocked flow look successful. The owner must
+review any additional required host. Scoped page/locator wrappers revalidate at
+the actual fill/click boundary and after awaits, including M02 approval actions.
+Unsupported transports refuse the platform-session start instead of using None
+as an unrestricted allowlist. Initial origin race was reproduced and fixed in
+patch 0003; 71 targeted tests pass with 10 existing live opt-in skips.

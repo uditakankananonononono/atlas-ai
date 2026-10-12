@@ -34,9 +34,16 @@ class Page:
         return Locator()
 
 class Sessions:
-    def __init__(self): self.pages = {}
+    def __init__(self): self.pages = {}; self.scopes = {}
+    def set_session_allowed_hosts(self, tenant, session, hosts):
+        assert hosts and (tenant, session) not in self.pages
+        self.scopes[(tenant, session)] = hosts
     async def page(self, tenant, session, *args):
-        return self.pages.setdefault((tenant, session), Page())
+        raw = self.pages.setdefault((tenant, session), Page())
+        if (tenant, session) in self.scopes:
+            from app.modules.m13_browser_agent.origin_scope import ScopedPage
+            return ScopedPage(raw, self.scopes[(tenant, session)], lambda: False)
+        return raw
 
 class Audit:
     def __init__(self): self.events = []
@@ -169,7 +176,7 @@ def test_challengerocket_and_devpost_card_contract():
 def test_no_stage_after_manual_external_navigation(browser):
     sid = start(browser)
     browser.flow.browser.sessions.pages[('t', sid)].url = 'https://evil.test/apply'
-    with pytest.raises(PermissionError): run(browser.stage('t', 'a', sid, {'full_name': 'Student'}, '#send'))
+    with pytest.raises((PermissionError, ValueError)): run(browser.stage('t', 'a', sid, {'full_name': 'Student'}, '#send'))
     assert not browser.flow.browser.sessions.pages[('t', sid)].values
 
 
@@ -204,3 +211,103 @@ def test_checkpoint_atomic_pacing_reservation(browser):
     browser.checkpoints.reserve('t', sid, 'a', 1000, 60)
     with pytest.raises(PlatformUnavailable): browser.checkpoints.reserve('t', sid, 'a', 1000, 60)
     browser.checkpoints.reserve('t', sid, 'a', 1060, 60)
+
+
+def test_origin_flip_between_snapshot_and_inspect_aborts_before_fill(browser, monkeypatch):
+    from app.modules.m13_browser_agent.security import NavigationBlocked
+    sid = start(browser)
+    original = browser.flow.inspect
+    async def inspect(*args):
+        page = browser.flow.browser.sessions.pages[('t', sid)]
+        page.url = 'https://evil.test/form'
+        return await original(*args)
+    monkeypatch.setattr(browser.flow, 'inspect', inspect)
+    with pytest.raises(NavigationBlocked): run(browser.stage('t', 'a', sid, {'full_name': 'Student'}, '#send'))
+    assert not browser.flow.browser.sessions.pages[('t', sid)].values
+
+
+def test_origin_flip_after_inspect_before_fill(browser, monkeypatch):
+    from app.modules.m13_browser_agent.security import NavigationBlocked
+    sid = start(browser)
+    original = browser.flow.inspect
+    async def inspect(*args):
+        result = await original(*args)
+        browser.flow.browser.sessions.pages[('t', sid)].url = 'https://evil.test/form'
+        return result
+    monkeypatch.setattr(browser.flow, 'inspect', inspect)
+    with pytest.raises(NavigationBlocked): run(browser.stage('t', 'a', sid, {'full_name': 'Student'}, '#send'))
+    assert not browser.flow.browser.sessions.pages[('t', sid)].values
+
+
+def test_flip_during_stage_extract_and_between_field_fills(browser, monkeypatch):
+    from app.modules.m13_browser_agent.security import NavigationBlocked
+    sid = start(browser)
+    page = browser.flow.browser.sessions.pages[('t', sid)]
+    original = page.content
+    calls = [0]
+    async def content():
+        calls[0] += 1
+        text = await original()
+        if calls[0] == 3: page.url = 'https://evil.test/form'
+        return text
+    monkeypatch.setattr(page, 'content', content)
+    with pytest.raises(NavigationBlocked): run(browser.stage('t', 'a', sid, {'full_name': 'Student'}, '#send'))
+    assert not page.values
+
+
+def test_scoped_locator_rechecks_after_locator_creation(browser):
+    from app.modules.m13_browser_agent.origin_scope import ScopedPage
+    from app.modules.m13_browser_agent.security import NavigationBlocked
+    page = Page()
+    original = page.locator
+    def locator(selector):
+        result = original(selector)
+        page.url = 'https://evil.test/form'
+        return result
+    page.locator = locator
+    guarded = ScopedPage(page, ('bold.org',), lambda: False)
+    with pytest.raises(NavigationBlocked): run(guarded.locator('#name').fill('private'))
+    assert not page.values
+
+
+def test_same_origin_redirect_and_external_redirect_guard(browser):
+    from app.modules.m13_browser_agent.origin_scope import ScopedPage
+    from app.modules.m13_browser_agent.security import NavigationBlocked
+    page = Page()
+    async def redirect(url, **kwargs): page.url = 'https://bold.org/scholarships/next/'
+    page.goto = redirect
+    guarded = ScopedPage(page, ('bold.org',), lambda: False)
+    run(guarded.goto('https://bold.org/scholarships/'))
+    assert guarded.url == 'https://bold.org/scholarships/next/'
+    async def external(url, **kwargs): page.url = 'https://evil.test/form'
+    page.goto = external
+    with pytest.raises(NavigationBlocked): run(guarded.goto('https://bold.org/scholarships/'))
+
+
+def test_transport_without_origin_interception_fails_closed(browser):
+    from app.modules.m13_browser_agent.security import NavigationBlocked
+    class Unsupported:
+        async def page(self, *args): raise AssertionError('must not create unscoped page')
+    browser.flow.browser.sessions = Unsupported()
+    with pytest.raises(NavigationBlocked): start(browser)
+
+
+def test_playwright_interceptor_aborts_cross_origin_and_stays_aborted(browser, tmp_path):
+    from app.modules.m13_browser_agent.playwright_adapter import PlaywrightSessions
+    sessions = PlaywrightSessions(root=str(tmp_path))
+    sessions.set_session_allowed_hosts('t', 's', ('bold.org',))
+    session = SimpleNamespace(aborted=False)
+    sessions._sessions[('t', 's')] = session
+    class Route:
+        def __init__(self, url): self.request = SimpleNamespace(url=url); self.events = []
+        async def abort(self, reason): self.events.append(('abort', reason))
+        async def continue_(self): self.events.append(('continue',))
+    same = Route('https://bold.org/scholarships/stem/')
+    run(sessions._guard_scoped_route(('t', 's'), same))
+    assert same.events == [('continue',)]
+    external = Route('https://evil.test/form')
+    run(sessions._guard_scoped_route(('t', 's'), external))
+    assert external.events == [('abort', 'blockedbyclient')] and session.aborted
+    later = Route('https://bold.org/again')
+    run(sessions._guard_scoped_route(('t', 's'), later))
+    assert later.events == [('abort', 'blockedbyclient')]

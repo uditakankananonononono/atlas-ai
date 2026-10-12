@@ -96,3 +96,32 @@ https://www.fastweb.com/college-scholarships
 
 These support workflow facts, not permission for platform automation. The patch
 does not assert an API or automation terms grant that has not been checked.
+
+## Origin-race correction (patch 0003)
+
+The initial patch failed audit: platform origin checking before awaited inspect
+was insufficient. A mid-stage origin flip could fill an unrelated page.
+
+Correction: ApplicationFlow start accepts explicit per-session allowed hosts.
+Platform parent/child sessions install this scope before page creation; unsupported
+transports fail closed. Playwright intercepts all requests and redirects against
+that session's exact host set, disables service workers, aborts forbidden requests,
+and permanently aborts subsequent operations after a forbidden request. This is
+strict, including cross-origin assets and SSO; owner-visible site failure is safer
+than silently widening scope. Devpost child scope adds only the selected observed
+event hostname, not a wildcard. Other generic M02 sessions remain unchanged.
+
+A scoped page/locator wrapper rechecks current origin synchronously at actual
+fill/click/readback boundaries with no intervening await before dispatch, and again
+after each await. M13/M02 operations obtain the scoped page from the session adapter,
+so final-submit-adjacent readbacks/screenshots and exact approval clicks inherit
+this boundary too. Request interception prevents cross-origin network navigation,
+rather than relying only on rejection after the page loads.
+
+Adversarial hermetic tests cover origin flips between snapshot and inspect,
+after inspect, during stage extraction, and at locator creation; all stop before
+private field writes. Same-origin redirect is allowed; external redirect is
+aborted and stays aborted, including future same-origin requests. Unsupported
+transport refuses session creation. Final targeted result: 71 passed, 10 skipped.
+No live Chromium/vendor navigation was run; actual browser acceptance remains an
+explicit gate, not implied by interceptor unit tests.

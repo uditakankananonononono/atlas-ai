@@ -20,6 +20,7 @@ class _Session:
     context: BrowserContext
     persistent: bool
     har_path: Path | None = None
+    aborted: bool = False
 
 
 class PlaywrightSessions:
@@ -33,6 +34,7 @@ class PlaywrightSessions:
         self._browser: Browser | None = None
         self._sessions: dict[tuple[str, str], _Session] = {}
         self._lock = asyncio.Lock()
+        self._origin_scopes: dict[tuple[str, str], frozenset[str]] = {}
         self._artifacts = ArtifactRoot(self.root)
 
     @staticmethod
@@ -104,6 +106,25 @@ class PlaywrightSessions:
         else:
             await route.continue_()
 
+    def set_session_allowed_hosts(self, tenant_id: str, session_id: str, hosts) -> None:
+        key = (self._check_id(tenant_id), self._check_id(session_id))
+        if not hosts or key in self._sessions:
+            raise NavigationBlocked("scope must be explicit and installed before session creation")
+        self._origin_scopes[key] = frozenset(hosts)
+
+    async def _guard_scoped_route(self, key, route):
+        session = self._sessions.get(key)
+        try:
+            if session and session.aborted:
+                raise NavigationBlocked("session already aborted")
+            validate_public_url(route.request.url, self._origin_scopes[key])
+        except NavigationBlocked:
+            if session:
+                session.aborted = True
+            await route.abort("blockedbyclient")
+        else:
+            await route.continue_()
+
     async def page(self, tenant_id: str, session_id: str, persistent: bool = False):
         key = (self._check_id(tenant_id), self._check_id(session_id))
         await self.start()
@@ -120,9 +141,16 @@ class PlaywrightSessions:
                 # the root at creation and again at context close.
                 path = self._artifacts.prepare_dir(tenant_id, session_id)
                 har_path = path / "audit.har"
-                context = await self._browser.new_context(record_har_path=str(har_path))
-                await context.route("**/*", self._guard_route)
+                context = await self._browser.new_context(record_har_path=str(har_path), service_workers="block")
+                if key in self._origin_scopes:
+                    await context.route("**/*", lambda route: self._guard_scoped_route(key, route))
+                else:
+                    await context.route("**/*", self._guard_route)
                 existing = _Session(context=context, persistent=persistent, har_path=har_path)
                 self._sessions[key] = existing
             pages = existing.context.pages
-            return pages[0] if pages else await existing.context.new_page()
+            page = pages[0] if pages else await existing.context.new_page()
+            if key in self._origin_scopes:
+                from .origin_scope import ScopedPage
+                return ScopedPage(page, self._origin_scopes[key], lambda: existing.aborted)
+            return page
