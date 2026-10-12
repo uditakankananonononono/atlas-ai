@@ -161,3 +161,71 @@ def report(register: RepoRegister) -> dict:
             "fetch_performed": False,
             "evidence_verified": False,
             "boundary": BOUNDARY}
+
+
+def bind_local_repositories(register, workspace, bindings):
+    """Resolve declared repos to contained local Git roots and content snapshots.
+
+    Configured origins are hashed, not published. Local snapshots do not prove
+    remote availability, ownership, project identity or deliverable completion.
+    """
+    from pathlib import Path
+    from .repo_evidence import EvidenceError, snapshot, digest
+    import subprocess
+    if not isinstance(register, RepoRegister):
+        raise _err('bad_type:register')
+    if type(bindings) is not list or len(bindings) > MAX_ENTRIES:
+        raise _err('bad_type:bindings')
+    workspace = Path(workspace).resolve()
+    known = {row[0] for row in register.entries}
+    by_id = {}
+    for item in bindings:
+        if type(item) is not dict or set(item) != {'entry_id', 'local_path', 'row_ids', 'project_ids'}:
+            raise _err('bad_fields:binding')
+        ident = item['entry_id']
+        if not isinstance(ident, str) or ident not in known or ident in by_id:
+            raise _err('unknown_or_duplicate:entry_id')
+        if not isinstance(item['local_path'], str):
+            raise _err('bad_type:local_path')
+        for key in ('row_ids', 'project_ids'):
+            values = item[key]
+            if type(values) is not list or len(values) > 1000 or not all(isinstance(x, str) and x.strip() and len(x) <= 128 and not any(unicodedata.category(c) in FORBIDDEN_CATEGORIES for c in x) for x in values) or len(values) != len(set(values)):
+                raise _err('bad_type:' + key)
+        by_id[ident] = item
+    rows = []
+    for row in register.entries:
+        ident, project, kind, value, normalized, source_ref = row
+        item = by_id.get(ident)
+        out = {'entry_id': ident, 'project_id': project, 'declared_kind': kind,
+               'status': 'UNVERIFIED',
+               'remote_verified': False, 'ownership_verified': False, 'completion_verified': False,
+               'row_ids': [], 'project_ids': [project], 'snapshot': None,
+               'reason': 'No local repository binding'}
+        if item:
+            out['row_ids'] = sorted(item['row_ids'])
+            out['project_ids'] = sorted(set(item['project_ids'] + [project]))
+            try:
+                relative = Path(item['local_path'])
+                if relative.is_absolute() or '..' in relative.parts:
+                    raise EvidenceError('unsafe repository path')
+                path = workspace
+                for part in relative.parts:
+                    path = path / part
+                    if path.is_symlink():
+                        raise EvidenceError('symlink repository path')
+                if not path.resolve().is_relative_to(workspace) or not path.is_dir():
+                    raise EvidenceError('repository path unavailable')
+                snap = snapshot(path)
+                out['snapshot'] = {key: snap[key] for key in ('head', 'dirty', 'tree_digest', 'status_digest', 'errors')}
+                out['snapshot']['origin_configured'] = bool(snap['origin'])
+                out['snapshot']['tracked_files'] = len(snap['files'])
+                if not snap['errors']:
+                    out['status'] = 'LOCAL-SNAPSHOT'
+                    out['reason'] = 'Local Git root and tracked bytes observed; remote/project identity unverified'
+            except (EvidenceError, OSError, ValueError, RuntimeError, subprocess.TimeoutExpired) as exc:
+                out['reason'] = 'Local repository inspection failed: ' + type(exc).__name__
+        rows.append(out)
+    return {'entries': rows, 'unbound_entry_ids': sorted(known - set(by_id)),
+            'counts': {status: sum(row['status'] == status for row in rows) for status in ('LOCAL-SNAPSHOT', 'UNVERIFIED')},
+            'repository_references': {row['entry_id']: {'project_ids': row['project_ids'], 'row_ids': row['row_ids']} for row in rows},
+            'boundary': 'Local evidence only, operator-declared cross-references; no remote request, ownership authentication or semantic completion.'}

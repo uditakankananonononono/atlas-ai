@@ -99,3 +99,67 @@ def render(register: Register, project_id=None) -> str:
             ev = "[%s]" % r[5] if r[5] else "UNVERIFIED"
             lines.append("%s %s %s %s" % (r[2], r[4], r[3], ev))
     return "\n".join(lines)
+
+
+def bind_local_evidence(register, root, bindings):
+    """Read and hash adapter/use artifacts; never turn local receipts into live use.
+
+    Every integration appears, including missing bindings. References describe
+    operator scope, not discovered semantic coverage or authenticated execution.
+    """
+    from pathlib import Path
+    from .repo_evidence import EvidenceError, safe_file, digest
+    if not isinstance(register, Register):
+        raise _err('bad_type:register')
+    if type(bindings) is not list or len(bindings) > 4096:
+        raise _err('bad_type:bindings')
+    root_error = None
+    try:
+        root = Path(root).resolve()
+    except (OSError, ValueError, RuntimeError, TypeError) as exc:
+        root_error = str(exc)[:200]
+    known = {row[0] for row in register.entries}
+    by_id = {}
+    for item in bindings:
+        if type(item) is not dict or set(item) != {'entry_id', 'adapter_path', 'use_evidence_path', 'row_ids', 'project_ids'}:
+            raise _err('bad_fields:binding')
+        ident = item['entry_id']
+        if not isinstance(ident, str) or ident not in known or ident in by_id:
+            raise _err('unknown_or_duplicate:entry_id')
+        for key in ('adapter_path', 'use_evidence_path'):
+            if not isinstance(item[key], str):
+                raise _err('bad_type:' + key)
+        for key in ('row_ids', 'project_ids'):
+            v = item[key]
+            if type(v) is not list or len(v) > 1000 or not all(isinstance(x, str) and x.strip() and len(x) <= 128 and not _has_control(x) for x in v) or len(set(v)) != len(v):
+                raise _err('bad_type:' + key)
+        by_id[ident] = item
+    rows = []
+    for row in register.entries:
+        ident, project, name, purpose, declared_status, evidence_ref = row
+        item = by_id.get(ident)
+        out = {'entry_id': ident, 'project_id': project, 'name': name,
+               'declared_status': declared_status, 'status': 'UNVERIFIED',
+               'adapter_sha256': None, 'use_evidence_sha256': None,
+               'live_working_use_verified': False, 'row_ids': [], 'project_ids': [project],
+               'reason': 'No local adapter/use binding', 'file_errors': {}}
+        if item:
+            out['row_ids'] = sorted(item['row_ids'])
+            out['project_ids'] = sorted(set(item['project_ids'] + [project]))
+            for field, target in [('adapter_path', 'adapter_sha256'), ('use_evidence_path', 'use_evidence_sha256')]:
+                try:
+                    if root_error:
+                        raise EvidenceError('root resolution failed: ' + root_error)
+                    out[target] = digest(safe_file(root, item[field]).read_bytes()) if item[field] else None
+                except (EvidenceError, OSError, ValueError, RuntimeError, TypeError) as exc:
+                    out[target] = None
+                    out['file_errors'][field] = type(exc).__name__ + ': ' + str(exc)[:200]
+            if out['adapter_sha256'] and out['use_evidence_sha256']:
+                out['status'] = 'DECLARED-ONLY'
+                out['reason'] = 'Adapter and use artifact bytes exist; receipt authenticity and live use unchecked'
+        rows.append(out)
+    return {'entries': rows, 'unbound_entry_ids': sorted(known - set(by_id)),
+            'counts': {status: sum(row['status'] == status for row in rows) for status in ('DECLARED-ONLY', 'UNVERIFIED')},
+            'integration_references': {row['entry_id']: {'project_ids': row['project_ids'], 'row_ids': row['row_ids']} for row in rows},
+            'working_external_tool_count': None,
+            'boundary': 'Check-then-read path/size changes are not atomically fenced; use immutable trusted checkouts. Local hashes and operator-declared reference mappings only; no live call, connection, receipt authenticity or working-use certification.'}

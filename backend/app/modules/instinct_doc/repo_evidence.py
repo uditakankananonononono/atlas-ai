@@ -58,8 +58,10 @@ def safe_file(root: Path, relative: str) -> Path:
 
 
 def git(root, *args):
-    result = subprocess.run(["git", "-C", str(root), *args], capture_output=True,
-                            timeout=20, check=False)
+    env = {key: value for key, value in os.environ.items() if not key.startswith('GIT_')}
+    env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT='0')
+    result = subprocess.run(["git", "-c", "core.fsmonitor=false", "-C", str(root), *args], capture_output=True,
+                            timeout=20, check=False, env=env)
     if result.returncode:
         raise EvidenceError("git read failed: " + result.stderr.decode(errors="replace")[:200])
     if len(result.stdout) > MAX_FILE_BYTES:
@@ -320,3 +322,64 @@ def build_report(root: Path, source_path: str, test_paths=None):
                              "boundary": "Computed from actual inventory; no supplied done/green flags accepted"}}
     report["report_sha256"] = canonical_digest(report)
     return report
+
+
+def task_progress(root: Path, source_path: str, selectors: list[dict], limit=100):
+    """Bind operator-defined task/path selectors to observed Git changes.
+
+    Selectors describe scope, not fulfillment. Source hashes must match the
+    pinned inventory. No commit message or caller status establishes completion.
+    """
+    root = root.resolve()
+    if type(limit) is not int or not 1 <= limit <= 1000:
+        raise EvidenceError('history limit must be 1..1000')
+    if type(selectors) is not list or len(selectors) > 1000:
+        raise EvidenceError('task selectors must be a bounded list')
+    source = source_inventory(root, source_path)
+    lines = {row['id']: row['sha256'] for row in source['rows']}
+    snap = snapshot(root)
+    seen, checked = set(), []
+    for selector in selectors:
+        if type(selector) is not dict or set(selector) != {'task_id', 'line_id', 'line_sha256', 'paths'}:
+            raise EvidenceError('task selector fields must be exact')
+        task_id = selector['task_id']
+        if not isinstance(task_id, str) or not re.fullmatch(r'[A-Za-z0-9_.:-]{1,128}', task_id) or task_id in seen:
+            raise EvidenceError('invalid or duplicate task id')
+        seen.add(task_id)
+        if not isinstance(selector['line_id'], str) or not isinstance(selector['line_sha256'], str) or lines.get(selector['line_id']) != selector['line_sha256']:
+            raise EvidenceError('task source hash does not match pinned line')
+        paths = selector['paths']
+        if type(paths) is not list or not paths or len(paths) > 100 or not all(isinstance(path, str) for path in paths) or len(set(paths)) != len(paths):
+            raise EvidenceError('task paths must be a nonempty unique bounded list')
+        for path in paths:
+            if not isinstance(path, str):
+                raise EvidenceError('task path must be text')
+            safe_file(root, path)
+            if path not in snap['files']:
+                raise EvidenceError('task path must be tracked')
+        checked.append(selector)
+    commits = git(root, 'log', f'-{limit}', '--format=%H').decode().splitlines()
+    history = []
+    for commit in commits:
+        changed = set(git(root, 'diff-tree', '--root', '--no-commit-id', '--name-only', '-z', '-m', '-r', commit).decode().split('\0')) - {''}
+        parents = git(root, 'rev-list', '--parents', '-n', '1', commit).decode().split()[1:]
+        at = git(root, 'show', '-s', '--format=%cI', commit).decode().strip()
+        history.append((commit, changed, not parents, at))
+    shallow = git(root, 'rev-parse', '--is-shallow-repository').decode().strip() == 'true'
+    rows = []
+    for selector in checked:
+        events = [{'commit': commit, 'changed_paths': sorted(changed.intersection(selector['paths'])),
+                   'status': 'ROOT_OR_BOUNDARY_SNAPSHOT' if root_boundary else 'TRACKED_CHANGE_OBSERVED',
+                   'commit_at': at, 'task_time_anchor_verified': False,
+                   'root_or_shallow_boundary': root_boundary}
+                  for commit, changed, root_boundary, at in history if changed.intersection(selector['paths'])]
+        rows.append({**selector, 'events': events, 'status': 'CHANGE_OBSERVED' if events else 'UNVERIFIED',
+                     'completion_verified': False,
+                     'current_files': {path: snap['files'][path] for path in selector['paths']}})
+    return {'tasks': rows, 'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],
+            'status_digest': snap['status_digest'], 'source_identity_authenticated': False,
+            'source_binding_boundary': 'Hash agreement with the current local inventory only, not authenticated original source',
+            'event_boundary': 'Merge events union changes against all parents; root/shallow snapshots do not prove task-time changes',
+            'history_limit': limit, 'commits_inspected': len(commits), 'shallow_history': shallow,
+            'history_may_be_truncated': shallow or len(commits) == limit,
+            'boundary': 'Source-hash-bound operator path selectors and observed changes only; no semantic task fulfillment or completion certification'}

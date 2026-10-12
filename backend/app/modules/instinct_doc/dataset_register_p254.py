@@ -128,3 +128,98 @@ def render(register, project_id=None) -> str:
         for r in rows:
             lines.append("%s %s %d records from %s [%s]" % (r[0], r[2], r[3], r[4], r[5]))
     return "\n".join(lines)
+
+
+def bind_artifacts(register, root, bindings, *, source_reader=None):
+    """Bind every declared row to local bytes and optional executed source read.
+
+    source_reader is an operator-owned callable, separate from row declarations.
+    It receives the declared source/source_ref and returns fetched source bytes.
+    VERIFIED means exact local/source byte equality in this run, not licensing,
+    authorship, scientific adequacy or whole-project fulfillment. A supplied
+    receipt/status/hash cannot select VERIFIED. Readers must enforce their own
+    authorization, network destinations, timeouts and size limits.
+    """
+    from pathlib import Path
+    from .repo_evidence import EvidenceError, digest, safe_file
+    if not isinstance(register, DatasetRegister):
+        raise _err('bad_type:register')
+    if type(bindings) is not list or len(bindings) > MAX_ENTRIES:
+        raise _err('bad_type:bindings')
+    if source_reader is not None and not callable(source_reader):
+        raise _err('bad_type:source_reader')
+    root_error = None
+    try:
+        root = Path(root).resolve()
+    except Exception as exc:
+        root_error = type(exc).__name__
+    by_id = {}
+    known = {row[0] for row in register.entries}
+    for binding in bindings:
+        if type(binding) is not dict or set(binding) != {'entry_id', 'artifact_path', 'row_ids', 'project_ids'}:
+            raise _err('bad_fields:binding')
+        ident = binding['entry_id']
+        if not isinstance(ident, str) or ident not in known or ident in by_id:
+            raise _err('unknown_or_duplicate:entry_id')
+        if not isinstance(binding['artifact_path'], str):
+            raise _err('bad_type:artifact_path')
+        for field in ('row_ids', 'project_ids'):
+            values = binding[field]
+            if type(values) is not list or len(values) > 1000 or not all(isinstance(v, str) and v.strip() and len(v) <= 128 and not any(category(c) in _BANNED_CATEGORIES for c in v) for v in values) or len(values) != len(set(values)):
+                raise _err('bad_type:' + field)
+        by_id[ident] = binding
+    rows, cross = [], {}
+    for row in register.entries:
+        ident, project, dataset, declared_count, source, source_ref = row
+        binding = by_id.get(ident)
+        result = {'entry_id': ident, 'project_id': project, 'dataset': dataset,
+                  'declared_records': declared_count, 'provenance': 'UNVERIFIED',
+                  'artifact_sha256': None, 'source_sha256': None, 'source_checked': False,
+                  'source_metadata_present': bool(source.strip() and source_ref.strip()),
+                  'source_authenticity_verified': False, 'source_metadata_redacted': True,
+                  'empty_content_match': False,
+                  'row_ids': [], 'project_ids': [project],
+                  'reference_scope': 'operator-declared references; not exhaustive discovery',
+                  'reason': 'No local artifact binding'}
+        if binding:
+            result['row_ids'] = sorted(binding['row_ids'])
+            result['project_ids'] = sorted(set(binding['project_ids'] + [project]))
+            result['artifact_path_disclosed'] = False
+            try:
+                if root_error:
+                    raise EvidenceError('root unavailable')
+                artifact = safe_file(root, binding['artifact_path']).read_bytes()
+                result['artifact_sha256'] = digest(artifact)
+                result['artifact_bytes'] = len(artifact)
+                result['provenance'] = 'DECLARED-ONLY'
+                result['reason'] = 'Local artifact exists; declared source not independently read'
+                if source_reader is not None:
+                    fetched = source_reader(source, source_ref)
+                    if type(fetched) is not bytes or len(fetched) > 8_000_000:
+                        raise EvidenceError('source reader must return bounded bytes')
+                    result['source_sha256'] = digest(fetched)
+                    result['source_checked'] = True
+                    if fetched == artifact and artifact:
+                        result['provenance'] = 'VERIFIED'
+                        result['reason'] = 'Executed source read matches local artifact bytes'
+                    else:
+                        result['provenance'] = 'UNVERIFIED'
+                        result['empty_content_match'] = fetched == artifact and not artifact
+                        result['reason'] = 'Empty source/artifact match excluded' if result['empty_content_match'] else 'Executed source bytes differ from local artifact'
+            except Exception as exc:
+                result['provenance'] = 'UNVERIFIED'
+                result['reason'] = 'Artifact/source read failed: ' + type(exc).__name__
+        rows.append(result)
+        if result['artifact_sha256']:
+            bucket = cross.setdefault(result['artifact_sha256'], {'entry_ids': [], 'project_ids': set(), 'row_ids': set()})
+            bucket['entry_ids'].append(ident)
+            bucket['project_ids'].update(result['project_ids'])
+            bucket['row_ids'].update(result['row_ids'])
+    return {'entries': rows,
+            'source_reader_injected': source_reader is not None,
+            'source_authenticity_verified': False,
+            'reader_boundary': 'Reader must enforce source byte budget before returning; this API cannot bound allocation inside an injected callback. Reader is operator-injected; content match does not independently authenticate the provider or authorship',
+            'counts': {status: sum(row['provenance'] == status for row in rows) for status in ('VERIFIED', 'DECLARED-ONLY', 'UNVERIFIED')},
+            'artifact_references': {sha: {'entry_ids': sorted(bucket['entry_ids']), 'project_ids': sorted(bucket['project_ids']), 'row_ids': sorted(bucket['row_ids'])} for sha, bucket in sorted(cross.items())},
+            'unbound_entry_ids': sorted(known - set(by_id)),
+            'boundary': 'Executed local/source content binding only. Counts remain declarations; reference mappings are not semantic acceptance; private source metadata must stay private.'}

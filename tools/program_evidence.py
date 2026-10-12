@@ -6,7 +6,7 @@ import json
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'backend'))
-from app.modules.instinct_doc.repo_evidence import build_report
+from app.modules.instinct_doc.repo_evidence import build_report, task_progress
 
 
 def main():
@@ -15,11 +15,17 @@ def main():
     parser.add_argument('--source', default='docs/program-evidence/source-manifest.json')
     parser.add_argument('--test', action='append', default=[])
     parser.add_argument('--allow-local-code-execution', action='store_true')
+    parser.add_argument('--task-selectors', type=Path, help='JSON source-hash-bound task/path selectors; not completion declarations')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     if args.test and not args.allow_local_code_execution:
         parser.error('tests execute repository code; opt in with --allow-local-code-execution')
     report = build_report(args.root, args.source, args.test or None)
+    if args.task_selectors:
+        from app.modules.instinct_doc.repo_evidence import canonical_digest
+        report['task_progress'] = task_progress(args.root, args.source, json.loads(args.task_selectors.read_text()))
+        report.pop('report_sha256')
+        report['report_sha256'] = canonical_digest(report)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps({'report_sha256': report['report_sha256'],
                       'unverified_lines': report['candy_gate']['unverified_lines'],
