@@ -26122,6 +26122,7 @@
       "implementation_details": "Dedicated-engine scope only: Bounded continuous PSO on supplied sphere/Rosenbrock benchmarks only. No arbitrary objectives, global-optimum guarantee, real swarm/robotics, discrete swarm behavior or general cognition. Caller inputs are not independently verified. No external effects or release authority.",
       "depth_sweep_status": "PARTIAL-reference-substitute",
       "depth_evidence": "Dedicated-engine scope only: Bounded continuous PSO on supplied sphere/Rosenbrock benchmarks only. No arbitrary objectives, global-optimum guarantee, real swarm/robotics, discrete swarm behavior or general cognition. Caller inputs are not independently verified. No external effects or release authority. Scope/status source: audits/additional-2000-features.json row 1984. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "engine_class": "dedicated-engine",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1984,
@@ -26143,6 +26144,7 @@
       "implementation_details": "Dedicated-engine scope only: Bounded synchronous DE/rand/1/bin on supplied sphere/Rosenbrock objectives only. No global-optimum guarantee or broader evolutionary methods (ES, CMA, NSGA). Caller inputs are not independently verified. No external effects or release authority.",
       "depth_sweep_status": "PARTIAL-reference-substitute",
       "depth_evidence": "Dedicated-engine scope only: Bounded synchronous DE/rand/1/bin on supplied sphere/Rosenbrock objectives only. No global-optimum guarantee or broader evolutionary methods (ES, CMA, NSGA). Caller inputs are not independently verified. No external effects or release authority. Scope/status source: audits/additional-2000-features.json row 1985. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "engine_class": "dedicated-engine",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1985,
@@ -26164,6 +26166,7 @@
       "implementation_details": "Dedicated-engine scope only: Binary-genome GA with tournament selection, one-point crossover, bit mutation and elitism on supplied weighted-bit objectives; mounted solve-quadratic also supports bounded supplied quadratic objectives. The weighted-bit objective is separable/linear: its optimum needs no search; convergence tests on it prove only convergence there, not search ability. No general optimizer, convergence/global-optimum guarantee or cognition. Caller inputs are not independently verified. No external effects or release authority.",
       "depth_sweep_status": "PARTIAL-reference-substitute",
       "depth_evidence": "Dedicated-engine scope only: Binary-genome GA with tournament selection, one-point crossover, bit mutation and elitism on supplied weighted-bit objectives; mounted solve-quadratic also supports bounded supplied quadratic objectives. The weighted-bit objective is separable/linear: its optimum needs no search; convergence tests on it prove only convergence there, not search ability. No general optimizer, convergence/global-optimum guarantee or cognition. Caller inputs are not independently verified. No external effects or release authority. Scope/status source: audits/additional-2000-features.json row 1986. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "engine_class": "dedicated-engine",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1986,
@@ -26185,6 +26188,7 @@
       "implementation_details": "Dedicated-engine scope only: Bounded single-variable add/sub/mul expression-tree symbolic regression on supplied x/y. No eval/exec of caller code, arbitrary/open-ended program synthesis, global-optimum guarantee or verified generalization. Caller inputs are not independently verified. No external effects or release authority.",
       "depth_sweep_status": "PARTIAL-reference-substitute",
       "depth_evidence": "Dedicated-engine scope only: Bounded single-variable add/sub/mul expression-tree symbolic regression on supplied x/y. No eval/exec of caller code, arbitrary/open-ended program synthesis, global-optimum guarantee or verified generalization. Caller inputs are not independently verified. No external effects or release authority. Scope/status source: audits/additional-2000-features.json row 1987. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "engine_class": "dedicated-engine",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1987,
@@ -26206,6 +26210,7 @@
       "implementation_details": "Dedicated-engine scope only: Bounded synchronous Conway B3/S23 finite grid automaton. No biological life, open-ended evolution or adaptive-agent claim. Caller inputs are not independently verified. No external effects or release authority.",
       "depth_sweep_status": "PARTIAL-reference-substitute",
       "depth_evidence": "Dedicated-engine scope only: Bounded synchronous Conway B3/S23 finite grid automaton. No biological life, open-ended evolution or adaptive-agent claim. Caller inputs are not independently verified. No external effects or release authority. Scope/status source: audits/additional-2000-features.json row 1988. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "engine_class": "dedicated-engine",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1988,
@@ -26227,6 +26232,7 @@
       "implementation_details": "Dedicated-engine scope only: Tenant-bound in-memory scalar linear Kalman twin over caller observations, with assimilation and noncommitting forecast. No persistence across restart, real physical-asset fidelity, live sensor/deployment, multivariate dynamics or independent source-truth verification. Caller inputs are not independently verified. No external effects or release authority.",
       "depth_sweep_status": "PARTIAL-reference-substitute",
       "depth_evidence": "Dedicated-engine scope only: Tenant-bound in-memory scalar linear Kalman twin over caller observations, with assimilation and noncommitting forecast. No persistence across restart, real physical-asset fidelity, live sensor/deployment, multivariate dynamics or independent source-truth verification. Caller inputs are not independently verified. No external effects or release authority. Scope/status source: audits/additional-2000-features.json row 1989. Original named capability remains unverified; this is not practitioner-depth verification.",
+      "engine_class": "dedicated-engine",
       "scope_provenance": {
         "ledger_path": "audits/additional-2000-features.json",
         "ledger_row": 1989,
