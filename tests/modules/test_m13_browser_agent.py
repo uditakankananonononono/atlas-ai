@@ -16,6 +16,12 @@ class Locator:
     async def fill(self, value):
         self.page.filled[self.selector] = value
 
+    async def evaluate(self, script):
+        # Read-only type probe issued by Service.fill before any write (see service.py). Returns tag:type.
+        assert script == "el => el.tagName.toLowerCase() + ':' + String(el.type || '').toLowerCase()"
+        assert self.selector == "#e"
+        return "input:email"
+
 
 class Response:
     status = 200
