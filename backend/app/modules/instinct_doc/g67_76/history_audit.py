@@ -51,6 +51,9 @@ def audit(requests, root):
             n = sum(1 for t in toks if t in s)
             if n > best_n:
                 best, best_n = p, n
-        rows.append({**r, "tokens": sorted(toks), "verdict": "FOUND" if best_n >= 2 else "NO_EVIDENCE",
+        rows.append({**r, "tokens": sorted(toks), "verdict": "TEXT_EVIDENCE_ONLY" if best_n >= 2 else "NO_TEXT_EVIDENCE",
+                     "evidence_kind": "token overlap in source text; not proof the feature works",
                      "file": best if best_n >= 2 else None, "hits": best_n})
-    return {"total": len(rows), "found": sum(r["verdict"] == "FOUND" for r in rows), "rows": rows}
+    return {"total": len(rows), "text_matched": sum(r["verdict"] == "TEXT_EVIDENCE_ONLY" for r in rows),
+            "basis": "textual evidence only: token overlap between request text and repo files",
+            "rows": rows}

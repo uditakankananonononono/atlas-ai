@@ -209,6 +209,128 @@ class T(unittest.TestCase):
         p = ae.parse_opportunity("Entry fee $10. Fee $10 payable online.")
         self.assertEqual(p["fee_status"], "stated")
 
+    def test_cli_args_validated(self):
+        spec = {"name": "args_tool", "kind": "cli", "command": ["/bin/echo"]}
+        for bad in ({"args": "x"}, {"args": [["nested"]]}, {"args": [None]}, {"args": ["a\x00b"]},
+                    {"args": ["x" * 300]}, {"args": ["a"] * 17}, {"args": [True]},
+                    {"args": ["ok"], "timeout": -1}, {"args": ["ok"], "timeout": "5"}, {"args": ["ok"], "timeout": 999}):
+            r = adapters.trial(spec, bad)
+            self.assertFalse(r["passed"], bad); self.assertIn("ADAPTER_REFUSED", r["error"], bad)
+        self.assertTrue(adapters.trial(spec, {"args": ["ok", 3, 1.5], "timeout": 5})["passed"])
+
+    def test_http_adapter_has_runtime_host_check_and_no_redirects(self):
+        src = adapters.generate({"name": "http_t", "kind": "http_json", "url": "https://e.x/a"}, allowed_hosts={"e.x"})
+        self.assertIn("ALLOWED_HOSTS", src); self.assertIn("NoRedirect", src)
+        ns = {}
+        exec(compile(src, "<a>", "exec"), ns)
+        self.assertEqual(ns["_check"]("https://e.x/z"), None)
+        for bad in ("https://evil.example/z", "http://e.x/z", "https://e.x.evil.example/z"):
+            with self.assertRaises(ValueError):
+                ns["_check"](bad)
+        import urllib.request
+        h = None
+        # a redirect target off the allowlist is never followed: handler returns None
+        class H(urllib.request.HTTPRedirectHandler):
+            pass
+        self.assertIn("return None", src)
+        r = ns["run"]({"q": 1}, transport=lambda u, d: (302, b"{}"))
+        self.assertFalse(r["ok"]); self.assertTrue(r["redirect_refused"])
+
+    def test_http_redirect_not_followed_end_to_end(self):
+        import http.server, threading, ssl
+        class Hd(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):
+                self.send_response(302); self.send_header("Location", "https://evil.example/x"); self.end_headers()
+            def log_message(self, *a): pass
+        srv = http.server.HTTPServer(("127.0.0.1", 0), Hd)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        # plain-http local server: exercise the generated opener by patching scheme check off
+        src = adapters.generate({"name": "http_t", "kind": "http_json", "url": "https://e.x/a"}, allowed_hosts={"e.x"})
+        src = src.replace('p.scheme != "https" or p.hostname not in ALLOWED_HOSTS', 'False')
+        src = src.replace("URL = 'https://e.x/a'", "URL = 'http://127.0.0.1:%d/a'" % srv.server_port)
+        ns = {}
+        exec(compile(src, "<a>", "exec"), ns)
+        r = ns["run"]({"q": 1})
+        srv.shutdown()
+        self.assertEqual(r["status"], 302); self.assertTrue(r["redirect_refused"]); self.assertFalse(r["ok"])
+
+    def test_trial_oserror_recorded(self):
+        import unittest.mock as mock
+        with mock.patch.object(adapters.subprocess, "run", side_effect=OSError("preexec failed")):
+            r = adapters.trial({"name": "e_tool", "kind": "cli", "command": ["/bin/echo"]}, {"args": ["x"]})
+        self.assertFalse(r["passed"]); self.assertIn("could not run", r["error"])
+        r = adapters.trial({"name": "e_tool", "kind": "cli", "command": ["/bin/echo"]}, {}, stub_response={"bad": 1})
+        self.assertFalse(r["passed"]); self.assertIn("BAD_STUB", r["error"])
+
+    def test_ideation_multiword_and_validation(self):
+        docs = ["machine learning for protein folding"] * 3 + ["Machine Learning meets robotics arm control"] * 3 + ["protein folding with robotics arm"] * 1
+        ideas = ideation.generate(docs, ["machine learning", "protein folding", "robotics arm", "Machine  Learning"], k=5)
+        pairs = {frozenset(i["pair"]) for i in ideas}
+        self.assertEqual(len(pairs), 3)  # duplicate topic collapsed; multiword topics kept
+        self.assertIn(frozenset(("machine learning", "protein folding")), pairs)
+        self.assertEqual(ideation.generate(docs, ["machine learning", "protein folding"], k=0), [])
+        for kw in ({"k": -1}, {"k": True}, {"k": 1.5}, {"min_df": 0}, {"min_df": -2}):
+            with self.assertRaises(ValueError):
+                ideation.generate(docs, ["a b"], **kw)
+        with self.assertRaises(ValueError):
+            ideation.generate("text", ["a"])
+        # short single-word topics are matched too
+        d2 = ["arm and leg"] * 2 + ["arm and eye"] * 2
+        self.assertTrue(ideation.generate(d2, ["arm", "leg", "eye"], k=3))
+
+    def test_atom_link_rel_and_truncation(self):
+        atom = b"""<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>T</title>
+        <link rel="self" href="http://x/self"/><link rel="enclosure" href="http://x/e.mp3"/>
+        <link rel="alternate" href="http://x/page"/></entry>
+        <entry><title>U</title><link href="http://x/norel"/></entry>
+        <entry><title>V</title><link rel="self" href="http://x/only-self"/></entry></feed>"""
+        docs = feed_ingest.parse_feed(atom)
+        self.assertEqual([d.get("link") for d in docs], ["http://x/page", "http://x/norel", None])
+        import unittest.mock as mock, io
+        class R(io.BytesIO):
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+        class O:
+            def open(self, req, timeout=0): return R(b"x" * 101)
+        with mock.patch.object(feed_ingest, "_check_url", return_value=feed_ingest.urllib.parse.urlparse("https://h/f")), \
+             mock.patch.object(feed_ingest.urllib.request, "build_opener", return_value=O()):
+            with self.assertRaises(ValueError) as cm:
+                feed_ingest.default_fetch("https://h/f", max_bytes=100)
+            self.assertIn("FETCH_TRUNCATED", str(cm.exception))
+            self.assertEqual(len(feed_ingest.default_fetch("https://h/f", max_bytes=101)), 101)
+        rep = feed_ingest.ingest(["https://h/f"], feed_ingest.Store(),
+                                 lambda u: (_ for _ in ()).throw(ValueError("FETCH_TRUNCATED:x")) if "robots" not in u
+                                 else (_ for _ in ()).throw(urllib.error.HTTPError(u, 404, "n", {}, None)))
+        self.assertEqual(rep["feeds"]["https://h/f"], "error:FETCH_TRUNCATED")
+
+    def test_instagram_malformed_entries_and_top(self):
+        bad = json.dumps({"likes_media_likes": [
+            {"title": "robotics", "string_list_data": [5, None, "x", {"value": 7}, {"value": "lab"}]},
+            {"title": 9, "string_list_data": "oops"}, {"title": None, "string_list_data": None}]})
+        out = interest_signals.from_instagram_likes(bad)
+        self.assertEqual(len(out), 3); self.assertEqual(out[0]["text"], "robotics lab")
+        for t in (0, -1, True, 1.5, "5", None):
+            with self.assertRaises(ValueError):
+                interest_signals.rank([], top=t)
+        self.assertEqual(interest_signals.rank([{"text": "alpha beta", "weight": 1}], top=1)[0]["topic"], "alpha")
+
+    def test_creator_verifies_module_exists(self):
+        r = universal_creator.route("build a landing page")
+        self.assertTrue(r["supported"] and r["module_verified"])
+        import unittest.mock as mock
+        fake = {"web_app": (r"\bwebsite\b", "m99_does_not_exist")}
+        with mock.patch.object(universal_creator, "KINDS", fake):
+            r = universal_creator.route("make a website")
+        self.assertFalse(r["supported"]); self.assertEqual(r["verdict"], "UNSUPPORTED")
+        self.assertEqual(r["unavailable_targets"], ["m99_does_not_exist"])
+        two = {"a": (r"\bsite\b", "m99_does_not_exist"), "b": (r"\bsite\b", "c32.ingest")}
+        with mock.patch.object(universal_creator, "KINDS", two):
+            r = universal_creator.route("a site")
+        self.assertEqual(r["kind"], "b")
+        for bad in ("", "  ", None, 5):
+            with self.assertRaises(ValueError):
+                universal_creator.route(bad)
+
     def test_history_audit(self):
         d = tempfile.mkdtemp()
         open(os.path.join(d, "a.py"), "w").write("def zebrafish_hatchery_tracker(): pass\n")
@@ -219,7 +341,9 @@ class T(unittest.TestCase):
         reqs = history_audit.parse(chat, "Udita")
         self.assertEqual(len(reqs), 2)
         r = history_audit.audit(reqs, d)
-        self.assertEqual([x["verdict"] for x in r["rows"]], ["FOUND", "NO_EVIDENCE"])
+        self.assertEqual([x["verdict"] for x in r["rows"]], ["TEXT_EVIDENCE_ONLY", "NO_TEXT_EVIDENCE"])
+        self.assertIn("textual evidence only", r["basis"]); self.assertEqual(r["text_matched"], 1)
+        self.assertIn("not proof", r["rows"][0]["evidence_kind"])
 
     def test_creator_unsupported_is_explicit(self):
         self.assertEqual(universal_creator.route("build a landing page")["kind"], "web_app")

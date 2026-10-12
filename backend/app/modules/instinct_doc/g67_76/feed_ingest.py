@@ -56,7 +56,10 @@ def default_fetch(url, timeout=20, max_bytes=5_000_000):
     opener = urllib.request.build_opener(_SameHostRedirect(p.hostname))
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     with opener.open(req, timeout=timeout) as r:
-        return r.read(max_bytes)
+        data = r.read(max_bytes + 1)
+    if len(data) > max_bytes:
+        raise ValueError("FETCH_TRUNCATED:response exceeds %d bytes" % max_bytes)
+    return data
 
 
 def parse_feed(raw):
@@ -70,7 +73,12 @@ def parse_feed(raw):
         for ch in it:
             t = ch.tag.rsplit("}", 1)[-1]
             if t == "link":
-                d["link"] = (ch.text or ch.attrib.get("href") or "").strip()
+                href = (ch.attrib.get("href") or "").strip()
+                if href:  # Atom: only rel=alternate (or no rel) names the entry page
+                    if ch.attrib.get("rel", "alternate") == "alternate" and not d.get("link"):
+                        d["link"] = href
+                elif (ch.text or "").strip():  # RSS: link text
+                    d["link"] = ch.text.strip()
             elif t in ("title", "description", "summary", "content", "pubDate", "published", "updated"):
                 d.setdefault({"description": "summary", "content": "summary", "pubDate": "published",
                               "updated": "published"}.get(t, t), (ch.text or "").strip())
@@ -127,7 +135,7 @@ def ingest(feeds, store, fetch=default_fetch, skip_done=True):
         try:
             docs = parse_feed(fetch(url))
         except Exception as e:
-            report["feeds"][url] = "error:%s" % type(e).__name__
+            report["feeds"][url] = "error:%s" % (str(e).split(":")[0] if isinstance(e, ValueError) and str(e).startswith("FETCH_") else type(e).__name__)
             continue
         for d in docs:
             if store.add(url, d):

@@ -11,22 +11,38 @@ import itertools, math, re
 from collections import Counter
 
 
-def _terms(t):
-    return set(re.findall(r"[a-z][a-z\-]{3,}", t.lower()))
+def _norm(t):
+    return " " + " ".join(re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", t.lower())) + " "
 
 
 def generate(docs, topics, k=10, min_df=2):
-    """docs: list of text; topics: list of topic strings (e.g. interest_signals.rank)."""
-    sets = [_terms(d) for d in docs]
-    df = Counter(t for s in sets for t in s)
-    n = max(len(sets), 1)
-    cand = [t for t in topics if df[t] >= min_df]
+    """docs: list of str; topics: list of str, single or multi-word (phrase match on
+    word boundaries, case-insensitive)."""
+    if not isinstance(docs, list) or not all(isinstance(d, str) for d in docs):
+        raise ValueError("IDEATION_REFUSED_DOCS")
+    if not isinstance(topics, list) or not all(isinstance(t, str) for t in topics):
+        raise ValueError("IDEATION_REFUSED_TOPICS")
+    for name, v, lo in (("k", k, 0), ("min_df", min_df, 1)):
+        if isinstance(v, bool) or not isinstance(v, int) or v < lo:
+            raise ValueError("IDEATION_REFUSED_%s" % name.upper())
+    normdocs = [_norm(d) for d in docs]
+    seen, labels = set(), {}
+    for t in topics:
+        n = _norm(t)
+        if n.strip() and n not in seen:
+            seen.add(n)
+            labels[n] = t.strip()
+    has = {n: {j for j, d in enumerate(normdocs) if n in d} for n in labels}
+    df = {n: len(v) for n, v in has.items()}
+    n_docs = max(len(docs), 1)
+    cand = [n for n in labels if df[n] >= min_df]
     ideas = []
     for a, b in itertools.combinations(cand, 2):
-        co = sum(1 for s in sets if a in s and b in s)
-        expected = df[a] * df[b] / n
+        co = len(has[a] & has[b])
+        expected = df[a] * df[b] / n_docs
         novelty = 1.0 / (1.0 + co) * math.log1p(expected)  # rare pairing of common terms
-        ideas.append({"pair": (a, b), "cooccurrence": co, "novelty": round(novelty, 4)})
+        ideas.append({"pair": (labels[a], labels[b]), "cooccurrence": co, "novelty": round(novelty, 4),
+                      "_docs": sorted(has[a] | has[b])})
     ideas.sort(key=lambda i: (-i["novelty"], i["pair"]))
     for i in ideas[:k]:
         a, b = i["pair"]
@@ -34,5 +50,7 @@ def generate(docs, topics, k=10, min_df=2):
                        "acceptance": ["write a one-page problem statement linking %s and %s" % (a, b),
                                       "find 3 corpus documents mentioning each side",
                                       "ship a runnable prototype with a test"],
-                       "evidence_docs": [j for j, s in enumerate(sets) if a in s or b in s][:5]}
+                       "evidence_docs": i["_docs"][:5]}
+    for i in ideas:
+        i.pop("_docs")
     return ideas[:k]

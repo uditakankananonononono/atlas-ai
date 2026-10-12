@@ -38,12 +38,19 @@ def from_instagram_likes(json_text):
     for it in items:
         if not isinstance(it, dict):
             continue
-        texts = [it.get("title", "")] + [sd.get("value", "") for sd in it.get("string_list_data", [])]
+        title = it.get("title")
+        texts = [title if isinstance(title, str) else ""]
+        sld = it.get("string_list_data")
+        for sd in (sld if isinstance(sld, list) else []):
+            if isinstance(sd, dict) and isinstance(sd.get("value"), str):
+                texts.append(sd["value"])
         out.append({"source": "instagram_like", "weight": 1, "text": " ".join(texts)})
     return out
 
 
 def rank(signals, top=20):
+    if isinstance(top, bool) or not isinstance(top, int) or top < 1:
+        raise ValueError("SIGNALS_REFUSED_TOP")
     c = Counter()
     for s in signals:
         for t in set(_terms(s["text"])):
