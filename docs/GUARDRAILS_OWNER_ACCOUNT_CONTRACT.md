@@ -1,0 +1,30 @@
+# Owner-Account Identity Gate - Contract (group 139, line 1)
+
+Bounded mechanism: `backend/app/runtime/guardrails/owner_account_gate.py`.
+An enforced runtime check over every external-service call. This document
+scopes the mechanism only.
+
+## Rule
+
+A (service, account_identity) pair is usable only when the gate's ledger
+carries a binding that is `binding_registered` then `binding_verified` and
+not `binding_revoked`. `call(ledger, call_id, service, account_identity,
+effect=..., now=...)` is the choke point:
+
+- state verified -> the effect runs; the admitted call is ledgered (and a
+  failed effect ledgers its error type);
+- state unregistered / registered-unverified / revoked ->
+  `GuardrailRefusal("ACCTGATE:refused:<state>")`; the refused call is
+  ledgered first; the effect is never invoked.
+
+Registration order is enforced on the chain: verify/revoke require a live
+registration; re-registration is allowed only after revocation.
+
+## Limits (named, none hidden)
+
+- Verification is CALLER-ATTESTED: the gate records who verified, when, and
+  under what evidence reference, and enforces that only currently verified
+  owner accounts are usable. It cannot authenticate the account; wire live
+  probes through `app.integrations.acceptance` for that.
+- The gate binds (service, account_identity) pairs only; permissions inside
+  the account are out of scope.
