@@ -103,3 +103,56 @@ def summarize_projects(projects):
                   "authenticated, and never verify a claim. An empty summary "
                   "does not prove the absence of projects."),
     )
+
+
+def inspect_projects(root, projects, *, execute=False):
+    """Compute selected project file counts and optional test-run observations.
+
+    Project/path mappings are operator scope. This does not authenticate the
+    mapping, discover all program projects or certify whole-project fulfillment.
+    """
+    from pathlib import Path
+    from .repo_evidence import safe_file, snapshot, execute_tests, EvidenceError
+    if type(execute) is not bool:
+        raise _err('execute must be boolean')
+    if type(projects) is not list or len(projects) > MAX_PROJECTS:
+        raise _err('projects must be a bounded list')
+    root = Path(root).resolve()
+    snap = snapshot(root)
+    rows, seen = [], set()
+    for item in projects:
+        if type(item) is not dict or set(item) != {'id', 'code_paths', 'test_paths'}:
+            raise _err('project fields must be exact')
+        ident = _text(item['id'], 'id', ID_LIMIT)
+        if ident in seen:
+            raise _err('duplicate project id')
+        seen.add(ident)
+        files, errors = {}, []
+        for field in ('code_paths', 'test_paths'):
+            paths = item[field]
+            if type(paths) is not list or len(paths) > 1000 or not all(isinstance(p, str) for p in paths) or len(set(paths)) != len(paths):
+                raise _err('paths must be unique bounded lists')
+            for path in paths:
+                try:
+                    if path not in snap['files']:
+                        raise EvidenceError('path is not tracked')
+                    data = safe_file(root, path).read_bytes()
+                    files[path] = {'lines': len(data.splitlines()), 'sha256': snap['files'][path]['sha256'], 'kind': field}
+                except (EvidenceError, OSError, ValueError) as exc:
+                    errors.append({'path': path, 'reason': str(exc)[:200]})
+        if set(item['code_paths']) & set(item['test_paths']):
+            raise _err('code and test paths must not overlap')
+        run = None
+        if execute and item['test_paths'] and not errors:
+            run = execute_tests(root, item['test_paths'])
+        rows.append({'id': ident, 'files': files, 'errors': errors,
+                     'code_files': sum(v['kind'] == 'code_paths' for v in files.values()),
+                     'code_lines': sum(v['lines'] for v in files.values() if v['kind'] == 'code_paths'),
+                     'test_files': sum(v['kind'] == 'test_paths' for v in files.values()),
+                     'test_lines': sum(v['lines'] for v in files.values() if v['kind'] == 'test_paths'),
+                     'execution': run, 'coverage_percent': None,
+                     'status': 'SCOPED_PASS' if run and run['status'] == 'SCOPED_PASS' else 'UNVERIFIED',
+                     'completion_verified': False,
+                     'scope_declared': True})
+    return {'projects': rows, 'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],
+            'boundary': 'Selected tracked source counts and opt-in test execution only; no exhaustive project scope, empirical coverage or whole-project completion.'}

@@ -149,3 +149,14 @@ race; use immutable trusted checkouts. Git reads scrub ambient GIT_* variables,
 disable system/global config and fsmonitor. Local repository inspection timeout
 becomes UNVERIFIED. Repository content is not executed by these inspection reads;
 untrusted filesystem races remain outside the trusted-checkout boundary.
+
+## Project-indexed code and test observations (row 126)
+
+`code_test_summary_p256.inspect_projects(root, projects, execute=False)` counts
+selected tracked code/test files and byte-line totals, then optionally executes
+explicit test files through the existing fenced JUnit executor. Each project
+selector has exactly `id`, `code_paths`, `test_paths`. Scope mappings are declared,
+not an exhaustive discovered project inventory. Missing files remain gaps and
+prevent execution for that project. No caller counts or status flags accepted.
+SCOPED_PASS does not establish coverage or semantic project completion; coverage
+stays null and completion false. Execution is opt-in and runs trusted repo code.
