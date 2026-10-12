@@ -1,0 +1,68 @@
+BASELINE tests/modules/test_m06_social_reading.py -> rc=0 9 passed in 1.54s
+S1 non-paired session accepted | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.49s | failing: -
+    old: 'if not is_pc_session(session_id):'
+    new: 'if False:'
+S2 unsupported platform tolerated | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.59s | failing: -
+    old: 'raise ValueError(f"unsupported platform: {platform}")'
+    new: 'result = {}'
+S3 blocked run recorded as failed | row 61 | reader.py | CAUGHT | rc=1 | 1 failed, 8 passed in 1.55s | failing: tests/modules/test_m06_social_reading.py::test_blocked_run_is_recorded_and_raised
+    old: 'self.store.finish_run(run_id, "blocked"'
+    new: 'self.store.finish_run(run_id, "failed"'
+S4 failed run recorded as complete | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.61s | failing: -
+    old: 'self.store.finish_run(run_id, "failed"'
+    new: 'self.store.finish_run(run_id, "complete"'
+S5 connections limit not applied | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.60s | failing: -
+    old: 'people = parse_linkedin_connections(await page.content())[:limit]'
+    new: 'people = parse_linkedin_connections(await page.content())'
+S6 feed limit not applied | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.69s | failing: -
+    old: 'posts = parse_linkedin_feed(await page.content())[:limit]'
+    new: 'posts = parse_linkedin_feed(await page.content())'
+S7 pinterest limit validation removed | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.58s | failing: -
+    old: 'if type(limit) is not int or not 1 <= limit <= 500:'
+    new: 'if False:'
+S8 pinterest 429 not a rate limit | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.52s | failing: -
+    old: 'response.status == 429'
+    new: 'response.status == 0'
+S9 pinterest 4xx not refused | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.58s | failing: -
+    old: 'if response and response.status is not None and response.status >= 400:'
+    new: 'if False:'
+S10 pinterest host check removed | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.59s | failing: -
+    old: 'if parsed.hostname not in ("pinterest.com", "www.pinterest.com"):'
+    new: 'if False:'
+S11 pinterest login path check removed | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.60s | failing: -
+    old: 'if any(x in parsed.path.lower() for x in ("login", "signup")):'
+    new: 'if False:'
+S12 pinterest captcha check removed | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.48s | failing: -
+    old: 'if soup.select("iframe[src*=\'captcha\'], [data-test-id*=\'captcha\'], #challenge-form"):'
+    new: 'if False:'
+S13 pinterest author marked verified | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.99s | failing: -
+    old: '"author_verified": False'
+    new: '"author_verified": True'
+S14 pinterest empty feed reported observed | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.55s | failing: -
+    old: '"observed" if posts else "no_visible_pins"'
+    new: '"observed"'
+S15 pinterest claims continuous monitoring | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.55s | failing: -
+    old: '"continuous_monitoring_configured": False'
+    new: '"continuous_monitoring_configured": True'
+S16 instagram username not required | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.49s | failing: -
+    old: 'if not username:'
+    new: 'if False:'
+S17 follower relation swapped | row 61 | reader.py | CAUGHT | rc=1 | 1 failed, 8 passed in 1.61s | failing: tests/modules/test_m06_social_reading.py::test_instagram_followers_via_daemon
+    old: 'relation = "follower" if operation == "followers" else "following"'
+    new: 'relation = "following" if operation == "followers" else "follower"'
+S18 naive timestamps left naive | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.55s | failing: -
+    old: 'return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)'
+    new: 'return parsed'
+S19 instagram truncated flag dropped | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.55s | failing: -
+    old: '"truncated": bool(result.get("truncated")),\n                    "summary": {"people"'
+    new: '"truncated": False,\n                    "summary": {"people"'
+S20 pinterest non-feed op allowed | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.51s | failing: -
+    old: 'if operation != "feed":\n            raise ValueError("Pinterest'
+    new: 'if False:\n            raise ValueError("Pinterest'
+S21 pinterest login-form check removed | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.41s | failing: -
+    old: 'if soup.select("form[action*=\'login\'] input[type=\'password\']"):'
+    new: 'if False:'
+S22 linkedin unknown operation tolerated | row 61 | reader.py | SURVIVED | rc=0 | 9 passed in 1.49s | failing: -
+    old: 'raise ValueError(f"unsupported linkedin operation: {operation}")'
+    new: 'return {}'
+TOTAL mutants=22 CAUGHT=2 SURVIVED=20 INVALID=0 NOT-APPLICABLE=0 | SHA restore True

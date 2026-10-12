@@ -1,0 +1,26 @@
+R='backend/app/modules/m06_social_media_manager/social_reading/reader.py'
+T='tests/modules/test_m06_social_reading.py tests/modules/test_m06_reader_deepening.py'
+MUT=[
+ ('S1 non-paired session accepted', 61, R, 'if not is_pc_session(session_id):', 'if False:', T),
+ ('S2 unsupported platform tolerated', 61, R, 'raise ValueError(f"unsupported platform: {platform}")', 'result = {}', T),
+ ('S3 blocked run recorded as failed', 61, R, 'self.store.finish_run(run_id, "blocked"', 'self.store.finish_run(run_id, "failed"', T),
+ ('S4 failed run recorded as complete', 61, R, 'self.store.finish_run(run_id, "failed"', 'self.store.finish_run(run_id, "complete"', T),
+ ('S5 connections limit not applied', 61, R, 'people = parse_linkedin_connections(await page.content())[:limit]', 'people = parse_linkedin_connections(await page.content())', T),
+ ('S6 feed limit not applied', 61, R, 'posts = parse_linkedin_feed(await page.content())[:limit]', 'posts = parse_linkedin_feed(await page.content())', T),
+ ('S7 pinterest limit validation removed', 61, R, 'if type(limit) is not int or not 1 <= limit <= 500:', 'if False:', T),
+ ('S8 pinterest 429 not a rate limit', 61, R, 'response.status == 429', 'response.status == 0', T),
+ ('S9 pinterest 4xx not refused', 61, R, 'if response and response.status is not None and response.status >= 400:', 'if False:', T),
+ ('S10 pinterest host check removed', 61, R, 'if parsed.hostname not in ("pinterest.com", "www.pinterest.com"):', 'if False:', T),
+ ('S11 pinterest login path check removed', 61, R, 'if any(x in parsed.path.lower() for x in ("login", "signup")):', 'if False:', T),
+ ('S12 pinterest captcha check removed', 61, R, 'if soup.select("iframe[src*=\'captcha\'], [data-test-id*=\'captcha\'], #challenge-form"):', 'if False:', T),
+ ('S13 pinterest author marked verified', 61, R, '"author_verified": False', '"author_verified": True', T),
+ ('S14 pinterest empty feed reported observed', 61, R, '"observed" if posts else "no_visible_pins"', '"observed"', T),
+ ('S15 pinterest claims continuous monitoring', 61, R, '"continuous_monitoring_configured": False', '"continuous_monitoring_configured": True', T),
+ ('S16 instagram username not required', 61, R, 'if not username:', 'if False:', T),
+ ('S17 follower relation swapped', 61, R, 'relation = "follower" if operation == "followers" else "following"', 'relation = "following" if operation == "followers" else "follower"', T),
+ ('S18 naive timestamps left naive', 61, R, 'return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)', 'return parsed', T),
+ ('S19 instagram truncated flag dropped', 61, R, '"truncated": bool(result.get("truncated")),\n                    "summary": {"people"', '"truncated": False,\n                    "summary": {"people"', T),
+ ('S20 pinterest non-feed op allowed', 61, R, 'if operation != "feed":\n            raise ValueError("Pinterest', 'if False:\n            raise ValueError("Pinterest', T),
+ ('S21 pinterest login-form check removed', 61, R, 'if soup.select("form[action*=\'login\'] input[type=\'password\']"):', 'if False:', T),
+ ('S22 linkedin unknown operation tolerated', 61, R, 'raise ValueError(f"unsupported linkedin operation: {operation}")', 'return {}', T),
+]
