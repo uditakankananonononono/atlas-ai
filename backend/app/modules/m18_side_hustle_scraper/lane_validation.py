@@ -34,7 +34,7 @@ SCAM_PATTERNS: Sequence[tuple[str, str]] = (
     (r"no work (required|needed)", "no_work_required"),
     (r"\$\s?\d[\d,]*\s?(/\s?|per )(day|hour|week)\b.*(effortless|easy|passive)", "effortless_daily_income"),
     (r"passive income while you sleep", "sleep_income"),
-    (r"(recruit|downline|upline|mlm|multi[- ]level)", "mlm_signal"),
+    (r"\b(recruit(?:ing|ment)?|downline|upline|mlm|multi[- ]level)\b", "mlm_signal"),
     (r"(limited spots|act now|only \d+ (spots|slots) left)", "urgency_pressure"),
     (r"(dm|message|whatsapp|telegram) me (for|to) (details|start|join)", "contact_lure"),
     (r"wire (transfer|money)|gift cards? (only|payment)", "payment_lure"),
@@ -112,7 +112,7 @@ class ValidationReport:
 class ValidatorConfig:
     min_text_chars: int = 80
     near_dup_threshold: float = 0.7
-    max_scam_signals: int = 1               # >= this many distinct signals rejects
+    max_scam_signals: int = 1               # maximum accepted count; above this rejects
     reject_on_injection: bool = True
     min_quality: float = 0.15
 

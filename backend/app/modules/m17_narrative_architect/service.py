@@ -28,9 +28,11 @@ class _Stored:
  owner:UUID|None; item:AdviceOut
 
 class Service:
- def __init__(self,*,generate:GenerateFn,collectors:dict[str,Collector],provider:str="openai",model:str|None=None,critique_models:list[tuple[str,str|None]]|None=None):
+ def __init__(self,*,generate:GenerateFn,collectors:dict[str,Collector],provider:str="openai",model:str|None=None,critique_models:list[tuple[str,str|None]]|None=None,corpus_limit:int=1000):
   self._generate=generate; self._collectors=collectors; self._provider=provider; self._model=model
   self._critique_models=critique_models or [(provider,model)]
+  if type(corpus_limit) is not int or not 1 <= corpus_limit <= 10000: raise ValueError("corpus_limit must be 1..10000")
+  self._corpus_limit=corpus_limit
   self._corpus:list[_Stored]=[]
 
  async def collect(self,request:CollectIn)->list[AdviceOut]:
@@ -55,14 +57,17 @@ class Service:
      topic=str(data.get("topic") or topic)[:120]; candidate=[str(x)[:400] for x in data.get("actionable_tips",[]) if str(x).strip()]
      if candidate: tips=candidate[:8]
      model_conf=float(data.get("confidence",.5))
-    except (ValueError,TypeError,KeyError,json.JSONDecodeError): model_conf=.35
+    except (ValueError,TypeError,KeyError,json.JSONDecodeError,RuntimeError,OSError): model_conf=.35
     spans=self._spans(raw,text)
     source=SourceOut(url=url,platform=platform,content_hash=digest,injection_flags=flags,creator=raw.get("creator"),published_at=raw.get("published_at"),provenance_kind=ProvenanceKind.TRANSCRIPT if raw.get("transcript") else ProvenanceKind.ARTICLE,transcript_spans=spans,credibility_score=credibility,credibility_reasons=reasons)
     confidence=max(0,min(1,(credibility*.65+model_conf*.35)*(0.65 if flags else 1)))
     item=AdviceOut(source=source,excerpt=" ".join(text.split())[:1200],topic=topic,actionable_tips=tips,confidence=confidence,citation=self._citation(source),cluster_id="pending")
     out.append(item)
   self._cluster(out)
+  incoming={x.source.content_hash for x in out}
+  self._corpus=[s for s in self._corpus if not (s.owner==request.owner_id and s.item.source.content_hash in incoming)]
   self._corpus.extend(_Stored(request.owner_id,x) for x in out)
+  self._corpus=self._corpus[-self._corpus_limit:]
   return out
 
  async def concepts(self,request:ConceptIn)->list[ConceptOut]:
@@ -161,7 +166,9 @@ class Service:
   return {"traits":clean(profile.traits),"pivotal_experiences":clean(profile.pivotal_experiences),"values":clean(profile.values),"voice_style_metrics":Service._style(profile.voice_samples).model_dump(),"forbidden_topics_redacted":len(profile.forbidden_topics)}
  @staticmethod
  def _looks_like_final_prose(text):
-  lower=text.lower(); return len(text.split())>55 and not any(x in lower for x in ("writer prompt","consider","question:","draft in your own words"))
+  # Long first-person narrative cannot be laundered by a scaffold marker.
+  # Short scaffolds stay usable; long passages require the writer to shorten them.
+  return len(text.split()) > 55
  @staticmethod
  def _style(samples):
   text=" ".join(samples); words=WORD.findall(text); sentences=[s for s in re.split(r"[.!?]+",text) if s.strip()]

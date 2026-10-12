@@ -55,9 +55,9 @@ class FeasibilityOut(BaseModel):
     barrier_to_entry: float = Field(ge=0, le=1)
     evidence_quality: float = Field(ge=0, le=1)
     viability_score: float = Field(ge=0, le=100)
-    score_explanation: list[str]
-    sensitivities: list[SensitivityOut]
-    first_experiment: str
+    score_explanation: list[str] = Field(min_length=1)
+    sensitivities: list[SensitivityOut] = Field(min_length=3)
+    first_experiment: str = Field(min_length=1)
     max_test_budget: float = Field(ge=0)
     recommendation: str
 

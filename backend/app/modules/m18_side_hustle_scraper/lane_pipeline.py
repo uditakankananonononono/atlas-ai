@@ -149,6 +149,7 @@ class CollectionPipeline:
         scam_map: dict[str, Sequence[str]] = {}
         quality_map: dict[str, float] = {}
         for doc in docs:
+            scam_map[doc.id] = self.validator.scan_scam(doc.title + " " + doc.text)
             quality_map[doc.id] = float(doc.meta.get("quality_score", 0.5))
         ranker = BlueprintRanker(
             self.ranker.config, clock=self.ranker.clock,

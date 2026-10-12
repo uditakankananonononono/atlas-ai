@@ -1,2 +1,22 @@
-# Module 17 integration
-Mount `spec.router`. Inject registry collectors: Reddit through official PRAW, YouTube through YouTube Data API/transcript rights checks, Pinterest through the existing public collector, and public web discovery. Add tenant-scoped Postgres corpus/revision repositories plus vector retrieval. Do not wire TikTok unofficial APIs, rotating proxies, login-driven Instagram automation, or stealth scraping. Whisper transcription must retain media source and reuse rights. Acceptance: cross-tenant isolation, citation retention, duplicate suppression, prompt-injection fixtures, and no mutation of the user's draft.
+# Module 17 narrative integration
+
+## Implemented
+
+The mounted service collects supplied public collector results, preserves source
+URLs/hashes, extracts deterministic tips with optional model labels, and keeps a
+bounded deduplicated in-process cache partitioned by owner identifier. Critique
+returns local suggestions; concepts are scaffolds, never final essay prose.
+Revision acceptance/key registry storage are separate SQL components.
+
+## Not implemented in this collection service
+
+Official PRAW collection, Whisper transcription, a tenant-Postgres advice corpus
+and vector retrieval are integration requirements, not shipped collector paths.
+Current Reddit wiring uses the existing public JSON collector. The advice corpus
+is not durable and eviction can remove old evidence. Configure public/licensed
+collectors only. Media transcription must preserve source and reuse permission.
+Do not claim these unavailable backends as deployed capabilities.
+
+Acceptance still requires cross-tenant isolation, source retention, repeated
+collection deduplication, bounded-cache behavior, injection fixtures, and no
+mutation of the user's draft.

@@ -15,6 +15,7 @@ from typing import Any, Callable
 # ---------------------------------------------------------------------------
 
 MANIPULATION_PATTERNS: list[tuple[str, str]] = [
+    (r"\b(?:guilt[- ]trip|manipulat(?:e|ing|ion)|threaten(?:ing)?|pressure (?:them|him|her|someone|people))\b", "explicit coercive intent"),
     (r"\byou must\b|\byou have to\b|\byou'd better\b", "coercive demand"),
     (r"\bif you (really )?(loved|cared|valued)\b", "guilt leverage"),
     (r"\beveryone (knows|agrees|is doing)\b", "false consensus"),

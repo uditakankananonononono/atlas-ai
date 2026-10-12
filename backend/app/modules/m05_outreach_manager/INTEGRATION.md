@@ -32,7 +32,7 @@
 `CampaignService.due_follow_ups()` returns sent messages whose follow-up window has elapsed with no reply and remaining follow-up budget. Wire a periodic worker (Celery beat or the shared scheduler) to:
 
 1. call `due_follow_ups()` per tenant,
-2. call `draft_follow_up(message_id, generate)` to create the next draft (idempotent: an existing follow-up draft is returned unchanged),
+2. call `draft_follow_up(message_id, generate)` to create the next draft (a second call while a follow-up draft exists raises CampaignStateError; callers must inspect existing drafts rather than retry blindly),
 3. call `submit_for_approval` on each new draft so a human approves every send.
 
 Reply detection stays in the Email Assistant over Gmail/IMAP provider APIs; it should call `POST /messages/{id}/reply`, which cancels pending follow-ups and stops the chain. No tracking pixels or covert open tracking are implemented.
@@ -68,8 +68,9 @@ Draft and proposal generation calls the shared BYOK `app.core.providers.generate
   exact-review approval machinery - the same action types, verified-email scope
   rules, and per-domain caps as outreach campaigns.
 - No builder fabricates contacts, journalists, creators, prices, or market data.
-  Empty supplied lists produce artifacts with explicit scope checks and manual
-  import steps, never invented entries.
+  Empty supplied lists generally produce scope-check/import artifacts. Exception:
+  plan_email_marketing requires at least one supplied contact and raises on an
+  empty contacts list. No contacts are invented.
 - Computed rows do transparent arithmetic on supplied numbers (lead scores,
   midpoint elasticity, funnel conversion, CRO drop-off, health scores, price
   floors, tier spacing, bundle discounts, dynamic-price bound stacking) and
