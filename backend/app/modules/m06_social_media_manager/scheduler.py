@@ -152,7 +152,8 @@ class _ApprovalAuthority:
 
     Binds approval_id -> action digest just before dispatch; unbound refs, a
     non-approved decision or a digest mismatch reject (fail closed). Trusts the
-    decision lookup (M00); it does not authenticate the approver.
+    decision lookup (M00); it does not authenticate the approver or prove the
+    owner reviewed this digest. Edits before this execution-time bind are not detected.
     """
 
     def __init__(self, decisions) -> None:
@@ -203,7 +204,9 @@ class Scheduler:
         # guardrail outbound gate. A caller-supplied enforcer must carry its own
         # authority_check; this scheduler binds approval digests only on the default.
         self._enforcer = enforcer or GuardrailEnforcer(authority_check=self._authority)
-        self._declarations = outbound_declarations or default_outbound_declarations()
+        self._declarations = (default_outbound_declarations() if outbound_declarations is None
+                              else {"tos": {}, "rate_limits": {}, "consent": [], "recent_actions": [],
+                                    **outbound_declarations})
         self._repository = repository
         self._decisions = decisions
         self._adapters = adapter_factory
@@ -331,27 +334,22 @@ class Scheduler:
                 continue
             try:
                 adapter = self._adapters.for_platform(entry.platform)
-                request = PublishRequest(
-                    platform=entry.platform.value,
-                    text=entry.text,
-                    format=entry.format,
-                    link=entry.link,
-                    media_urls=tuple(entry.media_urls),
-                    alt_texts=tuple(entry.alt_texts),
-                    thread_chunks=tuple(entry.thread_chunks),
-                )
                 moment = _aware(self._clock())
                 action = {"id": f"{entry.id}-{int(moment.timestamp())}", "platform": entry.platform.value,
                           "kind": "post", "at": int(moment.timestamp()), "count": 1,
                           "schedule_id": entry.id, "approval_id": entry.approval_id,
-                          "text": entry.text, "link": entry.link,
+                          "text": entry.text, "format": entry.format, "link": entry.link,
+                          "alt_texts": list(entry.alt_texts),
                           "media_urls": list(entry.media_urls), "thread_chunks": list(entry.thread_chunks)}
                 from app.runtime.guardrails._fields import payload_sha256
                 self._authority.bind(entry.approval_id,
                                      payload_sha256({k: v for k, v in action.items() if k != "id"}))
                 result = self._enforcer.dispatch_outbound(
                     action, self._declarations,
-                    effect=lambda a, _r=request: asyncio.run(adapter.publish(_r)),
+                    effect=lambda a: asyncio.run(adapter.publish(PublishRequest(
+                        platform=a["platform"], text=a["text"], format=a["format"],
+                        link=a["link"], media_urls=tuple(a["media_urls"]),
+                        alt_texts=tuple(a["alt_texts"]), thread_chunks=tuple(a["thread_chunks"])))),
                     now=moment.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=entry.approval_id)
             except GuardrailRefusal as refusal:
                 entry.status = STATUS_FAILED

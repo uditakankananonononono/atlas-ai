@@ -94,3 +94,66 @@ def test_default_enforcer_refuses_payload_edited_after_bind():
     assert scheduler.execute_due(NOW) == []
     assert adapter.published == []
     assert "authority_rejected" in repo.get_schedule(entry.id).failure
+
+
+import pytest
+
+@pytest.mark.parametrize("field", ["text", "format", "alt_texts", "media_urls", "link", "thread_chunks"])
+def test_every_publish_field_is_digest_bound(field):
+    adapter = FakeAdapter()
+    scheduler, repo, decisions = make_scheduler(adapter)
+    entry = _approved(scheduler, decisions)
+    def mutate(action):
+        action[field] = ["edited"] if isinstance(action[field], list) else "edited"
+    _mutate_after_bind(scheduler, mutate)
+    assert scheduler.execute_due(NOW) == [] and adapter.published == []
+    assert "authority_rejected" in repo.get_schedule(entry.id).failure
+
+
+def test_explicit_empty_declarations_refuse_publish():
+    adapter = FakeAdapter()
+    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    scheduler = Scheduler(repository=repo, decisions=decisions,
+                          adapter_factory=FakeAdapterFactory(adapter), clock=lambda: NOW,
+                          outbound_declarations={})
+    entry = _approved(scheduler, decisions)
+    assert scheduler.execute_due(NOW) == [] and adapter.published == []
+    assert "refused:denied" in repo.get_schedule(entry.id).failure
+
+
+def test_published_request_equals_gate_canonical_payload():
+    from app.runtime.guardrails._fields import payload_sha256
+    adapter = FakeAdapter()
+    scheduler, repo, decisions = make_scheduler(adapter)
+    _approved(scheduler, decisions)
+    admitted = {}
+    real = scheduler._enforcer.dispatch_outbound
+    def capture(action, *args, **kwargs):
+        admitted.update(action)
+        return real(action, *args, **kwargs)
+    scheduler._enforcer.dispatch_outbound = capture
+    assert len(scheduler.execute_due(NOW)) == 1
+    request = adapter.published[0]
+    for field in ("platform", "text", "format", "link", "media_urls", "alt_texts", "thread_chunks"):
+        value = getattr(request, field)
+        assert (list(value) if isinstance(value, tuple) else value) == admitted[field]
+    assert scheduler._enforcer.ledger("outbound")[-1]["record"]["action_digest"] == payload_sha256(
+        {k: v for k, v in admitted.items() if k != "id"})
+
+
+def test_publish_callback_consumes_gate_action_not_entry_or_detached_request():
+    class Gate:
+        def dispatch_outbound(self, action, declarations, *, effect, **kwargs):
+            # Contract probe, not a production admission.
+            action.update(text="canonical", format="post", link="https://example.test",
+                          media_urls=["media"], alt_texts=["alt"], thread_chunks=["chunk"])
+            return effect(action)
+    adapter = FakeAdapter()
+    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    scheduler = Scheduler(repository=repo, decisions=decisions, adapter_factory=FakeAdapterFactory(adapter),
+                          clock=lambda: NOW, enforcer=Gate())
+    _approved(scheduler, decisions)
+    assert len(scheduler.execute_due(NOW)) == 1
+    request = adapter.published[0]
+    assert (request.text, request.format, request.link) == ("canonical", "post", "https://example.test")
+    assert request.media_urls == ("media",) and request.alt_texts == ("alt",) and request.thread_chunks == ("chunk",)

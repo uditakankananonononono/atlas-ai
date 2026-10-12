@@ -1,0 +1,7 @@
+BASELINE tests/modules/test_m06_publish_guardrail.py tests/modules/test_m06_scheduler.py -> rc=0 27 passed in 1.04s
+S1 empty declarations default allow | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.80s | failing: test_explicit_empty_declarations_refuse_publish
+S2 format omitted from digest | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.94s | failing: test_every_publish_field_is_digest_bound[format]
+S3 alt_texts omitted from digest | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.88s | failing: test_every_publish_field_is_digest_bound[alt_texts]
+S4 callback ignores canonical text | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.88s | failing: test_publish_callback_consumes_gate_action_not_entry_or_detached_request
+counts: CAUGHT=4, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True
