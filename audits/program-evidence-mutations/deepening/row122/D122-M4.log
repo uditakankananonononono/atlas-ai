@@ -1,0 +1,10 @@
+.............F                                                           [100%]
+=================================== FAILURES ===================================
+___________ test_task_exact_upper_edges_and_unique_paths[duplicates] ___________
+tests/test_row122_validation_deepening.py:19: in test_task_exact_upper_edges_and_unique_paths
+    with pytest.raises(EvidenceError):task_progress(root,'source.txt',selectors,limit=limit)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EvidenceError
+=========================== short test summary info ============================
+FAILED tests/test_row122_validation_deepening.py::test_task_exact_upper_edges_and_unique_paths[duplicates]
+1 failed, 13 passed in 0.65s

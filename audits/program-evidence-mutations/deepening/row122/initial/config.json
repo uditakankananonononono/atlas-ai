@@ -1,0 +1,43 @@
+{
+  "row": 122,
+  "tests": [
+    "tests/test_task_progress_evidence.py"
+  ],
+  "mutants": [
+    {
+      "id": "D122-M1",
+      "name": "history-upper-bound",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "1 <= limit <= 1000",
+      "new": "1 <= limit <= 1001"
+    },
+    {
+      "id": "D122-M2",
+      "name": "selector-count-bound",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "len(selectors) > 1000",
+      "new": "len(selectors) > 1001"
+    },
+    {
+      "id": "D122-M3",
+      "name": "path-count-bound",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "len(paths) > 100",
+      "new": "len(paths) > 101"
+    },
+    {
+      "id": "D122-M4",
+      "name": "duplicate-path-refusal",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "len(set(paths)) != len(paths)",
+      "new": "False"
+    },
+    {
+      "id": "D122-M5",
+      "name": "source-authenticity-nonclaim",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "'source_identity_authenticated': False",
+      "new": "'source_identity_authenticated': True"
+    }
+  ]
+}
