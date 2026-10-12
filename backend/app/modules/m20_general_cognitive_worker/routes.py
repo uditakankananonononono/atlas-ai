@@ -1821,3 +1821,19 @@ from .ergonomics1525_routes import router as ergonomics1525_router
 router.include_router(ergonomics1525_router)
 from .industrial_design1526_routes import router as industrial_design1526_router
 router.include_router(industrial_design1526_router)
+
+# Dedicated supplied-input engineering engines, rows 1543-1549.
+from .reliability_testing1543_routes import router as reliability_testing1543_router
+router.include_router(reliability_testing1543_router)
+from .accelerated_life_testing1544_routes import router as accelerated_life_testing1544_router
+router.include_router(accelerated_life_testing1544_router)
+from .environmental_testing1545_routes import router as environmental_testing1545_router
+router.include_router(environmental_testing1545_router)
+from .vibration_modal1546_routes import router as vibration_modal1546_router
+router.include_router(vibration_modal1546_router)
+from .shock_testing1547_routes import router as shock_testing1547_router
+router.include_router(shock_testing1547_router)
+from .thermal_cycling1548_routes import router as thermal_cycling1548_router
+router.include_router(thermal_cycling1548_router)
+from .humidity_exposure1549_routes import router as humidity_exposure1549_router
+router.include_router(humidity_exposure1549_router)
