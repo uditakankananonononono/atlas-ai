@@ -1782,3 +1782,33 @@ from .release702_routes import router as release702_router
 router.include_router(release702_router)
 from .doc703_routes import router as doc703_router
 router.include_router(doc703_router)
+
+from .legal_analytics1300_routes import router as legal_analytics1300_router
+router.include_router(legal_analytics1300_router)
+
+from .predictive_coding1301_routes import router as predictive_coding1301_router
+router.include_router(predictive_coding1301_router)
+
+from .document_review1302_routes import router as document_review1302_router
+router.include_router(document_review1302_router)
+
+from .legal_operations1303_routes import router as legal_operations1303_router
+router.include_router(legal_operations1303_router)
+
+from .law_firm_management1304_routes import router as law_firm_management1304_router
+router.include_router(law_firm_management1304_router)
+
+from .legal_billing1305_routes import router as legal_billing1305_router
+router.include_router(legal_billing1305_router)
+
+from .alternative_fee_arrangements1306_routes import router as alternative_fee_arrangements1306_router
+router.include_router(alternative_fee_arrangements1306_router)
+
+from .legal_project_management1307_routes import router as legal_project_management1307_router
+router.include_router(legal_project_management1307_router)
+
+from .knowledge_management1308_routes import router as knowledge_management1308_router
+router.include_router(knowledge_management1308_router)
+
+from .legal_education1309_routes import router as legal_education1309_router
+router.include_router(legal_education1309_router)
