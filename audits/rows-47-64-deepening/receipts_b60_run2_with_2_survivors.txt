@@ -1,0 +1,95 @@
+BASELINE tests/modules/test_m21_row60_standalone.py -> rc=0 13 passed in 0.23s
+W1 blank tenant accepted | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_blank_tenant_or_actor_rejected
+    old: 'if not tenant_id.strip() or not actor_id.strip():'
+    new: 'if not tenant_id.strip():'
+W2 consent not required for answer | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.26s | failing: tests/modules/test_m21_row60_standalone.py::test_consent_gates_questions_context_and_answers
+    old: '            if not self._enabled(db):\n                raise PermissionError'
+    new: '            if False:\n                raise PermissionError'
+W3 consent not required for next_question | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.24s | failing: tests/modules/test_m21_row60_standalone.py::test_consent_gates_questions_context_and_answers
+    old: '            if not self._enabled(db):\n                return {"status": "consent_required", "question": None}'
+    new: '            if False:\n                return {"status": "consent_required", "question": None}'
+W4 consent not required for context | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.26s | failing: tests/modules/test_m21_row60_standalone.py::test_consent_gates_questions_context_and_answers
+    old: '            if not self._enabled(db):\n                return {"status": "consent_required", "preferences": []}'
+    new: '            if False:\n                return {"status": "consent_required", "preferences": []}'
+W5 invalid choice accepted | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_answer_validation_and_claim_label
+    old: 'if question is None or choice not in question["choices"]:'
+    new: 'if question is None:'
+W6 reason length cap dropped | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_answer_validation_and_claim_label
+    old: 'or len(reason) > 2000'
+    new: ''
+W7 source reference cap dropped | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_answer_validation_and_claim_label
+    old: 'or len(source_reference) > 240'
+    new: ''
+W8 duplicate answer allowed | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.54s | failing: tests/modules/test_m21_row60_standalone.py::test_duplicate_answer_needs_revoke_first
+    old: '            if prior:\n                raise ValueError'
+    new: '            if False:\n                raise ValueError'
+W9 revoke ignores actor | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.26s | failing: tests/modules/test_m21_row60_standalone.py::test_revoke_is_scoped_to_tenant_and_actor_and_unknown_ids
+    old: 'or row.actor_id != self.actor_id '
+    new: ''
+W10 revoke ignores tenant | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.27s | failing: tests/modules/test_m21_row60_standalone.py::test_revoke_is_scoped_to_tenant_and_actor_and_unknown_ids
+    old: 'row.tenant_id != self.tenant_id or '
+    new: ''
+W11 revoked answers still active | row 60 | owner_interview.py | CAUGHT | rc=1 | 3 failed, 10 passed in 0.26s | failing: tests/modules/test_m21_row60_standalone.py::test_duplicate_answer_needs_revoke_first, tests/modules/test_m21_row60_standalone.py::test_context_lists_active_answers_with_domain_and_no_action_permission, tests/modules/test_m21_row60_standalone.py::test_delete_all_removes_revoked_and_active_only_for_this_owner
+    old: 'InterviewAnswer.revoked_at.is_(None),\n        ).order_by'
+    new: 'True,\n        ).order_by'
+W12 action permission granted in context | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.26s | failing: tests/modules/test_m21_row60_standalone.py::test_context_lists_active_answers_with_domain_and_no_action_permission
+    old: '"external_action_permission": False'
+    new: '"external_action_permission": True'
+W13 claim label changed | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.24s | failing: tests/modules/test_m21_row60_standalone.py::test_answer_validation_and_claim_label
+    old: 'owner_reported_preference_not_action_permission'
+    new: 'owner_permission_to_act'
+W14 delete_all ignores actor | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_delete_all_removes_revoked_and_active_only_for_this_owner
+    old: 'InterviewAnswer.tenant_id == self.tenant_id, InterviewAnswer.actor_id == self.actor_id)))'
+    new: 'InterviewAnswer.tenant_id == self.tenant_id)))'
+W15 reason not stripped | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.24s | failing: tests/modules/test_m21_row60_standalone.py::test_answer_validation_and_claim_label
+    old: 'reason=reason.strip(),'
+    new: 'reason=reason,'
+W16 questions answered check ignored (next always first) | row 60 | owner_interview.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.24s | failing: tests/modules/test_m21_row60_standalone.py::test_questions_progress_in_order_then_complete
+    old: 'next((q for q in QUESTIONS if q["id"] not in answered), None)'
+    new: 'next((q for q in QUESTIONS), None)'
+X1 voice minimum lowered | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_voice_dataset_bounds_strip_and_hash
+    old: '50<=len(clean)'
+    new: '10<=len(clean)'
+X2 voice maximum raised | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.27s | failing: tests/modules/test_m21_row60_standalone.py::test_voice_dataset_bounds_strip_and_hash
+    old: 'len(clean)<=2000'
+    new: 'len(clean)<=5000'
+X3 blank voice samples kept | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.29s | failing: tests/modules/test_m21_row60_standalone.py::test_voice_dataset_bounds_strip_and_hash
+    old: 'if x.strip()]'
+    new: ']'
+X4 voice provenance changed | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.26s | failing: tests/modules/test_m21_row60_standalone.py::test_voice_dataset_bounds_strip_and_hash
+    old: "'provenance':'owner_authored'"
+    new: "'provenance':'model'"
+X5 preference minimum lowered | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_preference_dataset_validation_and_provenance
+    old: 'if len(examples)<20'
+    new: 'if len(examples)<2'
+X6 ranking set check dropped | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_preference_dataset_validation_and_provenance
+    old: 'or set(opts)!=set(order)'
+    new: ''
+X7 single-option ranking allowed | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.27s | failing: tests/modules/test_m21_row60_standalone.py::test_preference_dataset_validation_and_provenance
+    old: 'if len(opts)<2 or'
+    new: 'if'
+X8 voice allows non-LoRA | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_propose_training_is_pending_approval_only
+    old: "dataset.kind=='voice_lora' and method!='lora'"
+    new: 'False'
+X9 publishing enabled | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_propose_training_is_pending_approval_only
+    old: "'publishing':False"
+    new: "'publishing':True"
+X10 cost review dropped | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.28s | failing: tests/modules/test_m21_row60_standalone.py::test_propose_training_is_pending_approval_only
+    old: "'estimated_cost_requires_review':True"
+    new: "'estimated_cost_requires_review':False"
+X11 approval status not pending | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.25s | failing: tests/modules/test_m21_row60_standalone.py::test_propose_training_is_pending_approval_only
+    old: "'status':'pending'"
+    new: "'status':'approved'"
+X12 wrong action_type | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.26s | failing: tests/modules/test_m21_row60_standalone.py::test_propose_training_is_pending_approval_only
+    old: "action_type='train_personalization_model'"
+    new: "action_type='train'"
+X13 dataset hash dropped from payload | row 60 | training.py | CAUGHT | rc=1 | 1 failed, 12 passed in 0.26s | failing: tests/modules/test_m21_row60_standalone.py::test_propose_training_is_pending_approval_only
+    old: "'dataset_sha256':dataset.sha256"
+    new: "'dataset_sha256':''"
+X14 voice hash covers only first example | row 60 | training.py | SURVIVED | rc=0 | 13 passed in 0.24s | failing: -
+    old: "body=json.dumps(examples,sort_keys=True).encode()\n  return TrainingDataset('voice_lora'"
+    new: "body=json.dumps(examples[:1],sort_keys=True).encode()\n  return TrainingDataset('voice_lora'"
+X15 preference hash covers only first example | row 60 | training.py | SURVIVED | rc=0 | 13 passed in 0.24s | failing: -
+    old: "body=json.dumps(examples,sort_keys=True).encode();return TrainingDataset('preference'"
+    new: "body=json.dumps(examples[:1],sort_keys=True).encode();return TrainingDataset('preference'"
+TOTAL mutants=31 CAUGHT=29 SURVIVED=2 INVALID=0 NOT-APPLICABLE=0 | SHA restore True
