@@ -256,7 +256,7 @@ def test_cell_level_keys_must_be_the_canonical_decimal_string_of_a_declared_leve
     assert bad(cells=c) == f"SENT1260: cell level '{key}' is not a declared level"
 
 
-# --- size-cap pins (auditor-2 repair 1) ------------------------------------------------------------------
+# --- size-cap pins (repair 1) ------------------------------------------------------------------
 def test_levels_cap_64_accepted_65_refused():
     assert SentencingGrid({**DECL, "levels": list(range(1, 65))})
     assert bad(levels=list(range(1, 66))) == "SENT1260: levels must have at most 64 entries"
@@ -308,7 +308,7 @@ def test_adjustment_names_cap_64_accepted_65_refused():
     assert bad(offender_adjustments={"b" * 65: 1}) == "SENT1260: offender adjustment names must be at most 64 characters"
 
 
-# --- type-policy pins (auditor-2 repair 2) ---------------------------------------------------------------
+# --- type-policy pins (repair 2) ---------------------------------------------------------------
 def test_dict_subclasses_are_refused():
     class D(dict):
         pass
