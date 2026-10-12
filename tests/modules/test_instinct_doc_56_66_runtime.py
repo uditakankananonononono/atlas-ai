@@ -232,3 +232,17 @@ def test_owner_evaluation_api_is_consent_bound(tmp_path):
     assert c.post('/claire/interview/evaluation',json=body).json()['agreement']==1
     s.consent(False)
     assert c.post('/claire/interview/evaluation',json=body).status_code==403
+
+
+def test_hn_success_shaped_error_and_exact_response_hash_and_byte_bound():
+    import hashlib,json
+    body=json.dumps({'hits':[]}).encode()
+    for status in (301,403,429,500):
+        with pytest.raises(ResearchUnavailable):
+            HNResearch(httpx.MockTransport(lambda req:httpx.Response(status,content=body,headers={'content-type':'application/json'}))).collect('x',as_of=NOW.isoformat())
+    huge=json.dumps({'hits':[],'padding':'x'*1_000_000}).encode()
+    with pytest.raises(ResearchUnavailable,match='bound'):
+        HNResearch(httpx.MockTransport(lambda req:httpx.Response(200,content=huge,headers={'content-type':'application/json'}))).collect('x',as_of=NOW.isoformat())
+    out=HNResearch(httpx.MockTransport(lambda req:httpx.Response(200,content=body,headers={'content-type':'application/json'}))).collect('x',as_of=NOW.isoformat())
+    assert out['response_sha256']==hashlib.sha256(body).hexdigest()
+
