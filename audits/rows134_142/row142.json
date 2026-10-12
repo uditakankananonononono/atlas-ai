@@ -1,0 +1,45 @@
+{
+  "row": 142,
+  "selectors": [
+    "tests/runtime/guardrails/test_report_gate.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "local choke-point tests only, fixture effects",
+    "no external approval/provider truth",
+    "not universal runtime adoption",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "vacuous",
+      "path": "backend/app/runtime/guardrails/report_gate.py",
+      "old": "if result[\"vacuous\"]:",
+      "new": "if False:"
+    },
+    {
+      "id": "unmarked",
+      "path": "backend/app/runtime/guardrails/report_gate.py",
+      "old": "elif result[\"unmarked\"]:",
+      "new": "elif False:"
+    },
+    {
+      "id": "conflicting",
+      "path": "backend/app/runtime/guardrails/report_gate.py",
+      "old": "elif result[\"conflicting\"]:",
+      "new": "elif False:"
+    },
+    {
+      "id": "ambiguous",
+      "path": "backend/app/runtime/guardrails/report_gate.py",
+      "old": "elif result[\"structural_ambiguous\"]:",
+      "new": "elif False:"
+    },
+    {
+      "id": "refusal",
+      "path": "backend/app/runtime/guardrails/report_gate.py",
+      "old": "if verdict != \"emitted\":",
+      "new": "if False:"
+    }
+  ]
+}
