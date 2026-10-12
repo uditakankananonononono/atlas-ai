@@ -1,0 +1,9 @@
+BASELINE tests/modules/test_m14_report_identity.py tests/modules/test_m14_report_gate.py tests/modules/test_m14_wiring.py -> rc=0 58 passed, 1 warning in 4.23s
+ID1 truncate project identity | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.65s | failing: test_complete_report_identity_distinguishes_long_shared_prefixes
+ID2 omit tenant binding | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.69s | failing: test_identity_binds_tenant_kind_body_and_subsecond_time
+ID3 omit report body binding | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.86s | failing: test_identity_binds_tenant_kind_body_and_subsecond_time
+ID4 drop subsecond identity | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.68s | failing: test_identity_binds_tenant_kind_body_and_subsecond_time
+ID5 restore prefix truncated service id | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.79s | failing: test_status_report_ids_remain_distinct_for_long_project_ids
+ID6 random rather than bound README id | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.65s | failing: test_export_readme_and_status_use_content_bound_identity
+counts: CAUGHT=6, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True

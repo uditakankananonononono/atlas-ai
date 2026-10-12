@@ -7,7 +7,7 @@ Released selector:
 
     PYTHONPATH=backend ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python -m pytest tests/modules/test_m14_report_gate.py tests/modules/test_m14_reports.py tests/modules/test_m14_exports.py tests/modules/test_m14_wiring.py -q
 
-Result: 80 passed, two environment/deprecation warnings. Tests use real pgserver
+Historical patch1-intermediate result: 80 passed, two environment/deprecation warnings. Tests use real pgserver
 lifecycle where selected, fake project generation, and private local export directories.
 No network, artifact publication or remote repository writes.
 
@@ -20,9 +20,10 @@ README, STATUS, manifest or zip. Tests inject real supplied-goal CLAIM markers i
 direct renderers and service export, separately test alternate renderers, assert no files
 exist on refusal, and compare SHA-256 ledger digests to exported README/STATUS bytes.
 
-Mutation receipts: five exact replacements, CAUGHT=5, SURVIVED=0, INVALID=0,
+Historical patch1-intermediate mutation receipts: five exact replacements, CAUGHT=5, SURVIVED=0, INVALID=0,
 NOT-APPLICABLE=0. CAUGHT requires rc=1 plus FAILED ids and no collection/internal error,
-crash or timeout; every source file is restored and SHA-256 checked. The first early-write
+screened fatal-process error or timeout; FAILED can include product crashes, not only
+assertions. Mixed FAILED plus SKIP is not rejected. Every source file is restored and SHA-256 checked. The first early-write
 mutant hit a different method and survived; it was narrowed to export_project and rerun.
 
 Limits: claim_status grammar covers explicit CLAIM markers and qualifying label tables,
@@ -34,3 +35,8 @@ not gated arbitrary-document exporters. SCOPE and artifact payloads are not repo
 No control-flow proof of every future caller. Failure after admission or filesystem writes
 is not an atomic rollback guarantee. Report-id truncation in status_report remains for the
 separate identity patch; this patch does not claim to fix it.
+
+Composition replay: R3 now targets the content-bound README id introduced by the
+identity patch. Fresh composition receipts are in composition_mutation_receipts.txt.
+The original early-write survivor config/log and old test version were not supplied;
+that provenance gap remains, and the narrowed R5 receipt does not recover it.

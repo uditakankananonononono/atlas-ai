@@ -9,9 +9,12 @@ Released selector:
 
     PYTHONPATH=backend ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python -m pytest tests/modules/test_m14_report_identity.py tests/modules/test_m14_report_gate.py tests/modules/test_m14_wiring.py -q
 
-Result: 58 passed, two environment/deprecation warnings. Final mutation receipts:
+Historical result: 58 passed, two environment/deprecation warnings. Final mutation receipts:
 CAUGHT=6, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0; source SHA-256 restore true.
-CAUGHT requires pytest rc=1 and FAILED IDs, not collection/setup error, crash or timeout.
+CAUGHT requires pytest rc=1 and FAILED IDs, with collection/internal/fatal errors screened and timeout uncredited.
+FAILED includes product KeyError/RuntimeError crashes, not only assertion failures.
+Mixed FAILED plus SKIP is not rejected. These are failure-sensitivity counts.
+Fresh composition receipts are in composition_mutation_receipts.txt.
 
 Limits: this is report identity, not a replay/spend token. Identical complete identities
 can intentionally produce the same id; report_gate does not deduplicate them. SHA-256

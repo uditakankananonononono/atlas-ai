@@ -1,0 +1,8 @@
+BASELINE tests/modules/test_m14_report_gate.py tests/modules/test_m14_reports.py tests/modules/test_m14_exports.py tests/modules/test_m14_wiring.py -> rc=0 80 passed, 1 warning in 4.26s
+R1 bypass direct status renderer gate | reports.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.65s | failing: test_real_direct_renderer_refuses_unmarked_supplied_goal[status]
+R2 bypass direct README gate | exports.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.72s | failing: test_real_direct_renderer_refuses_unmarked_supplied_goal[readme]
+R3 bypass alternate README gate | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.68s | failing: test_alternate_readme_renderer_refused_before_files
+R4 omit exported STATUS validation | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.64s | failing: test_alternate_status_renderer_refused_before_export_files
+R5 write export directory before validation | service.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.76s | failing: test_real_service_export_refuses_unmarked_goal_before_any_files
+counts: CAUGHT=5, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True
