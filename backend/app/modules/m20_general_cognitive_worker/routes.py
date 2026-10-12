@@ -1676,3 +1676,15 @@ from .curiosity_investigator_routes import router as curiosity_investigator_rout
 router.include_router(curiosity_investigator_router)
 from .openapi704_routes import router as openapi704_router
 router.include_router(openapi704_router)
+
+from .adr705_routes import router as adr705_router
+router.include_router(adr705_router)
+
+from .comments706_routes import router as comments706_router
+router.include_router(comments706_router)
+
+from .naming707_routes import router as naming707_router
+router.include_router(naming707_router)
+
+from .formatting708_routes import router as formatting708_router
+router.include_router(formatting708_router)
