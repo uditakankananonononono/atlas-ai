@@ -69,8 +69,21 @@ def _packet_id(olympiad_name, profile_name):
     return "pkt-" + hashlib.sha256(blob.encode("utf-8")).hexdigest()[:12]
 
 
-def _digest(checklist):
-    return hashlib.sha256(json.dumps(checklist, sort_keys=True).encode("utf-8")).hexdigest()
+def _artifact_view(packet, reviewer=None):
+    """The WHOLE exported semantic artifact: everything the handoff writes
+    out (olympiad metadata incl. fee/name/deadline, checklist, waiver draft
+    text, packet id) plus the approver identity once bound. Only mutable
+    state (state, review metadata, handoff file paths, artifact_hash itself,
+    the static boundary text) is excluded."""
+    return {"id": packet.get("id"),
+            "olympiad": packet.get("olympiad"),
+            "checklist": packet.get("checklist"),
+            "waiver_draft": packet.get("waiver_draft"),
+            "reviewer": reviewer}
+
+
+def _digest(view):
+    return hashlib.sha256(json.dumps(view, sort_keys=True).encode("utf-8")).hexdigest()
 
 
 def _valid_packet(packet):
@@ -153,7 +166,7 @@ def build_packet(request):
         "boundary": ("Preparation only. Atlas does not register, submit, email, pay or log "
                      "in. The terminal state is a local handoff bundle for the owner."),
     }
-    packet["artifact_hash"] = _digest(packet["checklist"])
+    packet["artifact_hash"] = _digest(_artifact_view(packet))
     return packet
 
 
@@ -168,7 +181,7 @@ def review(store, packet_id, decision, reviewer):
         _err("STATE", packet["state"])
     # recompute the artifact digest from CURRENT store content; a store row
     # mutated since build is data, not proof, and must not be approvable
-    current = _digest(packet["checklist"])
+    current = _digest(_artifact_view(packet))
     if current != packet["artifact_hash"]:
         _err("TAMPERED", "artifact")
     reviewer = policy.clean_text(reviewer, PREFIX, "reviewer", 120)
@@ -181,7 +194,7 @@ def review(store, packet_id, decision, reviewer):
         raise ValueError("%s_REFUSED_BAD_TYPE:decision" % PREFIX)
     packet["state"] = "owner_approved"
     packet["review"] = {"reviewed_by": reviewer, "decision": "approve",
-                        "exact_artifact_hash": current}
+                        "exact_artifact_hash": _digest(_artifact_view(packet, reviewer))}
     return packet
 
 
@@ -196,9 +209,10 @@ def export_handoff(store, packet_id, out_dir):
     approved = packet["review"].get("exact_artifact_hash")
     if not approved:
         _err("STATE", "not-approved")
-    # recompute the artifact digest from CURRENT store content and require it
-    # to equal what the owner approved; a post-review mutation refuses export
-    if _digest(packet["checklist"]) != approved:
+    # recompute the digest over the WHOLE exported semantic artifact (and
+    # the approver identity) from CURRENT store content; any post-review
+    # mutation - waiver body, fee, name, checklist, id, approver - refuses
+    if _digest(_artifact_view(packet, packet["review"].get("reviewed_by"))) != approved:
         _err("TAMPERED", "artifact")
     out_dir = policy.clean_text(out_dir, PREFIX, "out_dir", MAX_OUT_PATH)
     root = os.path.realpath(out_dir)

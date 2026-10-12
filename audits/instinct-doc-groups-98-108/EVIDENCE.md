@@ -208,3 +208,13 @@ servers). Test counts are from `python3 -m pytest` on the listed files.
   re-validation (_valid_packet) before any action on loaded data.
   8 adversarial tests added.
 - New-suite total after hardening: 105 tests, all passing.
+
+## Follow-up 0015 (gate feedback): whole-artifact approval binding
+
+- registration_pipeline digest now covers the WHOLE exported semantic
+  artifact - packet id, olympiad metadata (name/deadline/fee), checklist,
+  waiver draft text - plus the approver identity bound at approval time.
+  Only mutable state (state, review metadata, file paths, the digest field
+  itself, static boundary text) is excluded. Reproduction test: approve,
+  mutate waiver body, export refuses TAMPERED; fee/name/deadline/approver
+  mutations refuse likewise (6 new adversarial tests; suite now 111).

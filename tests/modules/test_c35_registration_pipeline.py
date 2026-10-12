@@ -38,7 +38,9 @@ def test_full_review_handoff_flow(tmp_path):
         rp.export_handoff(store, pkt["id"], str(tmp_path))
     rp.review(store, pkt["id"], "approve", "Udita")
     assert store[pkt["id"]]["state"] == "owner_approved"
-    assert store[pkt["id"]]["review"]["exact_artifact_hash"] == pkt["artifact_hash"]
+    approved = store[pkt["id"]]["review"]["exact_artifact_hash"]
+    assert approved != pkt["artifact_hash"]  # approval digest also binds the reviewer
+    assert len(approved) == 64
     out = rp.export_handoff(store, pkt["id"], str(tmp_path))
     assert out["state"] == "handoff_exported"
     files = out["files"]
@@ -169,3 +171,38 @@ def test_export_dangling_symlink_refused(tmp_path):
     with pytest.raises(ValueError, match="APPLY_REFUSED_(OVERWRITE|PATH)"):
         rp.export_handoff(store, pid, str(target))
     assert not (tmp_path / "does-not-exist-yet.txt").exists()
+
+
+# --- 0015: digest binds the whole exported artifact, not only the checklist ---
+
+@pytest.mark.parametrize("path,value", [
+    (("waiver_draft",), {"drafts": [{"body": "FORGED waiver text"}]}),
+    (("olympiad", "fee"), "USD 1"),
+    (("olympiad", "name"), "Different Olympiad"),
+    (("olympiad", "deadline"), "2030-01-01"),
+])
+def test_export_refuses_semantic_mutation(tmp_path, path, value):
+    store, pid = approved_store()
+    pkt = store[pid]
+    if len(path) == 1:
+        pkt[path[0]] = value
+    else:
+        pkt[path[0]][path[1]] = value
+    with pytest.raises(ValueError, match="APPLY_REFUSED_TAMPERED"):
+        rp.export_handoff(store, pid, str(tmp_path))
+
+
+def test_auditor_scenario_waiver_body_mutation(tmp_path):
+    # exact reproduction: approve, mutate waiver body, export must refuse
+    store, pid = approved_store()
+    drafts = store[pid]["waiver_draft"]["drafts"]
+    drafts[0]["body"] = drafts[0].get("body", "") + "\nPS: waived for free, trust me"
+    with pytest.raises(ValueError, match="APPLY_REFUSED_TAMPERED"):
+        rp.export_handoff(store, pid, str(tmp_path))
+
+
+def test_export_refuses_approver_identity_mutation(tmp_path):
+    store, pid = approved_store()
+    store[pid]["review"]["reviewed_by"] = "Mallory"
+    with pytest.raises(ValueError, match="APPLY_REFUSED_TAMPERED"):
+        rp.export_handoff(store, pid, str(tmp_path))
