@@ -1,0 +1,49 @@
+{
+  "row": 82,
+  "selectors": [
+    "tests/mission_build/test_quality_acceptance.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "host-owned supplied benchmark callable executions",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "isolation",
+      "path": "backend/app/mission_build/quality_program.py",
+      "old": "adapter(copy.deepcopy(task['input']))",
+      "new": "adapter(task['input'])"
+    },
+    {
+      "id": "regression",
+      "path": "backend/app/mission_build/quality_program.py",
+      "old": "'regressed':c<b",
+      "new": "'regressed':False"
+    },
+    {
+      "id": "zero",
+      "path": "backend/app/mission_build/quality_program.py",
+      "old": "c/b if b else None",
+      "new": "0"
+    },
+    {
+      "id": "acceptance",
+      "path": "backend/app/mission_build/quality_program.py",
+      "old": "not failed and not regressed and improved",
+      "new": "improved"
+    },
+    {
+      "id": "million",
+      "path": "backend/app/mission_build/quality_program.py",
+      "old": "'million_fold_improvement_established':False",
+      "new": "'million_fold_improvement_established':True"
+    }
+  ]
+}

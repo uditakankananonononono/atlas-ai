@@ -50,3 +50,11 @@ def test_stale_digest_missing_sources_and_no_fake_boolean_pass():
     assert inspect_manifest([e],[r])['accepted_count']==0
     e,r=manifests();r['result']=True
     with pytest.raises(ValueError):inspect_manifest([e],[r])
+
+
+def test_baseline_mutation_does_not_change_candidate_input():
+    tasks=[{'id':'a','module':'m1','input':{'value':1},'expected':2}]
+    def baseline(x):x['value']=99;return 0
+    out=compare(tasks,baseline,lambda x:x['value']+1)
+    assert out['cases'][0]['candidate']['correct'] is True
+    assert out['scoped_acceptance'] is True
