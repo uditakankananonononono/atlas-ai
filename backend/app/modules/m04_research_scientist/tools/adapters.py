@@ -1,4 +1,5 @@
 """Approved scientific tool adapters. Execution belongs in an isolated worker container."""
+from app.runtime.guardrails.scoped_refusal import refuse_unbound_effect
 from dataclasses import dataclass
 from pathlib import Path
 import asyncio, os
@@ -31,6 +32,7 @@ class GalaxyAdapter:
     def __init__(self, base_url: str, api_key: str) -> None:
         self.base_url, self.api_key = base_url.rstrip("/"), api_key
     async def run_workflow(self, workflow_id: str, history_id: str, inputs: dict) -> ToolResult:
+        refuse_unbound_effect('remote Galaxy account invocation')  # effect boundary: scoped refusal
         async with httpx.AsyncClient(timeout=120) as client:
             response = await client.post(f"{self.base_url}/api/workflows/{workflow_id}/invocations", headers={"x-api-key": self.api_key}, json={"history": f"hist_id={history_id}", "inputs": inputs})
         response.raise_for_status(); data=response.json()

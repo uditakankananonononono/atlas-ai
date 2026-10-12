@@ -6,6 +6,7 @@ httpx.AsyncClient so tests run offline against MockTransport.
 """
 
 from __future__ import annotations
+from app.runtime.guardrails.scoped_refusal import refuse_unbound_effect
 
 import base64
 import urllib.parse
@@ -231,6 +232,7 @@ class HttpxGmailClient:
         return parse_gmail_message(data)
 
     async def watch(self, access_token: str, topic: str) -> WatchInfo:
+        refuse_unbound_effect('Gmail notification account mutation')  # effect boundary: scoped refusal
         response = await self._client.post(
             f"{self._base}/watch",
             headers=self._headers(access_token),

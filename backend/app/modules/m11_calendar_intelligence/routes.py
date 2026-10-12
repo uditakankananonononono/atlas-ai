@@ -1,4 +1,5 @@
 """FastAPI routes for the Calendar Intelligence module."""
+from app.runtime.guardrails.scoped_refusal import refuse_unbound_effect
 
 import os
 from collections.abc import AsyncIterator
@@ -113,6 +114,7 @@ def list_sources(service: Service = Depends(get_service)) -> list[CalendarSource
 
 @router.post("/sources/{source_id}/watch", response_model=CalendarSourceView)
 async def ensure_watch(source_id: str, service: Service = Depends(get_service)) -> CalendarSourceView:
+    refuse_unbound_effect('Calendar notification account mutation')  # effect boundary: scoped refusal
     try:
         return await service.ensure_watch(source_id)
     except SourceNotFoundError as exc:

@@ -1,5 +1,6 @@
 """The daemon loop: pair, connect, execute commands under the owner's rules."""
 from __future__ import annotations
+from app.runtime.guardrails.scoped_refusal import refuse_unbound_effect
 
 import asyncio
 import base64
@@ -171,6 +172,10 @@ class Daemon:
                 return protocol.make_result(command_id, ok=False,
                                             error="submit token missing or invalid; the click was not approved",
                                             blocked=BlockKind.POLICY.value, receipt=event)
+        if kind in (CommandKind.FILL, CommandKind.CLICK_NAV):
+            event = self._receipt_event(command_id, 'blocked', {'reason': 'EFFECT_UNBOUND_REFUSED'})
+            return protocol.make_result(command_id, ok=False, error='EFFECT_UNBOUND_REFUSED',
+                                        blocked=BlockKind.POLICY.value, receipt=event)
         await self._pace()
         try:
             result = await self._run(kind, session, args)
@@ -188,6 +193,8 @@ class Daemon:
         return protocol.make_result(command_id, ok=True, result=result, receipt=event)
 
     async def _run(self, kind: CommandKind, session: str, args: dict[str, Any]) -> dict[str, Any]:
+        if kind in (CommandKind.FILL, CommandKind.CLICK_NAV):
+            refuse_unbound_effect('unbound daemon browser mutation')
         if kind is CommandKind.SOCIAL_READ:
             from .social_read import run_social_read
             return await run_social_read(args)
@@ -260,6 +267,7 @@ def pair_with_server(server_url: str, nonce: str, code: str, *, name: str,
     never hardcoded). A 401/403 is raised as PairingRefusedError so the CLI
     can refuse cleanly instead of surfacing an httpx stack trace.
     """
+    refuse_unbound_effect('unbound device account pairing')
     import httpx
     identity = DeviceIdentity.load_or_create(key_path)
     headers = {"Authorization": f"Bearer {token}"} if token else {}

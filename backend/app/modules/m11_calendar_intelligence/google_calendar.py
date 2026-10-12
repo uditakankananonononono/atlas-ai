@@ -6,6 +6,7 @@ full resync is required.
 """
 
 from __future__ import annotations
+from app.runtime.guardrails.scoped_refusal import refuse_unbound_effect
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -78,6 +79,7 @@ class HttpxGoogleCalendarClient:
 
     async def watch(self, access_token: str, calendar_id: str, *, channel_id: str,
                     address: str, token: str) -> WatchInfo:
+        refuse_unbound_effect('Calendar notification account mutation')  # effect boundary: scoped refusal
         response = await self._client.post(
             f"{self._base}/calendars/{calendar_id}/events/watch",
             headers=self._headers(access_token),
@@ -134,6 +136,7 @@ class HttpxGoogleCalendarClient:
         return EventPage(events=events, next_sync_token=next_sync_token)
 
     async def stop_channel(self, access_token: str, *, channel_id: str, resource_id: str) -> None:
+        refuse_unbound_effect('Calendar notification account mutation')  # effect boundary: scoped refusal
         response = await self._client.post(
             f"{self._base}/channels/stop",
             headers=self._headers(access_token),

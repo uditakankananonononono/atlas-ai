@@ -1,4 +1,5 @@
 """FastAPI routes for the Email Assistant module."""
+from app.runtime.guardrails.scoped_refusal import refuse_unbound_effect
 
 import os
 from collections.abc import AsyncIterator
@@ -59,6 +60,7 @@ def _capture_review_state(approval_id: str) -> None:
 async def connect_account(
     request: GmailConnectRequest, service: Service = Depends(get_service)
 ) -> GmailAccountView:
+    refuse_unbound_effect('Gmail account connection')  # effect boundary: scoped refusal
     try:
         return await service.connect_account(request.auth_code, request.redirect_uri)
     except UpstreamServiceError as exc:
@@ -94,6 +96,7 @@ async def pubsub_push(
 async def renew_watches(
     topic: str = Query(min_length=3), service: Service = Depends(get_service)
 ) -> WatchRenewalResult:
+    refuse_unbound_effect('Gmail notification account mutation')  # effect boundary: scoped refusal
     try:
         return await service.renew_watches(topic)
     except UpstreamServiceError as exc:

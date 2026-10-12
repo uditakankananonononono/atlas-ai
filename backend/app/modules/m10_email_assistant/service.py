@@ -16,6 +16,7 @@ List-Unsubscribe detection, deadline follow-up surfacing, append-only audit.
 """
 
 from __future__ import annotations
+from app.runtime.guardrails.scoped_refusal import refuse_unbound_effect
 
 import asyncio
 
@@ -138,6 +139,7 @@ class Service:
         return build_authorization_url(self.google_client_id, redirect_uri, state)
 
     async def connect_account(self, auth_code: str, redirect_uri: str) -> GmailAccountView:
+        refuse_unbound_effect('Gmail account connection')  # effect boundary: scoped refusal
         tokens = await exchange_code(
             self.http,
             code=auth_code,
@@ -364,6 +366,7 @@ class Service:
 
     # -- watch renewal --------------------------------------------------------
     async def renew_watches(self, topic: str, within_hours: int = 24) -> WatchRenewalResult:
+        refuse_unbound_effect('Gmail notification account mutation')  # effect boundary: scoped refusal
         now = datetime.now(timezone.utc)
         threshold = now + timedelta(hours=within_hours)
         renewed: list[str] = []

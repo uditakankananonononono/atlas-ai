@@ -110,18 +110,16 @@ def push_envelope(email="me@example.com", history_id="105"):
 
 # -- OAuth + token storage ---------------------------------------------------
 
-def test_connect_account_stores_refresh_token_encrypted(tmp_path):
+def test_connect_account_refuses_unbound_mutation(tmp_path):
     def handler(request):
         assert request.url.path == "/token"
         return httpx.Response(200, json={
             "access_token": "at", "refresh_token": "rt-secret", "expires_in": 3600})
 
     service, repo, _, client = make_service(tmp_path, transport=httpx.MockTransport(handler))
-    view = asyncio.run(service.connect_account("auth-code", "https://app/callback"))
-    assert view.email_address == "me@example.com"
-    row = repo.get_account_by_email("me@example.com")
-    assert row.encrypted_refresh_token != "rt-secret"
-    assert service.cipher.decrypt(row.encrypted_refresh_token) == "rt-secret"
+    with pytest.raises(PermissionError, match='EFFECT_UNBOUND_REFUSED'):
+        asyncio.run(service.connect_account('auth-code', 'https://app/callback'))
+    assert service.list_accounts() == []
     asyncio.run(client.aclose())
 
 
@@ -304,7 +302,7 @@ def test_follow_ups_due_filters_by_deadline_window(tmp_path):
     asyncio.run(client.aclose())
 
 
-def test_watch_renewal_only_renews_expiring_accounts(tmp_path):
+def test_watch_renewal_refuses_unbound_mutation(tmp_path):
     gmail = FakeGmailClient()
     service, repo, _, client = make_service(tmp_path, gmail=gmail)
     cipher = service.cipher
@@ -314,9 +312,8 @@ def test_watch_renewal_only_renews_expiring_accounts(tmp_path):
     repo.save_account(account_id="fresh", email_address="fresh@example.com",
                       encrypted_refresh_token=cipher.encrypt("rt"), history_id="1",
                       watch_expiration=datetime.now(timezone.utc) + timedelta(days=6))
-    result = asyncio.run(service.renew_watches("projects/x/topics/y"))
-    assert result.renewed == ["old@example.com"]
-    assert result.skipped == ["fresh@example.com"]
+    with pytest.raises(PermissionError, match='EFFECT_UNBOUND_REFUSED'):
+        asyncio.run(service.renew_watches('projects/x/topics/y'))
     asyncio.run(client.aclose())
 
 

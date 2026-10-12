@@ -1,4 +1,5 @@
 from __future__ import annotations
+from app.runtime.guardrails.scoped_refusal import refuse_unbound_effect
 
 import asyncio
 import re
@@ -154,4 +155,26 @@ class PlaywrightSessions:
             pages = existing.context.pages
             page = pages[0] if pages else await existing.context.new_page()
             from .origin_scope import ScopedPage
-            return ScopedPage(page, self._origin_scopes[key], lambda: existing.aborted)
+            return _ReadOnlyPage(ScopedPage(page, self._origin_scopes[key], lambda: existing.aborted))
+
+
+class _ReadOnlyLocator:
+    def __init__(self, locator):self._locator=locator
+    async def fill(self, value):
+        refuse_unbound_effect('unbound browser fill')
+    async def click(self):
+        refuse_unbound_effect('unbound browser click')
+    async def input_value(self):
+        return await self._locator.input_value()
+
+class _ReadOnlyPage:
+    def __init__(self,page):self._page=page
+    def locator(self,selector):return _ReadOnlyLocator(self._page.locator(selector))
+    @property
+    def url(self):return self._page.url
+    async def goto(self,url,**kwargs):return await self._page.goto(url,**kwargs)
+    async def content(self):return await self._page.content()
+    async def screenshot(self,**kwargs):
+        if 'mask' in kwargs:
+            kwargs['mask']=[x._locator if isinstance(x,_ReadOnlyLocator) else x for x in kwargs['mask']]
+        return await self._page.screenshot(**kwargs)
