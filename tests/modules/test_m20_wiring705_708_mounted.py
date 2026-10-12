@@ -1,4 +1,5 @@
 import json
+import hashlib
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
@@ -16,28 +17,33 @@ CASES=[('/architecture-decisions/705/record',ADR,architecture_decision_records70
        ('/naming-conventions/707/check',NAMING,lambda d:check_naming(d['source'],d['rules'])),
        ('/code-formatting/708/inspect',FORMATTING,run)]
 
+@pytest.fixture
+def case_tenant(request):
+    return 'wiring705-708-'+hashlib.sha256(request.node.nodeid.encode()).hexdigest()
+
+
 @pytest.mark.parametrize('path,data,engine',CASES)
-def test_four_mounted_engines_real_parity(monkeypatch,oidc_auth_headers,path,data,engine):
+def test_four_mounted_engines_real_parity(monkeypatch,oidc_auth_headers,path,data,engine,case_tenant):
     monkeypatch.setenv('ATLAS_ENV','production')
     client=TestClient(app,raise_server_exceptions=False)
     path='/api/v1/api/modules/20'+path
     assert client.post(path,json={'data':data}).status_code==401
-    for tenant,actor in [('a','owner'),('b','other')]:
+    for tenant,actor in [(case_tenant,'owner'),(case_tenant+'-other','other')]:
         result=client.post(path,headers=oidc_auth_headers(tenant,actor),json={'data':data})
         assert result.status_code==200,result.text
         assert result.json()=={**engine(data),'tenant_id':tenant,'actor_id':actor}
-    headers=oidc_auth_headers('a','owner')
-    for extra in [{'tenant_id':'b'},{'actor_id':'other'},{'resource_refs':[{'tenant_id':'b'}]}]:
+    headers=oidc_auth_headers(case_tenant,'owner')
+    for extra in [{'tenant_id':case_tenant+'-other'},{'actor_id':'other'},{'resource_refs':[{'tenant_id':case_tenant+'-other'}]}]:
         assert client.post(path,headers=headers,json={'data':data,**extra}).status_code==403
     assert client.post(path,headers=headers,json={'data':{}}).status_code==422
     assert client.post(path,headers={**headers,'Content-Type':'application/json'},content=json.dumps({'data':{'source':'\ud800'}})).status_code==422
 
 @pytest.mark.parametrize('path,data,engine',CASES)
-def test_resource_refs_cap_boundary(monkeypatch,oidc_auth_headers,path,data,engine):
+def test_resource_refs_cap_boundary(monkeypatch,oidc_auth_headers,path,data,engine,case_tenant):
     monkeypatch.setenv('ATLAS_ENV','production')
     client=TestClient(app,raise_server_exceptions=False)
     path='/api/v1/api/modules/20'+path
-    tenant='set-c-refs-'+hashlib.sha256(path.encode()).hexdigest()[:12]
+    tenant=case_tenant
     headers=oidc_auth_headers(tenant,'owner')
     refs=[{'tenant_id':tenant,'actor_id':'owner','id':str(i)}for i in range(64)]
     ok=client.post(path,headers=headers,json={'data':data,'resource_refs':refs})
@@ -45,10 +51,10 @@ def test_resource_refs_cap_boundary(monkeypatch,oidc_auth_headers,path,data,engi
     assert client.post(path,headers=headers,json={'data':data,'resource_refs':refs+[{'tenant_id':tenant,'actor_id':'owner','id':'65'}]}).status_code==422
 
 @pytest.mark.parametrize('path,data,engine',CASES)
-def test_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc_auth_headers,path,data,engine):
+def test_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc_auth_headers,path,data,engine,case_tenant):
     monkeypatch.setenv('ATLAS_ENV','production')
     client=TestClient(app,raise_server_exceptions=False)
-    tenant='set-c-null-'+hashlib.sha256(path.encode()).hexdigest()[:12]
+    tenant=case_tenant
     r=client.post('/api/v1/api/modules/20'+path,headers=oidc_auth_headers(tenant,'owner'),json={'data':data,'tenant_id':None,'actor_id':None})
     assert r.status_code==200,r.text
     assert r.json()['tenant_id']==tenant and r.json()['actor_id']=='owner'
@@ -58,7 +64,6 @@ def test_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc_auth_h
 # executes, merges, releases or approves nothing. It does not establish the
 # row's literal capability.
 import copy
-import hashlib
 
 EXACT_ADR = {'title':'Use X','context':'c','decision':'d','consequences':['k'],'alternatives':['a','b']}
 EXACT_COMMENTS = {'source':'x = 1  # x\n# TODO fix\ny = 2\n'}
@@ -70,13 +75,13 @@ EXACT_CASES = [('/architecture-decisions/705/record', EXACT_ADR),
 
 
 @pytest.fixture
-def mounted_owner(monkeypatch, oidc_auth_headers):
+def mounted_owner(monkeypatch, oidc_auth_headers, case_tenant):
     monkeypatch.setenv('ATLAS_ENV','production')
-    return TestClient(app,raise_server_exceptions=False), oidc_auth_headers('a','owner')
+    return TestClient(app,raise_server_exceptions=False), oidc_auth_headers(case_tenant,'owner'), case_tenant
 
 
 def post(mounted_owner, path, data):
-    client, headers = mounted_owner
+    client, headers, tenant = mounted_owner
     return client.post('/api/v1/api/modules/20'+path,headers=headers,json={'data':data})
 
 
@@ -94,7 +99,7 @@ def test_705_exact_declared_record_and_non_authority(mounted_owner):
                    'immutable_history_required':True,'history_immutability_enforced':False,
                    'architecture_validated':False,'repository_behavior_verified':False,
                    'release_authorized':False,'evidence_verified':False,'human_review_required':True,
-                   'tenant_id':'a','actor_id':'owner'}
+                   'tenant_id':mounted_owner[2],'actor_id':'owner'}
     accepted=output(mounted_owner,EXACT_CASES[0][0],{**EXACT_ADR,'status':'accepted'})
     assert accepted['record']['status']=='accepted' and accepted['release_authorized'] is False
 
@@ -183,21 +188,21 @@ def test_parser_version_scoped_refusal_prefix(mounted_owner,index,prefix):
 
 @pytest.mark.parametrize('path,data',EXACT_CASES)
 def test_each_mounted_contract_boundaries(mounted_owner,path,data):
-    client,headers=mounted_owner;full='/api/v1/api/modules/20'+path
+    client,headers,tenant=mounted_owner;full='/api/v1/api/modules/20'+path
     assert client.post(full,json={'data':data}).status_code==401
-    for extra in [{'tenant_id':'b'},{'actor_id':'other'},{'resource_refs':[{'tenant_id':'b'}]},{'resource_refs':[{'tenant_id':'a','actor_id':'other'}]}]:
+    for extra in [{'tenant_id':tenant+'-other'},{'actor_id':'other'},{'resource_refs':[{'tenant_id':tenant+'-other'}]},{'resource_refs':[{'tenant_id':tenant,'actor_id':'other'}]}]:
         assert client.post(full,headers=headers,json={'data':data,**extra}).status_code==403
     assert client.post(full,headers=headers,json={}).status_code==422
     assert client.post(full,headers={**headers,'Content-Type':'application/json'},content=json.dumps({'data':{'x':'\ud800'}})).status_code==422
-    for refs,count in [([{'tenant_id':'a','actor_id':'owner'}]*64,200),([{'tenant_id':'a','actor_id':'owner'}]*65,422)]:
+    for refs,count in [([{'tenant_id':tenant,'actor_id':'owner'}]*64,200),([{'tenant_id':tenant,'actor_id':'owner'}]*65,422)]:
         response=client.post(full,headers=headers,json={'data':data,'resource_refs':refs})
         assert response.status_code==count,response.text
     nested='x'
     for _ in range(58):nested=[nested]
-    response=client.post(full,headers=headers,json={'data':data,'resource_refs':[{'tenant_id':'a','metadata':nested}]})
+    response=client.post(full,headers=headers,json={'data':data,'resource_refs':[{'tenant_id':tenant,'metadata':nested}]})
     assert response.status_code==422
     assert response.json()['detail']=='computation input exceeds size/depth boundary'
-    response=client.post(full,headers={**headers,'Content-Type':'application/json'},content=json.dumps({'data':data,'resource_refs':[{'tenant_id':'a','x':float('inf')}]}))
+    response=client.post(full,headers={**headers,'Content-Type':'application/json'},content=json.dumps({'data':data,'resource_refs':[{'tenant_id':tenant,'x':float('inf')}]}))
     assert response.status_code==422 and response.json()['detail']=='nonfinite numerical input rejected'
 
 
