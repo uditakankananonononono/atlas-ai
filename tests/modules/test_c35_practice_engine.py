@@ -71,3 +71,8 @@ def test_no_real_exam_claim():
     r = pe.score_session(BANK, s["session_id"], {q["id"]: q["answer"] for q in BANK}, 100)
     assert r["live_exam"] is False
     assert any("never assistance during a live" in l for l in r["limits"])
+
+def test_weakest_first_orders_distinct_accuracies():
+    from app.modules.c35 import practice_engine as engine
+    out=engine.study_plan({'tags':{'strong':{'accuracy_sum':.9,'sessions':1},'weak':{'accuracy_sum':.2,'sessions':1}}},'2026-10-12',days=2)
+    assert out['weakest_first']==['weak','strong']

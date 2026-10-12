@@ -1,0 +1,44 @@
+{
+  "row": 100,
+  "selectors": [
+    "tests/modules/test_c35_practice_engine.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "live_source",
+      "path": "backend/app/modules/c35/practice_engine.py",
+      "old": "if src in _LIVE_SOURCES:",
+      "new": "if False:"
+    },
+    {
+      "id": "live_config",
+      "path": "backend/app/modules/c35/practice_engine.py",
+      "old": "    _live_guard(config)",
+      "new": "    pass"
+    },
+    {
+      "id": "score",
+      "path": "backend/app/modules/c35/practice_engine.py",
+      "old": "\"score\": round(correct / total, 4) if total else 0.0",
+      "new": "\"score\": 0.0"
+    },
+    {
+      "id": "weak_first",
+      "path": "backend/app/modules/c35/practice_engine.py",
+      "old": "key=lambda x: (x[0], x[1])",
+      "new": "key=lambda x: (-x[0], x[1])"
+    },
+    {
+      "id": "no_award",
+      "path": "backend/app/modules/c35/practice_engine.py",
+      "old": "\"not_an_award_claim\": True",
+      "new": "\"not_an_award_claim\": False"
+    }
+  ]
+}
