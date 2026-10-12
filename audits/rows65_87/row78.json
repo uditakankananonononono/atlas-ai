@@ -1,0 +1,49 @@
+{
+  "row": 78,
+  "selectors": [
+    "tests/mission_build/test_growth.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "actor-scoped local owner-rating fixtures, not causal growth",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "actor",
+      "path": "backend/app/modules/m21_claire/personalization.py",
+      "old": "cls.actor_id==self.actor_id",
+      "new": "True"
+    },
+    {
+      "id": "rating",
+      "path": "backend/app/modules/m21_claire/personalization.py",
+      "old": "if data.get('rating') not in {'better','worse','unknown'}:",
+      "new": "if False:"
+    },
+    {
+      "id": "forgery",
+      "path": "backend/app/modules/m21_claire/personalization.py",
+      "old": "if set(data)-{'outcome','rating','lesson','evidence'}:",
+      "new": "if False:"
+    },
+    {
+      "id": "latest",
+      "path": "backend/app/modules/m21_claire/personalization.py",
+      "old": "if row.decision_id in owned_ids:latest[row.decision_id]=row",
+      "new": "if row.decision_id in owned_ids:latest.setdefault(row.decision_id,row)"
+    },
+    {
+      "id": "learned",
+      "path": "backend/app/modules/m21_claire/personalization.py",
+      "old": "'learned_model_improvement_verified':False",
+      "new": "'learned_model_improvement_verified':True"
+    }
+  ]
+}
