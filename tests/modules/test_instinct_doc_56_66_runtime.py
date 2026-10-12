@@ -246,3 +246,11 @@ def test_hn_success_shaped_error_and_exact_response_hash_and_byte_bound():
     out=HNResearch(httpx.MockTransport(lambda req:httpx.Response(200,content=body,headers={'content-type':'application/json'}))).collect('x',as_of=NOW.isoformat())
     assert out['response_sha256']==hashlib.sha256(body).hexdigest()
 
+
+def test_ranker_brier_is_exact_nonzero_supplied_probability_error():
+    from app.modules.m19_idea_incubator.preference_ranker import RankingTrial,run_trial
+    def p(i,text,liked):return {'post_id':i,'text':text,'liked':liked,'source_reference':'synthetic'}
+    trial=RankingTrial(train=[p('a','sensor science',True),p('b','fashion gossip',False)],test=[p('c','sensor science',True)])
+    out=run_trial(trial);score=out['predictions'][0]['score']
+    assert 0<out['brier_score']<1
+    assert out['brier_score']==pytest.approx((score-1)**2)
