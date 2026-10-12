@@ -356,3 +356,39 @@ class TestLedgerIntegrity:
             elif isinstance(n, ast.ImportFrom) and n.level == 0:
                 names.add(n.module.split(".")[0])
         assert names <= {"__future__", "hashlib", "json", "math", "re", "unicodedata", "datetime"}
+
+
+
+class TestBoundaryPins:
+    def test_draft_digest_uses_sorted_keys_for_multi_key_drafts(self):
+        draft = {"beta": "2", "alpha": "1"}           # insertion order is not sorted order
+        digest = hashlib.sha256(json.dumps({"alpha": "1", "beta": "2"}, sort_keys=True).encode()).hexdigest()
+        plan = dict(PLAN, draft_values=draft, draft_sha256=digest,
+                    handoff={"requires_exact_review": True, "snapshot_sha256": SNAP, "draft_sha256": digest})
+        assert rx.open_review(plan, review_id="R1", reviewer="u", now=T0)
+        unsorted = hashlib.sha256(json.dumps(draft, sort_keys=False).encode()).hexdigest()
+        bad = dict(plan, draft_sha256=unsorted,
+                   handoff={"requires_exact_review": True, "snapshot_sha256": SNAP, "draft_sha256": unsorted})
+        refuses("plan draft_sha256 does not match draft_values",
+                rx.open_review, bad, review_id="R1", reviewer="u", now=T0)
+
+    def test_decision_at_the_exact_opening_instant_is_allowed(self):
+        ledger = rx.record_decision(opened(), review_id="R1", decision="approved",
+                                    reviewer="u", rationale="r", now=T0)   # decided_at == opened_at
+        assert rx.audit_state(ledger, "R1") == "approved"
+        refuses("review 'R1' decision is before it opened", rx.record_decision, opened(),
+                review_id="R1", decision="approved", reviewer="u", rationale="r",
+                now="2026-10-11T06:29:59.999999Z")
+
+    def test_ledger_decision_at_the_exact_opening_instant_loads(self):
+        same = dict(DEC_REC, decided_at=OPEN_REC["opened_at"])
+        assert rx.loads(rx.dumps(chain([OPEN_REC, same])))
+        early = dict(DEC_REC, decided_at="2026-10-11T06:29:59.999999+00:00")
+        refuses("ledger entry 1 decision is before the review opened",
+                rx.loads, rx.dumps(chain([OPEN_REC, early])))
+
+    def test_ledger_permit_hash_consistency_per_field(self):
+        refuses("ledger entry 2 permit does not match the opened review",
+                rx.loads, rx.dumps(chain([OPEN_REC, DEC_REC, dict(PER_REC, snapshot_sha256="c" * 64)])))
+        refuses("ledger entry 2 permit does not match the opened review",
+                rx.loads, rx.dumps(chain([OPEN_REC, DEC_REC, dict(PER_REC, draft_sha256="d" * 64)])))
