@@ -13,9 +13,9 @@ SERVICES = [{"id": "svc1", "name": "Landing page", "price_cents": 15000, "unit":
 
 
 def test_brand_kit_deterministic():
-    k = agency.brand_kit({"name": "Udita Builds", "skills": ["web apps", "design"],
+    k = agency.brand_kit({"name": "Sample Studio", "skills": ["web apps", "design"],
                           "audience": "student founders"})
-    assert k["brand_name"] == "Udita Builds"
+    assert k["brand_name"] == "Sample Studio"
     assert k["positioning"].startswith("web apps for student founders")
     assert len(k["palette"]) == 3 and all(p.startswith("#") for p in k["palette"])
     assert k["generated_posting"] is False
@@ -44,8 +44,8 @@ def test_pipeline_states_and_exact_draft_approval():
     assert client["state"] == "proposal_drafted"
     assert client["proposal"]["sent"] is False
     with pytest.raises(ValueError, match="AGENCY_REFUSED_EXACT_DRAFT"):
-        agency.owner_approve(store, lead["id"], "Udita", "wrong-hash")
-    agency.owner_approve(store, lead["id"], "Udita", client["proposal"]["hash"])
+        agency.owner_approve(store, lead["id"], "Reviewer A", "wrong-hash")
+    agency.owner_approve(store, lead["id"], "Reviewer A", client["proposal"]["hash"])
     assert store["clients"][lead["id"]]["state"] == "owner_approved"
 
 
@@ -53,7 +53,7 @@ def test_invoice_payment_ledger():
     store = {}
     lead = full_pipeline(store)
     client = store["clients"][lead["id"]]
-    agency.owner_approve(store, lead["id"], "Udita", client["proposal"]["hash"])
+    agency.owner_approve(store, lead["id"], "Reviewer A", client["proposal"]["hash"])
     agency.mark_delivered(store, lead["id"], "page live at staging link")
     with pytest.raises(ValueError, match="AGENCY_REFUSED_STATE"):
         agency.record_payment(store, lead["id"],

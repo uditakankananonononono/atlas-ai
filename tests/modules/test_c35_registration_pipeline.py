@@ -36,7 +36,7 @@ def test_full_review_handoff_flow(tmp_path):
     store = {pkt["id"]: pkt}
     with pytest.raises(ValueError, match="APPLY_REFUSED_STATE"):
         rp.export_handoff(store, pkt["id"], str(tmp_path))
-    rp.review(store, pkt["id"], "approve", "Udita")
+    rp.review(store, pkt["id"], "approve", "Reviewer A")
     assert store[pkt["id"]]["state"] == "owner_approved"
     approved = store[pkt["id"]]["review"]["exact_artifact_hash"]
     assert approved != pkt["artifact_hash"]  # approval digest also binds the reviewer
@@ -56,7 +56,7 @@ def test_full_review_handoff_flow(tmp_path):
 def test_reject_returns_to_draft():
     pkt = rp.build_packet(REQ)
     store = {pkt["id"]: pkt}
-    rp.review(store, pkt["id"], "reject", "Udita")
+    rp.review(store, pkt["id"], "reject", "Reviewer A")
     assert store[pkt["id"]]["state"] == "draft"
 
 
@@ -81,7 +81,7 @@ def test_nested_forbidden_key_refused():
 def approved_store():
     pkt = rp.build_packet(REQ)
     store = {pkt["id"]: pkt}
-    rp.review(store, pkt["id"], "approve", "Udita")
+    rp.review(store, pkt["id"], "approve", "Reviewer A")
     return store, pkt["id"]
 
 
@@ -97,7 +97,7 @@ def test_review_refuses_pre_review_mutation():
     store = {pkt["id"]: pkt}
     pkt["checklist"]["injected"] = "mutated before approval"
     with pytest.raises(ValueError, match="APPLY_REFUSED_TAMPERED"):
-        rp.review(store, pkt["id"], "approve", "Udita")
+        rp.review(store, pkt["id"], "approve", "Reviewer A")
 
 
 def test_review_refuses_forged_artifact_hash():
@@ -105,7 +105,7 @@ def test_review_refuses_forged_artifact_hash():
     store = {pkt["id"]: pkt}
     pkt["artifact_hash"] = "0" * 64  # forged: does not match current content
     with pytest.raises(ValueError, match="APPLY_REFUSED_TAMPERED"):
-        rp.review(store, pkt["id"], "approve", "Udita")
+        rp.review(store, pkt["id"], "approve", "Reviewer A")
 
 
 def test_export_refuses_traversal_packet_id(tmp_path):
