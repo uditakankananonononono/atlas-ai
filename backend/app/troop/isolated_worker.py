@@ -2,7 +2,7 @@
 
 The host registers source code. No network, credentials, account connections or
 external effects are provided. The default runner executes only Python/stdlib.
-Every attempt keeps hashes, exit state and capped diagnostic logs in a bounded
+Attempts that reach the sandbox keep hashes, exit state and capped diagnostic logs in a bounded
 in-process receipt list. Receipts are execution evidence, not approval authority.
 """
 from __future__ import annotations

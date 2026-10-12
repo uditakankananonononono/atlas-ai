@@ -343,7 +343,10 @@ def test_each_inference_exception_mapping(config,model,error):
     def bad(*a,**kw):raise error('secret')
     model.transcribe=bad
     with pytest.raises(ASRError)as e:OfflineWhisper(config).transcribe(wav())
-    assert str(e.value)=='inference unavailable'
+    assert str(e.value)=='inference unavailable: '+error.__name__
+    assert 'secret' not in str(e.value)
+    assert isinstance(e.value.__cause__,error)
+    assert str(e.value.__cause__)=='secret'
 
 @pytest.mark.parametrize('size',['tiny','medium','large-v3'])
 def test_allowed_model_sizes(config,size):assert ASRConfig(config.model_dir,size).identity()
@@ -413,3 +416,18 @@ def test_factory_profile_guards(config,tmp_path):
 
 def test_zero_frame_guard_direct(config):
     with pytest.raises(ASRError,match='audio duration'):OfflineWhisper(config)._audio_duration(pcm(frames=0))
+
+def test_inference_error_preserves_original_cause(monkeypatch,tmp_path):
+    import sys,types
+    from app.ingest.offline_asr import ASRConfig,OfflineWhisper,ASRError
+    model=tmp_path/'model';model.mkdir()
+    for name in ('model.bin','config.json','tokenizer.json','preprocessor_config.json'):
+        (model/name).write_bytes(b'{}')
+    class Broken:
+        def __init__(self,*args,**kwargs):raise ModuleNotFoundError("No module named 'requests'")
+    monkeypatch.setitem(sys.modules,'faster_whisper',types.SimpleNamespace(WhisperModel=Broken))
+    backend=OfflineWhisper(ASRConfig(model,model_size='tiny'))
+    with pytest.raises(ASRError,match='inference unavailable: ModuleNotFoundError') as caught:
+        backend.transcribe(wav())
+    assert isinstance(caught.value.__cause__,ModuleNotFoundError)
+    assert str(caught.value.__cause__)=="No module named 'requests'"

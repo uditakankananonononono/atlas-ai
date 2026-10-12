@@ -1,0 +1,8 @@
+# Execution evidence corrections, 2026-10-12
+
+- Isolated-worker docstring now says attempts reaching sandbox keep receipts. Pre-run unregistered/non-finite/oversized input refusals do not create one.
+- Wall-time tests use sleeping workers instead of spinning workers. Spin-loop test failed 3/20 because either RLIMIT_CPU termination or wall timer can win at one second; neither outcome lets downstream execute. Sleep specifically exercises wall timer and passed 20/20. Same correction applied blueprint wall-time test. Production limits/receipt semantics unchanged; CPU termination is not falsely marked wall-time timeout.
+- Digits runner receipt now names training-only standardized Euclidean features, not unscaled. Acceptance pins 1347/450 split, centroid 0.86, majority 46/450, logistic 440/450 within 1e-12. This still shows centroid loses the stronger baseline, no breakthrough claim.
+- ASR verified local successful environment: Python3.12.14, av15.1.0, ctranslate2 4.8.2, faster-whisper1.2.0. Separate Python3.12 failure caused missing requests dependency, not Python incompatibility. Existing optional asr dependencies include requests. Exact CT2 pin not introduced. av>=11,<16 compatibility boundary retained for actual av19 metadata_errors incompatibility. ASRError exposes cause class only; chained original exception preserves class/message for trusted diagnostic logs without exposing arbitrary exception text in public error string. Diagnostic fixture confirms cause and secret-string suppression.
+
+Correction selection with actual prepared ASR enabled: 358 passed. Static/source/test evidence only where named; broad groups remain PARTIAL.

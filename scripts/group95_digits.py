@@ -26,6 +26,7 @@ def run():
         return [dict(r,features=v) for r,v in zip(split,values)]
     train,test=transform(train),transform(test)
     report=experiment(train,test)
+    report['limits']=report['limits'].replace('Unscaled Euclidean','Training-only standardized Euclidean')
     logistic=LogisticRegression(max_iter=2000,random_state=42).fit([r['features'] for r in train],[r['label'] for r in train])
     score=logistic.score([r['features'] for r in test],[r['label'] for r in test])
     raw=json.dumps(rows,sort_keys=True,separators=(',',':'))

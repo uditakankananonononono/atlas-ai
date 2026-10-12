@@ -2936,7 +2936,7 @@
     "majority_baseline_accuracy": 0.10222222222222223,
     "beats_training_majority_on_this_split": true,
     "breakthrough_claim": false,
-    "limits": "Unscaled Euclidean centroid classifier on supplied numeric data only. Split independence beyond IDs/exact duplicates, generalization and domain validity are unverified."
+    "limits": "Training-only standardized Euclidean centroid classifier on supplied numeric data only. Split independence beyond IDs/exact duplicates, generalization and domain validity are unverified."
   },
   "comparison": {
     "standardized_logistic_accuracy": 0.9777777777777777,

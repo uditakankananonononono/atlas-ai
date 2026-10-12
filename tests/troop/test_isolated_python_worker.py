@@ -15,8 +15,9 @@ def test_actual_namespace_workers_execute_dependency_inputs_and_hashes():
     assert all(r['backend']=='bubblewrap' and r['exit_code']==0 and len(r['source_sha256'])==64 for r in worker.receipts)
 
 def test_timeout_ends_hung_worker_blocks_dependents_not_independent():
+    # Sleep exercises the wall timer without racing RLIMIT_CPU on a busy loop.
     worker=IsolatedPythonWorker(timeout_seconds=1)
-    worker.register('hang','def action(args, inputs, attempt, feedback):\n while True:\n  pass\n')
+    worker.register('hang','def action(args, inputs, attempt, feedback):\n import time\n time.sleep(30)\n')
     worker.register('ok','def action(args, inputs, attempt, feedback):\n return 7\n')
     class Planner:
         def plan(self,task):return Plan(task['id'],(Step('a','hang'),Step('b','ok',depends_on=('a',)),Step('c','ok')))

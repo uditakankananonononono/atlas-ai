@@ -132,8 +132,10 @@ class OfflineWhisper:
                                   hashlib.sha256(audio).hexdigest(), self.identity)
             except ASRError:
                 raise
-            except (ValueError, TypeError, AttributeError, ImportError, RuntimeError, OSError):
-                raise ASRError('inference unavailable') from None
+            except (ValueError, TypeError, AttributeError, ImportError, RuntimeError, OSError) as exc:
+                # Preserve the local inference cause for trusted diagnostic logs.
+                # Do not echo arbitrary provider/credential-bearing messages in public errors.
+                raise ASRError('inference unavailable: ' + type(exc).__name__) from exc
 
 
 class TextTranscriber:
