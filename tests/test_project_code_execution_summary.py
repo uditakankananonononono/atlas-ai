@@ -47,3 +47,35 @@ def test_supplied_statistics_or_duplicates_refused(repo):
     with pytest.raises(ValueError): inspect_projects(root, [item, item])
     item['code_lines'] = 999
     with pytest.raises(ValueError): inspect_projects(root, [item])
+
+
+def test_invalid_later_shape_executes_nothing(repo, monkeypatch):
+    from app.modules.instinct_doc import code_test_summary_p256 as mod
+    root,item=repo;calls=[]
+    monkeypatch.setattr('app.modules.instinct_doc.repo_evidence.execute_tests',lambda *a:calls.append(a))
+    with pytest.raises(ValueError):mod.inspect_projects(root,[item,{'id':'bad'}],execute=True)
+    assert calls==[]
+
+
+def test_helper_error_confined_and_pairing_disclaimed(repo, monkeypatch):
+    root,item=repo
+    def failed(*a):raise RuntimeError('injected')
+    monkeypatch.setattr('app.modules.instinct_doc.repo_evidence.execute_tests',failed)
+    out=inspect_projects(root,[item,dict(item,id='P2')],execute=True)
+    assert all(row['status']=='UNVERIFIED' for row in out['projects'])
+    assert all(not row['selection_pairing_verified'] for row in out['projects'])
+    assert not out['aggregate_budget_enforced']
+
+
+def test_drifted_run_not_promoted(repo, monkeypatch):
+    root,item=repo
+    monkeypatch.setattr('app.modules.instinct_doc.repo_evidence.execute_tests',lambda *a:{'status':'SCOPED_PASS','head':'drift','tree_digest':'drift'})
+    row=inspect_projects(root,[item],execute=True)['projects'][0]
+    assert row['status']=='UNVERIFIED' and not row['snapshot_coherent']
+
+
+def test_failing_test_and_dirty_snapshot(repo):
+    root,item=repo
+    (root/'tests/test_ok.py').write_text('def test_ok(): assert False')
+    out=inspect_projects(root,[item],execute=True)
+    assert out['dirty'] and out['projects'][0]['status']=='UNVERIFIED'

@@ -112,7 +112,7 @@ def inspect_projects(root, projects, *, execute=False):
     mapping, discover all program projects or certify whole-project fulfillment.
     """
     from pathlib import Path
-    from .repo_evidence import safe_file, snapshot, execute_tests, EvidenceError
+    from .repo_evidence import safe_file, snapshot, execute_tests, EvidenceError, digest
     if type(execute) is not bool:
         raise _err('execute must be boolean')
     if type(projects) is not list or len(projects) > MAX_PROJECTS:
@@ -120,6 +120,19 @@ def inspect_projects(root, projects, *, execute=False):
     root = Path(root).resolve()
     snap = snapshot(root)
     rows, seen = [], set()
+    # Validate all request shapes before any repository test code runs.
+    for item in projects:
+        if type(item) is not dict or set(item) != {"id", "code_paths", "test_paths"}:
+            raise _err("project fields must be exact")
+        ident = _text(item["id"], "id", ID_LIMIT)
+        if ident in seen: raise _err("duplicate project id")
+        seen.add(ident)
+        for field in ("code_paths", "test_paths"):
+            paths = item[field]
+            if type(paths) is not list or len(paths) > 1000 or not all(isinstance(p, str) for p in paths) or len(set(paths)) != len(paths):
+                raise _err("paths must be unique bounded lists")
+        if set(item["code_paths"]) & set(item["test_paths"]): raise _err("code and test paths must not overlap")
+    seen.clear()
     for item in projects:
         if type(item) is not dict or set(item) != {'id', 'code_paths', 'test_paths'}:
             raise _err('project fields must be exact')
@@ -137,22 +150,29 @@ def inspect_projects(root, projects, *, execute=False):
                     if path not in snap['files']:
                         raise EvidenceError('path is not tracked')
                     data = safe_file(root, path).read_bytes()
-                    files[path] = {'lines': len(data.splitlines()), 'sha256': snap['files'][path]['sha256'], 'kind': field}
+                    files[path] = {'lines': len(data.splitlines()), 'sha256': digest(data), 'kind': field}
                 except (EvidenceError, OSError, ValueError) as exc:
                     errors.append({'path': path, 'reason': str(exc)[:200]})
         if set(item['code_paths']) & set(item['test_paths']):
             raise _err('code and test paths must not overlap')
         run = None
         if execute and item['test_paths'] and not errors:
-            run = execute_tests(root, item['test_paths'])
+            try:
+                run = execute_tests(root, item['test_paths'])
+            except Exception as exc:
+                run = {'status': 'UNVERIFIED', 'head': None, 'tree_digest': None, 'error': type(exc).__name__}
         rows.append({'id': ident, 'files': files, 'errors': errors,
                      'code_files': sum(v['kind'] == 'code_paths' for v in files.values()),
                      'code_lines': sum(v['lines'] for v in files.values() if v['kind'] == 'code_paths'),
                      'test_files': sum(v['kind'] == 'test_paths' for v in files.values()),
                      'test_lines': sum(v['lines'] for v in files.values() if v['kind'] == 'test_paths'),
                      'execution': run, 'coverage_percent': None,
-                     'status': 'SCOPED_PASS' if run and run['status'] == 'SCOPED_PASS' else 'UNVERIFIED',
+                     'status': 'SCOPED_PASS' if run and run['status'] == 'SCOPED_PASS' and run.get('head') == snap['head'] and run.get('tree_digest') == snap['tree_digest'] else 'UNVERIFIED',
+                     'selection_pairing_verified': False,
+                     'snapshot_coherent': not run or (run.get('head') == snap['head'] and run.get('tree_digest') == snap['tree_digest']),
                      'completion_verified': False,
                      'scope_declared': True})
-    return {'projects': rows, 'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],
-            'boundary': 'Selected tracked source counts and opt-in test execution only; no exhaustive project scope, empirical coverage or whole-project completion.'}
+    return {'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,
+            'execution_scope': 'Trusted checkout only; up to 256 per-run bounded calls, no aggregate time/disk budget. Test code may have effects.',
+            'projects': rows, 'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],
+            'boundary': 'Selected tracked source counts and opt-in test execution only; path pairing is operator-declared and current file hash may differ from starting snapshot; no exhaustive project scope, empirical coverage or whole-project completion.'}

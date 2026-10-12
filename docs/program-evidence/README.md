@@ -154,7 +154,7 @@ untrusted filesystem races remain outside the trusted-checkout boundary.
 
 `code_test_summary_p256.inspect_projects(root, projects, execute=False)` counts
 selected tracked code/test files and byte-line totals, then optionally executes
-explicit test files through the existing fenced JUnit executor. Each project
+explicit test files through the existing trusted-checkout JUnit executor. Each project
 selector has exactly `id`, `code_paths`, `test_paths`. Scope mappings are declared,
 not an exhaustive discovered project inventory. Missing files remain gaps and
 prevent execution for that project. No caller counts or status flags accepted.
