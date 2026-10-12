@@ -1,0 +1,195 @@
+{
+  "troop_comparison": {
+    "cases_sha256": "f340d9d62f3a76ec7887902f222f2d59a512be754ff40db6c686d60ca3ab5ca2",
+    "results": [
+      {
+        "runner": "atlas",
+        "passed": 1,
+        "total": 1,
+        "pass_rate": 1.0,
+        "trials": [
+          {
+            "case_id": "numeric",
+            "passed": true,
+            "checks": {
+              "totals": true
+            },
+            "run_status": "completed",
+            "attempts": {
+              "totals": 1
+            },
+            "seconds": 0.00035098199998628843
+          }
+        ]
+      },
+      {
+        "runner": "deliberately_broken",
+        "passed": 0,
+        "total": 1,
+        "pass_rate": 0.0,
+        "trials": [
+          {
+            "case_id": "numeric",
+            "passed": false,
+            "error_type": "RuntimeError",
+            "seconds": 1.3690000002952729e-05
+          }
+        ]
+      }
+    ],
+    "scope": "Executed registered runners on supplied frozen cases only. No Cellcog, Strawberry or YC product superiority claim."
+  },
+  "psychology_cues": {
+    "emotions": {
+      "joy": 1,
+      "anger": 0,
+      "fear": 0,
+      "sadness": 0,
+      "surprise": 0,
+      "trust": 0
+    },
+    "motives": {
+      "achievement": 0,
+      "affiliation": 0,
+      "power": 0
+    },
+    "evidence": {
+      "emotions": {
+        "joy": [
+          {
+            "cue": "happy",
+            "start": 21,
+            "end": 26,
+            "negated": true
+          },
+          {
+            "cue": "love",
+            "start": 30,
+            "end": 34,
+            "negated": false
+          }
+        ],
+        "anger": [],
+        "fear": [],
+        "sadness": [],
+        "surprise": [],
+        "trust": []
+      },
+      "motives": {
+        "achievement": [],
+        "affiliation": [],
+        "power": []
+      }
+    },
+    "claims_feeling": false,
+    "validity_limits": "Lexicon-and-rule counts over supplied text only. Tags are surface cues, not measurement of any person's actual emotions or motives; no clinical, diagnostic or truth value.",
+    "method": "whole-token lexicon with three-token sentence-bounded negation"
+  },
+  "brand_quotes": {
+    "brand": "Fixture Brand",
+    "dimensions": {
+      "product_composition": [],
+      "founder_history": [
+        {
+          "url": "https://example.invalid/fixture",
+          "quote": "Founder Jane started it.",
+          "start": 0,
+          "end": 24,
+          "basis": "source-stated, not independently verified"
+        }
+      ],
+      "marketing_channels": [],
+      "success_factors": [],
+      "improvement_hypotheses": [],
+      "appeal_levers": []
+    },
+    "affiliate_mentions": [],
+    "source_count": 1,
+    "missing_dimensions": [
+      "product_composition",
+      "marketing_channels",
+      "success_factors",
+      "improvement_hypotheses",
+      "appeal_levers"
+    ],
+    "claims_business_success": false,
+    "signup_performed": false
+  },
+  "channel_drafts": {
+    "drafts": [
+      {
+        "platform": "x",
+        "source_id": "notes",
+        "parts": [
+          "Field notes\n\nOur measured sum is five."
+        ],
+        "limit": 280,
+        "status": "needs_owner_review",
+        "method": "extractive adaptation of owner notes",
+        "sent": false
+      },
+      {
+        "platform": "linkedin",
+        "source_id": "notes",
+        "parts": [
+          "Field notes\n\nOur measured sum is five."
+        ],
+        "limit": 3000,
+        "status": "needs_owner_review",
+        "method": "extractive adaptation of owner notes",
+        "sent": false
+      }
+    ],
+    "scope": "Only supplied owner notes and listed channels; no creation or posting."
+  },
+  "workforce": {
+    "status": "completed",
+    "outputs": {
+      "researcher": [
+        2,
+        3
+      ],
+      "analyst": 5
+    }
+  },
+  "learning": {
+    "model": {
+      "algorithm": "nearest-centroid-euclidean-v1",
+      "dimension": 1,
+      "centroids": {
+        "a": [
+          0.5
+        ],
+        "b": [
+          9.0
+        ]
+      },
+      "training_sha256": "a27163085690186f673ccd41c96700aa45172b95f8d9ac9656ee651f3d77ed85"
+    },
+    "model_file": {
+      "path": "centroid-model.json (selfcheck output)",
+      "sha256": "996b5177d1151d3ad9b42fb90a2786b7c3bd1dd954f3e9b3fc6e7e59329ac7de"
+    },
+    "heldout_sha256": "ab9c06b0da010b4e10890f52fbf4f90267cb3e6748f7319aae945f05650d9b47",
+    "training_count": 4,
+    "heldout_count": 2,
+    "predictions": [
+      {
+        "id": "h1",
+        "expected": "a",
+        "predicted": "a"
+      },
+      {
+        "id": "h2",
+        "expected": "b",
+        "predicted": "b"
+      }
+    ],
+    "accuracy": 1.0,
+    "majority_baseline_accuracy": 0.5,
+    "beats_training_majority_on_this_split": true,
+    "breakthrough_claim": false,
+    "limits": "Unscaled Euclidean centroid classifier on supplied numeric data only. Split independence beyond IDs/exact duplicates, generalization and domain validity are unverified."
+  },
+  "limits": "Synthetic offline acceptance cases only; no vendor superiority, real image/audio inference, breakthrough or live pitch delivery verified."
+}
