@@ -62,3 +62,15 @@ def test_capped_receipts_and_detached_reads():
     worker.execute(Step('b','ok',{'value':2}),{},1,None)
     assert len(worker.receipts)==1 and worker.receipts[0]['step_id']=='b'
     view=worker.receipts;view[0]['step_id']='mutated';assert worker.receipts[0]['step_id']=='b'
+
+def test_actual_receipt_hashes_bind_exact_source_payload_and_output():
+    import hashlib
+    from app.troop.isolated_worker import canonical
+    source='def action(args, inputs, attempt, feedback):\n return args["value"]\n'
+    worker=IsolatedPythonWorker(timeout_seconds=2)
+    worker.register('echo',source)
+    assert worker.execute(Step('e','echo',{'value':7}),{},1,None)==7
+    receipt=worker.receipts[0]
+    assert receipt['source_sha256']==hashlib.sha256(source.encode()).hexdigest()
+    assert receipt['input_sha256']==hashlib.sha256(canonical({'args':{'value':7},'inputs':{},'attempt':1,'feedback':None}).encode()).hexdigest()
+    assert receipt['output_sha256']==hashlib.sha256(b'7').hexdigest()

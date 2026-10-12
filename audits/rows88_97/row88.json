@@ -1,0 +1,44 @@
+{
+  "row": 88,
+  "selectors": [
+    "tests/troop/test_isolated_python_worker.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "real namespace mechanics, not named competitor comparison",
+    "durable receipts untested",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "source_hash",
+      "path": "backend/app/troop/isolated_worker.py",
+      "old": "'source_sha256':digest(source)",
+      "new": "'source_sha256':'0'*64"
+    },
+    {
+      "id": "input_hash",
+      "path": "backend/app/troop/isolated_worker.py",
+      "old": "'input_sha256':digest(payload)",
+      "new": "'input_sha256':'0'*64"
+    },
+    {
+      "id": "receipt_cap",
+      "path": "backend/app/troop/isolated_worker.py",
+      "old": "self._receipts=self._receipts[-self.max_receipts:]",
+      "new": "self._receipts=self._receipts"
+    },
+    {
+      "id": "detached_receipts",
+      "path": "backend/app/troop/isolated_worker.py",
+      "old": "return json.loads(canonical(self._receipts))",
+      "new": "return self._receipts"
+    },
+    {
+      "id": "output_hash",
+      "path": "backend/app/troop/isolated_worker.py",
+      "old": "receipt['output_sha256']=hashlib.sha256(raw).hexdigest()",
+      "new": "receipt['output_sha256']='0'*64"
+    }
+  ]
+}
