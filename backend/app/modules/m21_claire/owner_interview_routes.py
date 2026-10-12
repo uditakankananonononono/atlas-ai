@@ -58,3 +58,11 @@ def context(s: InterviewStore = Depends(store)):
 @router.delete("/answers")
 def delete_all(s: InterviewStore = Depends(store)):
     return {"deleted": s.delete_all()}
+
+from .owner_evaluation import Evaluation, evaluate
+
+@router.post('/evaluation')
+def evaluation(body: Evaluation, s: InterviewStore = Depends(store)):
+    if s.context()['status'] == 'consent_required':
+        raise HTTPException(403, 'owner interview consent is not enabled')
+    return evaluate(body)

@@ -31,7 +31,7 @@ def get_reader() -> SocialReader:
 
 
 class ReadRunIn(BaseModel):
-    platform: str = Field(pattern=r"^(instagram|linkedin)$")
+    platform: str = Field(pattern=r"^(instagram|linkedin|pinterest)$")
     operation: str = Field(pattern=r"^(followers|following|connections|feed)$")
     session_id: str = Field(min_length=1, max_length=300, pattern=r"^pc\.[A-Za-z0-9_-]+\.[A-Za-z0-9_.-]+$")
     instagram_username: str = Field(default="", max_length=120)

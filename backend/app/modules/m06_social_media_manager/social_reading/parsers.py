@@ -61,3 +61,30 @@ def parse_linkedin_feed(html: str) -> list[dict[str, Any]]:
             "source_url": href if href.startswith("http") else (f"https://www.linkedin.com{href}" if href else ""),
         })
     return posts
+
+
+def parse_pinterest_feed(html: str) -> list[dict[str, Any]]:
+    """Visible pin cards only; no invented author or publication timestamp."""
+    from urllib.parse import urlsplit
+    import re
+    soup = BeautifulSoup(html, 'html.parser')
+    posts, seen = [], set()
+    for link in soup.select('a[href]'):
+        href = str(link.get('href', ''))
+        parsed = urlsplit(href)
+        if parsed.scheme and parsed.scheme != 'https':
+            continue
+        if parsed.netloc and parsed.hostname not in ('pinterest.com', 'www.pinterest.com'):
+            continue
+        match = re.fullmatch(r'/pin/([0-9]{1,30})/?', parsed.path)
+        if not match or match[1] in seen:
+            continue
+        image = link.select_one('img[alt]')
+        text = link.get_text(' ', strip=True) or (str(image.get('alt', '')) if image else '')
+        if not text.strip():
+            continue
+        seen.add(match[1])
+        posts.append({'handle': '', 'external_id': match[1], 'text': text[:2000],
+                      'source_url': 'https://www.pinterest.com/pin/' + match[1] + '/',
+                      'author_verified': False, 'posted_at': None})
+    return posts

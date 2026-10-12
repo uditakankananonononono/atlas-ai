@@ -18,7 +18,9 @@ from app.modules.m13_browser_agent.session_bridge.protocol import (
     CommandKind, PlatformBlocked, is_pc_session, split_pc_session)
 
 from .knowledge import KnowledgeStore
-from .parsers import parse_linkedin_connections, parse_linkedin_feed
+from app.modules.m13_browser_agent.session_bridge.protocol import BlockKind
+from urllib.parse import urlsplit
+from .parsers import parse_linkedin_connections, parse_linkedin_feed, parse_pinterest_feed
 
 LINKEDIN_CONNECTIONS_URL = "https://www.linkedin.com/mynetwork/invite-connect/connections/"
 LINKEDIN_FEED_URL = "https://www.linkedin.com/feed/"
@@ -38,6 +40,8 @@ class SocialReader:
         try:
             if platform == "linkedin":
                 result = await self._linkedin(tenant_id, operation, session_id, limit)
+            elif platform == "pinterest":
+                result = await self._pinterest(tenant_id, operation, session_id, limit)
             elif platform == "instagram":
                 result = await self._instagram(tenant_id, operation, session_id,
                                                instagram_username, limit)
@@ -75,6 +79,43 @@ class SocialReader:
             return {"posts": posts, "count": len(posts), "new": new,
                     "summary": {"posts": len(posts), "new": new, "source": LINKEDIN_FEED_URL}}
         raise ValueError(f"unsupported linkedin operation: {operation}")
+
+    async def _pinterest(self, tenant_id: str, operation: str, session_id: str,
+                         limit: int) -> dict[str, Any]:
+        if operation != "feed":
+            raise ValueError("Pinterest supports visible feed reads only")
+        if type(limit) is not int or not 1 <= limit <= 500:
+            raise ValueError("limit must be integer 1..500")
+        page = await self.sessions.page(tenant_id, session_id, True)
+        response = await page.goto("https://www.pinterest.com/")
+        if response and response.status == 429:
+            raise PlatformBlocked(BlockKind.RATE_LIMIT, "Pinterest rate limit")
+        if response and response.status is not None and response.status >= 400:
+            raise PlatformBlocked(BlockKind.POLICY, "Pinterest refused the read")
+        parsed = urlsplit(page.url)
+        if parsed.hostname not in ("pinterest.com", "www.pinterest.com"):
+            raise PlatformBlocked(BlockKind.POLICY, "unexpected Pinterest destination")
+        if any(x in parsed.path.lower() for x in ("login", "signup")):
+            raise PlatformBlocked(BlockKind.LOGIN_WALL, "Pinterest sign-in required")
+        html = await page.content()
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
+        if soup.select("iframe[src*='captcha'], [data-test-id*='captcha'], #challenge-form"):
+            raise PlatformBlocked(BlockKind.CHALLENGE, "Pinterest verification required")
+        if soup.select("form[action*='login'] input[type='password']"):
+            raise PlatformBlocked(BlockKind.LOGIN_WALL, "Pinterest sign-in required")
+        posts = parse_pinterest_feed(html)[:limit]
+        new = 0
+        for post in posts:
+            _, created = self.store.record_work(tenant_id, platform="pinterest", handle="",
+                external_id=post["external_id"], kind="pin", text=post["text"],
+                source_url=post["source_url"], detail={"author_verified": False,
+                "published_at_unknown": True, "sample": "visible_feed"})
+            new += int(created)
+        return {"posts": posts, "count": len(posts), "new": new,
+                "status": "observed" if posts else "no_visible_pins",
+                "summary": {"posts": len(posts), "new": new, "source": page.url,
+                            "continuous_monitoring_configured": False}}
 
     async def _instagram(self, tenant_id: str, operation: str, session_id: str,
                          username: str, limit: int) -> dict[str, Any]:
