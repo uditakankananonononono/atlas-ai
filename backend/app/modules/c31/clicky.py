@@ -5,11 +5,11 @@ ai tool".
 
 The tool's current public API/pricing is NOT verified live (offline unit):
 identification accepts only a SUPPLIED descriptor (her docs/links) naming the
-tool with pricing evidence. The adapter is pure: it plans requests and parses
-supplied responses; it never performs network calls itself (transport is
-caller-supplied and only ever a mock in tests). Live smoke on a free tier is
-explicitly out of scope until she approves account use. Stdlib only,
-deterministic.
+tool with pricing evidence. Planning and parsing are pure supplied-input
+operations. execute_stats_request can perform a bounded stats GET, only when
+live_approved=True AND ATLAS_CLICKY_LIVE_OWNER_APPROVED=1. Tests use mock
+transport; live API/pricing and free-tier smoke are unverified. This default-off
+read guard is not M00 authority or a person-facing send gate. Stdlib only.
 
 Identified descriptors carry endpoints as DETACHED DEEP COPIES - mutable, not
 frozen; identify and plan_request share descriptor validation through the

@@ -3,7 +3,7 @@
 Every module under backend/app that imports a network/effect client is bound to exactly one status,
 COMPUTED from code evidence (AST scan + file/test existence), never declared:
 
-  GATED              direct guardrail import, OR every call of a declared gated write method in
+  GATED              guardrail import AND a gate/refusal call, OR every call of a declared gated write method in
                      non-test app code sits in a declared gated-caller file whose source contains the
                      gate call, and the named refusal test file exists
   EXEMPT-BY-DESIGN   no write-method / browser-action call found by the scan, AND a named reason from
@@ -36,6 +36,12 @@ GATED_CALLERS = {
 GATED_WRITE_METHODS = {"modules/m06_social_media_manager/adapters.py": "publish"}
 
 # Named reasons for read-only classification, by path prefix (first match wins).
+WRITE_CAPABLE_TRANSPORTS = {
+    "modules/m01_opportunity_discovery/http.py": "generic Request(method=method, data=payload) transport, including POST search bodies",
+}
+GATE_CALLS = {"dispatch_outbound", "refuse_unbound_effect", "execute_reviewed", "call_service",
+              "run_bio_work", "emit_report", "emit_text"}
+
 EXEMPT_REASONS = (
     ("modules/m01_opportunity_discovery/", "public opportunity-source reads"),
     ("modules/m05_outreach_manager/discovery.py", "public contact-source reads"),
@@ -65,7 +71,7 @@ REVIEWED_UNGATED = {
     "modules/c31/clicky.py": (
         "reviewed 2026-10-12: only real effect is one GET to the stats endpoint in execute_stats_request, refused "
         "unless live_approved=True AND ATLAS_CLICKY_LIVE_OWNER_APPROVED=1 (default-off guard, not M00 authority); "
-        "'check'/'POST'/'submit' hits are policy.check, descriptor method strings and docstring text, no write is made; "
+        "'check'/'POST'/'submit' hits are policy.check, descriptor method strings and ThreadPoolExecutor.submit, no network write is made; "
         "baselined, not gated, because it is a read with its own default-off guard and no person-facing send"),
 }
 
@@ -113,7 +119,10 @@ def classify():
             calls[rel] = sorted(meth)
             sockattrs[rel] = {n.attr for n in ast.walk(tree) if isinstance(n, ast.Attribute)
                               and isinstance(n.value, ast.Name) and n.value.id == "socket"}
-            if any(n.startswith("app.runtime.guardrails") for n in names):
+            gate_calls = {n.func.attr if isinstance(n.func, ast.Attribute) else n.func.id
+                          for n in ast.walk(tree) if isinstance(n, ast.Call)
+                          and isinstance(n.func, (ast.Name, ast.Attribute))}
+            if any(n.startswith("app.runtime.guardrails") for n in names) and gate_calls & GATE_CALLS:
                 direct.add(rel)
         src[rel] = text
     result = {}
@@ -121,12 +130,13 @@ def classify():
         status, evidence = "UNGATED", "no gate evidence"
         write_calls = calls[rel]
         if rel in direct:
-            status, evidence = "GATED", "imports app.runtime.guardrails"
+            status, evidence = "GATED", "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)"
         elif rel in GATED_WRITE_METHODS:
             m = GATED_WRITE_METHODS[rel]
             pkg = rel.rsplit('/', 1)[0] + '/'
             sites = sorted(x for x in attr_sites.get(m, set()) if x.startswith(pkg))  # same package only: generic method names collide elsewhere
-            ok = True
+            sites = [site for site in sites if site != rel]
+            ok = bool(sites)
             why = []
             for site in sites:
                 if site == rel:
@@ -140,7 +150,9 @@ def classify():
                 evidence = f"write method .{m}( called only from gated callers {[s for s in sites if s in GATED_CALLERS]}; refusal tests exist (package-scoped check; other adapter methods, e.g. fetch_metrics, are reads)"
             else:
                 evidence = f".{m}( also called from ungated files {why}"
-        if status != "GATED" and not evidence.startswith("."):
+        if rel in WRITE_CAPABLE_TRANSPORTS:
+            status, evidence = "UNGATED", WRITE_CAPABLE_TRANSPORTS[rel]
+        elif status != "GATED" and not evidence.startswith("."):
             only_lookup = (set(libs) <= {"socket"} and sockattrs[rel] <= SOCKET_LOOKUP_ONLY)
             if not write_calls or only_lookup:
                 reason = next((r for pfx, r in EXEMPT_REASONS if rel.startswith(pfx)), None)

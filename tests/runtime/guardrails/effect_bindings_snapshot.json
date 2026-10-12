@@ -40,7 +40,7 @@
   "status": "EXEMPT-BY-DESIGN"
  },
  "modules/c31/clicky.py": {
-  "evidence": "write-capable calls found: ['check', 'method:POST', 'submit']; reviewed 2026-10-12: only real effect is one GET to the stats endpoint in execute_stats_request, refused unless live_approved=True AND ATLAS_CLICKY_LIVE_OWNER_APPROVED=1 (default-off guard, not M00 authority); 'check'/'POST'/'submit' hits are policy.check, descriptor method strings and docstring text, no write is made; baselined, not gated, because it is a read with its own default-off guard and no person-facing send",
+  "evidence": "write-capable calls found: ['check', 'method:POST', 'submit']; reviewed 2026-10-12: only real effect is one GET to the stats endpoint in execute_stats_request, refused unless live_approved=True AND ATLAS_CLICKY_LIVE_OWNER_APPROVED=1 (default-off guard, not M00 authority); 'check'/'POST'/'submit' hits are policy.check, descriptor method strings and ThreadPoolExecutor.submit, no network write is made; baselined, not gated, because it is a read with its own default-off guard and no person-facing send",
   "status": "UNGATED"
  },
  "modules/instinct_doc/g67_76/feed_ingest.py": {
@@ -52,8 +52,8 @@
   "status": "EXEMPT-BY-DESIGN"
  },
  "modules/m01_opportunity_discovery/http.py": {
-  "evidence": "public opportunity-source reads; no write-method call found by static scan (not certified)",
-  "status": "EXEMPT-BY-DESIGN"
+  "evidence": "generic Request(method=method, data=payload) transport, including POST search bodies",
+  "status": "UNGATED"
  },
  "modules/m01_opportunity_discovery/nlp_stack.py": {
   "evidence": "write-capable calls found: ['post']",
@@ -84,7 +84,7 @@
   "status": "UNGATED"
  },
  "modules/m04_research_scientist/tools/adapters.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "modules/m05_outreach_manager/delivery.py": {
@@ -132,15 +132,15 @@
   "status": "UNGATED"
  },
  "modules/m10_email_assistant/gmail.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "modules/m10_email_assistant/routes.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "modules/m10_email_assistant/service.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "modules/m11_calendar_intelligence/caldav.py": {
@@ -148,7 +148,7 @@
   "status": "UNGATED"
  },
  "modules/m11_calendar_intelligence/google_calendar.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "modules/m11_calendar_intelligence/google_refresh_lane.py": {
@@ -160,7 +160,7 @@
   "status": "UNGATED"
  },
  "modules/m11_calendar_intelligence/routes.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "modules/m12_ai_research_lab/checkpoint_loop.py": {
@@ -168,11 +168,11 @@
   "status": "EXEMPT-BY-DESIGN"
  },
  "modules/m13_browser_agent/pc_daemon/daemon.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "modules/m13_browser_agent/playwright_adapter.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "modules/m13_browser_agent/security.py": {
@@ -248,7 +248,7 @@
   "status": "EXEMPT-BY-DESIGN"
  },
  "modules/m24_billing/stripe_client.py": {
-  "evidence": "imports app.runtime.guardrails",
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
   "status": "GATED"
  },
  "platform/browser_fallback.py": {

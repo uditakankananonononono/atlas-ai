@@ -243,3 +243,24 @@ Landed at 7d6098ff81b17478d0a975961f40904d5c69cb99 after code, F1/F2 and docs au
 Actual six M18 service endpoints now use OIDC owner-pinned tenant factory, explicit private nonvolatile ATLAS_M18_DURABLE_ROOT and admin-local paired WAL/pacing/documentSQLite provisioning. API/page/robots/refresh dispatch share permission-before-fetch, bounded pacing recheck and zero redirects; no implicit root/reset/owner fallback. Tenant data persists across actual second-process restart. Default HTTP uses this path, unlike the historical injection-only binding layer; standalone library defaults and legacy run endpoints stay out of scope. No Claire/M21 claim, deployment, global/multiprocess/power-loss containment claim. Blueprint sync-collector adapter repaired; generation fixture tests do not prove live model quality. Current base144PASS/candidate181PASS, scoped mutation receipts and redundant-guard survival: [Exact workflow contract](docs/M18_COLLECTOR_WAL_BINDING_20261010.md).
 
 M09-M12 runtime limitations and corrections are recorded in [repair disposition](docs/repair/M09_M12_20261012.md). Named research methods include planning templates, not primary GAN/ARIMA/MCMC algorithm execution. No trained seven-class email BERT checkpoint ships; no live Google calendar apply, production OAuth or distributed node-runner acceptance is claimed.
+
+### Guardrail delta: scoped classification and execution binding
+
+The guardrail delta fixes empty effect-classification overrides, unknown action default-allow,
+detached publish/dispatch callbacks, and explicit empty social declarations. Effect
+classification and the fixed local targets are not caller-overridable. This is scoped
+choke-point enforcement, not global enforcement across the 65-module egress inventory.
+
+m06 scheduler declarations cover instagram/twitter/tiktok/linkedin post (25/day each).
+Approved-execution and worker defaults cover only Gmail send (50/day); other platforms
+need explicit declarations. Both are policy declarations, not verified provider terms.
+The bind is created at execution time: it detects drift from the execution read to the
+hook read, not edits since owner review. No owner-reviewed digest is persisted here.
+
+Report provenance labels have a narrower meaning: VERIFIED covers "the validator
+computed this result", not artifact goodness. Renderer-created labels do not certify
+artifact quality or global export enforcement. Distributed/process-restart rates,
+worker service-identity cache multiplication, direct M14 renderer/alternate export
+wiring, and M14 claim-id truncation remain outside this delta's proof. Exact selectors,
+FAILED-only mutation receipts and further limits are in [execution](audits/execution-binding/README.md),
+[social](audits/social-binding/README.md) and [inventory](audits/egress-inventory/README.md).

@@ -1,0 +1,9 @@
+BASELINE tests/runtime/guardrails/test_effect_bindings.py tests/runtime/guardrails/test_egress_coverage_ratchet.py -> rc=0 16 passed in 38.73s
+I1 exempt generic m01 transport | effect_bindings.py | CAUGHT | rc=1 | 1 failed in 4.01s | failing: test_generic_m01_transport_is_not_read_exempt
+I2 dead import classified gated | effect_bindings.py | CAUGHT | rc=1 | 1 failed in 0.05s | failing: test_dead_gate_import_cannot_make_egress_gated
+I3 vacuous package callers gated | effect_bindings.py | CAUGHT | rc=1 | 1 failed in 0.05s | failing: test_no_package_publish_call_cannot_vacuously_gate
+I4 remove reviewed clicky live guard | clicky.py | CAUGHT | rc=1 | 1 failed in 4.18s | failing: test_reviewed_ungated_rationale_is_code_bound
+I5 change reviewed clicky GET to POST | clicky.py | CAUGHT | rc=1 | 1 failed in 3.80s | failing: test_reviewed_ungated_rationale_is_code_bound
+I6 overclaim reviewed clicky authority | effect_bindings.py | CAUGHT | rc=1 | 1 failed, 1 passed in 4.11s | failing: test_reviewed_ungated_rationale_is_code_bound
+counts: CAUGHT=6, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True
