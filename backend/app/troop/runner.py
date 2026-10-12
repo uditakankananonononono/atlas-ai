@@ -7,7 +7,7 @@ max_attempts. A step whose dependency failed is blocked and never runs.
 """
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from dataclasses import dataclass
 
 from .roles import PlanError, Plan, WorkerError  # noqa: F401  (PlanError re-exported)
@@ -25,16 +25,28 @@ class RunResult:
 
 class TroopRunner:
     def __init__(self, planner, worker, reviewer, max_attempts=2, max_workers=4, max_steps=50):
+        for name, value, upper in (("max_attempts", max_attempts, 20),
+                                   ("max_workers", max_workers, 1000),
+                                   ("max_steps", max_steps, 10000)):
+            if type(value) is not int or not 1 <= value <= upper:
+                raise PlanError(f"{name} must be an integer from 1 to {upper}")
         self.planner, self.worker, self.reviewer = planner, worker, reviewer
         self.max_attempts, self.max_workers, self.max_steps = max_attempts, max_workers, max_steps
 
     @staticmethod
     def _validate(plan, max_steps):
+        if not isinstance(plan, Plan):
+            raise PlanError("planner must return Plan")
         steps = plan.steps
         if not steps:
             raise PlanError("plan has no steps")
         if len(steps) > max_steps:
             raise PlanError("plan has too many steps")
+        from .roles import Step
+        if any(not isinstance(s, Step) or type(s.id) is not str or not s.id.strip()
+               or type(s.depends_on) not in (tuple, list)
+               or any(type(d) is not str for d in s.depends_on) for s in steps):
+            raise PlanError("invalid step")
         ids = [s.id for s in steps]
         if len(set(ids)) != len(ids):
             raise PlanError("duplicate step id")
@@ -63,7 +75,16 @@ class TroopRunner:
                 feedback = f"worker error: {msg}"
                 continue
             events.append({"role": "worker", "step": step.id, "attempt": attempt})
-            v = self.reviewer.review(step, out)
+            try:
+                v = self.reviewer.review(step, out)
+                if type(v.ok) is not bool or type(v.reasons) not in (tuple, list) or any(
+                        type(reason) is not str for reason in v.reasons):
+                    raise ValueError("invalid reviewer verdict")
+            except Exception as e:
+                feedback = f"reviewer error: {e}"
+                events.append({"role": "reviewer", "step": step.id, "attempt": attempt,
+                               "ok": False, "error": str(e)})
+                continue
             events.append({"role": "reviewer", "step": step.id, "attempt": attempt,
                            "ok": v.ok, "reasons": list(v.reasons)})
             if v.ok:
@@ -72,28 +93,42 @@ class TroopRunner:
         return "failed", None, self.max_attempts, events
 
     def run(self, task):
-        if not task.get("id"):
+        if type(task) is not dict or type(task.get("id")) is not str or not task["id"].strip():
             raise PlanError("task id is required")
         plan = self.planner.plan(task)
-        layers = self._validate(plan, self.max_steps)
+        self._validate(plan, self.max_steps)
+        if plan.task_id != task["id"]:
+            raise PlanError("planner task id mismatch")
         transcript = [{"role": "planner", "task": task["id"], "steps": [s.id for s in plan.steps]}]
         outputs, status, attempts = {}, {}, {}
+        remaining = list(plan.steps)
+        active = {}
+        events_by_id = {}
         with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
-            for layer in layers:
-                runnable = []
-                for s in layer:
-                    if all(status.get(d) == "completed" for d in s.depends_on):
-                        runnable.append(s)
-                    else:
-                        status[s.id] = "blocked"
-                        transcript.append({"role": "runner", "step": s.id, "event": "blocked"})
-                futs = [(s, pool.submit(self._run_step, s, {d: outputs[d] for d in s.depends_on})) for s in runnable]
-                for s, f in futs:
-                    st, out, n, events = f.result()
-                    status[s.id], attempts[s.id] = st, n
-                    transcript.extend(events)
-                    if st == "completed":
-                        outputs[s.id] = out
+            while remaining or active:
+                for step in list(remaining):
+                    if not all(d in status for d in step.depends_on):
+                        continue
+                    if any(status[d] != "completed" for d in step.depends_on):
+                        status[step.id] = "blocked"
+                        events_by_id[step.id] = [{"role": "runner", "step": step.id, "event": "blocked"}]
+                        remaining.remove(step)
+                    elif len(active) < self.max_workers:
+                        inputs = {d: outputs[d] for d in step.depends_on}
+                        active[pool.submit(self._run_step, step, inputs)] = step
+                        remaining.remove(step)
+                if active:
+                    finished, _ = wait(active, return_when=FIRST_COMPLETED)
+                    for future in finished:
+                        step = active.pop(future)
+                        st, out, n, events = future.result()
+                        status[step.id], attempts[step.id] = st, n
+                        events_by_id[step.id] = events
+                        if st == "completed":
+                            outputs[step.id] = out
+        # Stable audit order, independent of thread completion order.
+        for step in plan.steps:
+            transcript.extend(events_by_id[step.id])
         done = sum(1 for v in status.values() if v == "completed")
         overall = "completed" if done == len(status) else ("failed" if done == 0 else "partial")
         return RunResult(overall, outputs, status, attempts, transcript, self.max_workers)
