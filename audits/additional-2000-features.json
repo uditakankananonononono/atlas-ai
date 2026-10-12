@@ -33844,9 +33844,10 @@
       "description": "",
       "status": "PARTIAL",
       "evidence": {
-        "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "commit": "e200dea10c6805fa7eadbc53dd81d89a1c6e3584",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/particle_swarm.py",
+        "test_path": "tests/modules/test_m20_pso1984.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/particle_swarm_routes.py"
       },
       "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
@@ -33859,8 +33860,9 @@
       },
       "current_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
       "current_evidence": {
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/particle_swarm.py",
+        "test_path": "tests/modules/test_m20_pso1984.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/particle_swarm_routes.py"
       },
       "reference_scope": {
         "method": "swarm_intelligence",
@@ -33878,9 +33880,10 @@
       "description": "",
       "status": "PARTIAL",
       "evidence": {
-        "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "commit": "f1b37501db03b5077a8bdf0795a2b82e0cf7b84f",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/differential_evolution.py",
+        "test_path": "tests/modules/test_m20_es1985.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/differential_evolution_routes.py"
       },
       "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
@@ -33893,8 +33896,9 @@
       },
       "current_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
       "current_evidence": {
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/differential_evolution.py",
+        "test_path": "tests/modules/test_m20_es1985.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/differential_evolution_routes.py"
       },
       "reference_scope": {
         "method": "evolutionary_computation",
@@ -33912,9 +33916,10 @@
       "description": "",
       "status": "PARTIAL",
       "evidence": {
-        "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "commit": "dfa6a6b10aa09a5f1ba681e405669a7a39ff19b7",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/genetic_algorithm.py",
+        "test_path": "tests/modules/test_m20_genetic_algorithm.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/genetic_algorithm_routes.py"
       },
       "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
@@ -33927,8 +33932,9 @@
       },
       "current_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
       "current_evidence": {
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/genetic_algorithm.py",
+        "test_path": "tests/modules/test_m20_genetic_algorithm.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/genetic_algorithm_routes.py"
       },
       "reference_scope": {
         "method": "genetic_algorithms",
@@ -33952,9 +33958,10 @@
       "description": "",
       "status": "PARTIAL",
       "evidence": {
-        "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "commit": "cc920d58f83c4cea2f6191459a98f9e8cbb2e34e",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/genetic_programming.py",
+        "test_path": "tests/modules/test_m20_gp1987.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/genetic_programming_routes.py"
       },
       "boundary": "Reference substitute only: supplied_polynomial_candidate_selection. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
@@ -33967,8 +33974,9 @@
       },
       "current_scope": "Reference substitute only: supplied_polynomial_candidate_selection. No execution of original named capability, learned/generative model or deployed integration.",
       "current_evidence": {
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/genetic_programming.py",
+        "test_path": "tests/modules/test_m20_gp1987.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/genetic_programming_routes.py"
       },
       "reference_scope": {
         "method": "genetic_programming",
@@ -33986,9 +33994,10 @@
       "description": "",
       "status": "PARTIAL",
       "evidence": {
-        "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "commit": "01cfd0038ed5a9a9f68dbf892e739179036e7065",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/artificial_life.py",
+        "test_path": "tests/modules/test_m20_life1988.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/artificial_life_routes.py"
       },
       "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
@@ -34001,8 +34010,9 @@
       },
       "current_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
       "current_evidence": {
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/artificial_life.py",
+        "test_path": "tests/modules/test_m20_life1988.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/artificial_life_routes.py"
       },
       "reference_scope": {
         "method": "artificial_life",
@@ -34020,9 +34030,10 @@
       "description": "",
       "status": "PARTIAL",
       "evidence": {
-        "commit": "0ad74845a492ae7350058b9dbddc98f92f3b6f11",
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "commit": "a491d8d9ea791574a83d58b926fac2bbff43ba59",
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/digital_twin.py",
+        "test_path": "tests/modules/test_m20_twin1989.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/digital_twin_routes.py"
       },
       "boundary": "Reference substitute only: supplied_series_residual_diagnostics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
       "historical_claim": {
@@ -34035,8 +34046,9 @@
       },
       "current_scope": "Reference substitute only: supplied_series_residual_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
       "current_evidence": {
-        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/cognitive_1960_2009.py",
-        "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
+        "implementation_path": "backend/app/modules/m20_general_cognitive_worker/digital_twin.py",
+        "test_path": "tests/modules/test_m20_twin1989.py",
+        "route_path": "backend/app/modules/m20_general_cognitive_worker/digital_twin_routes.py"
       },
       "reference_scope": {
         "method": "digital_twins",
