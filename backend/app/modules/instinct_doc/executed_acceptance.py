@@ -32,6 +32,8 @@ def audit_selected_checks(root, source_path, checks):
         ident = check['id']
         try:
             run = execute_tests(root, check['test_paths'])
+            if type(run) is not dict or not all(isinstance(run.get(key), str) for key in ('status', 'head', 'tree_digest')):
+                raise EvidenceError('malformed execution receipt')
         except Exception as exc:
             run = {'status': 'UNVERIFIED', 'head': None, 'tree_digest': None, 'error': type(exc).__name__}
         bindings.setdefault(check['line_id'], []).append({'id': ident, 'run': run})
@@ -43,10 +45,15 @@ def audit_selected_checks(root, source_path, checks):
     except Exception as exc:
         source_stable = False
         rehash_error = type(exc).__name__
+    try:
+        final = snapshot(root)
+        tree_stable = final['head'] == snap['head'] and final['tree_digest'] == snap['tree_digest'] and final['status_digest'] == snap['status_digest']
+    except Exception:
+        tree_stable = False
     rows = []
     for line_id, sha in lines.items():
         executions = bindings.get(line_id, [])
-        passed = bool(executions) and source_stable and all(item['run']['status'] == 'SCOPED_PASS' and item['run'].get('head') == snap['head'] and item['run'].get('tree_digest') == snap['tree_digest'] for item in executions)
+        passed = bool(executions) and source_stable and tree_stable and all(item['run']['status'] == 'SCOPED_PASS' and item['run'].get('head') == snap['head'] and item['run'].get('tree_digest') == snap['tree_digest'] for item in executions)
         rows.append({'line_id': line_id, 'line_sha256': sha,
                      'check_status': 'SCOPED_PASS' if passed else 'UNVERIFIED',
                      'checks': executions, 'semantic_fulfillment_verified': False, 'test_line_pairing_verified': False,
@@ -57,7 +64,8 @@ def audit_selected_checks(root, source_path, checks):
             'source_artifact_hash_scope': 'Actual local inventory bytes; declared export hash is separate',
             'post_run_source_error': rehash_error,
             'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],
-            'source_stable_after_runs': source_stable,
+            'source_stable_after_runs': source_stable, 'tree_stable_after_runs': tree_stable,
+            'snapshot_boundary': 'Before/after observations are non-atomic; transient restored changes are not proven absent',
             'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,
             'execution_scope': 'Trusted checkout; at most 1000 per-run bounded calls, no aggregate time/disk budget.',
             'lines': rows, 'blockers': blockers,

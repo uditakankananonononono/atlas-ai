@@ -117,3 +117,48 @@ def test_inventory_bytes_hash_and_disclosures(repo):
     assert out['source_artifact_sha256']==hashlib.sha256((root/'source.txt').read_bytes()).hexdigest()
     assert out['source_path']=='source.txt' and out['head'] and out['tree_digest']
     assert not out['aggregate_budget_enforced'] and not out['execution_is_sandboxed']
+
+
+def test_same_line_pass_and_fail_requires_all(repo):
+    root,check=repo
+    (root/'tests/test_bad.py').write_text('def test_bad(): assert False')
+    subprocess.run(['git','-C',str(root),'add','.'],check=True)
+    subprocess.run(['git','-C',str(root),'commit','-qm','failure fixture'],check=True)
+    bad=dict(check,id='bad',test_paths=['tests/test_bad.py'])
+    out=audit_selected_checks(root,'source.txt',[check,bad])
+    assert out['scoped_passing_lines']==0
+    assert len(out['lines'][0]['checks'])==2
+
+
+@pytest.mark.parametrize('field',['head','tree_digest'])
+def test_single_receipt_identity_drift_refused(repo,monkeypatch,field):
+    from app.modules.instinct_doc import executed_acceptance as mod
+    from app.modules.instinct_doc.repo_evidence import snapshot
+    root,check=repo;snap=snapshot(root)
+    receipt={'status':'SCOPED_PASS','head':snap['head'],'tree_digest':snap['tree_digest']}
+    receipt[field]='only-one-drift'
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:receipt)
+    assert mod.audit_selected_checks(root,'source.txt',[check])['scoped_passing_lines']==0
+
+
+@pytest.mark.parametrize('receipt',[None,{}, {'status':'SCOPED_PASS','head':[], 'tree_digest':{}}])
+def test_malformed_receipt_confined(repo,monkeypatch,receipt):
+    from app.modules.instinct_doc import executed_acceptance as mod
+    root,check=repo
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:receipt)
+    out=mod.audit_selected_checks(root,'source.txt',[check])
+    assert out['lines'][0]['checks'][0]['run']['status']=='UNVERIFIED'
+    assert out['scoped_passing_lines']==0
+
+
+def test_final_tree_drift_rejects_unchanged_source(repo,monkeypatch):
+    from app.modules.instinct_doc import executed_acceptance as mod
+    from app.modules.instinct_doc.repo_evidence import snapshot
+    root,check=repo;snap=snapshot(root)
+    def changed(*a):
+        (root/'tests/test_ok.py').write_text('changed')
+        return {'status':'SCOPED_PASS','head':snap['head'],'tree_digest':snap['tree_digest']}
+    monkeypatch.setattr(mod,'execute_tests',changed)
+    out=mod.audit_selected_checks(root,'source.txt',[check])
+    assert out['source_stable_after_runs'] and not out['tree_stable_after_runs']
+    assert out['scoped_passing_lines']==0
