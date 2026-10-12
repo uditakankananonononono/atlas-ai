@@ -1,0 +1,50 @@
+BASELINE tests/modules/test_m21_social_signal_review_standalone.py -> rc=0 10 passed in 0.77s
+V1 tenant not validated | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.96s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_tenant_since_and_score_bounds_are_validated_and_passed_through
+    old: 'if not tenant_id.strip() or not 0 <= min_score <= 1'
+    new: 'if not 0 <= min_score <= 1'
+V2 score upper bound dropped | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.84s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_tenant_since_and_score_bounds_are_validated_and_passed_through
+    old: 'not 0 <= min_score <= 1'
+    new: 'not 0 <= min_score'
+V3 limit upper bound dropped | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.83s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_tenant_since_and_score_bounds_are_validated_and_passed_through
+    old: 'not 1 <= limit <= 100'
+    new: 'not 1 <= limit'
+V4 naive since accepted | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.85s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_tenant_since_and_score_bounds_are_validated_and_passed_through
+    old: 'if since is not None and since.tzinfo is None:'
+    new: 'if False:'
+V5 scan window not scaled | row 61 | social_signal_review.py | CAUGHT | rc=1 | 2 failed, 8 passed in 0.81s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_limit_caps_cards_and_scans_ten_times_up_to_500, tests/modules/test_m21_social_signal_review_standalone.py::test_tenant_since_and_score_bounds_are_validated_and_passed_through
+    old: 'limit=min(500, limit * 10)'
+    new: 'limit=limit'
+V6 limit not enforced | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.86s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_limit_caps_cards_and_scans_ten_times_up_to_500
+    old: '        if len(cards) >= limit:\n            break'
+    new: '        if False:\n            break'
+V7 score threshold exclusive | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.82s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_score_threshold_is_inclusive_and_missing_score_counts_as_zero
+    old: 'if score < min_score:'
+    new: 'if score <= min_score:'
+V8 missing score counted as passing | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.79s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_score_threshold_is_inclusive_and_missing_score_counts_as_zero
+    old: 'score = signal.get("signal_score") or 0'
+    new: 'score = signal.get("signal_score") or 1'
+V9 non-https sources accepted | row 61 | social_signal_review.py | CAUGHT | rc=1 | 2 failed, 8 passed in 0.83s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_only_clean_https_sources_become_cards[http://example.org/p], tests/modules/test_m21_social_signal_review_standalone.py::test_only_clean_https_sources_become_cards[ftp://example.org/p]
+    old: 'url.scheme != "https" or'
+    new: ''
+V10 userinfo in url accepted | row 61 | social_signal_review.py | CAUGHT | rc=1 | 2 failed, 8 passed in 0.79s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_only_clean_https_sources_become_cards[https://user@example.org/p], tests/modules/test_m21_social_signal_review_standalone.py::test_only_clean_https_sources_become_cards[https://user:pw@example.org/p]
+    old: ' or url.username or url.password:'
+    new: ':'
+V11 excerpt not capped | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.83s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_cards_are_labeled_unverified_with_no_external_effects
+    old: '(signal.get("text") or "")[:600]'
+    new: '(signal.get("text") or "")'
+V12 card marked contacted | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.82s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_cards_are_labeled_unverified_with_no_external_effects
+    old: '"contacted": False'
+    new: '"contacted": True'
+V13 status label dropped | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.82s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_cards_are_labeled_unverified_with_no_external_effects
+    old: '"status": "unverified_external_observation_for_owner_review"'
+    new: '"status": "verified"'
+V14 external effects listed as present | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.81s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_cards_are_labeled_unverified_with_no_external_effects
+    old: '"external_effects": []'
+    new: '"external_effects": ["post"]'
+V15 hostless url accepted | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.78s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_only_clean_https_sources_become_cards[https://]
+    old: 'or not url.hostname'
+    new: ''
+V16 since not passed to the store | row 61 | social_signal_review.py | CAUGHT | rc=1 | 1 failed, 9 passed in 0.78s | failing: tests/modules/test_m21_social_signal_review_standalone.py::test_tenant_since_and_score_bounds_are_validated_and_passed_through
+    old: 'list_signals(tenant_id, since=since,'
+    new: 'list_signals(tenant_id, since=None,'
+TOTAL mutants=16 CAUGHT=16 SURVIVED=0 INVALID=0 NOT-APPLICABLE=0 | SHA restore True
