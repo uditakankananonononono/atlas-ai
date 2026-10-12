@@ -2,7 +2,7 @@
 
 No bool/dict 'owner approval' is accepted here. The approval must be a real
 Module-0 record with an unchanged reviewed state and consumed exact payload.
-Ambiguous provider outcomes remain started and cannot be silently retried.
+Ambiguous provider outcomes remain started or dispatching and cannot be silently retried.
 """
 from __future__ import annotations
 
@@ -34,16 +34,25 @@ class GmailPitchSender:
     The host must have a sender-account-bound token with Gmail send scope.
     No scopes are widened, OAuth flow run or secrets persisted by this class.
     """
-    def __init__(self, account_email: str, token_provider):
+    def __init__(self, account_email: str, token_provider, *, approval_store=None):
         policy.clean_text(account_email, 'PITCH', 'sender', 320)
         if not callable(token_provider):
             raise ValueError('trusted token provider required')
+        if type(approval_store) is not PitchExecution:
+            raise PermissionError('trusted PitchExecution approval store required')
+        self._approval_store = approval_store
         self.account = account_email
         self.token_provider = token_provider
 
-    def send(self, payload: dict) -> dict:
+    def send(self, effect: dict, approval_id: str) -> dict:
+        effect = deepcopy(effect)
+        policy.validate_descriptor(effect)
+        payload = effect['payload']
         if payload['sender'] != self.account or payload['channel'] != 'gmail' or payload['attachment_hashes']:
             raise ValueError('sender/channel mismatch or unsupported attachments')
+        # Verify actual durable M00 consumption and atomically claim transport.
+        # Caller flags, fabricated receipt objects and arbitrary payloads are not permits.
+        self._approval_store._claim_transport(effect, approval_id)
         message = EmailMessage()
         message['From'] = payload['sender']
         message['To'] = ', '.join(payload['to'])
@@ -114,13 +123,50 @@ class PitchExecution:
             db.execute('INSERT INTO pitch_sends VALUES (?,?,?,?,?)',
                        (effect_id, approval_id, payload_hash, 'started', None))
         # Exceptions deliberately retain started. A timeout may mean it was sent.
-        receipt = self.sender.send(deepcopy(effect['payload']))
+        receipt = self.sender.send(deepcopy(effect), approval_id)
         if type(receipt) is not dict or type(receipt.get('message_id')) is not str or not receipt['message_id']:
             raise RuntimeError('provider receipt missing; outcome unknown')
         with self._db() as db:
             db.execute('UPDATE pitch_sends SET status=?,receipt=? WHERE effect_id=?',
                        ('provider_accepted', json.dumps(receipt), effect_id))
         return {'effect_id': effect_id, 'approval_id': approval_id, **receipt}
+
+    def _claim_transport(self, effect: dict, approval_id: str) -> None:
+        from sqlalchemy import select
+        from app.modules.m00_approval_center import impact
+        from app.modules.m00_approval_center.service import ApprovalEffectRow, _request_hash, _aware
+        policy.validate_descriptor(effect)
+        if effect['class'] != 'outreach' or effect['module_id'] != 10 or effect['action_type'] != 'outreach':
+            raise PermissionError('pitch outreach effect required')
+        if effect['payload']['send_at'] != 'immediate':
+            raise PermissionError('immediate reviewed delivery required')
+        payload_hash = hashlib.sha256(json.dumps(effect, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+        effect_id = 'pitch-' + payload_hash
+        # The sender independently verifies the actual approval/consumption table.
+        # It cannot authorize transport from a caller-supplied permit object.
+        with self.service._sessions() as session:
+            consumed = session.scalar(select(ApprovalEffectRow).where(
+                ApprovalEffectRow.approval_id == approval_id))
+            digest = _request_hash(module_id=10, action_type='outreach', payload=effect['payload'],
+                                   user_id=effect['tenant_id'])
+            if consumed is None or consumed.effect_id != effect_id or consumed.request_hash != digest:
+                raise PermissionError('durable exact M00 consumption required')
+        view = self.service.get(approval_id)
+        if view.get('expires_at') is not None and _aware(view['expires_at']) <= self.service._clock():
+            raise PermissionError('approval expired before transport')
+        preview = impact.impact_preview(self.service, approval_id, registry=self.registry)
+        if preview['verdict'] != 'unchanged' or not preview['safe_to_consume']:
+            raise PermissionError('unchanged reviewed state required at transport')
+        with self._db() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row = db.execute('SELECT payload_sha256,status FROM pitch_sends '
+                             'WHERE effect_id=? AND approval_id=?', (effect_id, approval_id)).fetchone()
+            if row != (payload_hash, 'started'):
+                raise PermissionError('durable unused execution claim required')
+            changed = db.execute('UPDATE pitch_sends SET status=? WHERE effect_id=? AND status=?',
+                                 ('dispatching', effect_id, 'started'))
+            if changed.rowcount != 1:
+                raise PermissionError('transport already claimed')
 
     def receipts(self) -> list:
         with self._db() as db:

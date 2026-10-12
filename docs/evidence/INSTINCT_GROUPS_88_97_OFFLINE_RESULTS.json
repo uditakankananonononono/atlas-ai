@@ -121,7 +121,7 @@
         "platform": "x",
         "source_id": "notes",
         "parts": [
-          "Field notes\n\nOur measured sum is five."
+          "Field notes\n\nOur evaluated sum is five."
         ],
         "limit": 280,
         "status": "needs_owner_review",
@@ -132,7 +132,7 @@
         "platform": "linkedin",
         "source_id": "notes",
         "parts": [
-          "Field notes\n\nOur measured sum is five."
+          "Field notes\n\nOur evaluated sum is five."
         ],
         "limit": 3000,
         "status": "needs_owner_review",
@@ -191,5 +191,5 @@
     "breakthrough_claim": false,
     "limits": "Unscaled Euclidean centroid classifier on supplied numeric data only. Split independence beyond IDs/exact duplicates, generalization and domain validity are unverified."
   },
-  "limits": "Synthetic offline acceptance cases only; no vendor superiority, real image/audio inference, breakthrough or live pitch delivery verified."
+  "limits": "Synthetic offline acceptance cases only; no vendor superiority, actual image/audio inference, breakthrough or live pitch delivery verified."
 }

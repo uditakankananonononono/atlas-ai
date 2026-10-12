@@ -1,4 +1,4 @@
-"""Measured, small local classification experiment, not sector breakthroughs.
+"""Evaluated, small local classification experiment, not sector breakthroughs.
 
 Train a nearest-centroid classifier on labeled numeric vectors, evaluate on
 ID-disjoint heldout cases and compare with a training-majority baseline.

@@ -1,4 +1,4 @@
-"""Run real offline execution checks. No credentials, downloads or sends."""
+"""Run actual offline execution checks. No credentials, downloads or sends."""
 from __future__ import annotations
 
 import argparse
@@ -42,11 +42,11 @@ def main():
               'psychology_cues': tag_evidence('I made a saddle. Not happy. I love learning.'),
               'brand_quotes': teardown_sources('Fixture Brand', [{'url':'https://example.invalid/fixture',
                                           'text':'Founder Jane started it. Ingredients include rose.'}]),
-              'channel_drafts': adapt([{'id':'notes','title':'Field notes','text':'Our measured sum is five.',
+              'channel_drafts': adapt([{'id':'notes','title':'Field notes','text':'Our evaluated sum is five.',
                                        'owner_authored':True}],['x','linkedin']),
               'workforce': {'status':workers.status,'outputs':workers.outputs},
               'learning':experiment(training,heldout,model_output=root/'centroid-model.json'),
-              'limits': 'Synthetic offline acceptance cases only; no vendor superiority, real image/audio inference, '
+              'limits': 'Synthetic offline acceptance cases only; no vendor superiority, actual image/audio inference, '
                         'breakthrough or live pitch delivery verified.'}
     (root/'results.json').write_text(json.dumps(result, indent=2))
     print(json.dumps({'output':str(root/'results.json'), 'workforce':workers.status,

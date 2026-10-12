@@ -1,7 +1,7 @@
 """Local Diffusers image inference from an image_brief concept.
 
 Only a local model path is accepted. Missing runtime or weights fail closed.
-Generated files carry AI labeling and model/output hashes. Realism is not
+Generated files carry AI labeling and model/output hashes. Visual quality is not
 asserted: it needs human visual review of actual output.
 """
 from __future__ import annotations

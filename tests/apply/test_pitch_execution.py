@@ -25,7 +25,7 @@ def setup(tmp_path):
     impact.capture_review_state(service,view['id'],registry=registry)
     class Sender:
         def __init__(self):self.calls=0;self.fail=False
-        def send(self,payload):
+        def send(self,effect,approval_id):
             self.calls+=1
             if self.fail:raise TimeoutError('unknown outcome')
             return {'message_id':'provider-1','status':'provider_accepted'}
@@ -69,7 +69,7 @@ def test_timeout_retains_started_and_refuses_replay(setup):
     with pytest.raises(RuntimeError):ex.execute(effect,view['id'],actor='worker')
     assert sender.calls==1
 
-def test_gmail_transport_checks_profile_and_posts_real_mime(monkeypatch):
+def test_gmail_transport_checks_profile_and_posts_real_mime(monkeypatch, setup):
     import base64,json
     from email import policy as email_policy
     from email.parser import BytesParser
@@ -82,26 +82,78 @@ def test_gmail_transport_checks_profile_and_posts_real_mime(monkeypatch):
             return BytesIO(json.dumps({'emailAddress':'author@example.invalid'}).encode())
         return BytesIO(json.dumps({'id':'real-transport-fixture-id','threadId':'thread'}).encode())
     monkeypatch.setattr(module,'urlopen',fake_open)
-    draft=make_org_pitch_draft({'name':'Org','recipient':'editor@example.invalid'},
-                              {'name':'Author','summary':'Test findings.'},'research collaboration')
-    effect=descriptor(draft,tenant_id='t',sender='author@example.invalid',send_at='immediate')
-    sender=module.GmailPitchSender('author@example.invalid',lambda:'test-only-nonsecret-token')
-    receipt=sender.send(effect['payload'])
+    executor,service,state,old_sender,view,effect=setup
+    sender=module.GmailPitchSender('author@example.invalid',lambda:'test-only-nonsecret-token',approval_store=executor)
+    executor.sender=sender
+    service.decide(view['id'],ApprovalStatus.APPROVED,decided_by='owner')
+    receipt=executor.execute(effect,view['id'],actor='worker')
     assert receipt['delivered']=='unverified' and len(calls)==2
     raw=json.loads(calls[1].data)['raw']
     msg=BytesParser(policy=email_policy.default).parsebytes(base64.urlsafe_b64decode(raw))
-    assert msg['To']==draft['recipient'] and msg['Subject']==draft['subject']
-    assert msg.get_content().rstrip('\n')==draft['body']
+    assert msg['To']==effect['payload']['to'][0] and msg['Subject']==effect['payload']['subject']
+    assert msg.get_content().rstrip('\n')==effect['payload']['body']
 
-def test_wrong_token_profile_refuses_before_send(monkeypatch):
+def test_wrong_token_profile_refuses_before_send(monkeypatch, setup):
     from io import BytesIO
     from app.apply import pitch_execution as module
     calls=[]
     def fake_open(request,timeout):
         calls.append(request);return BytesIO(b'{"emailAddress":"different@example.invalid"}')
     monkeypatch.setattr(module,'urlopen',fake_open)
-    sender=module.GmailPitchSender('author@example.invalid',lambda:'fixture')
+    executor,service,state,old_sender,view,effect=setup
+    sender=module.GmailPitchSender('author@example.invalid',lambda:'fixture',approval_store=executor)
+    executor.sender=sender
+    service.decide(view['id'],ApprovalStatus.APPROVED,decided_by='owner')
     with pytest.raises(ValueError,match='different sending account'):
-        sender.send({'sender':'author@example.invalid','channel':'gmail','attachment_hashes':[],
-                     'to':['editor@example.invalid'],'cc':[],'bcc':[],'subject':'Test','body':'Test'})
+        executor.execute(effect,view['id'],actor='worker')
     assert len(calls)==1
+    assert executor.receipts()[0]['status']=='dispatching'
+
+def test_direct_transport_without_store_fails_closed():
+    from app.apply.pitch_execution import GmailPitchSender
+    with pytest.raises(PermissionError,match='approval store'):
+        GmailPitchSender('author@example.invalid',lambda:'fixture')
+    with pytest.raises(PermissionError,match='approval store'):
+        GmailPitchSender('author@example.invalid',lambda:'fixture',approval_store={'approved':True})
+
+def test_direct_transport_pending_or_fabricated_claim_cannot_send(setup,monkeypatch):
+    from app.apply import pitch_execution as module
+    ex,service,state,old_sender,view,effect=setup
+    calls=[]
+    monkeypatch.setattr(module,'urlopen',lambda *a,**kw:calls.append(a))
+    sender=module.GmailPitchSender('author@example.invalid',lambda:'fixture',approval_store=ex)
+    with pytest.raises(PermissionError,match='M00 consumption'):
+        sender.send(effect,view['id'])
+    import hashlib,json
+    digest=hashlib.sha256(json.dumps(effect,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    # Even writing a fake local claim does not supply a real consumed M00 record.
+    with ex._db() as db:
+        db.execute('INSERT INTO pitch_sends VALUES (?,?,?,?,?)',('pitch-'+digest,view['id'],digest,'started',None))
+    with pytest.raises(PermissionError,match='M00 consumption'):
+        sender.send(effect,view['id'])
+    assert calls==[]
+
+def test_transport_requires_exact_consumed_payload_and_unused_durable_claim(setup,monkeypatch):
+    from app.apply import pitch_execution as module
+    from app.modules.c30 import policy
+    import copy,hashlib,json
+    from io import BytesIO
+    ex,service,state,old_sender,view,effect=setup
+    service.decide(view['id'],ApprovalStatus.APPROVED,decided_by='owner')
+    digest=hashlib.sha256(json.dumps(effect,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    policy.execute(effect,view['id'],actor='worker',effect_id='pitch-'+digest,service=service,registry=ex.registry)
+    sender=module.GmailPitchSender('author@example.invalid',lambda:'fixture',approval_store=ex)
+    with pytest.raises(PermissionError,match='execution claim'):
+        sender.send(effect,view['id'])
+    with ex._db() as db:
+        db.execute('INSERT INTO pitch_sends VALUES (?,?,?,?,?)',('pitch-'+digest,view['id'],digest,'started',None))
+    changed=copy.deepcopy(effect);changed['payload']['to']=['other@example.invalid']
+    with pytest.raises(PermissionError,match='M00 consumption'):sender.send(changed,view['id'])
+    calls=[]
+    def fake_open(request,timeout):
+        calls.append(request)
+        return BytesIO(b'{"emailAddress":"author@example.invalid"}' if request.full_url.endswith('profile') else b'{"id":"sent"}')
+    monkeypatch.setattr(module,'urlopen',fake_open)
+    assert sender.send(effect,view['id'])['message_id']=='sent'
+    with pytest.raises(PermissionError,match='execution claim'):sender.send(effect,view['id'])
+    assert len(calls)==2

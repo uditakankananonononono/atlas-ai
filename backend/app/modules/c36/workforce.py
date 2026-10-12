@@ -1,6 +1,6 @@
 """Execute a blueprint's offline worker graph using registered handlers.
 
-A real workflow runner, not company formation or autonomous external effects.
+A actual workflow runner, not company formation or autonomous external effects.
 Handlers must be trusted, side-effect-free callables. This is not a sandbox.
 """
 from app.troop.roles import ActionWorker, Plan, Step, RuleReviewer
