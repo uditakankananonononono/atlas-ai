@@ -119,15 +119,18 @@ def _hash_text(text):
 
 # ---------------- PNG encoder + rasterizer (pixels, stdlib) ----------------
 
-def _png(width, height, rgb):
-    """Encode an RGB bytearray (row-major) as a PNG."""
+def _png(width, height, rgb, text=None):
+    """Encode an RGB bytearray (row-major) as a PNG; optional tEXt marker."""
     def chunk(tag, data):
         raw = tag + data
         return struct.pack(">I", len(data)) + raw + struct.pack(">I", zlib.crc32(raw) & 0xFFFFFFFF)
     ihdr = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
     scan = b"".join(b"\x00" + bytes(rgb[y * width * 3:(y + 1) * width * 3])
                     for y in range(height))
-    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr)
+    meta = b""
+    if text is not None:
+        meta = chunk(b"tEXt", b"Description\x00" + text.encode("latin-1"))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + meta
             + chunk(b"IDAT", zlib.compress(scan, 6)) + chunk(b"IEND", b""))
 
 
@@ -164,6 +167,48 @@ class _Canvas:
 def _hex(color):
     return tuple(int(color[i:i + 2], 16) for i in (1, 3, 5))
 
+
+
+
+# 3x5 bitmap glyphs (MSB-left rows), enough for labels and captions
+_FONT3X5 = {
+    "A": (0b010, 0b101, 0b111, 0b101, 0b101), "B": (0b110, 0b101, 0b110, 0b101, 0b110),
+    "C": (0b011, 0b100, 0b100, 0b100, 0b011), "D": (0b110, 0b101, 0b101, 0b101, 0b110),
+    "E": (0b111, 0b100, 0b110, 0b100, 0b111), "F": (0b111, 0b100, 0b110, 0b100, 0b100),
+    "G": (0b011, 0b100, 0b101, 0b101, 0b011), "H": (0b101, 0b101, 0b111, 0b101, 0b101),
+    "I": (0b111, 0b010, 0b010, 0b010, 0b111), "J": (0b001, 0b001, 0b001, 0b101, 0b010),
+    "K": (0b101, 0b101, 0b110, 0b101, 0b101), "L": (0b100, 0b100, 0b100, 0b100, 0b111),
+    "M": (0b101, 0b111, 0b111, 0b101, 0b101), "N": (0b110, 0b101, 0b101, 0b101, 0b101),
+    "O": (0b010, 0b101, 0b101, 0b101, 0b010), "P": (0b110, 0b101, 0b110, 0b100, 0b100),
+    "Q": (0b010, 0b101, 0b101, 0b110, 0b011), "R": (0b110, 0b101, 0b110, 0b101, 0b101),
+    "S": (0b011, 0b100, 0b010, 0b001, 0b110), "T": (0b111, 0b010, 0b010, 0b010, 0b010),
+    "U": (0b101, 0b101, 0b101, 0b101, 0b111), "V": (0b101, 0b101, 0b101, 0b101, 0b010),
+    "W": (0b101, 0b101, 0b101, 0b111, 0b101), "X": (0b101, 0b101, 0b010, 0b101, 0b101),
+    "Y": (0b101, 0b101, 0b010, 0b010, 0b010), "Z": (0b111, 0b001, 0b010, 0b100, 0b111),
+    "0": (0b111, 0b101, 0b101, 0b101, 0b111), "1": (0b010, 0b110, 0b010, 0b010, 0b111),
+    "2": (0b111, 0b001, 0b111, 0b100, 0b111), "3": (0b111, 0b001, 0b011, 0b001, 0b111),
+    "4": (0b101, 0b101, 0b111, 0b001, 0b001), "5": (0b111, 0b100, 0b111, 0b001, 0b111),
+    "6": (0b111, 0b100, 0b111, 0b101, 0b111), "7": (0b111, 0b001, 0b010, 0b010, 0b010),
+    "8": (0b111, 0b101, 0b111, 0b101, 0b111), "9": (0b111, 0b101, 0b111, 0b001, 0b111),
+    "-": (0b000, 0b000, 0b111, 0b000, 0b000), " ": (0b000, 0b000, 0b000, 0b000, 0b000),
+}
+
+
+def _text_width(text):
+    return len(text) * 4 - 1 if text else 0
+
+
+def _draw_text(canvas, text, x0, y0, color):
+    """Draw uppercase text with the 3x5 bitmap font; 1px advance gap."""
+    x = x0
+    for ch in text.upper():
+        glyph = _FONT3X5.get(ch, _FONT3X5[" "])
+        for row in range(5):
+            bits = glyph[row]
+            for col in range(3):
+                if bits & (1 << (2 - col)):
+                    canvas._set(x + col, y0 + row, color)
+        x += 4
 
 # ---------------- AI people: params -> PNG portrait / SVG figure ----------------
 
@@ -237,11 +282,12 @@ def render_person_png(params, size=64):
         c.fill(cx - 4, my, 8, 2, (120, 40, 40))
     else:
         c.fill(cx - 3, my, 6, 1, (120, 40, 40))
-    # label band: the SYNTHETIC-AI mark is part of the pixels, not metadata
-    c.fill(0, size - 6, size, 6, (30, 30, 34))
-    for x in range(2, size - 2, 4):  # dashed pale band reads as a watermark strip
-        c.fill(x, size - 5, 2, 4, (200, 200, 210))
-    return _png(size, size, c.px)
+    # label band: SYNTHETIC-AI drawn as legible bitmap glyphs, plus a tEXt
+    # metadata marker, so the label works at the output size and in the file
+    c.fill(0, size - 7, size, 7, (30, 30, 34))
+    x0 = max(1, (size - _text_width(LABEL)) // 2)
+    _draw_text(c, LABEL, x0, size - 6, (240, 240, 246))
+    return _png(size, size, c.px, text=LABEL)
 
 
 def render_person_svg(params, height=120):

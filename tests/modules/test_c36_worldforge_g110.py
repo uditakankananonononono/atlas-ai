@@ -40,25 +40,50 @@ def _png_chunks(png):
     return chunks
 
 
-def test_person_png_is_real_decodable_raster():
+def test_person_png_is_decodable_raster():
     out = worldforge.run(_req())
     for pid, png in out["renders"]["people_png"].items():
         chunks = _png_chunks(png)
         tags = [t for t, _ in chunks]
-        assert tags == [b"IHDR", b"IDAT", b"IEND"]
+        assert tags == [b"IHDR", b"tEXt", b"IDAT", b"IEND"]
         w, h, bitdepth, colortype = struct.unpack(">IIBB", chunks[0][1][:10])
         assert (w, h, bitdepth, colortype) == (64, 64, 8, 2)
-        raw = zlib.decompress(chunks[1][1])
+        raw = zlib.decompress(chunks[2][1])
         assert len(raw) == (w * 3 + 1) * h
         # two content rows carry painted pixels (not a blank canvas)
         mid = raw[10 * (w * 3 + 1) + 1: 10 * (w * 3 + 1) + 1 + w * 3]
         assert len(set(mid)) > 4
 
 
+def test_png_label_spells_synthetic_ai_in_legible_glyphs():
+    out = worldforge.run(_req())
+    png = out["renders"]["people_png"]["a1"]
+    idat = [d for t, d in _png_chunks(png) if t == b"IDAT"][0]
+    raw = zlib.decompress(idat)
+    size = 64
+    rows = [raw[y * (size * 3 + 1) + 1:(y + 1) * (size * 3 + 1)] for y in range(size)]
+    bright = {(x, y) for y in range(size - 6, size) for x in range(size)
+              if bytes(rows[y][x * 3:x * 3 + 3]) == bytes((240, 240, 246))}
+    expected_bits = sum(bin(g).count("1") for ch in worldforge.LABEL
+                        for g in worldforge._FONT3X5[ch])
+    assert expected_bits > 40  # twelve real glyphs, not a decorative stripe
+    assert len(bright) == expected_bits  # exactly the glyph pixels, nothing else
+
+
+def test_png_carries_text_metadata_marker():
+    out = worldforge.run(_req())
+    png = out["renders"]["people_png"]["a1"]
+    tags = [tag for tag, _ in _png_chunks(png)]
+    assert b"tEXt" in tags
+    text = [data for tag, data in _png_chunks(png) if tag == b"tEXt"][0]
+    assert text == b"Description\x00SYNTHETIC-AI"
+
+
 def test_png_label_band_present_in_pixels():
     out = worldforge.run(_req())
     png = out["renders"]["people_png"]["a1"]
-    raw = zlib.decompress(_png_chunks(png)[1][1])
+    idat = [d for t, d in _png_chunks(png) if t == b"IDAT"][0]
+    raw = zlib.decompress(idat)
     w = 64
     last = raw[(w * 3 + 1) * 63 + 1:]  # final row
     assert bytes(last[:3]) == bytes((30, 30, 34))  # label band color
