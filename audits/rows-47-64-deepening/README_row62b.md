@@ -29,3 +29,5 @@ search, novelty scoring, ownership check or filing. No production change, no net
 - Nothing here shows the drafted claims are legally sufficient, novel or fileable.
 - A green run shows the tests notice these 16 edits, not that the helper is correct or complete.
 - Receipts are recorded local harness runs, not independently re-run.
+
+Note on T12 and T14: they are caught only by the direct `_unicode_text` helper test. Through the public path (`_clean_item`, then `policy.clean_text`) the downstream `policy.clean_text` appears to reject the same inputs even without the helper check, so it masks them at API level. Whether it covers all of Cc/Cf/Zl/Zp was not traced.
