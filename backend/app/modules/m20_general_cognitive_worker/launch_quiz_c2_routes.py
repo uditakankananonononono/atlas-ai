@@ -1,8 +1,7 @@
-"""Unmounted C2 authenticated HTTP adapter. Integrator must mount router.
+"""C2 authenticated adapter; optional main-app mounting uses private SQLite.
 
-Uses verified tenant+actor as owner, never a caller-supplied owner field.
-Single-process memory only. RLock serializes route operations. No cross-worker
-persistence or UI is claimed. Core has no FastAPI dependency.
+The standalone router remains an in-memory adapter for explicit host binding.
+Identity is always authenticated tenant plus actor, never payload identity.
 """
 import json
 from threading import RLock
@@ -28,24 +27,28 @@ def owner(tenant):
 
 @router.post('/run')
 def run(request: RunRequest, tenant: TenantContext = Depends(require_tenant)):
+    return _run(request, tenant, _engine, _lock)
+
+
+def _run(request, tenant, engine, lock):
     identity = owner(tenant)
     p = request.payload
     try:
-        with _lock:
+        with lock:
             if request.operation == 'start':
-                return _engine.start(identity, consent=p.get('consent'), as_of=p.get('as_of', 'unspecified'))
+                return engine.start(identity, consent=p.get('consent'), as_of=p.get('as_of', 'unspecified'))
             if request.operation == 'answer':
-                return _engine.answer(identity, request.session_id, p.get('question_id'), p.get('choice'), p.get('explanation'))
+                return engine.answer(identity, request.session_id, p.get('question_id'), p.get('choice'), p.get('explanation'))
             if request.operation == 'documents':
-                return _engine.documents(identity, request.session_id, p.get('documents'))
+                return engine.documents(identity, request.session_id, p.get('documents'))
             if request.operation == 'edit':
-                return _engine.edit(identity, request.session_id, p.get('key'), p.get('value'))
+                return engine.edit(identity, request.session_id, p.get('key'), p.get('value'))
             if request.operation == 'plan':
-                return _engine.plan(identity, request.session_id, p.get('task'), action=p.get('action', 'draft'))
+                return engine.plan(identity, request.session_id, p.get('task'), action=p.get('action', 'draft'))
             if request.operation == 'delete':
-                return _engine.delete(identity, request.session_id)
+                return engine.delete(identity, request.session_id)
             if request.operation == 'revoke':
-                return _engine.revoke(identity, request.session_id)
+                return engine.revoke(identity, request.session_id)
             raise QuizError('FLEET_REFUSED_OPERATION')
     except QuizError as exc:
         raise HTTPException(400, str(exc)) from exc
@@ -55,8 +58,34 @@ def run(request: RunRequest, tenant: TenantContext = Depends(require_tenant)):
 
 @router.get('/report')
 def report(session_id: str, tenant: TenantContext = Depends(require_tenant)):
+    return _report(session_id, tenant, _engine, _lock)
+
+
+def _report(session_id, tenant, engine, lock):
     try:
-        with _lock:
-            return _engine.profile(owner(tenant), session_id)
+        with lock:
+            return engine.profile(owner(tenant), session_id)
     except QuizError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+
+def mount_launch_quiz(app, env=None):
+    """Explicit opt-in. Enabled without valid private storage fails startup."""
+    import os
+    from .launch_quiz_c2_store import DurableLaunchQuiz
+    env = os.environ if env is None else env
+    if env.get('ATLAS_C2_ENABLED') != '1':
+        return
+    filename = env.get('ATLAS_C2_DB')
+    if not filename:
+        raise QuizError('FLEET_REFUSED_STORAGE')
+    engine = DurableLaunchQuiz(filename)
+    lock = RLock()
+    mounted = APIRouter(prefix='/api/v1/c31/launch-quiz', tags=['C2'])
+    @mounted.post('/run')
+    def durable_run(request: RunRequest, tenant: TenantContext = Depends(require_tenant)):
+        return _run(request, tenant, engine, lock)
+    @mounted.get('/report')
+    def durable_report(session_id: str, tenant: TenantContext = Depends(require_tenant)):
+        return _report(session_id, tenant, engine, lock)
+    app.include_router(mounted)

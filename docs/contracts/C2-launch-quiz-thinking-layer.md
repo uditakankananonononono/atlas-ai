@@ -35,7 +35,7 @@ it is a label, not an independently verified capture timestamp.
 ## Integration
 
 Core: m20_general_cognitive_worker/launch_quiz_c2.py.
-Additive adapter: launch_quiz_c2_routes.py, **not mounted in the main app**.
+Adapter: launch_quiz_c2_routes.py. Main-app mounting is explicitly opt-in.
 It exposes POST /api/v1/c31/launch-quiz/run (start, answer, documents, edit,
 plan, delete, revoke) and GET /api/v1/c31/launch-quiz/report. Identity comes
 from require_tenant's authenticated tenant and actor, not request payload.
@@ -53,7 +53,28 @@ return literal True and cannot widen this boundary. Unexpected shared-guard
 allow still fails closed. No spending, sending or other execution is added.
 
 The shared guard c30.policy is present; the adapter injects it.
-Main-app mounting and durable storage remain absent.
+Set `ATLAS_C2_ENABLED=1` and `ATLAS_C2_DB=/absolute/private/quiz.sqlite`
+before starting the service. The parent directory must already exist with mode
+0700 (or stricter). The database is created with mode 0600; public modes,
+symlinks and hard-linked database files refuse. Missing or invalid storage while
+enabled fails startup. Without the exact enable value, no C2 routes are mounted.
+The existing standalone router remains an explicit in-memory host adapter.
+
+The mounted adapter uses SQLite transactions with BEGIN IMMEDIATE, FULL
+synchronous commits and secure_delete. Every operation reloads the state under
+the transaction, so separate connections on the same local database serialize and
+keep session IDs unique. Answers, documents and edits survive process restart;
+delete/revoke removes the owner-bound session from persisted live state. Invalid
+operations roll back. State is capped at 100 sessions and 25MB encoded JSON;
+Unicode escaping counts toward that cap. No silent memory fallback is used.
+Returned mounted profile/plan scope names local persistence; the core alone
+continues to report durable storage absent.
+
+Use a trusted private local filesystem and protect the directory from concurrent
+replacement. Path validation does not eliminate check-to-open races. SQLite is
+not encrypted storage, remote storage or a distributed database. secure_delete
+is not proof of erasure from backups, snapshots, storage hardware or historical
+copies. Operators must apply retention and deletion to those separately.
 
 
 ## LIMITS
@@ -64,20 +85,25 @@ external tool use, messaging, spending, posting or scraping. Supplied text
 is used only for explicit lexical style markers. Only synthetic data appears
 in tests and receipts; no owner's real documents were ingested.
 
-In-memory store only, up to 100 sessions by default (configurable 1-1000).
-Process restart loses profiles. IDs are sequential and are not authentication;
+The standalone in-memory store supports 100 sessions by default (configurable
+1-1000) and loses profiles on restart. Opt-in main-app storage persists up to
+100 sessions. IDs are sequential and are not authentication;
 core caller must supply a trusted owner, HTTP adapter derives it from auth.
-No UI, main-app mounting, database, encrypted storage, retention timer,
-cross-worker concurrency, production deployment, or end-to-end launch flow.
-A deployed persistence layer must implement owner-bound deletion separately.
+No UI, encrypted storage, retention timer, production deployment, or end-to-end
+launch flow is verified. Shared-local-database connection transactions are supported;
+multi-process behavior, network-filesystem and multi-host concurrency are not
+verified. FULL synchronous is configured but its crash/durability behavior has
+no direct test pin. One dependency deprecation warning remains in the reviewed
+floor.
 
 ## Verification
 
 Current focused floor: Python 3.12.14 with real tests/conftest.py,
-66 passed, 0 failed. This covers the existing engine and authenticated
+91 passed (66 shared/quiz + 25 durable), 0 failed. This covers the existing engine and authenticated
 isolated adapter plus shared-policy, alias/reason, offline-draft and literal
-True hook-acceptance pins. One dependency deprecation warning remains.
+True hook-acceptance pins. Synthetic mounting tests cover restart, owner isolation, edit, draft planning,
+revocation, rollback, private path checks and concurrent session creation.
 Targeted self-run mutation evidence is not an independent audit or an
 exhaustive mutation claim. Full regression, external model validation and
-production main-app mounting remain open. No release candy gate is closed
+live deployment remain open. No release candy gate is closed
 by this unit.

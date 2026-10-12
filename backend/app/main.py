@@ -45,6 +45,8 @@ app.include_router(product_orchestrator_router,prefix="/api/v1",dependencies=[De
 app.include_router(model_catalog_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 app.include_router(self_improve_router,prefix="/api/v1",dependencies=[Depends(require_tenant)])
 mount_training_routes(app)
+from app.modules.m20_general_cognitive_worker.launch_quiz_c2_routes import mount_launch_quiz
+mount_launch_quiz(app)
 for module_spec in IMPLEMENTED_SPECS:
     app.include_router(module_spec.router, prefix="/api/v1", dependencies=[Depends(require_tenant)])
 
