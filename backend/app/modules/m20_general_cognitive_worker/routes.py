@@ -1756,3 +1756,8 @@ from .mob692_routes import router as mob692_routes_router
 router.include_router(mob692_routes_router)
 from .debt693_routes import router as debt693_routes_router
 router.include_router(debt693_routes_router)
+
+from .design_for_six_sigma_routes1530 import router as dfss_router_1530
+router.include_router(dfss_router_1530)
+from .qa_evidence_routes1535 import router as qa_evidence_router_1535
+router.include_router(qa_evidence_router_1535)
