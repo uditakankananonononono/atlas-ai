@@ -1,0 +1,44 @@
+{
+  "row": 91,
+  "selectors": [
+    "tests/modules/test_group91_metadata_boundaries.py"
+  ],
+  "timeout_seconds": 40,
+  "limits": [
+    "mock pipeline only, not actual new image inference",
+    "realism fidelity and visual quality untested",
+    "full model safety quality untested"
+  ],
+  "mutations": [
+    {
+      "id": "model_drift",
+      "path": "backend/app/modules/c32/product_images.py",
+      "old": "if model_identity(self.root) != self.identity:",
+      "new": "if False:"
+    },
+    {
+      "id": "safety",
+      "path": "backend/app/modules/c32/product_images.py",
+      "old": "if nsfw is not None and any(nsfw):",
+      "new": "if False:"
+    },
+    {
+      "id": "png_ai_label",
+      "path": "backend/app/modules/c32/product_images.py",
+      "old": "metadata.add_text('AI-generated', 'true')",
+      "new": "metadata.add_text('AI-generated', 'false')"
+    },
+    {
+      "id": "output_hash",
+      "path": "backend/app/modules/c32/product_images.py",
+      "old": "digest = hashlib.sha256(output.read_bytes()).hexdigest()",
+      "new": "digest = '0'*64"
+    },
+    {
+      "id": "realism_scope",
+      "path": "backend/app/modules/c32/product_images.py",
+      "old": "'realism_validated': False",
+      "new": "'realism_validated': True"
+    }
+  ]
+}
