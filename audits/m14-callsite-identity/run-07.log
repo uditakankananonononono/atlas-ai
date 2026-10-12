@@ -1,0 +1,44 @@
+selector: tests/modules/test_m14_report_identity.py::test_export_emit_callsites_bind_exact_readme_and_status_identity
+rc=1
+STDOUT
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_export_emit_callsites_bind_exact_readme_and_status_identity _______
+
+service = <app.modules.m14_project_builder.service.Service object at 0x7f919ffbbcb0>
+project = ProjectView(id='8dad5485-14e6-4ef5-ba80-407b9493f6d2', tenant_id='tenant1', goal='Build an ISEF project', brief={}, bu...ax_iterations=3, max_agent_calls=50, max_runtime_seconds=3600, max_cost_usd=25), status='draft', revision=0, plan=None)
+tmp_path = PosixPath('<PYTEST_TMP>/test_export_emit_callsites_bin0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f91a0e8b1d0>
+
+    def test_export_emit_callsites_bind_exact_readme_and_status_identity(service, project, tmp_path, monkeypatch):
+        import hashlib
+        _freeze_service_time(monkeypatch)
+        result = service.export_project(project, base_dir=tmp_path)
+        readme = (tmp_path / project.id / "README.md").read_text()
+        status = (tmp_path / project.id / "STATUS.md").read_text()
+        assert readme == result.readme
+        records = [entry["record"] for entry in service._report_gate().ledger("reports")]
+        assert len(records) == 2
+        for record, kind, body in zip(records, ("readme", "status"), (readme, status), strict=True):
+>           assert record["report_id"] == _expected_callsite_id(kind, project, NOW, body)
+E           AssertionError: assert 'fe92ce213ed6...cbd6062e03734' == 'eca2ed5072c0...f405f580f194f'
+E
+E             - eca2ed5072c007b67637f706240c3602c86521597d8980f3cd6f405f580f194f
+E             + fe92ce213ed6370cbe794deb0db8c941ca9ab63983343da179ccbd6062e03734
+
+tests/modules/test_m14_report_identity.py:92: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <VENV>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/modules/test_m14_report_identity.py::test_export_emit_callsites_bind_exact_readme_and_status_identity
+  <VENV>/lib/python3.12/site-packages/platformdirs/api.py:459: RuntimeDirWarning: XDG_RUNTIME_DIR is not set, falling back to <RUNTIME_DIR>
+    return Path(self.user_runtime_dir)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m14_report_identity.py::test_export_emit_callsites_bind_exact_readme_and_status_identity
+1 failed, 2 warnings in 0.54s
+
+STDERR

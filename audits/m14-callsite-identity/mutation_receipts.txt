@@ -1,0 +1,22 @@
+BASELINE tests/modules/test_m14_report_identity.py tests/modules/test_m14_report_gate.py tests/modules/test_m14_wiring.py -> rc=0 60 passed, 2 warnings in 3.17s
+status random valid 64-char id | service.py | CAUGHT | rc=1 | 1 failed, 2 warnings in 0.56s | failing: tests/modules/test_m14_report_identity.py::test_status_emit_callsite_binds_exact_actual_identity
+status wrong body | service.py | CAUGHT | rc=1 | 1 failed, 2 warnings in 0.55s | failing: tests/modules/test_m14_report_identity.py::test_status_emit_callsite_binds_exact_actual_identity
+status wrong kind | service.py | CAUGHT | rc=1 | 1 failed, 2 warnings in 0.50s | failing: tests/modules/test_m14_report_identity.py::test_status_emit_callsite_binds_exact_actual_identity
+readme random valid 64-char id | service.py | CAUGHT | rc=1 | 1 failed, 2 warnings in 0.52s | failing: tests/modules/test_m14_report_identity.py::test_export_emit_callsites_bind_exact_readme_and_status_identity
+readme wrong body | service.py | CAUGHT | rc=1 | 1 failed, 2 warnings in 0.55s | failing: tests/modules/test_m14_report_identity.py::test_export_emit_callsites_bind_exact_readme_and_status_identity
+readme wrong kind | service.py | CAUGHT | rc=1 | 1 failed, 2 warnings in 0.54s | failing: tests/modules/test_m14_report_identity.py::test_export_emit_callsites_bind_exact_readme_and_status_identity
+counts: CAUGHT=6, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True
+
+
+Log normalization (content-only; no tests rerun):
+Trailing spaces/tabs stripped only at run-02/03/04.log line 22 and run-05/06/07.log line 25.
+Portable path substitutions across run-01.log through run-07.log: environment-specific virtualenv, runtime-directory and pytest temporary-root prefixes replaced by <VENV>, <RUNTIME_DIR> and <PYTEST_TMP> where present.
+audits/m14-callsite-identity/run-01.log: original SHA-256 ccf2f23facd7697ee9ff72186502dfa69058cef6719ac773dc372ea76e73eb6d; delivered SHA-256 b18f8b114bfb2f0ddd9f1d7a01baf43b58d3d880c0855230d334b39b83d65a5f.
+audits/m14-callsite-identity/run-02.log: original SHA-256 a4279206009dff0965d85c4a5a18549acce840d3f75a418ab7f12c4842d375bc; delivered SHA-256 1cbf2fae4089f0503ab7103268f1afc1ae5e7fa384e7c6a23250b32248e77c65.
+audits/m14-callsite-identity/run-03.log: original SHA-256 90c55cd4c599deeb55b5cf0b6888f86c9d1e1bbdefa1d8ca6dfb4b858a502ad6; delivered SHA-256 004ab06715b05dd7c0aa541cb7236e1304de2474f41b5ec2a8f1f7ded19b4efc.
+audits/m14-callsite-identity/run-04.log: original SHA-256 7685543cdbf8cbf722c5392f88b0d45340c75e6cbf0564f6d0b065cb2672851c; delivered SHA-256 031bbea8bcd84f0a695ccafdecbfe4891e0098544491da0d2c4b0fe6cc9589c8.
+audits/m14-callsite-identity/run-05.log: original SHA-256 81ebf3098d8475e16bffa0ff1661bd20fb2ac6667b494bc67361ae548e341b1b; delivered SHA-256 fd197bf8310e47159ee31d587427d5376d388fb2a1867ba3bf5ebe9e192059c6.
+audits/m14-callsite-identity/run-06.log: original SHA-256 b47f61dd4f14da1dd7bf67c43eb61cf94135193da63864492d2681ea52ea039a; delivered SHA-256 ae06e8623bc2161d5272bad0e628867febbe3f1266f902eb4e5620ec7e8c4370.
+audits/m14-callsite-identity/run-07.log: original SHA-256 397cf3bf5d402d566ccf0fb83e51fccaf42a52228a5885c99fcde367980bd5e6; delivered SHA-256 6466b0a079c4161a0fb721418119c2ab09d4d55d73dc4d52aeae8abe9c024948.
+Original raw bytes are retained privately; all seven delivered log files are intentionally changed by the disclosed whitespace/path normalization, not presented as byte-exact raw output.
