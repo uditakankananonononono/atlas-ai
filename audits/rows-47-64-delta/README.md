@@ -1,24 +1,53 @@
 # Rows 47-64 delta (post-landing deepening)
 
-Scope literal: nothing here promotes any row beyond PARTIAL.
+Scope literal: nothing here promotes any row beyond PARTIAL. Every result below is a builder-recorded run unless a
+receipt file is named; the receipt files are in this directory and the runners are committed so anyone can re-run.
 
-- Row 57 (Clicky): `execute_stats_request` in c31/clicky.py is a real stdlib GET transport for the documented
-  stats endpoint. `tests/modules/test_c31_clicky_transport.py` runs it against a loopback server: success query
-  shape, 403, non-JSON, oversize body, redirect not followed, timeout, connection refused, sitekey validation
-  and non-leak, tampered plans, loopback-only base override. No call to api.clicky.com was made. Live use, pricing
-  and the owner's sitekey stay unverified and pending her authorization.
-- Row 56 (20 publisher links): `row56_link_liveness_2026-10-12.json` is a read-only run of the existing bounded
-  fetcher (robots first, no redirects, 1s spacing, metadata only). Result: 16 page_reachable, 4 not (jhu 403,
-  collegeessayguy 403, cornell 308 redirect, admitraven robots 307). Challenges and redirects were NOT bypassed.
-  The index remains a link index, not a dataset or licensed corpus.
-- Row 64 (pipeline): `tests/modules/test_m25_row64_scale_workflow.py` runs the real LocalKnowledgePipeline over 210
-  SYNTHETIC local sources: per-source retrieval, citations, consent gate, tenant denial, dedup/versioning,
-  deletion, attested restart restore. It is not a 200-real-source corpus and not learning into Atlas.
-- Row 63: see the "Row 63 (added)" section below.
+## Row 57 (Clicky)
+`execute_stats_request` in c31/clicky.py is a stdlib GET transport for the documented stats endpoint.
+- Off by default for the real host: without `base_url` it needs `live_approved=True` AND env
+  `ATLAS_CLICKY_LIVE_OWNER_APPROVED=1`, else `APPLY_REFUSED_NOT_APPROVED`. A default-off guard, not an authorization
+  system; the owner's sitekey and approval are still needed. No call to api.clicky.com was made.
+- A plan is accepted only if `plan_stats_request` would produce exactly it (else `APPLY_REFUSED_BAD_TYPE:plan`).
+- Proxy env vars are ignored (empty ProxyHandler); redirects are refused; the timeout bounds the WHOLE call (worker
+  thread plus read1 deadline loop). Refusals carry no chained exception, so the sitekey in the request URL is not
+  reachable from `__cause__`/`__context__`/tracebacks. The sitekey is in the query string because the documented API
+  takes it there. The result `request.url` is the URL actually hit (no query).
+- Tests: `tests/modules/test_c31_clicky_transport.py` runs it against a loopback ThreadingHTTPServer behind an autouse
+  socket guard that fails the test on any non-loopback connect.
 
-## Row 63 (added)
-`tests/t_units/test_row63_advice_pipeline_workflow.py` executes PublicFetcher (robots, permit, rate limit) over a
-loopback server, then T3 concept candidates and T4 advice-prepared. It checks provenance (candidate sha256 matches
-served bytes), script text excluded, robots-disallowed path never requested, rate limit, unpermitted origin,
-policy denial and no-advice refusal, and status stays candidate_not_installed / prepared_only. It does not show
-advice becoming training or a created artifact; that remains PARTIAL. (Row 63 line above, "not built", is superseded.)
+## Row 56 (20 publisher links)
+- `run_row56_liveness.py` is the runner; `row56_receipts.json` is its raw output (per link: robots status, robots text,
+  request timestamps, page status, content-type, Location header, byte count and SHA-256; 39 requests, minimum
+  spacing 1.0 s). Result: 16 page_reachable; jhu 403, collegeessayguy 403, cornell 308 redirect (Location recorded),
+  admitraven robots.txt 307 redirect (robots_unverified, page not requested). Nothing was bypassed.
+- `row56_link_liveness_2026-10-12.json` is the earlier run from the existing helper (same counts). The helper gives no
+  http_status for successes; the receipts file does.
+- Body bounds are decoded-retained bounds, not transport peak allocation. page_reachable means HTTP 200 text/html; it does
+  not prove the page is the expected content, and says nothing about admissions outcomes or licensing. The index is still
+  not a dataset or licensed corpus.
+
+## Row 64 (pipeline)
+`tests/modules/test_m25_row64_scale_workflow.py`: real LocalKnowledgePipeline over 210 SYNTHETIC local sources.
+All 210 retrievable by their own token (top-1); one positive citation plus wrong-source and ungrounded negatives;
+consent and tenant denial; dedup/versioning; deletion; attested restart restore; a contradiction case at scale.
+Citation checks bind stored bytes, not semantic truth. Attestation is a caller assertion.
+FOUND BY THIS TEST (a residual, pinned not fixed): `contradictions()` pairs any two retrieved chunks whose negation
+words differ, and `search()` returns up to 100 chunks with any positive score, so one negated chunk pairs with many
+unrelated chunks (noisy, fail-closed). Not a 200-real-source corpus; no learning into Atlas.
+
+## Row 63 (advice pipeline)
+`tests/t_units/test_row63_advice_pipeline_workflow.py`: real PublicFetcher (permit, robots, rate limit incl. 59.9/60 s
+boundary, crawl-delay, oversize, robots non-200) over a loopback server via a test-authored transport, then T3 and T4.
+Each candidate's hash is bound to its own page URL; the candidate list is compared exactly; the shared-policy denial
+test asserts the exact `FLEET_REFUSED_OUTREACH` and a separate test asserts `FLEET_REFUSED_UNAVAILABLE` when the import
+is blocked. TLS, DNS pinning and real advice sources are not exercised. Advice becoming training or a created artifact
+is not shown; row 63 stays PARTIAL.
+
+## Mutation receipts
+`run_mutations.py` applies each single-replacement mutant (operator and exact old/new text are in the script), runs the
+named test file, records CAUGHT/SURVIVED, restores the file and checks the tree is clean. Output: `mutation_receipts.txt`.
+Result of the last run: 24 CAUGHT, 1 SURVIVED (C5, removing the outer future timeout). C5 survives because the worker's own
+read1 deadline loop also bounds the call, so the two layers are redundant for body time; the outer timeout is belt and
+braces and the connect/header phase is bounded by the per-operation timeout only. Treated as an equivalent mutant for body
+time, not as coverage. Earlier runs of the same harness had 3 survivors (C6, C8, R6); tests were strengthened and re-run.

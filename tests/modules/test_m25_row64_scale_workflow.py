@@ -1,9 +1,9 @@
 """Row 64 delta: run the real pipeline over 210 locally generated sources and check retrieval,
 citation, conflict, restart and deletion behave. This is a pipeline scale/behaviour test over
-SYNTHETIC local text. It is not evidence of a real 200-source corpus and not of 'learning into
+SYNTHETIC local text (retrieval for ALL 210, one positive citation plus wrong-source and ungrounded
+negatives, a contradiction case at scale, consent/tenant/dedup/delete/restart). It is not evidence of a real 200-source corpus and not of 'learning into
 Atlas'; both stay PARTIAL."""
 import hashlib
-import random
 import pytest
 from test_m25_knowledge_ingestion import src, pipe, ingest
 from app.modules.m25_knowledge_copilot_training.pipeline import ConsentError, KnowledgeError, UnsupportedClaim
@@ -23,10 +23,10 @@ def build(tmp_path):
     return p
 
 
-def test_210_sources_each_retrievable_by_its_own_token_and_cited(tmp_path):
+def test_all_210_sources_retrievable_by_their_own_token_and_one_cited(tmp_path):
     p = build(tmp_path)
     assert len(p.records) == N
-    for i in random.Random(64).sample(range(N), 40):
+    for i in range(N):
         hit = p.search(token(i), limit=1)
         assert hit and hit[0]["source_id"] == "s%d" % i and token(i) in hit[0]["text"]
     i = 123
@@ -76,3 +76,25 @@ def test_restart_restore_requires_attestation_and_preserves_retrieval(tmp_path):
     fresh.restore_verified(same_adapters_attested=True)
     assert len(fresh.records) == N
     assert fresh.search(token(150), limit=1)[0]["source_id"] == "s150"
+
+
+def test_contradiction_is_flagged_at_scale(tmp_path):
+    p = build(tmp_path)
+    ingest(p, src("pol-old"), text="Policy allows alpha submissions")
+    ingest(p, src("pol-new"), text="Policy does not allow alpha submissions")
+    found = p.contradictions("Policy alpha")
+    pairs = [{c["a"]["source_id"], c["b"]["source_id"]} for c in found]
+    assert {"pol-old", "pol-new"} in pairs and all(c["status"] == "conflict_requires_review" for c in found)
+
+
+def test_contradiction_over_reports_across_loosely_matching_chunks_RESIDUAL(tmp_path):
+    """Characterization of a real weakness found by this scale test, not a pass for it: contradictions()
+    pairs ANY two retrieved chunks (search() returns up to 100 chunks with any positive score, and the
+    deterministic embedder scores nearly every chunk above zero) whose negation words differ, so a
+    subject matching many unrelated chunks yields many spurious 'conflict_requires_review' pairs.
+    Fail-closed (extra review items) but noisy. Not fixed here; this test pins today's behaviour."""
+    p = build(tmp_path)
+    ingest(p, src("pol-new"), text="Policy does not allow alpha submissions")
+    found = p.contradictions(token(9))
+    assert all("pol-new" in {c["a"]["source_id"], c["b"]["source_id"]} for c in found)   # only the one negated chunk differs
+    assert len(found) >= 1 and len(found) > 20      # one negated chunk pairs with every retrieved unrelated chunk
