@@ -25,7 +25,7 @@ Doc source line refs in the table: 53,54,148,150,211. The doc text itself was no
 
 ## Tip-state update (second pass, snapshot of origin/main d8668c19)
 
-As of the d8668c19 snapshot, no per-row audit directory existed on main for this row (crosswalk marked 65-76 EVIDENCE-THIN). Later update: the integrator reports a 65-87 deepening audit package landing on main after that snapshot; it is the current evidence for this row once landed. I checked origin/main b3348dd0 at 01:38 IST and did not find it yet, so I have not read it and give no path for it. The table cell above is the only per-row description available, it is historical, and tip code for this row was not re-read in this pass. Treat the Missing scope as unverified-stale.
+As of the d8668c19 snapshot, no per-row audit directory existed on main for this row (crosswalk marked 65-76 EVIDENCE-THIN). Later update (checked on origin/main 5ba4db17, 2026-10-13 01:51 IST): a 65-87 deepening audit package is now on main. For this row see `audits/rows65_87/row74-README.md` and `audits/rows65_87/row74.json` (README title: "Row 74: scoped mutation sensitivity"; its tier line: "offline owner-channel snapshot fixture, not complete historical fulfillment."). The integrator refers to the landing as LAND-138; I did not verify that ID from the repo. I confirmed the two files exist, and read only the README title and tier line, not the mutation results or the rest of its limits. This sheet's snapshot text above is unchanged and still describes d8668c19. The table cell above is the only per-row description available, it is historical, and tip code for this row was not re-read in this pass. Treat the Missing scope as unverified-stale.
 
 ## (c) Verdict
 

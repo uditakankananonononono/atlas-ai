@@ -53,3 +53,7 @@ Every sheet now has a "Tip-state update" section. Rows 98-108 cite their per-row
 ## Amendment (third pass, gate fixes)
 
 Rows 65-76 are framed as a d8668c19 snapshot with a note that a later 65-87 deepening package is reported as landing (not found on b3348dd0). Rows 77-87 quotes are labelled whitespace-normalized. The row 102 benchmark is relabelled builder-reported, unverified, with no receipt.
+
+## Later update refresh (origin/main 5ba4db17)
+
+Rows 65-76: the "Later update" line now names `audits/rows65_87/rowNN-README.md` and `rowNN.json`, confirmed present on 5ba4db17. Their contents were not read beyond the README title and tier line. Rows 77-87 were not changed.
