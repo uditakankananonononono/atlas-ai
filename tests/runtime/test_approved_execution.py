@@ -162,3 +162,84 @@ def test_routes_cover_guards_receipts_and_readback(tmp_path):
                            json={"approval_id": refused["id"]}).status_code == 422
     finally:
         app.dependency_overrides.clear()
+
+
+# ---- guardrail enforcer wiring for person-facing action types (groups 136/137/139) ----
+from app.runtime.guardrails.enforcer import GuardrailEnforcer  # noqa: E402
+from app.runtime.guardrails.errors import GuardrailRefusal  # noqa: E402
+
+_EFF_ALLOW = {"send_email_reply": (10, "send"), "publish_social_post": (6, "post")}
+_DECL = {
+    "tos": {p: {"allowed_kinds": ["send", "post"], "automation_allowed": True}
+            for p in ("gmail", "social")},
+    "rate_limits": {p: {k: {"max": 100, "window_seconds": 60} for k in ("send", "post")}
+                    for p in ("gmail", "social")},
+    "consent": [], "recent_actions": [],
+}
+
+
+class _SpyRuntime:
+    def __init__(self):
+        self.calls = []
+
+    async def dispatch(self, context, handoff):
+        self.calls.append(handoff.operation)
+        return {"ok": True}
+
+
+def _effect_dispatcher(tmp_path, enforcer, runtime):
+    return ApprovedExecutionDispatcher(
+        "tenant-a", center=FakeCenter("tenant-a"), runtime=runtime,
+        store=ReceiptStore(str(tmp_path / "r.sqlite")), allowlist=_EFF_ALLOW,
+        enforcer=enforcer, outbound_declarations=_DECL)
+
+
+def _approved(d, action_type):
+    v = d.center.submit(module_id=10, action_type=action_type, payload={"to": "x"})
+    d.center.set_status(v["id"], "approved")
+    return v["id"]
+
+
+@pytest.mark.parametrize("action_type", sorted(_EFF_ALLOW))
+def test_person_facing_action_refused_without_enforcer(tmp_path, action_type):
+    rt = _SpyRuntime()
+    d = _effect_dispatcher(tmp_path, None, rt)
+    aid = _approved(d, action_type)
+    with pytest.raises(PermissionError, match="requires a guardrail enforcer"):
+        d.execute(aid)
+    assert rt.calls == []
+    assert d.store.latest_for("tenant-a", aid)["state"] == "failed"
+
+
+def test_person_facing_action_refused_without_authority_hook(tmp_path):
+    rt = _SpyRuntime()
+    enf = GuardrailEnforcer()  # no authority_check: fail closed
+    d = _effect_dispatcher(tmp_path, enf, rt)
+    aid = _approved(d, "send_email_reply")
+    with pytest.raises(GuardrailRefusal) as held:
+        d.execute(aid)
+    assert held.value.code == "OUTGATE:refused:authority_hook_required"
+    assert rt.calls == []
+    assert enf.ledger("outbound")[-1]["record"]["verdict"] == "refused:authority_hook_required"
+
+
+def test_person_facing_action_refused_when_authority_rejects(tmp_path):
+    rt = _SpyRuntime()
+    d = _effect_dispatcher(tmp_path, GuardrailEnforcer(authority_check=lambda ref, dig: False), rt)
+    aid = _approved(d, "publish_social_post")
+    with pytest.raises(GuardrailRefusal) as held:
+        d.execute(aid)
+    assert held.value.code == "OUTGATE:refused:authority_rejected"
+    assert rt.calls == []
+
+
+def test_person_facing_action_runs_with_validated_authority_and_ledgers(tmp_path):
+    rt = _SpyRuntime()
+    seen = []
+    enf = GuardrailEnforcer(authority_check=lambda ref, dig: seen.append(ref) or True)
+    d = _effect_dispatcher(tmp_path, enf, rt)
+    aid = _approved(d, "send_email_reply")
+    receipt = d.execute(aid)
+    assert receipt["state"] == "succeeded" and rt.calls == ["send"]
+    assert seen == [aid]
+    assert enf.ledger("outbound")[-1]["record"]["verdict"] == "dispatched"

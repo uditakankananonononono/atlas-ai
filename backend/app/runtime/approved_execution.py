@@ -108,13 +108,30 @@ def _jsonable(value: Any) -> Any:
         return repr(value)
 
 
+# Person-facing action types: approval_type -> (platform, outbound kind). These
+# NEVER run on an approved M00 item alone: they must go through a
+# GuardrailEnforcer (platform terms, rate limits, consent, owner effect
+# authority bound to the action digest, one ledger). No enforcer configured ->
+# refused, fail closed. Non-listed types keep the existing approval-only path.
+EFFECT_ACTION_KINDS: dict[str, tuple[str, str]] = {
+    "send_email_reply": ("gmail", "send"),
+    "publish_social_post": ("social", "post"),
+    "submit_application": ("applications", "submit"),
+    "send_outreach_message": ("outreach", "send"),
+    "create_subscription_checkout": ("stripe", "payment"),
+    "create_invoice": ("stripe", "payment"),
+}
+
+
 class ApprovedExecutionDispatcher:
     """Runs approved Module 0 items through allowlisted production adapters."""
 
     def __init__(self, tenant_id: str, *, actor_id: str = "dispatcher",
                  center: Any = None, runtime: AtlasRuntime | None = None,
                  store: ReceiptStore | None = None,
-                 allowlist: dict[str, tuple[int, str]] | None = None) -> None:
+                 allowlist: dict[str, tuple[int, str]] | None = None,
+                 enforcer: Any = None, outbound_declarations: dict | None = None,
+                 effect_kinds: dict[str, tuple[str, str]] | None = None) -> None:
         if center is None:
             from app.modules.m00_approval_center.service import default_service
             center = default_service()
@@ -123,6 +140,9 @@ class ApprovedExecutionDispatcher:
         self.center = center
         self.runtime = runtime or build_runtime()
         self.allowlist = dict(allowlist or ACTION_ALLOWLIST)
+        self.enforcer = enforcer
+        self.outbound_declarations = outbound_declarations or {}
+        self.effect_kinds = dict(EFFECT_ACTION_KINDS if effect_kinds is None else effect_kinds)
         if store is None:
             root = Path(os.getenv("ATLAS_RUNTIME_DATA_DIR", "/tmp/atlas-runtime"))
             store = ReceiptStore(str(root / f"receipts-{tenant_id}.sqlite"))
@@ -150,6 +170,14 @@ class ApprovedExecutionDispatcher:
                               readback={"error": f"action_type {action_type!r} is not allowlisted"})
             raise ValueError(f"action_type {action_type!r} is not allowlisted for execution")
         module_id, operation = target
+        effect_kind = self.effect_kinds.get(action_type)
+        if effect_kind is not None and self.enforcer is None:
+            self.store.record(receipt_id=receipt_id, tenant_id=self.tenant_id,
+                              approval_id=approval_id, action_type=action_type,
+                              state="failed",
+                              readback={"error": "person-facing action requires a guardrail enforcer (fail closed)"})
+            raise PermissionError(
+                f"action_type {action_type!r} is person-facing and requires a guardrail enforcer")
         handoff = Handoff(
             source_module=0, target_module=module_id, operation=operation,
             payload=dict(view.get("payload") or {}),
@@ -161,7 +189,22 @@ class ApprovedExecutionDispatcher:
                           state="started", readback={"target": [module_id, operation]})
         import asyncio
         try:
-            result = asyncio.run(self.runtime.dispatch(context, handoff))
+            if effect_kind is None:
+                result = asyncio.run(self.runtime.dispatch(context, handoff))
+            else:
+                platform, kind = effect_kind
+                now = datetime.now(timezone.utc)
+                action = {"id": receipt_id, "platform": platform, "kind": kind,
+                          "at": int(now.timestamp()), "count": 1,
+                          "approval_id": approval_id, "action_type": action_type,
+                          "payload": dict(view.get("payload") or {})}
+                # Admission is ledgered write-ahead by the gate; the runtime
+                # runs only if the gate admits (authority_ref = M00 approval id,
+                # validated by the enforcer's authority_check hook).
+                result = self.enforcer.dispatch_outbound(
+                    action, self.outbound_declarations,
+                    effect=lambda a: asyncio.run(self.runtime.dispatch(context, handoff)),
+                    now=now.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=approval_id)
         except Exception as exc:
             self.store.record(receipt_id=receipt_id, tenant_id=self.tenant_id,
                               approval_id=approval_id, action_type=action_type,
@@ -187,5 +230,5 @@ class ApprovedExecutionDispatcher:
         return self.store.list_for(self.tenant_id, limit)
 
 
-__all__ = ["ACTION_ALLOWLIST", "ApprovedExecutionDispatcher",
+__all__ = ["ACTION_ALLOWLIST", "EFFECT_ACTION_KINDS", "ApprovedExecutionDispatcher",
            "ExecutionConflictError", "ReceiptStore"]
