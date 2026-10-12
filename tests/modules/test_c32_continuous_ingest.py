@@ -91,3 +91,14 @@ def test_bounded_memory_batching(tmp_path):
     r = ci.run(str(inbox), state, batch_size=100)
     assert r["run"]["records"] == 5000
     assert "one batch (100 records)" in r["memory_bound"]
+
+def test_done_checkpoint_avoids_reopening_input(monkeypatch,tmp_path):
+    import builtins
+    inbox=tmp_path/'inbox';inbox.mkdir();path=inbox/'a.jsonl';write_jsonl(path,[{'id':1}]);state=str(tmp_path/'state.json')
+    ci.run(str(inbox),state)
+    original=builtins.open
+    def checked(file,*args,**kwargs):
+        if str(file)==str(path):raise AssertionError('done input reopened')
+        return original(file,*args,**kwargs)
+    monkeypatch.setattr(builtins,'open',checked)
+    assert ci.run(str(inbox),state)['run']['records']==0

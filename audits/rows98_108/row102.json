@@ -1,0 +1,44 @@
+{
+  "row": 102,
+  "selectors": [
+    "tests/modules/test_c32_continuous_ingest.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "dedupe",
+      "path": "backend/app/modules/c32/continuous_ingest.py",
+      "old": "if h in seen:",
+      "new": "if False:"
+    },
+    {
+      "id": "persist_seen",
+      "path": "backend/app/modules/c32/continuous_ingest.py",
+      "old": "state[\"seen\"] = sorted(seen)",
+      "new": "state[\"seen\"] = []"
+    },
+    {
+      "id": "done",
+      "path": "backend/app/modules/c32/continuous_ingest.py",
+      "old": "if fstate and fstate.get(\"done\"):",
+      "new": "if False:"
+    },
+    {
+      "id": "malformed",
+      "path": "backend/app/modules/c32/continuous_ingest.py",
+      "old": "run_stats[\"malformed\"] += 1",
+      "new": "run_stats[\"malformed\"] += 0"
+    },
+    {
+      "id": "records",
+      "path": "backend/app/modules/c32/continuous_ingest.py",
+      "old": "run_stats[\"records\"] += 1",
+      "new": "run_stats[\"records\"] += 0"
+    }
+  ]
+}
