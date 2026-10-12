@@ -125,3 +125,25 @@ def test_legacy_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc
  r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1','tenant_id':None,'actor_id':None})
  assert r.status_code==200,r.text
  assert r.json()['tenant_id']=='a' and r.json()['actor_id']=='owner'
+
+CARD_SRC="for x in xrange(2):\n    pass\nd = {}\nif d.has_key('a'):\n    pass\n"
+
+def test_card_vector_all_rules_exact_over_http(monkeypatch,oidc_auth_headers):
+ """Acceptance card 694, vector 1 (all rules). Closure note: the engine's documented scope is a seven-rule AST-span rewrite over supplied inputs; literal breadth remains unverified. This pin is closed-scoped, not literal breadth: it accepts only the seven-rule AST-span rewrite behavior over caller-supplied inputs and authorizes, executes, merges, releases or approves nothing. verified is always false over HTTP because the route never calls a check; that is documented behavior, not a defect. The fullwidth-identifier Unicode source-span defect (e.g. "self.assertEquals(1, 1)" with a fullwidth a) is a stated limit, pinned by test_known_unicode_defect_and_resource_failure_refuse."""
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':CARD_SRC})
+ assert r.status_code==200,r.text
+ assert r.json()=={'original':CARD_SRC,'modernized':"for x in range(2):\n    pass\nd = {}\nif 'a' in d:\n    pass\n",'changes':[{'rule':'xrange','line':1,'col':9,'before':'xrange','after':'range','pass_no':1,'assumption':'`xrange` is not defined or rebound anywhere in the module'},{'rule':'has_key','line':4,'col':3,'before':"d.has_key('a')",'after':"'a' in d",'pass_no':1,'assumption':'receiver assumed to be a mapping (type not known statically)'}],'refusals':[],'passes':1,'compiled_ok':True,'check_passed':None,'check_error':None,'verified':False,'tenant_id':'a','actor_id':'owner','source_execution_performed':False}
+
+def test_card_vector_python2_syntax_refusal_over_http(monkeypatch,oidc_auth_headers):
+ """Acceptance card 694, vector 2: Python-2-only syntax is reported as a syntax_error refusal, never converted; modernized equals the input. Reason pinned by prefix only (interpreter text varies)."""
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':"print 'x'\n"})
+ assert r.status_code==200,r.text
+ body=r.json()
+ assert body['changes']==[] and body['compiled_ok']is False and body['modernized']=="print 'x'\n" and body['passes']==0
+ assert len(body['refusals'])==1
+ refusal=body['refusals'][0]
+ assert refusal['rule']=='syntax_error' and refusal['line']==1 and refusal['col']==1
+ assert refusal['reason'].startswith('source does not parse as Python 3: SyntaxError')
+ assert body['verified']is False and body['source_execution_performed']is False and body['tenant_id']=='a' and body['actor_id']=='owner'
