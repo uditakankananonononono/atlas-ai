@@ -1,0 +1,49 @@
+{
+  "row": 79,
+  "selectors": [
+    "tests/mission_build/test_enclosure.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "numeric CAD geometry checks, no physical manufacture",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "interior",
+      "path": "backend/app/mission_build/enclosure.py",
+      "old": "if 2*t >= min(w, d) or t >= h:",
+      "new": "if False:"
+    },
+    {
+      "id": "volume",
+      "path": "backend/app/mission_build/enclosure.py",
+      "old": "w*d*h-(w-2*t)*(d-2*t)*(h-t)",
+      "new": "w*d*h"
+    },
+    {
+      "id": "cavity",
+      "path": "backend/app/mission_build/enclosure.py",
+      "old": "[w-2*t,d-2*t,h-t]",
+      "new": "[w,d,h]"
+    },
+    {
+      "id": "manufactured",
+      "path": "backend/app/mission_build/enclosure.py",
+      "old": "'manufactured': False",
+      "new": "'manufactured': True"
+    },
+    {
+      "id": "dimension",
+      "path": "backend/app/mission_build/enclosure.py",
+      "old": "not 0 < value <= 1000",
+      "new": "not 0 < value <= 10000"
+    }
+  ]
+}
