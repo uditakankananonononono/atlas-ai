@@ -1,6 +1,8 @@
 """Authenticated API for Atlas's measured autonomy mechanisms."""
 from __future__ import annotations
 
+import os
+import threading
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -10,12 +12,53 @@ from .agi_service import AGIRuntimeService
 
 router = APIRouter(prefix="/agi-runtime", tags=["m20_agi_runtime"])
 _services: dict[str, AGIRuntimeService] = {}
+AGI_AUTOBIND_MAX_TENANTS = 64
+AGI_AUTOBIND_MAX_TENANT_ID_CHARS = 128
+# One re-entrant lock orders explicit and automatic binding: an explicit
+# bind_agi_service() is never overwritten by a concurrent automatic bind.
+_agi_autobind_lock = threading.RLock()
+
+
+def bind_agi_service(service: AGIRuntimeService, *, tenant_id: str) -> None:
+    """Explicitly bind one tenant's AGI runtime service.
+
+    Never bind the same mutable instance for two tenants. Construction is
+    durable (SQLite under ATLAS_AGI_DATA_DIR), so persistence and approval
+    gates must be configured for that tenant before binding.
+    """
+    with _agi_autobind_lock:
+        _services[tenant_id] = service
+
+
+def _autobind_agi(tenant_id):
+    """Opt-in (ATLAS_AGI_RUNTIME_AUTOBIND exactly "1"): give an authenticated
+    tenant its own durable AGIRuntimeService. Never used for "local"; creates
+    SQLite files under ATLAS_AGI_DATA_DIR for the bound tenant only."""
+    if os.environ.get("ATLAS_AGI_RUNTIME_AUTOBIND") != "1":
+        return None
+    if type(tenant_id) is not str or not tenant_id or tenant_id == "local" or len(tenant_id) > AGI_AUTOBIND_MAX_TENANT_ID_CHARS:
+        return None
+    with _agi_autobind_lock:
+        existing = _services.get(tenant_id)
+        if existing is not None:
+            return existing
+        if len(_services) >= AGI_AUTOBIND_MAX_TENANTS:
+            return None
+        service = AGIRuntimeService(tenant_id)
+        bound = _services.get(tenant_id)
+        if bound is not None:
+            return bound  # a same-thread explicit bind inside the constructor wins (the lock is re-entrant)
+        _services[tenant_id] = service
+        return service
 
 
 def get_agi_service(tenant: TenantContext = Depends(require_tenant)) -> AGIRuntimeService:
-    if tenant.tenant_id not in _services:
-        _services[tenant.tenant_id] = AGIRuntimeService(tenant.tenant_id)
-    return _services[tenant.tenant_id]
+    service = _services.get(tenant.tenant_id)
+    if service is None:
+        service = _autobind_agi(tenant.tenant_id)
+    if service is None:
+        raise HTTPException(status_code=503, detail="AGI runtime service not bound for authenticated tenant")
+    return service
 
 
 class ObservationIn(BaseModel):

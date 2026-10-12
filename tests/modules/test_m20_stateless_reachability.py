@@ -111,6 +111,7 @@ def env(monkeypatch, oidc_auth_headers):
     monkeypatch.delenv("ATLAS_DEV_NO_AUTH", raising=False)
     monkeypatch.setenv("ATLAS_ENV", "production")
     monkeypatch.delenv("ATLAS_GCW_AUTOBIND", raising=False)
+    monkeypatch.delenv("ATLAS_AGI_RUNTIME_AUTOBIND", raising=False)
     monkeypatch.setattr(routes, "_services", {})
     monkeypatch.setattr(routes, "_service", None)
     from app.modules.m20_general_cognitive_worker import agi_routes
@@ -1142,21 +1143,45 @@ PRE_FINAL_REACHABLE = dict(REACHABLE)
 REACHABLE = {**PRE_FINAL_REACHABLE, **FINAL_REACHABLE_ADDITIONS}
 TOTAL_ROUTES = FINAL_TOTAL_ROUTES
 
+# Retain all prior snapshots as data; classify the current default separately.
+HISTORICAL_FINAL_REACHABLE = dict(REACHABLE)
+HISTORICAL_FINAL_NOT_BOUND = dict(FINAL_NOT_BOUND)
+AGI_UNBOUND_OPERATIONS = {
+    operation for operation in HISTORICAL_FINAL_REACHABLE
+    if "/agi-runtime/" in operation[1]
+}
+PRE_FINAL_REACHABLE = {
+    operation: status for operation, status in PRE_FINAL_REACHABLE.items()
+    if operation not in AGI_UNBOUND_OPERATIONS
+}
+REACHABLE = {
+    operation: status for operation, status in HISTORICAL_FINAL_REACHABLE.items()
+    if operation not in AGI_UNBOUND_OPERATIONS
+}
+NOT_BOUND = {
+    **HISTORICAL_FINAL_NOT_BOUND,
+    "AGI runtime service not bound for authenticated tenant": 8,
+}
+CURRENT_NOT_BOUND = BATCH2_NOT_BOUND = FINAL_NOT_BOUND = NOT_BOUND
+
 
 def test_additive_current_exact_operation_inventory(env):
     app, _, _ = env
     assert tuple(sorted(ops(app))) == FINAL_INVENTORY
     assert len(CURRENT_INVENTORY) == CURRENT_TOTAL_ROUTES == 241
     assert len(BATCH2_INVENTORY) == BATCH2_TOTAL_ROUTES == 246
-    assert len(PRE_FINAL_REACHABLE) == 85
+    assert len(PRE_FINAL_REACHABLE) == 77
     assert len(FINAL_REACHABLE_ADDITIONS) == 21
-    assert len(REACHABLE) == 106
+    assert len(REACHABLE) == 98
     assert FINAL_TOTAL_ROUTES == 267
     assert FINAL_NOT_BOUND == BATCH2_NOT_BOUND == CURRENT_NOT_BOUND == NOT_BOUND
-    assert sum(FINAL_NOT_BOUND.values()) == 161
+    assert sum(FINAL_NOT_BOUND.values()) == 169
     assert FINAL_TOTAL_ROUTES == len(REACHABLE) + sum(FINAL_NOT_BOUND.values())
     assert set(FINAL_REACHABLE_ADDITIONS).isdisjoint(PRE_FINAL_REACHABLE)
-    assert len([path for _, path in REACHABLE if '/agi-runtime/' in path]) == 8
+    assert len([path for _, path in REACHABLE if '/agi-runtime/' in path]) == 0
+    assert len(AGI_UNBOUND_OPERATIONS) == 8
+    assert len(HISTORICAL_FINAL_REACHABLE) == 106
+    assert sum(HISTORICAL_FINAL_NOT_BOUND.values()) == 161
 
 
 def test_final_combined_mounts_auth_and_reachability(env):
