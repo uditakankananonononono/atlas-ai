@@ -1,0 +1,45 @@
+{
+  "row": 138,
+  "selectors": [
+    "tests/runtime/guardrails/test_claim_lint_gate.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "local choke-point tests only, fixture effects",
+    "no external approval/provider truth",
+    "not universal runtime adoption",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "casefold",
+      "path": "backend/app/runtime/guardrails/claim_lint_gate.py",
+      "old": "lowered = char.lower()",
+      "new": "lowered = char"
+    },
+    {
+      "id": "lint_match",
+      "path": "backend/app/runtime/guardrails/claim_lint_gate.py",
+      "old": "if found != -1:",
+      "new": "if False:"
+    },
+    {
+      "id": "original_offset",
+      "path": "backend/app/runtime/guardrails/claim_lint_gate.py",
+      "old": "return category, phrase, index[found]",
+      "new": "return category, phrase, found"
+    },
+    {
+      "id": "text_hash",
+      "path": "backend/app/runtime/guardrails/claim_lint_gate.py",
+      "old": "digest = hashlib.sha256(body.encode()).hexdigest()",
+      "new": "digest = '0'*64"
+    },
+    {
+      "id": "lint_bypass",
+      "path": "backend/app/runtime/guardrails/claim_lint_gate.py",
+      "old": "match = lint(body)",
+      "new": "match = None"
+    }
+  ]
+}

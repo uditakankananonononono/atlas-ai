@@ -109,3 +109,9 @@ def test_roundtrip_and_tamper_detection():
     tampered[0]["record"]["verdict"] = "refused:false_claim"
     with pytest.raises(ValueError, match="GRLEDGER:.*integrity"):
         g.check_ledger(tampered)
+
+def test_lowercase_expansion_offset_is_original_character_index():
+    body='İ prefix I am sentient'
+    category,phrase,offset=g.lint(body)
+    assert offset==body.index('I am sentient')
+    assert body[offset:offset+len(phrase)].lower()==phrase
