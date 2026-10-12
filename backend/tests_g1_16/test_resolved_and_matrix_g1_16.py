@@ -169,8 +169,8 @@ class M(unittest.TestCase):
                         "discovery_claim": "yes"}}
         a = mx.build_matrix(self.d, ev, run)["rows"][0]
         self.assertEqual(a["columns"]["data_run"], "VERIFIED")
-        self.assertEqual(a["columns"]["improvement"], "VERIFIED")
-        self.assertEqual(a["columns"]["benchmark_vs_leader"], "VERIFIED")
+        self.assertEqual(a["columns"]["improvement"], "EXECUTION_EVIDENCE")
+        self.assertEqual(a["columns"]["benchmark_vs_leader"], "EXECUTION_EVIDENCE")
         self.assertEqual(a["columns"]["discovery"], "CLAIMED_NOT_CHECKABLE")
         self.assertEqual(a["verdict"], "PARTIAL")  # discovery is never checkable by code
 

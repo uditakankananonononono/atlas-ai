@@ -18,12 +18,24 @@ import importlib.util
 import sys
 
 _here = os.path.dirname(os.path.abspath(__file__))
-_spec = importlib.util.spec_from_file_location("pe_g1_16", os.path.join(_here, "program_evidence_g1_16.py"))
-pe = sys.modules.get("pe_g1_16") or importlib.util.module_from_spec(_spec)
-if "pe_g1_16" not in sys.modules:
-    sys.modules["pe_g1_16"] = pe
-    _spec.loader.exec_module(pe)
+_KEY = "pe_program_evidence_g1_16"  # one shared module object, so SANDBOX_ENV is shared
+if _KEY not in sys.modules:
+    _spec = importlib.util.spec_from_file_location(_KEY, os.path.join(_here, "program_evidence_g1_16.py"))
+    _m = importlib.util.module_from_spec(_spec)
+    sys.modules[_KEY] = _m
+    _spec.loader.exec_module(_m)
+pe = sys.modules[_KEY]
 
+EXEC_EVIDENCE = "EXECUTION_EVIDENCE"
+# Column states:
+#   data_run            VERIFIED only when the full chain held: dataset hash + stated origin,
+#                       file name named in the module's tests, allowlisted run executed here
+#                       with exit 0 and matching stdout. The run is not proven to have read the file.
+#   improvement         EXECUTION_EVIDENCE: the judge command ran here and printed an increasing,
+#   benchmark_vs_leader finite score stream (or a BENCH line meeting the declared criterion).
+#                       This proves command stdout provenance only. It is not authenticated judge
+#                       truth and not proof of the true state of the art.
+#   discovery           CLAIMED_NOT_CHECKABLE at best; code cannot check a discovery.
 COLUMNS = ("data_run", "improvement", "discovery", "benchmark_vs_leader")
 
 
@@ -66,13 +78,13 @@ def build_matrix(root, evidence=None, runner=None):
         if isinstance(mr, dict) and pe.check_module_run(root, mr, runner)["ok"]:
             cols["data_run"] = "VERIFIED"  # module run executed here + dataset hashed + named in tests
         if pe.check_judge(root, ev.get("judge_rounds"), t, runner)["ok"]:
-            cols["improvement"] = "VERIFIED"  # judge command executed here, scores parsed from its stdout
+            cols["improvement"] = EXEC_EVIDENCE  # judge command executed here, scores parsed from its stdout
         if pe.check_leader_benchmarks(root, ev.get("leader_benchmarks"), runner)["ok"]:
-            cols["benchmark_vs_leader"] = "VERIFIED"  # leader/metric/criterion declared, run executed here
+            cols["benchmark_vs_leader"] = EXEC_EVIDENCE  # leader/metric/criterion declared, run executed here
         if ev.get("discovery_claim"):
             cols["discovery"] = "CLAIMED_NOT_CHECKABLE"  # code cannot check a discovery claim
         structure = bool(os.path.isfile(spec_p) and mod_files and tests)
-        all_ok = all(cols[c] == "VERIFIED" for c in COLUMNS)
+        all_ok = cols["data_run"] == "VERIFIED" and all(cols[c] == EXEC_EVIDENCE for c in ("improvement", "benchmark_vs_leader")) and cols["discovery"] == "VERIFIED"  # discovery never reaches VERIFIED
         rows.append({
             "slug": slug, "spec_present": os.path.isfile(spec_p),
             "module_files": len(mod_files), "test_files": len(tests),
@@ -88,7 +100,7 @@ def render(m):
     lines = ["sugarcode %s modules=%d %s" % (m["sugarcode_head"][:8], m["modules"], m["counts"])]
     for r in m["rows"]:
         lines.append("%s %s files=%d tests=%d %s" % (r["slug"], r["verdict"], r["module_files"], r["test_files"],
-                     ",".join(c + "=" + v for c, v in r["columns"].items() if v != "VERIFIED") or "all-columns-verified"))
+                     ",".join(c + "=" + v for c, v in r["columns"].items() if v not in ("VERIFIED", EXEC_EVIDENCE)) or "no-unverified-columns"))
     return "\n".join(lines)
 
 

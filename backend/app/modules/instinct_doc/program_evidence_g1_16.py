@@ -7,7 +7,8 @@ caller-supplied claim. Each project is checked by resolving its evidence:
   * tools     - the declared argv is executed here (no shell, stripped env, timeout, resource
                 limits); exit 0 and the output hash are taken from this run, not from the caller
   * papers    - a PDF must exist; page count and Times font read via pdfinfo/pdffonts
-  * judge     - the transcript is hash-matched and PARSED; the score trend comes from its lines
+  * judge     - the judge argv is EXECUTED here; the score trend is parsed from its captured stdout.
+                Caller-written transcript files are never accepted
   * benchmark - the argv is re-run; its stdout hash must match
 Trust limits, stated plainly:
   * rlimits plus a stripped environment is NOT a security sandbox. A command that passes the
