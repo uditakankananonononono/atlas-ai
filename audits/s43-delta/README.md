@@ -1,10 +1,10 @@
 # Fresh S4.3 delta replay
 
-Original historical logs never landed and are not recovered here. That provenance gap remains. These runs are FRESH current-base scoped evidence on731f6d4a, not retroactive proof of the older delta.
+Original historical logs never landed and are not recovered here. That provenance gap remains. These runs are FRESH current-base scoped evidence on 731f6d4a, not retroactive proof of the older delta.
 
-Original old-site config replay: baselinePASS,4CAUGHT/2INVALID-SITE. The two recipient-control strings used the older policy.FORBIDDEN_CATEGORIES expression, absent from current source. Those missing sites are not kills. original-operator-replay.json retains that exact config.
+Original old-site config replay: baseline PASS, 4 CAUGHT, 2 INVALID-SITE. The two recipient-control strings used the older policy.FORBIDDEN_CATEGORIES expression, absent from current source. Those missing sites are not kills. original-operator-replay.json retains that exact config.
 
-Current-site config replay: baselinePASS,6CAUGHT/0other, exact restores. The two control operators now target the actual recipient Cc/Zl/Zp category expression. No production waiver logic changed.
+Current-site config replay: baseline PASS, 6 CAUGHT, 0 other, exact restores. The two control operators now target the actual recipient Cc/Zl/Zp category expression. No production waiver logic changed.
 
 Runner creates the missing audit parent and uses the shared single-site runner. CAUGHT needs rc1+FAILED IDs with no ERROR/collection/skip marker. FAILED can include product exceptions: failure sensitivity, not assertion-only proof. Invalid sites, timeout, no tests and process failure are not CAUGHT. Direct child timeout is not escaped-descendant isolation.
 
