@@ -25,3 +25,10 @@ def test_coverage_does_not_call_supplied_positive_labels_broad_collection():
     assert out['complete_category_coverage'] is False
     assert out['represented_supplied_categories']==2
     assert out['scope']=='Supplied records only; no platform collection, accounts or publishing.'
+
+def test_exact_text_hash_and_invalid_source_url_refusal():
+    import hashlib
+    out=coverage([post('a','tech')],['tech'])
+    assert out['posts'][0]['text_sha256']==hashlib.sha256(b'AI software field notes').hexdigest()
+    for url in ('https://user:secret@example.org/posts','file:///tmp/posts','https:///missing'):
+        with pytest.raises(ValueError,match='public source URL'):coverage([post('a','tech',url)],['tech'])

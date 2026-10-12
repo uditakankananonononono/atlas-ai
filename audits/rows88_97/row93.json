@@ -1,0 +1,45 @@
+{
+  "row": 93,
+  "selectors": [
+    "tests/modules/test_group93_corpus_coverage.py"
+  ],
+  "timeout_seconds": 40,
+  "limits": [
+    "caller-supplied records only",
+    "source URL not fetched",
+    "no account/publishing/category completeness",
+    "whole repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "text_hash",
+      "path": "backend/app/modules/c33/corpus_coverage.py",
+      "old": "hashlib.sha256(text.encode()).hexdigest()",
+      "new": "'0'*64"
+    },
+    {
+      "id": "duplicate_id",
+      "path": "backend/app/modules/c33/corpus_coverage.py",
+      "old": "if rid in seen:",
+      "new": "if False:"
+    },
+    {
+      "id": "url_credentials",
+      "path": "backend/app/modules/c33/corpus_coverage.py",
+      "old": "or parsed.username or parsed.password",
+      "new": ""
+    },
+    {
+      "id": "missing_category",
+      "path": "backend/app/modules/c33/corpus_coverage.py",
+      "old": "'no_supplied_posts'",
+      "new": "'supplied_records_only'"
+    },
+    {
+      "id": "false_completeness",
+      "path": "backend/app/modules/c33/corpus_coverage.py",
+      "old": "'complete_category_coverage':False",
+      "new": "'complete_category_coverage':True"
+    }
+  ]
+}
