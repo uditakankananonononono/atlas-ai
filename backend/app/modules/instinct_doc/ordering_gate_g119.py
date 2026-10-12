@@ -2,10 +2,10 @@
 
 The pinned sequencing_gate_p32 rules on caller-declared task marks; its own
 METHOD_LIMITS say GATE_OPEN "is not proof that any task is done". This module
-closes that gap: for each task entry it computes the real state from the repo
-itself - the module file exists and contains real implementations (AST scan
-rejecting pass-only / ellipsis / NotImplementedError bodies), a real test file
-exists with real test functions, and the tests are actually executed in a
+closes that gap: for each task entry it computes the state from the repo
+itself - the module file exists and contains implementations (AST scan
+rejecting pass-only / ellipsis / NotImplementedError bodies), a test file
+exists with test functions, and the tests are executed in a
 subprocess and must pass. GATE_OPEN here means computed evidence, not marks.
 It orders and verifies only: it starts nothing, sends nothing, spends nothing.
 """
@@ -32,7 +32,7 @@ def _refuse(reason, field=None):
 
 
 def _stub_functions(tree):
-    """Names of module-level/def functions whose body is a real stub."""
+    """Names of module-level/def functions whose body is a stub."""
     stubs = []
     for node in ast.walk(tree):
         if type(node) not in (ast.FunctionDef, ast.AsyncFunctionDef):
@@ -137,7 +137,7 @@ def _run_tests(root, rel):
 
 
 def evaluate(payload):
-    """Compute the real gate verdict. payload:
+    """Compute the gate verdict. payload:
     {as_of, repo_root, entries: [{task_id, module_path, test_path}], run_tests: bool}"""
     if type(payload) is not dict or set(payload) - {"as_of", "repo_root", "entries", "run_tests"}:
         _refuse("BAD_TYPE", "payload")
@@ -182,8 +182,8 @@ def evaluate(payload):
         "tasks_computed_complete": done,
         "results": results,
         "scope": policy.scope(
-            ["completion computed from the repo itself: real AST stub scan of every "
-             "module, real test-function collection, and real subprocess test "
+            ["completion computed from the repo itself: AST stub scan of every "
+             "module, test-function collection, and subprocess test "
              "execution that must exit 0",
              "GATE_OPEN requires every entry computed-complete; no declared marks "
              "are trusted anywhere in this gate"],

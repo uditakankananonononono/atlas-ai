@@ -1,9 +1,9 @@
-"""G109 / market.portfolio - real investing analytics over return series.
+"""G109 / market.portfolio - investing analytics over return series.
 
-Mean-variance allocation (exact 2-asset closed form, long-only projected
+Mean-variance allocation (closed-form 2-asset solution, long-only projected
 cyclic descent for n assets), capped Kelly sizing, historical VaR/ES, and
 drawdown statistics. Inputs are supplied return series (from predict.py or
-real adapter data). No trading, no execution, no spend: the key scan refuses.
+adapter data). No trading, no execution, no spend: the key scan refuses.
 Stdlib only, offline, deterministic.
 """
 from __future__ import annotations
@@ -148,7 +148,7 @@ def allocate(series, target_annual_return=None):
 
     Analytic KKT solution for the return-constrained minimum-variance
     portfolio; negative weights are removed by an active-set loop that
-    re-solves on the surviving assets, so the result is the exact long-only
+    re-solves on the surviving assets, so the result is the long-only
     optimum, deterministic, with no iterative tolerance."""
     names = sorted(series)
     data = [_series(series[n], n) for n in names]
@@ -204,7 +204,7 @@ def allocate(series, target_annual_return=None):
         "expected_annual_return": round(port_ret * TRADING_DAYS, 6),
         "annualized_volatility": round(port_std * math.sqrt(TRADING_DAYS), 6),
         "sharpe_annualized": round(port_ret / port_std * math.sqrt(TRADING_DAYS), 6) if port_std > 0 else 0.0,
-        "method": "exact long-only mean-variance: analytic KKT solution with active-set removal of negative weights",
+        "method": "long-only mean-variance: analytic KKT solution with active-set removal of negative weights",
         "target_annual_return": round(target * TRADING_DAYS, 6),
         "target_clamped_to": round(clamped * TRADING_DAYS, 6),
     }

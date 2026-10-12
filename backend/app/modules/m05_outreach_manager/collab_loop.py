@@ -4,18 +4,18 @@ Source request (instinct doc, verbatim): "reach out to people for help,
 outreach, designs, collabs, ideas".
 
 What the audit (G113) could not verify: a complete runtime from contact to
-collaboration. This unit closes the loop as a real state machine:
+collaboration. This unit closes the loop as a state machine:
 
   discovered -> researched -> drafted -> pending_approval -> approved
   -> sent -> replied -> negotiating -> collaborating   (+ lost, dormant)
 
 Every transition is validated and recorded. Drafts are generated from
-SUPPLIED evidence only - the generator refuses to draft without real
+SUPPLIED evidence only - the generator refuses to draft without
 evidence fields, so personalization can never be fabricated. Approval is a
 hard gate: only an owner approval token moves a draft to approved, matching
 the standing rule that person-facing communications stay owner-gated. The
 module never sends: mark_sent records the receipt of an external send done
-through the owner's own channel. Reply classification is real keyword
+through the owner's own channel. Reply classification is keyword
 scoring, follow-ups are computed against as_of, and a collaboration brief
 closes the loop. Stdlib only, offline, deterministic.
 """
@@ -125,7 +125,7 @@ def add_contact(pipeline, cid, name, channel, org, as_of):
 
 
 def research(pipeline, cid, evidence, as_of):
-    """Attach supplied evidence; all required fields must be real and non-empty."""
+    """Attach supplied evidence; all required fields must be present and non-empty."""
     c = _contact(pipeline, cid)
     _date(as_of, "as_of")
     if type(evidence) is not dict or set(evidence) - set(EVIDENCE_REQUIRED) - {"links", "notes"}:
@@ -143,7 +143,7 @@ def research(pipeline, cid, evidence, as_of):
 
 
 def draft(pipeline, cid, ask, goal, as_of):
-    """Generate a real personalized draft from the attached evidence only."""
+    """Generate a personalized draft from the attached evidence only."""
     c = _contact(pipeline, cid)
     _date(as_of, "as_of")
     if ask not in ASKS:

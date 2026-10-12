@@ -1,4 +1,4 @@
-"""G109: market prediction engine - real models, walk-forward selection, refusals."""
+"""G109: market prediction engine - models, walk-forward selection, refusals."""
 from __future__ import annotations
 
 import math

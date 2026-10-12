@@ -4,18 +4,18 @@ Source request (instinct doc, verbatim): "publish its own games on Roblox and
 make money".
 
 What c36.creative was missing (audit G111): it emitted design docs and
-UNIMPLEMENTED Lua stubs. This unit emits a complete, real Rojo-layout game
+UNIMPLEMENTED Lua stubs. This unit emits a complete Rojo-layout game
 project: every mechanic gets a fully implemented Lua server module drawn from
-four real gameplay archetypes (collect, survive, race, defend) selected
+four gameplay archetypes (collect, survive, race, defend) selected
 deterministically by name, a working round loop with win/lose, DataStore
 leaderstats with pcall/retry, RemoteEvent wiring checked both directions, a
-client HUD + input layer, ProcessReceipt monetization handlers, and a real
+client HUD + input layer, ProcessReceipt monetization handlers, and a
 publish runbook. A built-in Lua linter (block balance, reserved identifiers,
 forbidden calls, placeholder scan) runs over every generated file and its
 results ship in the build report - "no stubs" is checked, not claimed.
 
 Publishing and monetization themselves stay refused keys (owner-gated
-effects); the runbook is the honest, real path to them. Stdlib only,
+effects); the runbook is the owner-gated path to them. Stdlib only,
 deterministic.
 """
 from __future__ import annotations
@@ -156,7 +156,7 @@ def lint_lua(source, path="?"):
     return sorted(set(issues))
 
 
-# ---------------- mechanic archetype implementations (real Lua) ----------------
+# ---------------- mechanic archetype implementations (Lua) ----------------
 
 def _archetype(mechanic):
     h = _hash(mechanic)
@@ -501,7 +501,7 @@ _MONETIZATION_LUA = (
 def _runbook(title, mechanics):
     lines = [
         "# Publish runbook: %s" % title, "",
-        "Owner-gated path (Atlas never publishes; these are the real steps):", "",
+        "Owner-gated path (Atlas never publishes; these are the steps):", "",
         "1. Install Rojo 7.x and Roblox Studio under the owner's own account.",
         "2. `rojo serve` in the project root; in Studio use the Rojo plugin to sync.",
         "3. Play Solo test: verify round loop advances intermission -> running -> ended,",

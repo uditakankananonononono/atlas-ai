@@ -50,7 +50,7 @@ def test_person_png_is_real_decodable_raster():
         assert (w, h, bitdepth, colortype) == (64, 64, 8, 2)
         raw = zlib.decompress(chunks[1][1])
         assert len(raw) == (w * 3 + 1) * h
-        # two content rows carry real pixels (not a blank canvas)
+        # two content rows carry painted pixels (not a blank canvas)
         mid = raw[10 * (w * 3 + 1) + 1: 10 * (w * 3 + 1) + 1 + w * 3]
         assert len(set(mid)) > 4
 

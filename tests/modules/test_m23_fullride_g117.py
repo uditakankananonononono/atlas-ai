@@ -1,4 +1,4 @@
-"""G117: full-ride corpus + personal plan over real 100+ country routes."""
+"""G117: full-ride corpus + personal plan over 100+ country routes."""
 from __future__ import annotations
 
 import pytest
@@ -33,7 +33,7 @@ def test_exclusions_carry_real_reasons():
                                "profile": {"curriculum": "CBSE", "sat": 1520}, "rows": rows})
     reasons = {r for e in out["excluded"] for r in e["reasons"]}
     assert "not_full_ride" in reasons
-    assert "requires_extra_written_test" in reasons  # MEXT and Russia honestly excluded
+    assert "requires_extra_written_test" in reasons  # MEXT and Russia excluded by the written-test rule
 
 
 def test_ielts_only_profile_still_fits():

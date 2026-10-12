@@ -1,14 +1,14 @@
-"""G118 / c30.masterplan_pdf - real rendered pagination and a real PDF artifact.
+"""G118 / c30.masterplan_pdf - rendered pagination and a PDF artifact.
 
 The pinned masterplan.run assembles supplied sections and estimates pages by
 character count; 'rendered pagination' is in its not_implemented list. This
-module closes exactly that gap: it lays the assembled markdown out on real
-page geometry (Courier base-14, fixed metrics, so layout is exact and
-deterministic), emits a valid PDF (xref table, real byte offsets, page tree),
-and verifies its own output with a strict structural parser that counts real
-page objects. It never authors research: all text is caller-supplied via the
-pinned assembler, and target_met is computed from the real page count, never
-asserted. stdlib only, offline, deterministic.
+module closes that gap: it lays the assembled markdown out on fixed
+page geometry (Courier base-14, fixed metrics, so layout is deterministic),
+emits a valid PDF (xref table, byte offsets, page tree), and checks its own
+output with a strict structural parser that counts page objects. It never
+authors research: all text is caller-supplied via the pinned assembler, and
+target_met is computed from the counted pages, never asserted. stdlib only,
+offline, deterministic.
 """
 from __future__ import annotations
 
@@ -18,8 +18,8 @@ from app.modules.c30 import masterplan, policy
 
 PREFIX = "PLANPDF"
 
-# real layout geometry: US Letter, 1in margins, Courier 11pt (600/1000 em width
-# for every glyph, so line capacity is exact), 14pt leading.
+# layout geometry: US Letter, 1in margins, Courier 11pt (600/1000 em width
+# for every glyph, so line capacity is fixed), 14pt leading.
 PAGE_W, PAGE_H = 612.0, 792.0
 MARGIN = 72.0
 FONT_SIZE = 11.0
@@ -57,7 +57,7 @@ def _wrap_paragraph(text, width):
 
 
 def paginate(markdown, title=None):
-    """Lay markdown text out on real pages. Returns a list of pages of lines."""
+    """Lay markdown text out on pages. Returns a list of pages of lines."""
     if type(markdown) is not str:
         _refuse("BAD_TYPE", "markdown")
     text = policy.clean_text(markdown, PREFIX, "markdown", 20_000_000, allow_ws=True)
@@ -89,7 +89,7 @@ def _latin1(s):
 
 
 def render_pdf(pages, title="Masterplan"):
-    """Serialize real pages to a valid PDF with a real xref table. Deterministic."""
+    """Serialize pages to a valid PDF with an xref table. Deterministic."""
     if type(pages) is not list or not pages or any(
             type(p) is not list or any(type(l) is not str for l in p) for p in pages):
         _refuse("BAD_TYPE", "pages")
@@ -133,7 +133,7 @@ def render_pdf(pages, title="Masterplan"):
 
 
 def count_pdf_pages(pdf_bytes):
-    """Strict structural self-check: real header, xref, trailer, page objects."""
+    """Strict structural self-check: header, xref, trailer, page objects."""
     if type(pdf_bytes) is not bytes or not pdf_bytes.startswith(b"%PDF-1."):
         _refuse("BAD_TYPE", "pdf_bytes")
     if b"startxref" not in pdf_bytes or not pdf_bytes.rstrip().endswith(b"%%EOF"):
@@ -149,12 +149,12 @@ def count_pdf_pages(pdf_bytes):
 
 
 def assemble_pdf(request, title="Masterplan"):
-    """Compose the pinned assembler with real pagination and a real PDF artifact."""
+    """Compose the pinned assembler with rendered pagination and a PDF artifact."""
     return assemble_pdf_many([request], title=title)
 
 
 def assemble_pdf_many(requests, title="Masterplan"):
-    """Assemble several pinned-assembler batches into one real PDF document.
+    """Assemble several pinned-assembler batches into one PDF document.
 
     The pinned input cap (15M body chars per call) bounds one batch, not the
     document: a 5,000+ page masterplan is assembled from multiple supplied
@@ -190,11 +190,11 @@ def assemble_pdf_many(requests, title="Masterplan"):
         "unfilled_count": unfilled,
         "excluded_count": excluded,
         "scope": policy.scope(
-            ["real rendered pagination of the pinned assembler's output on exact "
+            ["rendered pagination of the pinned assembler's output on fixed "
              "Courier geometry (70 chars x 46 lines per Letter page)",
-             "a valid PDF artifact (page tree, real xref offsets, trailer) verified "
-             "by a strict structural page-count self-check",
-             "target_met computed from the verified real page count, never asserted"],
+             "a valid PDF artifact (page tree, xref offsets, trailer) checked "
+             "by a strict structural page-count parser",
+             "target_met computed from the counted page objects, never asserted"],
             ["research authorship - every byte of text is caller-supplied through the "
              "pinned assembler; this module adds layout only",
              "typographic fonts beyond base-14 Courier; latin-1 text only",

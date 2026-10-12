@@ -1,4 +1,4 @@
-"""G114: lenslab - real lens operators + measured battery."""
+"""G114: lenslab - lens operators + measured battery."""
 from __future__ import annotations
 
 import pytest

@@ -1,9 +1,9 @@
-"""G109 / market.predict - real market prediction and investing analytics.
+"""G109 / market.predict - market prediction and investing analytics.
 
 Source request (instinct doc, verbatim): "make me money, trade with it,
 invest, and predict markets".
 
-This unit actually predicts: it fits real time-series models (naive, drift,
+This unit predicts: it fits time-series models (naive, drift,
 AR(p) least squares, Holt linear smoothing, ridge on computed indicators) to
 supplied or adapter-fetched price observations, selects the best model by
 walk-forward out-of-sample RMSE, and forecasts with empirical residual
@@ -139,7 +139,7 @@ def _parse_series(raw, field="series"):
     return days, [rows[d] for d in days], [volumes.get(d) for d in days], dup
 
 
-# ---------------- indicators (real, standard definitions) ----------------
+# ---------------- indicators (standard definitions) ----------------
 
 def returns(closes, log=False):
     out = []
@@ -230,7 +230,7 @@ def _features(closes, i):
     return [1.0, r1, r5, r10, sma_ratio, sma20_ratio, math.sqrt(var)]
 
 
-# ---------------- small linear algebra (exact algorithms, floats) ----------------
+# ---------------- small linear algebra (standard algorithms, floats) ----------------
 
 def _solve(matrix, rhs):
     """Gaussian elimination with partial pivoting; raises on singularity."""
@@ -450,7 +450,7 @@ def run(request):
         "selected_model": best,
         "forecast": path,
         "scope": policy.scope(
-            ["real fitted models (naive/drift/AR(1)/AR(3)/Holt/ridge on indicators)",
+            ["fitted models (naive/drift/AR(1)/AR(3)/Holt/ridge on indicators)",
              "walk-forward out-of-sample selection by RMSE with measured errors",
              "empirical residual forecast bands, labeled empirical",
              "standard indicators (SMA/EMA/RSI/MACD/realized vol/momentum)"],

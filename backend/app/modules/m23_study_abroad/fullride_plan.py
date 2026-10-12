@@ -1,6 +1,6 @@
 """G117 / m23.fullride_plan - finished personal 100-country full-ride plan.
 
-Composes fullride_corpus (the real 100+ country route corpus) with
+Composes fullride_corpus (the 100+ country route corpus) with
 s4_7_abroad_fullride (the constraint filter) into a finished, personal plan:
 kept routes grouped by country with per-route actions, a milestone timeline
 backwards from application season, profile gaps, and the excluded set with

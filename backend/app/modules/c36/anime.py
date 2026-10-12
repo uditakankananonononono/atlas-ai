@@ -4,7 +4,7 @@ Source request (instinct doc, verbatim): "make its own anime show".
 
 What c36.creative was missing (audit G112): it emitted a template bible and
 fixed TO_WRITE acts. This unit produces the show: a series bible, per-episode
-three-act scripts with real generated dialogue (trait-driven diction,
+three-act scripts with generated dialogue (trait-driven diction,
 arc-themed beats, no placeholder tokens), per-scene shot lists with camera
 work, rendered storyboard panels (SVG figures composed from c36.worldforge),
 a phase-by-phase production schedule, and an assembly manifest. Coverage is
@@ -107,7 +107,7 @@ def _diction(character):
 
 
 def _line(character, beat, scene_no, line_no):
-    """One real dialogue line: trait diction + beat context, deterministic."""
+    """One dialogue line: trait diction + beat context, deterministic."""
     diction = _diction(character)
     pick = _hash(character["id"] + beat + str(scene_no) + str(line_no))
     phrase = diction[pick % len(diction)]
@@ -121,7 +121,7 @@ def _line(character, beat, scene_no, line_no):
 
 
 def _script_episode(ep_no, title, premise, characters, seed):
-    """Three-act episode script: scenes, beats, real dialogue lines."""
+    """Three-act episode script: scenes, beats, dialogue lines."""
     arc = ARC_BANK[(ep_no - 1 + seed % 3) % len(ARC_BANK)]
     acts = []
     beats = (("cold open on %s" % arc[0], "inciting turn: %s" % arc[1]),
@@ -150,7 +150,7 @@ def _script_episode(ep_no, title, premise, characters, seed):
 
 
 def _shot_list(episode):
-    """Every scene gets a real shot sequence with camera direction."""
+    """Every scene gets a shot sequence with camera direction."""
     shots = []
     seq = 0
     for act in episode["acts"]:
@@ -317,7 +317,7 @@ def run(request):
                    "every_scene_shot": not any("scene_without_shots" in i for i in check_issues),
                    "all_speakers_cast": not any("unknown_speaker" in i for i in check_issues)},
         "scope": policy.scope(
-            ["series bible, per-episode 3-act scripts with real generated dialogue",
+            ["series bible, per-episode 3-act scripts with generated dialogue",
              "per-scene shot lists with camera direction",
              "rendered SVG storyboard panels via c36.worldforge",
              "phase production schedule and assembly manifest",

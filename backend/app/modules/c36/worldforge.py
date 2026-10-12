@@ -5,7 +5,7 @@ of their own ... able to create ai people in the virtual world and able to
 model them for different things that humans do maybe makeup commercials".
 
 What c36.world was missing (audit G110): it was text-only. This unit renders:
-- parametric AI people, trait-derived, as real raster PNG portraits (a stdlib
+- parametric AI people, trait-derived, as raster PNG portraits (a stdlib
   PNG encoder + scanline rasterizer lives here) and SVG figures;
 - the world itself as a rendered SVG map (places, regions, roads);
 - sim events as rendered storyboard panels (SVG grid, captions, product
@@ -14,7 +14,7 @@ What c36.world was missing (audit G110): it was text-only. This unit renders:
   selection, encounters - still deterministic (splitmix64), still stdlib only.
 
 Every person and frame is labeled SYNTHETIC-AI; likeness/real-person keys
-refuse. Nothing is published. Rendering is real: PNG bytes decode, SVG parses.
+refuse. Nothing is published. PNG bytes decode; SVG parses.
 """
 from __future__ import annotations
 
@@ -117,10 +117,10 @@ def _hash_text(text):
     return h
 
 
-# ---------------- PNG encoder + rasterizer (real pixels, stdlib) ----------------
+# ---------------- PNG encoder + rasterizer (pixels, stdlib) ----------------
 
 def _png(width, height, rgb):
-    """Encode an RGB bytearray (row-major) as a real PNG."""
+    """Encode an RGB bytearray (row-major) as a PNG."""
     def chunk(tag, data):
         raw = tag + data
         return struct.pack(">I", len(data)) + raw + struct.pack(">I", zlib.crc32(raw) & 0xFFFFFFFF)
@@ -190,7 +190,7 @@ def person_params(agent_id, name, traits):
 
 
 def render_person_png(params, size=64):
-    """Rasterize the parametric person to real PNG bytes (size x size RGB)."""
+    """Rasterize the parametric person to PNG bytes (size x size RGB)."""
     bg = _hex("#eef1f5")
     c = _Canvas(size, size, bg)
     cx, cy = size // 2, size // 2 - 4
@@ -489,7 +489,7 @@ def run(request):
                      "png_bytes": sum(len(b) for b in renders["people_png"].values()),
                      "relationships": len(bonds)},
         "scope": policy.scope(
-            ["parametric AI people rendered as real PNG portraits and SVG figures",
+            ["parametric AI people rendered as PNG portraits and SVG figures",
              "rendered SVG world map and storyboard panels",
              "trait-driven behavior engine with mood, energy and encounter bonds",
              "every artifact labeled %s in pixels and in data" % LABEL],

@@ -8,7 +8,7 @@ working code."
 
 What evidence_harness_p83 was missing (audit G115): it recorded caller claims
 and never called a judge. This unit WIRES the judges: four provider adapters
-(ChatGPT, DeepSeek, Claude, Perplexity) over a transport protocol, real
+(ChatGPT, DeepSeek, Claude, Perplexity) over a transport protocol, with
 judge-packet construction from requirement text + code evidence, verdict
 parsing (PASS/FAIL/FACADE + quoted criticism), SHA-256 receipts binding
 provider/prompt/response, cross-provider aggregation with disagreement
@@ -199,7 +199,7 @@ def judge_requirement(requirement, code_evidence, transport, providers=PROVIDERS
         "final": "FACADE" if (consensus == "FACADE" or scan["facade_suspect"] and consensus != "PASS")
                  else consensus,
         "scope": policy.scope(
-            ["four provider adapters with real prompt construction and verdict parsing",
+            ["four provider adapters with prompt construction and verdict parsing",
              "SHA-256 receipts binding provider/prompt/response",
              "cross-provider aggregation with facade-poisoning and disagreement flags",
              "mechanical stub scan reported beside judge verdicts"],

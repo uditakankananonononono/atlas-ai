@@ -6,7 +6,7 @@ intelligence, depression creativity etc".
 
 What c31.lenses was missing (audit G114): it returned the strategy NAME
 wrapped around the idea - no transformation, no measurement. This unit makes
-each lens a real text operator with a distinct, inspectable transformation,
+each lens a text operator with a distinct, inspectable transformation,
 and adds a divergent-thinking battery that MEASURES the effect: baseline vs
 lens-applied generation scored on fluency, flexibility, originality and
 elaboration with documented formulas over a built-in word-frequency baseline.
@@ -68,7 +68,7 @@ def _hash(text):
     return h
 
 
-# ---------------- real lens operators ----------------
+# ---------------- lens operators ----------------
 
 def _op_systemizing(idea, toks):
     verbs = [t for t in dict.fromkeys(toks) if t in VERBS_HINT][:4]
@@ -155,7 +155,7 @@ OPERATORS = {"systemizing": _op_systemizing, "constraint-flip": _op_constraint_f
 
 
 def transform(idea, lens):
-    """Apply one lens operator; returns the real transformed artifact."""
+    """Apply one lens operator; returns the transformed artifact."""
     if type(lens) is not str or lens not in OPERATORS:
         _refuse("BAD_LENS", str(lens)[:64] if isinstance(lens, str) else "lens")
     text = policy.clean_text(idea, PREFIX, "idea", MAX_IDEA)
@@ -234,7 +234,7 @@ def battery(idea, lenses=None, n=12, diagnose=False):
                          "elaboration": "mean content-word count per candidate"},
             "disclaimer": DISCLAIMER,
             "scope": policy.scope(
-                ["real per-lens text operators with inspectable transformations",
+                ["per-lens text operators with inspectable transformations",
                  "measured baseline-vs-lens deltas over a documented battery"],
                 ["clinical meaning - refused and disclaimed",
                  "human cognitive measurement - scores compare generated texts only"],

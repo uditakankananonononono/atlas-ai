@@ -1,4 +1,4 @@
-"""G118: real rendered pagination and a real 5,000+ page PDF masterplan."""
+"""G118: rendered pagination and a 5,000+ page PDF masterplan."""
 from __future__ import annotations
 
 import re
@@ -9,7 +9,7 @@ from app.modules.c30 import masterplan_pdf as mp
 
 
 def _varied_body(n_sentences):
-    # deterministic, non-repetitive real text: the pinned repetition guard requires
+    # deterministic, non-repetitive text: the pinned repetition guard requires
     # unique 200-char windows, so every sentence carries its own index
     return " ".join(
         "Sentence %d records finding %d with measured detail and context."
@@ -68,7 +68,7 @@ def test_pypdf_cross_checks_real_pages_and_text():
 
 def test_five_thousand_plus_real_pages():
     # one pinned batch caps at 15M body chars (~4.6k dense pages), so the 5,000+
-    # page document is bound from two real batches - the stated volume model
+    # page document is bound from two batches - the stated volume model
     out = mp.assemble_pdf_many([_request(200_000), _request(200_000)])
     assert out["batch_count"] == 2
     assert out["real_page_count"] >= 5000

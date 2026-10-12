@@ -1,4 +1,4 @@
-"""G119: ordering gate computes real completion, never trusts declared marks."""
+"""G119: ordering gate computes completion, never trusts declared marks."""
 from __future__ import annotations
 
 import pytest
@@ -108,7 +108,7 @@ def test_multi_entry_mixed_state(tmp_path):
 
 
 def test_gate_against_this_repo_real_landed_groups():
-    """The gate itself verifies the G109-G118 lanes in the real repo."""
+    """The gate itself checks the G109-G118 lanes in the live repo."""
     import pathlib
     root = pathlib.Path(__file__).resolve().parents[2]
     entries = [

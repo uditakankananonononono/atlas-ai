@@ -1,4 +1,4 @@
-"""G111: roblox game builder - complete project, real Lua lint, wiring, refusals."""
+"""G111: roblox game builder - complete project, Lua lint, wiring, refusals."""
 from __future__ import annotations
 
 import json
