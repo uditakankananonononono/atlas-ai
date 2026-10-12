@@ -310,9 +310,10 @@ def test_prod_path_refuses_when_platform_terms_undeclared(tmp_path):
     assert held.value.code == "OUTGATE:refused:denied" and rt.calls == []
 
 
-def test_build_dispatcher_carries_enforcer_and_refuses_undeclared(tmp_path, monkeypatch):
+def test_build_dispatcher_carries_enforcer_and_default_declares_only_gmail(tmp_path, monkeypatch):
     from app.runtime import approved_execution_routes as r
     monkeypatch.delenv("ATLAS_OUTBOUND_DECLARATIONS", raising=False)
     d = r.build_dispatcher("tenant-a")
     assert d.enforcer is not None and isinstance(d.authority_binder, M00AuthorityCheck)
-    assert d.outbound_declarations["tos"] == {}
+    assert set(d.outbound_declarations["tos"]) == {"gmail"}
+    assert "social" not in d.outbound_declarations["tos"]

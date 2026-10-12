@@ -24,17 +24,29 @@ _dispatchers: dict[str, ApprovedExecutionDispatcher] = {}
 
 _EMPTY = {"tos": {}, "rate_limits": {}, "consent": [], "recent_actions": []}
 
+# Default declaration (ToS UNVERIFIED): Gmail API send, 50 per 24h. Consent is the
+# M00 approval binding: every send already requires the owner's approval of the
+# exact draft, and the outbound gate additionally requires M00 authority bound to
+# the action digest. Declared, not verified against Google's terms. Any
+# ATLAS_OUTBOUND_DECLARATIONS file REPLACES these defaults.
+_DEFAULT = {
+    "tos": {"gmail": {"allowed_kinds": ["send"], "automation_allowed": True}},
+    "rate_limits": {"gmail": {"send": {"max": 50, "window_seconds": 86400}}},
+    "consent": [], "recent_actions": [],
+}
+
 
 def outbound_declarations() -> dict:
     """Platform-terms / rate-limit / consent declarations for person-facing actions.
 
     Read from the JSON file at ATLAS_OUTBOUND_DECLARATIONS (owner-maintained).
-    Unset or unreadable -> an empty declaration set which the outbound gate
-    DENIES (no declared rules), so person-facing action types stay refused until declared.
+    Unset -> the gmail-send default below (ToS-unverified). A file that is set
+    but unreadable -> an empty declaration set which the outbound gate DENIES
+    (no declared rules), so person-facing action types stay refused until declared.
     """
     path = os.getenv("ATLAS_OUTBOUND_DECLARATIONS")
     if not path:
-        return json.loads(json.dumps(_EMPTY))
+        return json.loads(json.dumps(_DEFAULT))
     try:
         with open(path, encoding="utf-8") as fh:
             data = json.load(fh)

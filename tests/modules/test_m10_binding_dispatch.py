@@ -212,13 +212,16 @@ def test_bound_http_capture_explicit_state_cannot_replace_trusted_snapshot(env):
     assert result.status_code==409 and gmail.requests==[]
 
 
-def test_m10_send_refused_by_outbound_gate_without_declared_terms_before_permit(env, monkeypatch):
+def test_m10_send_refused_by_outbound_gate_without_declared_terms_before_permit(env, monkeypatch, tmp_path):
     """Real m10 send path: undeclared gmail terms refuse; adapter never runs; permit unspent."""
     from app.runtime.guardrails.errors import GuardrailRefusal
     from app.workers import action_registry
     from app.workers.tasks import execute_approved_action
     svc, registry, _, _ = env; aid = approve(svc, registry)
-    monkeypatch.delenv('ATLAS_OUTBOUND_DECLARATIONS')
+    import json
+    empty = tmp_path / 'empty.json'
+    empty.write_text(json.dumps({'tos': {}, 'rate_limits': {}, 'consent': [], 'recent_actions': []}))
+    monkeypatch.setenv('ATLAS_OUTBOUND_DECLARATIONS', str(empty))
     monkeypatch.setattr('app.modules.m00_approval_center.impact.PROBES', registry)
     monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: svc)
     monkeypatch.setattr(action_registry, '_CONDITIONAL_EXECUTORS', {})
@@ -231,3 +234,19 @@ def test_m10_send_refused_by_outbound_gate_without_declared_terms_before_permit(
         execute_approved_action.run(aid, 'gated')
     assert held.value.code == 'OUTGATE:refused:denied'
     assert effects == [] and 'effect_consumed' not in [e['event'] for e in svc.audit(aid)]
+
+
+def test_m10_send_uses_default_gmail_declaration_and_is_rate_limited(env, monkeypatch):
+    """No env file: the ToS-unverified gmail default (50/24h) applies; the 51st send refuses."""
+    from app.runtime.guardrails.errors import GuardrailRefusal
+    from app.runtime.approved_execution_routes import outbound_declarations
+    from app.runtime.guardrails import outbound_gate as g
+    monkeypatch.delenv('ATLAS_OUTBOUND_DECLARATIONS')
+    d = outbound_declarations()
+    assert d['rate_limits']['gmail']['send'] == {'max': 50, 'window_seconds': 86400}
+    d['recent_actions'] = [{'platform': 'gmail', 'kind': 'send', 'at': 1000 + i, 'count': 1} for i in range(50)]
+    action = {'id': 'x', 'platform': 'gmail', 'kind': 'send', 'at': 2000, 'count': 1}
+    with pytest.raises(GuardrailRefusal) as held:
+        g.dispatch(action, d, effect=lambda a: None, now='2026-10-12T08:00:00Z',
+                   authority_ref='r', authority_check=lambda r, dg: True)
+    assert held.value.code == 'OUTGATE:refused:denied'

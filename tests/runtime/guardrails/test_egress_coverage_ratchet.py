@@ -61,3 +61,26 @@ def test_report_number(capsys):
     egress, gated = scan()
     assert len(egress) > 0, "scan root resolved wrongly: zero egress modules"
     print(f"EGRESS_COVERAGE gated={len(gated)} of egress_modules={len(egress)}")
+
+
+# SOFT, SEPARATE number. A module listed here has no direct guardrail import but its
+# egress is reachable only through a caller that routes it via the outbound gate,
+# and the named test shows a refusal on that path. Never merged into the hard
+# gated=N figure above. An entry must name an existing egress module and test file.
+INDIRECTLY_GATED = {
+    "modules/m06_social_media_manager/adapters.py": (
+        "reached via Scheduler.execute_due -> GuardrailEnforcer.dispatch_outbound",
+        "tests/modules/test_m06_publish_guardrail.py",
+    ),
+}
+
+
+def test_indirect_report_is_separate_and_evidenced(capsys):
+    egress, gated = scan()
+    root = APP.parents[1]
+    for module, (_route, test_file) in INDIRECTLY_GATED.items():
+        assert module in egress, f"{module} is not an egress module"
+        assert module not in gated, f"{module} is directly gated; remove it from INDIRECTLY_GATED"
+        assert (root / test_file).is_file(), f"refusal test missing: {test_file}"
+    print(f"EGRESS_COVERAGE_HARD gated={len(gated)} of {len(egress)}")
+    print(f"EGRESS_COVERAGE_INDIRECT_SOFT {len(INDIRECTLY_GATED)} of {len(egress)} (not merged into hard figure)")
