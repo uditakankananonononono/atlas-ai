@@ -1,6 +1,6 @@
 # Rows 47-64 delta (post-landing deepening)
 
-Scope literal: nothing here promotes any row beyond PARTIAL. Every result below is a builder-recorded run unless a
+Scope literal: nothing here promotes any row beyond PARTIAL. Every result below is a recorded local run unless a
 receipt file is named; the receipt files are in this directory and the runners are committed so anyone can re-run.
 
 ## Row 57 (Clicky)
@@ -27,7 +27,7 @@ receipt file is named; the receipt files are in this directory and the runners a
 - This run HONORS per-host robots Crawl-delay (spacing = max(1s, Crawl-delay); above 30s the link is not fetched). Hamilton
   declares 5s, Dartmouth and CollegeTransitions 10s; recorded gaps respect them (0 violations across 20 hosts).
   An EARLIER d1/d3 run, and the existing helper `fetch_case_metadata_bounded`, used 1s spacing and ignored Crawl-delay;
-  `row56_link_liveness_2026-10-12.json` is from that earlier helper run and should be read as such (builder-recorded,
+  `row56_link_liveness_2026-10-12.json` is from that earlier helper run and should be read as such (recorded local run,
   Crawl-delay not honored). The helper in production code still ignores Crawl-delay (not changed here).
 - Result of this run: 16 page_reachable; jhu 403, collegeessayguy 403, cornell 308 redirect (Location recorded),
   admitraven robots.txt 307 redirect (robots_unverified, page not requested). Nothing was bypassed.
