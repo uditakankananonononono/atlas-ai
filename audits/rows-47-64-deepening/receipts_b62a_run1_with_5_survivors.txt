@@ -1,0 +1,75 @@
+BASELINE tests/modules/test_c31_replicate_plan_s12.py tests/modules/test_c62_dossier_plan_deepening.py -> rc=0 8 passed in 0.19s
+BASELINE tests/modules/test_c32_dossier_s27.py tests/modules/test_c62_dossier_plan_deepening.py -> rc=0 9 passed in 0.20s
+G1 private-facts refusal removed | row 62 | dossier.py | CAUGHT | rc=1 | 1 failed, 8 passed in 0.24s | failing: tests/modules/test_c32_dossier_s27.py::Dossier::test_private_refused
+    old: '    if include_private:\n        raise'
+    new: '    if False:\n        raise'
+G2 subject-name filter removed | row 62 | dossier.py | CAUGHT | rc=1 | 1 failed, 8 passed in 0.21s | failing: tests/modules/test_c32_dossier_s27.py::DossierPins::test_subject_mention_filter
+    old: 'if not any(t in low for t in tokens):'
+    new: 'if False:'
+G3 per-dimension fact cap removed | row 62 | dossier.py | SURVIVED | rc=0 | 9 passed in 0.19s | failing: -
+    old: 'if len(bucket) < MAX_FACTS_PER_DIM:'
+    new: 'if True:'
+G4 completeness denominator wrong | row 62 | dossier.py | CAUGHT | rc=1 | 1 failed, 8 passed in 0.21s | failing: tests/modules/test_c32_dossier_s27.py::Dossier::test_cited_facts_and_completeness
+    old: 'round(covered / len(DIMENSIONS), 6)'
+    new: 'round(covered / 4, 6)'
+G5 sentences split on period only | row 62 | dossier.py | CAUGHT | rc=1 | 1 failed, 8 passed in 0.21s | failing: tests/modules/test_c32_dossier_s27.py::DossierPins::test_sentence_split_and_tail
+    old: 'if ch in ".!?":'
+    new: 'if ch in ".":'
+G6 trailing unterminated sentence dropped | row 62 | dossier.py | CAUGHT | rc=1 | 1 failed, 8 passed in 0.21s | failing: tests/modules/test_c32_dossier_s27.py::DossierPins::test_sentence_split_and_tail
+    old: '    if tail:\n        out.append(tail)'
+    new: '    if False:\n        out.append(tail)'
+G7 source cap removed | row 62 | dossier.py | CAUGHT | rc=1 | 1 failed, 8 passed in 0.28s | failing: tests/modules/test_c32_dossier_s27.py::Dossier::test_bad_inputs
+    old: 'if len(sources) > MAX_SOURCES:'
+    new: 'if False:'
+G8 matching is case-sensitive | row 62 | dossier.py | CAUGHT | rc=1 | 2 failed, 7 passed in 0.22s | failing: tests/modules/test_c32_dossier_s27.py::Dossier::test_cited_facts_and_completeness, tests/modules/test_c32_dossier_s27.py::DossierPins::test_subject_mention_filter
+    old: 'low = s.lower()'
+    new: 'low = s'
+G9 citations not counted | row 62 | dossier.py | CAUGHT | rc=1 | 2 failed, 7 passed in 0.21s | failing: tests/modules/test_c32_dossier_s27.py::Dossier::test_cited_facts_and_completeness, tests/modules/test_c32_dossier_s27.py::DossierPins::test_subject_mention_filter
+    old: 'citation_count += 1'
+    new: 'pass'
+G10 'award' keyword dropped | row 62 | dossier.py | SURVIVED | rc=0 | 9 passed in 0.18s | failing: -
+    old: '"recognition": ("award", "recognition"'
+    new: '"recognition": ("recognition"'
+G11 empty sources accepted | row 62 | dossier.py | CAUGHT | rc=1 | 1 failed, 8 passed in 0.21s | failing: tests/modules/test_c32_dossier_s27.py::Dossier::test_bad_inputs
+    old: 'if not sources:'
+    new: 'if False:'
+G12 source records not type-checked | row 62 | dossier.py | CAUGHT | rc=1 | 1 failed, 8 passed in 0.21s | failing: tests/modules/test_c32_dossier_s27.py::DossierPins::test_sources_type_pins
+    old: 'if not isinstance(src, dict):'
+    new: 'if False:'
+R1 bsd not an open license | row 62 | replicate_plan.py | SURVIVED | rc=0 | 8 passed in 0.19s | failing: -
+    old: 'OPEN_LICENSES = ("mit", "apache", "bsd")'
+    new: 'OPEN_LICENSES = ("mit", "apache")'
+R2 closed-source copy refusal removed | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.23s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_closed_copy_refused
+    old: 'if copy_closed and license_ not in OPEN_LICENSES:'
+    new: 'if False:'
+R3 route inverted | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.21s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_routing_and_tickets
+    old: 'route = "integrate" if license_ in OPEN_LICENSES else "build_ourselves"'
+    new: 'route = "build_ourselves" if license_ in OPEN_LICENSES else "integrate"'
+R4 acceptance tests not first | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.21s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_routing_and_tickets
+    old: '"acceptance_tests_first": True'
+    new: '"acceptance_tests_first": False'
+R5 duplicate capabilities not merged | row 62 | replicate_plan.py | SURVIVED | rc=0 | 8 passed in 0.20s | failing: -
+    old: 'sorted({policy.clean_text(c, PREFIX, "capability", 128) for c in caps})'
+    new: 'sorted([policy.clean_text(c, PREFIX, "capability", 128) for c in caps])'
+R6 tickets not sorted | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.21s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_routing_and_tickets
+    old: 'tickets.sort(key=lambda r: (r["capability"], r["tool"]))'
+    new: 'pass'
+R7 license value not validated | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.21s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_bad_license
+    old: 'if license_ not in OPEN_LICENSES + ("gpl", "proprietary", "unknown"):'
+    new: 'if False:'
+R8 tool cap removed | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.22s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_survivor_pins_g1
+    old: 'if len(tools) > MAX_TOOLS:'
+    new: 'if False:'
+R9 gpl treated as open | row 62 | replicate_plan.py | SURVIVED | rc=0 | 8 passed in 0.19s | failing: -
+    old: 'OPEN_LICENSES = ("mit", "apache", "bsd")'
+    new: 'OPEN_LICENSES = ("mit", "apache", "bsd", "gpl")'
+R10 integrate and build counts swapped | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.21s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_routing_and_tickets
+    old: '"integrate_count": sum(1 for r in tickets if r["route"] == "integrate"),'
+    new: '"integrate_count": sum(1 for r in tickets if r["route"] == "build_ourselves"),'
+R11 empty tools accepted | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.21s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_no_source
+    old: '    if not tools:\n        raise'
+    new: '    if False:\n        raise'
+R12 unlicensed copy refused only for gpl | row 62 | replicate_plan.py | CAUGHT | rc=1 | 1 failed, 7 passed in 0.22s | failing: tests/modules/test_c31_replicate_plan_s12.py::ReplicatePlan::test_closed_copy_refused
+    old: 'if copy_closed and license_ not in OPEN_LICENSES:'
+    new: 'if copy_closed and license_ == "gpl":'
+TOTAL mutants=24 CAUGHT=19 SURVIVED=5 INVALID=0 NOT-APPLICABLE=0 | SHA restore True
