@@ -1,3 +1,18 @@
+import pytest
+
+@pytest.fixture(autouse=True)
+def isolated_approval_service(tmp_path,monkeypatch):
+ from sqlalchemy import create_engine
+ from sqlalchemy.orm import sessionmaker
+ from app.modules.m00_approval_center.service import Service,Base
+ import app.core.approvals as facade
+ engine=create_engine('sqlite:///'+str(tmp_path/'approvals.sqlite'))
+ Base.metadata.create_all(engine)
+ service=Service(session_factory=sessionmaker(bind=engine,expire_on_commit=False))
+ monkeypatch.setattr(facade,'default_service',lambda:service)
+ yield
+ engine.dispose()
+
 import asyncio
 from app.core.approvals import ApprovalStore
 from app.modules.m02_competition_manager.grounded_drafting import GroundedApplicationDrafter
@@ -30,3 +45,20 @@ def test_integrated_flow_attaches_evidence_completeness():
  ev=out['evidence_completeness']
  assert ev['complete'] and ev['overall_score']==1.0
  assert ev['fields']['impact']['claims'][0]['sources'][0]['source_id']=='doc1'
+
+
+def test_first_voice_fact_loss_refused_and_source_ids_pinned():
+ from app.modules.m02_competition_manager.humanize import HumanizedAnswer
+ class BadVoice:
+  calls=0
+  async def humanize(self,field,answer,provider):
+   self.calls+=1
+   return HumanizedAnswer(field,answer,'changed','fake',False)
+ voice=BadVoice()
+ f=IntegratedApplicationFlow(Corpus(),GroundedApplicationDrafter(generate),voice,ApprovalStore(),'tenant-a')
+ with pytest.raises(ValueError,match='factual anchors'):
+  asyncio.run(f.prepare('c','https://official.example',[{'field':'impact','question':'What?'}]))
+ assert voice.calls==1
+ f=IntegratedApplicationFlow(Corpus(),GroundedApplicationDrafter(generate),NaturalVoiceService(generate),ApprovalStore(),'tenant-a')
+ out=asyncio.run(f.prepare('c','https://official.example',[{'field':'impact','question':'What?'}]))
+ assert out['evidence_source_ids']=={'impact':[1]}
