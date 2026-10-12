@@ -27,8 +27,14 @@ def _route_actions(row, profile):
         actions.insert(0, "register for the SAT (or IELTS) - a test credential is required")
     if row["accepts_sat"] and profile.get("sat") is not None:
         actions.append("send SAT score via College Board when the portal opens")
-    if "need" in row["scholarship"].casefold() or "aid" in row["scholarship"].casefold():
+    award = fullride_corpus.award_type(row["university"])
+    if award == "meets_full_demonstrated_need":
+        actions.append("need-based coverage: the award equals assessed need - confirm the "
+                       "family's assessed contribution before treating this as zero-cost")
         actions.append("prepare financial-aid documents (income proofs, CSS/alternate forms)")
+    elif award == "full_cost_award":
+        actions.append("merit full-cost award: check nomination and separate-application "
+                       "requirements on the official page")
     actions.append("draft essays and activity list; owner reviews every word before use")
     return actions
 
@@ -74,6 +80,10 @@ def build_plan(profile, as_of):
     if profile.get("ielts") is None:
         gaps.append("no IELTS in profile - fine where SAT suffices, but some portals prefer an English test")
     gaps.append("essays, activity list and recommendation letters are built per route before season")
+    if any(fullride_corpus.award_type(r["university"]) == "meets_full_demonstrated_need"
+           for c in countries for r in c["routes"]):
+        gaps.append("need-based routes cover assessed need, not a fixed full ride - a "
+                    "profile without assessed financial need is not covered to zero cost")
     year = int(as_of_text[:4])
     return {
         "as_of": as_of_text,
