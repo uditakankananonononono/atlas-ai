@@ -1,0 +1,44 @@
+{
+  "row": 89,
+  "selectors": [
+    "tests/modules/test_group89_classifier_boundaries.py"
+  ],
+  "timeout_seconds": 40,
+  "limits": [
+    "controlled logits only; no new learned quality validation",
+    "psychology/personality/intelligence inference unsupported",
+    "actual pinned model test not run by this selector"
+  ],
+  "mutations": [
+    {
+      "id": "sigmoid",
+      "path": "backend/app/modules/c32/learned_affect.py",
+      "old": "torch.sigmoid(self._model(**tokens).logits)",
+      "new": "torch.softmax(self._model(**tokens).logits,dim=-1)"
+    },
+    {
+      "id": "threshold",
+      "path": "backend/app/modules/c32/learned_affect.py",
+      "old": "if v['score']>=self.threshold",
+      "new": "if True"
+    },
+    {
+      "id": "source_hash",
+      "path": "backend/app/modules/c32/learned_affect.py",
+      "old": "hashlib.sha256(text.encode()).hexdigest()",
+      "new": "'0'*64"
+    },
+    {
+      "id": "person_refusal",
+      "path": "backend/app/modules/c32/learned_affect.py",
+      "old": "if real_person is not None:",
+      "new": "if False:"
+    },
+    {
+      "id": "nonperson",
+      "path": "backend/app/modules/c32/learned_affect.py",
+      "old": "'personality_inferred':False",
+      "new": "'personality_inferred':True"
+    }
+  ]
+}
