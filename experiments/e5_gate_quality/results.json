@@ -1,0 +1,1190 @@
+[
+ {
+  "id": "clamp:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 5,
+  "survivors": [
+   [
+    "if x < lo:",
+    "if x <= lo:"
+   ],
+   [
+    "if x > hi:",
+    "if x >= hi:"
+   ]
+  ]
+ },
+ {
+  "id": "clamp:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 5,
+  "survivors": [
+   [
+    "if x < lo:",
+    "if x <= lo:"
+   ],
+   [
+    "if x > hi:",
+    "if x >= hi:"
+   ],
+   [
+    "return hi",
+    "return None"
+   ]
+  ]
+ },
+ {
+  "id": "clamp:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 7,
+  "survivors": [
+   [
+    "if x < lo:",
+    "if x <= lo:"
+   ],
+   [
+    "if x > hi:",
+    "if x >= hi:"
+   ],
+   [
+    "return hi - 1",
+    "return hi + 1"
+   ],
+   [
+    "return hi - 1",
+    "return None"
+   ],
+   [
+    "return hi - 1",
+    "return hi - 2"
+   ]
+  ]
+ },
+ {
+  "id": "clamp:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "clamp:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 5,
+  "survivors": [
+   [
+    "if x < lo:",
+    "if x <= lo:"
+   ],
+   [
+    "if x > hi:",
+    "if x >= hi:"
+   ]
+  ]
+ },
+ {
+  "id": "clamp:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 7,
+  "survivors": [
+   [
+    "if x < lo:",
+    "if x <= lo:"
+   ],
+   [
+    "if x > hi:",
+    "if x >= hi:"
+   ],
+   [
+    "return hi - 1",
+    "return hi + 1"
+   ],
+   [
+    "return hi - 1",
+    "return None"
+   ],
+   [
+    "return hi - 1",
+    "return hi - 2"
+   ]
+  ]
+ },
+ {
+  "id": "window_sum:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 5,
+  "survivors": [
+   [
+    "if n <= 0:",
+    "if n <= 1:"
+   ]
+  ]
+ },
+ {
+  "id": "window_sum:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 1,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 5,
+  "survivors": [
+   [
+    "if n <= 0:",
+    "if n < 0:"
+   ],
+   [
+    "if n <= 0:",
+    "if n <= 1:"
+   ],
+   [
+    "return 0",
+    "return None"
+   ],
+   [
+    "return 0",
+    "return 1"
+   ]
+  ]
+ },
+ {
+  "id": "window_sum:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 1,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 1,
+  "survivors": []
+ },
+ {
+  "id": "window_sum:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 2,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "window_sum:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 5,
+  "survivors": [
+   [
+    "if n <= 0:",
+    "if n <= 1:"
+   ]
+  ]
+ },
+ {
+  "id": "window_sum:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 1,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 1,
+  "survivors": []
+ },
+ {
+  "id": "dedupe:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 3,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 2,
+  "survivors": []
+ },
+ {
+  "id": "dedupe:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 2,
+  "survivors": []
+ },
+ {
+  "id": "dedupe:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 4,
+  "survivors": []
+ },
+ {
+  "id": "dedupe:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "dedupe:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 2,
+  "survivors": []
+ },
+ {
+  "id": "dedupe:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 4,
+  "survivors": []
+ },
+ {
+  "id": "parse_amount:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "parse_amount:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "parse_amount:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "parse_amount:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "parse_amount:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "parse_amount:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "rate_ok:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 2,
+  "survivors": []
+ },
+ {
+  "id": "rate_ok:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 2,
+  "survivors": [
+   [
+    "return count < limit",
+    "return count <= limit"
+   ]
+  ]
+ },
+ {
+  "id": "rate_ok:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 2,
+  "survivors": [
+   [
+    "return count <= limit",
+    "return count < limit"
+   ]
+  ]
+ },
+ {
+  "id": "rate_ok:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "rate_ok:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 2,
+  "survivors": []
+ },
+ {
+  "id": "rate_ok:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 2,
+  "survivors": [
+   [
+    "return count <= limit",
+    "return count < limit"
+   ]
+  ]
+ },
+ {
+  "id": "median:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 10,
+  "survivors": []
+ },
+ {
+  "id": "median:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 10,
+  "survivors": [
+   [
+    "mid = n // 2",
+    "mid = n // 3"
+   ],
+   [
+    "return (s[mid - 1] + s[mid]) / 2",
+    "return (s[mid - 1] - s[mid]) / 2"
+   ],
+   [
+    "return (s[mid - 1] + s[mid]) / 2",
+    "return (s[mid + 1] + s[mid]) / 2"
+   ],
+   [
+    "return (s[mid - 1] + s[mid]) / 2",
+    "return None"
+   ],
+   [
+    "return (s[mid - 1] + s[mid]) / 2",
+    "return (s[mid - 2] + s[mid]) / 2"
+   ]
+  ]
+ },
+ {
+  "id": "median:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 7,
+  "survivors": [
+   [
+    "mid = n // 2",
+    "mid = n // 3"
+   ],
+   [
+    "if n % 2 == 1:",
+    "if n % 2 != 1:"
+   ],
+   [
+    "if n % 2 == 1:",
+    "if n % 3 == 1:"
+   ],
+   [
+    "return s[mid]",
+    "return None"
+   ]
+  ]
+ },
+ {
+  "id": "median:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 2,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "median:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 10,
+  "survivors": []
+ },
+ {
+  "id": "median:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 7,
+  "survivors": [
+   [
+    "mid = n // 2",
+    "mid = n // 3"
+   ],
+   [
+    "if n % 2 == 1:",
+    "if n % 2 != 1:"
+   ],
+   [
+    "if n % 2 == 1:",
+    "if n % 3 == 1:"
+   ],
+   [
+    "return s[mid]",
+    "return None"
+   ]
+  ]
+ },
+ {
+  "id": "chunk:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 5,
+  "survivors": []
+ },
+ {
+  "id": "chunk:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 5,
+  "survivors": []
+ },
+ {
+  "id": "chunk:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 6,
+  "survivors": []
+ },
+ {
+  "id": "chunk:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 2,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "chunk:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 5,
+  "survivors": []
+ },
+ {
+  "id": "chunk:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 6,
+  "survivors": []
+ },
+ {
+  "id": "safe_div:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 4,
+  "survivors": []
+ },
+ {
+  "id": "safe_div:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 4,
+  "survivors": []
+ },
+ {
+  "id": "safe_div:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 5,
+  "survivors": []
+ },
+ {
+  "id": "safe_div:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "safe_div:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 4,
+  "survivors": []
+ },
+ {
+  "id": "safe_div:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 5,
+  "survivors": []
+ },
+ {
+  "id": "is_leap:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 9,
+  "survivors": []
+ },
+ {
+  "id": "is_leap:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 1,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 9,
+  "survivors": [
+   [
+    "if y % 400 == 0:",
+    "if y % 401 == 0:"
+   ],
+   [
+    "return True",
+    "return False"
+   ],
+   [
+    "if y % 100 == 0:",
+    "if y % 101 == 0:"
+   ],
+   [
+    "return False",
+    "return True"
+   ]
+  ]
+ },
+ {
+  "id": "is_leap:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 1,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 6,
+  "survivors": [
+   [
+    "if y % 100 == 0:",
+    "if y % 101 == 0:"
+   ],
+   [
+    "return False",
+    "return True"
+   ]
+  ]
+ },
+ {
+  "id": "is_leap:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "is_leap:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 9,
+  "survivors": []
+ },
+ {
+  "id": "is_leap:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 1,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 6,
+  "survivors": [
+   [
+    "if y % 100 == 0:",
+    "if y % 101 == 0:"
+   ],
+   [
+    "return False",
+    "return True"
+   ]
+  ]
+ },
+ {
+  "id": "is_leap:G",
+  "cond": "G",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 6,
+  "survivors": []
+ },
+ {
+  "id": "slugify:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "slugify:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 3,
+  "survivors": [
+   [
+    "s = re.sub(r\"[^a-z0-9]+\", \"-\", s.lower())",
+    "s = re.sub(r\"[^a-z0-10]+\", \"-\", s.lower())"
+   ],
+   [
+    "return s.strip(\"-\")",
+    "return s"
+   ]
+  ]
+ },
+ {
+  "id": "slugify:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 2,
+  "survivors": [
+   [
+    "s = re.sub(r\"[^a-z0-9]+\", \"-\", s.lower())",
+    "s = re.sub(r\"[^a-z0-10]+\", \"-\", s.lower())"
+   ]
+  ]
+ },
+ {
+  "id": "slugify:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "slugify:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "slugify:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 2,
+  "survivors": [
+   [
+    "s = re.sub(r\"[^a-z0-9]+\", \"-\", s.lower())",
+    "s = re.sub(r\"[^a-z0-10]+\", \"-\", s.lower())"
+   ]
+  ]
+ },
+ {
+  "id": "top_k:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "top_k:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "top_k:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "top_k:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 3,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "top_k:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "top_k:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 3,
+  "survivors": []
+ },
+ {
+  "id": "merge_ranges:A",
+  "cond": "A",
+  "label": "good",
+  "tests_passed": 5,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": true,
+  "gate_code": null,
+  "mutants": 7,
+  "survivors": []
+ },
+ {
+  "id": "merge_ranges:B",
+  "cond": "B",
+  "label": "good_undertested",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 7,
+  "survivors": [
+   [
+    "if out and lo <= out[-1][1]:",
+    "if out and lo < out[-1][1]:"
+   ]
+  ]
+ },
+ {
+  "id": "merge_ranges:C",
+  "cond": "C",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": true,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 7,
+  "survivors": [
+   [
+    "if out and lo < out[-1][1]:",
+    "if out and lo <= out[-1][1]:"
+   ]
+  ]
+ },
+ {
+  "id": "merge_ranges:D",
+  "cond": "D",
+  "label": "bad",
+  "tests_passed": 4,
+  "tests_failed": 1,
+  "T0": false,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_UNGATED",
+  "mutants": null,
+  "survivors": []
+ },
+ {
+  "id": "merge_ranges:E",
+  "cond": "E",
+  "label": "bad",
+  "tests_passed": 5,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_OUTSIDE_SANDBOX",
+  "mutants": 7,
+  "survivors": []
+ },
+ {
+  "id": "merge_ranges:F",
+  "cond": "F",
+  "label": "bad",
+  "tests_passed": 2,
+  "tests_failed": 0,
+  "T0": true,
+  "T1": false,
+  "GATE": false,
+  "gate_code": "PLAN_REFUSED_REGRESSION",
+  "mutants": 7,
+  "survivors": [
+   [
+    "if out and lo < out[-1][1]:",
+    "if out and lo <= out[-1][1]:"
+   ]
+  ]
+ }
+]
