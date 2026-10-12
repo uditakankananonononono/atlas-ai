@@ -12,6 +12,18 @@ from app.modules.m10_email_assistant.sql_repository import EmailDraftRow, EmailM
 from tests.modules.test_m10_drift_probe import env, PAYLOAD, approve, consume, msg
 
 
+@pytest.fixture(autouse=True)
+def _gmail_send_declared(tmp_path, monkeypatch):
+    """The outbound gate denies person-facing sends without declared platform terms (fail closed)."""
+    import json
+    path = tmp_path / "outbound.json"
+    path.write_text(json.dumps({
+        "tos": {"gmail": {"allowed_kinds": ["send"], "automation_allowed": True}},
+        "rate_limits": {"gmail": {"send": {"max": 100, "window_seconds": 60}}},
+        "consent": [], "recent_actions": []}))
+    monkeypatch.setenv("ATLAS_OUTBOUND_DECLARATIONS", str(path))
+
+
 def pending(env, **changes):
     svc, registry, gmail, sessions = env
     view = svc.submit(module_id=10, action_type='send_email_reply', payload={**PAYLOAD, **changes}, user_id='t1')
@@ -198,3 +210,24 @@ def test_bound_http_capture_explicit_state_cannot_replace_trusted_snapshot(env):
     app.dependency_overrides[require_tenant]=lambda:TenantContext('t1','owner')
     with TestClient(app) as client:result=client.post(f"/approval-center/requests/{view['id']}/review-state",json={'state':{'$approval_binding':impact.approval_context(view).binding()}})
     assert result.status_code==409 and gmail.requests==[]
+
+
+def test_m10_send_refused_by_outbound_gate_without_declared_terms_before_permit(env, monkeypatch):
+    """Real m10 send path: undeclared gmail terms refuse; adapter never runs; permit unspent."""
+    from app.runtime.guardrails.errors import GuardrailRefusal
+    from app.workers import action_registry
+    from app.workers.tasks import execute_approved_action
+    svc, registry, _, _ = env; aid = approve(svc, registry)
+    monkeypatch.delenv('ATLAS_OUTBOUND_DECLARATIONS')
+    monkeypatch.setattr('app.modules.m00_approval_center.impact.PROBES', registry)
+    monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: svc)
+    monkeypatch.setattr(action_registry, '_CONDITIONAL_EXECUTORS', {})
+    effects = []
+    class Adapter:
+        def dispatch_if_current(self, payload, condition):
+            effects.append(payload); return {'dispatched': True}
+    action_registry.register_conditional_executor(10, 'send_email_reply', Adapter())
+    with pytest.raises(GuardrailRefusal) as held:
+        execute_approved_action.run(aid, 'gated')
+    assert held.value.code == 'OUTGATE:refused:denied'
+    assert effects == [] and 'effect_consumed' not in [e['event'] for e in svc.audit(aid)]

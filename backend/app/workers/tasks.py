@@ -5,14 +5,62 @@ def expire_approval_requests() -> list[str]:
     from app.modules.m00_approval_center.service import default_service
     return default_service().expire_overdue()
 
+_OUTBOUND: dict[tuple[str, int], tuple[object, object]] = {}
+
+
+def _outbound_enforcer(service, tenant_id: str):
+    """Per-tenant guardrail enforcer whose owner-authority hook is Module 0.
+
+    Cached per process so the gate's ledger-derived rate history persists
+    across tasks (in memory only; a restarted worker starts empty).
+    """
+    key = (tenant_id, id(service))
+    if key not in _OUTBOUND:
+        from app.runtime.approved_execution import M00AuthorityCheck
+        from app.runtime.guardrails.enforcer import GuardrailEnforcer
+        check = M00AuthorityCheck(service, tenant_id)
+        _OUTBOUND[key] = (GuardrailEnforcer(authority_check=check), check)
+    return _OUTBOUND[key]
+
+
 @celery_app.task(name="atlas.modules.execute_approved")
 def execute_approved_action(approval_id: str, effect_id: str) -> dict[str, object]:
-    """Consume one approved permit, then invoke its exact registered executor."""
+    """Consume one approved permit, then invoke its exact registered executor.
+
+    Person-facing action types (app.runtime.approved_execution.EFFECT_ACTION_KINDS,
+    e.g. 10:send_email_reply) are admitted by the guardrail outbound gate BEFORE
+    the permit is consumed: no declared platform terms, no valid owner authority
+    (M00 approval, bound to the action digest) or an exhausted rate limit means
+    the gate refuses, the permit stays unspent and nothing is sent.
+    """
     from app.modules.m00_approval_center.service import default_service
-    from app.workers.action_registry import execute_registered
-    view = default_service().get(approval_id)
+    service = default_service()
+    view = service.get(approval_id)
     status = view["status"].value if hasattr(view["status"], "value") else view["status"]
     if status != "approved": raise ValueError("approval is not approved")
+    from app.runtime.approved_execution import EFFECT_ACTION_KINDS
+    kind = EFFECT_ACTION_KINDS.get(str(view["action_type"]))
+    if kind is None:
+        return _execute_permitted(approval_id, effect_id, view)
+    from datetime import datetime, timezone
+    from app.runtime.approved_execution_routes import outbound_declarations
+    enforcer, check = _outbound_enforcer(service, view["user_id"])
+    now = datetime.now(timezone.utc)
+    action = {"id": f"{effect_id}"[:64], "platform": kind[0], "kind": kind[1],
+              "at": int(now.timestamp()), "count": 1, "approval_id": approval_id,
+              "module_id": view["module_id"], "action_type": view["action_type"],
+              "effect_id": effect_id, "payload": view["payload"]}
+    fields = {k: v for k, v in action.items() if k != "id"}
+    check.bind(approval_id, fields)
+    return enforcer.dispatch_outbound(
+        action, outbound_declarations(),
+        effect=lambda a: _execute_permitted(approval_id, effect_id, view),
+        now=now.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=approval_id)
+
+
+def _execute_permitted(approval_id: str, effect_id: str, view: dict) -> dict[str, object]:
+    from app.modules.m00_approval_center.service import default_service
+    from app.workers.action_registry import execute_registered
     from app.modules.m00_approval_center.impact import consume_effect_checked, impact_preview, approval_context, PROBES
     conditional = None
     condition = None

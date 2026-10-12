@@ -150,7 +150,7 @@ class M00AuthorityCheck:
                 return False
             view = self.center.get(authority_ref)
             if (view.get("user_id") != self.tenant_id
-                    or str(view.get("status")) != ApprovalStatus.APPROVED.value
+                    or str(getattr(view.get("status"), "value", view.get("status"))) != ApprovalStatus.APPROVED.value
                     or str(view.get("action_type")) != fields["action_type"]):
                 return False
             current = dict(fields)
