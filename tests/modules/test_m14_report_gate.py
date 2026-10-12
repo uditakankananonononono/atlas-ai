@@ -2,7 +2,7 @@
 import pytest
 
 from app.runtime.guardrails.errors import GuardrailRefusal
-from tests.modules.test_m14_wiring import GOOD_PROV, b64, project, service  # noqa: F401
+from tests.modules.test_m14_wiring import GOOD_PROV, b64, client, project, service  # noqa: F401
 from app.modules.m14_project_builder import service as svc_mod
 
 
@@ -45,3 +45,13 @@ def test_claim_free_report_refused_as_vacuous(service, project, monkeypatch):
     with pytest.raises(GuardrailRefusal) as held:
         service.status_report(project)
     assert held.value.code == "REPGATE:refused:vacuous"
+
+
+@pytest.mark.parametrize("path,method", [("status-report", "get"), ("exports", "post")])
+def test_route_translates_report_refusal_to_422_not_500(client, monkeypatch, path, method):
+    pid = client.post("/project-builder/projects", json={"goal": "Analyze this dataset"}).json()["id"]
+    _render(monkeypatch, "# r\n\nCLAIM: unlabeled result\n")
+    response = getattr(client, method)(f"/project-builder/projects/{pid}/{path}")
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert detail["refused_by"] == "report_gate" and detail["code"] == "REPGATE:refused:unmarked_claims"

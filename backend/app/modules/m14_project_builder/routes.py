@@ -4,6 +4,7 @@ from app.auth.context import TenantContext,require_tenant
 from .schemas import *
 from .service import Service, PlannerUnavailable
 from app.core.providers import ProviderOutcomeUnknown
+from app.runtime.guardrails.errors import GuardrailRefusal
 router=APIRouter(prefix="/project-builder",tags=["Project Builder"])
 def get_service(tenant:TenantContext=Depends(require_tenant))->Service:
     from app.core.approvals import approvals
@@ -86,7 +87,9 @@ def list_designs(project_id:str,tenant_id:str=Depends(tenant),service:Service=De
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.get("/projects/{project_id}/status-report",response_model=StatusReportView)
 def status_report(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
-    return service.status_report(_get_or_404(service,tenant_id,project_id))
+    project=_get_or_404(service,tenant_id,project_id)
+    try:return service.status_report(project)
+    except GuardrailRefusal as exc:raise HTTPException(422,{"refused_by":"report_gate","code":exc.code,"message":str(exc)}) from exc
 @router.post("/projects/{project_id}/quality",response_model=QualityResult)
 def evaluate_quality(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     project=_get_or_404(service,tenant_id,project_id)
@@ -101,6 +104,7 @@ async def feedback(project_id:str,request:FeedbackRequest,tenant_id:str=Depends(
 def export_project(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     project=_get_or_404(service,tenant_id,project_id)
     try:return service.export_project(project)
+    except GuardrailRefusal as exc:raise HTTPException(422,{"refused_by":"report_gate","code":exc.code,"message":str(exc)}) from exc
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 
 from typing import Any
