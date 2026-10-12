@@ -37,7 +37,10 @@ def compare_selected_tests(root, subjects, repeats=3):
         runs = []
         for _ in range(repeats):
             try:
-                runs.append(execute_tests(root, subject['test_paths']))
+                receipt = execute_tests(root, subject['test_paths'])
+                if type(receipt) is not dict or not all(isinstance(receipt.get(key), str) for key in ('head', 'tree_digest', 'status')) or type(receipt.get('duration_seconds')) not in (int, float):
+                    raise EvidenceError('malformed execution receipt')
+                runs.append(receipt)
             except Exception as exc:
                 runs.append({'status': 'UNVERIFIED', 'head': None, 'tree_digest': None,
                              'duration_seconds': None, 'error': type(exc).__name__})
@@ -47,11 +50,16 @@ def compare_selected_tests(root, subjects, repeats=3):
                      'median_seconds': median(run['duration_seconds'] for run in runs) if passed else None,
                      'semantic_workload_equivalence_verified': False, 'field_leader_verified': False})
     snapshots = {(run['head'], run['tree_digest']) for row in rows for run in row['runs']}
-    cross_coherent = len(snapshots) == 1 and next(iter(snapshots)) == (snap['head'], snap['tree_digest'])
+    try:
+        final = snapshot(root)
+        final_stable = final['head'] == snap['head'] and final['tree_digest'] == snap['tree_digest'] and final['status_digest'] == snap['status_digest']
+    except Exception:
+        final_stable = False
+    cross_coherent = final_stable and len(snapshots) == 1 and next(iter(snapshots)) == (snap['head'], snap['tree_digest'])
     if not cross_coherent:
         for row in rows:
             row['status'], row['median_seconds'] = 'UNVERIFIED', None
-    return {'cross_subject_coherent': cross_coherent,
+    return {'final_snapshot_stable': final_stable, 'cross_subject_coherent': cross_coherent,
             'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,
             'execution_scope': 'Trusted checkout only. At most 50 per-run bounded calls; no aggregate time/disk budget. Test code can have effects. Returned output may be truncated.',
             'subjects': rows, 'repeats': repeats, 'winner': None,

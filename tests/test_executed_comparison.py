@@ -72,3 +72,24 @@ def test_helper_exception_keeps_bounded_failure(repo, monkeypatch):
 @pytest.mark.parametrize('repeats',[True,-1,0,6])
 def test_repeat_bounds(repo,repeats):
     with pytest.raises(EvidenceError):compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=repeats)
+
+
+@pytest.mark.parametrize('receipt',[{}, {'head':[], 'tree_digest':{}, 'status':'SCOPED_PASS','duration_seconds':1}])
+def test_malformed_receipt_cannot_abort_report(repo, monkeypatch, receipt):
+    from app.modules.instinct_doc import executed_comparison as mod
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:receipt)
+    out=mod.compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=1)
+    assert all(row['status']=='UNVERIFIED' for row in out['subjects'])
+
+
+def test_final_snapshot_rehash_rejects_last_run_change(repo,monkeypatch):
+    from app.modules.instinct_doc import executed_comparison as mod
+    from app.modules.instinct_doc.repo_evidence import snapshot
+    snap=snapshot(repo)
+    def changed(*a):
+        (repo/'tests/test_b.py').write_text('changed')
+        return {'head':snap['head'],'tree_digest':snap['tree_digest'],'status':'SCOPED_PASS','duration_seconds':1}
+    monkeypatch.setattr(mod,'execute_tests',changed)
+    out=mod.compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=1)
+    assert not out['final_snapshot_stable']
+    assert all(row['median_seconds'] is None for row in out['subjects'])
