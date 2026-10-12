@@ -21,7 +21,7 @@ servers). Test counts are from `python3 -m pytest` on the listed files.
 - `backend/app/modules/m23_study_abroad/essay_excellence.py`: eight-criterion
   deterministic rubric (readability, specificity, evidence linkage,
   reflection, originality, hook, structure, length fit) with published
-  formulas, prompt-alignment check, measured revision-over-revision deltas,
+  formulas, prompt-alignment check, revision-over-revision deltas,
   per-college package assembly with completeness status.
 - `tests/modules/test_m23_essay_excellence.py` (7 tests): strong draft
   measurably outscores weak draft; revision delta positive; package refuses
@@ -60,7 +60,7 @@ servers). Test counts are from `python3 -m pytest` on the listed files.
 ## Group 101 - Common App preview from portfolio ZIP
 
 - Gap closed: "actual prior ZIP and complete personal preview not verified".
-- `backend/app/modules/m23_study_abroad/common_app_preview.py`: real ZIP
+- `backend/app/modules/m23_study_abroad/common_app_preview.py`: ZIP archive
   reader (profile.json, activities/, honors/, essays/), validation against
   Common App published constraints (10 activities, 150-char descriptions,
   5 honors, 650-word essays, required profile fields), full section-ordered
@@ -76,7 +76,7 @@ servers). Test counts are from `python3 -m pytest` on the listed files.
 - `backend/app/modules/c32/continuous_ingest.py`: drop-directory worker -
   chunked reads, atomic crash-safe checkpoints, dedupe persisted across
   runs, backpressure reporting, bounded memory (one batch), throughput
-  ledger measured on real clock time (records/s, MB/s) accumulating across
+  ledger recorded on clock time (records/s, MB/s) accumulating across
   runs.
 - `tests/modules/test_c32_continuous_ingest.py` (6 tests): multi-run
   continuation, cross-run dedupe, crash-resume without double counting,
@@ -104,7 +104,7 @@ servers). Test counts are from `python3 -m pytest` on the listed files.
   (CLASSIFIED/NOSOURCE/PRIVATE refusals still apply after parsing), handles
   304 not-modified, reports fetch metadata.
 - `tests/modules/test_c37_live_watch.py` (7 tests, hermetic local server):
-  RSS + Atom parse into the real diff, second-run dedupe, unknown-source and
+  RSS + Atom parse into the existing diff, second-run dedupe, unknown-source and
   off-registry feed-host refusals, unparsable refusal, a planted
   "TOP SECRET" feed item refused CLASSIFIED by the downstream diff.
 - Boundary: public registry sources only; cannot see or confirm classified
@@ -197,7 +197,7 @@ servers). Test counts are from `python3 -m pytest` on the listed files.
   reserved refuse in production; the allow_http test seam relaxes it).
   14 adversarial tests added (off-list redirect to a metadata endpoint
   refused before contact, redirect loop cap, robots-error denial matrix,
-  dangling-symlink-independent IP refusals, real 304 flow).
+  dangling-symlink-independent IP refusals, end-to-end 304 flow).
 - c35.registration_pipeline: export recomputes the artifact digest from
   CURRENT store content and requires equality with the owner-approved hash
   (post-review mutation refuses TAMPERED); review recomputes before
