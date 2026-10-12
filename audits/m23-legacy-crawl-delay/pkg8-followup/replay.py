@@ -19,18 +19,27 @@ def run(label,selectors):
     text=p.stdout+p.stderr;(OUT/(label+'.log')).write_text(text)
     failed=[x[7:].split(' - ')[0] for x in text.splitlines() if x.startswith('FAILED ')]
     return {'returncode':p.returncode,'failed_ids':failed,'command':['python',*cmd[1:]],'portable_path_normalization':'portable-path-normalized: interpreter only','log':label+'.log','log_sha256':sha(text.encode()),'caught':p.returncode==1 and bool(failed)}
-def load_legacy_body():
+def load_legacy_body(compare_git=False):
     raw=(OUT/'legacy-body.txt').read_bytes()
     if sha(raw)!=BODY_SHA256:raise ValueError('retained legacy body SHA mismatch')
     body=raw.decode()
-    found=subprocess.run(['git','show',PIN+':backend/app/modules/m23_study_abroad/admitted_cases.py'],cwd=ROOT,capture_output=True,text=True)
-    comparison='unavailable'
-    if found.returncode==0:
-        old=found.stdout
-        fn=next(n for n in ast.parse(old).body if isinstance(n,ast.FunctionDef) and n.name=='fetch_case_metadata')
-        derived='\n'.join(old.splitlines()[fn.body[0].lineno-1:fn.end_lineno])+'\n'
-        if derived!=body:raise ValueError('available historical body disagrees with retained bytes')
-        comparison='matched'
+    comparison='not-requested'
+    if compare_git:
+        env=dict(os.environ,GIT_NO_LAZY_FETCH='1',GIT_TERMINAL_PROMPT='0')
+        try:
+            found=subprocess.run(['git','show',PIN+':backend/app/modules/m23_study_abroad/admitted_cases.py'],cwd=ROOT,capture_output=True,text=True,env=env)
+        except FileNotFoundError as exc:
+            raise ValueError('historical comparison executable unavailable') from exc
+        comparison='unavailable'
+        if found.returncode==0:
+            old=found.stdout
+            try:
+                fn=next(n for n in ast.parse(old).body if isinstance(n,ast.FunctionDef) and n.name=='fetch_case_metadata')
+            except (SyntaxError,StopIteration) as exc:
+                raise ValueError('available historical body malformed') from exc
+            derived='\n'.join(old.splitlines()[fn.body[0].lineno-1:fn.end_lineno])+'\n'
+            if derived!=body:raise ValueError('available historical body disagrees with retained bytes')
+            comparison='matched'
     return body,comparison
 
 def kwargs_mutant(src):
@@ -38,9 +47,9 @@ def kwargs_mutant(src):
     if src.count(old)!=1:raise ValueError('delegate replacement site must occur exactly once')
     return src.replace(old,'return fetch_case_metadata_bounded(case_id, transport)',1)
 
-def main():
+def main(compare_git=False):
     raw=TARGET.read_bytes();src=raw.decode()
-    body,comparison=load_legacy_body()
+    body,comparison=load_legacy_body(compare_git=compare_git)
     new_fn=next(n for n in ast.parse(src).body if isinstance(n,ast.FunctionDef) and n.name=='fetch_case_metadata')
     lines=src.splitlines(keepends=True)
     true_old=''.join(lines[:new_fn.body[0].lineno-1])+body+''.join(lines[new_fn.end_lineno:])
@@ -60,4 +69,7 @@ def main():
     assert report['restored_baseline']['returncode']==0
     (OUT/'receipt.json').write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps(report,indent=2))
-if __name__=='__main__':main()
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--compare-git',action='store_true')
+    main(compare_git=parser.parse_args().compare_git)

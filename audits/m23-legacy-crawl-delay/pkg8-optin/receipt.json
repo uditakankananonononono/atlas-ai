@@ -1,0 +1,123 @@
+{
+  "base": "27511b4aff4ffabbd05b91edc420d40d921639f3",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/release/test_pkg8_retained_body.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "normalization": "Interpreter portable-normalized; trailing whitespace removed at listed lines; original raw logs privately retained. No path replacements.",
+  "baseline": {
+    "log": "baseline.log",
+    "rc": 0,
+    "failed_ids": [],
+    "original_sha256": "b33632f1430ce0b5613db6927aa9428be40f9ba4c14734049ef9438acb7ebe3a",
+    "delivered_sha256": "b33632f1430ce0b5613db6927aa9428be40f9ba4c14734049ef9438acb7ebe3a",
+    "normalized_lines": []
+  },
+  "mutants": [
+    {
+      "log": "O8-M1.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_default_does_not_attempt_git_comparison"
+      ],
+      "original_sha256": "ef1ed580230b460902614e6485b59cd432db8183f73eb5a09392075c852c7fe6",
+      "delivered_sha256": "ef1ed580230b460902614e6485b59cd432db8183f73eb5a09392075c852c7fe6",
+      "normalized_lines": [],
+      "id": "O8-M1",
+      "old": "if compare_git:",
+      "new": "if True:",
+      "before_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "mutant_sha256": "dd6f08ddf5add62d023c22af8ad55b7628dd121daad9ec35ca325658ba09101e",
+      "restored_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "caught": true
+    },
+    {
+      "log": "O8-M2.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_optin_prohibits_lazy_fetch"
+      ],
+      "original_sha256": "ff1d1c973863a37c90ba5f3b025747643d4ad17b6914d762e2fc03042ad39040",
+      "delivered_sha256": "13f9936cac1b580bf69682a261c554047c8131e37b8ff9b90e5a7f29784c4436",
+      "normalized_lines": [
+        13
+      ],
+      "id": "O8-M2",
+      "old": "GIT_NO_LAZY_FETCH='1'",
+      "new": "GIT_NO_LAZY_FETCH='0'",
+      "before_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "mutant_sha256": "080e19070505e8c50b08c30d1deb8d5a8688ef9d879a323bf0a6087e67ca5851",
+      "restored_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "caught": true
+    },
+    {
+      "log": "O8-M3.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_missing_executable_refused"
+      ],
+      "original_sha256": "ec6829471793ff2063922b6f652cf829b2fb5cca571d762cdf487883da435ffb",
+      "delivered_sha256": "ec6829471793ff2063922b6f652cf829b2fb5cca571d762cdf487883da435ffb",
+      "normalized_lines": [],
+      "id": "O8-M3",
+      "old": "raise ValueError('historical comparison executable unavailable') from exc",
+      "new": "return body,'unavailable'",
+      "before_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "mutant_sha256": "49603de5e2d657e8f90dcdc3813682f093b4ce8b59b53726cc7ae6074c39a448",
+      "restored_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "caught": true
+    },
+    {
+      "log": "O8-M4.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_malformed_available_object_refused[def broken(]",
+        "tests/release/test_pkg8_retained_body.py::test_malformed_available_object_refused[value = 1\\n]"
+      ],
+      "original_sha256": "7df57187f344e27c9323675ecf5154e3e8d5c9e372937d33cdda89e6749c2659",
+      "delivered_sha256": "7df57187f344e27c9323675ecf5154e3e8d5c9e372937d33cdda89e6749c2659",
+      "normalized_lines": [],
+      "id": "O8-M4",
+      "old": "raise ValueError('available historical body malformed') from exc",
+      "new": "return body,'unavailable'",
+      "before_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "mutant_sha256": "73c26496ecfda0d20e687f9dbda55b59c40efd187319ec295ae12021a7a0e6e4",
+      "restored_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "caught": true
+    },
+    {
+      "log": "O8-M5.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_available_body_mismatch_refused_without_overwrite"
+      ],
+      "original_sha256": "4c76d3eb1910dc11e7657907bddccb308418691ad280216894136ee358971c26",
+      "delivered_sha256": "4c76d3eb1910dc11e7657907bddccb308418691ad280216894136ee358971c26",
+      "normalized_lines": [],
+      "id": "O8-M5",
+      "old": "if derived!=body:",
+      "new": "if False:",
+      "before_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "mutant_sha256": "843175803ac4b88686117eccb838ea0c972697cae1a6f9c2e6be6ea58489f345",
+      "restored_sha256": "1ae5ef5ab9060a1eb182c8fba7feb218caa4506cfd3f73a3c16dc9b90302f62a",
+      "caught": true
+    }
+  ],
+  "restored_baseline": {
+    "log": "restored-baseline.log",
+    "rc": 0,
+    "failed_ids": [],
+    "original_sha256": "b33632f1430ce0b5613db6927aa9428be40f9ba4c14734049ef9438acb7ebe3a",
+    "delivered_sha256": "b33632f1430ce0b5613db6927aa9428be40f9ba4c14734049ef9438acb7ebe3a",
+    "normalized_lines": []
+  }
+}

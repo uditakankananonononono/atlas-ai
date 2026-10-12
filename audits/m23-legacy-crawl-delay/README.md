@@ -37,7 +37,7 @@ L9 was removed before release; see the warning in Limits.
 - Behavior change: the legacy helper now returns the bounded helper's closed status set and result shape, and raises
   ValueError on invalid cap args. The `too_large` status is kept, but now comes from the bounded read limits, which stop reading early.
 
-## Current pkg8 replay on 41098321
+## Historical pkg8 replay on 41098321
 
 `pkg8-followup/replay.py` restores the actual old fetch function body from source
 715337337dc704cf18085128fef3ad24f8e88021 under the current kwargs-compatible
@@ -50,7 +50,7 @@ change is made or retained.
 On Python 3.12.14, the retained current baseline and restored baseline each have
 41 passed. The true-body probe has 6 FAILED / 35 passed, including delay/order,
 cap/refusal and delegate assertions; the focused kwargs-drop sentinel has 1 FAILED.
-Both probes report rc1 plus FAILED IDs and SHA-matching restoration. The full
+Both probes report rc1 plus FAILED IDs and SHA-matching restoration. The historical full
 logs and receipt.json are in pkg8-followup/. These are local recorded outcomes,
 not independent reviewer execution or semantic acceptance. Commands normalize
 only the interpreter path for delivery; this is disclosed in each receipt.
@@ -68,12 +68,12 @@ every changed line and any original/delivered path pair, plus original and
 delivered SHA-256 for each file. `original_log_sha256` binds raw evidence;
 `log_sha256` binds delivered logs. No rerun is implied by this formatting repair.
 
-- L2-kwargs-sentinel.log: original `f399d672871f9e305967f0d178649ee6a468593e80609c2a663ab7f2b00886e8`; delivered `ad8b1cceb77a9977b2d12a3cb09bccf9a36b245483657592075444c91ed7b74d`. Normalized lines: 17 (trailing-whitespace).
-- L8-true-legacy-body.log: original `569a3588a35aa9d29dcbc616bd40ea59e9a77c6c71bbbc6fea63c8207553d47f`; delivered `5db30b30b45888da64e1bf9ac66339f66746bf83e3d337a2e62f20a23097d9fc`. Normalized lines: 10 (trailing-whitespace), 12 (trailing-whitespace), 23 (trailing-whitespace), 34 (trailing-whitespace), 44 (trailing-whitespace), 61 (trailing-whitespace), 71 (trailing-whitespace), 73 (trailing-whitespace), 78 (trailing-whitespace).
-- baseline.log: original `bf16fb909a37fe9c1ed75e530dc4c5a5a6b07041b04f9b9e495ce79e82777940`; delivered `bf16fb909a37fe9c1ed75e530dc4c5a5a6b07041b04f9b9e495ce79e82777940`. Normalized lines: none.
-- restored-baseline.log: original `45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1`; delivered `45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1`. Normalized lines: none.
+- pkg8-followup/L2-kwargs-sentinel.log: original `f399d672871f9e305967f0d178649ee6a468593e80609c2a663ab7f2b00886e8`; delivered `ad8b1cceb77a9977b2d12a3cb09bccf9a36b245483657592075444c91ed7b74d`. Normalized lines: 17 (trailing-whitespace).
+- pkg8-followup/L8-true-legacy-body.log: original `569a3588a35aa9d29dcbc616bd40ea59e9a77c6c71bbbc6fea63c8207553d47f`; delivered `5db30b30b45888da64e1bf9ac66339f66746bf83e3d337a2e62f20a23097d9fc`. Normalized lines: 10 (trailing-whitespace), 12 (trailing-whitespace), 23 (trailing-whitespace), 34 (trailing-whitespace), 44 (trailing-whitespace), 61 (trailing-whitespace), 71 (trailing-whitespace), 73 (trailing-whitespace), 78 (trailing-whitespace).
+- pkg8-followup/baseline.log: original `bf16fb909a37fe9c1ed75e530dc4c5a5a6b07041b04f9b9e495ce79e82777940`; delivered `bf16fb909a37fe9c1ed75e530dc4c5a5a6b07041b04f9b9e495ce79e82777940`. Normalized lines: none.
+- pkg8-followup/restored-baseline.log: original `45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1`; delivered `45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1`. Normalized lines: none.
 
-## Retained-body replay portability follow-up
+## Historical retained-body portability replay on fc71886b
 
 The harness now prefers retained legacy-body.txt and verifies its fixed SHA256
 76e00134fa6e9d61c9e68c03747aef5d43d21074fa58fd0c70050f064c2cc9af
@@ -104,14 +104,47 @@ receipt.json/current-replay-receipt.json. No private path hits/replacements.
 Interpreter command is portable-normalized; recorded current outcomes are not
 universal guarantees or independent reviewer acceptance.
 
-- current-baseline.log: original `31ac66f9c5f213461c8de137a1ca63fb973ac3d4e21d6723b2af3e5a39a573fd`; delivered `31ac66f9c5f213461c8de137a1ca63fb973ac3d4e21d6723b2af3e5a39a573fd`; normalized lines none.
-- current-L8-true-legacy-body.log: original `19e2ef2a1ea3fdc0f6d4b6bd487fe586bca78a18a29768e9dc978983e00e99b9`; delivered `5dde5650a2bdc09b7eda6fcff43ccc714a61da547e04c6a3fc5d0f7f0a927709`; normalized lines [10, 12, 23, 34, 44, 61, 71, 73, 78].
-- current-L2-kwargs-sentinel.log: original `65753e4c42b7a35501619fc687d81ae2c57d7c1c7c432d6fd5f4ab7ec451b4e2`; delivered `27d2f03b3a0ea2176bf84345427f1fd54b33f3eaf6197d7441675f0daa611f42`; normalized lines [17].
-- current-restored-baseline.log: original `45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1`; delivered `45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1`; normalized lines none.
-- baseline.log: original `c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf`; delivered `c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf`; normalized lines none.
-- P8-M1.log: original `806835fbacebbe146d37428efcca9fc6426a7da3213fcec3046864090a06a934`; delivered `806835fbacebbe146d37428efcca9fc6426a7da3213fcec3046864090a06a934`; normalized lines none.
-- P8-M2.log: original `40d729bea563ee594c536021474fd2585c44812be811faafe62f216269154790`; delivered `02acd0679b22dd7ee723ccc66c8e053dba6f8d69bd35e122220a43a9f7ca6a40`; normalized lines [7, 13, 15].
-- P8-M3.log: original `08fc0c2fe8564cf2a627d5fff913feb7664452a02d4028c8e9bfaee58271df78`; delivered `08fc0c2fe8564cf2a627d5fff913feb7664452a02d4028c8e9bfaee58271df78`; normalized lines none.
-- P8-M4.log: original `0642d934e488e457dd45f8a4b1b0c080f6b8fdc4bdc473c4f5f1da4cb18e2034`; delivered `0642d934e488e457dd45f8a4b1b0c080f6b8fdc4bdc473c4f5f1da4cb18e2034`; normalized lines none.
-- P8-M5.log: original `7aa98b33e947ba3cd190f300c6b13a26b06141e2bcd27a41a10d4f5ce07ff33d`; delivered `73a50d39f720787a2a87feb389c0db7ca62ecb93e2da597fd2b437ae47eb2747`; normalized lines [7].
-- restored-baseline.log: original `c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf`; delivered `c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf`; normalized lines none.
+- pkg8-portability/current-baseline.log: original `31ac66f9c5f213461c8de137a1ca63fb973ac3d4e21d6723b2af3e5a39a573fd`; delivered `31ac66f9c5f213461c8de137a1ca63fb973ac3d4e21d6723b2af3e5a39a573fd`; normalized lines none.
+- pkg8-portability/current-L8-true-legacy-body.log: original `19e2ef2a1ea3fdc0f6d4b6bd487fe586bca78a18a29768e9dc978983e00e99b9`; delivered `5dde5650a2bdc09b7eda6fcff43ccc714a61da547e04c6a3fc5d0f7f0a927709`; normalized lines [10, 12, 23, 34, 44, 61, 71, 73, 78].
+- pkg8-portability/current-L2-kwargs-sentinel.log: original `65753e4c42b7a35501619fc687d81ae2c57d7c1c7c432d6fd5f4ab7ec451b4e2`; delivered `27d2f03b3a0ea2176bf84345427f1fd54b33f3eaf6197d7441675f0daa611f42`; normalized lines [17].
+- pkg8-portability/current-restored-baseline.log: original `45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1`; delivered `45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1`; normalized lines none.
+- pkg8-portability/baseline.log: original `c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf`; delivered `c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf`; normalized lines none.
+- pkg8-portability/P8-M1.log: original `806835fbacebbe146d37428efcca9fc6426a7da3213fcec3046864090a06a934`; delivered `806835fbacebbe146d37428efcca9fc6426a7da3213fcec3046864090a06a934`; normalized lines none.
+- pkg8-portability/P8-M2.log: original `40d729bea563ee594c536021474fd2585c44812be811faafe62f216269154790`; delivered `02acd0679b22dd7ee723ccc66c8e053dba6f8d69bd35e122220a43a9f7ca6a40`; normalized lines [7, 13, 15].
+- pkg8-portability/P8-M3.log: original `08fc0c2fe8564cf2a627d5fff913feb7664452a02d4028c8e9bfaee58271df78`; delivered `08fc0c2fe8564cf2a627d5fff913feb7664452a02d4028c8e9bfaee58271df78`; normalized lines none.
+- pkg8-portability/P8-M4.log: original `0642d934e488e457dd45f8a4b1b0c080f6b8fdc4bdc473c4f5f1da4cb18e2034`; delivered `0642d934e488e457dd45f8a4b1b0c080f6b8fdc4bdc473c4f5f1da4cb18e2034`; normalized lines none.
+- pkg8-portability/P8-M5.log: original `7aa98b33e947ba3cd190f300c6b13a26b06141e2bcd27a41a10d4f5ce07ff33d`; delivered `73a50d39f720787a2a87feb389c0db7ca62ecb93e2da597fd2b437ae47eb2747`; normalized lines [7].
+- pkg8-portability/restored-baseline.log: original `c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf`; delivered `c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf`; normalized lines none.
+
+## Explicit optional Git comparison follow-up on 27511b4a
+
+Retained-body hash checking is the default; no historical Git comparison is
+attempted unless replay.py is called with `--compare-git`. That optional branch
+sets GIT_NO_LAZY_FETCH=1 and GIT_TERMINAL_PROMPT=0. Partial-clone Git commands can
+otherwise lazy-fetch missing promisor objects. This is an environment caution,
+not evidence of observed HTTP and not a comprehensive network-isolation promise.
+Git-version/environment support for these flags is not a tested egress boundary.
+MockTransport/socket-plugin limits and permanent L9 remain unchanged.
+
+Replay still requires Git for current HEAD metadata, so it is not a Git-free
+workflow. Missing comparison executable and malformed AVAILABLE object are
+explicit ValueError refusals before baseline/product mutation, not silent fallback.
+Nonzero missing-object results use retained bytes; mismatch remains refused.
+Tests independently pin expected retained-body SHA, not historical authorship.
+Unchanged retained body and socket plugin are prior dependencies; include their
+current bytes/hashes when preparing a full review bundle.
+
+Exact selector: tests/release/test_pkg8_retained_body.py, 12 passed baseline/restored.
+Five named harness operators: 5 CAUGHT using rc1+FAILED sensitivity, no classifier
+tightening. pkg8-optin/ contains the replayable battery, receipt and logs. Historical
+counts/logs above are not rewritten or promoted. No full product replay rerun here.
+Delivered logs intentionally strip whitespace if listed, originals privately
+retained; interpreter portable-normalized, no private path replacements.
+
+- pkg8-optin/baseline.log: original `b33632f1430ce0b5613db6927aa9428be40f9ba4c14734049ef9438acb7ebe3a`; delivered `b33632f1430ce0b5613db6927aa9428be40f9ba4c14734049ef9438acb7ebe3a`; normalized lines none.
+- pkg8-optin/O8-M1.log: original `ef1ed580230b460902614e6485b59cd432db8183f73eb5a09392075c852c7fe6`; delivered `ef1ed580230b460902614e6485b59cd432db8183f73eb5a09392075c852c7fe6`; normalized lines none.
+- pkg8-optin/O8-M2.log: original `ff1d1c973863a37c90ba5f3b025747643d4ad17b6914d762e2fc03042ad39040`; delivered `13f9936cac1b580bf69682a261c554047c8131e37b8ff9b90e5a7f29784c4436`; normalized lines [13].
+- pkg8-optin/O8-M3.log: original `ec6829471793ff2063922b6f652cf829b2fb5cca571d762cdf487883da435ffb`; delivered `ec6829471793ff2063922b6f652cf829b2fb5cca571d762cdf487883da435ffb`; normalized lines none.
+- pkg8-optin/O8-M4.log: original `7df57187f344e27c9323675ecf5154e3e8d5c9e372937d33cdda89e6749c2659`; delivered `7df57187f344e27c9323675ecf5154e3e8d5c9e372937d33cdda89e6749c2659`; normalized lines none.
+- pkg8-optin/O8-M5.log: original `4c76d3eb1910dc11e7657907bddccb308418691ad280216894136ee358971c26`; delivered `4c76d3eb1910dc11e7657907bddccb308418691ad280216894136ee358971c26`; normalized lines none.
+- pkg8-optin/restored-baseline.log: original `b33632f1430ce0b5613db6927aa9428be40f9ba4c14734049ef9438acb7ebe3a`; delivered `b33632f1430ce0b5613db6927aa9428be40f9ba4c14734049ef9438acb7ebe3a`; normalized lines none.

@@ -1,0 +1,16 @@
+.......F....                                                             [100%]
+=================================== FAILURES ===================================
+_________________ test_default_does_not_attempt_git_comparison _________________
+tests/release/test_pkg8_retained_body.py:54: in test_default_does_not_attempt_git_comparison
+    assert m.load_legacy_body()==(BODY.decode(),'not-requested')
+           ^^^^^^^^^^^^^^^^^^^^
+audits/m23-legacy-crawl-delay/pkg8-followup/replay.py:30: in load_legacy_body
+    found=subprocess.run(['git','show',PIN+':backend/app/modules/m23_study_abroad/admitted_cases.py'],cwd=ROOT,capture_output=True,text=True,env=env)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/release/test_pkg8_retained_body.py:53: in <lambda>
+    monkeypatch.setattr(m.subprocess,'run',lambda *a,**k:pytest.fail('unexpected optional Git comparison'))
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: unexpected optional Git comparison
+=========================== short test summary info ============================
+FAILED tests/release/test_pkg8_retained_body.py::test_default_does_not_attempt_git_comparison
+1 failed, 11 passed in 0.08s

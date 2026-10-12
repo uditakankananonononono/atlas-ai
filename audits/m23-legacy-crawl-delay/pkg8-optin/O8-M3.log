@@ -1,0 +1,10 @@
+.........F..                                                             [100%]
+=================================== FAILURES ===================================
+_______________________ test_missing_executable_refused ________________________
+tests/release/test_pkg8_retained_body.py:67: in test_missing_executable_refused
+    with pytest.raises(ValueError,match='executable unavailable'):m.load_legacy_body(compare_git=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ============================
+FAILED tests/release/test_pkg8_retained_body.py::test_missing_executable_refused
+1 failed, 11 passed in 0.07s
