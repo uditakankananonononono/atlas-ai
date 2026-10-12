@@ -37,20 +37,33 @@ def _date(s):
 
 
 def parse_fee(text):
-    """Returns (fee, currency, status). Zero only when free language is explicit;
-    unknown currency or no fee statement gives fee=None and a review status."""
-    if FREE_RE.search(text):
-        return 0.0, None, "free"
-    m = FEE_RE.search(text)
-    if not m:
+    """Returns (fee, currency, status). Collects every fee statement.
+    status: free (explicit free language, no charged fee), stated, conflict
+    (free language AND a charged fee, or different charged amounts; the first
+    charged fee is surfaced), unknown_currency, not_stated. fee is None unless
+    a charged fee with a known currency exists or the status is free."""
+    free_spans = [m.span() for m in FREE_RE.finditer(text)]
+    charged = []  # (amount, currency or None)
+    for m in FEE_RE.finditer(text):
+        if any(a <= m.start() < b for a, b in free_spans):
+            continue  # the word "fee" belongs to a free phrase such as "no fee"
+        gap, amt, post = m.group(1), float(m.group(2).replace(",", "")), m.group(3)
+        k = KNOWN_CUR.search(gap)
+        cur = k.group(0) if k else None
+        if cur is None and post and KNOWN_CUR.fullmatch(post):
+            cur = post
+        charged.append((amt, (cur.upper() if cur and cur.isalpha() else cur)))
+    known = [c for c in charged if c[1] is not None]
+    if free_spans:
+        if not charged:
+            return 0.0, None, "free"
+        return (known[0][0], known[0][1], "conflict") if known else (None, None, "conflict")
+    if not charged:
         return None, None, "not_stated"
-    gap, amt, post = m.group(1), float(m.group(2).replace(",", "")), m.group(3)
-    k = KNOWN_CUR.search(gap)
-    cur = (k.group(0) if k else None)
-    if cur is None and post and KNOWN_CUR.fullmatch(post):
-        cur = post
-    if cur is not None:
-        return amt, cur.upper() if cur.isalpha() else cur, "stated"
+    if known:
+        if len({c for c in known}) > 1:
+            return known[0][0], known[0][1], "conflict"
+        return known[0][0], known[0][1], "stated"
     return None, None, "unknown_currency"
 
 
@@ -78,6 +91,9 @@ def match(opp, profile, today=None):
     needs = []
     if opp["fee_status"] == "stated" and opp["fee"]:
         needs.append("fee approval: %.2f %s" % (opp["fee"], opp["fee_currency"]))
+    elif opp["fee_status"] == "conflict":
+        shown = "%.2f %s" % (opp["fee"], opp["fee_currency"]) if opp["fee"] is not None else "unknown amount"
+        needs.append("conflicting fee statements: review (charged fee surfaced: %s)" % shown)
     elif opp["fee_status"] == "unknown_currency":
         needs.append("fee currency unrecognized: review")
     elif opp["fee_status"] == "not_stated":

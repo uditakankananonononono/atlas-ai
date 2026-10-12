@@ -195,6 +195,20 @@ class T(unittest.TestCase):
         same = ae.prepare(o, {}, lambda q, l, f: "I never won the Nobel Prize.", ["I never won the Nobel Prize."])
         self.assertTrue(same["ready_for_owner_review"])
 
+    def test_fee_conflicts(self):
+        p = ae.parse_opportunity("No application fee. Mandatory registration fee EUR 100.")
+        self.assertEqual((p["fee"], p["fee_currency"], p["fee_status"]), (100.0, "EUR", "conflict"))
+        n = ae.match(p, {}, today=date(2026, 10, 12))["needs_owner"]
+        self.assertTrue(any("conflicting fee statements" in x and "100.00 EUR" in x for x in n))
+        p = ae.parse_opportunity("Free to enter. Finalist fee: 500 ZAR.")
+        self.assertEqual((p["fee"], p["fee_status"]), (None, "conflict"))
+        p = ae.parse_opportunity("Entry fee $10. Late fee $20.")
+        self.assertEqual(p["fee_status"], "conflict")
+        p = ae.parse_opportunity("No fee, deadline 2026-12-20")
+        self.assertEqual((p["fee"], p["fee_status"]), (0.0, "free"))
+        p = ae.parse_opportunity("Entry fee $10. Fee $10 payable online.")
+        self.assertEqual(p["fee_status"], "stated")
+
     def test_history_audit(self):
         d = tempfile.mkdtemp()
         open(os.path.join(d, "a.py"), "w").write("def zebrafish_hatchery_tracker(): pass\n")
