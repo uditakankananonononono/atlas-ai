@@ -29,7 +29,7 @@ def test_exempt_reasons_name_existing_prefixes():
         assert reason and any(p.relative_to(eb.APP).as_posix().startswith(pfx) for p in eb.APP.rglob("*.py")), pfx
 
 
-def test_snapshot_matches_computation_and_prints_declared_counts(capsys):
+def test_snapshot_matches_computation_and_prints_computed_counts(capsys):
     res = eb.classify()
     got = {k: {"status": v["status"], "evidence": v["evidence"]} for k, v in sorted(res.items())}
     want = json.loads(SNAPSHOT.read_text())
@@ -38,7 +38,7 @@ def test_snapshot_matches_computation_and_prints_declared_counts(capsys):
     print(f"EFFECT_BINDINGS total={len(res)} GATED={c['GATED']} EXEMPT-BY-DESIGN={c['EXEMPT-BY-DESIGN']} UNGATED={c['UNGATED']} (computed under declared policy tables, not certified)")
 
 
-def test_gated_status_is_computed_not_declared(monkeypatch):
+def test_gated_status_depends_on_declared_caller_evidence(monkeypatch):
     m06 = "modules/m06_social_media_manager/adapters.py"
     assert eb.classify()[m06]["status"] == "GATED"
     monkeypatch.setattr(eb, "GATED_CALLERS", {})
