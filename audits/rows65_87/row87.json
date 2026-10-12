@@ -1,0 +1,49 @@
+{
+  "row": 87,
+  "selectors": [
+    "tests/mission_build/test_training.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "actually fitted synthetic NB classifier, not licensed ten-site admissions training",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "rights",
+      "path": "backend/app/mission_build/admissions_training.py",
+      "old": "if s.get('training_allowed') is not True or not s.get('rights_receipt'):",
+      "new": "if False:"
+    },
+    {
+      "id": "duplicate",
+      "path": "backend/app/mission_build/admissions_training.py",
+      "old": "if canonical in seen_text:",
+      "new": "if False:"
+    },
+    {
+      "id": "domains",
+      "path": "backend/app/mission_build/admissions_training.py",
+      "old": "if len(domains) < minimum_sites:",
+      "new": "if False:"
+    },
+    {
+      "id": "coverage",
+      "path": "backend/app/mission_build/admissions_training.py",
+      "old": "{r[3] for r in heldout} != set(labels)",
+      "new": "False"
+    },
+    {
+      "id": "checksum",
+      "path": "backend/app/mission_build/admissions_training.py",
+      "old": "if 'artifact_sha256' in model and _hash({k:v for k,v in model.items() if k != 'artifact_sha256'}) != model['artifact_sha256']:",
+      "new": "if False:"
+    }
+  ]
+}
