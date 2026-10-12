@@ -1,28 +1,14 @@
-"""Instinct-doc groups 1-16: program evidence verifier.
+"""Instinct-doc groups 1-16: bounded program evidence verifier.
 
-Unlike the declaration registers (p77/p254/p255/p258), nothing here trusts a
-caller-supplied claim. Each project is checked by resolving its evidence:
-  * repo      - the declared path must itself be the top level of a git checkout with commits
-  * datasets  - each dataset file must exist; sha256 and byte size recomputed
-  * tools     - the declared argv is executed here (no shell, stripped env, timeout, resource
-                limits); exit 0 and the output hash are taken from this run, not from the caller
-  * papers    - a PDF must exist; page count and Times font read via pdfinfo/pdffonts
-  * judge     - the judge argv is EXECUTED here; the score trend is parsed from its captured stdout.
-                Caller-written transcript files are never accepted
-  * benchmark - the argv is re-run; its stdout hash must match
-Trust limits, stated plainly:
-  * rlimits plus a stripped environment is NOT a security sandbox. A command that passes the
-    allowlist still runs with this process's user, network and filesystem access. Use this only on
-    evidence from sources the operator already trusts to run code locally.
-  * Passing runner= to any check REPLACES the allowlist and the sandbox entirely. It exists so
-    tests can inject fakes and so an operator can supply their own isolation; it is never a default.
-  * Tool, judge and benchmark evidence counts only when this module ran the command and captured
-    the output itself. Files a caller wrote (transcripts, outputs) are not authenticated and
-    never count above PARTIAL.
-  * The paper check is a format gate only. It is not evidence of a good or neat paper.
-Thresholds are parameters so the 40-each / 200-each / 200-overall rulings are all
-supported without rework (see STRICT, LENIENT). Pure stdlib; subprocess only for
-git/pdfinfo/pdffonts and explicit benchmark commands.
+Verifies repo existence, dataset hash integrity, and repeatable command output
+under a caller-supplied allowlist; does NOT verify provenance, scientific validity,
+or judge authenticity. PDF checks are format gates, not visual quality review.
+Leader values, dataset origin labels and judge identities remain caller claims.
+
+The default trusted-local runner uses stripped environment, rlimits and timeout,
+not network/filesystem isolation. Only run code the operator already trusts.
+runner= replaces the default runner and bypasses its allowlist/resource limits;
+project and program reports explicitly mark this as injected execution.
 """
 from __future__ import annotations
 
@@ -88,25 +74,43 @@ def default_remote_probe(url):
 
 
 def check_repo(base, spec, probe=None):
-    """spec: {path, remote?}. Passes only if path is the top level of a git checkout with
-    commits. When spec has "remote", probe(remote) must return the local HEAD sha."""
+    """Require a committed top-level checkout with a clean tracked tree.
+
+    Optional spec.remote is only an expected origin, never a probe destination.
+    Remote HEAD is always obtained from the checkout's configured origin.
+    Untracked files do not affect the tracked-clean verdict.
+    """
     try:
         p = _resolve(base, spec["path"])
+        def git(*args):
+            result = subprocess.run(["git", "-C", p, *args], capture_output=True,
+                                    text=True, timeout=30)
+            if result.returncode != 0:
+                raise _err("git_command_failed")
+            return result.stdout.strip()
         top = subprocess.run(["git", "-C", p, "rev-parse", "--show-toplevel"],
                              capture_output=True, text=True, timeout=30)
         if top.returncode != 0 or os.path.realpath(top.stdout.strip()) != p:
             return {"ok": False, "commits": 0, "reason": "not_toplevel"}
-        n = int(subprocess.run(["git", "-C", p, "rev-list", "--count", "HEAD"],
-                               capture_output=True, text=True, timeout=30).stdout.strip() or 0)
-        head = subprocess.run(["git", "-C", p, "rev-parse", "HEAD"], capture_output=True,
-                              text=True, timeout=30).stdout.strip()
-        if n > 0 and spec.get("remote"):
-            got = (probe or default_remote_probe)(spec["remote"])
+        n = int(git("rev-list", "--count", "HEAD") or 0)
+        head = git("rev-parse", "HEAD")
+        if git("status", "--porcelain", "--untracked-files=no"):
+            return {"ok": False, "commits": n, "reason": "tracked_tree_dirty"}
+        origin_result = subprocess.run(["git", "-C", p, "remote", "get-url", "origin"],
+                                      capture_output=True, text=True, timeout=30)
+        origin = origin_result.stdout.strip() if origin_result.returncode == 0 else ""
+        if spec.get("remote") and spec["remote"] != origin:
+            return {"ok": False, "commits": n, "reason": "origin_mismatch"}
+        if origin:
+            got = (probe or default_remote_probe)(origin)
             if got != head:
-                return {"ok": False, "commits": n, "reason": "remote_head_mismatch"}
+                return {"ok": False, "commits": n, "reason": "remote_head_mismatch",
+                        "configured_origin": origin}
     except (KeyError, ValueError, OSError, TypeError, AttributeError, subprocess.SubprocessError):
         return {"ok": False, "commits": 0, "reason": "unreadable"}
-    return {"ok": n > 0, "commits": n}
+    return {"ok": n > 0, "commits": n, "configured_origin": origin,
+            "tracked_clean": True, "remote_verified": bool(origin),
+            "remote_probe_injected": probe is not None}
 
 
 def check_datasets(base, specs, minimum):
@@ -254,7 +258,7 @@ def check_judge(base, rounds, t, runner=None, allowlist=BENCH_ALLOWED):
     return {"rounds": len(seen), "unattributed": unattributed, "ok": len(seen) >= t.judge_rounds}
 
 
-def check_benchmarks(base, specs, t, runner=None):
+def check_benchmarks(base, specs, t, runner=None, allowlist=BENCH_ALLOWED):
     """Reproduction only: re-run argv; non-empty stdout must hash to stdout_sha256. This shows
     a command is repeatable. It says nothing about a leader; see check_leader_benchmarks."""
     seen = set()
@@ -263,7 +267,7 @@ def check_benchmarks(base, specs, t, runner=None):
             key = (tuple(s["argv"]), s["stdout_sha256"])
             if key in seen:
                 continue
-            r = _run_checked(base, s["argv"], BENCH_ALLOWED, runner)
+            r = _run_checked(base, s["argv"], allowlist, runner)
             if r is not None and r.returncode == 0 and r.stdout and hashlib.sha256(r.stdout).hexdigest() == s["stdout_sha256"]:
                 seen.add(key)
         except (KeyError, ValueError, OSError, TypeError, subprocess.SubprocessError):
@@ -292,7 +296,7 @@ def parse_bench(text):
     return out
 
 
-def check_leader_benchmarks(base, specs, runner=None):
+def check_leader_benchmarks(base, specs, runner=None, allowlist=BENCH_ALLOWED):
     """Spec: {argv, leader, metric, higher_is_better(bool)}. The benchmark is executed here;
     its stdout must hold exactly one BENCH line for that leader and metric, and the subject
     must beat (or match) the leader value in the declared direction. The leader identity,
@@ -304,7 +308,7 @@ def check_leader_benchmarks(base, specs, runner=None):
         try:
             if not isinstance(s.get("higher_is_better"), bool) or not s.get("leader") or not s.get("metric"):
                 continue
-            r = _run_checked(base, s["argv"], BENCH_ALLOWED, runner)
+            r = _run_checked(base, s["argv"], allowlist, runner)
             if r is None or r.returncode != 0:
                 continue
             rows = [x for x in parse_bench(r.stdout.decode("utf-8", "replace"))
@@ -320,7 +324,7 @@ def check_leader_benchmarks(base, specs, runner=None):
     return {"compared": compared, "beat": beat, "ok": beat >= 1}
 
 
-def check_module_run(base, spec, runner=None):
+def check_module_run(base, spec, runner=None, allowlist=BENCH_ALLOWED):
     """Spec: {argv, stdout_regex, datasets:[{path, sha256, origin}], referenced_in:[test file]}.
     A module data run counts only when (a) each dataset file exists with the given hash and a
     stated origin, (b) at least one named source file mentions each dataset's file name, and
@@ -337,7 +341,7 @@ def check_module_run(base, spec, runner=None):
                 srcs.append(fh.read())
         if not srcs or not all(any(os.path.basename(d["path"]) in t for t in srcs) for d in ds):
             return {"ok": False, "reason": "not_referenced"}
-        r = _run_checked(base, spec["argv"], BENCH_ALLOWED, runner)
+        r = _run_checked(base, spec["argv"], allowlist, runner)
         if r is None or r.returncode != 0 or not r.stdout:
             return {"ok": False, "reason": "run_failed"}
         if not re.search(spec["stdout_regex"], r.stdout.decode("utf-8", "replace")):
@@ -389,13 +393,22 @@ def check_paper(base, spec, t):
         p = _resolve(base, spec["path"])
         if not all(shutil.which(x) for x in ("pdfinfo", "pdffonts", "pdftotext")):
             return {"ok": False, "reason": "pdf_tools_missing"}
-        info = subprocess.run(["pdfinfo", p], capture_output=True, text=True, timeout=30).stdout
+        info_run = subprocess.run(["pdfinfo", p], capture_output=True, text=True, timeout=30)
+        if info_run.returncode != 0:
+            return {"ok": False, "reason": "pdfinfo_failed", "returncode": info_run.returncode}
+        info = info_run.stdout
         pages = next((int(l.split()[-1]) for l in info.splitlines() if l.startswith("Pages:")), 0)
-        names = [n.split("+")[-1] for n in _pdf_fonts(subprocess.run(["pdffonts", p], capture_output=True, text=True, timeout=30).stdout)]
+        fonts_run = subprocess.run(["pdffonts", p], capture_output=True, text=True, timeout=30)
+        if fonts_run.returncode != 0:
+            return {"ok": False, "reason": "pdffonts_failed", "returncode": fonts_run.returncode}
+        names = [n.split("+")[-1] for n in _pdf_fonts(fonts_run.stdout)]
         extra = ("symbol", "math", "cmsy", "cmmi")
         body = [n for n in names if not n.lower().startswith(extra)]
         fonts_ok = bool(body) and all(n.lower().startswith(t.paper_font.lower()) for n in body)
-        text = subprocess.run(["pdftotext", "-layout", p, "-"], capture_output=True, text=True, timeout=120).stdout
+        text_run = subprocess.run(["pdftotext", "-layout", p, "-"], capture_output=True, text=True, timeout=120)
+        if text_run.returncode != 0:
+            return {"ok": False, "reason": "pdftotext_failed", "returncode": text_run.returncode}
+        text = text_run.stdout
         page_texts = text.split("\f")
         full = sum(1 for pg in page_texts if len(pg.split()) >= 50)
         counts, order = section_words(page_texts, t.paper_sections)
@@ -410,24 +423,27 @@ def check_paper(base, spec, t):
         return {"ok": False, "reason": "unreadable"}
 
 
-def verify_project(base, project, t=LENIENT, runner=None, probe=None, tool_allowlist=()):
+def verify_project(base, project, t=LENIENT, runner=None, probe=None, tool_allowlist=(), command_allowlist=BENCH_ALLOWED):
     checks = {
         "repo": check_repo(base, project.get("repo", {}), probe),
         "datasets": check_datasets(base, project.get("datasets"), t.datasets_per_project),
         "paper": check_paper(base, project.get("paper") or {}, t),
-        "judge": check_judge(base, project.get("judge_rounds"), t, runner),
-        "benchmarks": check_benchmarks(base, project.get("benchmarks"), t, runner),
+        "judge": check_judge(base, project.get("judge_rounds"), t, runner, command_allowlist),
+        "benchmarks": check_benchmarks(base, project.get("benchmarks"), t, runner, command_allowlist),
+        "leader_benchmarks": check_leader_benchmarks(base, project.get("leader_benchmarks"), runner, command_allowlist),
+        "module_run": check_module_run(base, project.get("module_run") or {}, runner, command_allowlist),
     }
     tools = check_tools(base, project.get("tools"), runner, tool_allowlist)
     checks["tools"] = {"counted": len(tools), "ok": len(tools) >= t.tools_per_project}
     passed = sum(1 for c in checks.values() if c["ok"])
     verdict = "VERIFIED" if passed == len(checks) else ("PARTIAL" if passed else "UNSUPPORTED")
     return {"project": project.get("id", ""), "verdict": verdict, "checks": checks,
-            "_tools": sorted(tools)}
+            "_tools": sorted(tools), "runner_injected": runner is not None,
+            "execution_mode": "injected_runner_allowlist_bypassed" if runner is not None else "trusted_local_allowlisted"}
 
 
-def verify_program(base, projects, t=LENIENT, runner=None, probe=None, tool_allowlist=()):
-    rows = [verify_project(base, p, t, runner, probe, tool_allowlist) for p in projects]
+def verify_program(base, projects, t=LENIENT, runner=None, probe=None, tool_allowlist=(), command_allowlist=BENCH_ALLOWED):
+    rows = [verify_project(base, p, t, runner, probe, tool_allowlist, command_allowlist) for p in projects]
     allt, total = set(), 0
     for r in rows:
         tools = r.pop("_tools")
@@ -439,13 +455,17 @@ def verify_program(base, projects, t=LENIENT, runner=None, probe=None, tool_allo
     return {"thresholds": t.__dict__, "projects": rows,
             "program_distinct_tools_verified": len(allt), "program_tools_counted": n,
             "program_tools_ok": prog_ok,
-            "verdict": "VERIFIED" if all_ok else ("PARTIAL" if rows else "UNSUPPORTED"),
+            "verdict": "VERIFIED" if all_ok else ("PARTIAL" if any(r["verdict"] != "UNSUPPORTED" for r in rows) else "UNSUPPORTED"),
+            "runner_injected": runner is not None,
+            "execution_mode": "injected_runner_allowlist_bypassed" if runner is not None else "trusted_local_allowlisted",
             "not_covered": ["discovery or breakthrough", "5-year-equivalence",
                             "world-best claims", "model training"]}
 
 
 def render(report):
     lines = ["program %s tools=%d" % (report["verdict"], report["program_distinct_tools_verified"])]
+    if report.get("runner_injected"):
+        lines.append("EXECUTION: injected runner; default allowlist/resource limits bypassed")
     for r in report["projects"]:
         fails = [k for k, v in r["checks"].items() if not v["ok"]]
         lines.append("%s %s%s" % (r["project"], r["verdict"], " FAIL:" + ",".join(fails) if fails else ""))

@@ -46,6 +46,7 @@ class T(unittest.TestCase):
     def test_repo_remote_probe(self):
         git_repo(os.path.join(self.d, "r"))
         head = subprocess.run(["git", "-C", os.path.join(self.d, "r"), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+        subprocess.run(["git", "-C", os.path.join(self.d, "r"), "remote", "add", "origin", "https://example.invalid/r"], check=True)
         spec_ = {"path": "r", "remote": "https://example.invalid/r"}
         self.assertTrue(pe.check_repo(self.d, spec_, lambda u: head)["ok"])
         self.assertEqual(pe.check_repo(self.d, spec_, lambda u: "deadbeef")["reason"], "remote_head_mismatch")
@@ -237,7 +238,7 @@ class T(unittest.TestCase):
 
     def test_empty_project_unsupported_and_program(self):
         rep = pe.verify_program(self.d, [{"id": "p"}])
-        self.assertEqual(rep["projects"][0]["verdict"], "UNSUPPORTED"); self.assertEqual(rep["verdict"], "PARTIAL")
+        self.assertEqual(rep["projects"][0]["verdict"], "UNSUPPORTED"); self.assertEqual(rep["verdict"], "UNSUPPORTED")
         self.assertEqual(pe.verify_program(self.d, [])["verdict"], "UNSUPPORTED")
 
 
