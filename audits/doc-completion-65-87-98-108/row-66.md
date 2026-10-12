@@ -36,4 +36,4 @@ As of the d8668c19 snapshot, no per-row audit directory existed on main for this
 
 Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Collectors/ranking and proposal helpers exist; no verified trend-to-real-operation outcome across these fields.
 
-CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.
+CLOSEABLE delta: none proposed. This process has not established literal acceptance for this row. This sheet makes no completion claim.

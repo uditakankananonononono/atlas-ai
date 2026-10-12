@@ -37,4 +37,4 @@ Per-row audit on main: `audits/rows98_108/row98-README.md` and `row98.json` ("Ro
 
 Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Student-authored text export/coaching/draft flow; requested personal winning-material package not inspected or judged.
 
-CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.
+CLOSEABLE delta: none proposed. This process has not established literal acceptance for this row. This sheet makes no completion claim.

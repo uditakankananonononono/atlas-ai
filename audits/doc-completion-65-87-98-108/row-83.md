@@ -36,4 +36,4 @@ The module paths in section (a) came from the Oct 12 table and may not be the me
 
 Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Large concept code inventory is not a source-bound 1,000-concept functional acceptance ledger.
 
-CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.
+CLOSEABLE delta: none proposed. This process has not established literal acceptance for this row. This sheet makes no completion claim.

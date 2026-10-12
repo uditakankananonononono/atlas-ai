@@ -42,4 +42,4 @@ Row 99 module `backend/app/modules/c35/registration_pipeline.py` is a review-gat
 
 Missing scope from the Oct 12 audit table (HISTORICAL, superseded by the tip-state update above where one is given): Offline registration checklist/waiver drafts; no account/register/send execution.
 
-CLOSEABLE delta: none proposed. No acceptance for a literal reading of this row can be shown by code alone without the outside-world outcome named above, or without an owner decision. This sheet makes no completion claim.
+CLOSEABLE delta: none proposed. This process has not established literal acceptance for this row. This sheet makes no completion claim.
