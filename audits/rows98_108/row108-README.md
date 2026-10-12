@@ -18,7 +18,10 @@ python scripts/release/scoped_mutations.py audits/rows98_108/row108.json OUT
 45-second timeout per run. CAUGHT requires rc1 plus FAILED IDs, no errors or
 skips. Source SHA restored and checked each mutation. Fresh receipt binds
 checkout HEAD/tree/status and tracked code/test/spec hashes. Initial non-kills:
-payment_amount: SURVIVED, total: INVALID-SITE. Initial logs retained, sensitivities
+payment_amount: SURVIVED, total: INVALID-SITE. Initial raw logs are retained in the private archive, not in this patch.
+Portable delivered logs and per-log original/delivered SHA256 pairs plus
+normalization disclosures are in the separate portable evidence package.
+Sensitivities
 added before rerun; final five CAUGHT. No runtime source edit.
 
 UNTESTED: Owner-recorded payment arithmetic only. No outreach, charging, real collected revenue, business outcome or authenticated approval. Whole-repository regression, external dependency truth

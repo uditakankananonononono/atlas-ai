@@ -18,10 +18,17 @@ python scripts/release/scoped_mutations.py audits/rows98_108/row98.json OUT
 45-second timeout per run. CAUGHT requires rc1 plus FAILED IDs, no errors or
 skips. Source SHA restored and checked each mutation. Fresh receipt binds
 checkout HEAD/tree/status and tracked code/test/spec hashes. Initial non-kills:
-none. Initial logs retained, sensitivities
+none. Initial raw logs are retained in the private archive, not in this patch.
+Portable delivered logs and per-log original/delivered SHA256 pairs plus
+normalization disclosures are in the separate portable evidence package.
+Sensitivities
 added before rerun; final five CAUGHT. No runtime source edit.
 
 UNTESTED: No prose generation, admission or scholarship prediction, or independent judging of essay excellence. Whole-repository regression, external dependency truth
 and hostile-process containment untested. Direct pytest timeout is not an
 escaped-descendant guarantee. Declared source hashes are not semantic truth.
 Literal row remains PARTIAL; no admission/award/virality/revenue/coverage victory.
+
+Portable package scan: zero actual private path values across delivered
+text files, including the scan report. The report names scan rules with
+root-type enum labels, not literal filesystem paths.

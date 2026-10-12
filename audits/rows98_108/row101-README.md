@@ -18,7 +18,10 @@ python scripts/release/scoped_mutations.py audits/rows98_108/row101.json OUT
 45-second timeout per run. CAUGHT requires rc1 plus FAILED IDs, no errors or
 skips. Source SHA restored and checked each mutation. Fresh receipt binds
 checkout HEAD/tree/status and tracked code/test/spec hashes. Initial non-kills:
-honors: SURVIVED. Initial logs retained, sensitivities
+honors: SURVIVED. Initial raw logs are retained in the private archive, not in this patch.
+Portable delivered logs and per-log original/delivered SHA256 pairs plus
+normalization disclosures are in the separate portable evidence package.
+Sensitivities
 added before rerun; final five CAUGHT. No runtime source edit.
 
 UNTESTED: No original personal portfolio inspected, submission or identity attestation. Constraint constants are local assumptions, not current policy verification. Whole-repository regression, external dependency truth
