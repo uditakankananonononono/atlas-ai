@@ -1,0 +1,46 @@
+{
+  "row": 139,
+  "selectors": [
+    "tests/runtime/guardrails/test_owner_account_gate.py",
+    "tests/runtime/guardrails/test_authority_binding.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "local choke-point tests only, fixture effects",
+    "no external approval/provider truth",
+    "not universal runtime adoption",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "record_mode",
+      "path": "backend/app/runtime/guardrails/owner_account_gate.py",
+      "old": "if authority_check is None:\n        verdict = \"refused:authority_hook_required\"",
+      "new": "if False:\n        verdict = \"refused:authority_hook_required\""
+    },
+    {
+      "id": "verified_state",
+      "path": "backend/app/runtime/guardrails/owner_account_gate.py",
+      "old": "elif state != \"verified\":",
+      "new": "elif False:"
+    },
+    {
+      "id": "authority_binding",
+      "path": "backend/app/runtime/guardrails/owner_account_gate.py",
+      "old": "elif not _validated(ledger, service, account_identity):",
+      "new": "elif False:"
+    },
+    {
+      "id": "hook_rejected",
+      "path": "backend/app/runtime/guardrails/owner_account_gate.py",
+      "old": "if not validated:",
+      "new": "if False:"
+    },
+    {
+      "id": "effect_guard",
+      "path": "backend/app/runtime/guardrails/owner_account_gate.py",
+      "old": "if verdict != \"admitted\":",
+      "new": "if False:"
+    }
+  ]
+}
