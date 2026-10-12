@@ -82,6 +82,10 @@ class RuleBasedClassifier:
         if "SPAM" in labels:
             return Classification(EmailCategory.SPAM, 0.99, ["gmail-label:SPAM"])
 
+        if _ACTION_RE.search(text):
+            return Classification(EmailCategory.ACTION_REQUIRED, 0.95 if "IMPORTANT" in labels else 0.8,
+                                  ["action-required keywords; takes precedence over substantive/bulk categories"])
+
         scores: dict[EmailCategory, int] = {}
 
         if _ACTION_RE.search(text):

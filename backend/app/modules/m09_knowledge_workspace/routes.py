@@ -7,7 +7,16 @@ from .repository import SqlGraphRepository
 from .schemas import *
 from .service import ConflictError,Service
 router=APIRouter(prefix="/knowledge-workspace",tags=["knowledge-workspace"])
-def get_service(t:TenantContext=Depends(require_tenant)):return Service(SqlGraphRepository(t.tenant_id,t.actor_id))
+def get_service(t:TenantContext=Depends(require_tenant)):
+    from .inference import configured_inference
+    inference = configured_inference()
+    return Service(SqlGraphRepository(t.tenant_id,t.actor_id), embed=inference.embed,
+                   extract_entities=inference.entities)
+
+@router.get('/inference-status')
+def inference_status(t:TenantContext=Depends(require_tenant)):
+    from .inference import configured_inference
+    return configured_inference().status()
 @router.post("/nodes",response_model=Node,status_code=status.HTTP_201_CREATED)
 def create_node(data:NodeCreate,service:Service=Depends(get_service)):return service.create_node(data)
 @router.patch("/nodes/{node_id}",response_model=Node)

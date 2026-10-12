@@ -50,6 +50,10 @@ class DagEngine:
             if not ready: raise RuntimeError("DAG made no progress")
             output=await asyncio.gather(*(execute(n) for n in ready),return_exceptions=True)
             for n,value in zip(ready,output):
-                if isinstance(value,Exception): raise RuntimeError(f"node {n.id} failed") from value
+                if isinstance(value,Exception):
+                    from .wiring import WorkflowReviewRequired
+                    if isinstance(value, WorkflowReviewRequired):
+                        raise value
+                    raise RuntimeError(f"node {n.id} failed") from value
                 results[n.id]=value; pending.remove(n.id)
         return results

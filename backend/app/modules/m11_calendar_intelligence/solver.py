@@ -6,11 +6,13 @@ blocks. It suggests an optimised weekly schedule."
 
 The OptaPy/optaplanner seam is the Solver protocol: a JVM-backed
 implementation can plug in later without touching the service. The built-in
-solver is a real CSP: hard constraints (working hours, no overlap, deadline,
+solver is a bounded best-slot/task-order search: constraints (working hours, no overlap, deadline,
 travel buffers, prep blocks, protected focus time) and a soft objective
 (energy fit, then earliest placement). Tasks are placed highest-priority /
 earliest-deadline first; failure raises InfeasibleScheduleError, which the
-conflict-resolution layer turns into human-reviewable alternatives.
+conflict-resolution layer turns into human-reviewable alternatives. Failure
+does not prove infeasibility; no global optimum or exhaustive placement search
+is claimed.
 """
 
 from __future__ import annotations
@@ -91,6 +93,10 @@ class InfeasibleScheduleError(RuntimeError):
         self.reason = reason
 
 
+class ScheduleSearchLimitError(InfeasibleScheduleError):
+    """Search stopped without proving infeasibility."""
+
+
 class Solver(Protocol):
     def solve(self, tasks: list[TaskSpec], fixed_events: list[FixedEvent],
               prefs: SchedulingPrefs, week_start: date, days: int = 7) -> list[Placement]: ...
@@ -112,7 +118,7 @@ class _Busy:
 
 
 class BuiltInSolver:
-    """Greedy best-slot CSP with 15-minute granularity."""
+    """Best-slot scheduler with bounded task-order recovery, not complete optimization."""
 
     def solve(self, tasks: list[TaskSpec], fixed_events: list[FixedEvent],
               prefs: SchedulingPrefs, week_start: date, days: int = 7) -> list[Placement]:
@@ -127,10 +133,41 @@ class BuiltInSolver:
 
         placements: list[Placement] = []
         ordered = sorted(tasks, key=lambda t: (-t.priority, _aware(t.deadline), t.id))
-        for task in ordered:
-            placed = self._place_task(task, busy, prefs, week_start, days)
-            placements.extend(placed)
-        return placements
+        original_busy = list(busy)
+        try:
+            for task in ordered:
+                placed = self._place_task(task, busy, prefs, week_start, days)
+                placements.extend(placed)
+            return placements
+        except InfeasibleScheduleError as initial:
+            # Recover alternative task orderings without leaking partial reservations.
+            # Best-slot choice remains deterministic; this is not an exhaustive
+            # search over every possible placement. Bound work and report unknown.
+            if len(ordered) > 100:
+                raise ScheduleSearchLimitError(initial.task_id,
+                    "task-order recovery limited to 100 tasks; feasibility unknown") from initial
+            remaining_states = [10000]
+            def recover(todo, reserved):
+                if not todo:
+                    return []
+                for index, task in enumerate(todo):
+                    remaining_states[0] -= 1
+                    if remaining_states[0] < 0:
+                        raise ScheduleSearchLimitError(task.id, "task-order search limit reached; feasibility unknown")
+                    trial = list(reserved)
+                    try:
+                        blocks = self._place_task(task, trial, prefs, week_start, days)
+                    except InfeasibleScheduleError:
+                        continue
+                    tail = recover(todo[:index] + todo[index + 1:], trial)
+                    if tail is not None:
+                        return blocks + tail
+                return None
+            recovered = recover(ordered, original_busy)
+            if recovered is not None:
+                return recovered
+            raise InfeasibleScheduleError(initial.task_id,
+                "no plan found by bounded best-slot/task-order search; infeasibility not proven") from initial
 
     # -- placement ---------------------------------------------------------
     def _place_task(self, task: TaskSpec, busy: list[_Busy],
@@ -151,26 +188,22 @@ class BuiltInSolver:
 
         remaining = task.duration_minutes
         placements: list[Placement] = []
+        not_before = None
+        first = True
         while remaining > 0:
-            chunk = self._best_slot(task, remaining, 0, busy, prefs, week_start,
-                                    effective_end, allow_partial=True,
-                                    min_block=task.min_block_minutes)
+            prep_minutes = task.prep_minutes if first else 0
+            chunk = self._best_slot(task, remaining, prep_minutes, busy, prefs,
+                                    week_start, effective_end, allow_partial=True,
+                                    min_block=min(task.min_block_minutes, remaining),
+                                    not_before=not_before)
             if chunk is None:
-                raise InfeasibleScheduleError(
-                    task.id, f"splittable task still short {remaining} minutes before deadline")
+                raise InfeasibleScheduleError(task.id,
+                    f"splittable task still short {remaining} minutes before deadline")
             length = int((chunk[1] - chunk[0]).total_seconds() // 60)
-            placements.extend(self._commit(task, chunk, 0, busy))
+            placements.extend(self._commit(task, chunk, prep_minutes, busy))
             remaining -= length
-        if task.prep_minutes:
-            # Prep goes immediately before the first work block.
-            first = min(placements, key=lambda p: p.start)
-            prep_end = first.start
-            prep_start = prep_end - timedelta(minutes=task.prep_minutes)
-            if not self._fits(prep_start, prep_end, task.location, busy, prefs):
-                raise InfeasibleScheduleError(task.id, "no room for the preparatory block")
-            prep = Placement(task.id, "prep", prep_start, prep_end, task.location)
-            busy.append(_Busy(prep_start, prep_end, task.location))
-            placements.append(prep)
+            not_before = chunk[1]
+            first = False
         return placements
 
     def _commit(self, task: TaskSpec, block: tuple[datetime, datetime],
@@ -187,13 +220,16 @@ class BuiltInSolver:
     def _best_slot(self, task: TaskSpec, minutes: int, prep_minutes: int,
                    busy: list[_Busy], prefs: SchedulingPrefs, week_start: date,
                    effective_end: datetime, allow_partial: bool = False,
-                   min_block: int = 30) -> tuple[datetime, datetime] | None:
+                   min_block: int = 30,
+                   not_before: datetime | None = None) -> tuple[datetime, datetime] | None:
         best: tuple[float, datetime, datetime] | None = None  # (score, start, end) - max score, earliest
         deadline_day = effective_end.date()
         day = week_start
         while day <= deadline_day:
             for window in prefs.working_hours.get(day.weekday(), []):
                 cursor = _day_dt(day, window.start_minute)
+                if not_before is not None:
+                    cursor = max(cursor, not_before)
                 window_end = min(_day_dt(day, window.end_minute), effective_end)
                 while cursor < window_end:
                     need = minutes
@@ -205,7 +241,7 @@ class BuiltInSolver:
                         end = self._grow(start, remaining=minutes, window_end=window_end,
                                          location=task.location, busy=busy, prefs=prefs,
                                          min_block=min_block)
-                        if end is None:
+                        if end is None or (prep_minutes and not self._fits(cursor, start, task.location, busy, prefs)):
                             cursor += timedelta(minutes=SLOT_MINUTES)
                             continue
                     else:

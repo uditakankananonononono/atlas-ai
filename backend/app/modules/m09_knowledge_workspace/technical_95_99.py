@@ -26,4 +26,4 @@ def run(row:int,d:dict[str,Any]):
   for m in d['mentions']:
    x=idx.get((m.get('type'),m.get('normalized_name')));links.append({'mention':m,'entity_id':x.get('id') if x else None,'status':'linked' if x else 'unresolved'})
   r={'text':d['text'],'links':links,'unresolved_count':sum(x['status']=='unresolved' for x in links),'deadline_normalization_requires_timezone':True,'auto_created':False}
- return {'row':row,'requirement':ROWS[row],'result':r}
+ return {'row':row,'requirement':ROWS[row],'result':r,'execution_scope':'supplied-data validation/schema preview/vector comparison/entity matching','persistence_performed':False,'embedding_inference_performed':False,'ner_inference_performed':False,'boundary':'Use the authenticated graph node service for persistence and configured inference. This helper does not implement those primary capabilities.'}

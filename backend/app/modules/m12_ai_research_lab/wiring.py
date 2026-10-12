@@ -28,13 +28,22 @@ class AtlasProvider:
    raise ProviderError(f"{model_id} is a paid model; set ATLAS_ALLOW_PAID=true to enable it")
   provider,model=model_id.split(':',1)
   chosen,text=await generate(prompt,provider,model)
-  return ModelResult(text=text,model_id=chosen,confidence=None,metadata={'provider':provider,'confidence_source':'unavailable'})
+  return ModelResult(text=text,model_id=chosen,confidence=None,metadata={'provider':provider,'confidence_source':'unavailable','execution_state':'review_required'})
+
+class WorkflowReviewRequired(RuntimeError):
+ def __init__(self, result):
+  super().__init__('Workflow node needs review; downstream nodes were not run')
+  self.result = result
 
 def build_service():return Service(ModelRouter(active_catalog()),AtlasProvider())
 def build_dag_engine(service):
  async def run(task,config,context):
   from .models import RouteRequest
   req=RouteRequest(TaskType(config.get('task_type',task if task in {x.value for x in TaskType} else 'research')),int(config.get('output_tokens',1000)),float(config.get('budget_cents',1)),int(config.get('latency_tolerance_ms',10000)),str(context['workflow_inputs']['tenant_id']))
-  result=await service.execute(req,str(config.get('prompt') or context['workflow_inputs'].get('prompt') or task),context)
+  from .executor import ConfidenceUnavailable
+  try:
+   result=await service.execute(req,str(config.get('prompt') or context['workflow_inputs'].get('prompt') or task),context)
+  except ConfidenceUnavailable as error:
+   raise WorkflowReviewRequired(error.result) from error
   return {'text':result.text,'model_id':result.model_id,'usage':result.usage,'metadata':result.metadata}
  return DagEngine(run)

@@ -1,8 +1,8 @@
 """Action-item extraction per the spec output schema [{action, deadline,
 related_entity}]. Primary path is an injected LLM (app.core.providers.generate
 style); output is JSON-validated against the ActionItem schema with one
-retry, then a deterministic heuristic fallback so ingestion never hard-fails
-on model noise.
+retry, then a deterministic heuristic fallback for malformed outputs. Provider
+exceptions may stop ingestion; no provider-availability guarantee is claimed.
 """
 
 from __future__ import annotations

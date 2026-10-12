@@ -9,18 +9,22 @@ Spec coverage (user directive, Module 10):
   webhook is `POST /api/v1/email-assistant/pubsub?token=...`. Watch renewal is
   `Service.renew_watches` and the `atlas.email.renew_watches` Celery task.
 - **Categorisation**: the spec's seven labels in `schemas.EmailCategory`.
-  `classifier.BertEmailClassifier` loads the fine-tuned BERT checkpoint lazily
+  `classifier.BertEmailClassifier` loads an operator-supplied BERT checkpoint lazily
   (transformers, already a project dep); `RuleBasedClassifier` is the
-  deterministic fallback until a trained checkpoint exists.
+  deterministic default until a verified trained checkpoint exists. No trained
+  seven-label checkpoint ships with this module.
 - **Action extraction**: `extraction.extract_actions` calls the injected LLM
   with the exact spec output schema `[{action, deadline, related_entity}]`,
-  validates it, retries once, then falls back to a deterministic heuristic so
-  ingestion never hard-fails on model noise.
+  validates it, retries once, then falls back to a deterministic heuristic for malformed model output.
+  Provider exceptions can still stop ingestion; unknown invoked outcomes do
+  not authorize another model call.
 - **Drafting replies**: `_draft_reply` builds a context window from recent
   related emails (same thread) plus an optional knowledge-graph hook
   (`graph_context`, the Module 9 seam). Drafts are proposed to Module 0 as
-  `send_email_reply` approvals. **This module has no send path**; executing an
-  approved reply is the approval dispatcher's job.
+  `send_email_reply` approvals. **The mounted Service drafts only**; executing an
+  approved reply is the approval dispatcher's job. The separate lane_service
+  EmailAssistant has send_approved through an injected MailProvider; this is
+  not proof of production Gmail delivery.
 
 Advancement pass beyond spec: idempotent ingestion on (tenant, gmail_id),
 history-id checkpointing, List-Unsubscribe detection, sender-frequency
@@ -35,12 +39,13 @@ Spec coverage (user directive, Module 11):
   `handle_google_notification` / `sync_source`); Outlook/Apple via CalDAV
   calendar-query REPORT (`caldav.py`, stdlib ICS parser in `ics.py`).
 - **Smart scheduling**: `solver.Solver` protocol is the OptaPy seam;
-  `BuiltInSolver` is a real CSP (working hours, no overlap, deadlines, travel
+  `BuiltInSolver` is a bounded best-slot scheduler with task-order recovery (working hours, no overlap, deadlines, travel
   buffers, prep blocks, protected focus time; energy-fit soft objective).
 - **Conflict resolution**: `Service.request_reschedule` builds alternatives
   (split task / extend hours / push lowest priority) and proposes the first
   viable one as an `apply_reschedule` approval. `apply_reschedule` and
-  `apply_plan` verify the approval decision before mutating anything.
+  `apply_plan` verify the approval decision before mutating local plans/tasks. They do not
+  write or verify remote calendar events.
 
 Advancement pass beyond spec: splittable tasks, channel-token verification on
 webhooks, cancelled-event handling, meeting-load analytics
@@ -58,7 +63,8 @@ webhooks, cancelled-event handling, meeting-load analytics
 - Celery: `atlas.email.renew_watches`, `atlas.calendar.renew_watches` (hourly
   beat entries use `ATLAS_LOCAL_TENANT`; a multi-tenant dispatcher is
   integrator work).
-- Known limitations: ICS TZID-local times are surfaced as UTC; RRULE
-  expansion, Gmail pagination beyond 500 history records, and pgvector LTM
+- Known limitations: Known IANA TZID-local times retain ZoneInfo; floating times use UTC. RRULE
+  expansion and pgvector LTM
   sync for email embeddings (rows carry embeddings in JSON meanwhile) are
-  integrator work.
+  integrator work. Gmail history pagination is implemented with a bounded page
+  cap and fails rather than dropping later pages.
