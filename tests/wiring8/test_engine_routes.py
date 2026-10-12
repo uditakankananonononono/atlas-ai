@@ -38,3 +38,22 @@ def test_actual_dedicated_engine_over_app(client,oidc_auth_headers,monkeypatch,e
     invalid=client.post(path,json={'data':{}},headers=oidc_auth_headers('tenant-a','owner'))
     assert invalid.status_code==422
     assert client.post(path,json={'data':payload,'unexpected':True},headers=oidc_auth_headers()).status_code==422
+
+@pytest.mark.parametrize('engine,entry,payload,key,value',CASES)
+def test_resource_refs_cap_boundary(client,oidc_auth_headers,engine,entry,payload,key,value):
+    # Pins the max_length=64 resource_refs boundary: 64 references accepted, 65 refused 422.
+    path='/api/v1/api/modules/20/engineering/'+engine+'/run'
+    headers=oidc_auth_headers('tenant-a','owner')
+    refs=[{'tenant_id':'tenant-a'} for _ in range(64)]
+    ok=client.post(path,json={'data':payload,'resource_refs':refs},headers=headers)
+    assert ok.status_code==200,ok.text
+    assert client.post(path,json={'data':payload,'resource_refs':refs+[{'tenant_id':'tenant-a'}]},headers=headers).status_code==422
+
+@pytest.mark.parametrize('engine,entry,payload,key,value',CASES)
+def test_explicit_null_identity_fields_treated_as_absent(client,oidc_auth_headers,engine,entry,payload,key,value):
+    # Pins the intended contract behind model_dump(exclude_none=True): explicit null
+    # tenant_id/actor_id mean "absent", never a claim that must match.
+    path='/api/v1/api/modules/20/engineering/'+engine+'/run'
+    r=client.post(path,json={'data':payload,'tenant_id':None,'actor_id':None},headers=oidc_auth_headers('tenant-a','owner'))
+    assert r.status_code==200,r.text
+    assert r.json()['tenant_id']=='tenant-a' and r.json()['actor_id']=='owner'
