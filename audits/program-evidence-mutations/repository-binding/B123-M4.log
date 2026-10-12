@@ -1,0 +1,19 @@
+F.........FF                                                             [100%]
+=================================== FAILURES ===================================
+__________________ test_local_snapshot_and_missing_reference ___________________
+tests/test_repository_evidence_binding.py:33: in test_local_snapshot_and_missing_reference
+    assert not row['remote_verified'] and not row['ownership_verified'] and not row['completion_verified']
+E   assert (not False and not True)
+_______ test_tracked_symlink_error_does_not_promote_or_erase_other_entry _______
+tests/test_repository_binding_error_sensitivity.py:26: in test_tracked_symlink_error_does_not_promote_or_erase_other_entry
+    assert not healthy['remote_verified'] and not healthy['ownership_verified']
+E   assert (not False and not True)
+___________ test_origin_configured_is_presence_not_locator_identity ____________
+tests/test_repository_binding_error_sensitivity.py:39: in test_origin_configured_is_presence_not_locator_identity
+    assert row['remote_verified'] is False and row['ownership_verified'] is False
+E   assert (False is False and True is False)
+=========================== short test summary info ============================
+FAILED tests/test_repository_evidence_binding.py::test_local_snapshot_and_missing_reference
+FAILED tests/test_repository_binding_error_sensitivity.py::test_tracked_symlink_error_does_not_promote_or_erase_other_entry
+FAILED tests/test_repository_binding_error_sensitivity.py::test_origin_configured_is_presence_not_locator_identity
+3 failed, 9 passed in 0.50s

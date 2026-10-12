@@ -1,0 +1,45 @@
+{
+  "base": "d8668c19",
+  "tests": [
+    "tests/test_repository_evidence_binding.py",
+    "tests/test_row123_mutation_sensitivity.py",
+    "tests/test_repository_binding_error_sensitivity.py"
+  ],
+  "mutants": [
+    {
+      "id": "B123-M1",
+      "name": "error-nonpromotion",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "if not snap['errors']:",
+      "new": "if True:"
+    },
+    {
+      "id": "B123-M2",
+      "name": "origin-presence",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "out['snapshot']['origin_configured'] = bool(snap['origin'])",
+      "new": "out['snapshot']['origin_configured'] = False"
+    },
+    {
+      "id": "B123-M3",
+      "name": "remote-nonpromotion",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "'remote_verified': False, 'ownership_verified': False, 'completion_verified': False,",
+      "new": "'remote_verified': True, 'ownership_verified': False, 'completion_verified': False,"
+    },
+    {
+      "id": "B123-M4",
+      "name": "ownership-nonpromotion",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "'remote_verified': False, 'ownership_verified': False, 'completion_verified': False,",
+      "new": "'remote_verified': False, 'ownership_verified': True, 'completion_verified': False,"
+    },
+    {
+      "id": "B123-M5",
+      "name": "cross-reference-retention",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "'project_ids': row['project_ids'], 'row_ids': row['row_ids']",
+      "new": "'project_ids': row['project_ids'], 'row_ids': []"
+    }
+  ]
+}

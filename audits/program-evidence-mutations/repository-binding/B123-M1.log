@@ -1,0 +1,12 @@
+..........F.                                                             [100%]
+=================================== FAILURES ===================================
+_______ test_tracked_symlink_error_does_not_promote_or_erase_other_entry _______
+tests/test_repository_binding_error_sensitivity.py:17: in test_tracked_symlink_error_does_not_promote_or_erase_other_entry
+    assert broken['status']=='UNVERIFIED'
+E   AssertionError: assert 'LOCAL-SNAPSHOT' == 'UNVERIFIED'
+E
+E     - UNVERIFIED
+E     + LOCAL-SNAPSHOT
+=========================== short test summary info ============================
+FAILED tests/test_repository_binding_error_sensitivity.py::test_tracked_symlink_error_does_not_promote_or_erase_other_entry
+1 failed, 11 passed in 0.44s

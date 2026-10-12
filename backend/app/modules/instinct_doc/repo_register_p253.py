@@ -166,7 +166,8 @@ def report(register: RepoRegister) -> dict:
 def bind_local_repositories(register, workspace, bindings):
     """Resolve declared repos to contained local Git roots and content snapshots.
 
-    Configured origins are hashed, not published. Local snapshots do not prove
+    Configured origin presence is disclosed; locators and locator hashes are omitted.
+    Local snapshots do not prove
     remote availability, ownership, project identity or deliverable completion.
     """
     from pathlib import Path

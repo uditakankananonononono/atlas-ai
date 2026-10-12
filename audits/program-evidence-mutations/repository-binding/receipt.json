@@ -1,0 +1,158 @@
+{
+  "tree": "a2a581ee26616269dd1b4a287fa104ada5105cbc",
+  "status": " M backend/app/modules/instinct_doc/repo_register_p253.py\n?? audits/program-evidence-mutations/repository-binding.json\n?? audits/program-evidence-mutations/repository-binding/\n?? tests/test_repository_binding_error_sensitivity.py\n",
+  "file_sha256": {
+    "tests/test_repository_evidence_binding.py": "5a8f9f860371e794b71ea3c127ebe0636204f1ac2f653de5b8eee66cbb436ec3",
+    "tests/test_row123_mutation_sensitivity.py": "cc1b8938523929a5db132a57c85c4546b8d1482b8c4aabcf252e9eff2841b5c7",
+    "tests/test_repository_binding_error_sensitivity.py": "ffe48082605023fa5aaa35b9c577c81f3695b9c01f03f3005db5bfef37cbe6b0",
+    "backend/app/modules/instinct_doc/repo_register_p253.py": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+    "backend/app/modules/instinct_doc/repo_evidence.py": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+    "audits/program-evidence-mutations/repository-binding.json": "b740813daa7537fe40d4f8cad2b3eea90edbee0a7b74a77874e499b207de722b",
+    "audits/program-evidence-mutations/repository-binding/replay.py": "09e39deebabb53195f4df996d7379732539c186faf6a22d904ec2038a055baae"
+  },
+  "base": "d8668c19e99bc47122907c5d47d30586612dbc1a",
+  "config_sha256": "b740813daa7537fe40d4f8cad2b3eea90edbee0a7b74a77874e499b207de722b",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_repository_evidence_binding.py",
+    "tests/test_row123_mutation_sensitivity.py",
+    "tests/test_repository_binding_error_sensitivity.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "portable_path_normalization": "interpreter normalized to python; delivered logs strip whitespace and replace listed private paths only",
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "baseline.log",
+    "original_sha256": "5af02ab3ce1a4a1e85f4e75799d1fddbdf29350ca4034adfd7a4df3ecbb835f3",
+    "delivered_sha256": "5af02ab3ce1a4a1e85f4e75799d1fddbdf29350ca4034adfd7a4df3ecbb835f3",
+    "normalizations": []
+  },
+  "mutants": [
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_repository_binding_error_sensitivity.py::test_tracked_symlink_error_does_not_promote_or_erase_other_entry"
+      ],
+      "log": "B123-M1.log",
+      "original_sha256": "295f23a27df68a53280b089830add18eb887c61870011a3fc01c23c1155fe95b",
+      "delivered_sha256": "a37f81380310c8070fd93582886b72bc4cbbff199dec27a3249ea9ac1c07bf59",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "B123-M1",
+      "target": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "mutant_sha256": "cea8727f39665e075cfad826fe716fc5effc9df12cdd7a5d69edc241aaf0465a",
+      "before_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restored_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_repository_evidence_binding.py::test_snapshot_content_hash_and_no_locator_digest",
+        "tests/test_repository_binding_error_sensitivity.py::test_origin_configured_is_presence_not_locator_identity"
+      ],
+      "log": "B123-M2.log",
+      "original_sha256": "afa034f38b7890a5ac16acc060cec661569f55f76721d03869b6516c8b25413b",
+      "delivered_sha256": "afa034f38b7890a5ac16acc060cec661569f55f76721d03869b6516c8b25413b",
+      "normalizations": [],
+      "id": "B123-M2",
+      "target": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "mutant_sha256": "37ed47095b22daaea2ea2ade2dbdb392862c681a97c086f6a6076ed9efdac4f1",
+      "before_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restored_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_repository_evidence_binding.py::test_local_snapshot_and_missing_reference",
+        "tests/test_repository_binding_error_sensitivity.py::test_tracked_symlink_error_does_not_promote_or_erase_other_entry",
+        "tests/test_repository_binding_error_sensitivity.py::test_origin_configured_is_presence_not_locator_identity"
+      ],
+      "log": "B123-M3.log",
+      "original_sha256": "3bd80bce4f76c8a01e741635a246d6d4f55b1a82956d82096298d6761afe561d",
+      "delivered_sha256": "3bd80bce4f76c8a01e741635a246d6d4f55b1a82956d82096298d6761afe561d",
+      "normalizations": [],
+      "id": "B123-M3",
+      "target": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "mutant_sha256": "371eacda9e5ebbac6d14839da6db31205e8058e513d743f30c56a6920e2a35e3",
+      "before_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restored_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_repository_evidence_binding.py::test_local_snapshot_and_missing_reference",
+        "tests/test_repository_binding_error_sensitivity.py::test_tracked_symlink_error_does_not_promote_or_erase_other_entry",
+        "tests/test_repository_binding_error_sensitivity.py::test_origin_configured_is_presence_not_locator_identity"
+      ],
+      "log": "B123-M4.log",
+      "original_sha256": "b9e7c87a5cf664d6f992c62f5a0b52eab0e337cf84abfa42d558276f91d1a76e",
+      "delivered_sha256": "b9e7c87a5cf664d6f992c62f5a0b52eab0e337cf84abfa42d558276f91d1a76e",
+      "normalizations": [],
+      "id": "B123-M4",
+      "target": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "mutant_sha256": "6a4d194bf06bd0b0450f4ea0ee07ca7886a789a3f31d4e2df1bd791bdb2e177b",
+      "before_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restored_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_repository_binding_error_sensitivity.py::test_tracked_symlink_error_does_not_promote_or_erase_other_entry"
+      ],
+      "log": "B123-M5.log",
+      "original_sha256": "5be113587ecc659ea0d2dc913d3b368052da3103ebc00c40035dc474cad3118a",
+      "delivered_sha256": "6d047d65ca9177752d669e0f4a3c3214dcc211c4efcfb0aac4a2d2be5b5a0641",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "B123-M5",
+      "target": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "mutant_sha256": "e10a66190e97349747e83f538aba3fcdd27239985649341d3e5b6f8dbfd8f913",
+      "before_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restored_sha256": "c194cc8d24c8e88e566839554093d3103d67496b6907d292fb6a9278948a5c19",
+      "restore_verified": true
+    }
+  ],
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "restored-baseline.log",
+    "original_sha256": "d5cad463dca075ce0547be8f305973f6f4bb4204b0258745e1a11b6f28245699",
+    "delivered_sha256": "d5cad463dca075ce0547be8f305973f6f4bb4204b0258745e1a11b6f28245699",
+    "normalizations": []
+  },
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0
+  }
+}

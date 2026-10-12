@@ -1,0 +1,14 @@
+.......F...F                                                             [100%]
+=================================== FAILURES ===================================
+_______________ test_snapshot_content_hash_and_no_locator_digest _______________
+tests/test_repository_evidence_binding.py:74: in test_snapshot_content_hash_and_no_locator_digest
+    assert row['snapshot']['origin_configured']
+E   assert False
+___________ test_origin_configured_is_presence_not_locator_identity ____________
+tests/test_repository_binding_error_sensitivity.py:36: in test_origin_configured_is_presence_not_locator_identity
+    assert row['snapshot']['origin_configured'] is True
+E   assert False is True
+=========================== short test summary info ============================
+FAILED tests/test_repository_evidence_binding.py::test_snapshot_content_hash_and_no_locator_digest
+FAILED tests/test_repository_binding_error_sensitivity.py::test_origin_configured_is_presence_not_locator_identity
+2 failed, 10 passed in 0.46s
