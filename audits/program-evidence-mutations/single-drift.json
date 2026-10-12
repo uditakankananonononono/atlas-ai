@@ -1,0 +1,46 @@
+{
+  "row": "single-drift",
+  "tests": [
+    "tests/test_executed_acceptance.py",
+    "tests/test_acceptance_single_drift_sensitivity.py"
+  ],
+  "tier": "Local offline Git/files and actual pytest subprocess tests; explicitly controlled injected receipt/error/drift cases. No external evidence.",
+  "limits": "Sensitivity to these5 named faults only; non-atomic snapshots, no aggregate sandbox/budget or semantic acceptance. Literal rows remain PARTIAL.",
+  "mutants": [
+    {
+      "id": "single-drift-M1",
+      "name": "ignore-receipt-head",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "and item['run'].get('head') == snap['head']",
+      "new": ""
+    },
+    {
+      "id": "single-drift-M2",
+      "name": "ignore-receipt-tree",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "and item['run'].get('tree_digest') == snap['tree_digest']",
+      "new": ""
+    },
+    {
+      "id": "single-drift-M3",
+      "name": "ignore-final-head",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "final['head'] == snap['head'] and final['tree_digest']",
+      "new": "True and final['tree_digest']"
+    },
+    {
+      "id": "single-drift-M4",
+      "name": "ignore-final-tree",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "and final['tree_digest'] == snap['tree_digest']",
+      "new": ""
+    },
+    {
+      "id": "single-drift-M5",
+      "name": "ignore-final-status",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "and final['status_digest'] == snap['status_digest']",
+      "new": ""
+    }
+  ]
+}

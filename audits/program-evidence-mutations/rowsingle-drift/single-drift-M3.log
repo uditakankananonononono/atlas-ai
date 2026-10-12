@@ -1,0 +1,9 @@
+.....................F..                                                 [100%]
+=================================== FAILURES ===================================
+_________________ test_isolated_final_field_is_required[head] __________________
+tests/test_acceptance_single_drift_sensitivity.py:18: in test_isolated_final_field_is_required
+    assert out['tree_stable_after_runs'] is False
+E   assert True is False
+=========================== short test summary info ============================
+FAILED tests/test_acceptance_single_drift_sensitivity.py::test_isolated_final_field_is_required[head]
+1 failed, 23 passed in 4.88s

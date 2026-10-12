@@ -1,0 +1,9 @@
+............F........                                                    [100%]
+=================================== FAILURES ===================================
+___________ test_single_receipt_identity_drift_refused[tree_digest] ____________
+tests/test_executed_acceptance.py:141: in test_single_receipt_identity_drift_refused
+    assert mod.audit_selected_checks(root,'source.txt',[check])['scoped_passing_lines']==0
+E   assert 1 == 0
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_single_receipt_identity_drift_refused[tree_digest]
+1 failed, 20 passed in 4.62s
