@@ -32,8 +32,14 @@ def bind_agi_service(service: AGIRuntimeService, *, tenant_id: str) -> None:
 
 def _autobind_agi(tenant_id):
     """Opt-in (ATLAS_AGI_RUNTIME_AUTOBIND exactly "1"): give an authenticated
-    tenant its own durable AGIRuntimeService. Never used for "local"; creates
-    SQLite files under ATLAS_AGI_DATA_DIR for the bound tenant only."""
+    tenant its own durable AGIRuntimeService. Never used for "local".
+    Persistence is tenant-keyed rows in SQLite files shared by every tenant
+    (world.sqlite and events.sqlite under ATLAS_AGI_DATA_DIR); isolation is
+    row-level, not file-level. Automatic binding refuses new tenants with
+    HTTP 503 once AGI_AUTOBIND_MAX_TENANTS services are bound in the process.
+    Explicit binding (bind_agi_service) has no such cap and can bypass this
+    limit. In this function tenant ids are used as row keys; they are not
+    used to build file paths."""
     if os.environ.get("ATLAS_AGI_RUNTIME_AUTOBIND") != "1":
         return None
     if type(tenant_id) is not str or not tenant_id or tenant_id == "local" or len(tenant_id) > AGI_AUTOBIND_MAX_TENANT_ID_CHARS:
