@@ -57,7 +57,9 @@ training or a created artifact is not shown; row 63 stays PARTIAL.
 
 ## Mutation receipts
 `run_mutations.py [out.txt]` applies each single-replacement mutant (exact old/new text in the script) and runs the named
-test file. CAUGHT means pytest exited 1 with at least one FAILED test (ids recorded); collection errors, crashes and
-timeouts are INVALID, not caught. Restore is verified by SHA-256 of every mutated file against its pre-run content.
+test file. CAUGHT means pytest exited 1 with at least one FAILED test ID. FAILED includes product
+KeyError/RuntimeError, not just assertions; mixed FAILED plus SKIP is not rejected. No independent
+ERROR/collection/internal/fatal screening is implemented beyond rc and FAILED-ID presence. Timeout,
+other nonzero rc, or rc1 without FAILED IDs is INVALID; rc0 is SURVIVED, including rc0 with skips. Restore is verified by SHA-256 of every mutated file against its pre-run content.
 The last run's counts and any SURVIVED or INVALID entries are in `mutation_receipts.txt` and are stated in the delivery
 message. Prior versions of this harness counted any non-zero exit as a catch; that is why the counts below were re-run.

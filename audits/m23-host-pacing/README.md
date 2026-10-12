@@ -33,7 +33,10 @@ The sync route runs in the threadpool, so one such call can hold a worker for ab
 Run (repo root): `ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python3 -m pytest tests/modules/test_m23_host_pacing.py tests/modules/test_m23_admitted_cases_legacy_delegation.py tests/modules/test_m23_admitted_cases_crawl_delay.py tests/modules/test_m23_admitted_cases_bounded.py tests/modules/test_m23_admitted_cases.py -q`
 
 Mutation receipts: `python3 audits/m23-host-pacing/run_mutations.py` -> mutation_receipts.txt (Q1-Q19). CAUGHT only on pytest rc=1
-with FAILED lines; rc 2/4/5 or timeout = INVALID. Mutated files are SHA-256 checked as restored. No mutant passes
+with FAILED lines. FAILED includes product KeyError/RuntimeError, not just assertions; mixed FAILED plus SKIP
+is not rejected. No independent ERROR/collection/internal/fatal screening is implemented beyond rc and
+FAILED-ID presence. Timeout, other nonzero rc, or rc1 without FAILED IDs is INVALID; rc0 is SURVIVED,
+including rc0 with skips. Mutated files are SHA-256 checked as restored. No mutant passes
 `transport=None`; every call uses MockTransport. Commit the source before running the harness: killing the harness mid-run
 can leave a mutant on disk (this happened once during development and was restored from git).
 

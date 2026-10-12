@@ -12,7 +12,10 @@ Run (repo root): `ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python3 -m pytest te
 (32 passed).
 
 Mutation receipts: `python3 audits/m23-crawl-delay/run_mutations.py` -> mutation_receipts.txt. 12 mutants (M1-M12),
-CAUGHT only on pytest rc=1 with FAILED lines; rc 2/4/5 or timeout = INVALID. Result: CAUGHT=12, SURVIVED=0, INVALID=0.
+CAUGHT only on pytest rc=1 with FAILED lines. FAILED includes product KeyError/RuntimeError,
+not just assertions; mixed FAILED plus SKIP is not rejected. No independent ERROR/collection/internal/fatal
+screening is implemented beyond rc and FAILED-ID presence. Timeout, other nonzero rc, or rc1 without FAILED
+IDs is INVALID; rc0 is SURVIVED, including rc0 with skips. Result: CAUGHT=12, SURVIVED=0, INVALID=0.
 Mutated files are SHA-256 checked as restored. M12 takes ~50s because the mutant really sleeps.
 
 ## Limits: what stays untested

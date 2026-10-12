@@ -11,7 +11,10 @@ instead of documenting it. routes.py already imports the bounded function under 
 Run (repo root): `ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python3 -m pytest tests/modules/test_m23_admitted_cases_legacy_delegation.py tests/modules/test_m23_admitted_cases_crawl_delay.py tests/modules/test_m23_admitted_cases_bounded.py tests/modules/test_m23_admitted_cases.py -q` (41 passed).
 
 Mutation receipts: `python3 audits/m23-legacy-crawl-delay/run_mutations.py` -> mutation_receipts.txt. 8 mutants (L1-L8) on
-admitted_cases.py. CAUGHT only on pytest rc=1 with FAILED lines; rc 2/4/5 or timeout = INVALID. Result: CAUGHT=8,
+admitted_cases.py. CAUGHT only on pytest rc=1 with FAILED lines. FAILED includes product KeyError/RuntimeError,
+not just assertions; mixed FAILED plus SKIP is not rejected. No independent ERROR/collection/internal/fatal
+screening is implemented beyond rc and FAILED-ID presence. Timeout, other nonzero rc, or rc1 without FAILED
+IDs is INVALID; rc0 is SURVIVED, including rc0 with skips. Result: CAUGHT=8,
 SURVIVED=0, INVALID=0, SHA-256 restore check passes. L2 drops the injected sleep, so it really sleeps and takes ~35s.
 L9 was removed before release; see the warning in Limits.
 

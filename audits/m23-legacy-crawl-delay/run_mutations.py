@@ -2,9 +2,11 @@
     ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python audits/m23-legacy-crawl-delay/run_mutations.py [out.txt]
 (out.txt defaults to audits/m23-legacy-crawl-delay/mutation_receipts.txt). Each mutant is an exact single textual
 replacement (old -> new) in one file. The named test file is run before (must be green) and after.
-A mutant is CAUGHT only when pytest exits 1 with at least one FAILED test (an assertion/test failure) and no
-collection error, no timeout and no crash; the failing test ids are recorded. rc 2/4/5, a timeout, or a failure with
-no FAILED line is recorded as INVALID (not counted as caught). rc 0 is SURVIVED. Restore is verified by SHA-256 of
+A mutant is CAUGHT only when pytest exits 1 with at least one FAILED test ID.
+FAILED includes product KeyError/RuntimeError, not just assertions. Mixed FAILED plus SKIP is not rejected.
+There is no independent ERROR/collection/internal/fatal screening beyond rc and FAILED-ID presence.
+Timeout, nonzero rc other than 1, or rc1 without FAILED IDs is INVALID (not counted as caught).
+rc0 is SURVIVED, including rc0 with skips. Restore is verified by SHA-256 of
 every mutated file against its pre-run content (exact), independent of git state."""
 import hashlib, os, subprocess, sys
 
