@@ -1,0 +1,44 @@
+{
+  "row": 92,
+  "selectors": [
+    "tests/modules/test_group92_reasoning_boundaries.py"
+  ],
+  "timeout_seconds": 40,
+  "limits": [
+    "supplied fake transcript, no new ASR execution",
+    "actual ASR model test not selected",
+    "human thinking/music/speaker inference untested"
+  ],
+  "mutations": [
+    {
+      "id": "medium_refusal",
+      "path": "backend/app/modules/c32/audio_reasoning.py",
+      "old": "if medium not in MEDIA or type(medium) is not str:",
+      "new": "if False:"
+    },
+    {
+      "id": "provenance",
+      "path": "backend/app/modules/c32/audio_reasoning.py",
+      "old": "report['transcription'] = transcript.provenance()",
+      "new": "report['transcription'] = {}"
+    },
+    {
+      "id": "scope",
+      "path": "backend/app/modules/c32/audio_reasoning.py",
+      "old": "['validation of human thinking', 'speaker identification',\n                                            'music understanding', 'all forms of media']",
+      "new": "[]"
+    },
+    {
+      "id": "caveat",
+      "path": "backend/app/modules/c32/audio_reasoning.py",
+      "old": "'Reasoning moves are fixed cue tags, not a learned model of human thinking. '",
+      "new": "'Reasoning is validated human thinking. '"
+    },
+    {
+      "id": "validity_binding",
+      "path": "backend/app/modules/c32/audio_reasoning.py",
+      "old": "report['validity']['caveat'] = report['report_caveat']",
+      "new": "report['validity']['caveat'] = 'different'"
+    }
+  ]
+}
