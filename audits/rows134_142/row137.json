@@ -1,0 +1,46 @@
+{
+  "row": 137,
+  "selectors": [
+    "tests/runtime/guardrails/test_review_gate.py",
+    "tests/runtime/guardrails/test_authority_binding.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "local choke-point tests only, fixture effects",
+    "no external approval/provider truth",
+    "not universal runtime adoption",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "record_mode",
+      "path": "backend/app/runtime/guardrails/review_gate.py",
+      "old": "if record_mode:",
+      "new": "if False:"
+    },
+    {
+      "id": "spent_permit",
+      "path": "backend/app/runtime/guardrails/review_gate.py",
+      "old": "if spent:",
+      "new": "if False:"
+    },
+    {
+      "id": "expiry",
+      "path": "backend/app/runtime/guardrails/review_gate.py",
+      "old": "if at > deadline:",
+      "new": "if False:"
+    },
+    {
+      "id": "approved_decision",
+      "path": "backend/app/runtime/guardrails/review_gate.py",
+      "old": "if decision[\"decision\"] != \"approved\":",
+      "new": "if False:"
+    },
+    {
+      "id": "revoked_grant",
+      "path": "backend/app/runtime/guardrails/review_gate.py",
+      "old": "if granted <= at < expires:",
+      "new": "if True:"
+    }
+  ]
+}
