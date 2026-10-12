@@ -26,7 +26,7 @@ Doc source line refs in the table: 53,163. The doc text itself was not re-read f
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 78, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 78, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 78 |Grow with the user | Actor-isolated durable decision outcomes and growth report; actor leak in inherited read/write fixed; signed-identity owner routes | PARTIAL: owner ratings measure feedback, not independent learned or causal owner-growth results |
 

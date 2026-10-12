@@ -24,7 +24,7 @@ Doc source line refs in the table: 33,186. The doc text itself was not re-read f
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 85, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 85, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 85 |Merge Meemee to Claire if extra capabilities | Cross-instance SQLite private-computation jobs, authenticated-principal ownership, transactional claim, CAS settlement, restart retention, expired worker unknown holds, executed worker computation | PARTIAL: additive durable computation runtime, not full Meemee deployed parity; existing inventory/deferred capabilities unchanged |
 

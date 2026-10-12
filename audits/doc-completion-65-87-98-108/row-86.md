@@ -25,7 +25,7 @@ Doc source line refs in the table: 50,175. The doc text itself was not re-read f
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 86, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 86, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 86 |20 more new features and capabilities to each module | Acceptance checker takes explicit expected module list and per-module target; retains deficits instead of counting aliases/file presence | PARTIAL: no claim that 20 new features have been implemented in every Atlas or Sugarcode module |
 

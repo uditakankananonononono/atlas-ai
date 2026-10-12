@@ -23,7 +23,7 @@ Doc source line refs in the table: 53,167. The doc text itself was not re-read f
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 81, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 81, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 81 |Come up with killer strategies for anything | Finite scenario minimax-regret optimization under budget, feasible-set ranking and per-scenario regret | PARTIAL: supplied utility assumptions, no general or deployment effectiveness |
 

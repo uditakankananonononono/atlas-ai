@@ -24,7 +24,7 @@ Doc source line refs in the table: 36,184. The doc text itself was not re-read f
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 83, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 83, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 83 |Additional 1000 concepts for AGI-like intelligence | Source/test-digest-bound functional acceptance-manifest checker; detects duplicate implementation aliases, stale/skipped/error receipts, and concept deficit | PARTIAL: checker is not 1000 new functional concepts; no padded inventory added |
 

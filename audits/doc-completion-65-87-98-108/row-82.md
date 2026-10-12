@@ -24,7 +24,7 @@ Doc source line refs in the table: 33,170,187. The doc text itself was not re-re
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 82, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 82, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 82 |Sugarcode x1,000,000/unrecognizable quality | Executes baseline and candidate callables on immutable task suites; per-module regressions and undefined zero-baseline ratios retained | PARTIAL: no Sugarcode code changed, independent benchmark execution, defined million-fold metric or whole-product improvement |
 

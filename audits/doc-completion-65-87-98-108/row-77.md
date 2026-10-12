@@ -23,7 +23,7 @@ Doc source line refs in the table: 53,160. The doc text itself was not re-read f
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 77, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 77, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 77 |See new ideas/ventures and develop patent applications | `patent_preparation.prepare`: sectioned drafting packet, literal source-corpus comparison, claimed feature-to-description quote checks, explicit missing items | PARTIAL: no live prior-art retrieval, semantic/legal novelty, verified inventorship, jurisdiction-specific filing-ready review or filing |
 

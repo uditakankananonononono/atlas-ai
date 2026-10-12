@@ -49,3 +49,7 @@ Limits, stated plainly:
 ## Second pass (origin/main d8668c19)
 
 Every sheet now has a "Tip-state update" section. Rows 98-108 cite their per-row audit on main (`audits/rows98_108/`) with its selector and its own limits text. Rows 77-87 quote their row from `audits/instinct-groups-77-87/README.md`. Rows 65-76 have no per-row audit and are flagged unverified-stale. Section (a) file lists still come from the historical table in all rows. Test results and mutation runs were still NOT re-run in this pass.
+
+## Amendment (third pass, gate fixes)
+
+Rows 65-76 are framed as a d8668c19 snapshot with a note that a later 65-87 deepening package is reported as landing (not found on b3348dd0). Rows 77-87 quotes are labelled whitespace-normalized. The row 102 benchmark is relabelled builder-reported, unverified, with no receipt.

@@ -36,9 +36,9 @@ Doc source line refs in the table: 53,141,214. The doc text itself was not re-re
 - evidence ids: B4 arc landed-scoped (rest staged/landed earlier per map)
 - note: doc group PARTIAL (B4 assigned doc completion 00:57); literal row PARTIAL
 
-## Tip-state update (second pass, origin/main d8668c19)
+## Tip-state update (second pass, snapshot of origin/main d8668c19)
 
-No per-row audit directory exists on main for this row (crosswalk marks 65-76 EVIDENCE-THIN). The table cell above is the only per-row description available, it is historical, and tip code for this row was not re-read in this pass. Treat the Missing scope as unverified-stale.
+As of the d8668c19 snapshot, no per-row audit directory existed on main for this row (crosswalk marked 65-76 EVIDENCE-THIN). Later update: the integrator reports a 65-87 deepening audit package landing on main after that snapshot; it is the current evidence for this row once landed. I checked origin/main b3348dd0 at 01:38 IST and did not find it yet, so I have not read it and give no path for it. The table cell above is the only per-row description available, it is historical, and tip code for this row was not re-read in this pass. Treat the Missing scope as unverified-stale.
 
 ## (c) Verdict
 

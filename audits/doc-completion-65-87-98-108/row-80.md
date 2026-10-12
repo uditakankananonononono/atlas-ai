@@ -23,7 +23,7 @@ Doc source line refs in the table: 53,166. The doc text itself was not re-read f
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 80, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 80, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 80 |Crack maths problems or dilemmas in any field | Exact rational polynomial evaluation, derivative, antiderivative, definite integrals, candidate-root checks and full certificate replay | PARTIAL: bounded polynomials, not unrestricted cross-field solving |
 

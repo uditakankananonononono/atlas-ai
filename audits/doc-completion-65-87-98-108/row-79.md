@@ -23,7 +23,7 @@ Doc source line refs in the table: 53,164,214. The doc text itself was not re-re
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 79, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 79, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 79 |Prototype new device concepts | Parametric open-top enclosure OBJ mesh and editable OpenSCAD; paired edge/winding checks and signed-volume comparison | PARTIAL: one bounded CAD family, no physical manufacture, material/fit/safety or premium-product assessment |
 

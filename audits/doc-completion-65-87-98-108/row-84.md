@@ -25,7 +25,7 @@ Doc source line refs in the table: 37,182,185,215,216. The doc text itself was n
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 84, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 84, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 84 |Try to make it into AGI-like capability | Existing AGI-runtime regression retained; private computation runtime integrates actual bounded work and durable results | PARTIAL: no actual-model E2E, learned/general intelligence or independent transfer result |
 

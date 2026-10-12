@@ -25,7 +25,7 @@ Doc source line refs in the table: 50,176. The doc text itself was not re-read f
 
 ## Tip-state update (second pass, origin/main d8668c19)
 
-Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 87, verbatim:
+Source: `audits/instinct-groups-77-87/README.md` on main (base 4163f497, read 2026-10-12). Its own row for group 87, as a whitespace-normalized quote (spaces around the pipe separators removed, wording otherwise copied):
 
 > | 87 |Add info to train models from 10 websites like AdmitSee | Actually fitted multinomial naive-Bayes advice-topic model, token/class counts, serialized artifact checksums, held-out per-class coverage, training-domain count, rights receipts and owner-consent route | PARTIAL: executed on synthetic author-owned fixtures, not licensed content from ten admissions-provider sites; not LoRA/LLM training or admissions success prediction |
 
