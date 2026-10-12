@@ -1,0 +1,49 @@
+{
+  "row": 77,
+  "selectors": [
+    "tests/mission_build/test_patents.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "literal supplied-corpus patent drafting only",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "quote",
+      "path": "backend/app/mission_build/patent_preparation.py",
+      "old": "quote in accepted.get('detailed_description','')",
+      "new": "True"
+    },
+    {
+      "id": "https",
+      "path": "backend/app/mission_build/patent_preparation.py",
+      "old": "url.scheme != 'https'",
+      "new": "False"
+    },
+    {
+      "id": "abstract",
+      "path": "backend/app/mission_build/patent_preparation.py",
+      "old": "len(abstract.split())>150",
+      "new": "False"
+    },
+    {
+      "id": "missing_art",
+      "path": "backend/app/mission_build/patent_preparation.py",
+      "old": "if not arts:missing.append('prior_art_corpus')",
+      "new": "if False:pass"
+    },
+    {
+      "id": "filing",
+      "path": "backend/app/mission_build/patent_preparation.py",
+      "old": "'filing_ready':False",
+      "new": "'filing_ready':True"
+    }
+  ]
+}
