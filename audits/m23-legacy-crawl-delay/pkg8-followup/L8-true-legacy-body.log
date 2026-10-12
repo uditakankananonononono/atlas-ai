@@ -1,0 +1,89 @@
+FFFF.F.F.................................                                [100%]
+=================================== FAILURES ===================================
+_______________ test_legacy_helper_waits_the_robots_crawl_delay ________________
+
+    def test_legacy_helper_waits_the_robots_crawl_delay():
+        row, calls = run('User-agent: *\nCrawl-delay: 5\nAllow: /')
+        assert row['live_status'] == 'page_reachable'
+>       assert calls[0] == '/robots.txt' and calls[1] == 'sleep:5' and len(calls) == 3
+E       AssertionError: assert ('/robots.txt' == '/robots.txt'
+E
+E           /robots.txt and '/admission/a...s-that-worked' == 'sleep:5'
+E
+E         - sleep:5
+E         + /admission/apply/college-essays-that-worked)
+
+tests/modules/test_m23_admitted_cases_legacy_delegation.py:27: AssertionError
+_______ test_legacy_helper_skips_delay_above_cap_without_requesting_page _______
+
+    def test_legacy_helper_skips_delay_above_cap_without_requesting_page():
+        row, calls = run('User-agent: *\nCrawl-delay: 31\nAllow: /')
+>       assert row['live_status'] == 'crawl_delay_too_long' and row['crawl_delay_seconds'] == 31
+E       AssertionError: assert ('page_reachable' == 'crawl_delay_too_long'
+E
+E         - crawl_delay_too_long
+E         + page_reachable)
+
+tests/modules/test_m23_admitted_cases_legacy_delegation.py:32: AssertionError
+____________________ test_legacy_helper_honors_boundary_30 _____________________
+
+    def test_legacy_helper_honors_boundary_30():
+        row, calls = run('User-agent: *\nCrawl-delay: 30\nAllow: /')
+>       assert row['live_status'] == 'page_reachable' and 'sleep:30' in calls
+E       AssertionError: assert ('page_reachable' == 'page_reachable'
+E
+E           page_reachable and 'sleep:30' in ['/robots.txt', '/admission/apply/college-essays-that-worked'])
+
+tests/modules/test_m23_admitted_cases_legacy_delegation.py:38: AssertionError
+____________________ test_legacy_helper_passes_cap_through _____________________
+
+    def test_legacy_helper_passes_cap_through():
+        row, calls = run('User-agent: *\nCrawl-delay: 31\nAllow: /', max_crawl_delay=60)
+>       assert row['live_status'] == 'page_reachable' and 'sleep:31' in calls
+E       AssertionError: assert ('page_reachable' == 'page_reachable'
+E
+E           page_reachable and 'sleep:31' in ['/robots.txt', '/admission/apply/college-essays-that-worked'])
+
+tests/modules/test_m23_admitted_cases_legacy_delegation.py:43: AssertionError
+_________ test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1ed05a0d40>
+
+    def test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper(monkeypatch):
+        got = {}
+        def fake(case_id, transport=None, **kw):
+            got.update(case_id=case_id, transport=transport, kw=kw)
+            return {'live_status': 'sentinel'}
+        monkeypatch.setattr(admitted_cases_bounded, 'fetch_case_metadata_bounded', fake)
+        t = httpx.MockTransport(lambda r: httpx.Response(500))
+>       assert admitted_cases.fetch_case_metadata('mit', t, page_limit=7)['live_status'] == 'sentinel'
+E       AssertionError: assert 'robots_unverified' == 'sentinel'
+E
+E         - sentinel
+E         + robots_unverified
+
+tests/modules/test_m23_admitted_cases_legacy_delegation.py:65: AssertionError
+__________________ test_legacy_module_has_no_own_http_client ___________________
+
+    def test_legacy_module_has_no_own_http_client():
+>       assert 'httpx.Client' not in inspect.getsource(admitted_cases.fetch_case_metadata)
+E       assert 'httpx.Client' not in "def fetch_c...d': False}\n"
+E
+E         'httpx.Client' is contained here:
+E
+E               with httpx.Client(timeout=8, follow_redirects=False, transport=transport,
+E         ?          ++++++++++++
+E                                 headers={'User-Agent': USER_AGENT}) as client:
+E                   robots = client.get(base + '/robots.txt')...
+E
+E         ...Full output truncated (20 lines hidden), use '-vv' to show
+
+tests/modules/test_m23_admitted_cases_legacy_delegation.py:75: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_waits_the_robots_crawl_delay
+FAILED tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_skips_delay_above_cap_without_requesting_page
+FAILED tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_honors_boundary_30
+FAILED tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_passes_cap_through
+FAILED tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper
+FAILED tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_module_has_no_own_http_client
+6 failed, 35 passed in 0.86s
