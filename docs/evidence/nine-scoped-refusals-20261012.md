@@ -34,7 +34,8 @@ raw mutation exposure are covered here.
 Python 3.12, declared Playwright package installed locally; no browser launched
 and no provider mutation or payment executed.
 
-- Bounded inclusive selector: **103 passed** with explicit local development
+- Historical old-base inclusive selector (integrator reference `8ab6542c`):
+  **103 passed** with explicit local development
   auth test opt-in (`ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development`) and
   `PYTHONPATH=backend`, Python 3.12, `--noconftest`. Includes scoped entry tests,
   imported HTTP adapters with zero MockTransport calls, imported browser
@@ -51,7 +52,7 @@ and no provider mutation or payment executed.
   that environment, because `--noconftest` disables the normal autouse
   development-auth fixture. This is environment-specific, not a baseline
   defect. Reinstating both fixture environment values yields 103 passed
-  inclusive. The test itself was not changed.
+  inclusive on the old base. The test itself was not changed.
 - Broader billing regression attempts are incomplete: full selector stalls in
   embedded Postgres setup, no-conftest loses fixture availability, and a
   SQLite-filtered selector also exceeds its 35-second bound. No passing total
@@ -61,7 +62,7 @@ and no provider mutation or payment executed.
 These are scoped fail-closed paths. No live end-to-end provider evidence,
 aggregate coverage promotion or new standing authorization is claimed.
 
-Canonical bounded reproduction from repository root:
+Inclusive bounded reproduction command from repository root (no deselection):
 
 ```sh
 PYTHONPATH=backend ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development /home/sandbox/venv312/bin/python -m pytest --noconftest tests/runtime/guardrails/test_nine_scoped_effect_refusals.py tests/modules/test_m13_pc_daemon.py tests/modules/test_m13_browser_agent.py tests/modules/test_m13_capture_bound_submit.py tests/modules/test_m10_email_assistant.py tests/modules/test_m11_calendar_intelligence.py -q
@@ -71,3 +72,15 @@ The development-auth opt-in is test-only, replicating the existing fixture;
 production authentication defaults are unchanged. The local browser wrapper
 intentionally omits locator.evaluate too: a composed fill path using it
 refuses before any driver write rather than acquiring a new effect permit.
+
+## Current composition status
+
+On current tip `3db0a1e8` plus the nine-gate code and docs patches, the same
+inclusive command reports **102 passed, 1 failed**, not 103 passed. The failure
+is `tests/modules/test_m13_browser_agent.py::test_fill_does_not_put_values_in_audit`:
+the fake locator lacks evaluate, required by B3's landed read-only control-type
+probe before fill. The same failure is present on bare current main, so this
+is pre-existing B3 fixture debt, not a nine-gate regression. B3 owns its repair.
+The old-base 103-pass result above is historical evidence only and does not
+claim the current composition is green. Keep this test included; no guard
+weakening or deselection is used to change that result.
