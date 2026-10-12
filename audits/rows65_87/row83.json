@@ -1,0 +1,49 @@
+{
+  "row": 83,
+  "selectors": [
+    "tests/modules/test_concept_acceptance_ledger_r83.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "temp-tree inventory and per-file execution, not1000 functional concepts",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "routes",
+      "path": "backend/app/modules/instinct_doc/concept_acceptance_ledger_r83.py",
+      "old": "and not p.stem.endswith(\"_routes\")",
+      "new": ""
+    },
+    {
+      "id": "passed",
+      "path": "backend/app/modules/instinct_doc/concept_acceptance_ledger_r83.py",
+      "old": "all(results[f] is True for f in files)",
+      "new": "True"
+    },
+    {
+      "id": "shortfall",
+      "path": "backend/app/modules/instinct_doc/concept_acceptance_ledger_r83.py",
+      "old": "max(0, target - passed)",
+      "new": "0"
+    },
+    {
+      "id": "static",
+      "path": "backend/app/modules/instinct_doc/concept_acceptance_ledger_r83.py",
+      "old": "elif not run_tests:",
+      "new": "elif False:"
+    },
+    {
+      "id": "complete",
+      "path": "backend/app/modules/instinct_doc/concept_acceptance_ledger_r83.py",
+      "old": "passed >= target",
+      "new": "True"
+    }
+  ]
+}
