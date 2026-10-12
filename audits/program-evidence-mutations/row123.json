@@ -1,0 +1,46 @@
+{
+  "row": 123,
+  "tests": [
+    "tests/test_repository_evidence_binding.py",
+    "tests/test_row123_mutation_sensitivity.py"
+  ],
+  "tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "mutants": [
+    {
+      "id": "R123-M1",
+      "name": "symlink",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "if path.is_symlink():",
+      "new": "if False:"
+    },
+    {
+      "id": "R123-M2",
+      "name": "parent traversal",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "if relative.is_absolute() or '..' in relative.parts:",
+      "new": "if False:"
+    },
+    {
+      "id": "R123-M3",
+      "name": "completion claim",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "'remote_verified': False, 'ownership_verified': False, 'completion_verified': False,",
+      "new": "'remote_verified': False, 'ownership_verified': False, 'completion_verified': True,"
+    },
+    {
+      "id": "R123-M4",
+      "name": "file count",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "out['snapshot']['tracked_files'] = len(snap['files'])",
+      "new": "out['snapshot']['tracked_files'] = 999"
+    },
+    {
+      "id": "R123-M5",
+      "name": "dirty state",
+      "file": "backend/app/modules/instinct_doc/repo_register_p253.py",
+      "old": "out['snapshot'] = {key: snap[key] for key in ('head', 'dirty', 'tree_digest', 'status_digest', 'errors')}",
+      "new": "out['snapshot'] = {key: snap[key] for key in ('head', 'dirty', 'tree_digest', 'status_digest', 'errors')}\n                out['snapshot']['dirty'] = False"
+    }
+  ]
+}

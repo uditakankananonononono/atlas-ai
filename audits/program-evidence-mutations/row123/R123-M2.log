@@ -1,0 +1,12 @@
+.........F                                                               [100%]
+=================================== FAILURES ===================================
+_________________ test_internal_parent_traversal_still_refused _________________
+tests/test_row123_mutation_sensitivity.py:9: in test_internal_parent_traversal_still_refused
+    assert row['status']=='UNVERIFIED'
+E   AssertionError: assert 'LOCAL-SNAPSHOT' == 'UNVERIFIED'
+E
+E     - UNVERIFIED
+E     + LOCAL-SNAPSHOT
+=========================== short test summary info ============================
+FAILED tests/test_row123_mutation_sensitivity.py::test_internal_parent_traversal_still_refused
+1 failed, 9 passed in 0.35s

@@ -1,0 +1,9 @@
+.....F....                                                               [100%]
+=================================== FAILURES ===================================
+________________________ test_dirty_snapshot_disclosed _________________________
+tests/test_repository_evidence_binding.py:56: in test_dirty_snapshot_disclosed
+    assert row['snapshot']['dirty']
+E   assert False
+=========================== short test summary info ============================
+FAILED tests/test_repository_evidence_binding.py::test_dirty_snapshot_disclosed
+1 failed, 9 passed in 0.32s

@@ -1,0 +1,12 @@
+....F.....                                                               [100%]
+=================================== FAILURES ===================================
+_________________________ test_symlink_root_unverified _________________________
+tests/test_repository_evidence_binding.py:49: in test_symlink_root_unverified
+    assert bind_local_repositories(r, tmp_path, [binding])['entries'][0]['status'] == 'UNVERIFIED'
+E   AssertionError: assert 'LOCAL-SNAPSHOT' == 'UNVERIFIED'
+E
+E     - UNVERIFIED
+E     + LOCAL-SNAPSHOT
+=========================== short test summary info ============================
+FAILED tests/test_repository_evidence_binding.py::test_symlink_root_unverified
+1 failed, 9 passed in 0.34s
