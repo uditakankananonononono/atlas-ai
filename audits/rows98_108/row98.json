@@ -1,0 +1,44 @@
+{
+  "row": 98,
+  "selectors": [
+    "tests/modules/test_m23_essay_excellence.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "authorship",
+      "path": "backend/app/modules/m23_study_abroad/essay_excellence.py",
+      "old": "if e.get(\"student_confirmed\") is not True:",
+      "new": "if False:"
+    },
+    {
+      "id": "revision",
+      "path": "backend/app/modules/m23_study_abroad/essay_excellence.py",
+      "old": "round(vb - va, 4)",
+      "new": "round(va - vb, 4)"
+    },
+    {
+      "id": "length",
+      "path": "backend/app/modules/m23_study_abroad/essay_excellence.py",
+      "old": "\"within_limit\": n_words <= word_limit",
+      "new": "\"within_limit\": True"
+    },
+    {
+      "id": "complete",
+      "path": "backend/app/modules/m23_study_abroad/essay_excellence.py",
+      "old": "\"status\": \"complete\" if not missing else \"incomplete\"",
+      "new": "\"status\": \"complete\""
+    },
+    {
+      "id": "submission",
+      "path": "backend/app/modules/m23_study_abroad/essay_excellence.py",
+      "old": "\"submitted\": False",
+      "new": "\"submitted\": True"
+    }
+  ]
+}
