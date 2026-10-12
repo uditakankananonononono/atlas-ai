@@ -1,4 +1,8 @@
-"""rc1 plus FAILED-only mutation receipt runner, including product crash failures for trusted local checkouts."""
+"""Mutation receipts for trusted local checkouts: rc1 plus FAILED test IDs.
+FAILED includes product KeyError/RuntimeError, not just assertions. Text containing
+ERROR-space or ERROR-at is rejected; timeout is uncredited. Mixed FAILED plus SKIP
+is not rejected. Counts measure failure sensitivity, not assertion-only kills.
+"""
 from pathlib import Path
 import hashlib
 import json

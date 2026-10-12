@@ -1,8 +1,9 @@
 # Row 124 mutation sensitivity
 
 Literal state: PARTIAL. Five named source operators, with IDs R124-M1..M5.
-CAUGHT means pytest exit1 with FAILED test IDs, including product crash failures;
+CAUGHT means pytest exit1 with FAILED test IDs, including product crash failures such as KeyError/RuntimeError;
 no ERROR/collection/setup/timeout credit. This is not an assertion-only classifier.
+Mixed FAILED plus SKIP is not rejected; counts are failure sensitivity.
 Timeout/ERROR/inapplicable is not caught; product crashes reported as FAILED can count. Logs and JSON retain full outcomes.
 Every mutated source is restored byte-for-byte and SHA256 compared; restored
 baseline must pass. No product implementation changes are included here.
