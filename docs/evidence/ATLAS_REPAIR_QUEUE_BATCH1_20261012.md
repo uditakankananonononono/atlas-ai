@@ -35,3 +35,13 @@ Test-first: 16 failing cases reproduced before implementation changes. After fix
 Advice deduplication is service-level and sequential; the repository has no unique-key/CAS contract, so cross-process concurrent compiles remain unproven. Narrative cache is not durable. Provider fallback catches operational RuntimeError/OSError and parsing errors, not arbitrary programming errors or cancellation. Source URL validation ties blueprints to collected sources, not source truth. Feasibility checks shape requirements, not calibrated scores. Full repository suite and live integration outcomes were not run.
 
 Rows m13-m16 are not changed by this batch.
+
+## Gate fixture reconciliation
+
+The positive owner route fixture now supplies collected Reddit source evidence rather than an unsupported empty-source blueprint, and three schema-correct sensitivities. Separate negative regressions reject empty sensitivities with a valid explanation and reject an empty explanation with valid sensitivities. The tightened contract is intentional. Gate selection plus repair cases: 20 passed.
+
+Original 508-test selection (Python 3.10, --noconftest):
+
+```
+python -m pytest --noconftest tests/modules/test_repair_queue_m17_m18_m19.py tests/modules/test_m17_advice_essay_service.py tests/modules/test_m17_narrative_architect*.py tests/modules/test_m17_coaching_state_machines_710_809.py tests/modules/test_m17_rows_*.py tests/modules/test_m18_side_hustle_scraper.py tests/modules/test_m18_lane_pipeline.py tests/modules/test_m18_lane_validation.py tests/modules/test_m19_idea_incubator.py -q
+```

@@ -181,12 +181,12 @@ def test_positive_owner_blueprint_feasibility_routes(root,monkeypatch,oidc_auth_
     provision(root,'t','a',known_new=True)
     http=FakeHttpClient()
     for sub in ('sidehustle','Entrepreneur','smallbusiness','passive_income'):
-        http.add('https://www.reddit.com/r/'+sub+'/search.json?q=demo&restrict_sr=1&sort=relevance&t=year&limit=1',json.dumps({'data':{'children':[]}}))
+        http.add('https://www.reddit.com/r/'+sub+'/search.json?q=demo&restrict_sr=1&sort=relevance&t=year&limit=1',json.dumps({'data':{'children':[{'data':{'id':sub,'title':'Observed test opportunity','selftext':'student demand','permalink':'/r/'+sub+'/comments/evidence/demo/','created_utc':1780000000}}]}}))
     from datetime import datetime,timezone,timedelta
     now=[datetime.now(timezone.utc)]
     def sleep(n):now[0]+=timedelta(seconds=n)
-    blueprint={'title':'demo','steps':['test'],'tools':[],'complexity':1,'automation_level':0,'monetisation':[],'source_urls':[]}
-    feasibility={'strengths':[],'weaknesses':[],'opportunities':[],'threats':[],'market_saturation':0,'barrier_to_entry':0,'evidence_quality':0,'viability_score':0,'score_explanation':['fixture not model quality'],'sensitivities':[],'first_experiment':'test','max_test_budget':0,'recommendation':'test'}
+    blueprint={'title':'demo','steps':['test'],'tools':[],'complexity':1,'automation_level':0,'monetisation':[],'source_urls':['https://www.reddit.com/r/sidehustle/comments/evidence/demo/']}
+    feasibility={'strengths':[],'weaknesses':[],'opportunities':[],'threats':[],'market_saturation':0,'barrier_to_entry':0,'evidence_quality':0,'viability_score':0,'score_explanation':['fixture not model quality'],'sensitivities':[{'name':'lower demand','inputs':{'demand':0},'viability_score':0},{'name':'lower pricing','inputs':{'price':0},'viability_score':0},{'name':'higher cost','inputs':{'cost':1},'viability_score':0}],'first_experiment':'test','max_test_budget':0,'recommendation':'test'}
     async def generate(prompt,*a):return 'fixture',json.dumps(feasibility if 'SWOT' in prompt else [blueprint])
     monkeypatch.setenv('ATLAS_DEV_NO_AUTH','0');monkeypatch.setenv('ATLAS_ENV','production');monkeypatch.setenv('ATLAS_M18_DURABLE_ROOT',str(root));monkeypatch.setattr(r,'_factory',CollectorServiceFactory(root,http=http,generate=generate,sleeper=sleep,clock=lambda:now[0]))
     app=FastAPI();app.include_router(r.router)

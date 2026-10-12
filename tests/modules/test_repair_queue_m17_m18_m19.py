@@ -117,3 +117,9 @@ def test_m18_A01_admitted_scam_flag_reaches_rank_penalty():
     pipeline=CollectionPipeline(repository=repo,validator=DocumentValidator(),ranker=BlueprintRanker(clock=lambda:now),monitor=FreshnessMonitor(repo,clock=lambda:now),collectors={})
     ranked=pipeline.ranked('tenant','tutoring')
     assert ranked[0].scam_penalty>0
+
+@pytest.mark.parametrize('invalid', [{'sensitivities':[]},{'score_explanation':[]}])
+def test_m18_A04_each_required_feasibility_field_fails_independently(invalid):
+    value=dict(strengths=[],weaknesses=[],opportunities=[],threats=[],market_saturation=.2,barrier_to_entry=.2,evidence_quality=.1,viability_score=10,score_explanation=['evidence is limited'],sensitivities=[{'name':name,'inputs':{'demand':0},'viability_score':0} for name in ('demand','cost','price')],first_experiment='Interview customers',max_test_budget=0,recommendation='test')
+    value.update(invalid)
+    with pytest.raises(ValueError):FeasibilityOut(**value)
