@@ -1688,3 +1688,19 @@ router.include_router(naming707_router)
 
 from .formatting708_routes import router as formatting708_router
 router.include_router(formatting708_router)
+
+# Dedicated supplied-input engineering engines, rows 1536-1542.
+from .statistical_process_control1536_routes import router as statistical_process_control1536_router
+router.include_router(statistical_process_control1536_router)
+from .process_capability1537_routes import router as process_capability1537_router
+router.include_router(process_capability1537_router)
+from .measurement_systems_analysis1538_routes import router as measurement_systems_analysis1538_router
+router.include_router(measurement_systems_analysis1538_router)
+from .design_of_experiments1539_routes import router as design_of_experiments1539_router
+router.include_router(design_of_experiments1539_router)
+from .taguchi_methods1540_routes import router as taguchi_methods1540_router
+router.include_router(taguchi_methods1540_router)
+from .response_surface_methodology1541_routes import router as response_surface_methodology1541_router
+router.include_router(response_surface_methodology1541_router)
+from .robust_design1542_routes import router as robust_design1542_router
+router.include_router(robust_design1542_router)
