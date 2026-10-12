@@ -1,32 +1,37 @@
 from fastapi.testclient import TestClient
 from app.main import app
 
-def test_mounted_owner_limits_and_no_execution(monkeypatch,oidc_auth_headers):
+def test_mounted_owner_limits_and_no_execution(monkeypatch,oidc_auth_headers,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app);path='/api/v1/api/modules/20/legacy-modernization/694/modernize';body={'source':'for x in xrange(2): pass'}
  assert c.post(path,json=body).status_code==401
- for tenant,actor in [('a','owner'),('b','other')]:
+ for tenant,actor in [(case_tenant,'owner'),(case_tenant+'-other','other')]:
   r=c.post(path,headers=oidc_auth_headers(tenant,actor),json=body);assert r.status_code==200,r.text
   assert r.json()['tenant_id']==tenant and r.json()['actor_id']==actor and r.json()['source_execution_performed']is False
- h=oidc_auth_headers('a','owner')
- for extra in [{'tenant_id':'b'},{'actor_id':'other'},{'resource_refs':[{'tenant_id':'b'}]}]:assert c.post(path,headers=h,json={**body,**extra}).status_code==403
+ h=oidc_auth_headers(case_tenant,'owner')
+ for extra in [{'tenant_id':case_tenant+'-other'},{'actor_id':'other'},{'resource_refs':[{'tenant_id':case_tenant+'-other'}]}]:assert c.post(path,headers=h,json={**body,**extra}).status_code==403
  for extra in [{'source':'x'*100001},{'rules':['xrange']*8},{'rules':['unknown']},{'source':'😀'*30000}]:assert c.post(path,headers=h,json={**body,**extra}).status_code==422
  r=c.post(path,headers=h,json={'source':'raise RuntimeError("never executed")'});assert r.status_code==200 and r.json()['verified']is False
 
-def test_known_unicode_defect_and_resource_failure_refuse(monkeypatch,oidc_auth_headers):
+def test_known_unicode_defect_and_resource_failure_refuse(monkeypatch,oidc_auth_headers,case_tenant):
  from app.modules.m20_general_cognitive_worker import legacy_modernizer_routes694 as routes
- monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app);h=oidc_auth_headers('a','owner');path='/api/v1/api/modules/20/legacy-modernization/694/modernize'
+ monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app);h=oidc_auth_headers(case_tenant,'owner');path='/api/v1/api/modules/20/legacy-modernization/694/modernize'
  r=c.post(path,headers=h,json={'source':'self.ａssertEquals(1, 1)'});assert r.status_code==422 and r.json()['detail']=='legacy694 Unicode source-span defect; transformation refused'
  for exc in [RecursionError,MemoryError]:
   def fail(*args,**kwargs):raise exc()
   monkeypatch.setattr(routes,'modernize',fail);r=c.post(path,headers=h,json={'source':'x=1'});assert r.status_code==422 and r.json()['detail']=='legacy694 parser resource limit; transformation refused'
 
-def test_lone_surrogate_refuses_422(monkeypatch,oidc_auth_headers):
+def test_lone_surrogate_refuses_422(monkeypatch,oidc_auth_headers,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers('a','owner'),'Content-Type':'application/json'},content='{"source":"\\ud800"}')
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers(case_tenant,'owner'),'Content-Type':'application/json'},content='{"source":"\\ud800"}')
  assert r.status_code==422 and r.json()['detail']=='source contains invalid Unicode surrogate'
 
+import hashlib
 import json
 import pytest
+
+@pytest.fixture
+def case_tenant(request):
+    return 'legacy694-'+hashlib.sha256(request.node.nodeid.encode()).hexdigest()
 
 @pytest.mark.parametrize('packet',[
  {'source':['\ud800']}, {'source':{'x':'\ud800'}},
@@ -37,9 +42,9 @@ import pytest
  {'source':'x=1','rules':['\ud800']},
  {'source':'\udfff'},
 ])
-def test_surrogate_keys_values_and_type_error_shapes_refuse(monkeypatch,oidc_auth_headers,packet):
+def test_surrogate_keys_values_and_type_error_shapes_refuse(monkeypatch,oidc_auth_headers,packet,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers('a','owner'),'Content-Type':'application/json'},content=json.dumps(packet))
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers(case_tenant,'owner'),'Content-Type':'application/json'},content=json.dumps(packet))
  assert r.status_code==422,r.text
  assert r.json()['detail']=='source contains invalid Unicode surrogate'
 
@@ -47,23 +52,23 @@ def test_surrogate_keys_values_and_type_error_shapes_refuse(monkeypatch,oidc_aut
  {'source':['plain']}, {'source':{'x':'plain'}},
  {'source':'x=1','rules':'plain'}, ['plain'],
 ])
-def test_nonsurrogate_type_errors_remain_422(monkeypatch,oidc_auth_headers,packet):
+def test_nonsurrogate_type_errors_remain_422(monkeypatch,oidc_auth_headers,packet,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json=packet)
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json=packet)
  assert r.status_code==422,r.text
 
 @pytest.mark.parametrize('source',['x=1','name="é"','name="😀"'])
-def test_valid_unicode_stays_accepted(monkeypatch,oidc_auth_headers,source):
+def test_valid_unicode_stays_accepted(monkeypatch,oidc_auth_headers,source,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':source})
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json={'source':source})
  assert r.status_code==200,r.text
  assert r.json()['source_execution_performed']is False
 
-def test_deep_json_refuses_before_validation(monkeypatch,oidc_auth_headers):
+def test_deep_json_refuses_before_validation(monkeypatch,oidc_auth_headers,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
  nested='plain'
  for _ in range(66):nested=[nested]
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1','extra':nested})
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json={'source':'x=1','extra':nested})
  assert r.status_code==422,r.text
  assert r.json()['detail']=='legacy694 JSON nesting exceeds 64 levels'
 
@@ -72,17 +77,17 @@ def test_deep_json_refuses_before_validation(monkeypatch,oidc_auth_headers):
  ('é'*50000,200,None),('é'*50001,422,'source exceeds 100000 UTF-8 bytes'),
  ('é'*50000+'x',422,'source exceeds 100000 UTF-8 bytes'),
 ])
-def test_source_character_and_utf8_edges(monkeypatch,oidc_auth_headers,source,status,detail):
+def test_source_character_and_utf8_edges(monkeypatch,oidc_auth_headers,source,status,detail,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':source})
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json={'source':source})
  assert r.status_code==status,r.text
  if detail=='string_too_long':assert r.json()['detail'][0]['type']==detail
  elif detail:assert r.json()['detail']==detail
 
 @pytest.mark.parametrize('count,status',[(64,200),(65,422)])
-def test_legacy_reference_count_edge(monkeypatch,oidc_auth_headers,count,status):
+def test_legacy_reference_count_edge(monkeypatch,oidc_auth_headers,count,status,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1','resource_refs':[{'tenant_id':'a','actor_id':'owner','id':str(i)}for i in range(count)]})
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json={'source':'x=1','resource_refs':[{'tenant_id':case_tenant,'actor_id':'owner','id':str(i)}for i in range(count)]})
  assert r.status_code==status,r.text
  if count==65:assert r.json()['detail'][0]['type']=='too_long'
 
@@ -92,11 +97,11 @@ def test_legacy_reference_count_edge(monkeypatch,oidc_auth_headers,count,status)
  (63,'\ud800','source contains invalid Unicode surrogate'),
  (64,'\ud800','legacy694 JSON nesting exceeds 64 levels'),
 ])
-def test_json_value_depth_exact_edges(monkeypatch,oidc_auth_headers,kind,levels,leaf,detail):
+def test_json_value_depth_exact_edges(monkeypatch,oidc_auth_headers,kind,levels,leaf,detail,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
  value=leaf
  for _ in range(levels):value=[value]if kind=='list'else{'value':value}
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers('a','owner'),'Content-Type':'application/json'},content=json.dumps({'source':'x=1','extra':value}))
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers(case_tenant,'owner'),'Content-Type':'application/json'},content=json.dumps({'source':'x=1','extra':value}))
  assert r.status_code==(422 if detail else 200),r.text
  if detail:assert r.json()['detail']==detail
 
@@ -105,40 +110,40 @@ def test_json_value_depth_exact_edges(monkeypatch,oidc_auth_headers,kind,levels,
  (62,'\ud800','source contains invalid Unicode surrogate'),
  (63,'\ud800','legacy694 JSON nesting exceeds 64 levels'),
 ])
-def test_json_key_depth_exact_edges(monkeypatch,oidc_auth_headers,levels,key,detail):
+def test_json_key_depth_exact_edges(monkeypatch,oidc_auth_headers,levels,key,detail,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
  value={key:0}
  for _ in range(levels):value={'value':value}
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers('a','owner'),'Content-Type':'application/json'},content=json.dumps({'source':'x=1','extra':value}))
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers={**oidc_auth_headers(case_tenant,'owner'),'Content-Type':'application/json'},content=json.dumps({'source':'x=1','extra':value}))
  assert r.status_code==(422 if detail else 200),r.text
  if detail:assert r.json()['detail']==detail
 
 @pytest.mark.parametrize('extra,status',[({},200),({'actor_id':None},200),({'actor_id':'other'},403)])
-def test_legacy_exclude_none_owner_semantic(monkeypatch,oidc_auth_headers,extra,status):
+def test_legacy_exclude_none_owner_semantic(monkeypatch,oidc_auth_headers,extra,status,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1',**extra})
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json={'source':'x=1',**extra})
  assert r.status_code==status,r.text
  if status==200:assert r.json()['actor_id']=='owner'
 
-def test_legacy_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc_auth_headers):
+def test_legacy_explicit_null_identity_fields_treated_as_absent(monkeypatch,oidc_auth_headers,case_tenant):
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':'x=1','tenant_id':None,'actor_id':None})
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json={'source':'x=1','tenant_id':None,'actor_id':None})
  assert r.status_code==200,r.text
- assert r.json()['tenant_id']=='a' and r.json()['actor_id']=='owner'
+ assert r.json()['tenant_id']==case_tenant and r.json()['actor_id']=='owner'
 
 CARD_SRC="for x in xrange(2):\n    pass\nd = {}\nif d.has_key('a'):\n    pass\n"
 
-def test_card_vector_all_rules_exact_over_http(monkeypatch,oidc_auth_headers):
+def test_card_vector_all_rules_exact_over_http(monkeypatch,oidc_auth_headers,case_tenant):
  """Acceptance card 694, vector 1 (all rules). Closure note: the engine's documented scope is a seven-rule AST-span rewrite over supplied inputs; literal breadth remains unverified. This pin is closed-scoped, not literal breadth: it accepts only the seven-rule AST-span rewrite behavior over caller-supplied inputs and authorizes, executes, merges, releases or approves nothing. verified is always false over HTTP because the route never calls a check; that is documented behavior, not a defect. The fullwidth-identifier Unicode source-span defect (e.g. "self.assertEquals(1, 1)" with a fullwidth a) is a stated limit, pinned by test_known_unicode_defect_and_resource_failure_refuse."""
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':CARD_SRC})
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json={'source':CARD_SRC})
  assert r.status_code==200,r.text
- assert r.json()=={'original':CARD_SRC,'modernized':"for x in range(2):\n    pass\nd = {}\nif 'a' in d:\n    pass\n",'changes':[{'rule':'xrange','line':1,'col':9,'before':'xrange','after':'range','pass_no':1,'assumption':'`xrange` is not defined or rebound anywhere in the module'},{'rule':'has_key','line':4,'col':3,'before':"d.has_key('a')",'after':"'a' in d",'pass_no':1,'assumption':'receiver assumed to be a mapping (type not known statically)'}],'refusals':[],'passes':1,'compiled_ok':True,'check_passed':None,'check_error':None,'verified':False,'tenant_id':'a','actor_id':'owner','source_execution_performed':False}
+ assert r.json()=={'original':CARD_SRC,'modernized':"for x in range(2):\n    pass\nd = {}\nif 'a' in d:\n    pass\n",'changes':[{'rule':'xrange','line':1,'col':9,'before':'xrange','after':'range','pass_no':1,'assumption':'`xrange` is not defined or rebound anywhere in the module'},{'rule':'has_key','line':4,'col':3,'before':"d.has_key('a')",'after':"'a' in d",'pass_no':1,'assumption':'receiver assumed to be a mapping (type not known statically)'}],'refusals':[],'passes':1,'compiled_ok':True,'check_passed':None,'check_error':None,'verified':False,'tenant_id':case_tenant,'actor_id':'owner','source_execution_performed':False}
 
-def test_card_vector_python2_syntax_refusal_over_http(monkeypatch,oidc_auth_headers):
+def test_card_vector_python2_syntax_refusal_over_http(monkeypatch,oidc_auth_headers,case_tenant):
  """Acceptance card 694, vector 2: Python-2-only syntax is reported as a syntax_error refusal, never converted; modernized equals the input. Reason pinned by prefix only (interpreter text varies)."""
  monkeypatch.setenv('ATLAS_ENV','production');c=TestClient(app,raise_server_exceptions=False)
- r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers('a','owner'),json={'source':"print 'x'\n"})
+ r=c.post('/api/v1/api/modules/20/legacy-modernization/694/modernize',headers=oidc_auth_headers(case_tenant,'owner'),json={'source':"print 'x'\n"})
  assert r.status_code==200,r.text
  body=r.json()
  assert body['changes']==[] and body['compiled_ok']is False and body['modernized']=="print 'x'\n" and body['passes']==0
@@ -146,4 +151,4 @@ def test_card_vector_python2_syntax_refusal_over_http(monkeypatch,oidc_auth_head
  refusal=body['refusals'][0]
  assert refusal['rule']=='syntax_error' and refusal['line']==1 and refusal['col']==1
  assert refusal['reason'].startswith('source does not parse as Python 3: SyntaxError')
- assert body['verified']is False and body['source_execution_performed']is False and body['tenant_id']=='a' and body['actor_id']=='owner'
+ assert body['verified']is False and body['source_execution_performed']is False and body['tenant_id']==case_tenant and body['actor_id']=='owner'
