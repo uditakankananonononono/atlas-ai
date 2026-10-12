@@ -187,3 +187,23 @@ def test_public_manifest_excludes_source_text():
     assert source['sha256'] == '575b3745949b5859370faf3d27ab61fc9af07c55b9daf7f6bf1238ce55a76d3a'
     assert source['source_text_included'] is False
     assert all('text' not in row for row in source['rows'])
+
+
+def test_public_manifest_and_report_exclude_locator():
+    root = Path(__file__).resolve().parents[1]
+    path = root / 'docs/program-evidence/source-manifest.json'
+    manifest = json.loads(path.read_text())
+    assert 'url' not in manifest
+    assert 'docs.google.com' not in path.read_text()
+    source = source_inventory(root, 'docs/program-evidence/source-manifest.json')
+    assert 'url' not in source
+    assert 'docs.google.com' not in json.dumps(source)
+
+
+def test_manifest_with_locator_refused(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    manifest = json.loads((root / 'docs/program-evidence/source-manifest.json').read_text())
+    manifest['url'] = 'https://example.invalid/private'
+    (tmp_path / 'source.json').write_text(json.dumps(manifest))
+    with pytest.raises(EvidenceError):
+        source_inventory(tmp_path, 'source.json')

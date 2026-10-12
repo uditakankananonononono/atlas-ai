@@ -1,7 +1,7 @@
 # Instinct doc groups 88-97: execution delta
 
 Base: `4163f497f38420a7f755501034549fc9e2e4a4b0`.
-Source: https://docs.google.com/document/d/1VRD84FClUlTk5pX8kcW6ZFxGfbAR6MwH8EoWdkCzlss/edit
+Source: private source locator withheld
 Group numbering comes from the supplied 142-group request audit, not an independent completion count.
 
 All ten broad groups remain **PARTIAL**. This patch adds executable capabilities,

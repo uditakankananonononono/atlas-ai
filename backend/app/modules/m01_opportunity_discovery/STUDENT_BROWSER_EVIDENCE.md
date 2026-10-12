@@ -82,7 +82,7 @@ accepted by these APIs; login happens personally in the paired browser.
 ## Sources read October 12, 2026
 
 Original source doc retrieved in full:
-https://docs.google.com/document/d/1VRD84FClUlTk5pX8kcW6ZFxGfbAR6MwH8EoWdkCzlss/edit
+private source locator withheld
 
 Vendor workflow sources:
 https://resources.ripplematch.com/what-is-ripplematch-and-how-does-it-work

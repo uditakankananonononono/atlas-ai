@@ -82,7 +82,7 @@ No full repository suite or UI/visual work was performed by this lane.
 
 ## Observed vendor and technical sources
 
-- Source specification: https://docs.google.com/document/d/1VRD84FClUlTk5pX8kcW6ZFxGfbAR6MwH8EoWdkCzlss/edit
+- Source specification: private source locator withheld
 - HN API contract fetched: https://hn.algolia.com/api
 - Clicky analytics API fetched: https://clicky.com/help/api (not silently used as AI-tool identity)
 - Mac AI buddy pages fetched: https://www.heyclicky.com/ and https://github.com/farzaa/clicky

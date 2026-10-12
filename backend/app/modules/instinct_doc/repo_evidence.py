@@ -94,7 +94,7 @@ def source_inventory(root, source_path):
     data = p.read_bytes()
     if p.suffix == ".json":
         manifest = json.loads(data)
-        if set(manifest) != {"schema_version", "url", "retrieved_at", "byte_count", "sha256", "rows"} or manifest["schema_version"] != 1:
+        if set(manifest) != {"schema_version", "retrieved_at", "byte_count", "sha256", "rows"} or manifest["schema_version"] != 1:
             raise EvidenceError("invalid source manifest")
         if type(manifest["byte_count"]) is not int or manifest["byte_count"] <= 0 or not re.fullmatch(r"[0-9a-f]{64}", manifest["sha256"]):
             raise EvidenceError("invalid source fingerprint")
@@ -107,7 +107,7 @@ def source_inventory(root, source_path):
             seen.add(row["id"])
             rows.append({**row, "status": "UNVERIFIED", "reason": "No semantic acceptance evidence bound"})
         return {"path": source_path, "sha256": manifest["sha256"], "rows": rows,
-                "manifest_sha256": digest(data), "url": manifest["url"],
+                "manifest_sha256": digest(data),
                 "retrieved_at": manifest["retrieved_at"], "byte_count": manifest["byte_count"],
                 "identity": "physical export line numbers; not historical paragraph P/L IDs",
                 "source_text_included": False,

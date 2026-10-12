@@ -2,7 +2,7 @@
 
 Base: `4163f497f38420a7f755501034549fc9e2e4a4b0`.
 Source read live on 2026-10-12:
-https://docs.google.com/document/d/1VRD84FClUlTk5pX8kcW6ZFxGfbAR6MwH8EoWdkCzlss/edit
+private source locator withheld
 
 This patch does not change literal group verdicts to LANDED. Working components
 are not proof of the source's universal, million-fold, or best-in-world claims.

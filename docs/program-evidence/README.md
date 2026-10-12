@@ -6,7 +6,8 @@ repository rather than accepting caller counts, statuses, receipts or results.
 
 ## Pinned source
 
-- Export URL: https://docs.google.com/document/d/1VRD84FClUlTk5pX8kcW6ZFxGfbAR6MwH8EoWdkCzlss/export?format=txt
+The retrieval URL is held privately. Public metadata contains no document locator.
+
 - Retrieved: 2026-10-12T13:18:34+05:30.
 - Original bytes: 42,199, UTF-8 BOM retained.
 - SHA256: `575b3745949b5859370faf3d27ab61fc9af07c55b9daf7f6bf1238ce55a76d3a`.
