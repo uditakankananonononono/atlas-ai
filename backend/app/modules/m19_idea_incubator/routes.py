@@ -256,3 +256,6 @@ router.include_router(ranking_router)
 
 from .snapshot_router import router as snapshot_router
 router.include_router(snapshot_router)
+
+from .hn_routes import router as hn_research_router
+router.include_router(hn_research_router)
