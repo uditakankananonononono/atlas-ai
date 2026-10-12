@@ -14,7 +14,7 @@ STOP = set("the a an and or of to in for on with at by from is are was be this t
 
 
 def _terms(text):
-    return [w for w in re.findall(r"[a-z][a-z\-]{2,}", (text or "").lower()) if w not in STOP]
+    return [w for w in re.findall(r"[a-z]{3,}", (text or "").lower()) if w not in STOP]
 
 
 def from_starred_gmail(messages):
@@ -33,9 +33,11 @@ def from_linkedin_csv(csv_text, kind="reaction"):
 
 def from_instagram_likes(json_text):
     data = json.loads(json_text)
-    items = data.get("likes_media_likes", data if isinstance(data, list) else [])
+    items = data if isinstance(data, list) else (data.get("likes_media_likes", []) if isinstance(data, dict) else [])
     out = []
     for it in items:
+        if not isinstance(it, dict):
+            continue
         texts = [it.get("title", "")] + [sd.get("value", "") for sd in it.get("string_list_data", [])]
         out.append({"source": "instagram_like", "weight": 1, "text": " ".join(texts)})
     return out
@@ -46,4 +48,4 @@ def rank(signals, top=20):
     for s in signals:
         for t in set(_terms(s["text"])):
             c[t] += s["weight"]
-    return [{"topic": t, "score": n} for t, n in c.most_common(top)]
+    return [{"topic": t, "score": n} for t, n in sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))[:top]]

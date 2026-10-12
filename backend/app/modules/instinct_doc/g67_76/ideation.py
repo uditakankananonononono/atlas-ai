@@ -1,9 +1,10 @@
 """Group 69: novelty-scored idea generation from an ingested corpus.
 
-Pairs high-weight topics across different source clusters, then scores each
-pair's novelty by how rarely the two terms co-occur in the corpus (PMI-style
-rarity, computed here) and emits build tickets. Heuristic combinatorial
-ideation with measured novelty; not a trained creativity model.
+Pairs every two supplied topics that each appear in at least min_df corpus
+documents (no source-cluster check is done), then scores each pair's novelty
+by how rarely the two terms co-occur in the corpus (a PMI-style rarity score
+computed here) and emits build tickets. Heuristic combinatorial
+ideation with a computed novelty score; not a trained creativity model.
 """
 from __future__ import annotations
 import itertools, math, re

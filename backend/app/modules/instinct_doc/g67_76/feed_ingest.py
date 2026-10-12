@@ -1,12 +1,19 @@
-"""Group 68: resumable public-feed ingestion (RSS/Atom) into a sqlite store,
+"""Group 68: public-feed ingestion (RSS/Atom) into a sqlite store,
 with robots.txt respect, dedupe, and JSONL export as inner-model training data.
+
+Cursor semantics: the cursor marks a feed as imported once. ingest() skips
+feeds already marked done (a one-shot import that is safe to re-run after an
+interruption, since feeds are marked only after a full parse and store). For
+continuing ingestion call with skip_done=False; dedupe by link/title hash
+keeps repeats out. There is no per-item cursor or scheduler here.
+robots.txt: HTTP 4xx means no restrictions; any other fetch failure denies.
 
 Fetching is injected (fetch(url)->bytes) so it is testable offline; the default
 fetcher uses urllib on PUBLIC feeds only. No auth walls, no paywalls, no
 CAPTCHA handling. This builds the data pipeline; it does not train a model.
 """
 from __future__ import annotations
-import hashlib, json, sqlite3, time, urllib.request, urllib.robotparser, urllib.parse
+import hashlib, json, sqlite3, time, urllib.error, urllib.request, urllib.robotparser, urllib.parse
 import xml.etree.ElementTree as ET
 
 UA = "atlas-ingest/1.0"
@@ -67,8 +74,10 @@ def robots_ok(url, fetch):
     rp = urllib.robotparser.RobotFileParser()
     try:
         rp.parse(fetch("%s://%s/robots.txt" % (p.scheme, p.netloc)).decode("utf-8", "replace").splitlines())
+    except urllib.error.HTTPError as e:
+        return 400 <= e.code < 500  # 4xx: no robots.txt published; 5xx: deny
     except Exception:
-        return True  # no readable robots.txt = no restriction published
+        return False  # unreachable or unreadable robots.txt: deny
     return rp.can_fetch(UA, url)
 
 

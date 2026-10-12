@@ -1,5 +1,5 @@
 """Groups 67-76 tests. Hermetic, stdlib unittest."""
-import json, os, pathlib, sys, tempfile, unittest
+import asyncio, json, os, pathlib, sys, tempfile, unittest, urllib.error
 from datetime import date
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "backend"))
@@ -12,48 +12,78 @@ RSS = b"""<rss><channel><item><title>Grant opens</title><link>http://x/1</link><
 
 class T(unittest.TestCase):
     def test_cli_adapter_really_runs(self):
-        r = adapters.trial({"name": "echo_tool", "kind": "cli", "command": ["echo"]}, {"args": ["hi"]})
+        r = adapters.trial({"name": "echo_tool", "kind": "cli", "command": ["/bin/echo"]}, {"args": ["hi"]})
         self.assertTrue(r["passed"]); self.assertEqual(r["result"]["stdout"], "hi\n")
 
     def test_http_adapter_with_transport(self):
         r = adapters.trial({"name": "api_tool", "kind": "http_json", "url": "https://e.x/a"}, {"q": 1},
-                           transport=lambda u, d: (200, b'{"a": 1}'))
+                           stub_response={"status": 200, "body": {"a": 1}}, allowed_hosts={"e.x"})
         self.assertTrue(r["passed"]); self.assertEqual(r["result"]["data"], {"a": 1})
 
     def test_failed_trial_reported(self):
-        r = adapters.trial({"name": "bad_tool", "kind": "cli", "command": ["ls"]}, {"args": ["/nonexistent_zz"]})
+        r = adapters.trial({"name": "bad_tool", "kind": "cli", "command": ["/bin/ls"]}, {"args": ["/nonexistent_zz"]})
         self.assertFalse(r["passed"]); self.assertIn("FAILED", r["owner_notification"])
 
     def test_refusals(self):
         for spec in ({"name": "x1", "kind": "cli", "command": ["rm"]},
-                     {"name": "paid_t", "kind": "cli", "command": ["echo"], "paid": True},
+                     {"name": "x2", "kind": "cli", "command": ["/tmp/echo"]},
+                     {"name": "x3", "kind": "cli", "command": ["echo"]},
+                     {"name": "x4", "kind": "cli", "command": ["python3", "-c", "1"]},
+                     {"name": "x5", "kind": "cli", "command": ["/usr/bin/python3", "-c", "1"]},
+                     {"name": "paid_t", "kind": "cli", "command": ["/bin/echo"], "paid": True},
                      {"name": "h_t", "kind": "http_json", "url": "http://insecure"},
-                     {"name": "Bad Name", "kind": "cli", "command": ["echo"]}):
+                     {"name": "h_u", "kind": "http_json", "url": "https://evil.example/x"},
+                     {"name": "Bad Name", "kind": "cli", "command": ["/bin/echo"]}):
             with self.assertRaises(ValueError):
                 adapters.generate(spec)
 
+    def test_trial_is_out_of_process(self):
+        r = adapters.trial({"name": "pid_tool", "kind": "cli", "command": ["/bin/echo"]}, {"args": ["x"]})
+        self.assertNotIn("adapter", sys.modules)
+        self.assertIn("child process", r["isolation"])
+
     def test_fleet_1000_measured(self):
         async def w(job):
+            await asyncio.sleep(0.05)
             return job["id"]
         r = fleet.run([{"id": "j%d" % i} for i in range(1000)], w)
         self.assertEqual(r["ok"], 1000); self.assertEqual(r["peak_inflight_measured"], 1000)
         self.assertTrue(r["simultaneous_1000_achieved"])
 
+    def test_fleet_non_overlapping_workers_not_claimed(self):
+        async def w(job):
+            return 1  # never awaits, so workers never overlap
+        r = fleet.run([{"id": "j%d" % i} for i in range(1000)], w)
+        self.assertEqual(r["peak_inflight_measured"], 1)
+        self.assertFalse(r["simultaneous_1000_achieved"])
+
+    def test_fleet_negative_cost_refused(self):
+        async def w(job):
+            return 1
+        for bad in (-1, True, 1.5):
+            with self.assertRaises(ValueError):
+                fleet.run([{"id": "a", "cost": bad}], w)
+
     def test_fleet_capped_not_claimed(self):
         async def w(job):
+            await asyncio.sleep(0.01)
             return 1
         r = fleet.run([{"id": "j%d" % i} for i in range(50)], w, concurrency=5)
         self.assertEqual(r["peak_inflight_measured"], 5); self.assertFalse(r["simultaneous_1000_achieved"])
 
     def test_fleet_budget(self):
         async def w(job):
+            await asyncio.sleep(0.01)
             return 1
         r = fleet.run([{"id": "j%d" % i, "cost": 2} for i in range(10)], w, concurrency=10, budget=6)
         self.assertEqual(r["ok"], 3); self.assertEqual(r["skipped_budget"], 7)
 
     def test_ingest_dedupe_resume_export(self):
         s = feed_ingest.Store()
-        f = lambda u: RSS if u.endswith("feed") else (_ for _ in ()).throw(OSError())
+        def f(u):
+            if u.endswith("feed"):
+                return RSS
+            raise urllib.error.HTTPError(u, 404, "nf", {}, None)
         a = feed_ingest.ingest(["http://h/feed"], s, f)
         self.assertEqual(a["new"], 2)
         b = feed_ingest.ingest(["http://h/feed"], s, f)
@@ -69,6 +99,24 @@ class T(unittest.TestCase):
         f = lambda u: b"User-agent: *\nDisallow: /" if u.endswith("robots.txt") else RSS
         self.assertEqual(feed_ingest.ingest(["http://h/feed"], s, f)["feeds"]["http://h/feed"], "blocked_by_robots")
 
+    def test_robots_fetch_error_denies(self):
+        s = feed_ingest.Store()
+        def f(u):
+            if u.endswith("robots.txt"):
+                raise OSError("down")
+            return RSS
+        self.assertEqual(feed_ingest.ingest(["http://h/feed"], s, f)["feeds"]["http://h/feed"], "blocked_by_robots")
+        def g(u):
+            if u.endswith("robots.txt"):
+                raise urllib.error.HTTPError(u, 503, "x", {}, None)
+            return RSS
+        self.assertEqual(feed_ingest.ingest(["http://h/feed"], s, g)["feeds"]["http://h/feed"], "blocked_by_robots")
+
+    def test_instagram_empty_and_list(self):
+        self.assertEqual(interest_signals.from_instagram_likes("[]"), [])
+        self.assertEqual(interest_signals.from_instagram_likes("{}"), [])
+        self.assertEqual(len(interest_signals.from_instagram_likes('[{"title": "x"}, 5]')), 1)
+
     def test_signals(self):
         sig = interest_signals.from_starred_gmail([
             {"labelIds": ["STARRED"], "subject": "Genomics scholarship", "snippet": "genomics deadline"},
@@ -76,7 +124,9 @@ class T(unittest.TestCase):
         sig += interest_signals.from_linkedin_csv("Date,Link,Type\n1,http://l/genomics-lab,LIKE\n")
         sig += interest_signals.from_instagram_likes(json.dumps({"likes_media_likes": [{"title": "robotics", "string_list_data": [{"value": "robotics"}]}]}))
         top = interest_signals.rank(sig)
-        self.assertEqual(top[0]["topic"], "genomics"); self.assertNotIn("shoes", [t["topic"] for t in top])
+        self.assertEqual(top[0]["topic"], "genomics")
+        self.assertEqual(top, interest_signals.rank(list(reversed(sig))))  # order independent
+        self.assertNotIn("shoes", [t["topic"] for t in top])
         self.assertIn("robotics", [t["topic"] for t in top])
 
     def test_ideation_prefers_rare_pairs(self):
@@ -90,13 +140,22 @@ class T(unittest.TestCase):
         o = ae.parse_opportunity(txt)
         self.assertEqual(o["deadline"], date(2026, 12, 20)); self.assertEqual(o["fee"], 25.0)
         m = ae.match(o, {"grade": 12}, today=date(2026, 10, 12))
-        self.assertTrue(m["eligible"]); self.assertEqual(m["needs_owner"], ["fee approval: 25.00"])
+        self.assertTrue(m["eligible"]); self.assertEqual(m["needs_owner"], ["fee approval: 25.00 $"])
         self.assertFalse(ae.match(o, {"grade": 9}, today=date(2026, 10, 12))["eligible"])
         self.assertFalse(ae.match(o, {"grade": 12}, today=date(2027, 1, 1))["eligible"])
+        miss = ae.match(o, {}, today=date(2026, 10, 12))
+        self.assertFalse(miss["eligible"]); self.assertIn("grade", miss["needs_owner"])
+        for txt2, amt, cur in (("Entry fee: EUR 100", 100.0, "EUR"), ("The fee is 50 GBP", 50.0, "GBP"),
+                               ("Application cost INR 1,500", 1500.0, "INR"), ("No fee. Deadline: 2026-12-20", 0.0, None)):
+            p = ae.parse_opportunity(txt2)
+            self.assertEqual((p["fee"], p["fee_currency"]), (amt, cur))
         ok = ae.prepare(o, {}, lambda q, l, f: "I studied biology.", ["I studied biology"])
         self.assertTrue(ok["ready_for_owner_review"])
         bad = ae.prepare(o, {}, lambda q, l, f: "I won 99 awards " + "x " * 60, ["I studied"])
-        self.assertEqual(len(bad["issues"]), 2)
+        self.assertGreaterEqual(len(bad["issues"]), 2)
+        nobel = ae.prepare(o, {}, lambda q, l, f: "I won the Nobel Prize.", ["I studied biology"])
+        self.assertFalse(nobel["ready_for_owner_review"])
+        self.assertTrue(any("nobel" in i for i in nobel["issues"]))
 
     def test_history_audit(self):
         d = tempfile.mkdtemp()
