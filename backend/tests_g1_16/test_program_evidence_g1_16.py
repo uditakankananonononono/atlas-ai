@@ -59,57 +59,88 @@ class T(unittest.TestCase):
         r = pe.check_datasets(self.d, specs, 1)
         self.assertEqual(r["counted"], 1); self.assertEqual(len(r["rejected"]), 7)
 
-    # tools: executed, not declared
+    # tools: executed here, identity-based
+    AL = [(sys.executable, "-c")]
+
     def test_tool_never_executed_is_not_counted(self):
-        h = w(self.d, "o", b"out")
-        decl = {"name": "blast", "argv": ["blast"], "exit_code": 0, "output_path": "o", "output_sha256": h}
+        h = sh(b"out")
+        decl = {"name": "blast", "argv": ["blast"], "output_sha256": h}
         self.assertEqual(pe.check_tools(self.d, [decl]), set())  # no allowlist: nothing runs
-        self.assertEqual(pe.check_tools(self.d, [decl], allowlist=[("python3", "-c")]), set())  # not allowlisted prefix
+        self.assertEqual(pe.check_tools(self.d, [decl], allowlist=self.AL), set())  # prefix not allowlisted
+
+    def test_refused_command_never_touches_caller_files(self):
+        keep = os.path.join(self.d, "keep.txt"); w(self.d, "keep.txt", b"precious")
+        spec_ = {"name": "t", "argv": ["rm", "keep.txt"], "output_name": "keep.txt", "output_path": "keep.txt", "output_sha256": sh(b"precious")}
+        self.assertEqual(pe.check_tools(self.d, [spec_], allowlist=self.AL), set())
+        self.assertTrue(os.path.isfile(keep))
+        ok_run = dict(spec_, argv=[sys.executable, "-c", "pass"])
+        self.assertEqual(pe.check_tools(self.d, [ok_run], allowlist=self.AL), set())  # run did not write it into SC_OUTPUT_DIR
+        self.assertTrue(os.path.isfile(keep))
 
     def test_tool_executes_and_hash_comes_from_run(self):
         out = b"hello\n"
         spec_ = {"name": "Echo", "argv": [sys.executable, "-c", "print('hello')"], "output_sha256": sh(out)}
-        al = [(sys.executable, "-c")]
-        self.assertEqual(pe.check_tools(self.d, [spec_], allowlist=al), {"echo"})
-        self.assertEqual(pe.check_tools(self.d, [dict(spec_, output_sha256="0")], allowlist=al), set())
+        self.assertEqual(len(pe.check_tools(self.d, [spec_], allowlist=self.AL)), 1)
+        self.assertEqual(pe.check_tools(self.d, [dict(spec_, output_sha256="0")], allowlist=self.AL), set())
         bad = dict(spec_, argv=[sys.executable, "-c", "import sys; print('hello'); sys.exit(3)"])
-        self.assertEqual(pe.check_tools(self.d, [bad], allowlist=al), set())
+        self.assertEqual(pe.check_tools(self.d, [bad], allowlist=self.AL), set())
 
-    def test_tool_output_file_produced_by_run(self):
-        code = "open('o.txt','w').write('x')"
-        s_ = {"name": "t", "argv": [sys.executable, "-c", code], "output_path": "o.txt", "output_sha256": sh(b"x")}
-        self.assertEqual(pe.check_tools(self.d, [s_], allowlist=[(sys.executable, "-c")]), {"t"})
-        pre = w(self.d, "pre.txt", b"x")  # caller-planted file; the run does not write it
-        s2 = {"name": "u", "argv": [sys.executable, "-c", "pass"], "output_path": "pre.txt", "output_sha256": pre}
-        self.assertEqual(pe.check_tools(self.d, [s2], allowlist=[(sys.executable, "-c")]), set())
+    def test_tool_output_file_comes_from_fresh_dir(self):
+        code = "import os; open(os.path.join(os.environ['SC_OUTPUT_DIR'],'o.txt'),'w').write('x')"
+        s_ = {"name": "t", "argv": [sys.executable, "-c", code], "output_name": "o.txt", "output_sha256": sh(b"x")}
+        self.assertEqual(len(pe.check_tools(self.d, [s_], allowlist=self.AL)), 1)
+        for bad in ("../o.txt", "a/o.txt", "", ".."):
+            self.assertEqual(pe.check_tools(self.d, [dict(s_, output_name=bad)], allowlist=self.AL), set())
+
+    def test_same_tool_under_many_names_counts_once(self):
+        base = {"argv": [sys.executable, "-c", "print('o')"], "output_sha256": sh(b"o\n")}
+        specs = [dict(base, name="tool%d" % i) for i in range(40)]
+        self.assertEqual(len(pe.check_tools(self.d, specs, allowlist=self.AL)), 1)
+        proj = {"id": "p", "tools": specs}
+        r = pe.verify_project(self.d, proj, pe.LENIENT, tool_allowlist=self.AL)
+        self.assertFalse(r["checks"]["tools"]["ok"]); self.assertEqual(r["checks"]["tools"]["counted"], 1)
+        self.assertEqual(len(pe.check_tools(self.d, [dict(base, name="a", argv=[sys.executable, "-c", "print('o')", ]), dict(base, name="b", argv=[sys.executable, "-c", "print( 'o' )"])], allowlist=self.AL)), 2)
 
     def test_tool_malformed(self):
         self.assertEqual(pe.check_tools(self.d, [None, {}, {"name": 1}, {"name": "a", "argv": "x"}], allowlist=[("x",)]), set())
 
-    # judge: parsed from transcript
-    def test_judge_metric_free_transcript_rejected(self):
-        h = w(self.d, "j", b"the model said it improved a lot\n")
-        self.assertFalse(pe.check_judge(self.d, [{"transcript_path": "j", "transcript_sha256": h, "before": 1, "after": 9}], pe.LENIENT)["ok"])
+    # judge: attributable output only
+    def judge_runner(self, out):
+        return lambda argv: subprocess.CompletedProcess(argv, 0, out, b"")
 
-    def test_judge_improvement_from_transcript(self):
-        h = w(self.d, "j", b"JUDGE_SCORE round=1 value=5.5\nnoise\nJUDGE_SCORE round=2 value=7.0\n")
-        r = {"transcript_path": "j", "transcript_sha256": h}
-        self.assertTrue(pe.check_judge(self.d, [r], pe.LENIENT)["ok"])
-        h2 = w(self.d, "k", b"JUDGE_SCORE round=1 value=7\nJUDGE_SCORE round=2 value=7\n")
-        self.assertFalse(pe.check_judge(self.d, [{"transcript_path": "k", "transcript_sha256": h2}], pe.LENIENT)["ok"])
-        h3 = w(self.d, "m", b"JUDGE_SCORE round=1 value=1\n")
-        self.assertFalse(pe.check_judge(self.d, [{"transcript_path": "m", "transcript_sha256": h3}], pe.LENIENT)["ok"])
+    def test_judge_self_authored_transcript_file_never_passes(self):
+        h = w(self.d, "j", b"JUDGE_SCORE round=1 value=1\nJUDGE_SCORE round=2 value=999\n")
+        r = pe.check_judge(self.d, [{"transcript_path": "j", "transcript_sha256": h}], pe.LENIENT)
+        self.assertFalse(r["ok"]); self.assertEqual(r["unattributed"], 1)
+
+    def test_judge_stream_from_executed_command(self):
+        ok = b"JUDGE_SCORE round=1 value=5.5\nnoise\nJUDGE_SCORE round=2 value=7.0\n"
+        r = pe.check_judge(self.d, [{"argv": ["j"]}], pe.LENIENT, runner=self.judge_runner(ok))
+        self.assertTrue(r["ok"])
+        for bad in (b"no metric here\n", b"JUDGE_SCORE round=1 value=7\nJUDGE_SCORE round=2 value=7\n",
+                    b"JUDGE_SCORE round=1 value=1\n",
+                    b"JUDGE_SCORE round=1 value=1\nJUDGE_SCORE round=2 value=inf\n",
+                    b"JUDGE_SCORE round=1 value=nan\nJUDGE_SCORE round=2 value=3\n",
+                    b"JUDGE_SCORE round=1 value=1\nJUDGE_SCORE round=1 value=2\nJUDGE_SCORE round=2 value=3\n",
+                    b"JUDGE_SCORE round=-1 value=1\nJUDGE_SCORE round=2 value=3\n"):
+            self.assertFalse(pe.check_judge(self.d, [{"argv": ["j"]}], pe.LENIENT, runner=self.judge_runner(bad))["ok"], bad)
+        failing = lambda argv: subprocess.CompletedProcess(argv, 1, ok, b"")
+        self.assertFalse(pe.check_judge(self.d, [{"argv": ["j"]}], pe.LENIENT, runner=failing)["ok"])
+
+    def test_judge_default_runner_uses_allowlist_and_runs_here(self):
+        code = "print('JUDGE_SCORE round=1 value=1'); print('JUDGE_SCORE round=2 value=2')"
+        item = {"argv": [sys.executable, "-c", code]}
+        self.assertFalse(pe.check_judge(self.d, [item], pe.LENIENT)["ok"])  # not on default allowlist
+        self.assertTrue(pe.check_judge(self.d, [item], pe.LENIENT, allowlist=[(sys.executable, "-c")])["ok"])
 
     def test_judge_duplicates_count_once(self):
-        h = w(self.d, "j", b"JUDGE_SCORE round=1 value=1\nJUDGE_SCORE round=2 value=2\n")
-        r = {"transcript_path": "j", "transcript_sha256": h}
+        out = b"JUDGE_SCORE round=1 value=1\nJUDGE_SCORE round=2 value=2\n"
         t = pe.Thresholds(judge_rounds=2)
-        res = pe.check_judge(self.d, [r, dict(r), dict(r)], t)
+        res = pe.check_judge(self.d, [{"argv": ["j"]}] * 3, t, runner=self.judge_runner(out))
         self.assertEqual(res["rounds"], 1); self.assertFalse(res["ok"])
 
-    def test_judge_hash_mismatch_and_malformed(self):
-        w(self.d, "j", b"JUDGE_SCORE round=1 value=1\nJUDGE_SCORE round=2 value=2\n")
-        self.assertEqual(pe.check_judge(self.d, [{"transcript_path": "j", "transcript_sha256": "0"}, None, {}], pe.LENIENT)["rounds"], 0)
+    def test_judge_malformed(self):
+        self.assertEqual(pe.check_judge(self.d, [None, {}, {"argv": 5}], pe.LENIENT)["rounds"], 0)
 
     # benchmarks
     def test_benchmark_reproduces_and_dedupes(self):
@@ -122,15 +153,66 @@ class T(unittest.TestCase):
         self.assertEqual(pe.check_benchmarks(self.d, [good, dict(good), dict(good)], t2, fake)["reproduced"], 1)
 
     def test_benchmark_default_runner_rejects_non_allowlisted(self):
-        s_ = {"argv": ["rm", "-rf", "x"], "stdout_sha256": sh(b"")}
-        self.assertEqual(pe.check_benchmarks(self.d, [s_], pe.LENIENT)["reproduced"], 0)
-        s2 = {"argv": ["sh", "-c", "echo hi"], "stdout_sha256": sh(b"hi\n")}
-        self.assertEqual(pe.check_benchmarks(self.d, [s2], pe.LENIENT)["reproduced"], 0)
+        for argv in (["rm", "-rf", "x"], ["sh", "-c", "echo hi"]):
+            s_ = {"argv": argv, "stdout_sha256": sh(b"")}
+            self.assertEqual(pe.check_benchmarks(self.d, [s_], pe.LENIENT)["reproduced"], 0)
 
     def test_benchmark_unittest_allowlisted_runs_in_base(self):
         w(self.d, "test_a.py", b"import unittest\nclass A(unittest.TestCase):\n    def test(self): self.assertTrue(True)\n")
         r = pe._sandbox_run(self.d, ["python3", "-m", "unittest", "test_a"], pe.BENCH_ALLOWED)
         self.assertEqual(r.returncode, 0)
+
+    # leader benchmarks: leader, metric, criterion declared; values from the executed run
+    def bench(self, line, **kw):
+        spec_ = dict({"argv": ["b"], "leader": "L", "metric": "auc", "higher_is_better": True}, **kw)
+        run = lambda argv: subprocess.CompletedProcess(argv, 0, line.encode(), b"")
+        return pe.check_leader_benchmarks(self.d, [spec_], run)
+
+    def test_leader_benchmark_criterion(self):
+        self.assertTrue(self.bench("BENCH leader=L metric=auc subject=0.9 leader_value=0.8")["ok"])
+        self.assertFalse(self.bench("BENCH leader=L metric=auc subject=0.7 leader_value=0.8")["ok"])
+        self.assertTrue(self.bench("BENCH leader=L metric=err subject=0.1 leader_value=0.2", metric="err", higher_is_better=False)["ok"])
+        self.assertFalse(self.bench("BENCH leader=L metric=err subject=0.3 leader_value=0.2", metric="err", higher_is_better=False)["ok"])
+
+    def test_leader_benchmark_rejects_unrecorded_or_inconsistent(self):
+        self.assertEqual(self.bench("BENCH leader=OTHER metric=auc subject=9 leader_value=1")["compared"], 0)
+        self.assertEqual(self.bench("BENCH leader=L metric=f1 subject=9 leader_value=1")["compared"], 0)
+        two = "BENCH leader=L metric=auc subject=9 leader_value=1\nBENCH leader=L metric=auc subject=9 leader_value=1"
+        self.assertEqual(self.bench(two)["compared"], 0)
+        self.assertFalse(self.bench("BENCH leader=L metric=auc subject=nan leader_value=1")["ok"])
+        self.assertFalse(self.bench("BENCH leader=L metric=auc subject=inf leader_value=1")["ok"])
+        self.assertFalse(self.bench("score is great")["ok"])
+        for kw in ({"leader": ""}, {"metric": ""}, {"higher_is_better": "yes"}):
+            self.assertFalse(self.bench("BENCH leader=L metric=auc subject=9 leader_value=1", **kw)["ok"])
+
+    # module run: executed here, dataset hashed, named in test source
+    def run_spec(self, **kw):
+        h = w(self.d, "tests/data/a.csv", b"1,2\n")
+        w(self.d, "tests/test_m.py", b"open('tests/data/a.csv')\n")
+        return dict({"argv": ["pytest", "-q"], "stdout_regex": r"\d+ passed",
+                     "datasets": [{"path": "tests/data/a.csv", "sha256": h, "origin": "lab"}],
+                     "referenced_in": ["tests/test_m.py"]}, **kw)
+
+    def test_module_run_requires_execution_hash_reference_and_stdout(self):
+        ok = lambda argv: subprocess.CompletedProcess(argv, 0, b"3 passed in 0.1s\n", b"")
+        self.assertTrue(pe.check_module_run(self.d, self.run_spec(), ok)["ok"])
+        r = self.run_spec()
+        bad_runs = [lambda a: subprocess.CompletedProcess(a, 1, b"3 passed\n", b""),
+                    lambda a: subprocess.CompletedProcess(a, 0, b"", b""),
+                    lambda a: subprocess.CompletedProcess(a, 0, b"nothing\n", b"")]
+        for run in bad_runs:
+            self.assertFalse(pe.check_module_run(self.d, r, run)["ok"])
+        self.assertFalse(pe.check_module_run(self.d, dict(r, datasets=[dict(r["datasets"][0], sha256="0")]), ok)["ok"])
+        self.assertFalse(pe.check_module_run(self.d, dict(r, datasets=[dict(r["datasets"][0], origin="")]), ok)["ok"])
+        w(self.d, "tests/test_other.py", b"print('no file named here')\n")
+        self.assertEqual(pe.check_module_run(self.d, dict(r, referenced_in=["tests/test_other.py"]), ok)["reason"], "not_referenced")
+        self.assertFalse(pe.check_module_run(self.d, dict(r, datasets=[]), ok)["ok"])
+        self.assertFalse(pe.check_module_run(self.d, None, ok)["ok"])
+        self.assertFalse(pe.check_module_run(self.d, dict(r, stdout_regex="("), ok)["ok"])
+
+    def test_module_run_default_runner_needs_allowlisted_command(self):
+        r = self.run_spec(argv=["sh", "-c", "echo 1 passed"])
+        self.assertEqual(pe.check_module_run(self.d, r)["reason"], "run_failed")
 
     # paper
     def test_paper_missing_and_not_pdf(self):
@@ -144,7 +226,7 @@ class T(unittest.TestCase):
         self.assertEqual(pe.STRICT.tools_per_project, 200); self.assertEqual(pe.LENIENT.tools_per_project, 40)
 
     def test_non_distinct_program_counts_total(self):
-        names = lambda n: [{"name": "t%d" % i, "argv": ["a"], "output_sha256": sh(b"o")} for i in range(n)]
+        names = lambda n: [{"name": "t%d" % i, "argv": ["a%d" % i], "output_sha256": sh(b"o")} for i in range(n)]
         fake = lambda argv: subprocess.CompletedProcess(argv, 0, b"o", b"")
         projs = [{"id": "a", "tools": names(3)}, {"id": "b", "tools": names(3)}]
         t = pe.Thresholds(tools_program=6, tools_distinct_program=False)

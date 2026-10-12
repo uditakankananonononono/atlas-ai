@@ -1,8 +1,10 @@
 """Resolving wrappers over the p77/p254/p255/p258 registers (groups 1-4, 6, 9).
 
 The base registers record caller declarations and are kept unchanged (their
-existing contracts and tests stand). These wrappers REFUSE an entry unless its
-evidence resolves on disk, and count only resolved entries. Use these for any
+existing contracts and tests stand). Datasets, papers and "active" integrations are
+refused unless their evidence resolves here (file hash, PDF format gate, an executed run).
+"planned" and other non-active integration entries pass without evidence: they are
+declarations by design and make no run claim. Use these for any
 "is it done" statement; use the base registers only as declarations.
 """
 from __future__ import annotations
@@ -50,7 +52,7 @@ def append_integration(register, entry, base, run_spec, allowlist, runner=None):
     {argv, output_path?, output_sha256}; it must exit 0 and match its output hash."""
     if entry.get("status") == "active":
         spec = dict(run_spec or {}, name=entry.get("name", ""))
-        if entry.get("name", "").strip().lower() not in pe.check_tools(base, [spec], runner, allowlist):
+        if not pe.check_tools(base, [spec], runner, allowlist):
             raise _refuse("tool_run")
     return integrations.append(register, entry)
 

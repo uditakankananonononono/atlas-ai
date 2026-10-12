@@ -9,7 +9,16 @@ caller-supplied claim. Each project is checked by resolving its evidence:
   * papers    - a PDF must exist; page count and Times font read via pdfinfo/pdffonts
   * judge     - the transcript is hash-matched and PARSED; the score trend comes from its lines
   * benchmark - the argv is re-run; its stdout hash must match
-Limit: the sandbox is rlimits plus a stripped environment, not network or filesystem isolation.
+Trust limits, stated plainly:
+  * rlimits plus a stripped environment is NOT a security sandbox. A command that passes the
+    allowlist still runs with this process's user, network and filesystem access. Use this only on
+    evidence from sources the operator already trusts to run code locally.
+  * Passing runner= to any check REPLACES the allowlist and the sandbox entirely. It exists so
+    tests can inject fakes and so an operator can supply their own isolation; it is never a default.
+  * Tool, judge and benchmark evidence counts only when this module ran the command and captured
+    the output itself. Files a caller wrote (transcripts, outputs) are not authenticated and
+    never count above PARTIAL.
+  * The paper check is a format gate only. It is not evidence of a good or neat paper.
 Thresholds are parameters so the 40-each / 200-each / 200-overall rulings are all
 supported without rework (see STRICT, LENIENT). Pure stdlib; subprocess only for
 git/pdfinfo/pdffonts and explicit benchmark commands.
@@ -18,9 +27,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
+import re
 import shutil
 import subprocess
+import tempfile
 from dataclasses import dataclass, field
 
 VERDICTS = ("VERIFIED", "PARTIAL", "UNSUPPORTED")
@@ -36,6 +48,7 @@ class Thresholds:
     paper_font: str = "Times"
     judge_rounds: int = 1
     benchmarks_per_project: int = 1
+    min_section_words: int = 150
     paper_sections: tuple = ("abstract", "introduction", "methods", "results", "discussion", "references")
 
 
@@ -128,105 +141,210 @@ def _allowed(argv, allowlist):
     return any(tuple(argv[:len(a)]) == tuple(a) for a in allowlist)
 
 
-def _sandbox_run(base, argv, allowlist, timeout=60):
+def _sandbox_run(base, argv, allowlist, timeout=60, extra_env=None):
     """Trusted-local runner: allowlisted argv prefixes only, cwd fixed to base, stripped
-    env, rlimits, timeout. It is not network or filesystem isolation."""
+    env, rlimits, timeout. NOT a security sandbox: no network or filesystem isolation."""
     if not isinstance(argv, list) or not argv or not all(isinstance(a, str) for a in argv):
         raise _err("bad_argv")
     if not _allowed(argv, allowlist):
         raise _err("command_not_allowlisted")
     env = {"PATH": "/usr/local/bin:/usr/bin:/bin", "HOME": base, "LANG": "C"}
+    env.update(extra_env or {})
     return subprocess.run(argv, cwd=base, env=env, capture_output=True, timeout=timeout,
                           preexec_fn=_limits, stdin=subprocess.DEVNULL)
 
 
-def check_tools(base, specs, runner=None, allowlist=()):
-    """Spec: {name, argv, output_path?, output_sha256}. The argv is executed here.
+def _identity(argv, out_hash):
+    exe = shutil.which(argv[0]) or argv[0]
+    return hashlib.sha256(json.dumps([exe, list(argv), out_hash]).encode()).hexdigest()
 
-    Counts a tool only when this run exits 0 and the hash of output_path (read after the
-    run) or of stdout (when no output_path) equals output_sha256. Caller-supplied exit
-    codes are ignored. With no allowlist nothing is executed, so nothing counts.
-    Returns the set of lower-cased names."""
-    run = runner or (lambda argv: _sandbox_run(base, argv, allowlist))
-    names = set()
+
+def _run_checked(base, argv, allowlist, runner, timeout=300, extra_env=None):
+    """Allowlist first, then execute. runner= bypasses the allowlist (see module doc)."""
+    if runner is None:
+        if not isinstance(argv, list) or not argv or not _allowed(argv, allowlist):
+            return None
+        return _sandbox_run(base, argv, allowlist, timeout, extra_env)
+    return runner(argv)
+
+
+def check_tools(base, specs, runner=None, allowlist=()):
+    """Spec: {name, argv, output_name?, output_sha256}. The argv is executed here.
+
+    The allowlist is checked BEFORE anything else happens. The run gets a fresh temp
+    directory in env var SC_OUTPUT_DIR; output_name (a bare file name) is read from it
+    afterwards, otherwise stdout is hashed. Nothing the caller names is ever deleted.
+    A tool counts once per identity = (executable, argv, output hash); extra names for the
+    same command add nothing. With no allowlist nothing runs. Returns identity digests."""
+    ids = set()
     for s in specs or []:
         try:
-            name = s["name"].strip().lower()
-            if not name:
+            argv = s["argv"]
+            if not isinstance(s["name"], str) or not s["name"].strip():
                 continue
-            if s.get("output_path"):
-                p = _resolve(base, s["output_path"])
-                if os.path.isfile(p):
-                    os.remove(p)  # the run itself must produce the output file
-            r = run(s["argv"])
-            if r.returncode != 0:
+            name = s.get("output_name")
+            if name is not None and (not isinstance(name, str) or os.path.basename(name) != name or name in ("", ".", "..")):
                 continue
-            if s.get("output_path"):
-                got = sha256_file(p) if os.path.getsize(p) > 0 else ""
-            else:
-                got = hashlib.sha256(r.stdout).hexdigest() if r.stdout else ""
+            with tempfile.TemporaryDirectory() as out_dir:
+                r = _run_checked(base, argv, allowlist, runner, 60, {"SC_OUTPUT_DIR": out_dir})
+                if r is None or r.returncode != 0:
+                    continue
+                if name:
+                    fp = os.path.join(out_dir, name)
+                    got = sha256_file(fp) if os.path.isfile(fp) and os.path.getsize(fp) > 0 else ""
+                else:
+                    got = hashlib.sha256(r.stdout).hexdigest() if r.stdout else ""
             if got and got == s["output_sha256"]:
-                names.add(name)
+                ids.add(_identity(argv, got))
         except (KeyError, ValueError, OSError, TypeError, AttributeError, subprocess.SubprocessError):
             continue
-    return names
+    return ids
 
 
-SCORE_PREFIX = "JUDGE_SCORE"  # transcript line: JUDGE_SCORE round=<int> value=<float>
+SCORE_PREFIX = "JUDGE_SCORE"  # stream line: JUDGE_SCORE round=<int> value=<float>
 
 
 def parse_judge_scores(text):
-    """Return [(round, value)] from transcript lines; malformed lines are ignored."""
-    out = []
+    """Return sorted [(round, value)] or None when the stream is unusable.
+
+    Malformed lines are ignored. A non-finite value, a negative round, or two different
+    values for one round make the whole stream unusable (None)."""
+    seen = {}
     for line in text.splitlines():
         parts = line.split()
         if len(parts) == 3 and parts[0] == SCORE_PREFIX and parts[1].startswith("round=") \
                 and parts[2].startswith("value="):
             try:
-                out.append((int(parts[1][6:]), float(parts[2][6:])))
+                rnd, val = int(parts[1][6:]), float(parts[2][6:])
             except ValueError:
                 continue
-    return sorted(out)
+            if rnd < 0 or not math.isfinite(val):
+                return None
+            if rnd in seen and seen[rnd] != val:
+                return None
+            seen[rnd] = val
+    return sorted(seen.items())
 
 
-def check_judge(base, rounds, t):
-    """Each item: {transcript_path, transcript_sha256}. The score trend is parsed from the
-    transcript: it needs at least 2 distinct rounds and the last value above the first.
-    Caller-supplied before/after numbers are not read."""
-    done_hashes = set()
+def check_judge(base, rounds, t, runner=None, allowlist=BENCH_ALLOWED):
+    """Each item: {argv}. The judge command is run here and its captured stdout is the score
+    stream: >= 2 distinct rounds, finite values, no conflicting repeats, last above first.
+    A transcript file written by the caller is not accepted: items without argv are counted
+    under "unattributed" and never pass. Scores inside a stream a command prints are still
+    only as honest as that command; this proves who ran it, not that a model judged it."""
+    seen, unattributed = set(), 0
     for r in rounds or []:
         try:
-            if not isinstance(r, dict):
+            if not isinstance(r, dict) or "argv" not in r:
+                unattributed += 1
                 continue
-            p = _resolve(base, r["transcript_path"])
-            if os.path.getsize(p) == 0 or sha256_file(p) != r["transcript_sha256"]:
+            res = _run_checked(base, r["argv"], allowlist, runner)
+            if res is None or res.returncode != 0:
                 continue
-            if r["transcript_sha256"] in done_hashes:
-                continue  # identical transcript counts once
-            with open(p, encoding="utf-8", errors="replace") as fh:
-                sc = parse_judge_scores(fh.read())
-            if len({k for k, _ in sc}) >= 2 and sc[-1][1] > sc[0][1]:
-                done_hashes.add(r["transcript_sha256"])
-        except (KeyError, ValueError, OSError, TypeError):
+            sc = parse_judge_scores(res.stdout.decode("utf-8", "replace"))
+            if sc and len(sc) >= 2 and sc[-1][1] > sc[0][1]:
+                seen.add((tuple(r["argv"]), hashlib.sha256(res.stdout).hexdigest()))
+        except (KeyError, ValueError, OSError, TypeError, AttributeError, subprocess.SubprocessError):
             continue
-    return {"rounds": len(done_hashes), "ok": len(done_hashes) >= t.judge_rounds}
+    return {"rounds": len(seen), "unattributed": unattributed, "ok": len(seen) >= t.judge_rounds}
 
 
 def check_benchmarks(base, specs, t, runner=None):
-    """Re-run argv in the sandbox; stdout sha256 must equal expected. Never trusts a score."""
-    run = runner or (lambda argv: _sandbox_run(base, argv, BENCH_ALLOWED, 300))
+    """Reproduction only: re-run argv; non-empty stdout must hash to stdout_sha256. This shows
+    a command is repeatable. It says nothing about a leader; see check_leader_benchmarks."""
     seen = set()
     for s in specs or []:
         try:
             key = (tuple(s["argv"]), s["stdout_sha256"])
             if key in seen:
-                continue  # same command and expected output counts once
-            r = run(s["argv"])
-            if r.returncode == 0 and hashlib.sha256(r.stdout).hexdigest() == s["stdout_sha256"]:
+                continue
+            r = _run_checked(base, s["argv"], BENCH_ALLOWED, runner)
+            if r is not None and r.returncode == 0 and r.stdout and hashlib.sha256(r.stdout).hexdigest() == s["stdout_sha256"]:
                 seen.add(key)
         except (KeyError, ValueError, OSError, TypeError, subprocess.SubprocessError):
             continue
     return {"reproduced": len(seen), "ok": len(seen) >= t.benchmarks_per_project}
+
+
+BENCH_PREFIX = "BENCH"  # stream line: BENCH leader=<id> metric=<name> subject=<float> leader_value=<float>
+
+
+def parse_bench(text):
+    """Return a list of dicts from BENCH lines with finite numeric values; others ignored."""
+    out = []
+    for line in text.splitlines():
+        parts = line.split()
+        if not parts or parts[0] != BENCH_PREFIX:
+            continue
+        kv = dict(p.split("=", 1) for p in parts[1:] if "=" in p)
+        try:
+            row = {"leader": kv["leader"], "metric": kv["metric"],
+                   "subject": float(kv["subject"]), "leader_value": float(kv["leader_value"])}
+        except (KeyError, ValueError):
+            continue
+        if row["leader"] and row["metric"] and math.isfinite(row["subject"]) and math.isfinite(row["leader_value"]):
+            out.append(row)
+    return out
+
+
+def check_leader_benchmarks(base, specs, runner=None):
+    """Spec: {argv, leader, metric, higher_is_better(bool)}. The benchmark is executed here;
+    its stdout must hold exactly one BENCH line for that leader and metric, and the subject
+    must beat (or match) the leader value in the declared direction. The leader identity,
+    metric and criterion are all declared up front and compared with what the run printed.
+    This proves what the command printed, not that the leader value is the true state of the
+    art. Returns {"compared": n, "beat": n, "ok": beat >= 1}."""
+    compared = beat = 0
+    for s in specs or []:
+        try:
+            if not isinstance(s.get("higher_is_better"), bool) or not s.get("leader") or not s.get("metric"):
+                continue
+            r = _run_checked(base, s["argv"], BENCH_ALLOWED, runner)
+            if r is None or r.returncode != 0:
+                continue
+            rows = [x for x in parse_bench(r.stdout.decode("utf-8", "replace"))
+                    if x["leader"] == s["leader"] and x["metric"] == s["metric"]]
+            if len(rows) != 1:
+                continue
+            compared += 1
+            x = rows[0]
+            if (x["subject"] >= x["leader_value"]) if s["higher_is_better"] else (x["subject"] <= x["leader_value"]):
+                beat += 1
+        except (KeyError, ValueError, OSError, TypeError, AttributeError, subprocess.SubprocessError):
+            continue
+    return {"compared": compared, "beat": beat, "ok": beat >= 1}
+
+
+def check_module_run(base, spec, runner=None):
+    """Spec: {argv, stdout_regex, datasets:[{path, sha256, origin}], referenced_in:[test file]}.
+    A module data run counts only when (a) each dataset file exists with the given hash and a
+    stated origin, (b) at least one named source file mentions each dataset's file name, and
+    (c) the argv, executed here through the allowlist, exits 0 and its captured stdout matches
+    stdout_regex. (b) is a static check: it shows the code names the file, not that the run
+    read it."""
+    try:
+        ds = spec["datasets"]
+        if not ds or not pe_ok_datasets(base, ds):
+            return {"ok": False, "reason": "datasets"}
+        srcs = []
+        for rel in spec.get("referenced_in") or []:
+            with open(_resolve(base, rel), encoding="utf-8", errors="replace") as fh:
+                srcs.append(fh.read())
+        if not srcs or not all(any(os.path.basename(d["path"]) in t for t in srcs) for d in ds):
+            return {"ok": False, "reason": "not_referenced"}
+        r = _run_checked(base, spec["argv"], BENCH_ALLOWED, runner)
+        if r is None or r.returncode != 0 or not r.stdout:
+            return {"ok": False, "reason": "run_failed"}
+        if not re.search(spec["stdout_regex"], r.stdout.decode("utf-8", "replace")):
+            return {"ok": False, "reason": "stdout_mismatch"}
+        return {"ok": True}
+    except (KeyError, ValueError, OSError, TypeError, AttributeError, re.error, subprocess.SubprocessError):
+        return {"ok": False, "reason": "unreadable"}
+
+
+def pe_ok_datasets(base, ds):
+    r = check_datasets(base, ds, 1)
+    return r["ok"] and not r["rejected"]
 
 
 def _pdf_fonts(text):
@@ -234,25 +352,55 @@ def _pdf_fonts(text):
     return [l.split()[0] for l in text.splitlines()[2:] if l.strip()]
 
 
+_HEAD = re.compile(r"^(?:(?:\d+|[ivx]+)\.?\s+)?([a-z ]+?)\.?$")
+
+
+def section_words(page_texts, sections):
+    """Words under each section heading, in reading order. A heading is a line that, stripped,
+    lower-cased and without a leading number, equals a section name exactly. Returns
+    ({section: words}, order_found)."""
+    counts, order, cur = {}, [], None
+    for pg in page_texts:
+        for line in pg.splitlines():
+            m = _HEAD.match(line.strip().lower())
+            if m and m.group(1) in sections and m.group(1) not in counts:
+                cur = m.group(1); counts[cur] = 0; order.append(cur)
+            elif cur:
+                counts[cur] += len(line.split())
+    return counts, order
+
+
 def check_paper(base, spec, t):
-    """Page count >= t.paper_pages; every embedded font is Times family (subset prefix
-    stripped; Symbol/Math faces allowed only as extras, never as the only font); text
-    contains each required section heading. The source doc (line 9) asks for a neat paper
-    in Times New Roman with good formatting; it names no border colour, so none is checked."""
+    """Format gate using poppler. NOT proof of a good or neat paper; look at the pages.
+      * pdfinfo page count >= t.paper_pages
+      * every embedded font (subset prefix stripped) starts with 'Times'; only math and
+        symbol faces are exempt, never as the only font
+      * at least t.paper_pages pages carry >= 50 words of text (no blank padding)
+      * each required section name is a standalone heading line, in the required order, with
+        >= t.min_section_words words under it before the next heading
+    The source line asks for a neat paper in Times New Roman with good formatting and names
+    no border colour, so none is checked."""
     try:
         p = _resolve(base, spec["path"])
-        if not shutil.which("pdfinfo") or not shutil.which("pdffonts") or not shutil.which("pdftotext"):
+        if not all(shutil.which(x) for x in ("pdfinfo", "pdffonts", "pdftotext")):
             return {"ok": False, "reason": "pdf_tools_missing"}
         info = subprocess.run(["pdfinfo", p], capture_output=True, text=True, timeout=30).stdout
         pages = next((int(l.split()[-1]) for l in info.splitlines() if l.startswith("Pages:")), 0)
         names = [n.split("+")[-1] for n in _pdf_fonts(subprocess.run(["pdffonts", p], capture_output=True, text=True, timeout=30).stdout)]
         extra = ("symbol", "math", "cmsy", "cmmi")
         body = [n for n in names if not n.lower().startswith(extra)]
-        fonts_ok = bool(body) and all(t.paper_font.lower() in n.lower() for n in body)
-        text = subprocess.run(["pdftotext", p, "-"], capture_output=True, text=True, timeout=60).stdout.lower()
-        missing = [x for x in t.paper_sections if x not in text]
-        return {"ok": pages >= t.paper_pages and fonts_ok and not missing, "pages": pages,
-                "times_only": fonts_ok, "missing_sections": missing}
+        fonts_ok = bool(body) and all(n.lower().startswith(t.paper_font.lower()) for n in body)
+        text = subprocess.run(["pdftotext", "-layout", p, "-"], capture_output=True, text=True, timeout=120).stdout
+        page_texts = text.split("\f")
+        full = sum(1 for pg in page_texts if len(pg.split()) >= 50)
+        counts, order = section_words(page_texts, t.paper_sections)
+        missing = [x for x in t.paper_sections if x not in counts]
+        thin = [x for x, n in counts.items() if n < t.min_section_words]
+        in_order = order == [x for x in t.paper_sections if x in counts]
+        ok = (pages >= t.paper_pages and full >= t.paper_pages and fonts_ok
+              and not missing and not thin and in_order)
+        return {"ok": ok, "pages": pages, "pages_with_text": full, "times_only": fonts_ok,
+                "missing_headings": missing, "thin_sections": thin, "in_order": in_order}
     except (KeyError, ValueError, OSError, TypeError, subprocess.SubprocessError):
         return {"ok": False, "reason": "unreadable"}
 
@@ -262,7 +410,7 @@ def verify_project(base, project, t=LENIENT, runner=None, probe=None, tool_allow
         "repo": check_repo(base, project.get("repo", {}), probe),
         "datasets": check_datasets(base, project.get("datasets"), t.datasets_per_project),
         "paper": check_paper(base, project.get("paper") or {}, t),
-        "judge": check_judge(base, project.get("judge_rounds"), t),
+        "judge": check_judge(base, project.get("judge_rounds"), t, runner),
         "benchmarks": check_benchmarks(base, project.get("benchmarks"), t, runner),
     }
     tools = check_tools(base, project.get("tools"), runner, tool_allowlist)

@@ -1,11 +1,11 @@
 """Row 16: 77-module Sugarcode validation matrix generator.
 
 Reads a Sugarcode checkout (pinned by git HEAD) and, for each of the 77 spec
-slugs in spec/index.json, records what can be MEASURED: spec file hash, module
-source files and hashes, test files and hashes. Function-level columns
+slugs in spec/index.json, records what is observable by reading files: module
+source file hashes and test file names. Function-level columns
 (data_run, improvement, discovery, benchmark_vs_leader) are filled only from
 evidence in an optional file {slug: {...}} that is re-checked through
-program_evidence_g1_16 (datasets by hash, judge transcripts by parsing, benchmarks by re-running);
+program_evidence_g1_16 (module runs, judge commands and leader benchmarks are executed here);
 otherwise they are UNVERIFIED. A module is never VERIFIED
 from structure alone: the best structure-only verdict is PARTIAL.
 """
@@ -61,13 +61,14 @@ def build_matrix(root, evidence=None, runner=None):
         tests = sorted(f for f in os.listdir(tdir) if f.startswith("test_" + slug) and f.endswith(".py")) if os.path.isdir(tdir) else []
         ev = evidence.get(slug) if isinstance(evidence.get(slug), dict) else {}
         cols = {c: "UNVERIFIED" for c in COLUMNS}
-        t = pe.Thresholds(judge_rounds=1, benchmarks_per_project=1)
-        if pe.check_datasets(root, ev.get("datasets"), 1)["ok"]:
-            cols["data_run"] = "VERIFIED"
-        if pe.check_judge(root, ev.get("judge_rounds"), t)["ok"]:
-            cols["improvement"] = "VERIFIED"
-        if pe.check_benchmarks(root, ev.get("benchmarks"), t, runner)["ok"]:
-            cols["benchmark_vs_leader"] = "VERIFIED"
+        t = pe.Thresholds(judge_rounds=1)
+        mr = ev.get("module_run")
+        if isinstance(mr, dict) and pe.check_module_run(root, mr, runner)["ok"]:
+            cols["data_run"] = "VERIFIED"  # module run executed here + dataset hashed + named in tests
+        if pe.check_judge(root, ev.get("judge_rounds"), t, runner)["ok"]:
+            cols["improvement"] = "VERIFIED"  # judge command executed here, scores parsed from its stdout
+        if pe.check_leader_benchmarks(root, ev.get("leader_benchmarks"), runner)["ok"]:
+            cols["benchmark_vs_leader"] = "VERIFIED"  # leader/metric/criterion declared, run executed here
         if ev.get("discovery_claim"):
             cols["discovery"] = "CLAIMED_NOT_CHECKABLE"  # code cannot check a discovery claim
         structure = bool(os.path.isfile(spec_p) and mod_files and tests)
