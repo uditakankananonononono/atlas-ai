@@ -1,0 +1,78 @@
+{
+  "checkout": {
+    "head": "fc71886bfa289190ac2d9e491a582334d424c267",
+    "tree": "c4048f36d908538f5e5e30e9406bdafba43110ab",
+    "status": ""
+  },
+  "selector_files": [
+    "tests/troop/test_isolated_python_worker.py",
+    "tests/modules/test_group89_classifier_boundaries.py",
+    "tests/modules/test_group90_product_evidence.py",
+    "tests/release/test_scoped_mutations.py",
+    "tests/modules/test_group91_metadata_boundaries.py",
+    "tests/modules/test_group92_reasoning_boundaries.py",
+    "tests/modules/test_group93_corpus_coverage.py",
+    "tests/modules/test_group94_isolated_workforce.py",
+    "tests/modules/test_group95_digits_execution.py",
+    "tests/modules/test_group96_reflow.py",
+    "tests/apply/test_pitch_execution.py"
+  ],
+  "retro_historical_selector_files": [
+    "tests/release/test_package_mailbox.py",
+    "tests/modules/test_c35_sweep_s41.py",
+    "tests/modules/test_c34_site_s32.py",
+    "tests/troop/test_s3_1_prototyper.py",
+    "tests/modules/test_c32_dossier_timeline_s27.py",
+    "tests/modules/test_m06_multi_account_u07.py",
+    "tests/modules/test_m19_trend_counts_u03.py",
+    "tests/modules/test_m19_trend_pipeline_u03.py",
+    "tests/modules/test_m19_trend_pipeline_u03_pins.py",
+    "tests/modules/test_m19_u03_j1_adapter.py",
+    "tests/modules/test_m20_sentencing_grid1260.py",
+    "tests/modules/test_m23_s4_7_abroad_fullride.py",
+    "tests/modules/test_m23_polymath_roadmap.py",
+    "tests/modules/test_m02_site_application_planner.py",
+    "tests/modules/test_m20_trunk698_dag.py",
+    "tests/modules/test_m01_high_school_competitions_u37.py"
+  ],
+  "intersection": [],
+  "argv": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "tests/troop/test_isolated_python_worker.py",
+    "tests/modules/test_group89_classifier_boundaries.py",
+    "tests/modules/test_group90_product_evidence.py",
+    "tests/release/test_scoped_mutations.py",
+    "tests/modules/test_group91_metadata_boundaries.py",
+    "tests/modules/test_group92_reasoning_boundaries.py",
+    "tests/modules/test_group93_corpus_coverage.py",
+    "tests/modules/test_group94_isolated_workforce.py",
+    "tests/modules/test_group95_digits_execution.py",
+    "tests/modules/test_group96_reflow.py",
+    "tests/apply/test_pitch_execution.py",
+    "-q"
+  ],
+  "returncode": 0,
+  "log_sha256": "4623a73f5c3be48c3ab4f18817b7ddd1ba35769e9fda78bc44879acc988c597f",
+  "scope": "Fresh current-base split selector execution; separate from historical retro1059; not a same-tree 1108 claim",
+  "test_file_hashes": {
+    "tests/troop/test_isolated_python_worker.py": "994fd3f32b92af3c51db276ea34a9565c8a66a2aefd5794f1e57fc2dc6d32b98",
+    "tests/modules/test_group89_classifier_boundaries.py": "a35e2b79daa70525b112fa5171d63fb87711a428aebf19db7deac079673520ca",
+    "tests/modules/test_group90_product_evidence.py": "e3be4c62d25fc028baa92cb2827b6e82f46fac63ec14e74e8c22f8f14ddf39b1",
+    "tests/release/test_scoped_mutations.py": "dedd1d35aa4867c42858b6cc06b566adfacaec9a178756857e52db88b0c10096",
+    "tests/modules/test_group91_metadata_boundaries.py": "5fc489b1c247eb4ff6558ca14d28589c6613d28a2daa2454a663db5fc83ac247",
+    "tests/modules/test_group92_reasoning_boundaries.py": "0c14963126dd0fd05a5d2ce8422103d9675d45df4d637fedca1cf056f1e04d3c",
+    "tests/modules/test_group93_corpus_coverage.py": "7fd82504e82e9160308ab4a7ee22a2b07170664c32f5ed3c82e9df240d27c908",
+    "tests/modules/test_group94_isolated_workforce.py": "4afd2b48577594ec9b3e548b52e5d94f6acb1e2f7f7f1d0080e8412744d94919",
+    "tests/modules/test_group95_digits_execution.py": "c5f0edcabad6f2e1bdd4ad8a111c28887fcd8efa7bdf9b44b4f3598420d8141f",
+    "tests/modules/test_group96_reflow.py": "929eb3403d98b2edb63cffb9223725e6c62e7321d3627917cfda3f93b148635b",
+    "tests/apply/test_pitch_execution.py": "7af401d462153fc65e292bcd60b9fd76df6fbe0e59e81f156a410ce21bbf1a27"
+  },
+  "summary": {
+    "passed": 49,
+    "seconds": 7.75
+  },
+  "retained_log": "distinct-split-selector.log"
+}

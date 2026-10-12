@@ -21,3 +21,8 @@ SENT1260 and APP-PLANNER list-subclass policy remains unresolved; existing
 isinstance/lying-length residual is retained. APP-PLANNER accepted short-token
 exact-match tradeoffs remain unchanged. U03 real J1 ledger/scorer round trip is
 UNTESTED. These limitations are not closed by packaging evidence.
+
+The historical composition receipt now includes the exact combined-log summary
+(1059 passed, 129 subtests passed, 10.24s), bound to its existing retained-log
+SHA256. This is a historical sixteen-file run, not summed unit durations,
+not current-tree execution, and not the distinct eleven-file split49 selector.

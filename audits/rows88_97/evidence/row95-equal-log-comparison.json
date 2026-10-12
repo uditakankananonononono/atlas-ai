@@ -1,0 +1,13 @@
+{
+  "row": 95,
+  "mutation": "scaling_scope",
+  "phases": [
+    "corrected-per-row",
+    "final-composition"
+  ],
+  "bytes_equal": true,
+  "byte_count": 1644,
+  "sha256": "274427b52c3500e3057a324d1a7d4fbf9548f3edde1a34fb6bde294fa17a778d",
+  "pytest_summary_line": "1 failed, 1 passed in 2.92s",
+  "explanation": "Both retained logs contain the same rounded pytest duration (2.92s), same assertion source and same failure text. Runner monotonic seconds are measured separately and differ; rounded pytest duration does not have to differ. Byte equality proves equal retained artifacts, not independent process execution or duplicate execution."
+}

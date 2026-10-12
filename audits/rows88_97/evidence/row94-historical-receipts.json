@@ -157,7 +157,11 @@
       "durability and whole repository untested"
     ],
     "all_caught": false,
-    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive.",
+    "generation": "original-rows88-97-release",
+    "phase": "initial-per-row",
+    "phase_index": 1,
+    "chronology_limit": "Not a later peer-follow-up battery; historical receipt lacks checkout/test hashes."
   },
   {
     "row": 94,
@@ -319,7 +323,17 @@
       "durability and whole repository untested"
     ],
     "all_caught": true,
-    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive.",
+    "generation": "original-rows88-97-release",
+    "phase": "corrected-per-row",
+    "phase_index": 2,
+    "chronology_limit": "Not a later peer-follow-up battery; historical receipt lacks checkout/test hashes.",
+    "closing_test_change": {
+      "commit": "3964e8af3dbd0569d2be559ba1a51e8f578271eb",
+      "path": "tests/modules/test_group94_isolated_workforce.py",
+      "test": "test_hanging_source_fails_and_blocks_downstream",
+      "assertion": "assert all(r['duration_seconds'] < 2.5 for r in receipts)"
+    }
   },
   {
     "row": 94,
@@ -482,6 +496,16 @@
       "durability and whole repository untested"
     ],
     "all_caught": true,
-    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive.",
+    "generation": "original-rows88-97-release",
+    "phase": "final-composition",
+    "phase_index": 3,
+    "chronology_limit": "Not a later peer-follow-up battery; historical receipt lacks checkout/test hashes.",
+    "closing_test_change": {
+      "commit": "3964e8af3dbd0569d2be559ba1a51e8f578271eb",
+      "path": "tests/modules/test_group94_isolated_workforce.py",
+      "test": "test_hanging_source_fails_and_blocks_downstream",
+      "assertion": "assert all(r['duration_seconds'] < 2.5 for r in receipts)"
+    }
   }
 ]

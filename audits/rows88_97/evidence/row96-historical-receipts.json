@@ -158,7 +158,11 @@
       "whole repository untested"
     ],
     "all_caught": true,
-    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive.",
+    "generation": "original-rows88-97-release",
+    "phase": "initial-per-row",
+    "phase_index": 1,
+    "chronology_limit": "Not a later peer-follow-up battery; historical receipt lacks checkout/test hashes."
   },
   {
     "row": 96,
@@ -320,6 +324,10 @@
       "whole repository untested"
     ],
     "all_caught": true,
-    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive."
+    "provenance": "Historical local execution, portable executable token substituted; exact executable and logs supplied in private release archive.",
+    "generation": "original-rows88-97-release",
+    "phase": "final-composition",
+    "phase_index": 2,
+    "chronology_limit": "Not a later peer-follow-up battery; historical receipt lacks checkout/test hashes."
   }
 ]

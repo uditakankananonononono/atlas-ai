@@ -70,5 +70,14 @@
     "live integrations and provider effects",
     "timeout descendants: trusted local test process only, no process-group isolation"
   ],
-  "provenance": "Historical local execution only, not a fresh current-tree result; portable executable token substituted."
+  "provenance": "Historical local execution only, not a fresh current-tree result; portable executable token substituted.",
+  "selector_summary": {
+    "passed": 1059,
+    "subtests_passed": 129,
+    "seconds": 10.24,
+    "summary_line": "1059 passed, 129 subtests passed in 10.24s",
+    "source_log_sha256": "aab3c6f0619963141c4a3a36e32259d0e115dddb2c2484bd17682d02fcba4d46",
+    "scope": "Historical combined 16-file run, not summed unit durations and not current-tree execution",
+    "retained_log": "historical-composition-selector.log"
+  }
 }
