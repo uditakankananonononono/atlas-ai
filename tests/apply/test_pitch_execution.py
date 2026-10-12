@@ -173,3 +173,26 @@ def test_wire_preview_has_deterministic_reconciliation_id_and_no_send(setup):
     assert msg['Message-ID'] is not None
     assert first['status']=='preview_only_not_authority'
     assert ex.receipts()==[]
+
+def test_wire_exact_hash_changes_with_descriptor_and_preserves_input(setup):
+    import base64,copy,hashlib
+    from app.apply.pitch_execution import wire_preview
+    ex,service,state,sender,view,effect=setup
+    original=copy.deepcopy(effect)
+    one=wire_preview(effect)
+    assert one['wire_sha256']==hashlib.sha256(base64.urlsafe_b64decode(one['raw'])).hexdigest()
+    other=descriptor(make_org_pitch_draft({'name':'Research Org','recipient':'editor@example.invalid'},
+                     {'name':'Example Author','summary':'Different supported results.'},'a meeting'),
+                     tenant_id='tenant',sender='author@example.invalid',send_at='immediate')
+    two=wire_preview(other)
+    assert one['message_id']!=two['message_id']
+    assert one['raw']!=two['raw']
+    assert effect==original and sender.calls==0 and ex.receipts()==[]
+
+def test_wire_preview_refuses_attachment_descriptor_even_without_transport(setup):
+    import copy
+    from app.apply.pitch_execution import wire_preview
+    *_,effect=setup
+    effect=copy.deepcopy(effect)
+    effect['payload']['attachment_hashes']=['a'*64]
+    with pytest.raises(ValueError,match='attachment-free'):wire_preview(effect)

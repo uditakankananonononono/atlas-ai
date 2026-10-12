@@ -1,0 +1,45 @@
+{
+  "row": 97,
+  "selectors": [
+    "tests/apply/test_pitch_execution.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "preview is not send authority or provider delivery",
+    "live send and reconciliation untested",
+    "no manuscript attachments",
+    "whole repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "descriptor_id",
+      "path": "backend/app/apply/pitch_execution.py",
+      "old": "digest=hashlib.sha256(json.dumps(effect,sort_keys=True,separators=(',',':')).encode()).hexdigest()",
+      "new": "digest='0'*64"
+    },
+    {
+      "id": "wire_hash",
+      "path": "backend/app/apply/pitch_execution.py",
+      "old": "'wire_sha256':hashlib.sha256(raw).hexdigest()",
+      "new": "'wire_sha256':'0'*64"
+    },
+    {
+      "id": "subject",
+      "path": "backend/app/apply/pitch_execution.py",
+      "old": "message['Subject']=payload['subject']",
+      "new": "message['Subject']='wrong subject'"
+    },
+    {
+      "id": "preview_scope",
+      "path": "backend/app/apply/pitch_execution.py",
+      "old": "'status':'preview_only_not_authority'",
+      "new": "'status':'approved'"
+    },
+    {
+      "id": "attachment_refusal",
+      "path": "backend/app/apply/pitch_execution.py",
+      "old": "or payload['attachment_hashes']:\n        raise ValueError('attachment-free pitch outreach required')",
+      "new": ":\n        raise ValueError('attachment-free pitch outreach required')"
+    }
+  ]
+}
