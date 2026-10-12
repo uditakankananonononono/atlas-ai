@@ -179,7 +179,10 @@ def test_factory_and_request_share_canonical_platform_not_stale_entry():
     scheduler = Scheduler(repository=repo, decisions=decisions, adapter_factory=factory,
                           clock=lambda: NOW, enforcer=Gate())
     _approved(scheduler, decisions)
-    assert len(scheduler.execute_due(NOW)) == 1
+    records = scheduler.execute_due(NOW)
+    assert len(records) == 1
+    assert records[0].platform == "linkedin"
+    assert repo.list_publish_records()[0].platform == "linkedin"
     assert factory.selected == [Platform.LINKEDIN]
     assert factory.adapters[Platform.TWITTER].published == []
     assert factory.adapters[Platform.LINKEDIN].published[0].platform == "linkedin"
@@ -202,3 +205,17 @@ def test_real_gate_refuses_platform_drift_before_factory_or_publish():
     assert scheduler.execute_due(NOW) == []
     assert factory.selected == [] and factory.adapter.published == []
     assert "authority_rejected" in repo.get_schedule(entry.id).failure
+
+
+def test_receipt_uses_request_platform_not_provider_result():
+    from app.modules.m06_social_media_manager.adapters import PublishResult
+    class MislabelledAdapter(FakeAdapter):
+        async def publish(self, request):
+            self.published.append(request)
+            return PublishResult(platform="linkedin", external_id="ext-mislabelled")
+    adapter = MislabelledAdapter()
+    scheduler, repo, decisions = make_scheduler(adapter)
+    _approved(scheduler, decisions)
+    records = scheduler.execute_due(NOW)
+    assert adapter.published[0].platform == "twitter"
+    assert records[0].platform == repo.list_publish_records()[0].platform == "twitter"

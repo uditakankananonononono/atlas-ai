@@ -87,3 +87,14 @@ Fresh follow-up checks on 62d0481d: the inventory/ratchet selector above is 16 p
 tests/modules/test_m06_publish_guardrail.py tests/modules/test_m06_scheduler.py`
 is 66 passed (one FastAPI warning). These fresh checks do not overwrite historical
 receipts or imply those larger original selectors were rerun on this base.
+
+## Inventory pytest node-id rename
+
+Two names changed without assertion, policy or output changes:
+`test_snapshot_matches_computation_and_prints_declared_counts` ->
+`test_snapshot_matches_computation_and_prints_computed_counts`, and
+`test_gated_status_is_computed_not_declared` ->
+`test_gated_status_depends_on_declared_caller_evidence`.
+File-level selectors are unchanged. External selectors/receipts naming the old node IDs
+were not verified; consumers of those IDs must use the new names. This is wording
+alignment, not an assertion or classifier repair.

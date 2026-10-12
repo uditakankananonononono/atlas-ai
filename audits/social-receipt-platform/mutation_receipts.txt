@@ -1,0 +1,6 @@
+BASELINE tests/modules/test_m06_publish_guardrail.py tests/modules/test_m06_scheduler.py -> rc=0 30 passed in 0.98s
+RP1 stale-entry receipt platform | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.93s | failing: tests/modules/test_m06_publish_guardrail.py::test_factory_and_request_share_canonical_platform_not_stale_entry
+RP2 provider-result receipt platform | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.93s | failing: tests/modules/test_m06_publish_guardrail.py::test_receipt_uses_request_platform_not_provider_result
+RP3 fixed receipt platform | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.89s | failing: tests/modules/test_m06_publish_guardrail.py::test_factory_and_request_share_canonical_platform_not_stale_entry
+counts: CAUGHT=3, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True

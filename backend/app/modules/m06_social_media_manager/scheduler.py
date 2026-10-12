@@ -313,8 +313,9 @@ class Scheduler:
 
         The decision lookup is consulted again immediately before every
         platform write, so an approval revoked, denied, or expired after the
-        last sync can never publish. Adapter failures mark the entry failed
-        with the reason; they never propagate as exceptions.
+        last sync can never publish. GuardrailRefusal and AdapterError mark the
+        entry failed with the reason. Unexpected factory/adapter exceptions,
+        malformed canonical data and repository errors may propagate.
         """
         records: list[PublishRecord] = []
         for entry in self.due_entries(now):
@@ -343,12 +344,18 @@ class Scheduler:
                 from app.runtime.guardrails._fields import payload_sha256
                 self._authority.bind(entry.approval_id,
                                      payload_sha256({k: v for k, v in action.items() if k != "id"}))
-                result = self._enforcer.dispatch_outbound(
-                    action, self._declarations,
-                    effect=lambda a: asyncio.run(self._adapters.for_platform(Platform(a["platform"])).publish(PublishRequest(
+                def publish(a):
+                    request = PublishRequest(
                         platform=a["platform"], text=a["text"], format=a["format"],
                         link=a["link"], media_urls=tuple(a["media_urls"]),
-                        alt_texts=tuple(a["alt_texts"]), thread_chunks=tuple(a["thread_chunks"])))),
+                        alt_texts=tuple(a["alt_texts"]), thread_chunks=tuple(a["thread_chunks"]))
+                    adapter = self._adapters.for_platform(Platform(request.platform))
+                    outcome = asyncio.run(adapter.publish(request))
+                    # Return the actual request platform, never the entry or provider result label.
+                    return request.platform, outcome
+
+                published_platform, result = self._enforcer.dispatch_outbound(
+                    action, self._declarations, effect=publish,
                     now=moment.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=entry.approval_id)
             except GuardrailRefusal as refusal:
                 entry.status = STATUS_FAILED
@@ -372,7 +379,7 @@ class Scheduler:
                 self._repository.save_publish_record(
                     PublishRecord(
                         schedule_id=entry.id,
-                        platform=entry.platform.value,
+                        platform=published_platform,
                         external_id=result.external_id,
                         external_url=result.url,
                         draft_only=result.draft_only,
