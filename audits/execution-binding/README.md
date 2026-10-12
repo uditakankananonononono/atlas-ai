@@ -1,6 +1,7 @@
 # execution classification and canonical dispatch delta
 
-Base: 4ea55fae. Offline classifier/enforcement repair, not provider integration.
+Landed series base: 14d4be2d. Original development/receipt base: 4ea55fae.
+Offline classifier/enforcement repair, not provider integration.
 
 Released selectors:
 
@@ -32,10 +33,13 @@ is not a 65-module runtime enforcement guarantee. M10 provider-conditional produ
 support is still unavailable; tests use an explicit fake conditional adapter.
 
 Mutation receipts: run_mutations.py applies exact replacements and exact test selectors.
-CAUGHT requires pytest rc=1 plus FAILED lines and no collection errors, crash or timeout.
+CAUGHT requires pytest rc=1 plus FAILED IDs, with collection/internal/fatal errors
+screened and timeout uncredited. FAILED includes product KeyError/RuntimeError crashes,
+not only assertion failures. Mixed FAILED plus SKIP is not rejected. These are
+failure-sensitivity counts, not proof that every kill is a graceful refusal.
 SURVIVED and INVALID are separate. Mutated files are restored and SHA-256 checked.
 
-Released-selector result: 134 passed (one FastAPI deprecation warning).
+Historical original-development released-selector result: 134 passed (one FastAPI deprecation warning).
 Final mutation result: CAUGHT=11, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0;
 SHA-256 restoration true. The initial shallow-copy mutant survived an insufficient
 negative-only test; the final test checks preserved nested bytes and refusal of a

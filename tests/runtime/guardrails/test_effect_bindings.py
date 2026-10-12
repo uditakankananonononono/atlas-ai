@@ -1,4 +1,4 @@
-"""Row 137/142 coverage binding: computed statuses, counts declared (not certified)."""
+"""Row 137/142 coverage binding: statuses/counts computed under declared policy tables (not certified)."""
 import json
 import pathlib
 
@@ -35,7 +35,7 @@ def test_snapshot_matches_computation_and_prints_declared_counts(capsys):
     want = json.loads(SNAPSHOT.read_text())
     assert got == want, "binding changed: review the diff, then regenerate effect_bindings_snapshot.json"
     c = eb.counts(res)
-    print(f"EFFECT_BINDINGS total={len(res)} GATED={c['GATED']} EXEMPT-BY-DESIGN={c['EXEMPT-BY-DESIGN']} UNGATED={c['UNGATED']} (declared by computation, not certified)")
+    print(f"EFFECT_BINDINGS total={len(res)} GATED={c['GATED']} EXEMPT-BY-DESIGN={c['EXEMPT-BY-DESIGN']} UNGATED={c['UNGATED']} (computed under declared policy tables, not certified)")
 
 
 def test_gated_status_is_computed_not_declared(monkeypatch):

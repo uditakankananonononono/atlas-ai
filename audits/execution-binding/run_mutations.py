@@ -1,6 +1,9 @@
 """exact-replacement mutation battery. Run from repository root with Python >=3.12.
 Named released selectors must pass before mutation. CAUGHT requires pytest rc=1,
-at least one FAILED line and no collection error, internal error, crash or timeout.
+at least one FAILED ID, with collection/internal/fatal errors screened and timeout
+uncredited. FAILED includes product KeyError/RuntimeError crashes, not only assertion
+failures. Mixed FAILED plus SKIP is not rejected. Counts measure failure sensitivity,
+not graceful-refusal proof.
 SURVIVED/INVALID/NOT-APPLICABLE are reported separately. Every file is restored
 in finally and SHA-256 compared with its original bytes. Receipts default to
 this audit directory's mutation_receipts.txt; an alternate path may be supplied.

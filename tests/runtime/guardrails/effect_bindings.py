@@ -1,7 +1,8 @@
 """Effect-path binding computation (instinct-doc rows 137 + 142).
 
-Every module under backend/app that imports a network/effect client is bound to exactly one status,
-COMPUTED from code evidence (AST scan + file/test existence), never declared:
+Every module found by the declared EGRESS import scan under backend/app is assigned exactly
+one status. Statuses and counts are computed from AST/file evidence using declared policy
+tables (libraries, call names, gated callers/write methods, exemptions and reviewed gaps):
 
   GATED              guardrail import AND a gate/refusal call, OR every call of a declared gated write method in
                      non-test app code sits in a declared gated-caller file whose source contains the
@@ -11,7 +12,9 @@ COMPUTED from code evidence (AST scan + file/test existence), never declared:
   UNGATED            everything else; a gap (DEFECT-class). Includes read-only modules with no named reason
 
 Limits (by construction): the scan is import- and call-name-based. It misses dynamic imports, aliasing,
-helper indirection and side-effecting GET requests. Counts are declared by the computation, not certified.
+helper indirection and side-effecting GET requests. Counts are computed under declared rules,
+not certified. Call-name/package/library/import-form/scope limits remain; no domination/completeness
+claim (a gate call need not dominate the effect).
 """
 from __future__ import annotations
 
