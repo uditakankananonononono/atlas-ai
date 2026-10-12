@@ -11,16 +11,52 @@ from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
 from app.modules.m00_approval_center.service import ApprovalNotFoundError
 
-from .approved_execution import ApprovedExecutionDispatcher, ExecutionConflictError
+import json
+import os
+
+from .approved_execution import (ApprovedExecutionDispatcher, ExecutionConflictError,
+                                 M00AuthorityCheck)
+from .guardrails.enforcer import GuardrailEnforcer
 
 router = APIRouter(prefix="/approved-executions", tags=["approved_execution"])
 _dispatchers: dict[str, ApprovedExecutionDispatcher] = {}
 
 
+_EMPTY = {"tos": {}, "rate_limits": {}, "consent": [], "recent_actions": []}
+
+
+def outbound_declarations() -> dict:
+    """Platform-terms / rate-limit / consent declarations for person-facing actions.
+
+    Read from the JSON file at ATLAS_OUTBOUND_DECLARATIONS (owner-maintained).
+    Unset or unreadable -> an empty declaration set which the outbound gate
+    DENIES (no declared rules), so person-facing action types stay refused until declared.
+    """
+    path = os.getenv("ATLAS_OUTBOUND_DECLARATIONS")
+    if not path:
+        return json.loads(json.dumps(_EMPTY))
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+        return data if isinstance(data, dict) else json.loads(json.dumps(_EMPTY))
+    except (OSError, ValueError):
+        return json.loads(json.dumps(_EMPTY))
+
+
+def build_dispatcher(tenant_id: str) -> ApprovedExecutionDispatcher:
+    """Production dispatcher: carries an enforcer whose owner-authority hook is M00."""
+    from app.modules.m00_approval_center.service import default_service
+    center = default_service()
+    check = M00AuthorityCheck(center, tenant_id)
+    return ApprovedExecutionDispatcher(
+        tenant_id, actor_id=tenant_id, center=center,
+        enforcer=GuardrailEnforcer(authority_check=check),
+        authority_binder=check, outbound_declarations=outbound_declarations())
+
+
 def get_dispatcher(tenant: TenantContext = Depends(require_tenant)) -> ApprovedExecutionDispatcher:
     if tenant.tenant_id not in _dispatchers:
-        _dispatchers[tenant.tenant_id] = ApprovedExecutionDispatcher(
-            tenant.tenant_id, actor_id=tenant.tenant_id)
+        _dispatchers[tenant.tenant_id] = build_dispatcher(tenant.tenant_id)
     return _dispatchers[tenant.tenant_id]
 
 

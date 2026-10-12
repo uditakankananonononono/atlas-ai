@@ -243,3 +243,76 @@ def test_person_facing_action_runs_with_validated_authority_and_ledgers(tmp_path
     assert receipt["state"] == "succeeded" and rt.calls == ["send"]
     assert seen == [aid]
     assert enf.ledger("outbound")[-1]["record"]["verdict"] == "dispatched"
+
+
+# ---- production wiring: M00 authority hook bound to the action digest ----
+from app.runtime.approved_execution import M00AuthorityCheck  # noqa: E402
+
+
+def _prod_like(tmp_path, rt, decl=None):
+    center = FakeCenter("tenant-a")
+    chk = M00AuthorityCheck(center, "tenant-a")
+    return ApprovedExecutionDispatcher(
+        "tenant-a", center=center, runtime=rt,
+        store=ReceiptStore(str(tmp_path / "r.sqlite")), allowlist=_EFF_ALLOW,
+        enforcer=GuardrailEnforcer(authority_check=chk), authority_binder=chk,
+        outbound_declarations=_DECL if decl is None else decl)
+
+
+def test_prod_path_dispatches_approved_unmodified_send(tmp_path):
+    rt = _SpyRuntime()
+    d = _prod_like(tmp_path, rt)
+    aid = _approved(d, "send_email_reply")
+    assert d.execute(aid)["state"] == "succeeded" and rt.calls == ["send"]
+
+
+def test_prod_path_refuses_when_payload_edited_after_approval(tmp_path):
+    rt = _SpyRuntime()
+    d = _prod_like(tmp_path, rt)
+    aid = _approved(d, "send_email_reply")
+    orig = d.center.get
+
+    def edited(a):
+        v = dict(orig(a))
+        if d.authority_binder._bound.get(a):  # hook call happens after bind
+            v["payload"] = {"to": "attacker"}
+        return v
+    d.center.get = edited
+    # first get() (status check) happens before bind -> unmodified; hook's get() is edited
+    with pytest.raises(GuardrailRefusal) as held:
+        d.execute(aid)
+    assert held.value.code == "OUTGATE:refused:authority_rejected" and rt.calls == []
+
+
+def test_prod_path_refuses_when_approval_revoked_before_dispatch(tmp_path):
+    rt = _SpyRuntime()
+    d = _prod_like(tmp_path, rt)
+    aid = _approved(d, "send_email_reply")
+    orig = d.center.get
+
+    def revoked(a):
+        v = dict(orig(a))
+        if d.authority_binder._bound.get(a):
+            v["status"] = "denied"
+        return v
+    d.center.get = revoked
+    with pytest.raises(GuardrailRefusal) as held:
+        d.execute(aid)
+    assert held.value.code == "OUTGATE:refused:authority_rejected" and rt.calls == []
+
+
+def test_prod_path_refuses_when_platform_terms_undeclared(tmp_path):
+    rt = _SpyRuntime()
+    d = _prod_like(tmp_path, rt, decl={"tos": {}, "rate_limits": {}, "consent": [], "recent_actions": []})
+    aid = _approved(d, "send_email_reply")
+    with pytest.raises(GuardrailRefusal) as held:
+        d.execute(aid)
+    assert held.value.code == "OUTGATE:refused:denied" and rt.calls == []
+
+
+def test_build_dispatcher_carries_enforcer_and_refuses_undeclared(tmp_path, monkeypatch):
+    from app.runtime import approved_execution_routes as r
+    monkeypatch.delenv("ATLAS_OUTBOUND_DECLARATIONS", raising=False)
+    d = r.build_dispatcher("tenant-a")
+    assert d.enforcer is not None and isinstance(d.authority_binder, M00AuthorityCheck)
+    assert d.outbound_declarations["tos"] == {}

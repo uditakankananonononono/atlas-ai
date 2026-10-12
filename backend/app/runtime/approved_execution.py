@@ -123,6 +123,43 @@ EFFECT_ACTION_KINDS: dict[str, tuple[str, str]] = {
 }
 
 
+class M00AuthorityCheck:
+    """authority_check hook for the outbound gate, backed by Module 0.
+
+    Accepts (authority_ref, action_digest) only when authority_ref is an M00
+    approval that is CURRENTLY approved, belongs to this tenant, has the bound
+    action_type, and whose current payload reproduces the exact digest of the
+    action the dispatcher bound for it. Editing the payload after approval, a
+    different action, an unbound ref or any lookup error all reject (fail
+    closed). Not authentication of the approver: it trusts the M00 center.
+    """
+
+    def __init__(self, center: Any, tenant_id: str) -> None:
+        self.center = center
+        self.tenant_id = tenant_id
+        self._bound: dict[str, dict[str, Any]] = {}
+
+    def bind(self, approval_id: str, fields: dict[str, Any]) -> None:
+        self._bound[approval_id] = dict(fields)
+
+    def __call__(self, authority_ref: Any, action_digest: Any) -> bool:
+        from app.runtime.guardrails._fields import payload_sha256
+        try:
+            fields = self._bound.get(authority_ref)
+            if fields is None:
+                return False
+            view = self.center.get(authority_ref)
+            if (view.get("user_id") != self.tenant_id
+                    or str(view.get("status")) != ApprovalStatus.APPROVED.value
+                    or str(view.get("action_type")) != fields["action_type"]):
+                return False
+            current = dict(fields)
+            current["payload"] = dict(view.get("payload") or {})
+            return payload_sha256(current) == action_digest
+        except Exception:
+            return False
+
+
 class ApprovedExecutionDispatcher:
     """Runs approved Module 0 items through allowlisted production adapters."""
 
@@ -130,7 +167,7 @@ class ApprovedExecutionDispatcher:
                  center: Any = None, runtime: AtlasRuntime | None = None,
                  store: ReceiptStore | None = None,
                  allowlist: dict[str, tuple[int, str]] | None = None,
-                 enforcer: Any = None, outbound_declarations: dict | None = None,
+                 enforcer: Any = None, authority_binder: Any = None, outbound_declarations: dict | None = None,
                  effect_kinds: dict[str, tuple[str, str]] | None = None) -> None:
         if center is None:
             from app.modules.m00_approval_center.service import default_service
@@ -141,6 +178,7 @@ class ApprovedExecutionDispatcher:
         self.runtime = runtime or build_runtime()
         self.allowlist = dict(allowlist or ACTION_ALLOWLIST)
         self.enforcer = enforcer
+        self.authority_binder = authority_binder
         self.outbound_declarations = outbound_declarations or {}
         self.effect_kinds = dict(EFFECT_ACTION_KINDS if effect_kinds is None else effect_kinds)
         if store is None:
@@ -198,6 +236,9 @@ class ApprovedExecutionDispatcher:
                           "at": int(now.timestamp()), "count": 1,
                           "approval_id": approval_id, "action_type": action_type,
                           "payload": dict(view.get("payload") or {})}
+                if self.authority_binder is not None:
+                    self.authority_binder.bind(
+                        approval_id, {k: v for k, v in action.items() if k != "id"})
                 # Admission is ledgered write-ahead by the gate; the runtime
                 # runs only if the gate admits (authority_ref = M00 approval id,
                 # validated by the enforcer's authority_check hook).
@@ -230,5 +271,5 @@ class ApprovedExecutionDispatcher:
         return self.store.list_for(self.tenant_id, limit)
 
 
-__all__ = ["ACTION_ALLOWLIST", "EFFECT_ACTION_KINDS", "ApprovedExecutionDispatcher",
+__all__ = ["ACTION_ALLOWLIST", "EFFECT_ACTION_KINDS", "M00AuthorityCheck", "ApprovedExecutionDispatcher",
            "ExecutionConflictError", "ReceiptStore"]
