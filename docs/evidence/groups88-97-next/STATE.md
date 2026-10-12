@@ -7,7 +7,7 @@ All ten literal groups PARTIAL, zero complete. Base 96b4cb97. Distinguish actual
 | 88 | M04 namespace Python actions, dependency/timeout/receipt OS tests | No real named-competitor execution/comparison, superiority or durable receipts |
 | 89 | Actual pinned local GoEmotions/RoBERTa sigmoid classification | Uncalibrated text associations only; no human psychology/personality/intelligence |
 | 90 | Explicit product facts with exact source spans/hash and contradiction retention | Supplied-text extraction only; no automatic platform collection or business outcomes |
-| 91 | Downloaded actual pinned SD1.5 and attempted local inference | MemoryError loading UNet; no image produced or visual quality evidence |
+| 91 | Actual full pinned SD1.5 inference on T4 after local MemoryError; exact PNG metadata/hash and pixels inspected | Pseudo-text/brand-like marks despite unbranded prompt, distorted geometry; no product fidelity or realism validation |
 | 92 | Actual pinned local Whisper transcript -> fixed reasoning cues, compatible decoder dependency | Synthetic audio only, no human thought/music understanding or production-ASR validation |
 | 93 | Supplied category inventory with missing categories, hashes and caller-source provenance | No category-wide collection/source verification/accounts/publishing |
 | 94 | Optional namespace execution of blueprint worker graph | No actual company/external ops/thousands-of-industry evidence/durable runtime |

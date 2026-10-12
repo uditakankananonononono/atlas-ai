@@ -1,0 +1,7 @@
+# Group 91 actual SD1.5 inference, 2026-10-12
+
+Following local approximately-2GB-RAM MemoryError, actual unchanged LocalProductImages executed on a Tesla T4 with approximately 12.67GB host RAM, full safetensors SD1.5 model and safety checker. No tiny fixture substitution. Model revision 451f4fe16113bff5a5d2269ed5ad43b0592e9a14; source https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5 . Model directory hash c804e78c0fa16268f7cb87e9ee44ac76b45865c4cb1379381561919490c3f301.
+
+Single inference: seed 42, 512x512, 20 steps, unchanged generated prompt: "single unbranded perfume bottle on pink background product concept, glossy-editorial style, high detail, clearly AI-generated". Full model load and actual 20-step pipeline succeeded. Exact original PNG hash 29dcd75814512a64e20e147092abfda7c3cdf09933b9967dca179d5fc5d7e0cd, 351957 bytes. PNG metadata inspected: AI-generated=true, Model-SHA256 matches. No safety refusal observed. No second inference.
+
+Actual original pixels reviewed, not merely receipt or DOM: pink background, perfume-shaped glass bottle, reflective cap, strong shadow. Important negative: pseudo-text and brand-like marks despite unbranded prompt; bottle/cap geometry is stylized/distorted. Output is not a faithful unbranded product asset or real product photograph. One image is not photorealism, commercial fitness or reliable generation evidence. Group 91 remains PARTIAL. The prior memory-failure receipt remains historical evidence, not erased by successful execution on different hardware.
