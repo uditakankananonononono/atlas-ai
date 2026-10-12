@@ -6,23 +6,57 @@ feeds already marked done (a one-shot import that is safe to re-run after an
 interruption, since feeds are marked only after a full parse and store). For
 continuing ingestion call with skip_done=False; dedupe by link/title hash
 keeps repeats out. There is no per-item cursor or scheduler here.
-robots.txt: HTTP 4xx means no restrictions; any other fetch failure denies.
+robots.txt: only HTTP 404 (or 410) means no robots.txt, so no restrictions.
+401, 403, 429, 5xx and any other failure deny.
+default_fetch: https only, public addresses only, redirects must stay on the
+same host and pass the same checks (DNS rebinding is not fully closed).
 
 Fetching is injected (fetch(url)->bytes) so it is testable offline; the default
 fetcher uses urllib on PUBLIC feeds only. No auth walls, no paywalls, no
 CAPTCHA handling. This builds the data pipeline; it does not train a model.
 """
 from __future__ import annotations
-import hashlib, json, sqlite3, time, urllib.error, urllib.request, urllib.robotparser, urllib.parse
+import hashlib, ipaddress, json, socket, sqlite3, time, urllib.error, urllib.request, urllib.robotparser, urllib.parse
 import xml.etree.ElementTree as ET
 
 UA = "atlas-ingest/1.0"
 
 
-def default_fetch(url, timeout=20):
+def _check_url(url):
+    """https only; every resolved address must be public (no private, loopback,
+    link-local, reserved or multicast). Resolution happens again at connect
+    time, so DNS rebinding is not fully closed by this check."""
+    p = urllib.parse.urlparse(url)
+    if p.scheme != "https" or not p.hostname:
+        raise ValueError("FETCH_REFUSED_SCHEME")
+    try:
+        infos = socket.getaddrinfo(p.hostname, p.port or 443, proto=socket.IPPROTO_TCP)
+    except socket.gaierror:
+        raise ValueError("FETCH_REFUSED_UNRESOLVED")
+    for info in infos:
+        ip = ipaddress.ip_address(info[4][0].split("%")[0])
+        if not ip.is_global or ip.is_multicast:
+            raise ValueError("FETCH_REFUSED_NONPUBLIC_ADDRESS")
+    return p
+
+
+class _SameHostRedirect(urllib.request.HTTPRedirectHandler):
+    def __init__(self, host):
+        self.host = host
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        p = _check_url(newurl)
+        if p.hostname != self.host:
+            raise ValueError("FETCH_REFUSED_REDIRECT_HOST")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def default_fetch(url, timeout=20, max_bytes=5_000_000):
+    p = _check_url(url)
+    opener = urllib.request.build_opener(_SameHostRedirect(p.hostname))
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read()
+    with opener.open(req, timeout=timeout) as r:
+        return r.read(max_bytes)
 
 
 def parse_feed(raw):
@@ -75,7 +109,7 @@ def robots_ok(url, fetch):
     try:
         rp.parse(fetch("%s://%s/robots.txt" % (p.scheme, p.netloc)).decode("utf-8", "replace").splitlines())
     except urllib.error.HTTPError as e:
-        return 400 <= e.code < 500  # 4xx: no robots.txt published; 5xx: deny
+        return e.code in (404, 410)  # only a genuine absence; 401/403/429/5xx deny
     except Exception:
         return False  # unreachable or unreadable robots.txt: deny
     return rp.can_fetch(UA, url)

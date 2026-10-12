@@ -99,6 +99,30 @@ class T(unittest.TestCase):
         f = lambda u: b"User-agent: *\nDisallow: /" if u.endswith("robots.txt") else RSS
         self.assertEqual(feed_ingest.ingest(["http://h/feed"], s, f)["feeds"]["http://h/feed"], "blocked_by_robots")
 
+    def test_robots_status_codes(self):
+        for code, blocked in ((404, False), (410, False), (401, True), (403, True), (429, True), (500, True)):
+            def f(u, code=code):
+                if u.endswith("robots.txt"):
+                    raise urllib.error.HTTPError(u, code, "x", {}, None)
+                return RSS
+            r = feed_ingest.ingest(["http://h/feed"], feed_ingest.Store(), f)["feeds"]["http://h/feed"]
+            self.assertEqual(r == "blocked_by_robots", blocked, code)
+
+    def test_default_fetch_url_boundary(self):
+        for u in ("http://example.com/f", "https://127.0.0.1/f", "https://localhost/f",
+                  "https://10.0.0.5/f", "https://169.254.169.254/latest", "https://[::1]/f",
+                  "ftp://example.com/f", "file:///etc/passwd"):
+            with self.assertRaises(ValueError, msg=u):
+                feed_ingest.default_fetch(u)
+
+    def test_redirect_handler_refuses_other_host_and_private(self):
+        import urllib.request
+        h = feed_ingest._SameHostRedirect("example.com")
+        req = urllib.request.Request("https://example.com/a")
+        for target in ("https://127.0.0.1/x", "http://example.com/x", "https://169.254.169.254/x"):
+            with self.assertRaises(ValueError):
+                h.redirect_request(req, None, 302, "Found", {}, target)
+
     def test_robots_fetch_error_denies(self):
         s = feed_ingest.Store()
         def f(u):
@@ -146,9 +170,16 @@ class T(unittest.TestCase):
         miss = ae.match(o, {}, today=date(2026, 10, 12))
         self.assertFalse(miss["eligible"]); self.assertIn("grade", miss["needs_owner"])
         for txt2, amt, cur in (("Entry fee: EUR 100", 100.0, "EUR"), ("The fee is 50 GBP", 50.0, "GBP"),
-                               ("Application cost INR 1,500", 1500.0, "INR"), ("No fee. Deadline: 2026-12-20", 0.0, None)):
+                               ("Application cost INR 1,500", 1500.0, "INR"), ("No fee. Deadline: 2026-12-20", 0.0, None),
+                               ("Free to enter", 0.0, None)):
             p = ae.parse_opportunity(txt2)
             self.assertEqual((p["fee"], p["fee_currency"]), (amt, cur))
+        for txt3, status in (("Entry fee: 500 ZAR", "unknown_currency"), ("Fee: ZAR 500", "unknown_currency"),
+                             ("fee is 500", "unknown_currency"), ("Open to everyone", "not_stated"),
+                             ("fee waiver available. Deadline 2026-12-20", "not_stated")):
+            p = ae.parse_opportunity(txt3)
+            self.assertIsNone(p["fee"]); self.assertEqual(p["fee_status"], status)
+            self.assertTrue(ae.match(p, {}, today=date(2026, 10, 12))["needs_owner"])
         ok = ae.prepare(o, {}, lambda q, l, f: "I studied biology.", ["I studied biology"])
         self.assertTrue(ok["ready_for_owner_review"])
         bad = ae.prepare(o, {}, lambda q, l, f: "I won 99 awards " + "x " * 60, ["I studied"])
@@ -156,6 +187,13 @@ class T(unittest.TestCase):
         nobel = ae.prepare(o, {}, lambda q, l, f: "I won the Nobel Prize.", ["I studied biology"])
         self.assertFalse(nobel["ready_for_owner_review"])
         self.assertTrue(any("nobel" in i for i in nobel["issues"]))
+        neg = ae.prepare(o, {}, lambda q, l, f: "I won the Nobel Prize.", ["I never won the Nobel Prize."])
+        self.assertFalse(neg["ready_for_owner_review"])
+        self.assertTrue(any("polarity conflict" in i for i in neg["issues"]))
+        rev = ae.prepare(o, {}, lambda q, l, f: "I never studied biology.", ["I studied biology."])
+        self.assertFalse(rev["ready_for_owner_review"])
+        same = ae.prepare(o, {}, lambda q, l, f: "I never won the Nobel Prize.", ["I never won the Nobel Prize."])
+        self.assertTrue(same["ready_for_owner_review"])
 
     def test_history_audit(self):
         d = tempfile.mkdtemp()
