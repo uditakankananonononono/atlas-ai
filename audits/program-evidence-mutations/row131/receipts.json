@@ -1,0 +1,125 @@
+{
+  "row": 131,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_executed_acceptance.py",
+    "tests/test_row131_mutation_sensitivity.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "baseline.log"
+  },
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "restored-baseline.log"
+  },
+  "mutants": [
+    {
+      "id": "R131-M1",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "40c7b32fc8b3ee6fa0c9c59078b622d332fa9a36babf1a99c15455fd8f3fecb3",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_single_receipt_identity_drift_refused[head]"
+      ],
+      "log": "R131-M1.log"
+    },
+    {
+      "id": "R131-M2",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "7f267bdc9dd7de138ea957f5522c4a9837fd6a080640e28f87f30e5b044159aa",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_single_receipt_identity_drift_refused[tree_digest]"
+      ],
+      "log": "R131-M2.log"
+    },
+    {
+      "id": "R131-M3",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "3f04fdea8297838fedbfe42cba485729ebb1e57da914682c131142d598508dfc",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_row131_mutation_sensitivity.py::test_each_semantic_flag_false_despite_scoped_pass"
+      ],
+      "log": "R131-M3.log"
+    },
+    {
+      "id": "R131-M4",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "bcdb24c20e69e3a0d53094ae507dce7c43fb0c181ff769650c4661d59065bd69",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers",
+        "tests/test_executed_acceptance.py::test_all_selected_lines_pass_still_no_candy",
+        "tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts",
+        "tests/test_executed_acceptance.py::test_inventory_bytes_hash_and_disclosures",
+        "tests/test_executed_acceptance.py::test_final_tree_drift_rejects_unchanged_source"
+      ],
+      "log": "R131-M4.log"
+    },
+    {
+      "id": "R131-M5",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "c9c19331f653a9eea92e73bc557e621a7ef04b39c47fb1c7afa8a4dd0218c847",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers",
+        "tests/test_executed_acceptance.py::test_mixed_failure_and_source_mutation_not_promoted",
+        "tests/test_executed_acceptance.py::test_missing_line_not_scoped_pass",
+        "tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts",
+        "tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts",
+        "tests/test_executed_acceptance.py::test_helper_exception_and_head_drift_unverified",
+        "tests/test_executed_acceptance.py::test_same_line_pass_and_fail_requires_all",
+        "tests/test_executed_acceptance.py::test_single_receipt_identity_drift_refused[head]",
+        "tests/test_executed_acceptance.py::test_single_receipt_identity_drift_refused[tree_digest]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[None]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt1]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt2]",
+        "tests/test_executed_acceptance.py::test_final_tree_drift_rejects_unchanged_source"
+      ],
+      "log": "R131-M5.log"
+    }
+  ],
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0,
+    "NOT-APPLICABLE": 0
+  },
+  "evidence_tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "portable_path_normalization": "portable-path-normalized: command[0] replaced for delivery; original private receipt retained, bytes changed"
+}

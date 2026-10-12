@@ -1,0 +1,10 @@
+.................F                                                       [100%]
+=================================== FAILURES ===================================
+______________ test_each_semantic_flag_false_despite_scoped_pass _______________
+tests/test_row131_mutation_sensitivity.py:8: in test_each_semantic_flag_false_despite_scoped_pass
+    assert all(row['semantic_fulfillment_verified'] is False for row in out['lines'])
+E   assert False
+E    +  where False = all(<generator object test_each_semantic_flag_false_despite_scoped_pass.<locals>.<genexpr> at 0x7f0dd5e2f370>)
+=========================== short test summary info ============================
+FAILED tests/test_row131_mutation_sensitivity.py::test_each_semantic_flag_false_despite_scoped_pass
+1 failed, 17 passed in 4.74s

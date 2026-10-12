@@ -1,0 +1,46 @@
+{
+  "row": 131,
+  "tests": [
+    "tests/test_executed_acceptance.py",
+    "tests/test_row131_mutation_sensitivity.py"
+  ],
+  "tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "mutants": [
+    {
+      "id": "R131-M1",
+      "name": "head check",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "and item['run'].get('head') == snap['head']",
+      "new": ""
+    },
+    {
+      "id": "R131-M2",
+      "name": "tree check",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "and item['run'].get('tree_digest') == snap['tree_digest']",
+      "new": ""
+    },
+    {
+      "id": "R131-M3",
+      "name": "semantic label",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'semantic_fulfillment_verified': False, 'test_line_pairing_verified': False,",
+      "new": "'semantic_fulfillment_verified': True, 'test_line_pairing_verified': False,"
+    },
+    {
+      "id": "R131-M4",
+      "name": "actual inventory hash",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "source_artifact_sha256 = digest(safe_file(root, source_path).read_bytes())",
+      "new": "source_artifact_sha256 = '0' * 64"
+    },
+    {
+      "id": "R131-M5",
+      "name": "missing status",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'check_status': 'SCOPED_PASS' if passed else 'UNVERIFIED',",
+      "new": "'check_status': 'SCOPED_PASS',"
+    }
+  ]
+}

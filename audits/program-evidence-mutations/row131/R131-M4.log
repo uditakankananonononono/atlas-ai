@@ -1,0 +1,32 @@
+FF....F..F......F.                                                       [100%]
+=================================== FAILURES ===================================
+___________________ test_pass_and_missing_line_keep_blockers ___________________
+tests/test_executed_acceptance.py:23: in test_pass_and_missing_line_keep_blockers
+    assert out['scoped_passing_lines']==1
+E   assert 0 == 1
+_________________ test_all_selected_lines_pass_still_no_candy __________________
+tests/test_executed_acceptance.py:35: in test_all_selected_lines_pass_still_no_candy
+    assert out['scoped_passing_lines']==2 and not out['candy_gate']['release']
+E   assert (0 == 2)
+_____________________ test_actual_mixed_pass_fail_receipts _____________________
+tests/test_executed_acceptance.py:83: in test_actual_mixed_pass_fail_receipts
+    assert out['scoped_passing_lines']==1
+E   assert 0 == 1
+__________________ test_inventory_bytes_hash_and_disclosures ___________________
+tests/test_executed_acceptance.py:117: in test_inventory_bytes_hash_and_disclosures
+    assert out['source_artifact_sha256']==hashlib.sha256((root/'source.txt').read_bytes()).hexdigest()
+E   AssertionError: assert '000000000000...0000000000000' == 'dbea9325179e...a064623d7ee23'
+E
+E     - dbea9325179efe46ea2add94f7b6b745ca983fabb208dc6d34aa064623d7ee23
+E     + 0000000000000000000000000000000000000000000000000000000000000000
+________________ test_final_tree_drift_rejects_unchanged_source ________________
+tests/test_executed_acceptance.py:163: in test_final_tree_drift_rejects_unchanged_source
+    assert out['source_stable_after_runs'] and not out['tree_stable_after_runs']
+E   assert (False)
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers
+FAILED tests/test_executed_acceptance.py::test_all_selected_lines_pass_still_no_candy
+FAILED tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts
+FAILED tests/test_executed_acceptance.py::test_inventory_bytes_hash_and_disclosures
+FAILED tests/test_executed_acceptance.py::test_final_tree_drift_rejects_unchanged_source
+5 failed, 13 passed in 5.06s

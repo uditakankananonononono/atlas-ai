@@ -1,0 +1,72 @@
+F...FFFFF.FFFFFFF.                                                       [100%]
+=================================== FAILURES ===================================
+___________________ test_pass_and_missing_line_keep_blockers ___________________
+tests/test_executed_acceptance.py:23: in test_pass_and_missing_line_keep_blockers
+    assert out['scoped_passing_lines']==1
+E   assert 2 == 1
+_____________ test_mixed_failure_and_source_mutation_not_promoted ______________
+tests/test_executed_acceptance.py:63: in test_mixed_failure_and_source_mutation_not_promoted
+    assert not out['source_stable_after_runs'] and out['scoped_passing_lines']==0
+E   assert (not False and 2 == 0)
+______________________ test_missing_line_not_scoped_pass _______________________
+tests/test_executed_acceptance.py:70: in test_missing_line_not_scoped_pass
+    assert out['lines'][1]['check_status']=='UNVERIFIED'
+E   AssertionError: assert 'SCOPED_PASS' == 'UNVERIFIED'
+E
+E     - UNVERIFIED
+E     + SCOPED_PASS
+_____________________ test_actual_mixed_pass_fail_receipts _____________________
+tests/test_executed_acceptance.py:83: in test_actual_mixed_pass_fail_receipts
+    assert out['scoped_passing_lines']==1
+E   assert 2 == 1
+_______________ test_postrun_inventory_error_preserves_receipts ________________
+tests/test_executed_acceptance.py:99: in test_postrun_inventory_error_preserves_receipts
+    assert out['scoped_passing_lines']==0
+E   assert 2 == 0
+_______________ test_helper_exception_and_head_drift_unverified ________________
+tests/test_executed_acceptance.py:110: in test_helper_exception_and_head_drift_unverified
+    assert mod.audit_selected_checks(root,'source.txt',[check])['scoped_passing_lines']==0
+E   assert 2 == 0
+__________________ test_same_line_pass_and_fail_requires_all ___________________
+tests/test_executed_acceptance.py:129: in test_same_line_pass_and_fail_requires_all
+    assert out['scoped_passing_lines']==0
+E   assert 2 == 0
+_______________ test_single_receipt_identity_drift_refused[head] _______________
+tests/test_executed_acceptance.py:141: in test_single_receipt_identity_drift_refused
+    assert mod.audit_selected_checks(root,'source.txt',[check])['scoped_passing_lines']==0
+E   assert 2 == 0
+___________ test_single_receipt_identity_drift_refused[tree_digest] ____________
+tests/test_executed_acceptance.py:141: in test_single_receipt_identity_drift_refused
+    assert mod.audit_selected_checks(root,'source.txt',[check])['scoped_passing_lines']==0
+E   assert 2 == 0
+____________________ test_malformed_receipt_confined[None] _____________________
+tests/test_executed_acceptance.py:151: in test_malformed_receipt_confined
+    assert out['scoped_passing_lines']==0
+E   assert 2 == 0
+__________________ test_malformed_receipt_confined[receipt1] ___________________
+tests/test_executed_acceptance.py:151: in test_malformed_receipt_confined
+    assert out['scoped_passing_lines']==0
+E   assert 2 == 0
+__________________ test_malformed_receipt_confined[receipt2] ___________________
+tests/test_executed_acceptance.py:151: in test_malformed_receipt_confined
+    assert out['scoped_passing_lines']==0
+E   assert 2 == 0
+________________ test_final_tree_drift_rejects_unchanged_source ________________
+tests/test_executed_acceptance.py:164: in test_final_tree_drift_rejects_unchanged_source
+    assert out['scoped_passing_lines']==0
+E   assert 2 == 0
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers
+FAILED tests/test_executed_acceptance.py::test_mixed_failure_and_source_mutation_not_promoted
+FAILED tests/test_executed_acceptance.py::test_missing_line_not_scoped_pass
+FAILED tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts
+FAILED tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts
+FAILED tests/test_executed_acceptance.py::test_helper_exception_and_head_drift_unverified
+FAILED tests/test_executed_acceptance.py::test_same_line_pass_and_fail_requires_all
+FAILED tests/test_executed_acceptance.py::test_single_receipt_identity_drift_refused[head]
+FAILED tests/test_executed_acceptance.py::test_single_receipt_identity_drift_refused[tree_digest]
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[None]
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt1]
+FAILED tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt2]
+FAILED tests/test_executed_acceptance.py::test_final_tree_drift_rejects_unchanged_source
+13 failed, 5 passed in 4.93s
