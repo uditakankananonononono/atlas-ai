@@ -18,14 +18,14 @@ verdicts to LANDED. It adds executable behavior with narrowly stated evidence.
   External text is reference data, never action authority or automatic learning.
 - M19 live HN research uses the documented fixed Algolia HTTPS endpoint, bounds
   response bytes and stories, rejects redirects, HTTP failures and malformed
-  responses, excludes future/duplicate records, and feeds the existing measured
+  responses, excludes future/duplicate records, and feeds the existing computed
   trend pipeline. The tenant-authenticated route returns source response hashes.
 - M19 fits a small smoothed token-presence content-preference ranker from explicit
   owner labels. A disjoint held-out test returns accuracy, majority baseline and
-  Brier score. This is a real fitted/executed algorithm, not general cognition.
+  Brier score. This is a fitted algorithm with test execution, not general cognition.
 - M21 consent-bound held-out owner-quiz evaluation rejects calibration/test overlap
   and reports domain agreement and Wilson intervals. Caller-attested evidence
-  is not an independently validated owner-thinking model or action permission.
+  does not establish a validated owner-thinking model or action permission.
 - M06 paired-PC Pinterest feed reads use the existing session bridge, parse only
   visible pin cards, preserve unknown authors/timestamps, deduplicate stored pin
   ids, and stop on login, verification, rate limiting, errors or wrong domains.
