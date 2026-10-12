@@ -14,7 +14,7 @@ Broader M17/M18/M19 selection before those final three additional cases: 1213 pa
 python -m pytest tests/modules/test_m17*.py tests/modules/test_m18*.py tests/modules/test_m19*.py tests/modules/test_repair_*.py -k 'not test_actual_second_process_factory_pending_and_tenant_isolation and not test_m19_immutable_snapshots' -q
 ```
 
-The immutable-snapshot tests require unavailable pgserver and account for 18 deselections. The second-process factory case fails its Python subprocess setup on the base too, independently confirmed by the parent gate; this is the remaining deselection. A prior unfiltered run had 17 pgserver setup errors, 8 skips, and the subprocess failure. These are not presented as passing tests. Full repository suite was not run.
+The immutable-snapshot tests require unavailable pgserver and account for 18 deselections. The second-process factory case fails its Python subprocess setup on the base too, independently reproduced on the unpatched base; this is the remaining deselection. A prior unfiltered run had 17 pgserver setup errors, 8 skips, and the subprocess failure. These are not presented as passing tests. Full repository suite was not run.
 
 ## Per-card disposition
 
@@ -34,4 +34,8 @@ The publication adapter contract intentionally changes from publish-only to prep
 
 M18 verifier injection is code configuration, not caller request data. Outcomes are still explicitly observed inputs, not independently verified. Unknown/failed receipts and historical stored snapshots are not retroactively authenticated. The patch does not supply a live provider verifier.
 
-M13-M16 remain with the specialist lane and are untouched.
+M13-M16 are outside this patch scope and are untouched.
+
+## Reviewed-binding snapshot regression
+
+An additional red case reproduced request mutation inside prepare: the prior acceptance check passed for hash a, then the effect published hash c. The gate now revalidates and freezes a private scalar request snapshot and copies acceptance before any adapter callback. Preflight verification, effect arguments, final verification and returned metadata all use that frozen snapshot. Changed signed preflight bindings are refused before publish. Mutating the caller request during prepare or publish cannot change the approved effect or returned metadata.

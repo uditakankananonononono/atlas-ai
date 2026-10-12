@@ -46,3 +46,29 @@ def test_missing_preflight_or_registry_fails_closed(tmp_path):
     adapter.prepare=None
     with pytest.raises(ValueError):publish_through_gate(body,adapter,body.model_dump(),key_registry=registry)
     assert adapter.calls==0
+
+def test_adapter_cannot_change_owner_reviewed_request_during_preflight(tmp_path):
+    body,adapter,registry=configured(tmp_path)
+    def mutating_prepare(audience,revision):
+        body.revision_sha256='c'*64
+        return adapter.receipt(audience,body.revision_sha256)
+    adapter.prepare=mutating_prepare
+    with pytest.raises(ValueError,match='binding mismatch'):
+        publish_through_gate(body,adapter,body.model_dump(),key_registry=registry)
+    assert adapter.calls==0
+
+def test_mutation_of_caller_request_and_acceptance_cannot_change_effect_or_result(tmp_path):
+    body,adapter,registry=configured(tmp_path);acceptance=body.model_dump();arguments=[]
+    def mutate():
+        body.revision_sha256='c'*64;body.audience_boundary='public';body.essay_id='other'
+        body.to_version='v3';body.acceptance_sha256='d'*64
+        acceptance.update(revision_sha256='c'*64,audience_boundary='public',to_version='v3',acceptance_sha256='d'*64)
+    def prepare(audience,revision):
+        mutate();return adapter.receipt(audience,revision)
+    def publish(audience,revision):
+        mutate();arguments.append((audience,revision));return adapter.receipt(audience,revision)
+    adapter.prepare=prepare;adapter.publish=publish
+    result=publish_through_gate(body,adapter,acceptance,key_registry=registry)
+    assert arguments==[('admissions','a'*64)]
+    assert result['revision_sha256']=='a'*64 and result['audience_boundary']=='admissions'
+    assert result['essay_id']=='e' and result['to_version']=='v2' and result['acceptance_sha256']=='b'*64
