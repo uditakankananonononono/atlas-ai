@@ -3,6 +3,7 @@ import inspect
 import httpx
 import pytest
 from app.modules.m23_study_abroad import admitted_cases, admitted_cases_bounded, routes
+from app.modules.m23_study_abroad.admitted_cases_bounded import HostPacer
 
 HTML = {'content-type': 'text/html'}
 
@@ -14,6 +15,7 @@ def run(robots_text, **kw):
         if request.url.path == '/robots.txt':
             return httpx.Response(200, text=robots_text)
         return httpx.Response(200, headers=HTML, text='<title>t</title>')
+    kw.setdefault('pacer', HostPacer())
     row = admitted_cases.fetch_case_metadata('hamilton', httpx.MockTransport(handler),
                                              sleep=lambda s: calls.append('sleep:%g' % s), **kw)
     return row, calls

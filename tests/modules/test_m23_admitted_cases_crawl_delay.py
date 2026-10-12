@@ -4,7 +4,7 @@ import httpx
 import pytest
 from app.modules.m23_study_abroad.admitted_cases import USER_AGENT, cases
 from app.modules.m23_study_abroad.admitted_cases_bounded import (MAX_CRAWL_DELAY_SECONDS, SAFE_STATUSES,
-                                                                 fetch_case_metadata_bounded)
+                                                                 fetch_case_metadata_bounded, HostPacer)
 
 HTML = {'content-type': 'text/html'}
 PAGE = lambda: httpx.Response(200, headers=HTML, text='<title>t</title>')
@@ -17,6 +17,7 @@ def run(robots_text, **kw):
     def handler(request):
         calls.append(request.url.path)
         return httpx.Response(200, text=robots_text) if request.url.path == '/robots.txt' else PAGE()
+    kw.setdefault('pacer', HostPacer())   # these tests exercise per-call behavior only
     row = fetch_case_metadata_bounded('hamilton', httpx.MockTransport(handler), sleep=lambda s: calls.append('sleep:%g' % s), **kw)
     return row, calls
 

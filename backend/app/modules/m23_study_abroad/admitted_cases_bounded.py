@@ -5,6 +5,8 @@ no essay retention. Per-body caps bound retained decoded data, not transport
 allocation, decompression peak memory, or wire bytes. Defaults500k robots/1MB
 page, configurable helper bounds1..2000000. No redirects.
 """
+import math
+import threading
 import time
 from urllib.parse import urlparse
 from urllib.robotparser import RobotFileParser
@@ -17,11 +19,67 @@ from .admitted_cases import USER_AGENT, cases
 PAGE_LIMIT_BYTES = 1_000_000
 ROBOTS_LIMIT_BYTES = 500_000
 TIMEOUT_SECONDS = 8
+MAX_PACE_WAIT_SECONDS = 60     # a call that would have to queue longer than this for its host is refused, not parked
 MAX_CRAWL_DELAY_SECONDS = 30   # a robots Crawl-delay above this is not waited out: the page is skipped
 SAFE_STATUSES = frozenset({
     'robots_unverified', 'robots_denied', 'unavailable', 'unsupported_content_type',
-    'too_large', 'fetch_failed', 'page_reachable', 'crawl_delay_too_long',
+    'too_large', 'fetch_failed', 'page_reachable', 'crawl_delay_too_long', 'host_pacing_busy',
 })
+
+
+class HostPacer:
+    """In-memory, process-local, thread-safe per-host pacing. Calls to one host are serialized.
+
+    acquire(host, max_wait) admits one call at a time per host: while another call to the same host is in flight
+    (robots + Crawl-delay sleep + page), later callers block on a condition variable for at most max_wait real
+    seconds, then are refused. The admitted call must also wait until the host's last known Crawl-delay has passed
+    since the previous call FINISHED; if that remaining wait exceeds max_wait it is refused instead. Because the
+    host is held for the whole call, two calls can never overlap, and a host with no known delay gets a single-flight
+    first robots fetch: the others queue and then use the delay it learned. release() records the finish time and
+    the delay learned from robots.txt (None keeps the last known delay) and wakes waiters. Nothing is persisted or
+    shared across processes."""
+
+    def __init__(self, clock=time.monotonic, max_queue=None):
+        self._clock = clock
+        self._max_queue = max_queue      # optional lower bound on the real-time queue wait (tests); None = max_wait
+        self._cond = threading.Condition()
+        self._busy: set[str] = set()
+        self._last_end: dict[str, float] = {}
+        self._delay: dict[str, float] = {}
+
+    def acquire(self, host: str, max_wait: float):
+        """Return (True, seconds_to_sleep_before_requesting) or (False, retry_after_seconds)."""
+        deadline = time.monotonic() + (max_wait if self._max_queue is None else min(max_wait, self._max_queue))
+        with self._cond:
+            while host in self._busy:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    return False, max(1.0, self._delay.get(host, 0.0))
+                self._cond.wait(remaining)
+            spacing = max(0.0, self._last_end.get(host, float('-inf')) + self._delay.get(host, 0.0) - self._clock())
+            if spacing > max_wait:
+                return False, spacing
+            self._busy.add(host)
+            return True, spacing
+
+    def release(self, host: str, delay):
+        """Call exactly once after a successful acquire, in a finally block."""
+        with self._cond:
+            if delay is not None:
+                self._delay[host] = float(delay)
+            self._last_end[host] = self._clock()
+            self._busy.discard(host)
+            self._cond.notify_all()
+
+    def reset(self):
+        with self._cond:
+            self._busy.clear()
+            self._last_end.clear()
+            self._delay.clear()
+            self._cond.notify_all()
+
+
+DEFAULT_PACER = HostPacer()
 
 
 class BodyTooLarge(Exception):
@@ -66,15 +124,24 @@ def fetch_case_metadata_bounded(case_id: str, transport: httpx.BaseTransport | N
                                 page_limit: int = PAGE_LIMIT_BYTES,
                                 robots_limit: int = ROBOTS_LIMIT_BYTES,
                                 max_crawl_delay: float = MAX_CRAWL_DELAY_SECONDS,
-                                sleep=time.sleep) -> dict:
+                                sleep=time.sleep,
+                                pacer: HostPacer | None = None,
+                                max_pace_wait: float = MAX_PACE_WAIT_SECONDS) -> dict:
     """robots.txt Crawl-delay is honored: the helper waits that long (via `sleep`) between the robots request and the
     page request; a delay above `max_crawl_delay` (default 30s) skips the page with status crawl_delay_too_long.
     The delay is read for USER_AGENT, falling back to the `*` entry (stdlib RobotFileParser semantics). Only one page
-    request follows one robots request per call, so no further per-host pacing exists across calls."""
+    request follows one robots request per call.
+    Across calls, a HostPacer (default: the process-wide DEFAULT_PACER) serializes calls per host: a call queues (real
+    time, at most `max_pace_wait`, default 60s) while another call to the same host is in flight, then waits via
+    `sleep` until the host's last known Crawl-delay has passed since the previous call FINISHED. If the queue or that
+    remaining wait would exceed `max_pace_wait` it returns host_pacing_busy with retry_after_seconds. The ledger is
+    in-memory and process-local; a host never seen with a Crawl-delay is not spaced beyond serialization."""
     if isinstance(max_crawl_delay, bool) or not isinstance(max_crawl_delay, (int, float)) or not 0 <= max_crawl_delay <= 120:
         raise ValueError('max_crawl_delay must be 0..120 seconds')
     for bound in (page_limit,robots_limit):
         if type(bound) is not int or not 1<=bound<=2_000_000:raise ValueError('body limits must be integer1..2000000')
+    if isinstance(max_pace_wait, bool) or not isinstance(max_pace_wait, (int, float)) or not 0 <= max_pace_wait <= 600:
+        raise ValueError('max_pace_wait must be 0..600 seconds')
     rows = cases() if catalog is None else catalog
     row = next((r for r in rows if r['id'] == case_id), None)
     if row is None:
@@ -83,35 +150,47 @@ def fetch_case_metadata_bounded(case_id: str, transport: httpx.BaseTransport | N
     if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password:
         return _safe(row, 'unavailable')
     base = f'{parsed.scheme}://{parsed.netloc}'
+    ledger = DEFAULT_PACER if pacer is None else pacer
+    host = parsed.hostname.lower()
+    admitted, wait = ledger.acquire(host, max_pace_wait)
+    if not admitted:
+        return _safe(row, 'host_pacing_busy', retry_after_seconds=math.ceil(wait))
+    seen_delay = None
     try:
-        with httpx.Client(timeout=TIMEOUT_SECONDS, follow_redirects=False, transport=transport,
-                          headers={'User-Agent': USER_AGENT}) as client:
-            # 1. robots first; any failure refuses BEFORE the page request.
-            try:
-                status, _ctype, robots_body = _get_bounded(client, base + '/robots.txt', robots_limit)
-            except BodyTooLarge:
-                return _safe(row, 'robots_unverified')
-            if status != 200:
-                return _safe(row, 'robots_unverified', http_status=status)
-            parser = RobotFileParser()
-            try:robots_text=robots_body.decode('utf-8', errors='strict')
-            except UnicodeError:return _safe(row,'robots_unverified')
-            parser.parse(robots_text.splitlines())
-            if not parser.can_fetch(USER_AGENT, row['url']):
-                return _safe(row, 'robots_denied')
-            # 1b. Crawl-delay: honored or the page is skipped; never ignored.
-            delay = parser.crawl_delay(USER_AGENT)
-            if delay is not None and delay > max_crawl_delay:
-                return _safe(row, 'crawl_delay_too_long', crawl_delay_seconds=delay)
-            if delay:
-                sleep(delay)
-            # 2. page, bounded.
-            try:
-                status, ctype, page_body = _get_bounded(client, row['url'], page_limit)
-            except BodyTooLarge:
-                return _safe(row, 'too_large')
-    except (httpx.HTTPError, ValueError, UnicodeError):
-        return _safe(row, 'fetch_failed')  # no exception text, URL, or body in the result
+        if wait > 0:
+            sleep(wait)
+        try:
+            with httpx.Client(timeout=TIMEOUT_SECONDS, follow_redirects=False, transport=transport,
+                              headers={'User-Agent': USER_AGENT}) as client:
+                # 1. robots first; any failure refuses BEFORE the page request.
+                try:
+                    status, _ctype, robots_body = _get_bounded(client, base + '/robots.txt', robots_limit)
+                except BodyTooLarge:
+                    return _safe(row, 'robots_unverified')
+                if status != 200:
+                    return _safe(row, 'robots_unverified', http_status=status)
+                parser = RobotFileParser()
+                try:robots_text=robots_body.decode('utf-8', errors='strict')
+                except UnicodeError:return _safe(row,'robots_unverified')
+                parser.parse(robots_text.splitlines())
+                if not parser.can_fetch(USER_AGENT, row['url']):
+                    return _safe(row, 'robots_denied')
+                # 1b. Crawl-delay: honored or the page is skipped; never ignored.
+                delay = parser.crawl_delay(USER_AGENT)
+                seen_delay = delay or 0
+                if delay is not None and delay > max_crawl_delay:
+                    return _safe(row, 'crawl_delay_too_long', crawl_delay_seconds=delay)
+                if delay:
+                    sleep(delay)
+                # 2. page, bounded.
+                try:
+                    status, ctype, page_body = _get_bounded(client, row['url'], page_limit)
+                except BodyTooLarge:
+                    return _safe(row, 'too_large')
+        except (httpx.HTTPError, ValueError, UnicodeError):
+            return _safe(row, 'fetch_failed')  # no exception text, URL, or body in the result
+    finally:
+        ledger.release(host, seen_delay)
     if status != 200:
         return _safe(row, 'unavailable', http_status=status)
     if 'text/html' not in ctype.lower():

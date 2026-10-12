@@ -146,3 +146,18 @@ def isolated_m00_approvals(tmp_path,monkeypatch):
 def isolated_m22_approvals(isolated_m00_approvals):
     """Compatibility alias for already reviewed M22 tests."""
     return isolated_m00_approvals
+
+
+import pytest as _pytest
+
+
+@_pytest.fixture(autouse=True)
+def _reset_m23_host_pacer(request):
+    """The m23 pacing ledger is process-wide; give every m23 admitted-cases test a clean one."""
+    if 'm23_admitted_cases' in request.module.__name__:
+        from app.modules.m23_study_abroad.admitted_cases_bounded import DEFAULT_PACER
+        DEFAULT_PACER.reset()
+        DEFAULT_PACER._max_queue = .3     # tests: a leaked in-flight mark must fail fast, not park for 60s
+    yield
+    if 'm23_admitted_cases' in request.module.__name__:
+        DEFAULT_PACER._max_queue = None
