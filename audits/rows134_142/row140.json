@@ -1,0 +1,45 @@
+{
+  "row": 140,
+  "selectors": [
+    "tests/runtime/guardrails/test_research_gate.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "local choke-point tests only, fixture effects",
+    "no external approval/provider truth",
+    "not universal runtime adoption",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "project_scope",
+      "path": "backend/app/runtime/guardrails/research_gate.py",
+      "old": "if record.get(\"project_id\") != project_id:",
+      "new": "if False:"
+    },
+    {
+      "id": "missing_evidence",
+      "path": "backend/app/runtime/guardrails/research_gate.py",
+      "old": "if state[\"missing\"]:",
+      "new": "if False:"
+    },
+    {
+      "id": "result_binding",
+      "path": "backend/app/runtime/guardrails/research_gate.py",
+      "old": "if digest not in result_digests:",
+      "new": "if False:"
+    },
+    {
+      "id": "statement_hash",
+      "path": "backend/app/runtime/guardrails/research_gate.py",
+      "old": "digest = hashlib.sha256(statement.encode()).hexdigest()",
+      "new": "digest = '0'*64"
+    },
+    {
+      "id": "effect_verdict",
+      "path": "backend/app/runtime/guardrails/research_gate.py",
+      "old": "if verdict != \"admitted\":",
+      "new": "if False:"
+    }
+  ]
+}
