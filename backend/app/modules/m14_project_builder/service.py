@@ -246,7 +246,16 @@ class Service:
         markdown=report_engine.render_status_report(report_engine.StatusReportContext(
             project_id=project.id,goal=project.goal,status=project.status,progress=progress,
             milestones=milestones,slippage=slippage,artifact_validation=validation,generated_at=generated))
+        # Report gate (group 142): refuses unlabeled/conflicting/vacuous claim ledgers before the report leaves.
+        self._report_gate().emit_report(f"m14-status-{project.id}-{int(generated.timestamp())}"[:64],markdown,now=generated.strftime("%Y-%m-%dT%H:%M:%SZ"))
         return StatusReportView(project_id=project.id,markdown=markdown,generated_at=generated)
+
+    def _report_gate(self):
+        gate=getattr(self,"_report_enforcer",None)
+        if gate is None:
+            from app.runtime.guardrails.enforcer import GuardrailEnforcer
+            gate=self._report_enforcer=GuardrailEnforcer()
+        return gate
 
     # --- Feedback and exports --------------------------------------------------
     async def apply_feedback(self,project:ProjectView,request:FeedbackRequest)->FeedbackResponse:

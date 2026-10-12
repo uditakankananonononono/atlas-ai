@@ -111,5 +111,18 @@ def render_status_report(context: StatusReportContext) -> str:
             lines.append(
                 "- **EXHAUSTED:** " + ", ".join(b.exhausted_dimensions)
             )
+    # Claim ledger for the report gate (instinct-doc group 142). Conservative by
+    # construction: only a computed validator result is VERIFIED; self-reported
+    # milestone state is UNVERIFIED. The label asserts provenance, not truth.
+    lines += ["", "## Claims", "", "| Claim | Status |", "|---|---|"]
+    if context.progress is not None:
+        lines.append(f"| Overall progress {context.progress.overall_progress:.0%} (milestone state as recorded, not independently checked) | UNVERIFIED |")
+    else:
+        lines.append("| No milestone progress recorded | UNVERIFIED |")
+    if context.artifact_validation is not None:
+        v = context.artifact_validation
+        lines.append(f"| Artifact validation {'passed' if v.passed else 'failed'} (computed validator result over {len(v.artifact_reports)} artifacts) | VERIFIED |")
+    else:
+        lines.append("| No artifacts validated | UNVERIFIED |")
     lines.append("")
     return "\n".join(lines)
