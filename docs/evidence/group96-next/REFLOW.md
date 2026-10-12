@@ -1,0 +1,3 @@
+# Group 96 remaining-work reflow
+
+Optional reflow=True on reconcile replans only still-pending selected curriculum after caller-supplied completion evidence, starting at relative week 1. Removes completed work hours, can bring formerly beyond-horizon steps into horizon, preserves original total separately, and does not repeat completed steps. Existing reconciliation default unchanged. Missing pending prerequisite/invalid horizon/capacity refuse. Does not inspect artifact URLs, prove individual completion, determine college eligibility or modify any calendar/task. No individual real-world outcomes reproduced by these tests. Group remains PARTIAL. Two reflow acceptance tests plus existing roadmap/group selection: 194 passed. All tests fictional.
