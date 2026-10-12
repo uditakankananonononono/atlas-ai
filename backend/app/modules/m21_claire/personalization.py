@@ -24,32 +24,32 @@ class TelemetryEventRow(Base):
 def cosine(a,b):
  n=math.sqrt(sum(x*x for x in a))*math.sqrt(sum(x*x for x in b));return 0 if not n else sum(x*y for x,y in zip(a,b))/n
 class PersonalizationRepository:
- def __init__(self,tenant_id,session_factory:sessionmaker=SessionLocal):self.tenant_id=tenant_id;self.sessions=session_factory;Base.metadata.create_all(engine)
+ def __init__(self,tenant_id,session_factory:sessionmaker=SessionLocal,actor_id='owner'):self.tenant_id=tenant_id;self.actor_id=actor_id;self.sessions=session_factory;Base.metadata.create_all(engine)
  def add(self,kind,data,embedding=None):
   cls={'decision':DecisionRow,'correction':CorrectionRow,'reasoning_note':ReasoningNoteRow,'ranking':RankingRow,'review':ReviewRow}[kind]
-  with self.sessions.begin() as db:row=cls(tenant_id=self.tenant_id,embedding=embedding or [],**data) if hasattr(cls,'embedding') else cls(tenant_id=self.tenant_id,**data);db.add(row);db.flush();return row.id
+  with self.sessions.begin() as db:data={k:v for k,v in data.items() if k not in {'tenant_id','actor_id'}};row=cls(tenant_id=self.tenant_id,actor_id=self.actor_id,embedding=embedding or [],**data) if hasattr(cls,'embedding') else cls(tenant_id=self.tenant_id,actor_id=self.actor_id,**data);db.add(row);db.flush();return row.id
  def retrieve(self,query_vector,limit=8):
   with self.sessions() as db:
-   rows=[*db.scalars(select(DecisionRow).where(DecisionRow.tenant_id==self.tenant_id)),*db.scalars(select(CorrectionRow).where(CorrectionRow.tenant_id==self.tenant_id)),*db.scalars(select(ReasoningNoteRow).where(ReasoningNoteRow.tenant_id==self.tenant_id))]
+   rows=[*db.scalars(select(DecisionRow).where(DecisionRow.tenant_id==self.tenant_id,DecisionRow.actor_id==self.actor_id)),*db.scalars(select(CorrectionRow).where(CorrectionRow.tenant_id==self.tenant_id,CorrectionRow.actor_id==self.actor_id)),*db.scalars(select(ReasoningNoteRow).where(ReasoningNoteRow.tenant_id==self.tenant_id,ReasoningNoteRow.actor_id==self.actor_id))]
    rows=[r for r in rows if r.embedding];rows.sort(key=lambda r:cosine(query_vector,r.embedding),reverse=True)
    result=[]
    for r in rows[:limit]:
-    content={k:v for k,v in vars(r).items() if not k.startswith('_') and k not in {'embedding','tenant_id'}}
+    content={k:v for k,v in vars(r).items() if not k.startswith('_') and k not in {'embedding','tenant_id','actor_id'}}
     if isinstance(r,DecisionRow):
-     outcomes=list(db.scalars(select(DecisionOutcomeRow).where(DecisionOutcomeRow.tenant_id==self.tenant_id,DecisionOutcomeRow.decision_id==r.id).order_by(DecisionOutcomeRow.observed_at.desc())))
+     outcomes=list(db.scalars(select(DecisionOutcomeRow).where(DecisionOutcomeRow.tenant_id==self.tenant_id,DecisionOutcomeRow.actor_id==self.actor_id,DecisionOutcomeRow.decision_id==r.id).order_by(DecisionOutcomeRow.observed_at.desc())))
      content['outcomes']=[{'outcome':x.outcome,'rating':x.rating,'lesson':x.lesson,'evidence':x.evidence,'observed_at':x.observed_at} for x in outcomes]
     result.append({'kind':r.__tablename__,'id':r.id,'score':round(cosine(query_vector,r.embedding),4),'content':content})
    return result
  def add_decision_outcome(self,decision_id,data):
   with self.sessions.begin() as db:
    decision=db.get(DecisionRow,decision_id)
-   if decision is None or decision.tenant_id!=self.tenant_id:raise KeyError('decision not found')
-   row=DecisionOutcomeRow(tenant_id=self.tenant_id,decision_id=decision_id,**data);db.add(row);db.flush();return row.id
+   if decision is None or decision.tenant_id!=self.tenant_id or decision.actor_id!=self.actor_id:raise KeyError('decision not found')
+   row=DecisionOutcomeRow(tenant_id=self.tenant_id,actor_id=self.actor_id,decision_id=decision_id,**data);db.add(row);db.flush();return row.id
  def decision_history(self,decision_id):
   with self.sessions() as db:
    decision=db.get(DecisionRow,decision_id)
-   if decision is None or decision.tenant_id!=self.tenant_id:raise KeyError('decision not found')
-   outcomes=list(db.scalars(select(DecisionOutcomeRow).where(DecisionOutcomeRow.tenant_id==self.tenant_id,DecisionOutcomeRow.decision_id==decision_id).order_by(DecisionOutcomeRow.observed_at)))
+   if decision is None or decision.tenant_id!=self.tenant_id or decision.actor_id!=self.actor_id:raise KeyError('decision not found')
+   outcomes=list(db.scalars(select(DecisionOutcomeRow).where(DecisionOutcomeRow.tenant_id==self.tenant_id,DecisionOutcomeRow.actor_id==self.actor_id,DecisionOutcomeRow.decision_id==decision_id).order_by(DecisionOutcomeRow.observed_at)))
    return {'decision':{'id':decision.id,'decision':decision.decision,'reason':decision.reason,'context':decision.context,'created_at':decision.created_at},'outcomes':[{'id':x.id,'outcome':x.outcome,'rating':x.rating,'lesson':x.lesson,'evidence':x.evidence,'observed_at':x.observed_at} for x in outcomes]}
  def set_telemetry_consent(self,enabled,scopes):
   now=datetime.now(timezone.utc)
@@ -61,7 +61,7 @@ class PersonalizationRepository:
   with self.sessions.begin() as db:
    consent=db.get(TelemetryConsentRow,self.tenant_id)
    if not consent or not consent.enabled or kind not in consent.scopes:raise PermissionError('telemetry scope is not enabled by owner')
-   row=TelemetryEventRow(tenant_id=self.tenant_id,kind=kind,payload=payload);db.add(row);db.flush();return row.id
+   row=TelemetryEventRow(tenant_id=self.tenant_id,actor_id=self.actor_id,kind=kind,payload=payload);db.add(row);db.flush();return row.id
 
 # Row-specific owner controls for features-document rows 2-9.  These are
 # deliberately separate operations rather than aliases around ``retrieve``.
@@ -78,7 +78,7 @@ class ScopedPersonalizationRepository(PersonalizationRepository):
  """
  def __init__(self,tenant_id:str,actor_id:str,session_factory:sessionmaker=SessionLocal):
   if not tenant_id.strip() or not actor_id.strip():raise ValueError('tenant_id and actor_id are required')
-  super().__init__(tenant_id,session_factory);self.actor_id=actor_id
+  super().__init__(tenant_id,session_factory,actor_id)
  def _owned(self,cls):
   # Legacy records predate actor_id. They are never silently adopted.
   return select(cls).where(cls.tenant_id==self.tenant_id,cls.actor_id==self.actor_id)
@@ -133,7 +133,7 @@ class ScopedPersonalizationRepository(PersonalizationRepository):
  def cognitive_twin_context(self,query_vector:list[float])->dict:
   return {'decisions':self.retrieve_decisions(query_vector,4),'corrections':self.correction_examples(query_vector,4),'reasoning_notes':self.reasoning_templates(query_vector,4),'preference_scores':self.preference_scores(),'provenance':'consented_owner_records','external_effects':[]}
  def export_data(self)->dict:
-  classes=(DecisionRow,CorrectionRow,ReasoningNoteRow,RankingRow,ReviewRow,TelemetryEventRow)
+  classes=(DecisionRow,DecisionOutcomeRow,CorrectionRow,ReasoningNoteRow,RankingRow,ReviewRow,TelemetryEventRow)  # every table delete_data removes
   with self.sessions() as db:return {'tenant_id':self.tenant_id,'actor_id':self.actor_id,'records':{c.__tablename__:[_public(x) for x in db.scalars(self._owned(c))] for c in classes}}
  def delete_data(self)->dict:
   classes=(DecisionOutcomeRow,DecisionRow,CorrectionRow,ReasoningNoteRow,RankingRow,ReviewRow,TelemetryEventRow)

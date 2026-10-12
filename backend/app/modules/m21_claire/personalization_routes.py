@@ -4,7 +4,7 @@ from pydantic import BaseModel,Field
 from app.auth.context import TenantContext,require_tenant
 from .personalization import PersonalizationRepository
 router=APIRouter(prefix='/claire/personalization',tags=['claire-personalization'])
-def repo(t:TenantContext=Depends(require_tenant)):return PersonalizationRepository(t.tenant_id)
+def repo(t:TenantContext=Depends(require_tenant)):return PersonalizationRepository(t.tenant_id,actor_id=t.actor_id)
 class MemoryIn(BaseModel):kind:Literal['decision','correction','reasoning_note','ranking','review'];data:dict[str,Any];embedding:list[float]=[]
 class OutcomeIn(BaseModel):
  outcome:str=Field(min_length=1);rating:Literal['better','same','worse','mixed','unknown'];lesson:str=Field(min_length=1);evidence:dict[str,Any]={}
