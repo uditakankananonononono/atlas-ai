@@ -14,4 +14,11 @@ Scope literal: nothing here promotes any row beyond PARTIAL.
 - Row 64 (pipeline): `tests/modules/test_m25_row64_scale_workflow.py` runs the real LocalKnowledgePipeline over 210
   SYNTHETIC local sources: per-source retrieval, citations, consent gate, tenant denial, dedup/versioning,
   deletion, attested restart restore. It is not a 200-real-source corpus and not learning into Atlas.
-- Row 63: not built in this delta.
+- Row 63: see the "Row 63 (added)" section below.
+
+## Row 63 (added)
+`tests/t_units/test_row63_advice_pipeline_workflow.py` executes PublicFetcher (robots, permit, rate limit) over a
+loopback server, then T3 concept candidates and T4 advice-prepared. It checks provenance (candidate sha256 matches
+served bytes), script text excluded, robots-disallowed path never requested, rate limit, unpermitted origin,
+policy denial and no-advice refusal, and status stays candidate_not_installed / prepared_only. It does not show
+advice becoming training or a created artifact; that remains PARTIAL. (Row 63 line above, "not built", is superseded.)
