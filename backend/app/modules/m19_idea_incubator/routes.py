@@ -259,3 +259,18 @@ router.include_router(snapshot_router)
 
 from .hn_routes import router as hn_research_router
 router.include_router(hn_research_router)
+
+# Canonical compatibility routes: both the historical path and compact alias.
+from .lane_router import router as compatibility_router
+router.include_router(compatibility_router)
+from fastapi.routing import APIRoute
+from copy import copy
+compat_alias=APIRouter(dependencies=[Depends(require_tenant)])
+for original in compatibility_router.routes:
+ if isinstance(original,APIRoute):
+  alias=copy(original)
+  alias.path=original.path.replace('/api/modules/19/ideas','/compat/ideas',1)
+  from starlette.routing import compile_path
+  alias.path_regex,alias.path_format,alias.param_convertors=compile_path(alias.path)
+  compat_alias.routes.append(alias)
+router.include_router(compat_alias)

@@ -2,15 +2,16 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.modules.m19_idea_incubator.lane_router import get_service, router
-from app.modules.m19_idea_incubator.lane_service import IdeaIncubatorService
+from app.modules.m19_idea_incubator.ledger import LedgerService
+from app.modules.m19_idea_incubator.repository import MemoryIdeaRepository
 
 
 def client():
     app = FastAPI()
     app.include_router(router)
-    service = IdeaIncubatorService()
+    service = LedgerService(MemoryIdeaRepository(),"u1")
     app.dependency_overrides[get_service] = lambda: service
-    return TestClient(app)
+    client=TestClient(app);client.headers.update({"X-Atlas-Tenant":"test","X-Atlas-Actor":"u1"});return client
 
 
 def test_create_and_dossier_endpoints():
