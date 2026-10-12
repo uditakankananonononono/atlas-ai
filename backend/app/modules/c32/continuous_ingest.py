@@ -1,12 +1,12 @@
 """c32.continuous_ingest (doc row 102): continuous huge-data ingestion worker
-with MEASURED sustained capacity.
+with a sustained-capacity ledger.
 
 Closes the audit gap on c32.ingest ("synthetic batch ingestion benchmark, not
 unbounded live sustained ingestion"): a drop-directory worker that ingests
 JSONL files CONTINUOUSLY across runs - chunked reads, per-file checkpointing
 (crash-safe resume), content-hash dedupe persisted across runs, backpressure
 reporting when the pending queue exceeds a cap, and a throughput ledger
-measured on real clock time (records/s, bytes/s) over every run.
+recorded on clock time (records/s, bytes/s) over every run.
 
 Scope stays honest: "huge data" means whatever arrives in the inbox
 directory; the worker sustains unbounded cumulative volume across runs with

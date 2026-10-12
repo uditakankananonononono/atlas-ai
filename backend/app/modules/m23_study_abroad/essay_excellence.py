@@ -168,7 +168,7 @@ def _feedback(criteria, cliches, n_words, word_limit, drift):
 
 
 def compare_revisions(before, after, prompt="", evidence=None, word_limit=WORD_LIMIT_DEFAULT):
-    """Measured revision-over-revision delta on every criterion."""
+    """Revision-over-revision delta on every criterion."""
     a = analyze_draft(before, prompt, evidence, word_limit)
     b = analyze_draft(after, prompt, evidence, word_limit)
     deltas = {}

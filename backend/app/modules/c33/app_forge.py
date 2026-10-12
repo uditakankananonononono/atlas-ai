@@ -1,7 +1,7 @@
 """c33.app_forge (doc row 105): viral app/content engine across niches.
 
 Closes the audit gap on c33.niches/c33.content ("taxonomy enumeration/ranked
-drafts; no built viral apps"): this unit actually BUILDS apps - for each
+drafts; no built viral apps"): this unit builds apps - for each
 niche it writes a complete, runnable static web app (index.html with inline
 CSS/JS, webmanifest, README) carrying engineered-virality mechanics: Web
 Share API with clipboard fallback, a local referral counter, an interest
@@ -10,7 +10,7 @@ hook-scored content calendar per niche. Batch mode forges apps across
 thousands of niches (cap enforced).
 
 Honest bounds: virality is ENGINEERED mechanics (share, referral, capture),
-not a measured viral outcome; apps are written to a local output directory
+not a promised viral outcome; apps are written to a local output directory
 and are not deployed or posted anywhere. AUTOPOST/FAKEACCT guard: any
 request key naming posting, publishing, accounts or sending refuses.
 Stdlib only, offline, deterministic output.

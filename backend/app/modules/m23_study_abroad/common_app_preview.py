@@ -2,7 +2,7 @@
 prior portfolio ZIP.
 
 Closes the audit gap ("actual prior ZIP and complete personal preview not
-verified"): a real ZIP reader that parses a portfolio archive (profile.json,
+verified"): a ZIP archive reader that parses a portfolio archive (profile.json,
 activities/*.json, honors/*.json, essays/*.txt|*.md), validates every field
 against Common App's published constraints, and renders the complete
 application preview in section order with per-section status.
