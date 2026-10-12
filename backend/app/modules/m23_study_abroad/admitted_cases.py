@@ -33,40 +33,16 @@ def search_cases(query: str = '', evidence_type: str = '', limit: int = 20) -> l
             ][:max(1, min(limit, 20))]
 
 
-def fetch_case_metadata(case_id: str, transport: httpx.BaseTransport | None = None) -> dict:
-    """Check robots and retrieve a title/description; never ingest the applicant's essay.
+def fetch_case_metadata(case_id: str, transport: httpx.BaseTransport | None = None, **kwargs) -> dict:
+    """Legacy entry point, kept for its test contract. It no longer has its own fetch path.
 
-    A known HTTPS catalog URL is the only possible target; redirects are not followed.
-    Unknown sites and login walls cannot become evidence through this function.
+    It delegates to admitted_cases_bounded.fetch_case_metadata_bounded, so robots Crawl-delay
+    (cap 30s, skipped above it), response-size bounds and the closed status set apply here too.
+    routes.py already imports the bounded function under this name. Extra keyword arguments
+    (max_crawl_delay, sleep, page_limit, ...) are passed through unchanged.
     """
-    row = next((r for r in cases() if r['id'] == case_id), None)
-    if row is None:
-        raise KeyError(case_id)
-    parsed = urlparse(row['url'])
-    base = f'{parsed.scheme}://{parsed.netloc}'
-    with httpx.Client(timeout=8, follow_redirects=False, transport=transport,
-                      headers={'User-Agent': USER_AGENT}) as client:
-        robots = client.get(base + '/robots.txt')
-        if robots.status_code != 200:
-            return {**row, 'live_status': 'robots_unverified', 'http_status': robots.status_code}
-        parser = RobotFileParser()
-        parser.parse(robots.text.splitlines())
-        if not parser.can_fetch(USER_AGENT, row['url']):
-            return {**row, 'live_status': 'robots_denied'}
-        response = client.get(row['url'])
-    if response.status_code != 200:
-        return {**row, 'live_status': 'unavailable', 'http_status': response.status_code}
-    if 'text/html' not in response.headers.get('content-type', '').lower():
-        return {**row, 'live_status': 'unsupported_content_type'}
-    if len(response.content) > 1_000_000:
-        return {**row, 'live_status': 'too_large'}
-    soup = BeautifulSoup(response.text, 'html.parser')
-    title = soup.title.get_text(' ', strip=True) if soup.title else ''
-    meta = soup.find('meta', attrs={'name': 'description'})
-    description = meta.get('content', '') if meta else ''
-    # Metadata is not proof of acceptance, and no essay body is retained.
-    return {**row, 'live_status': 'page_reachable', 'page_title': title[:250],
-            'page_description': description[:500], 'outcome_independently_verified': False}
+    from .admitted_cases_bounded import fetch_case_metadata_bounded  # lazy: the bounded module imports this one
+    return fetch_case_metadata_bounded(case_id, transport, **kwargs)
 
 
 def reading_route(case_id: str) -> dict:
