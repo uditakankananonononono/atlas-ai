@@ -7,7 +7,7 @@ Battery `batteries/b60.py`: 31 mutants. W1-W16 cover owner_interview (consent ga
 
 Final: 31 CAUGHT, 0 SURVIVED, 0 INVALID; source SHA restored. Receipt: `receipts_b60.txt`.
 Preserved earlier runs:
-- `receipts_b60_run1_X14_not_applicable.txt`: 29 CAUGHT, 1 NOT-APPLICABLE (X14 old text matched twice; split into X14 and X15).
+- `receipts_b60_run1_X14_not_applicable.txt`: 29 CAUGHT, 1 NOT-APPLICABLE (the order-stability mutant X14 matched its old text twice; replaced by redesigned X14 and X15, which are first-example hash-coverage mutants).
 - `receipts_b60_run2_with_2_survivors.txt`: 29 CAUGHT, 2 SURVIVED (X14, X15: hash tests did not vary later examples). Fixed by `test_dataset_hash_covers_every_example`.
 CAUGHT = pytest exits 1 with FAILED lines.
 
