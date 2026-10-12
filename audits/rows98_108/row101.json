@@ -1,0 +1,44 @@
+{
+  "row": 101,
+  "selectors": [
+    "tests/modules/test_m23_common_app_preview.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "traversal",
+      "path": "backend/app/modules/m23_study_abroad/common_app_preview.py",
+      "old": "or \"..\" in name.split(\"/\")",
+      "new": ""
+    },
+    {
+      "id": "activities",
+      "path": "backend/app/modules/m23_study_abroad/common_app_preview.py",
+      "old": "if len(acts) > ACTIVITIES_MAX:",
+      "new": "if False:"
+    },
+    {
+      "id": "essay_limit",
+      "path": "backend/app/modules/m23_study_abroad/common_app_preview.py",
+      "old": "if words > ESSAY_WORDS_MAX:",
+      "new": "if False:"
+    },
+    {
+      "id": "required_profile",
+      "path": "backend/app/modules/m23_study_abroad/common_app_preview.py",
+      "old": "if not prof.get(field):",
+      "new": "if False:"
+    },
+    {
+      "id": "honors",
+      "path": "backend/app/modules/m23_study_abroad/common_app_preview.py",
+      "old": "if len(honors) > HONORS_MAX:",
+      "new": "if False:"
+    }
+  ]
+}

@@ -87,3 +87,7 @@ def test_bad_zip_refused():
 def test_unknown_members_reported_not_executed():
     p = cp.read_portfolio(make_zip(extra={"notes/readme.txt": "hello"}))
     assert "notes/readme.txt" in p["unknown_members"]
+
+def test_six_honors_exceed_published_local_constraint():
+    p=cp.read_portfolio(make_zip());p['honors']=[{'title':'Honor'}]*6
+    assert any(v['section']=='honors' and v['issue']=='exceeds-5' for v in cp.validate(p))
