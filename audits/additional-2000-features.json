@@ -33849,7 +33849,7 @@
         "test_path": "tests/modules/test_m20_pso1984.py",
         "route_path": "backend/app/modules/m20_general_cognitive_worker/particle_swarm_routes.py"
       },
-      "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
+      "boundary": "Dedicated-engine scope only: Bounded continuous PSO on supplied sphere/Rosenbrock benchmarks only. No arbitrary objectives, global-optimum guarantee, real swarm/robotics, discrete swarm behavior or general cognition. Caller inputs are not independently verified. No external effects or release authority.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33858,7 +33858,7 @@
           "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
         }
       },
-      "current_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+      "current_scope": "Bounded continuous PSO on supplied sphere/Rosenbrock benchmarks only. No arbitrary objectives, global-optimum guarantee, real swarm/robotics, discrete swarm behavior or general cognition.",
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/particle_swarm.py",
         "test_path": "tests/modules/test_m20_pso1984.py",
@@ -33866,10 +33866,17 @@
       },
       "reference_scope": {
         "method": "swarm_intelligence",
-        "reference_operator": "scalar_elite_gaussian_mutation",
+        "dedicated_operator": "continuous_particle_swarm",
         "original_capability_status": "unverified",
         "named_capability_executed": false,
-        "source_number": 1975
+        "scope_status": "dedicated_engine_only",
+        "legacy_reference_scope": {
+          "method": "swarm_intelligence",
+          "reference_operator": "scalar_elite_gaussian_mutation",
+          "original_capability_status": "unverified",
+          "named_capability_executed": false,
+          "source_number": 1975
+        }
       }
     },
     {
@@ -33885,7 +33892,7 @@
         "test_path": "tests/modules/test_m20_es1985.py",
         "route_path": "backend/app/modules/m20_general_cognitive_worker/differential_evolution_routes.py"
       },
-      "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
+      "boundary": "Dedicated-engine scope only: Bounded synchronous DE/rand/1/bin on supplied sphere/Rosenbrock objectives only. No global-optimum guarantee or broader evolutionary methods (ES, CMA, NSGA). Caller inputs are not independently verified. No external effects or release authority.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33894,7 +33901,7 @@
           "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
         }
       },
-      "current_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+      "current_scope": "Bounded synchronous DE/rand/1/bin on supplied sphere/Rosenbrock objectives only. No global-optimum guarantee or broader evolutionary methods (ES, CMA, NSGA).",
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/differential_evolution.py",
         "test_path": "tests/modules/test_m20_es1985.py",
@@ -33902,10 +33909,17 @@
       },
       "reference_scope": {
         "method": "evolutionary_computation",
-        "reference_operator": "scalar_elite_gaussian_mutation",
+        "dedicated_operator": "differential_evolution_rand_1_bin",
         "original_capability_status": "unverified",
         "named_capability_executed": false,
-        "source_number": 1976
+        "scope_status": "dedicated_engine_only",
+        "legacy_reference_scope": {
+          "method": "evolutionary_computation",
+          "reference_operator": "scalar_elite_gaussian_mutation",
+          "original_capability_status": "unverified",
+          "named_capability_executed": false,
+          "source_number": 1976
+        }
       }
     },
     {
@@ -33921,7 +33935,7 @@
         "test_path": "tests/modules/test_m20_genetic_algorithm.py",
         "route_path": "backend/app/modules/m20_general_cognitive_worker/genetic_algorithm_routes.py"
       },
-      "boundary": "Reference substitute only: scalar_elite_gaussian_mutation. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
+      "boundary": "Dedicated-engine scope only: Binary-genome GA with tournament selection, one-point crossover, bit mutation and elitism on supplied weighted-bit objectives; mounted solve-quadratic also supports bounded supplied quadratic objectives. The weighted-bit objective is separable/linear: its optimum needs no search; convergence tests on it prove only convergence there, not search ability. No general optimizer, convergence/global-optimum guarantee or cognition. Caller inputs are not independently verified. No external effects or release authority.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33930,7 +33944,7 @@
           "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
         }
       },
-      "current_scope": "Reference substitute only: scalar_elite_gaussian_mutation. No execution of original named capability, learned/generative model or deployed integration.",
+      "current_scope": "Binary-genome GA with tournament selection, one-point crossover, bit mutation and elitism on supplied weighted-bit objectives; mounted solve-quadratic also supports bounded supplied quadratic objectives. The weighted-bit objective is separable/linear: its optimum needs no search; convergence tests on it prove only convergence there, not search ability. No general optimizer, convergence/global-optimum guarantee or cognition.",
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/genetic_algorithm.py",
         "test_path": "tests/modules/test_m20_genetic_algorithm.py",
@@ -33938,10 +33952,17 @@
       },
       "reference_scope": {
         "method": "genetic_algorithms",
-        "reference_operator": "scalar_elite_gaussian_mutation",
+        "dedicated_operator": "binary_genetic_algorithm",
         "original_capability_status": "unverified",
         "named_capability_executed": false,
-        "source_number": 1977
+        "scope_status": "dedicated_engine_only",
+        "legacy_reference_scope": {
+          "method": "genetic_algorithms",
+          "reference_operator": "scalar_elite_gaussian_mutation",
+          "original_capability_status": "unverified",
+          "named_capability_executed": false,
+          "source_number": 1977
+        }
       },
       "implementation_candidate": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/genetic_algorithm.py",
@@ -33963,7 +33984,7 @@
         "test_path": "tests/modules/test_m20_gp1987.py",
         "route_path": "backend/app/modules/m20_general_cognitive_worker/genetic_programming_routes.py"
       },
-      "boundary": "Reference substitute only: supplied_polynomial_candidate_selection. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
+      "boundary": "Dedicated-engine scope only: Bounded single-variable add/sub/mul expression-tree symbolic regression on supplied x/y. No eval/exec of caller code, arbitrary/open-ended program synthesis, global-optimum guarantee or verified generalization. Caller inputs are not independently verified. No external effects or release authority.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -33972,7 +33993,7 @@
           "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
         }
       },
-      "current_scope": "Reference substitute only: supplied_polynomial_candidate_selection. No execution of original named capability, learned/generative model or deployed integration.",
+      "current_scope": "Bounded single-variable add/sub/mul expression-tree symbolic regression on supplied x/y. No eval/exec of caller code, arbitrary/open-ended program synthesis, global-optimum guarantee or verified generalization.",
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/genetic_programming.py",
         "test_path": "tests/modules/test_m20_gp1987.py",
@@ -33980,10 +34001,17 @@
       },
       "reference_scope": {
         "method": "genetic_programming",
-        "reference_operator": "supplied_polynomial_candidate_selection",
+        "dedicated_operator": "expression_tree_genetic_programming",
         "original_capability_status": "unverified",
         "named_capability_executed": false,
-        "source_number": 1978
+        "scope_status": "dedicated_engine_only",
+        "legacy_reference_scope": {
+          "method": "genetic_programming",
+          "reference_operator": "supplied_polynomial_candidate_selection",
+          "original_capability_status": "unverified",
+          "named_capability_executed": false,
+          "source_number": 1978
+        }
       }
     },
     {
@@ -33999,7 +34027,7 @@
         "test_path": "tests/modules/test_m20_life1988.py",
         "route_path": "backend/app/modules/m20_general_cognitive_worker/artificial_life_routes.py"
       },
-      "boundary": "Reference substitute only: scalar_mean_coupling_toy_dynamics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
+      "boundary": "Dedicated-engine scope only: Bounded synchronous Conway B3/S23 finite grid automaton. No biological life, open-ended evolution or adaptive-agent claim. Caller inputs are not independently verified. No external effects or release authority.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34008,7 +34036,7 @@
           "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
         }
       },
-      "current_scope": "Reference substitute only: scalar_mean_coupling_toy_dynamics. No execution of original named capability, learned/generative model or deployed integration.",
+      "current_scope": "Bounded synchronous Conway B3/S23 finite grid automaton. No biological life, open-ended evolution or adaptive-agent claim.",
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/artificial_life.py",
         "test_path": "tests/modules/test_m20_life1988.py",
@@ -34016,10 +34044,17 @@
       },
       "reference_scope": {
         "method": "artificial_life",
-        "reference_operator": "scalar_mean_coupling_toy_dynamics",
+        "dedicated_operator": "conway_life_B3_S23",
         "original_capability_status": "unverified",
         "named_capability_executed": false,
-        "source_number": 1979
+        "scope_status": "dedicated_engine_only",
+        "legacy_reference_scope": {
+          "method": "artificial_life",
+          "reference_operator": "scalar_mean_coupling_toy_dynamics",
+          "original_capability_status": "unverified",
+          "named_capability_executed": false,
+          "source_number": 1979
+        }
       }
     },
     {
@@ -34035,7 +34070,7 @@
         "test_path": "tests/modules/test_m20_twin1989.py",
         "route_path": "backend/app/modules/m20_general_cognitive_worker/digital_twin_routes.py"
       },
-      "boundary": "Reference substitute only: supplied_series_residual_diagnostics. Original named capability remains unverified; caller inputs are not independently verified. No generation, learned model or deployed integration demonstrated.",
+      "boundary": "Dedicated-engine scope only: Tenant-bound in-memory scalar linear Kalman twin over caller observations, with assimilation and noncommitting forecast. No persistence across restart, real physical-asset fidelity, live sensor/deployment, multivariate dynamics or independent source-truth verification. Caller inputs are not independently verified. No external effects or release authority.",
       "historical_claim": {
         "status": "verified-pushed",
         "evidence": {
@@ -34044,7 +34079,7 @@
           "test_path": "tests/modules/test_m20_cognitive_1960_2009.py"
         }
       },
-      "current_scope": "Reference substitute only: supplied_series_residual_diagnostics. No execution of original named capability, learned/generative model or deployed integration.",
+      "current_scope": "Tenant-bound in-memory scalar linear Kalman twin over caller observations, with assimilation and noncommitting forecast. No persistence across restart, real physical-asset fidelity, live sensor/deployment, multivariate dynamics or independent source-truth verification.",
       "current_evidence": {
         "implementation_path": "backend/app/modules/m20_general_cognitive_worker/digital_twin.py",
         "test_path": "tests/modules/test_m20_twin1989.py",
@@ -34052,10 +34087,17 @@
       },
       "reference_scope": {
         "method": "digital_twins",
-        "reference_operator": "supplied_series_residual_diagnostics",
+        "dedicated_operator": "scalar_linear_kalman_twin",
         "original_capability_status": "unverified",
         "named_capability_executed": false,
-        "source_number": 1980
+        "scope_status": "dedicated_engine_only",
+        "legacy_reference_scope": {
+          "method": "digital_twins",
+          "reference_operator": "supplied_series_residual_diagnostics",
+          "original_capability_status": "unverified",
+          "named_capability_executed": false,
+          "source_number": 1980
+        }
       }
     },
     {
