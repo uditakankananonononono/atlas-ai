@@ -63,3 +63,11 @@ def test_autopost_keys_refused(tmp_path):
 def test_niche_validation():
     with pytest.raises(ValueError, match="SOCIAL_REFUSED"):
         app_forge.forge({"taxonomy": "", "audience": "a", "format": "f"}, BRAND, "/tmp/x")
+
+def test_exact_page_hash_html_escape_and_day_bound(tmp_path):
+    import hashlib
+    out=app_forge.forge(NICHE,dict(BRAND,tagline='<b>unsafe</b>'),str(tmp_path))
+    raw=pathlib.Path(out['files']['index']).read_bytes()
+    assert out['content_sha']==hashlib.sha256(raw).hexdigest()[:12]
+    assert b'&lt;b&gt;unsafe&lt;/b&gt;' in raw
+    with pytest.raises(ValueError):app_forge.content_calendar(NICHE,days=61)

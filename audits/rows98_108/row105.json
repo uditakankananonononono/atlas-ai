@@ -1,0 +1,44 @@
+{
+  "row": 105,
+  "selectors": [
+    "tests/modules/test_c33_app_forge.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "autopost",
+      "path": "backend/app/modules/c33/app_forge.py",
+      "old": "if isinstance(k, str) and k.casefold().replace(\"-\", \"_\") in _FORBIDDEN_KEYS:",
+      "new": "if False:"
+    },
+    {
+      "id": "batch_cap",
+      "path": "backend/app/modules/c33/app_forge.py",
+      "old": "niches[:cap]",
+      "new": "niches"
+    },
+    {
+      "id": "content_hash",
+      "path": "backend/app/modules/c33/app_forge.py",
+      "old": "digest = hashlib.sha256(page.encode(\"utf-8\")).hexdigest()[:12]",
+      "new": "digest = '0'*12"
+    },
+    {
+      "id": "html_escape",
+      "path": "backend/app/modules/c33/app_forge.py",
+      "old": "tagline=html.escape(tagline)",
+      "new": "tagline=tagline"
+    },
+    {
+      "id": "calendar_days",
+      "path": "backend/app/modules/c33/app_forge.py",
+      "old": "or not 1 <= days <= MAX_CALENDAR_DAYS:",
+      "new": "or False:"
+    }
+  ]
+}
