@@ -1,0 +1,49 @@
+{
+  "row": 74,
+  "selectors": [
+    "tests/b1_chat_bind/test_chat_bind.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "offline owner-channel snapshot fixture, not complete historical fulfillment",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "owner",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if row['author'] != 'user' or row['service'] not in OWNER_CHANNELS:",
+      "new": "if False:"
+    },
+    {
+      "id": "snapshot",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if self.snapshot['digest'] != snapshot['digest']:",
+      "new": "if False:"
+    },
+    {
+      "id": "evidence",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if not all(evidence.get(k) for k in ('unit', 'tests', 'mutation', 'commit')) or not re.fullmatch(r'[0-9a-f]{40}', evidence['commit']):",
+      "new": "if False:"
+    },
+    {
+      "id": "unmapped",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "passed = bool(self.snapshot['rows']) and counts['UNMAPPED'] == 0",
+      "new": "passed = True"
+    },
+    {
+      "id": "pin",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if _time(pin['ts']) < _time(target['ts']) or pin['span_id'] == sid:",
+      "new": "if False:"
+    }
+  ]
+}
