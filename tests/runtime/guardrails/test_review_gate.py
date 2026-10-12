@@ -182,7 +182,8 @@ def test_roundtrip_and_chain_tamper_detection():
     # order violation: deciding an unopened review inside a valid chain
     import hashlib, json
     record = {"kind": "review_decision", "review_id": "RX", "decision": "approved",
-              "reviewer": "u", "rationale": "r", "decided_at": "2026-10-12T10:00:00+00:00"}
+              "reviewer": "u", "rationale": "r", "decided_at": "2026-10-12T10:00:00+00:00",
+              "authority_ref": None, "authority_validated": False}
     seq = len(ledger)
     prev = ledger[-1]["record_hash"]
     payload = json.dumps({"seq": seq, "record": record, "prev_hash": prev},

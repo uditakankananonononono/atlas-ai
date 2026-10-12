@@ -28,3 +28,6 @@ registration; re-registration is allowed only after revocation.
   probes through `app.integrations.acceptance` for that.
 - The gate binds (service, account_identity) pairs only; permissions inside
   the account are out of scope.
+- The ledger is an unkeyed hash chain: tamper-evident, not tamper-proof. A rehashed edit is not detectable; safe storage of the serialized ledger is the caller's job.
+- Admission/spend records are committed write-ahead via the `on_commit` hook BEFORE the effect runs and are retained on ANY exception the effect raises; an effect that fails after admission reconciles as spent-pending-review, never silently re-usable. Without a wired `on_commit`/persist sink the ledger lives in memory only.
+- `reviewer` / `granted_by` / `verified_by` labels are caller-supplied DECLARATIONS, not authentication. A record carrying `authority_ref` (an approval-store reference) requires the caller-bound `authority_check` hook and fails closed without it; the hook accepts only with a strict True or a verified-permit object (truthy non-True values reject), and only an accepted reference is ledgered as `authority_validated=True`.

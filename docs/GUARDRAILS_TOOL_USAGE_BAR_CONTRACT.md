@@ -28,3 +28,4 @@ Nothing is silently reduced.
 - Counts say nothing about how well any tool was used.
 - The bar counts distinct verified tools per project; the program-wide 200+
   reading is the sum over projects and needs no separate mechanism.
+- The ledger is an unkeyed hash chain: tamper-evident, not tamper-proof. A rehashed edit is not detectable; safe storage of the serialized ledger is the caller's job.

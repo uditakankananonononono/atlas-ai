@@ -2,7 +2,7 @@
 81, 211).
 
 Enforced runtime check: a research project may only be marked "conducted"
-when the gate's hash-chained ledger carries real conduction evidence for it:
+when the gate's hash-chained ledger carries caller-attested conduction evidence for it:
 
 - at least one registered dataset (what the work ran on);
 - at least one recorded run with ordered start/end timestamps (the work

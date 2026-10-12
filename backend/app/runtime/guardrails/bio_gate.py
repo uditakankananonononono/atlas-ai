@@ -25,8 +25,8 @@ from app.modules.instinct_doc import insilico_guardrail_p68 as p68
 from app.modules.instinct_doc import prohibited_bio_p69 as p69
 
 from . import ledger as _ledger
-from ._fields import ident, instant, iso, make_fail, text
-from .errors import GuardrailRefusal
+from ._fields import hook_accepted, ident, instant, iso, make_fail, payload_sha256, text
+from .errors import GuardrailRefusal, attach_ledger
 
 PREFIX = "BIOGATE"
 _fail = make_fail(PREFIX)
@@ -45,12 +45,12 @@ VERDICTS = (
 LIMITS = (
     "Lexical enforcement over the item's declared text and domain terms only; it is not a biosafety, ethics or legal review.",
     "A clear P69 screen means only that no listed prohibited pattern matched; the closed pattern list is contract-governed.",
-    "approval_check is a caller-bound hook: the gate records its boolean answer and never authenticates, resolves or trusts an approval_ref by itself.",
+    "approval_check is a caller-bound hook receiving (approval_ref, action_digest); only a strict True or a verified-permit object accepts, and the gate never authenticates, resolves or trusts an approval_ref by itself.",
     "The ledger is tamper-evident, not tamper-proof; safe storage of the serialized ledger is the caller's job.",
 )
 
 _DECISION_KEYS = {"kind", "item_id", "at", "verdict", "p68_verdict", "p69_verdict",
-                  "p69_category", "approval_checked", "approval_accepted"}
+                  "p69_category", "approval_checked", "approval_accepted", "action_digest"}
 _EFFECT_KEYS = {"kind", "item_id", "at", "outcome", "error_type"}
 
 
@@ -128,10 +128,13 @@ def admit(item, *, now, ledger=None, approval_check=None):
 
     Never raises for a prohibited or unapproved item: refusal is a verdict on
     the record. Raises ValueError('BIOGATE:<code>') for malformed input.
-    approval_check, when supplied, is called exactly once with the item's
-    approval_ref and must return a bool.
+    approval_check, when supplied, is called exactly once with
+    (approval_ref, action_digest) - the sha256 of the canonical checked item -
+    so an approval binds to this action's exact content, and must return the
+    boolean True or a verified-permit mapping; any other value rejects.
     """
     checked = _check_item(item)
+    action_digest = payload_sha256(checked)
     if ledger is None:
         ledger = []
     check_ledger(ledger)
@@ -162,26 +165,33 @@ def admit(item, *, now, ledger=None, approval_check=None):
             if approval_check is None:
                 verdict = "refused:physical_approval_unverifiable"
             else:
-                approval_accepted = bool(approval_check(checked["approval_ref"]))
+                approval_accepted = hook_accepted(approval_check(checked["approval_ref"], action_digest))
                 verdict = ("admitted:physical_with_validated_approval" if approval_accepted
                            else "refused:physical_approval_rejected")
 
     record = {"kind": "decision", "item_id": checked["id"], "at": at, "verdict": verdict,
               "p68_verdict": p68_verdict, "p69_verdict": p69_verdict, "p69_category": p69_category,
-              "approval_checked": approval_checked, "approval_accepted": approval_accepted}
+              "approval_checked": approval_checked, "approval_accepted": approval_accepted,
+              "action_digest": action_digest}
     return _ledger.append(ledger, record), record
 
 
-def run_guarded(effect, item, *, now, ledger=None, approval_check=None):
+def run_guarded(effect, item, *, now, ledger=None, approval_check=None, on_commit=None):
     """The enforcement point: run effect(item) only after admission.
 
     Raises GuardrailRefusal when the item is refused - the effect is never
     called. On admission the effect runs and its outcome (completed/failed)
-    is ledgered. Returns (ledger, effect result).
+    is ledgered. on_commit, when supplied, is called with the extended ledger
+    after EVERY append and BEFORE the effect runs (write-ahead). Returns
+    (ledger, effect result).
     """
     if not callable(effect):
         _fail("bad_type:effect")
+    if on_commit is not None and not callable(on_commit):
+        _fail("bad_type:on_commit")
     ledger, decision = admit(item, now=now, ledger=ledger, approval_check=approval_check)
+    if on_commit is not None:
+        on_commit(ledger)
     verdict = decision["verdict"]
     if not verdict.startswith("admitted:"):
         raise GuardrailRefusal(
@@ -195,13 +205,19 @@ def run_guarded(effect, item, *, now, ledger=None, approval_check=None):
     at = iso(instant(now, "now", fail=_fail))
     try:
         result = effect(item)
-    except Exception as exc:
+    except BaseException as exc:
+        # Ambiguous outcome: the admission and the failure are committed and
+        # the ledger rides the exception so the caller can persist it.
         ledger = _ledger.append(ledger, {"kind": "effect", "item_id": decision["item_id"],
                                          "at": at, "outcome": "failed",
                                          "error_type": type(exc).__name__})
-        raise
+        if on_commit is not None:
+            on_commit(ledger)
+        raise attach_ledger(exc, ledger)
     ledger = _ledger.append(ledger, {"kind": "effect", "item_id": decision["item_id"],
                                      "at": at, "outcome": "completed", "error_type": None})
+    if on_commit is not None:
+        on_commit(ledger)
     return ledger, result
 
 

@@ -15,7 +15,9 @@ document scopes the mechanism only.
    `execution_mode`: `not_bio_scoped` and `allowed_in_silico` admit;
    `refused_physical_without_review` refuses;
    `flagged_physical_with_review_ref` admits only when the caller-supplied
-   `approval_check(approval_ref)` hook returns true. With no hook the gate
+   `approval_check(approval_ref, action_digest)` hook accepts. The digest is
+   the sha256 of the canonical checked item, so the approval binds to the
+   action's exact content. With no hook the gate
    fails closed (`refused:physical_approval_unverifiable`).
 
 ## Enforcement surface
@@ -41,7 +43,10 @@ shape and field validity. Tampering with any record breaks the chain check.
   not a biosafety, ethics or legal review.
 - A clear P69 screen means only that no listed pattern matched; the closed
   pattern list is contract-governed by the P69 contract doc.
-- `approval_check` is caller-bound: the gate records its boolean answer and
+- `approval_check` is caller-bound and must return the boolean True or a
+  verified-permit mapping {"verified": True}; any truthy non-True value
+  rejects. The gate records its strict verdict and
   never authenticates, resolves or trusts an `approval_ref` by itself.
 - The ledger is tamper-evident, not tamper-proof; safe storage of the
   serialized ledger is the caller's job.
+- Admission/spend records are committed write-ahead via the `on_commit` hook BEFORE the effect runs and are retained on ANY exception the effect raises; an effect that fails after admission reconciles as spent-pending-review, never silently re-usable. Without a wired `on_commit`/persist sink the ledger lives in memory only.

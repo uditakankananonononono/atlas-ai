@@ -19,7 +19,8 @@ gate:
 2. runs P70 `preflight` over the merged declarations;
 3. `deny` -> `GuardrailRefusal("OUTGATE:refused:denied")` with the failed
    check names; the effect is never called;
-4. `needs_review` -> requires `review_check(action)` to return true, else
+4. `needs_review` -> requires `review_check(action)` to accept (strict True
+   or a verified-permit object), else
    `refused:review_required` (no hook: fail closed);
 5. `allow` (or approved review) -> the effect runs and the decision is
    ledgered as `dispatched` / `dispatched:after_review`.
@@ -34,9 +35,12 @@ verdict. `dumps`/`loads` re-verifies chain and content.
 
 ## Limits (named, none hidden)
 
-- Checks caller-declared platform rules only; the gate reads no real terms
+- Checks caller-declared platform rules only; the gate does not fetch live terms
   of service and is not proof of legal compliance.
-- `review_check` is caller-bound: the gate records its boolean answer and
+- `review_check` is caller-bound: only a strict True or a verified-permit
+  object accepts (truthy non-True values reject); the gate records the verdict and
   never authenticates a review.
 - Ledger-derived rate history covers actions that went through this gate
   only; actions performed outside it are invisible to it.
+- The ledger is an unkeyed hash chain: tamper-evident, not tamper-proof. A rehashed edit is not detectable; safe storage of the serialized ledger is the caller's job.
+- Admission/spend records are committed write-ahead via the `on_commit` hook BEFORE the effect runs and are retained on ANY exception the effect raises; an effect that fails after admission reconciles as spent-pending-review, never silently re-usable. Without a wired `on_commit`/persist sink the ledger lives in memory only.

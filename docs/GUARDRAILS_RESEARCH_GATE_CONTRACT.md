@@ -27,3 +27,4 @@ record so it cannot be swapped afterwards.
   benchmark standing.
 - A `conducted` verdict means evidence exists and is bound - not that the
   research is correct.
+- The ledger is an unkeyed hash chain: tamper-evident, not tamper-proof. A rehashed edit is not detectable; safe storage of the serialized ledger is the caller's job.

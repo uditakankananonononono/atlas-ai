@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from collections.abc import Mapping
 from datetime import datetime, timezone
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -68,3 +69,16 @@ def payload_sha256(payload):
     return hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
     ).hexdigest()
+
+
+def hook_accepted(result):
+    """Strict hook verdict. A hook ACCEPTS only by returning the boolean
+    True or a structured verified-permit mapping whose "verified" field is
+    the boolean True. Anything else - including truthy non-True values such
+    as 1, "yes" or a non-empty string - is a rejection. Hooks never coerce.
+    """
+    if result is True:
+        return True
+    if isinstance(result, Mapping):
+        return result.get("verified") is True
+    return False

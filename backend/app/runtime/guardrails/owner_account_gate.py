@@ -16,8 +16,8 @@ verified owner accounts are usable. It cannot authenticate the account itself
 from __future__ import annotations
 
 from . import ledger as _ledger
-from ._fields import ident, instant, iso, make_fail, text
-from .errors import GuardrailRefusal
+from ._fields import hook_accepted, ident, instant, iso, make_fail, text
+from .errors import GuardrailRefusal, attach_ledger
 
 PREFIX = "ACCTGATE"
 _fail = make_fail(PREFIX)
@@ -33,7 +33,8 @@ LIMITS = (
 )
 
 _REGISTER_KEYS = {"kind", "service", "account_identity", "registered_by", "at", "evidence_ref"}
-_VERIFY_KEYS = {"kind", "service", "account_identity", "verified_by", "at", "evidence_ref"}
+_VERIFY_KEYS = {"kind", "service", "account_identity", "verified_by", "at", "evidence_ref",
+                "authority_ref", "authority_validated"}
 _REVOKE_KEYS = {"kind", "service", "account_identity", "revoked_by", "at", "rationale"}
 _CALL_KEYS = {"kind", "call_id", "service", "account_identity", "at", "verdict", "failure"}
 
@@ -63,6 +64,12 @@ def _validate_content(ledger):
         elif kind == "binding_verified":
             _pair_fields(record, seq, _VERIFY_KEYS, "verified_by")
             text(record["evidence_ref"], "evidence_ref", fail=_fail, max_len=MAX_REF, allow_blank=True)
+            if record["authority_ref"] is not None:
+                text(record["authority_ref"], "authority_ref", fail=_fail, max_len=MAX_REF)
+            if type(record["authority_validated"]) is not bool:
+                _fail(f"ledger entry {seq} has invalid content")
+            if record["authority_validated"] and record["authority_ref"] is None:
+                _fail(f"ledger entry {seq} claims validation without a reference")
             if bindings.get(key) not in ("registered", "verified"):
                 _fail(f"ledger entry {seq} verifies binding {key!r} out of order")
             bindings[key] = "verified"
@@ -133,8 +140,15 @@ def register_binding(ledger, service, account_identity, *, registered_by, now, e
     return _ledger.append(ledger, record)
 
 
-def verify_binding(ledger, service, account_identity, *, verified_by, now, evidence_ref=""):
-    """Mark a registered binding verified (caller-attested). Returns the extended ledger."""
+def verify_binding(ledger, service, account_identity, *, verified_by, now, evidence_ref="",
+                   authority_ref=None, authority_check=None):
+    """Mark a registered binding verified. Returns the extended ledger.
+
+    verified_by is a caller-supplied DECLARATION, not authentication. To bind
+    the verification to the approval store, pass authority_ref (e.g. a Module 0
+    approval id or a review-gate permit id): the caller-bound authority_check
+    hook must then confirm it, and the gate fails closed when no hook is wired.
+    """
     check_ledger(ledger)
     service = text(service, "service", fail=_fail, max_len=MAX_SERVICE)
     account_identity = text(account_identity, "account_identity", fail=_fail, max_len=MAX_IDENTITY)
@@ -143,8 +157,17 @@ def verify_binding(ledger, service, account_identity, *, verified_by, now, evide
     at = iso(instant(now, "now", fail=_fail))
     if _state(ledger, service, account_identity) not in ("registered", "verified"):
         _fail(f"binding ({service!r}, {account_identity!r}) is not registered")
+    validated = False
+    if authority_ref is not None:
+        authority_ref = text(authority_ref, "authority_ref", fail=_fail, max_len=MAX_REF)
+        if authority_check is None:
+            _fail("authority_unverifiable:authority_ref")
+        validated = hook_accepted(authority_check(authority_ref))
+        if not validated:
+            _fail("authority_rejected:authority_ref")
     record = {"kind": "binding_verified", "service": service, "account_identity": account_identity,
-              "verified_by": verified_by, "at": at, "evidence_ref": evidence_ref}
+              "verified_by": verified_by, "at": at, "evidence_ref": evidence_ref,
+              "authority_ref": authority_ref, "authority_validated": validated}
     return _ledger.append(ledger, record)
 
 
@@ -163,7 +186,7 @@ def revoke_binding(ledger, service, account_identity, *, revoked_by, rationale, 
     return _ledger.append(ledger, record)
 
 
-def call(ledger, call_id, service, account_identity, *, effect, now):
+def call(ledger, call_id, service, account_identity, *, effect, now, on_commit=None):
     """The enforcement point: run effect() only under a verified binding.
 
     Returns (ledger, effect result). Raises GuardrailRefusal - and ledgers the
@@ -172,6 +195,8 @@ def call(ledger, call_id, service, account_identity, *, effect, now):
     """
     if not callable(effect):
         _fail("bad_type:effect")
+    if on_commit is not None and not callable(on_commit):
+        _fail("bad_type:on_commit")
     check_ledger(ledger)
     call_id = text(call_id, "call_id", fail=_fail, max_len=64)
     service = text(service, "service", fail=_fail, max_len=MAX_SERVICE)
@@ -182,6 +207,8 @@ def call(ledger, call_id, service, account_identity, *, effect, now):
     record = {"kind": "service_call", "call_id": call_id, "service": service,
               "account_identity": account_identity, "at": at, "verdict": verdict, "failure": None}
     ledger = _ledger.append(ledger, record)
+    if on_commit is not None:
+        on_commit(ledger)  # write-ahead: the call record is committed before any effect
     if verdict != "admitted":
         raise GuardrailRefusal(
             f"{PREFIX}:{verdict}",
@@ -191,12 +218,16 @@ def call(ledger, call_id, service, account_identity, *, effect, now):
             ledger=ledger)
     try:
         result = effect()
-    except Exception as exc:
+    except BaseException as exc:
+        # Ambiguous outcome: the admitted call AND its failure are committed
+        # and the ledger rides the exception so the caller can persist it.
         ledger = _ledger.append(ledger, {"kind": "service_call", "call_id": call_id,
                                          "service": service, "account_identity": account_identity,
                                          "at": at, "verdict": "admitted",
                                          "failure": type(exc).__name__})
-        raise
+        if on_commit is not None:
+            on_commit(ledger)
+        raise attach_ledger(exc, ledger)
     return ledger, result
 
 

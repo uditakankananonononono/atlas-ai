@@ -30,7 +30,7 @@ draft gate to the four effect categories in the doc.
 Hash-chained records: review_opened, review_decision, execution_permit,
 permit_spent, preauthorization, preauthorization_revoked,
 preauthorization_used, execution_refused. Refused executions are ledgered
-with the reason code as durable evidence. `loads` re-verifies chain, per-kind
+with the reason code recorded on the ledger. `loads` re-verifies chain, per-kind
 content and cross-record order (no decision before open, no permit before
 approval, no spend before issue, no use of unknown grants).
 
@@ -43,3 +43,5 @@ approval, no spend before issue, no use of unknown grants).
   notified.
 - The ledger is tamper-evident, not tamper-proof; safe storage of the
   serialized ledger is the caller's job.
+- Admission/spend records are committed write-ahead via the `on_commit` hook BEFORE the effect runs and are retained on ANY exception the effect raises; an effect that fails after admission reconciles as spent-pending-review, never silently re-usable. Without a wired `on_commit`/persist sink the ledger lives in memory only.
+- `reviewer` / `granted_by` / `verified_by` labels are caller-supplied DECLARATIONS, not authentication. A record carrying `authority_ref` (an approval-store reference) requires the caller-bound `authority_check` hook and fails closed without it; the hook accepts only with a strict True or a verified-permit object (truthy non-True values reject), and only an accepted reference is ledgered as `authority_validated=True`.

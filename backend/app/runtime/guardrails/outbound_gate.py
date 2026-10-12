@@ -16,7 +16,7 @@ two enforcement additions:
    declared limit. Caller-supplied recent_actions still apply on top.
 
 The P70 layer keeps its documented scope: it checks caller-declared rules
-only, reads no real terms of service and is not legal compliance; missing
+only, does not fetch live terms of service and is not legal compliance; missing
 declarations deny (fail closed). Every dispatch decision is ledgered with the
 full check list. Pure stdlib, no I/O, no network, no clock.
 """
@@ -25,15 +25,15 @@ from __future__ import annotations
 from app.modules.instinct_doc import platform_conduct_p70 as p70
 
 from . import ledger as _ledger
-from ._fields import ident, instant, iso, make_fail, text
-from .errors import GuardrailRefusal
+from ._fields import hook_accepted, ident, instant, iso, make_fail, text
+from .errors import GuardrailRefusal, attach_ledger
 
 PREFIX = "OUTGATE"
 _fail = make_fail(PREFIX)
 
 VERDICTS = ("dispatched", "dispatched:after_review", "refused:denied", "refused:review_required")
 LIMITS = (
-    "Checks caller-declared platform rules only; the gate reads no real terms of service and is not proof of legal compliance.",
+    "Checks caller-declared platform rules only; the gate does not fetch live terms of service and is not proof of legal compliance.",
     "review_check is a caller-bound hook: the gate records its boolean answer and never authenticates a review by itself.",
     "Ledger-derived rate history covers actions that went through this gate only; actions performed outside the gate are invisible to it.",
     "The ledger is tamper-evident, not tamper-proof; safe storage of the serialized ledger is the caller's job.",
@@ -105,7 +105,8 @@ def _check_action(action):
     return action
 
 
-def dispatch(action, declarations, *, effect, now, ledger=None, review_check=None):
+def dispatch(action, declarations, *, effect, now, ledger=None, review_check=None,
+             on_commit=None):
     """The enforcement point: run effect(action) only after the gate admits it.
 
     action: a P70 action dict plus a non-empty "id" field used for ledgering.
@@ -116,6 +117,8 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
     """
     if not callable(effect):
         _fail("bad_type:effect")
+    if on_commit is not None and not callable(on_commit):
+        _fail("bad_type:on_commit")
     _check_action(action)
     if type(declarations) is not dict:
         _fail("bad_type:declarations")
@@ -138,7 +141,7 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
         if review_check is None:
             verdict = "refused:review_required"
         else:
-            review_accepted = bool(review_check(action))
+            review_accepted = hook_accepted(review_check(action))
             verdict = "dispatched:after_review" if review_accepted else "refused:review_required"
     else:
         verdict = "dispatched"
@@ -148,6 +151,8 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
               "preflight_verdict": preflight["verdict"], "failed_checks": failed,
               "review_checked": review_checked, "review_accepted": review_accepted}
     ledger = _ledger.append(ledger, record)
+    if on_commit is not None:
+        on_commit(ledger)  # write-ahead: the decision is committed before any effect
     if verdict.startswith("refused:"):
         raise GuardrailRefusal(
             f"{PREFIX}:{verdict}",
@@ -155,7 +160,13 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
             details={"action_id": action["id"], "verdict": verdict,
                      "preflight_verdict": preflight["verdict"], "failed_checks": failed},
             ledger=ledger)
-    return ledger, effect(action)
+    try:
+        return ledger, effect(action)
+    except BaseException as exc:
+        # Ambiguous outcome after admission: the dispatch decision (and its
+        # rate-budget consumption) was already committed via on_commit and
+        # also rides the exception via the attached ledger.
+        raise attach_ledger(exc, ledger)
 
 
 __all__ = ["VERDICTS", "LIMITS", "dispatch", "history", "check_ledger", "dumps", "loads"]

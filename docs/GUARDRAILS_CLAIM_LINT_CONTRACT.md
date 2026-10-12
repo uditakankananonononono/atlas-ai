@@ -40,3 +40,4 @@ Two categories. sentience_claim: "i am sentient", "atlas is sentient",
   phrase, but a phrase embedded in a longer word would match); that bias
   toward refusal is deliberate.
 - Only text digests are stored; the lint keeps no content copy.
+- The ledger is an unkeyed hash chain: tamper-evident, not tamper-proof. A rehashed edit is not detectable; safe storage of the serialized ledger is the caller's job.

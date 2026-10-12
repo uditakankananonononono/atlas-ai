@@ -28,3 +28,4 @@ capped at 64). Only the report digest is stored.
   (research_gate, tool_usage_bar) the claims point at.
 - The claim grammar covers table rows with exactly one Label/Status column
   and CLAIM: marker lines; other prose is not checked.
+- The ledger is an unkeyed hash chain: tamper-evident, not tamper-proof. A rehashed edit is not detectable; safe storage of the serialized ledger is the caller's job.

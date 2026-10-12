@@ -20,8 +20,9 @@ from __future__ import annotations
 from datetime import timedelta
 
 from . import ledger as _ledger
-from ._fields import ident, instant, iso, make_fail, payload_sha256, sha256_hex, text
-from .errors import GuardrailRefusal
+from ._fields import (hook_accepted, ident, instant, iso, make_fail,
+                      payload_sha256, sha256_hex, text)
+from .errors import GuardrailRefusal, attach_ledger
 
 PREFIX = "REVGATE"
 _fail = make_fail(PREFIX)
@@ -34,18 +35,21 @@ MAX_PREAUTH_HOURS = 8760  # one year
 
 _OPEN_KEYS = {"kind", "review_id", "action_id", "category", "payload_sha256",
               "opened_by", "opened_at", "valid_hours"}
-_DECISION_KEYS = {"kind", "review_id", "decision", "reviewer", "rationale", "decided_at"}
+_DECISION_KEYS = {"kind", "review_id", "decision", "reviewer", "rationale", "decided_at",
+                  "authority_ref", "authority_validated"}
 _PERMIT_KEYS = {"kind", "review_id", "permit_id", "issued_at", "action_id", "category", "payload_sha256"}
 _SPEND_KEYS = {"kind", "permit_id", "spent_at", "action_id"}
 _PREAUTH_KEYS = {"kind", "preauth_id", "category", "payload_sha256", "granted_by",
-                 "granted_at", "expires_at", "scope_note"}
+                 "granted_at", "expires_at", "scope_note",
+                 "authority_ref", "authority_validated"}
 _REVOKE_KEYS = {"kind", "preauth_id", "revoked_by", "revoked_at", "rationale"}
 _PREAUTH_USE_KEYS = {"kind", "preauth_id", "used_at", "action_id"}
 _REFUSAL_KEYS = {"kind", "action_id", "at", "reason_code", "permit_id"}
 REFUSAL_REASONS = ("review_required", "unknown_permit", "permit_invalid")
 
 LIMITS = (
-    "Reviewer and grantor identities are caller-supplied labels, not authentication; the gate cannot know who decided.",
+    "Reviewer and grantor identities are caller-supplied DECLARATIONS, not authentication; bind decisions and grants to the approval store with authority_ref + a caller-bound authority_check hook, which fails closed when absent.",
+    "Records live in memory until the caller persists them (on_commit write-ahead or dumps); the gate itself holds no durable store.",
     "A permit or preauthorization covers exactly one category + payload hash; it authorizes nothing outside execute() and no external system is notified.",
     "Preauthorization scope is exact-hash only: a changed payload needs a new grant; there are no wildcard scopes.",
     "Refused executions are ledgered as evidence (execution_refused records) before the refusal is raised.",
@@ -74,12 +78,37 @@ def _check_action(action):
             "summary": action["summary"], "payload_sha256": digest}
 
 
+def _authority(authority_ref, authority_check):
+    """Validate an optional approval-store reference through the caller hook.
+
+    Returns (ref, validated). A supplied ref with no hook fails closed; a
+    hook rejection fails closed. No ref: the actor label stays a declaration.
+    """
+    if authority_ref is None:
+        return None, False
+    text(authority_ref, "authority_ref", fail=_fail, max_len=256)
+    if authority_check is None:
+        _fail("authority_unverifiable:authority_ref")
+    if not hook_accepted(authority_check(authority_ref)):
+        _fail("authority_rejected:authority_ref")
+    return authority_ref, True
+
+
 def _hours(value, name, cap):
     if type(value) not in (int, float) or type(value) is bool:
         _fail(f"bad_type:{name}")
     if not 0 < value <= cap:
         _fail(f"bad_range:{name}")
     return value
+
+
+def _check_authority_fields(record, seq):
+    if record["authority_ref"] is not None:
+        text(record["authority_ref"], "authority_ref", fail=_fail, max_len=256)
+    if type(record["authority_validated"]) is not bool:
+        _fail(f"ledger entry {seq} has invalid content")
+    if record["authority_validated"] and record["authority_ref"] is None:
+        _fail(f"ledger entry {seq} claims validation without a reference")
 
 
 def _validate_content(ledger):
@@ -113,6 +142,7 @@ def _validate_content(ledger):
             text(record["reviewer"], "reviewer", fail=_fail)
             text(record["rationale"], "rationale", fail=_fail, max_len=MAX_SUMMARY)
             instant(record["decided_at"], "decided_at", fail=_fail)
+            _check_authority_fields(record, seq)
             if reviews.get(record["review_id"]) != "open":
                 _fail(f"ledger entry {seq} decides review {record['review_id']!r} out of order")
             reviews[record["review_id"]] = record["decision"]
@@ -156,6 +186,7 @@ def _validate_content(ledger):
             if expires - granted > timedelta(hours=MAX_PREAUTH_HOURS):
                 _fail(f"ledger entry {seq} exceeds the preauthorization horizon")
             text(record["scope_note"], "scope_note", fail=_fail, max_len=MAX_SUMMARY)
+            _check_authority_fields(record, seq)
             if record["preauth_id"] in preauths:
                 _fail(f"ledger entry {seq} regrants preauthorization {record['preauth_id']!r}")
             preauths[record["preauth_id"]] = "live"
@@ -268,8 +299,14 @@ def open_review(ledger, action, *, review_id, reviewer, now, valid_hours=24):
     return _ledger.append(ledger, record)
 
 
-def record_decision(ledger, *, review_id, decision, reviewer, rationale, now):
-    """Append the human decision for an open review. One decision per review, final."""
+def record_decision(ledger, *, review_id, decision, reviewer, rationale, now,
+                    authority_ref=None, authority_check=None):
+    """Append the human decision for an open review. One decision per review, final.
+
+    reviewer is a caller-supplied DECLARATION, not authentication. To bind the
+    decision to the approval store, pass authority_ref (e.g. a Module 0
+    approval id); the caller-bound authority_check hook must confirm it and
+    the gate fails closed without one."""
     check_ledger(ledger)
     rid = ident(review_id, "review_id", fail=_fail)
     if decision not in DECISIONS:
@@ -284,8 +321,10 @@ def record_decision(ledger, *, review_id, decision, reviewer, rationale, now):
         _fail(f"review {rid!r} already has a decision")
     if decided_at < instant(opened["opened_at"], "opened_at", fail=_fail):
         _fail(f"review {rid!r} decision is before it opened")
+    ref, validated = _authority(authority_ref, authority_check)
     record = {"kind": "review_decision", "review_id": rid, "decision": decision,
-              "reviewer": reviewer, "rationale": rationale, "decided_at": iso(decided_at)}
+              "reviewer": reviewer, "rationale": rationale, "decided_at": iso(decided_at),
+              "authority_ref": ref, "authority_validated": validated}
     return _ledger.append(ledger, record)
 
 
@@ -327,10 +366,15 @@ def issue_permit(ledger, action, *, review_id, now):
                         "issued_at": record["issued_at"], "executes": False}
 
 
-def grant_preauthorization(ledger, action, *, preauth_id, granted_by, now, valid_hours, scope_note):
+def grant_preauthorization(ledger, action, *, preauth_id, granted_by, now, valid_hours, scope_note,
+                           authority_ref=None, authority_check=None):
     """Record a standing preauthorization for the action's exact category +
     payload hash (the doc's 'unless specifically preauthorized' branch).
-    Exact-hash scope only; there are no wildcards. Returns the extended ledger."""
+    Exact-hash scope only; there are no wildcards. Returns the extended ledger.
+
+    granted_by is a caller-supplied DECLARATION, not authentication. Bind the
+    grant to the approval store with authority_ref + authority_check (fails
+    closed without a hook)."""
     check_ledger(ledger)
     checked = _check_action(action)
     pid = ident(preauth_id, "preauth_id", fail=_fail)
@@ -341,10 +385,11 @@ def grant_preauthorization(ledger, action, *, preauth_id, granted_by, now, valid
     for entry in ledger:
         if entry["record"].get("preauth_id") == pid and entry["record"]["kind"] == "preauthorization":
             _fail(f"preauthorization {pid!r} already exists")
+    ref, validated = _authority(authority_ref, authority_check)
     record = {"kind": "preauthorization", "preauth_id": pid, "category": checked["category"],
               "payload_sha256": checked["payload_sha256"], "granted_by": granted_by,
               "granted_at": iso(granted_at), "expires_at": iso(granted_at + timedelta(hours=hours)),
-              "scope_note": scope_note}
+              "scope_note": scope_note, "authority_ref": ref, "authority_validated": validated}
     return _ledger.append(ledger, record)
 
 
@@ -369,7 +414,7 @@ def revoke_preauthorization(ledger, *, preauth_id, revoked_by, rationale, now):
     return _ledger.append(ledger, record)
 
 
-def execute(ledger, action, *, effect, now, permit_id=None):
+def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None):
     """The enforcement point: run effect(action) for a contact, application,
     submission or account action only under a valid permit or a live
     preauthorization.
@@ -384,6 +429,8 @@ def execute(ledger, action, *, effect, now, permit_id=None):
     """
     if not callable(effect):
         _fail("bad_type:effect")
+    if on_commit is not None and not callable(on_commit):
+        _fail("bad_type:on_commit")
     check_ledger(ledger)
     checked = _check_action(action)
     at = instant(now, "now", fail=_fail)
@@ -392,6 +439,8 @@ def execute(ledger, action, *, effect, now, permit_id=None):
         refused = _ledger.append(ledger, {"kind": "execution_refused",
                                           "action_id": checked["action_id"], "at": iso(at),
                                           "reason_code": reason_code, "permit_id": permit_ref})
+        if on_commit is not None:
+            on_commit(refused)
         raise GuardrailRefusal(f"{PREFIX}:{reason_code}", message, details=details, ledger=refused)
 
     if permit_id is not None:
@@ -418,7 +467,15 @@ def execute(ledger, action, *, effect, now, permit_id=None):
                    {"permit_id": pid, "reasons": reasons}, permit_ref=pid)
         ledger = _ledger.append(ledger, {"kind": "permit_spent", "permit_id": pid,
                                          "spent_at": iso(at), "action_id": checked["action_id"]})
-        return ledger, effect(action)
+        if on_commit is not None:
+            on_commit(ledger)  # write-ahead: the spend is committed BEFORE the effect
+        try:
+            return ledger, effect(action)
+        except BaseException as exc:
+            # Ambiguous outcome: the permit STAYS SPENT (single-use holds on
+            # the committed record); reconciliation is a human review matter,
+            # never an automatic un-spend.
+            raise attach_ledger(exc, ledger)
 
     grant = _live_preauth(ledger, checked["category"], checked["payload_sha256"], at)
     if grant is None:
@@ -430,7 +487,14 @@ def execute(ledger, action, *, effect, now, permit_id=None):
     ledger = _ledger.append(ledger, {"kind": "preauthorization_used",
                                      "preauth_id": grant["preauth_id"], "used_at": iso(at),
                                      "action_id": checked["action_id"]})
-    return ledger, effect(action)
+    if on_commit is not None:
+        on_commit(ledger)  # write-ahead: the use is committed BEFORE the effect
+    try:
+        return ledger, effect(action)
+    except BaseException as exc:
+        # Ambiguous outcome: the use record was already committed and also
+        # rides the exception via the attachment.
+        raise attach_ledger(exc, ledger)
 
 
 def audit_state(ledger, review_id):

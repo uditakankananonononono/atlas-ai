@@ -28,7 +28,7 @@ REPORT = "| Claim | Status |\n|---|---|\n| Gate exists | VERIFIED |\n"
 
 
 def test_all_gates_fire_through_one_surface():
-    e = GuardrailEnforcer(approval_check=lambda ref: ref == "IRB-1",
+    e = GuardrailEnforcer(approval_check=lambda ref, digest: ref == "IRB-1",
                           review_check=lambda a: True)
     # 134+135
     assert e.run_bio_work(lambda i: "bio-ran", SILICO, now=T0) == "bio-ran"
@@ -136,3 +136,91 @@ def test_constructor_validation():
         GuardrailEnforcer(ledgers={"bio": []})
     with pytest.raises(ValueError, match="ENFORCER:"):
         GuardrailEnforcer.loads("{}")
+
+
+def test_persist_sink_write_ahead_and_ambiguous_reconciliation():
+    """The parent's defect scenario: permit spent, effect raises after a real
+    side effect. The sink must hold the spend BEFORE the effect ran, and the
+    permit must never be silently re-usable."""
+    events = []
+    e = GuardrailEnforcer(persist=lambda name, led: events.append(
+        (name, len(led), led[-1]["record"].get("kind"))))
+    e.open_review(ACTION, review_id="R1", reviewer="udita", now=T0)
+    e.record_decision(review_id="R1", decision="approved", reviewer="udita",
+                      rationale="ok", now=T0)
+    permit = e.issue_permit(ACTION, review_id="R1", now=T0)
+
+    def flaky(action):
+        events.append(("EFFECT", None, "ran-then-failed"))
+        raise RuntimeError("ambiguous")
+
+    with pytest.raises(RuntimeError):
+        e.execute_reviewed(ACTION, effect=flaky, now=T1, permit_id=permit["permit_id"])
+    # the spend was committed to the sink BEFORE the effect event
+    spend_index = next(i for i, ev in enumerate(events)
+                       if ev == ("review", 4, "permit_spent"))
+    effect_index = events.index(("EFFECT", None, "ran-then-failed"))
+    assert spend_index < effect_index
+    # the permit is spent in the enforcer's state: replay refuses
+    with pytest.raises(GuardrailRefusal) as held:
+        e.execute_reviewed(ACTION, effect=lambda a: "replay", now=T1,
+                           permit_id=permit["permit_id"])
+    assert "permit already spent" in held.value.details["reasons"]
+
+
+def test_persist_sink_covers_refusals_and_all_gates():
+    commits = []
+    e = GuardrailEnforcer(persist=lambda name, led: commits.append((name, len(led))))
+    with pytest.raises(GuardrailRefusal):
+        e.emit_text("e1", "I am sentient.", channel="ui", now=T0)
+    with pytest.raises(GuardrailRefusal):
+        e.execute_reviewed(ACTION, effect=lambda a: None, now=T0)
+    e.register_account("github", "owner", registered_by="u", now=T0)
+    e.record_tool_use("p", "blast", used_at=T0, evidence_ref="ev", verified_by="b")
+    assert ("claims", 1) in commits
+    assert ("review", 1) in commits
+    assert ("accounts", 1) in commits
+    assert ("tools", 1) in commits
+
+
+def test_authority_check_threaded_to_decisions_and_verifications():
+    e = GuardrailEnforcer(authority_check=lambda ref: ref.startswith("m00-"))
+    e.open_review(ACTION, review_id="R1", reviewer="udita", now=T0)
+    with pytest.raises(ValueError, match="REVGATE:authority_rejected"):
+        e.record_decision(review_id="R1", decision="approved", reviewer="udita",
+                          rationale="ok", now=T0, authority_ref="bogus-1")
+    e.record_decision(review_id="R1", decision="approved", reviewer="udita",
+                      rationale="ok", now=T0, authority_ref="m00-1")
+    rec = e.ledger("review")[-1]["record"]
+    assert rec["authority_validated"] is True
+    e.register_account("github", "owner", registered_by="u", now=T0)
+    e.verify_account("github", "owner", verified_by="u", now=T0, authority_ref="m00-2")
+    assert e.ledger("accounts")[-1]["record"]["authority_validated"] is True
+
+
+def test_authority_ref_fails_closed_when_hook_unset():
+    e = GuardrailEnforcer()
+    e.open_review(ACTION, review_id="R1", reviewer="udita", now=T0)
+    with pytest.raises(ValueError, match="REVGATE:authority_unverifiable"):
+        e.record_decision(review_id="R1", decision="approved", reviewer="udita",
+                          rationale="ok", now=T0, authority_ref="m00-1")
+
+
+def test_persist_sink_failure_propagates():
+    def bad_sink(name, led):
+        raise OSError("disk full")
+    e = GuardrailEnforcer(persist=bad_sink)
+    with pytest.raises(OSError):
+        e.register_account("github", "owner", registered_by="u", now=T0)
+
+
+def test_loads_restores_hooks_and_sink():
+    commits = []
+    e = GuardrailEnforcer(authority_check=lambda ref: True,
+                          persist=lambda name, led: commits.append(name))
+    e.register_account("github", "owner", registered_by="u", now=T0)
+    restored = GuardrailEnforcer.loads(e.dumps(), authority_check=lambda ref: True,
+                                       persist=lambda name, led: commits.append(("r", name)))
+    restored.verify_account("github", "owner", verified_by="u", now=T0,
+                            authority_ref="m00-1")
+    assert ("r", "accounts") in commits
