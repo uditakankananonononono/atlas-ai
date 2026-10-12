@@ -1,0 +1,44 @@
+{
+  "row": 94,
+  "selectors": [
+    "tests/modules/test_group94_isolated_workforce.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "actual offline namespace graph, no company/external operations",
+    "scale/thousands of industries untested",
+    "durability and whole repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "dependency_order",
+      "path": "backend/app/modules/c36/workforce.py",
+      "old": "tuple(deps[n])",
+      "new": "()"
+    },
+    {
+      "id": "returned_receipts",
+      "path": "backend/app/modules/c36/workforce.py",
+      "old": "return result,worker.receipts",
+      "new": "return result,[]"
+    },
+    {
+      "id": "timeout_forward",
+      "path": "backend/app/modules/c36/workforce.py",
+      "old": "timeout_seconds=timeout_seconds,memory_mb=memory_mb",
+      "new": "timeout_seconds=3,memory_mb=memory_mb"
+    },
+    {
+      "id": "edge_guard",
+      "path": "backend/app/modules/c36/workforce.py",
+      "old": "if type(edge) is not dict or set(edge) != {'from', 'to'} or edge['from'] not in deps or edge['to'] not in deps:",
+      "new": "if False:"
+    },
+    {
+      "id": "source_guard",
+      "path": "backend/app/modules/c36/workforce.py",
+      "old": "if any(n not in handlers or (isolated_worker is None and not callable(handlers[n])) for n in nodes):",
+      "new": "if False:"
+    }
+  ]
+}

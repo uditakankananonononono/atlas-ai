@@ -18,3 +18,11 @@ def test_hanging_source_fails_and_blocks_downstream():
         'analyst':'def action(args,inputs,attempt,feedback):\n    return 1'},timeout_seconds=1)
     assert 'analyst' not in result.outputs
     assert receipts and all(r['timed_out'] for r in receipts)
+    assert all(r['duration_seconds'] < 2.5 for r in receipts)
+
+def test_unknown_roles_and_missing_sources_refused():
+    import pytest
+    graph={'id':'offline','offer':'fixture','worker_graph':{'nodes':['a'],'edges':[{'from':'a','to':'unknown'}],'isolated':[]}}
+    with pytest.raises(ValueError,match='unknown'):execute_isolated_blueprint(graph,{'a':'def action(*args): return 1'})
+    graph['worker_graph']['edges']=[]
+    with pytest.raises(ValueError,match='handlers'):execute_isolated_blueprint(graph,{})
