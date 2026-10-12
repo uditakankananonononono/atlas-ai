@@ -79,3 +79,24 @@ def test_failing_test_and_dirty_snapshot(repo):
     (root/'tests/test_ok.py').write_text('def test_ok(): assert False')
     out=inspect_projects(root,[item],execute=True)
     assert out['dirty'] and out['projects'][0]['status']=='UNVERIFIED'
+
+
+def test_no_run_coherence_unknown_and_reason(repo):
+    root,item=repo
+    row=inspect_projects(root,[item])['projects'][0]
+    assert row['snapshot_coherent'] is None
+    assert row['failure_reason']=='not_executed'
+    assert 'Top-level' in row['dirty_scope']
+
+
+def test_file_drift_between_snapshot_and_read_refused(repo,monkeypatch):
+    from app.modules.instinct_doc import repo_evidence as evidence
+    root,item=repo
+    original=evidence.snapshot
+    def changed(path):
+        result=original(path)
+        (root/'core.py').write_bytes(b'changed')
+        return result
+    monkeypatch.setattr(evidence,'snapshot',changed)
+    row=inspect_projects(root,[item])['projects'][0]
+    assert row['errors'] and row['failure_reason']=='missing_or_drifted_file'

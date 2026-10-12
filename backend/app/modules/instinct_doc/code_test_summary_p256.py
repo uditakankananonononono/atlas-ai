@@ -132,6 +132,13 @@ def inspect_projects(root, projects, *, execute=False):
             if type(paths) is not list or len(paths) > 1000 or not all(isinstance(p, str) for p in paths) or len(set(paths)) != len(paths):
                 raise _err("paths must be unique bounded lists")
         if set(item["code_paths"]) & set(item["test_paths"]): raise _err("code and test paths must not overlap")
+    initial_bytes = {}
+    for item in projects:
+        for path in item['code_paths'] + item['test_paths']:
+            try:
+                initial_bytes[path] = safe_file(root, path).read_bytes()
+            except (EvidenceError, OSError, ValueError):
+                pass
     seen.clear()
     for item in projects:
         if type(item) is not dict or set(item) != {'id', 'code_paths', 'test_paths'}:
@@ -150,6 +157,8 @@ def inspect_projects(root, projects, *, execute=False):
                     if path not in snap['files']:
                         raise EvidenceError('path is not tracked')
                     data = safe_file(root, path).read_bytes()
+                    if path not in initial_bytes or data != initial_bytes[path] or digest(data) != snap['files'][path]['sha256']:
+                        raise EvidenceError('file bytes drifted from initial observation')
                     files[path] = {'lines': len(data.splitlines()), 'sha256': digest(data), 'kind': field}
                 except (EvidenceError, OSError, ValueError) as exc:
                     errors.append({'path': path, 'reason': str(exc)[:200]})
@@ -169,8 +178,10 @@ def inspect_projects(root, projects, *, execute=False):
                      'execution': run, 'coverage_percent': None,
                      'status': 'SCOPED_PASS' if run and run['status'] == 'SCOPED_PASS' and run.get('head') == snap['head'] and run.get('tree_digest') == snap['tree_digest'] else 'UNVERIFIED',
                      'selection_pairing_verified': False,
-                     'snapshot_coherent': not run or (run.get('head') == snap['head'] and run.get('tree_digest') == snap['tree_digest']),
+                     'snapshot_coherent': None if run is None else (run.get('head') == snap['head'] and run.get('tree_digest') == snap['tree_digest']),
                      'completion_verified': False,
+                     'dirty_scope': 'Top-level repository status only; nested untracked repositories not inspected',
+                     'failure_reason': 'missing_or_drifted_file' if errors else 'not_executed' if run is None else run.get('error') or ('execution_not_passing' if run.get('status') != 'SCOPED_PASS' else 'snapshot_drift' if run.get('head') != snap['head'] or run.get('tree_digest') != snap['tree_digest'] else None),
                      'scope_declared': True})
     return {'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,
             'execution_scope': 'Trusted checkout only; up to 256 per-run bounded calls, no aggregate time/disk budget. Test code may have effects.',
