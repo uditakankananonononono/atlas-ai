@@ -50,6 +50,29 @@ persistence, and the FastAPI surface.
    replace the dict stores - the retrieval contracts are already similarity-
    based.
 
+## Opt-in per-tenant service binding
+
+By default an authenticated tenant with no explicit `bind_service()` call gets
+503. Setting `ATLAS_GCW_AUTOBIND=1` (exact value) makes `get_service` create a
+default `CognitiveWorkerService()` for that tenant on first use and bind it, so
+mounted routes return live responses.
+
+- Scope: any non-`local` tenant id that passes `require_tenant`. That includes a
+  header-selected tenant when insecure development auth is explicitly on. Missing credentials stay 401;
+  the `local` tenant stays 403 unless insecure development auth is on, and is
+  never auto-bound. An explicit `bind_service()` takes precedence: explicit and automatic
+  binding are serialized by one lock, so a concurrent explicit bind is never
+  overwritten by an automatic one.
+- Isolation: one new service instance per tenant id, reused for that tenant.
+  The count is capped at `AUTOBIND_MAX_TENANTS` (64) and tenant ids longer than
+  128 characters are not bound; beyond the cap the response is 503 as before.
+- The auto-bound service is the default in-memory service: no model clients,
+  no transcriber or vision backend, offline embedder, default approval gate and
+  sandbox, no durable repository. Its state is lost on restart and is not
+  shared across processes. Use explicit binding for durable persistence or
+  production clients.
+- No external calls, paid services or model downloads are made by the binding.
+
 ## Honest boundaries
 - LLM-driven steps (de novo planning, attention scoring in production,
   reflections) are protocol-injected. Missing planning/reasoning fails closed;

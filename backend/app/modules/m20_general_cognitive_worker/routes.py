@@ -10,6 +10,7 @@ from app.core.providers import ProviderOutcomeUnknown
 
 from datetime import datetime
 import os
+import threading
 from typing import Any, Annotated
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -25,6 +26,33 @@ router = APIRouter(prefix="/api/modules/20", tags=["m20_general_cognitive_worker
 
 _service = None  # Legacy local development binding only.
 _services = {}
+AUTOBIND_MAX_TENANTS = 64
+AUTOBIND_MAX_TENANT_ID_CHARS = 128
+# One re-entrant lock orders explicit and automatic binding: an explicit bind_service()
+# is never overwritten by a concurrent automatic bind.
+_autobind_lock = threading.RLock()
+
+
+def _autobind(tenant_id):
+    """Opt-in (ATLAS_GCW_AUTOBIND exactly "1"): give an authenticated tenant its own
+    default in-memory service. Never used for "local"; makes no external calls."""
+    if os.environ.get("ATLAS_GCW_AUTOBIND") != "1":
+        return None
+    if type(tenant_id) is not str or not tenant_id or tenant_id == "local" or len(tenant_id) > AUTOBIND_MAX_TENANT_ID_CHARS:
+        return None
+    from .service import CognitiveWorkerService
+    with _autobind_lock:
+        existing = _services.get(tenant_id)
+        if existing is not None:
+            return existing
+        if len(_services) >= AUTOBIND_MAX_TENANTS:
+            return None
+        service = CognitiveWorkerService()
+        bound = _services.get(tenant_id)
+        if bound is not None:
+            return bound  # an explicit bind landed during construction
+        bind_service(service, tenant_id=tenant_id)
+        return service
 
 
 def bind_service(service, *, tenant_id: str = "local") -> None:
@@ -33,6 +61,12 @@ def bind_service(service, *, tenant_id: str = "local") -> None:
     Never bind the same mutable instance for two tenants. Persistence, tools,
     model clients and approval gates must also be configured for that tenant.
     """
+    global _service
+    with _autobind_lock:
+        _bind_locked(service, tenant_id)
+
+
+def _bind_locked(service, tenant_id) -> None:
     global _service
     if not tenant_id or not isinstance(tenant_id,str):
         raise ValueError("nonempty tenant_id required")
@@ -51,6 +85,8 @@ def get_service(tenant: TenantContext = Depends(require_tenant)):
     service = _services.get(tenant.tenant_id)
     if tenant.tenant_id == "local" and insecure_development_auth_enabled():
         service = _service
+    if service is None and tenant.tenant_id != "local":
+        service = _autobind(tenant.tenant_id)
     if service is None:
         raise HTTPException(status_code=503, detail="GCW service not bound for authenticated tenant")
     return service
