@@ -1,0 +1,15 @@
+BASELINE tests/modules/test_m23_admitted_cases_crawl_delay.py tests/modules/test_m23_admitted_cases_bounded.py tests/modules/test_m23_admitted_cases.py -> rc=0 32 passed in 0.41s
+M1 ignore Crawl-delay | admitted_cases_bounded.py | CAUGHT | rc=1 | 6 failed, 26 passed in 0.39s | failing: test_crawl_delay_is_waited_between_robots_and_page; test_boundary_30_is_honored_31_is_skipped; test_specific_agent_group_overrides_star_group
+M2 cap removed | admitted_cases_bounded.py | CAUGHT | rc=1 | 3 failed, 29 passed in 0.43s | failing: test_boundary_30_is_honored_31_is_skipped; test_custom_cap_is_respected_and_validated; test_result_contains_no_robots_text_or_error_detail
+M3 cap boundary off by one (>=) | admitted_cases_bounded.py | CAUGHT | rc=1 | 2 failed, 30 passed in 0.43s | failing: test_boundary_30_is_honored_31_is_skipped; test_custom_cap_is_respected_and_validated
+M4 wait half the delay | admitted_cases_bounded.py | CAUGHT | rc=1 | 5 failed, 27 passed in 0.43s | failing: test_crawl_delay_is_waited_between_robots_and_page; test_boundary_30_is_honored_31_is_skipped; test_specific_agent_group_overrides_star_group
+M5 read only the * group | admitted_cases_bounded.py | CAUGHT | rc=1 | 1 failed, 31 passed in 0.45s | failing: test_specific_agent_group_overrides_star_group
+M6 read a wrong agent name | admitted_cases_bounded.py | CAUGHT | rc=1 | 1 failed, 31 passed in 0.44s | failing: test_specific_agent_group_overrides_star_group
+M7 sleep even for zero delay | admitted_cases_bounded.py | CAUGHT | rc=1 | 1 failed, 31 passed in 0.44s | failing: test_crawl_delay_zero_does_not_sleep
+M8 max_crawl_delay validation removed | admitted_cases_bounded.py | CAUGHT | rc=1 | 1 failed, 31 passed in 0.52s | failing: test_custom_cap_is_respected_and_validated
+M9 new status missing from closed set | admitted_cases_bounded.py | CAUGHT | rc=1 | 4 failed, 28 passed in 0.44s | failing: test_default_cap_is_30_and_status_is_in_closed_set; test_boundary_30_is_honored_31_is_skipped; test_custom_cap_is_respected_and_validated
+M10 skipped result omits the delay | admitted_cases_bounded.py | CAUGHT | rc=1 | 2 failed, 30 passed in 0.45s | failing: test_boundary_30_is_honored_31_is_skipped; test_result_contains_no_robots_text_or_error_detail
+M11 denied page still requested | admitted_cases_bounded.py | CAUGHT | rc=1 | 2 failed, 30 passed in 0.45s | failing: test_disallow_takes_precedence_over_crawl_delay_cap; test_robots_denied_never_requests_page
+M12 injected sleep ignored (real time.sleep) | admitted_cases_bounded.py | CAUGHT | rc=1 | 5 failed, 27 passed in 49.51s | failing: test_crawl_delay_is_waited_between_robots_and_page; test_boundary_30_is_honored_31_is_skipped; test_specific_agent_group_overrides_star_group
+counts: CAUGHT=12, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True

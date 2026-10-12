@@ -5,6 +5,7 @@ no essay retention. Per-body caps bound retained decoded data, not transport
 allocation, decompression peak memory, or wire bytes. Defaults500k robots/1MB
 page, configurable helper bounds1..2000000. No redirects.
 """
+import time
 from urllib.parse import urlparse
 from urllib.robotparser import RobotFileParser
 
@@ -16,9 +17,10 @@ from .admitted_cases import USER_AGENT, cases
 PAGE_LIMIT_BYTES = 1_000_000
 ROBOTS_LIMIT_BYTES = 500_000
 TIMEOUT_SECONDS = 8
+MAX_CRAWL_DELAY_SECONDS = 30   # a robots Crawl-delay above this is not waited out: the page is skipped
 SAFE_STATUSES = frozenset({
     'robots_unverified', 'robots_denied', 'unavailable', 'unsupported_content_type',
-    'too_large', 'fetch_failed', 'page_reachable',
+    'too_large', 'fetch_failed', 'page_reachable', 'crawl_delay_too_long',
 })
 
 
@@ -62,7 +64,15 @@ def _safe(row: dict, status: str, **extra) -> dict:
 def fetch_case_metadata_bounded(case_id: str, transport: httpx.BaseTransport | None = None, *,
                                 catalog: list[dict] | None = None,
                                 page_limit: int = PAGE_LIMIT_BYTES,
-                                robots_limit: int = ROBOTS_LIMIT_BYTES) -> dict:
+                                robots_limit: int = ROBOTS_LIMIT_BYTES,
+                                max_crawl_delay: float = MAX_CRAWL_DELAY_SECONDS,
+                                sleep=time.sleep) -> dict:
+    """robots.txt Crawl-delay is honored: the helper waits that long (via `sleep`) between the robots request and the
+    page request; a delay above `max_crawl_delay` (default 30s) skips the page with status crawl_delay_too_long.
+    The delay is read for USER_AGENT, falling back to the `*` entry (stdlib RobotFileParser semantics). Only one page
+    request follows one robots request per call, so no further per-host pacing exists across calls."""
+    if isinstance(max_crawl_delay, bool) or not isinstance(max_crawl_delay, (int, float)) or not 0 <= max_crawl_delay <= 120:
+        raise ValueError('max_crawl_delay must be 0..120 seconds')
     for bound in (page_limit,robots_limit):
         if type(bound) is not int or not 1<=bound<=2_000_000:raise ValueError('body limits must be integer1..2000000')
     rows = cases() if catalog is None else catalog
@@ -89,6 +99,12 @@ def fetch_case_metadata_bounded(case_id: str, transport: httpx.BaseTransport | N
             parser.parse(robots_text.splitlines())
             if not parser.can_fetch(USER_AGENT, row['url']):
                 return _safe(row, 'robots_denied')
+            # 1b. Crawl-delay: honored or the page is skipped; never ignored.
+            delay = parser.crawl_delay(USER_AGENT)
+            if delay is not None and delay > max_crawl_delay:
+                return _safe(row, 'crawl_delay_too_long', crawl_delay_seconds=delay)
+            if delay:
+                sleep(delay)
             # 2. page, bounded.
             try:
                 status, ctype, page_body = _get_bounded(client, row['url'], page_limit)

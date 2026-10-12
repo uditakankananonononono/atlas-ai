@@ -1,0 +1,74 @@
+"""Mutation receipts. Run from repo root:
+    ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python audits/m23-crawl-delay/run_mutations.py [out.txt]
+(out.txt defaults to audits/m23-crawl-delay/mutation_receipts.txt). Each mutant is an exact single textual
+replacement (old -> new) in one file. The named test file is run before (must be green) and after.
+A mutant is CAUGHT only when pytest exits 1 with at least one FAILED test (an assertion/test failure) and no
+collection error, no timeout and no crash; the failing test ids are recorded. rc 2/4/5, a timeout, or a failure with
+no FAILED line is recorded as INVALID (not counted as caught). rc 0 is SURVIVED. Restore is verified by SHA-256 of
+every mutated file against its pre-run content (exact), independent of git state."""
+import hashlib, os, subprocess, sys
+
+B = "backend/app/modules/m23_study_abroad/admitted_cases_bounded.py"
+TESTS = "tests/modules/test_m23_admitted_cases_crawl_delay.py tests/modules/test_m23_admitted_cases_bounded.py tests/modules/test_m23_admitted_cases.py"
+MUT = [
+ ("M1 ignore Crawl-delay", B, "delay = parser.crawl_delay(USER_AGENT)", "delay = None", TESTS),
+ ("M2 cap removed", B, "if delay is not None and delay > max_crawl_delay:", "if False:", TESTS),
+ ("M3 cap boundary off by one (>=)", B, "delay > max_crawl_delay:", "delay >= max_crawl_delay:", TESTS),
+ ("M4 wait half the delay", B, "sleep(delay)", "sleep(delay / 2)", TESTS),
+ ("M5 read only the * group", B, "parser.crawl_delay(USER_AGENT)", "parser.crawl_delay('*')", TESTS),
+ ("M6 read a wrong agent name", B, "parser.crawl_delay(USER_AGENT)", "parser.crawl_delay('x')", TESTS),
+ ("M7 sleep even for zero delay", B, "            if delay:\n                sleep(delay)", "            if delay is not None:\n                sleep(delay)", TESTS),
+ ("M8 max_crawl_delay validation removed", B, "or not 0 <= max_crawl_delay <= 120:", "or False:", TESTS),
+ ("M9 new status missing from closed set", B, "'page_reachable', 'crawl_delay_too_long',", "'page_reachable',", TESTS),
+ ("M10 skipped result omits the delay", B, "_safe(row, 'crawl_delay_too_long', crawl_delay_seconds=delay)", "_safe(row, 'crawl_delay_too_long')", TESTS),
+ ("M11 denied page still requested", B, "return _safe(row, 'robots_denied')", "pass", TESTS),
+ ("M12 injected sleep ignored (real time.sleep)", B, "                sleep(delay)", "                time.sleep(delay)", TESTS),
+]
+ENV =dict(os.environ, ATLAS_DEV_NO_AUTH="1", ATLAS_ENV="development", PYTHONPATH="backend")
+TIMEOUT_S = 120
+
+def run(tests):
+    try:
+        r = subprocess.run([sys.executable, "-m", "pytest", "-p", "no:cacheprovider", *tests.split(), "-q", "-rf"],
+                           capture_output=True, text=True, env=ENV, timeout=TIMEOUT_S)
+    except subprocess.TimeoutExpired:
+        return None, "TIMEOUT", []
+    lines = [l for l in r.stdout.strip().splitlines() if l.strip()]
+    failed = [l.split(" - ")[0][len("FAILED "):] for l in lines if l.startswith("FAILED ")]
+    return r.returncode, (lines[-1] if lines else ""), failed
+
+def sha(path):
+    return hashlib.sha256(open(path, "rb").read()).hexdigest()
+
+def main(out):
+    lines = []
+    files = sorted({m[1] for m in MUT})
+    before = {f: sha(f) for f in files}
+    for tests in (TESTS,):
+        rc, last, _ = run(tests); lines.append("BASELINE %s -> rc=%s %s" % (tests, rc, last)); assert rc == 0, last
+    counts = {"CAUGHT": 0, "SURVIVED": 0, "INVALID": 0, "NOT-APPLICABLE": 0}
+    for mid, f, old, new, tests in MUT:
+        src = open(f).read()
+        if src.count(old) < 1:
+            counts["NOT-APPLICABLE"] += 1
+            lines.append("%s | NOT-APPLICABLE (old text not found)" % mid); continue
+        open(f, "w").write(src.replace(old, new, 1))
+        try:
+            rc, last, failed = run(tests)
+        finally:
+            open(f, "w").write(src)
+        if rc == 0:
+            verdict = "SURVIVED"
+        elif rc == 1 and failed:
+            verdict = "CAUGHT"
+        else:
+            verdict = "INVALID"
+        counts[verdict] += 1
+        lines.append("%s | %s | %s | rc=%s | %s | failing: %s" % (mid, f.split("/")[-1], verdict, rc, last, "; ".join(x.split("::")[-1] for x in failed[:3]) or "-"))
+    restored = all(sha(f) == before[f] for f in files)
+    lines.append("counts: " + ", ".join("%s=%d" % kv for kv in counts.items()))
+    lines.append("mutated files byte-identical to pre-run state (sha256): %s" % restored)
+    open(out, "w").write("\n".join(lines) + "\n"); print("\n".join(lines))
+    sys.exit(0 if restored else 3)
+
+main(sys.argv[1] if len(sys.argv) > 1 else "audits/m23-crawl-delay/mutation_receipts.txt")
