@@ -1,0 +1,68 @@
+BASELINE tests/modules/test_m22_source_collectors.py tests/modules/test_m22_phase2_features.py tests/modules/test_m22_row55_deepening.py -> rc=0 51 passed in 0.42s
+M1 devto query tag not slugged | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.43s | failing: tests/modules/test_m22_row55_deepening.py::test_url_uses_slugged_tag_for_devto_and_quoted_query_for_others
+    old: 'return self.url_template.format(query=quote_plus(query), tag=_tag_slug(query))'
+    new: 'return self.url_template.format(query=quote_plus(query), tag=query)'
+M2 tag slug length cap removed | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.42s | failing: tests/modules/test_m22_row55_deepening.py::test_tag_slug_is_capped_at_40_characters
+    old: 'return re.sub(r"[^a-z0-9]", "", query.lower())[:40]'
+    new: 'return re.sub(r"[^a-z0-9]", "", query.lower())'
+M3 query not URL-quoted | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.45s | failing: tests/modules/test_m22_row55_deepening.py::test_url_uses_slugged_tag_for_devto_and_quoted_query_for_others
+    old: 'self.url_template.format(query=quote_plus(query)'
+    new: 'self.url_template.format(query=query'
+M4 non-JSON body swallowed | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.42s | failing: tests/modules/test_m22_row55_deepening.py::test_non_json_body_raises_source_error
+    old: 'raise SourceError(f"{self.name} returned non-JSON content: {exc}") from exc'
+    new: 'return'
+M5 kind overwritten by constant | row 55 | sources.py | CAUGHT | rc=1 | 5 failed, 46 passed in 0.42s | failing: tests/modules/test_m22_source_collectors.py::test_json_sources_parse_real_shapes[collector2-mapping2-Google Kubernetes Engine's third consecutive day of service disruption], tests/modules/test_m22_source_collectors.py::test_json_sources_parse_real_shapes[collector3-mapping3-Talk Python To Me], tests/modules/test_m22_source_collectors.py::test_json_sources_parse_real_shapes[collector4-mapping4-gitlab-org/cloud-native/gitlab-operator]
+    old: 'item.setdefault("kind", self.kind)'
+    new: 'item["kind"] = "blog"'
+M6 devto result cap raised | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.43s | failing: tests/modules/test_m22_row55_deepening.py::test_devto_caps_at_20_and_cleans_the_summary
+    old: 'for x in (payload if isinstance(payload, list) else [])[:20]:\n        user = x.get("user") or {}'
+    new: 'for x in (payload if isinstance(payload, list) else [])[:200]:\n        user = x.get("user") or {}'
+M7 devto summary not truncated | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.45s | failing: tests/modules/test_m22_row55_deepening.py::test_devto_caps_at_20_and_cleans_the_summary
+    old: '"summary": _truncate(_strip_html(x.get("description") or "")),\n            "version": None, "license": None,\n            "maintenance": 0.6, "security": 0.55'
+    new: '"summary": _strip_html(x.get("description") or ""),\n            "version": None, "license": None,\n            "maintenance": 0.6, "security": 0.55'
+M8 devto html not stripped | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.43s | failing: tests/modules/test_m22_row55_deepening.py::test_devto_caps_at_20_and_cleans_the_summary
+    old: '"summary": _truncate(_strip_html(x.get("description") or "")),\n            "version": None, "license": None,\n            "maintenance": 0.6, "security": 0.55'
+    new: '"summary": _truncate(x.get("description") or ""),\n            "version": None, "license": None,\n            "maintenance": 0.6, "security": 0.55'
+M9 wordpress title html not stripped | row 55 | sources.py | CAUGHT | rc=1 | 2 failed, 49 passed in 0.42s | failing: tests/modules/test_m22_source_collectors.py::test_json_sources_parse_real_shapes[collector1-mapping1-Kubernetes: A Beginner\u2019s Guide], tests/modules/test_m22_row55_deepening.py::test_wordpress_title_html_is_stripped
+    old: '"name": _strip_html(x.get("title") or "") or "(untitled)",\n            "url": x.get("URL")'
+    new: '"name": (x.get("title") or "") or "(untitled)",\n            "url": x.get("URL")'
+M10 hackernews self-post fallback url dropped | row 55 | sources.py | CAUGHT | rc=1 | 2 failed, 49 passed in 0.42s | failing: tests/modules/test_m22_source_collectors.py::test_json_sources_parse_real_shapes[collector2-mapping2-Google Kubernetes Engine's third consecutive day of service disruption], tests/modules/test_m22_source_collectors.py::test_hackernews_fallback_url_for_self_posts
+    old: 'url = x.get("url") or f"https://news.ycombinator.com/item?id={x.get(\'objectID\')}"'
+    new: 'url = x.get("url") or ""'
+M11 itunes podcasts genre not filtered | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.40s | failing: tests/modules/test_m22_row55_deepening.py::test_itunes_genres_url_artist_and_cap
+    old: 'genres = [g for g in (x.get("genres") or []) if g.lower() != "podcasts"]'
+    new: 'genres = [g for g in (x.get("genres") or [])]'
+M12 itunes result cap raised | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.40s | failing: tests/modules/test_m22_row55_deepening.py::test_itunes_genres_url_artist_and_cap
+    old: 'for x in (payload.get("results") if isinstance(payload, dict) else [])[:20]:\n        artist = x.get("artistName")'
+    new: 'for x in (payload.get("results") if isinstance(payload, dict) else [])[:200]:\n        artist = x.get("artistName")'
+M13 itunes url prefers track url | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.42s | failing: tests/modules/test_m22_row55_deepening.py::test_itunes_genres_url_artist_and_cap
+    old: '"url": x.get("collectionViewUrl") or x.get("trackViewUrl") or "",'
+    new: '"url": x.get("trackViewUrl") or x.get("collectionViewUrl") or "",'
+M14 itunes artist fallback removed | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.43s | failing: tests/modules/test_m22_row55_deepening.py::test_itunes_genres_url_artist_and_cap
+    old: 'artist = x.get("artistName") or "unknown artist"\n        genres'
+    new: 'artist = x.get("artistName")\n        genres'
+M15 recency windows widened | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.48s | failing: tests/modules/test_m22_row55_deepening.py::test_recency_score_windows_and_missing_timestamp
+    old: 'if days <= 180:\n        return 0.8'
+    new: 'if days <= 1800:\n        return 0.8'
+M16 recency missing timestamp scored high | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.43s | failing: tests/modules/test_m22_row55_deepening.py::test_recency_score_windows_and_missing_timestamp
+    old: 'if not timestamp:\n        return 0.5'
+    new: 'if not timestamp:\n        return 0.8'
+M17 json size cap check removed | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.41s | failing: tests/modules/test_m22_row55_deepening.py::test_http_get_enforces_the_byte_cap
+    old: 'if len(data) > limit:\n        if truncate_ok:'
+    new: 'if False:\n        if truncate_ok:'
+M18 github repo cap raised | row 55 | collectors.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.41s | failing: tests/modules/test_m22_row55_deepening.py::test_github_caps_at_20_and_uses_html_url
+    old: "for x in p.get('items',[])[:20]:yield {'name':x['full_name']"
+    new: "for x in p.get('items',[])[:200]:yield {'name':x['full_name']"
+M19 github url uses api url | row 55 | collectors.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.45s | failing: tests/modules/test_m22_row55_deepening.py::test_github_caps_at_20_and_uses_html_url
+    old: "'url':x['html_url']"
+    new: "'url':x.get('url','')"
+M20 collector registry loses source group | row 55 | collectors.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.47s | failing: tests/modules/test_m22_source_collectors.py::test_default_collectors_cover_blogs_podcasts_and_git
+    old: 'return base+default_source_collectors()'
+    new: 'return base'
+M21 default sources drop the podcast | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.48s | failing: tests/modules/test_m22_source_collectors.py::test_default_collectors_cover_blogs_podcasts_and_git
+    old: 'JsonSourceCollector("itunes", "podcast", "https://itunes.apple.com/search?media=podcast&term={query}&limit=20", _parse_itunes),\n'
+    new: ''
+M22 default sources drop devto | row 55 | sources.py | CAUGHT | rc=1 | 1 failed, 50 passed in 0.54s | failing: tests/modules/test_m22_source_collectors.py::test_default_collectors_cover_blogs_podcasts_and_git
+    old: 'JsonSourceCollector("devto", "blog", "https://dev.to/api/articles?tag={tag}&per_page=20&top=30", _parse_devto),\n'
+    new: ''
+TOTAL mutants=22 CAUGHT=22 SURVIVED=0 INVALID=0 NOT-APPLICABLE=0 | SHA restore True
