@@ -1,0 +1,5 @@
+# Group 95 public educational dataset execution
+
+Executed learned nearest-centroid training/evaluation on actual sklearn bundled UCI handwritten digits, 1797 images, 64 features. Fixed 75/25 stratified split seed 42 after dropping exact duplicate feature vectors, train-only StandardScaler. Same standardized split logistic-regression comparator fits training labels only, no heldout tuning. Source inspected: https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html . Receipt includes dataset/split hashes and predictions; sklearn 1.9.1.
+
+This bundle itself is a copy of the UCI dataset's test partition. Educational re-split is not the original published benchmark protocol, external holdout, domain breakthrough or independent scientific result. No sector-wide best-tool evidence. Broad group remains PARTIAL. Test scores are displayed exactly including losses versus logistic baseline. 119 digits/group/c37 tests pass. Heavy dataset execution test explicitly skips if sklearn unavailable, never substitutes synthetic data.
