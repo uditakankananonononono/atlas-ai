@@ -41,4 +41,4 @@ def optimize(payload):
     return {'status': 'optimized_supplied_scenarios', 'choice': reports[0]['id'], 'ranking': reports,
             'scenario_ideals': {s: str(v) for s, v in ideals.items()}, 'effectiveness_verified': False,
             'method': 'minimax regret; tie-break worst utility, cost, id',
-            'assumptions': 'Utilities are caller assumptions, not measured forecasts. No external action.'}
+            'assumptions': 'Utilities are caller assumptions, not verified forecasts. No external action.'}

@@ -1,6 +1,6 @@
 """Source-bound acceptance manifests for counted capability requirements.
 
-Review reports preserve missing entries and measured gaps. Names, aliases,
+Review reports preserve missing entries and recorded gaps. Names, aliases,
 file existence and self-attested pass booleans do not count as acceptance.
 Receipts must be supplied by the host's test runner, not web content.
 """

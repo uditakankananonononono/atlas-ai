@@ -93,5 +93,5 @@
     },
     "artifact_sha256": "5a61111eaee1f6cc8c62039210ca7656177a2dc33d6ce60a27c024873183b4fb"
   },
-  "evidence_note": "Synthetic author-owned test fixtures at .example domains, NOT ten real admissions websites."
+  "evidence_note": "Synthetic author-owned test fixtures at .example domains, NOT ten admissions-provider websites."
 }

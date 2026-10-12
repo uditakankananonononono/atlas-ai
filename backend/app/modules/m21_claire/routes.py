@@ -76,6 +76,6 @@ def verify_device_receipt(device_id:str,body:DeviceReceiptIn):
  except KeyError:raise HTTPException(404,'device not found')
  except ValueError as error:raise HTTPException(422,str(error)) from error
 
-# Instinct-doc groups 77-87: measured private computations, no universal claims.
+# Instinct-doc groups 77-87: computed private computations, no universal claims.
 from app.mission_build.routes import router as mission_build_router
 router.include_router(mission_build_router)

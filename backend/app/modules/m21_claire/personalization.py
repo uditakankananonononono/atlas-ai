@@ -164,7 +164,7 @@ class ScopedPersonalizationRepository(PersonalizationRepository):
    return {'decision':_public(decision),'outcomes':[_public(x) for x in outcomes]}
 
  def growth_report(self):
-  """Measured owner feedback over recorded decisions, never inferred learning."""
+  """Recorded owner feedback over recorded decisions, never inferred learning."""
   with self.sessions() as db:
    decisions=list(db.scalars(self._owned(DecisionRow)))
    outcomes=list(db.scalars(self._owned(DecisionOutcomeRow).order_by(DecisionOutcomeRow.observed_at,DecisionOutcomeRow.id)))
