@@ -333,7 +333,6 @@ class Scheduler:
                 self._repository.save_schedule(entry)
                 continue
             try:
-                adapter = self._adapters.for_platform(entry.platform)
                 moment = _aware(self._clock())
                 action = {"id": f"{entry.id}-{int(moment.timestamp())}", "platform": entry.platform.value,
                           "kind": "post", "at": int(moment.timestamp()), "count": 1,
@@ -346,7 +345,7 @@ class Scheduler:
                                      payload_sha256({k: v for k, v in action.items() if k != "id"}))
                 result = self._enforcer.dispatch_outbound(
                     action, self._declarations,
-                    effect=lambda a: asyncio.run(adapter.publish(PublishRequest(
+                    effect=lambda a: asyncio.run(self._adapters.for_platform(Platform(a["platform"])).publish(PublishRequest(
                         platform=a["platform"], text=a["text"], format=a["format"],
                         link=a["link"], media_urls=tuple(a["media_urls"]),
                         alt_texts=tuple(a["alt_texts"]), thread_chunks=tuple(a["thread_chunks"])))),

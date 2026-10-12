@@ -1,0 +1,7 @@
+BASELINE tests/modules/test_m06_publish_guardrail.py tests/modules/test_m06_scheduler.py -> rc=0 29 passed in 1.06s
+P1 stale entry adapter platform | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.92s | failing: tests/modules/test_m06_publish_guardrail.py::test_factory_and_request_share_canonical_platform_not_stale_entry
+P2 fixed twitter adapter | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.89s | failing: tests/modules/test_m06_publish_guardrail.py::test_factory_and_request_share_canonical_platform_not_stale_entry
+P3 detached request platform | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.87s | failing: tests/modules/test_m06_publish_guardrail.py::test_factory_and_request_share_canonical_platform_not_stale_entry
+P4 factory before admission | scheduler.py | CAUGHT | rc=1 | 1 failed in 0.87s | failing: tests/modules/test_m06_publish_guardrail.py::test_real_gate_refuses_platform_drift_before_factory_or_publish
+counts: CAUGHT=4, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True

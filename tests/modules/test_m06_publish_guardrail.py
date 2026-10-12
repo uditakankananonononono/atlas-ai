@@ -157,3 +157,48 @@ def test_publish_callback_consumes_gate_action_not_entry_or_detached_request():
     request = adapter.published[0]
     assert (request.text, request.format, request.link) == ("canonical", "post", "https://example.test")
     assert request.media_urls == ("media",) and request.alt_texts == ("alt",) and request.thread_chunks == ("chunk",)
+
+
+def test_factory_and_request_share_canonical_platform_not_stale_entry():
+    from app.modules.m06_social_media_manager.models import Platform
+    class Factory:
+        def __init__(self):
+            self.selected = []
+            self.adapters = {p: FakeAdapter() for p in (Platform.TWITTER, Platform.LINKEDIN)}
+        def for_platform(self, platform):
+            self.selected.append(platform)
+            return self.adapters[platform]
+    class Gate:
+        def dispatch_outbound(self, action, declarations, *, effect, **kwargs):
+            # Contract probe: default authority would refuse this digest change.
+            assert factory.selected == []
+            action["platform"] = "linkedin"
+            return effect(action)
+    factory = Factory()
+    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    scheduler = Scheduler(repository=repo, decisions=decisions, adapter_factory=factory,
+                          clock=lambda: NOW, enforcer=Gate())
+    _approved(scheduler, decisions)
+    assert len(scheduler.execute_due(NOW)) == 1
+    assert factory.selected == [Platform.LINKEDIN]
+    assert factory.adapters[Platform.TWITTER].published == []
+    assert factory.adapters[Platform.LINKEDIN].published[0].platform == "linkedin"
+
+
+def test_real_gate_refuses_platform_drift_before_factory_or_publish():
+    from app.modules.m06_social_media_manager.models import Platform
+    class Factory:
+        def __init__(self):
+            self.selected = []
+            self.adapter = FakeAdapter()
+        def for_platform(self, platform):
+            self.selected.append(platform)
+            return self.adapter
+    factory = Factory()
+    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    scheduler = Scheduler(repository=repo, decisions=decisions, adapter_factory=factory, clock=lambda: NOW)
+    entry = _approved(scheduler, decisions)
+    _mutate_after_bind(scheduler, lambda a: a.__setitem__("platform", "linkedin"))
+    assert scheduler.execute_due(NOW) == []
+    assert factory.selected == [] and factory.adapter.published == []
+    assert "authority_rejected" in repo.get_schedule(entry.id).failure
