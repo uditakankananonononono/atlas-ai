@@ -1,0 +1,19 @@
+FF....F...........                                                       [100%]
+=================================== FAILURES ===================================
+___________________ test_pass_and_missing_line_keep_blockers ___________________
+tests/test_executed_acceptance.py:26: in test_pass_and_missing_line_keep_blockers
+    assert not out['candy_gate']['release']
+E   assert not True
+_________________ test_all_selected_lines_pass_still_no_candy __________________
+tests/test_executed_acceptance.py:35: in test_all_selected_lines_pass_still_no_candy
+    assert out['scoped_passing_lines']==2 and not out['candy_gate']['release']
+E   assert (2 == 2 and not True)
+_____________________ test_actual_mixed_pass_fail_receipts _____________________
+tests/test_executed_acceptance.py:85: in test_actual_mixed_pass_fail_receipts
+    assert not out['candy_gate']['release']
+E   assert not True
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers
+FAILED tests/test_executed_acceptance.py::test_all_selected_lines_pass_still_no_candy
+FAILED tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts
+3 failed, 15 passed in 4.66s

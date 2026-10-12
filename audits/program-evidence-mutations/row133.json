@@ -1,0 +1,46 @@
+{
+  "row": 133,
+  "tests": [
+    "tests/test_executed_acceptance.py",
+    "tests/test_row133_mutation_sensitivity.py"
+  ],
+  "tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "mutants": [
+    {
+      "id": "R133-M1",
+      "name": "release true",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'release': False,",
+      "new": "'release': True,"
+    },
+    {
+      "id": "R133-M2",
+      "name": "semantic count",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'semantic_verified_lines': 0,",
+      "new": "'semantic_verified_lines': len(rows),"
+    },
+    {
+      "id": "R133-M3",
+      "name": "dependency scope",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'dependency_scope_verified': False,",
+      "new": "'dependency_scope_verified': True,"
+    },
+    {
+      "id": "R133-M4",
+      "name": "pairing claim",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'semantic_fulfillment_verified': False, 'test_line_pairing_verified': False,",
+      "new": "'semantic_fulfillment_verified': False, 'test_line_pairing_verified': True,"
+    },
+    {
+      "id": "R133-M5",
+      "name": "unconditional pass",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'check_status': 'SCOPED_PASS' if passed else 'UNVERIFIED',",
+      "new": "'check_status': 'SCOPED_PASS',"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+.....F...........                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_missing_line_not_scoped_pass _______________________
+tests/test_executed_acceptance.py:72: in test_missing_line_not_scoped_pass
+    assert not out['lines'][0]['test_line_pairing_verified']
+E   assert not True
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_missing_line_not_scoped_pass
+1 failed, 16 passed in 4.54s

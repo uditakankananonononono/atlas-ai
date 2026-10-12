@@ -1,0 +1,9 @@
+F.................                                                       [100%]
+=================================== FAILURES ===================================
+___________________ test_pass_and_missing_line_keep_blockers ___________________
+tests/test_executed_acceptance.py:25: in test_pass_and_missing_line_keep_blockers
+    assert out['semantic_verified_lines']==0
+E   assert 2 == 0
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers
+1 failed, 17 passed in 4.79s

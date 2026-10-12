@@ -1,0 +1,9 @@
+.................F                                                       [100%]
+=================================== FAILURES ===================================
+____________ test_dependency_scope_never_verified_by_selected_tests ____________
+tests/test_row133_mutation_sensitivity.py:8: in test_dependency_scope_never_verified_by_selected_tests
+    assert out['dependency_scope_verified'] is False
+E   assert True is False
+=========================== short test summary info ============================
+FAILED tests/test_row133_mutation_sensitivity.py::test_dependency_scope_never_verified_by_selected_tests
+1 failed, 17 passed in 4.71s
