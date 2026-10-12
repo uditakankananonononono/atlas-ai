@@ -1,5 +1,5 @@
 {
- "run_at": "2026-10-12T22:14:49.588+05:30",
+ "run_at": "2026-10-12T22:34:46.705+05:30",
  "user_agent": "AtlasCaseResearch/1.0 (public source research; no bulk copy)",
  "results": [
   {
@@ -7,16 +7,19 @@
    "publisher": "Olin College",
    "url": "https://www.olin.edu/blogs/voices-olins-class-2028-college-essay-snippets",
    "robots": {
-    "requested_at": "2026-10-12T22:14:04.673+05:30",
+    "requested_at": "2026-10-12T22:33:48.301+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain",
     "location": null,
     "bytes": 2027,
     "sha256": "773fb8d35bb9a39d35335ee6db8dc5c912d2aacbfb823152d9c61cd647dd902d",
-    "text": "#\n# robots.txt\n#\n# This file is to prevent the crawling and indexing of certain parts\n# of your site by web crawlers and spiders run by sites like Yahoo!\n# and Google. By telling these \"robots\" where not to go on your site,\n# you save bandwidth and server resources.\n#\n# This file will be ignored unless it is at the root of your host:\n# Used:    http://example.com/robots.txt\n# Ignored: http://example.com/site/robots.txt\n#\n# For more information about the robots.txt standard, see:\n# http://www.robotstxt.org/robotstxt.html\n\nUser-agent: *\n# CSS, JS, Images\nAllow: /core/*.css$\nAllow: /core/*.css?\nAllow: /core/*.js$\nAllow: /core/*.js?\nAllow: /core/*.gif\nAllow: /core/*.jpg\nAllow: /core/*.jpeg\nAllow: /core/*.png\nAllow: /core/*.svg\nAllow: /profiles/*.css$\nAllow: /profiles/*.css?\nAllow: /profiles/*.js$\nAllow: /profiles/*.js?\nAllow: /profiles/*.gif\nAllow: /profiles/*.jpg\nAllow: /profiles/*.jpeg\nAllow: /profiles/*.png\nAllow: /profiles/*.svg\n# Directories\nDisallow: /core/\nDisallow: /profiles/\n# Files\nDisallow: /README.md\nDisallow: /composer/Metapackage/README.txt\nDisallow: /composer/Plugin/ProjectMessage/README.md\nDisallow: /composer/Plugin/Scaffold/README.md\nDisallow: /composer/Plugin/VendorHardening/README.txt\nDisallow: /composer/Template/README.txt\nDisallow: /modules/README.txt\nDisallow: /sites/README.txt\nDisallow: /themes/README.txt\nDisallow: /web.config\n# Paths (clean URLs)\nDisallow: /admin/\nDisallow: /comment/reply/\nDisallow: /filter/tips\nDisallow: /node/add/\nDisallow: /search/\nDisallow: /user/register\nDisallow: /user/password\nDisallow: /user/login\nDisallow: /user/logout\nDisallow: /media/oembed\nDisallow: /*/media/oembed\n# Paths (no clean URLs)\nDisallow: /index.php/admin/\nDisallow: /index.php/comment/reply/\nDisallow: /index.php/filter/tips\nDisallow: /index.php/node/add/\nDisallow: /index.php/search/\nDisallow: /index.php/user/password\nDisallow: /index.php/user/register\nDisallow: /index.php/user/login\nDisallow: /index.php/user/logout\nDisallow: /index.php/media/oembed\nDisallow: /index.php/*/media/oembed\n"
+    "text": "#\n# robots.txt\n#\n# This file is to prevent the crawling and indexing of certain parts\n# of your site by web crawlers and spiders run by sites like Yahoo!\n# and Google. By telling these \"robots\" where not to go on your site,\n# you save bandwidth and server resources.\n#\n# This file will be ignored unless it is at the root of your host:\n# Used:    http://example.com/robots.txt\n# Ignored: http://example.com/site/robots.txt\n#\n# For more information about the robots.txt standard, see:\n# http://www.robotstxt.org/robotstxt.html\n\nUser-agent: *\n# CSS, JS, Images\nAllow: /core/*.css$\nAllow: /core/*.css?\nAllow: /core/*.js$\nAllow: /core/*.js?\nAllow: /core/*.gif\nAllow: /core/*.jpg\nAllow: /core/*.jpeg\nAllow: /core/*.png\nAllow: /core/*.svg\nAllow: /profiles/*.css$\nAllow: /profiles/*.css?\nAllow: /profiles/*.js$\nAllow: /profiles/*.js?\nAllow: /profiles/*.gif\nAllow: /profiles/*.jpg\nAllow: /profiles/*.jpeg\nAllow: /profiles/*.png\nAllow: /profiles/*.svg\n# Directories\nDisallow: /core/\nDisallow: /profiles/\n# Files\nDisallow: /README.md\nDisallow: /composer/Metapackage/README.txt\nDisallow: /composer/Plugin/ProjectMessage/README.md\nDisallow: /composer/Plugin/Scaffold/README.md\nDisallow: /composer/Plugin/VendorHardening/README.txt\nDisallow: /composer/Template/README.txt\nDisallow: /modules/README.txt\nDisallow: /sites/README.txt\nDisallow: /themes/README.txt\nDisallow: /web.config\n# Paths (clean URLs)\nDisallow: /admin/\nDisallow: /comment/reply/\nDisallow: /filter/tips\nDisallow: /node/add/\nDisallow: /search/\nDisallow: /user/register\nDisallow: /user/password\nDisallow: /user/login\nDisallow: /user/logout\nDisallow: /media/oembed\nDisallow: /*/media/oembed\n# Paths (no clean URLs)\nDisallow: /index.php/admin/\nDisallow: /index.php/comment/reply/\nDisallow: /index.php/filter/tips\nDisallow: /index.php/node/add/\nDisallow: /index.php/search/\nDisallow: /index.php/user/password\nDisallow: /index.php/user/register\nDisallow: /index.php/user/login\nDisallow: /index.php/user/logout\nDisallow: /index.php/media/oembed\nDisallow: /index.php/*/media/oembed\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:05.674+05:30",
+    "requested_at": "2026-10-12T22:33:49.302+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
@@ -30,16 +33,19 @@
    "publisher": "Hamilton College",
    "url": "https://www.hamilton.edu/admission/apply/college-essays-that-worked",
    "robots": {
-    "requested_at": "2026-10-12T22:14:06.675+05:30",
+    "requested_at": "2026-10-12T22:33:49.435+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain",
     "location": null,
     "bytes": 722,
     "sha256": "15ffca7c05221cf297b045fd391562fbc94565ee3e7faabdfb77d961dca76530",
-    "text": "# robots.txt for https://www.hamilton.edu/\r\nSitemap: https://www.hamilton.edu/sitemap.xml\r\nUser-agent: *\r\nCrawl-delay: 5\r\nDisallow: /print.cfm\r\nDisallow: /performingarts/performing-arts-reservations\r\nDisallow: /applications/test\r\nDisallow: /applications/vanschedule\r\nDisallow: /lab-reservations\r\nDisallow: /applications/calendar/index.cfm\r\nDisallow: /news/email\r\nDisallow: /uniobjerror.cfm\r\nDisallow: *?print=yes\r\nDisallow: *daterequest=\r\nDisallow: /applications/catalogue/syllabi/\r\nDisallow: /myhamilton/alumni/listing.html\r\nDisallow: /applications/scheduledtasks/\r\n\r\nUser-agent: Slurp\r\nCrawl-delay: 30\r\n\r\nUser-agent: GPTBot\r\nCrawl-delay: 10\r\n\r\nUser-agent: Scrapy\r\nCrawl-delay: 30\r\n\r\nUser-agent: BLP_bbot/0.1\r\nDisallow: /"
+    "text": "# robots.txt for https://www.hamilton.edu/\r\nSitemap: https://www.hamilton.edu/sitemap.xml\r\nUser-agent: *\r\nCrawl-delay: 5\r\nDisallow: /print.cfm\r\nDisallow: /performingarts/performing-arts-reservations\r\nDisallow: /applications/test\r\nDisallow: /applications/vanschedule\r\nDisallow: /lab-reservations\r\nDisallow: /applications/calendar/index.cfm\r\nDisallow: /news/email\r\nDisallow: /uniobjerror.cfm\r\nDisallow: *?print=yes\r\nDisallow: *daterequest=\r\nDisallow: /applications/catalogue/syllabi/\r\nDisallow: /myhamilton/alumni/listing.html\r\nDisallow: /applications/scheduledtasks/\r\n\r\nUser-agent: Slurp\r\nCrawl-delay: 30\r\n\r\nUser-agent: GPTBot\r\nCrawl-delay: 10\r\n\r\nUser-agent: Scrapy\r\nCrawl-delay: 30\r\n\r\nUser-agent: BLP_bbot/0.1\r\nDisallow: /",
+    "crawl_delay_s": 5
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:07.676+05:30",
+    "requested_at": "2026-10-12T22:33:54.440+05:30",
+    "spacing_applied_s": 5.0,
     "status": 200,
     "content_type": "text/html;charset=UTF-8",
     "location": null,
@@ -53,16 +59,19 @@
    "publisher": "Connecticut College",
    "url": "https://www.conncoll.edu/admission/apply/essays-that-worked/edie-banovic-25/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:08.676+05:30",
+    "requested_at": "2026-10-12T22:33:54.861+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=UTF-8",
     "location": null,
     "bytes": 83,
     "sha256": "d9a553d2fc7411cc81dacbd611c23bad6997974c08caf031c301f45fd127706d",
-    "text": "User-Agent: *\nDisallow: \nAllow: /\n\nSitemap: http://www.conncoll.edu/sitemap-en.xml\n"
+    "text": "User-Agent: *\nDisallow: \nAllow: /\n\nSitemap: http://www.conncoll.edu/sitemap-en.xml\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:09.677+05:30",
+    "requested_at": "2026-10-12T22:33:55.861+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
@@ -76,16 +85,19 @@
    "publisher": "Johns Hopkins University",
    "url": "https://apply.jhu.edu/hopkins-insider/queens-gambit/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:10.678+05:30",
+    "requested_at": "2026-10-12T22:33:56.009+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain",
     "location": null,
     "bytes": 179,
     "sha256": "bbe228468e3299156b4b472f8a7144b26e17ebeb0d2fd2ba9749a41d3e2d5999",
-    "text": "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://apply.jhu.edu/sitemap_index.xml\n# ---------------------------\n# Manual Mission robots.txt file"
+    "text": "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://apply.jhu.edu/sitemap_index.xml\n# ---------------------------\n# Manual Mission robots.txt file",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:11.679+05:30",
+    "requested_at": "2026-10-12T22:33:57.010+05:30",
+    "spacing_applied_s": 1.0,
     "status": 403,
     "content_type": "text/html; charset=UTF-8",
     "location": null
@@ -97,21 +109,24 @@
    "publisher": "MIT",
    "url": "https://mitadmissions.org/blogs/entry/my_college_essay/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:12.680+05:30",
+    "requested_at": "2026-10-12T22:33:57.043+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 163,
     "sha256": "66fff762add85401a3b75460433c5b5318ac80bfc622f1c7e4a771895c8c40c5",
-    "text": "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://mitadmissions.org/sitemap.xml\nSitemap: https://mitadmissions.org/sitemap.html\n"
+    "text": "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://mitadmissions.org/sitemap.xml\nSitemap: https://mitadmissions.org/sitemap.html\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:13.681+05:30",
+    "requested_at": "2026-10-12T22:33:58.044+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
     "bytes": 203662,
-    "sha256": "cfba78d47ec1c7d31f069396b2b1d7b05c133a7ce675fbbbdbadf956a1654603"
+    "sha256": "86186f7c0faaf7d5ee3673776e0968fc565a99b3584c42a4267dd8f0baddd8ba"
    },
    "outcome": "page_reachable"
   },
@@ -120,16 +135,19 @@
    "publisher": "Tufts University",
    "url": "https://admissions.tufts.edu/blogs/jumbo-talk/post/how-i-wrote-my-college-essay/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:14.682+05:30",
+    "requested_at": "2026-10-12T22:33:58.128+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain",
     "location": null,
     "bytes": 42,
     "sha256": "3ae5d92d398f459a3fc054dbe4a1c5756ad7097b06ad5ef8a8b1f8845113d42a",
-    "text": "User-agent: *\nDisallow: /admin/\nAllow: /\n\n"
+    "text": "User-agent: *\nDisallow: /admin/\nAllow: /\n\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:15.683+05:30",
+    "requested_at": "2026-10-12T22:33:59.129+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html;charset=UTF-8",
     "location": null,
@@ -143,21 +161,24 @@
    "publisher": "Emory University",
    "url": "https://blog.emoryadmission.com/2025/10/strong-personal-statement-selected-exceptional-essays/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:16.684+05:30",
+    "requested_at": "2026-10-12T22:33:59.470+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 179,
     "sha256": "0ec148490e891e0459237bfd972b972e8716c927f0fa292cb44e637316c5784e",
-    "text": "User-agent: *\r\nDisallow: /wp-admin/\r\nAllow: /wp-admin/admin-ajax.php\r\n\r\nSitemap: https://blog.emoryadmission.com/sitemap.xml\r\nSitemap: https://blog.emoryadmission.com/sitemap.rss\n"
+    "text": "User-agent: *\r\nDisallow: /wp-admin/\r\nAllow: /wp-admin/admin-ajax.php\r\n\r\nSitemap: https://blog.emoryadmission.com/sitemap.xml\r\nSitemap: https://blog.emoryadmission.com/sitemap.rss\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:19.384+05:30",
+    "requested_at": "2026-10-12T22:34:03.467+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
     "bytes": 99719,
-    "sha256": "fad362d229f5c6e8f45d37d46b50b15183b93121e58839744e52cff9bdbc3283"
+    "sha256": "8095f307cd3b0ff4746d2057b7d6614a0e4549ec45e6c8a1964608a1e30de39c"
    },
    "outcome": "page_reachable"
   },
@@ -166,16 +187,19 @@
    "publisher": "Pomona College",
    "url": "https://sagehenstories.pomona.edu/2026/04/my-admissions-journey-to-pomona/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:22.693+05:30",
+    "requested_at": "2026-10-12T22:34:07.955+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 126,
     "sha256": "32f04600b6efcfaddf888c9ef3cbe16c8bf670b1a826c1260b49b41f1773cf33",
-    "text": "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://sagehenstories.pomona.edu/wp-sitemap.xml\n"
+    "text": "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://sagehenstories.pomona.edu/wp-sitemap.xml\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:23.819+05:30",
+    "requested_at": "2026-10-12T22:34:09.636+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
@@ -189,16 +213,19 @@
    "publisher": "Princeton University",
    "url": "https://admission.princeton.edu/blogs/application-story",
    "robots": {
-    "requested_at": "2026-10-12T22:14:24.819+05:30",
+    "requested_at": "2026-10-12T22:34:10.272+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 2538,
     "sha256": "aa8c51c266798fa4041f972e599d573f3c1ba12ff29595368cad55a7f2b1fad2",
-    "text": "#\r\n# robots.txt\r\n#\r\n# This file is to prevent the crawling and indexing of certain parts\r\n# of your site by web crawlers and spiders run by sites like Yahoo!\r\n# and Google. By telling these \"robots\" where not to go on your site,\r\n# you save bandwidth and server resources.\r\n#\r\n# This file will be ignored unless it is at the root of your host:\r\n# Used:    http://example.com/robots.txt\r\n# Ignored: http://example.com/site/robots.txt\r\n#\r\n# For more information about the robots.txt standard, see:\r\n# http://www.robotstxt.org/robotstxt.html\r\n\r\nUser-agent: *\r\n# CSS, JS, Images\r\nAllow: /core/*.css$\r\nAllow: /core/*.css?\r\nAllow: /core/*.js$\r\nAllow: /core/*.js?\r\nAllow: /core/*.gif\r\nAllow: /core/*.jpg\r\nAllow: /core/*.jpeg\r\nAllow: /core/*.png\r\nAllow: /core/*.svg\r\nAllow: /profiles/*.css$\r\nAllow: /profiles/*.css?\r\nAllow: /profiles/*.js$\r\nAllow: /profiles/*.js?\r\nAllow: /profiles/*.gif\r\nAllow: /profiles/*.jpg\r\nAllow: /profiles/*.jpeg\r\nAllow: /profiles/*.png\r\nAllow: /profiles/*.svg\r\n# Directories\r\nDisallow: /core/\r\nDisallow: /profiles/\r\n# Files\r\nDisallow: /README.txt\r\nDisallow: /web.config\r\n# Paths (clean URLs)\r\nDisallow: /admin/\r\nDisallow: /comment/reply/\r\nDisallow: /filter/tips\r\nDisallow: /node/add/\r\nDisallow: /search/\r\nDisallow: /user/register/\r\nDisallow: /user/password/\r\nDisallow: /user/login/\r\nDisallow: /user/logout/\r\n# Paths (no clean URLs)\r\nDisallow: /index.php/admin/\r\nDisallow: /index.php/comment/reply/\r\nDisallow: /index.php/filter/tips\r\nDisallow: /index.php/node/add/\r\nDisallow: /index.php/search/\r\nDisallow: /index.php/user/password/\r\nDisallow: /index.php/user/register/\r\nDisallow: /index.php/user/login/\r\nDisallow: /index.php/user/logout/\r\n\r\n# AI and Scraping Bots blocklist - Block all content for these user-agents\r\nUser-agent: GPTBot\r\nDisallow: /\r\nUser-agent: ChatGPT-User\r\nDisallow: /\r\nUser-agent: PerplexityBot\r\nDisallow: /\r\nUser-agent: ClaudeBot\r\nDisallow: /\r\nUser-agent: Amazonbot\r\nDisallow: /\r\nUser-agent: Bytespider\r\nDisallow: /\r\nUser-agent: anthropic-ai\r\nDisallow: /\r\nUser-agent: Claude-Web\r\nDisallow: /\r\nUser-agent: Omgilibot\r\nDisallow: /\r\nUser-agent: Applebot\r\nDisallow: /\r\nUser-agent: Diffbot\r\nDisallow: /\r\nUser-agent: ImagesiftBot\r\nDisallow: /\r\nUser-agent: Omgili\r\nDisallow: /\r\nUser-agent: YouBot\r\nDisallow: /\r\nUser-agent: AI2Bot\r\nDisallow: /\r\nUser-agent: ia_archiver\r\nDisallow: /\r\nUser-agent: Baiduspider\r\nDisallow: /\r\nUser-agent: MJ12bot\r\nDisallow: /\r\nUser-agent: Thinkbot\r\nDisallow: /\r\nUser-agent: DotBot\r\nDisallow: /\r\nUser-agent: AwarioBot\r\nDisallow: /\nSitemap: https://admission.princeton.edu/sitemap.xml"
+    "text": "#\r\n# robots.txt\r\n#\r\n# This file is to prevent the crawling and indexing of certain parts\r\n# of your site by web crawlers and spiders run by sites like Yahoo!\r\n# and Google. By telling these \"robots\" where not to go on your site,\r\n# you save bandwidth and server resources.\r\n#\r\n# This file will be ignored unless it is at the root of your host:\r\n# Used:    http://example.com/robots.txt\r\n# Ignored: http://example.com/site/robots.txt\r\n#\r\n# For more information about the robots.txt standard, see:\r\n# http://www.robotstxt.org/robotstxt.html\r\n\r\nUser-agent: *\r\n# CSS, JS, Images\r\nAllow: /core/*.css$\r\nAllow: /core/*.css?\r\nAllow: /core/*.js$\r\nAllow: /core/*.js?\r\nAllow: /core/*.gif\r\nAllow: /core/*.jpg\r\nAllow: /core/*.jpeg\r\nAllow: /core/*.png\r\nAllow: /core/*.svg\r\nAllow: /profiles/*.css$\r\nAllow: /profiles/*.css?\r\nAllow: /profiles/*.js$\r\nAllow: /profiles/*.js?\r\nAllow: /profiles/*.gif\r\nAllow: /profiles/*.jpg\r\nAllow: /profiles/*.jpeg\r\nAllow: /profiles/*.png\r\nAllow: /profiles/*.svg\r\n# Directories\r\nDisallow: /core/\r\nDisallow: /profiles/\r\n# Files\r\nDisallow: /README.txt\r\nDisallow: /web.config\r\n# Paths (clean URLs)\r\nDisallow: /admin/\r\nDisallow: /comment/reply/\r\nDisallow: /filter/tips\r\nDisallow: /node/add/\r\nDisallow: /search/\r\nDisallow: /user/register/\r\nDisallow: /user/password/\r\nDisallow: /user/login/\r\nDisallow: /user/logout/\r\n# Paths (no clean URLs)\r\nDisallow: /index.php/admin/\r\nDisallow: /index.php/comment/reply/\r\nDisallow: /index.php/filter/tips\r\nDisallow: /index.php/node/add/\r\nDisallow: /index.php/search/\r\nDisallow: /index.php/user/password/\r\nDisallow: /index.php/user/register/\r\nDisallow: /index.php/user/login/\r\nDisallow: /index.php/user/logout/\r\n\r\n# AI and Scraping Bots blocklist - Block all content for these user-agents\r\nUser-agent: GPTBot\r\nDisallow: /\r\nUser-agent: ChatGPT-User\r\nDisallow: /\r\nUser-agent: PerplexityBot\r\nDisallow: /\r\nUser-agent: ClaudeBot\r\nDisallow: /\r\nUser-agent: Amazonbot\r\nDisallow: /\r\nUser-agent: Bytespider\r\nDisallow: /\r\nUser-agent: anthropic-ai\r\nDisallow: /\r\nUser-agent: Claude-Web\r\nDisallow: /\r\nUser-agent: Omgilibot\r\nDisallow: /\r\nUser-agent: Applebot\r\nDisallow: /\r\nUser-agent: Diffbot\r\nDisallow: /\r\nUser-agent: ImagesiftBot\r\nDisallow: /\r\nUser-agent: Omgili\r\nDisallow: /\r\nUser-agent: YouBot\r\nDisallow: /\r\nUser-agent: AI2Bot\r\nDisallow: /\r\nUser-agent: ia_archiver\r\nDisallow: /\r\nUser-agent: Baiduspider\r\nDisallow: /\r\nUser-agent: MJ12bot\r\nDisallow: /\r\nUser-agent: Thinkbot\r\nDisallow: /\r\nUser-agent: DotBot\r\nDisallow: /\r\nUser-agent: AwarioBot\r\nDisallow: /\nSitemap: https://admission.princeton.edu/sitemap.xml",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:25.820+05:30",
+    "requested_at": "2026-10-12T22:34:11.273+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=utf-8",
     "location": null,
@@ -212,21 +239,24 @@
    "publisher": "Dartmouth College",
    "url": "https://admissions.dartmouth.edu/follow/blog/julia-cappio/my-dartmouth-acceptance-one-year-later",
    "robots": {
-    "requested_at": "2026-10-12T22:14:26.821+05:30",
+    "requested_at": "2026-10-12T22:34:11.401+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain;charset=UTF-8",
     "location": null,
     "bytes": 2408,
     "sha256": "1103e97c65722157bf9fb794c9b7c63ed42d94b4208a10be51c014566df61019",
-    "text": "#\r\n# robots.txt\r\n#\r\n# This file is to prevent the crawling and indexing of certain parts\r\n# of your site by web crawlers and spiders run by sites like Yahoo!\r\n# and Google. By telling these \"robots\" where not to go on your site,\r\n# you save bandwidth and server resources.\r\n#\r\n# This file will be ignored unless it is at the root of your host:\r\n# Used:    http://example.com/robots.txt\r\n# Ignored: http://example.com/site/robots.txt\r\n#\r\n# For more information about the robots.txt standard, see:\r\n# http://www.robotstxt.org/robotstxt.html\r\n\r\nUser-agent: *\r\nCrawl-delay: 10\r\n# CSS, JS, Images\r\nAllow: /misc/*.css$\r\nAllow: /misc/*.css?\r\nAllow: /misc/*.js$\r\nAllow: /misc/*.js?\r\nAllow: /misc/*.gif\r\nAllow: /misc/*.jpg\r\nAllow: /misc/*.jpeg\r\nAllow: /misc/*.png\r\nAllow: /modules/*.css$\r\nAllow: /modules/*.css?\r\nAllow: /modules/*.js$\r\nAllow: /modules/*.js?\r\nAllow: /modules/*.gif\r\nAllow: /modules/*.jpg\r\nAllow: /modules/*.jpeg\r\nAllow: /modules/*.png\r\nAllow: /profiles/*.css$\r\nAllow: /profiles/*.css?\r\nAllow: /profiles/*.js$\r\nAllow: /profiles/*.js?\r\nAllow: /profiles/*.gif\r\nAllow: /profiles/*.jpg\r\nAllow: /profiles/*.jpeg\r\nAllow: /profiles/*.png\r\nAllow: /themes/*.css$\r\nAllow: /themes/*.css?\r\nAllow: /themes/*.js$\r\nAllow: /themes/*.js?\r\nAllow: /themes/*.gif\r\nAllow: /themes/*.jpg\r\nAllow: /themes/*.jpeg\r\nAllow: /themes/*.png\r\n# Directories\r\nDisallow: /includes/\r\nDisallow: /misc/\r\nDisallow: /modules/\r\nDisallow: /profiles/\r\nDisallow: /scripts/\r\nDisallow: /themes/\r\n# Files\r\nDisallow: /CHANGELOG.txt\r\nDisallow: /cron.php\r\nDisallow: /INSTALL.mysql.txt\r\nDisallow: /INSTALL.pgsql.txt\r\nDisallow: /INSTALL.sqlite.txt\r\nDisallow: /install.php\r\nDisallow: /INSTALL.txt\r\nDisallow: /LICENSE.txt\r\nDisallow: /MAINTAINERS.txt\r\nDisallow: /update.php\r\nDisallow: /UPGRADE.txt\r\nDisallow: /xmlrpc.php\r\n# Paths (clean URLs)\r\nDisallow: /admin/\r\nDisallow: /comment/reply/\r\nDisallow: /filter/tips/\r\nDisallow: /node/add/\r\nDisallow: /search/\r\nDisallow: /user/register/\r\nDisallow: /user/password/\r\nDisallow: /user/login/\r\nDisallow: /user/logout/\r\n# Paths (no clean URLs)\r\nDisallow: /?q=admin/\r\nDisallow: /?q=comment/reply/\r\nDisallow: /?q=filter/tips/\r\nDisallow: /?q=node/add/\r\nDisallow: /?q=search/\r\nDisallow: /?q=user/password/\r\nDisallow: /?q=user/register/\r\nDisallow: /?q=user/login/\r\nDisallow: /?q=user/logout/\r\n\r\nDisallow: /follow/blog/natalie-keim\r\nDisallow: /follow/blog/natalie-keim/\nSitemap: https://admissions.dartmouth.edu/sitemap.xml"
+    "text": "#\r\n# robots.txt\r\n#\r\n# This file is to prevent the crawling and indexing of certain parts\r\n# of your site by web crawlers and spiders run by sites like Yahoo!\r\n# and Google. By telling these \"robots\" where not to go on your site,\r\n# you save bandwidth and server resources.\r\n#\r\n# This file will be ignored unless it is at the root of your host:\r\n# Used:    http://example.com/robots.txt\r\n# Ignored: http://example.com/site/robots.txt\r\n#\r\n# For more information about the robots.txt standard, see:\r\n# http://www.robotstxt.org/robotstxt.html\r\n\r\nUser-agent: *\r\nCrawl-delay: 10\r\n# CSS, JS, Images\r\nAllow: /misc/*.css$\r\nAllow: /misc/*.css?\r\nAllow: /misc/*.js$\r\nAllow: /misc/*.js?\r\nAllow: /misc/*.gif\r\nAllow: /misc/*.jpg\r\nAllow: /misc/*.jpeg\r\nAllow: /misc/*.png\r\nAllow: /modules/*.css$\r\nAllow: /modules/*.css?\r\nAllow: /modules/*.js$\r\nAllow: /modules/*.js?\r\nAllow: /modules/*.gif\r\nAllow: /modules/*.jpg\r\nAllow: /modules/*.jpeg\r\nAllow: /modules/*.png\r\nAllow: /profiles/*.css$\r\nAllow: /profiles/*.css?\r\nAllow: /profiles/*.js$\r\nAllow: /profiles/*.js?\r\nAllow: /profiles/*.gif\r\nAllow: /profiles/*.jpg\r\nAllow: /profiles/*.jpeg\r\nAllow: /profiles/*.png\r\nAllow: /themes/*.css$\r\nAllow: /themes/*.css?\r\nAllow: /themes/*.js$\r\nAllow: /themes/*.js?\r\nAllow: /themes/*.gif\r\nAllow: /themes/*.jpg\r\nAllow: /themes/*.jpeg\r\nAllow: /themes/*.png\r\n# Directories\r\nDisallow: /includes/\r\nDisallow: /misc/\r\nDisallow: /modules/\r\nDisallow: /profiles/\r\nDisallow: /scripts/\r\nDisallow: /themes/\r\n# Files\r\nDisallow: /CHANGELOG.txt\r\nDisallow: /cron.php\r\nDisallow: /INSTALL.mysql.txt\r\nDisallow: /INSTALL.pgsql.txt\r\nDisallow: /INSTALL.sqlite.txt\r\nDisallow: /install.php\r\nDisallow: /INSTALL.txt\r\nDisallow: /LICENSE.txt\r\nDisallow: /MAINTAINERS.txt\r\nDisallow: /update.php\r\nDisallow: /UPGRADE.txt\r\nDisallow: /xmlrpc.php\r\n# Paths (clean URLs)\r\nDisallow: /admin/\r\nDisallow: /comment/reply/\r\nDisallow: /filter/tips/\r\nDisallow: /node/add/\r\nDisallow: /search/\r\nDisallow: /user/register/\r\nDisallow: /user/password/\r\nDisallow: /user/login/\r\nDisallow: /user/logout/\r\n# Paths (no clean URLs)\r\nDisallow: /?q=admin/\r\nDisallow: /?q=comment/reply/\r\nDisallow: /?q=filter/tips/\r\nDisallow: /?q=node/add/\r\nDisallow: /?q=search/\r\nDisallow: /?q=user/password/\r\nDisallow: /?q=user/register/\r\nDisallow: /?q=user/login/\r\nDisallow: /?q=user/logout/\r\n\r\nDisallow: /follow/blog/natalie-keim\r\nDisallow: /follow/blog/natalie-keim/\nSitemap: https://admissions.dartmouth.edu/sitemap.xml",
+    "crawl_delay_s": 10
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:27.822+05:30",
+    "requested_at": "2026-10-12T22:34:21.411+05:30",
+    "spacing_applied_s": 10.0,
     "status": 200,
     "content_type": "text/html; charset=utf-8",
     "location": null,
     "bytes": 152885,
-    "sha256": "c936bd89a37c58edd2f07777400ab36840cbf003bc73938a74df96076843eea0"
+    "sha256": "8b9d6f5c2b462161c25880b7fff79b436f3507f93bf284e3cd3ddfba83116666"
    },
    "outcome": "page_reachable"
   },
@@ -235,21 +265,24 @@
    "publisher": "CollegeVine",
    "url": "https://blog.collegevine.com/vanderbilt-essay-examples",
    "robots": {
-    "requested_at": "2026-10-12T22:14:30.936+05:30",
+    "requested_at": "2026-10-12T22:34:24.487+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 53,
     "sha256": "2eeffc9cef056633d2f45bc276da9d60f87f8176642ebe2f6e49a0f958fde0b2",
-    "text": "Sitemap: https://blog.collegevine.com/sitemap.xml.gz\n"
+    "text": "Sitemap: https://blog.collegevine.com/sitemap.xml.gz\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:31.937+05:30",
+    "requested_at": "2026-10-12T22:34:25.488+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=utf-8",
     "location": null,
-    "bytes": 54014,
-    "sha256": "c363dd9d19bfcfb344cb51f9a9bd759ecefaa7a4d5c05848a31d8c66f91f5b8c"
+    "bytes": 54013,
+    "sha256": "9b668ae28fe1e43a79e5c11d1bef0892da2179abf80fb6a8065ecf74c4f32d56"
    },
    "outcome": "page_reachable"
   },
@@ -258,16 +291,19 @@
    "publisher": "PrepScholar",
    "url": "https://blog.prepscholar.com/successful-harvard-application-common-application-harvard-supplement",
    "robots": {
-    "requested_at": "2026-10-12T22:14:32.938+05:30",
+    "requested_at": "2026-10-12T22:34:25.679+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 165,
     "sha256": "ea8e85a2b5420fc4539c4997c85a6821500c4e4a4ebb410b0c926f648fddb5ce",
-    "text": "User-agent: *\nDisallow: /_hcms/preview/\nDisallow: /hs/manage-preferences/\nDisallow: /hs/preferences-center/\nDisallow: /*?*hs_preview=*\nDisallow: /*?*hsCacheBuster=*\n"
+    "text": "User-agent: *\nDisallow: /_hcms/preview/\nDisallow: /hs/manage-preferences/\nDisallow: /hs/preferences-center/\nDisallow: /*?*hs_preview=*\nDisallow: /*?*hsCacheBuster=*\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:33.939+05:30",
+    "requested_at": "2026-10-12T22:34:26.680+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
@@ -281,16 +317,19 @@
    "publisher": "College Essay Guy",
    "url": "https://www.collegeessayguy.com/blog/college-essay-examples",
    "robots": {
-    "requested_at": "2026-10-12T22:14:34.940+05:30",
+    "requested_at": "2026-10-12T22:34:26.855+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 231,
     "sha256": "056a4189308d83bd2e6dca4ec5b769e298b9f236fb73d29f58f4e420dfbf2ee1",
-    "text": "Crawl-delay: 10\n# START YOAST BLOCK\n# ---------------------------\nUser-agent: *\nDisallow: /wp-json/\nDisallow: /?rest_route=\n\nSitemap: https://www.collegeessayguy.com/sitemap_index.xml\n# ---------------------------\n# END YOAST BLOCK"
+    "text": "Crawl-delay: 10\n# START YOAST BLOCK\n# ---------------------------\nUser-agent: *\nDisallow: /wp-json/\nDisallow: /?rest_route=\n\nSitemap: https://www.collegeessayguy.com/sitemap_index.xml\n# ---------------------------\n# END YOAST BLOCK",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:35.941+05:30",
+    "requested_at": "2026-10-12T22:34:27.856+05:30",
+    "spacing_applied_s": 1.0,
     "status": 403,
     "content_type": "text/html; charset=UTF-8",
     "location": null
@@ -302,21 +341,24 @@
    "publisher": "College Raptor",
    "url": "https://www.collegeraptor.com/getting-in/articles/college-applications/application-essays-that-got-students-accepted-into-impressive-schools/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:36.942+05:30",
+    "requested_at": "2026-10-12T22:34:27.884+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 353,
     "sha256": "c04d9b7f6e99febe64eb1c76f9dc3335a0b311d4e1ae3a0dd042bc330f6cbb64",
-    "text": "User-agent: *\r\nDisallow: /Account/LogOn\r\nDisallow: /Account/LogOn/\r\nDisallow: /Account/Register\r\nDisallow: /Account/Register/\r\nDisallow: /Account/PasswordReset\r\nDisallow: /Account/PasswordReset/\r\nDisallow: /wp-login.php\r\nDisallow: /Shopping/Download*\r\nDisallow: /Shopping/Pdf* \r\nDisallow: /pdf/*\r\nSitemap: https://www.collegeraptor.com/sitemap-index.xml"
+    "text": "User-agent: *\r\nDisallow: /Account/LogOn\r\nDisallow: /Account/LogOn/\r\nDisallow: /Account/Register\r\nDisallow: /Account/Register/\r\nDisallow: /Account/PasswordReset\r\nDisallow: /Account/PasswordReset/\r\nDisallow: /wp-login.php\r\nDisallow: /Shopping/Download*\r\nDisallow: /Shopping/Pdf* \r\nDisallow: /pdf/*\r\nSitemap: https://www.collegeraptor.com/sitemap-index.xml",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:37.943+05:30",
+    "requested_at": "2026-10-12T22:34:28.885+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
     "bytes": 150313,
-    "sha256": "65cdc24ce390acac8e08c720582fef1892eb75260d2675f86ae3b90dca603802"
+    "sha256": "384fa65d3a2906c1cc438f33c11ef7b96466f846c5dbef7123a4505cb2bf8308"
    },
    "outcome": "page_reachable"
   },
@@ -325,21 +367,24 @@
    "publisher": "College Transitions",
    "url": "https://www.collegetransitions.com/blog/college-transitions-case-study-bethlehem-central/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:38.944+05:30",
+    "requested_at": "2026-10-12T22:34:29.522+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain",
     "location": null,
     "bytes": 192,
     "sha256": "c9ff95115ce92dc019c6d32318b8554ebd49b7fab214216761383242207ee9b4",
-    "text": "User-agent: *\r\nCrawl-delay: 10\r\n\r\nDisallow: /wp-content/uploads/wpforms/\r\nDisallow: /wp-admin/\r\nAllow: /wp-admin/admin-ajax.php\r\n\r\nSitemap: https://www.collegetransitions.com/sitemap_index.xml"
+    "text": "User-agent: *\r\nCrawl-delay: 10\r\n\r\nDisallow: /wp-content/uploads/wpforms/\r\nDisallow: /wp-admin/\r\nAllow: /wp-admin/admin-ajax.php\r\n\r\nSitemap: https://www.collegetransitions.com/sitemap_index.xml",
+    "crawl_delay_s": 10
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:39.945+05:30",
+    "requested_at": "2026-10-12T22:34:39.532+05:30",
+    "spacing_applied_s": 10.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
     "bytes": 247369,
-    "sha256": "40d68047a8c011abab540ab6a2abf41aa6b5ac41767ec1b834f2ba54a324ab4c"
+    "sha256": "12f671ae552f74dd0ee76b5d392d999e6b4a66e902ab0121838f30929ac2576d"
    },
    "outcome": "page_reachable"
   },
@@ -348,7 +393,8 @@
    "publisher": "AdmitRaven",
    "url": "https://admitraven.com/en/case-studies/cdd76171-e4ae-44be-bd7f-c3fb7d747074",
    "robots": {
-    "requested_at": "2026-10-12T22:14:40.946+05:30",
+    "requested_at": "2026-10-12T22:34:40.050+05:30",
+    "spacing_applied_s": 1.0,
     "status": 307,
     "content_type": "text/plain",
     "location": "/en/robots.txt"
@@ -360,21 +406,24 @@
    "publisher": "AdmitSee",
    "url": "https://www.admitsee.com/profile-detail/123956",
    "robots": {
-    "requested_at": "2026-10-12T22:14:41.947+05:30",
+    "requested_at": "2026-10-12T22:34:40.404+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain",
     "location": null,
     "bytes": 2088,
     "sha256": "1e245da6a20d1bbf98bb5ef0016f579e2248addee7aef979f490ef223590113c",
-    "text": "User-agent: *\nSitemap: https://www.admitsee.com/sitemap-g.xml\nDisallow: /v3_matchesblog/*\nDisallow: /v3_blogcategorylistajax/*\nDisallow: /v3_blognewpostsajax/*\nDisallow: /v3_blogsearchajax/*\nDisallow: /searchundergrad/P*\nDisallow: /searchundergrad/search*\nDisallow: /searchundergrad/terms*\nDisallow: /searchundergrad/privacy*\nDisallow: /read-actual-college-essays/faq/*\n# was using meta tag also:\nDisallow: /unlock/*\n# Disallow: /profile-detail/*\nDisallow: /start/profile-detail/*\nDisallow: /start/unlock/*\nDisallow: /sample\nDisallow: /profile-detail-grad/*\nDisallow: /viewdesktop/*\nDisallow: /ebook-download\nDisallow: /ebook-thanks\n# was using meta tag also:\nDisallow: /start/*\n# was using meta tag also:\nDisallow: /login/*\nDisallow: /v4_matches\nDisallow: /mentor/*\n# was using meta tag also:\nDisallow: /unlockNEW/*\n# was using meta tag also:\nDisallow: /unlocknew/*\nDisallow: /sendprofilereq/*\n#Disallow: /searchundergrad/*\n#Disallow: /searchundergradfilter/search&home_country*\n#Disallow: /searchundergradfilter/search&keywords*\nDisallow: /searchgradfilter/P*\n#Disallow: /searchundergradfilter/faq*\n#Disallow: /searchundergradfilter/P*\n#Disallow: /searchundergradfilter/*\nDisallow: /blog/P*\nDisallow: /blog/index*\nDisallow: /upgrade-class*\n#Disallow: /searchundergradfilter/search/P*\nDisallow: /searchgradfilter/search/P*\nDisallow: /searchgradfilter/faq*\n#Disallow: /searchundergradfilter/search&home_country*\nDisallow: /searchgradfilter/search&graduate_degree-emptyn&grad_schools_attended*\nDisallow: /searchgradfilter/search*\nDisallow: /viewdesktop\n#using meta tag instead Disallow: /start\nDisallow: /register2\n#Disallow: /package_experts\n#Disallow: /package_schools\n#Disallow: /package_topics\n#Disallow: /package_detailNEW\n#Disallow: /searchundergradfilter\nDisallow: /searchgradfilter\nDisallow: /searchgrad\nDisallow: /\u201d\n\nUser-agent: Googlebot-Image \nDisallow: /  \nUser-agent: Yahoo-MMCrawler \nDisallow: /  \nUser-agent: psbot \nDisallow: /  \nUser-agent: msnbot \nDisallow: /*.jpg$ \nDisallow: /*.jpeg$ \nDisallow: /*.gif$ \nDisallow: /*.png$  \n\nLLMS: https://www.admitsee.com/llms.txt\n\n\n\n"
+    "text": "User-agent: *\nSitemap: https://www.admitsee.com/sitemap-g.xml\nDisallow: /v3_matchesblog/*\nDisallow: /v3_blogcategorylistajax/*\nDisallow: /v3_blognewpostsajax/*\nDisallow: /v3_blogsearchajax/*\nDisallow: /searchundergrad/P*\nDisallow: /searchundergrad/search*\nDisallow: /searchundergrad/terms*\nDisallow: /searchundergrad/privacy*\nDisallow: /read-actual-college-essays/faq/*\n# was using meta tag also:\nDisallow: /unlock/*\n# Disallow: /profile-detail/*\nDisallow: /start/profile-detail/*\nDisallow: /start/unlock/*\nDisallow: /sample\nDisallow: /profile-detail-grad/*\nDisallow: /viewdesktop/*\nDisallow: /ebook-download\nDisallow: /ebook-thanks\n# was using meta tag also:\nDisallow: /start/*\n# was using meta tag also:\nDisallow: /login/*\nDisallow: /v4_matches\nDisallow: /mentor/*\n# was using meta tag also:\nDisallow: /unlockNEW/*\n# was using meta tag also:\nDisallow: /unlocknew/*\nDisallow: /sendprofilereq/*\n#Disallow: /searchundergrad/*\n#Disallow: /searchundergradfilter/search&home_country*\n#Disallow: /searchundergradfilter/search&keywords*\nDisallow: /searchgradfilter/P*\n#Disallow: /searchundergradfilter/faq*\n#Disallow: /searchundergradfilter/P*\n#Disallow: /searchundergradfilter/*\nDisallow: /blog/P*\nDisallow: /blog/index*\nDisallow: /upgrade-class*\n#Disallow: /searchundergradfilter/search/P*\nDisallow: /searchgradfilter/search/P*\nDisallow: /searchgradfilter/faq*\n#Disallow: /searchundergradfilter/search&home_country*\nDisallow: /searchgradfilter/search&graduate_degree-emptyn&grad_schools_attended*\nDisallow: /searchgradfilter/search*\nDisallow: /viewdesktop\n#using meta tag instead Disallow: /start\nDisallow: /register2\n#Disallow: /package_experts\n#Disallow: /package_schools\n#Disallow: /package_topics\n#Disallow: /package_detailNEW\n#Disallow: /searchundergradfilter\nDisallow: /searchgradfilter\nDisallow: /searchgrad\nDisallow: /\u201d\n\nUser-agent: Googlebot-Image \nDisallow: /  \nUser-agent: Yahoo-MMCrawler \nDisallow: /  \nUser-agent: psbot \nDisallow: /  \nUser-agent: msnbot \nDisallow: /*.jpg$ \nDisallow: /*.jpeg$ \nDisallow: /*.gif$ \nDisallow: /*.png$  \n\nLLMS: https://www.admitsee.com/llms.txt\n\n\n\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:42.947+05:30",
+    "requested_at": "2026-10-12T22:34:41.405+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,
-    "bytes": 76524,
-    "sha256": "2fd786c519b337c6ec17e0a42e4008cc76c282c05186c8d56b1f668222150e46"
+    "bytes": 76306,
+    "sha256": "a4f8fd162f84cfbdb535c98543f967092e174a487785ba0d95bf55f2f40c7e6d"
    },
    "outcome": "page_reachable"
   },
@@ -383,21 +432,24 @@
    "publisher": "Borderless",
    "url": "https://borderless.so/stories/how-my-tripod-of-family-faith-and-voice-led-me-to-the-university-of-notre-dame",
    "robots": {
-    "requested_at": "2026-10-12T22:14:44.536+05:30",
+    "requested_at": "2026-10-12T22:34:43.171+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 83,
     "sha256": "af36665bef948c77fffa6f13a735387b0aa08dfd24a5b2f8d62c23d9f4d535d4",
-    "text": "User-agent: *\nAllow: /\nAllow: /api/og/\n\nSitemap: https://borderless.so/sitemap.xml\n"
+    "text": "User-agent: *\nAllow: /\nAllow: /api/og/\n\nSitemap: https://borderless.so/sitemap.xml\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:45.537+05:30",
+    "requested_at": "2026-10-12T22:34:44.172+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=utf-8",
     "location": null,
     "bytes": 108599,
-    "sha256": "344fc5392c9ab3071e72f73de134eb3010bcf8c7daaa249323bb7ed005fe200c"
+    "sha256": "5834088b593afede834bbf4affe29014097af3f149a9ed9cfc25fbd7c144c500"
    },
    "outcome": "page_reachable"
   },
@@ -406,16 +458,19 @@
    "publisher": "Cornell University",
    "url": "https://business.cornell.edu/hub/2018/11/19/college-application-process-led-me-to-cornell/",
    "robots": {
-    "requested_at": "2026-10-12T22:14:46.538+05:30",
+    "requested_at": "2026-10-12T22:34:44.422+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 771,
     "sha256": "41782463097680fedc24800c7246d39f80e9018d896e12d2486afd9a5490c1d4",
-    "text": "# START YOAST BLOCK\n# ---------------------------\nUser-agent: *\nDisallow:\n\nSitemap: https://business.cornell.edu/sitemap_index.xml\nSitemap: https://business.cornell.edu/dyson/sitemap_index.xml\nSitemap: https://business.cornell.edu/johnson/sitemap_index.xml\nSitemap: https://business.cornell.edu/nolan/sitemap_index.xml\nSitemap: https://realestate.cornell.edu/sitemap_index.xml\nSitemap: https://business.cornell.edu/centers/sitemap_index.xml\nSitemap: https://business.cornell.edu/alumni/sitemap_index.xml\nSitemap: https://business.cornell.edu/students/sitemap_index.xml\nSitemap: https://business.cornell.edu/partners/sitemap_index.xml\n# ---------------------------\n# END YOAST BLOCK\n\nUser-agent: cludo\nUser-agent: bingbot\nUser-agent: StudylibBot\nDisallow:\nCrawl-delay: 10\n"
+    "text": "# START YOAST BLOCK\n# ---------------------------\nUser-agent: *\nDisallow:\n\nSitemap: https://business.cornell.edu/sitemap_index.xml\nSitemap: https://business.cornell.edu/dyson/sitemap_index.xml\nSitemap: https://business.cornell.edu/johnson/sitemap_index.xml\nSitemap: https://business.cornell.edu/nolan/sitemap_index.xml\nSitemap: https://realestate.cornell.edu/sitemap_index.xml\nSitemap: https://business.cornell.edu/centers/sitemap_index.xml\nSitemap: https://business.cornell.edu/alumni/sitemap_index.xml\nSitemap: https://business.cornell.edu/students/sitemap_index.xml\nSitemap: https://business.cornell.edu/partners/sitemap_index.xml\n# ---------------------------\n# END YOAST BLOCK\n\nUser-agent: cludo\nUser-agent: bingbot\nUser-agent: StudylibBot\nDisallow:\nCrawl-delay: 10\n",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:47.539+05:30",
+    "requested_at": "2026-10-12T22:34:45.423+05:30",
+    "spacing_applied_s": 1.0,
     "status": 308,
     "content_type": "text/html; charset=UTF-8",
     "location": "/news/2018/11/19/college-application-process-led-me-to-cornell/"
@@ -427,16 +482,19 @@
    "publisher": "The Harvard Crimson",
    "url": "https://business.thecrimson.com/10-successful-harvard-essays-2025",
    "robots": {
-    "requested_at": "2026-10-12T22:14:48.540+05:30",
+    "requested_at": "2026-10-12T22:34:45.650+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/plain; charset=utf-8",
     "location": null,
     "bytes": 497,
     "sha256": "63bfb60889bfb9ee4a01d1a18090a4c72f9b12e346058acb9fbca4abc2d50126",
-    "text": "User-agent: *\nAllow: /\nDisallow: *?lightbox=\n\n# Optimization for Google Ads Bot\nUser-agent: AdsBot-Google-Mobile\nUser-agent: AdsBot-Google\nDisallow: /_partials*\nDisallow: /pro-gallery-webapp/v1/galleries/*\n\n# Block PetalBot\nUser-agent: PetalBot\nDisallow: /\n\n# Crawl delay for overly enthusiastic bots\nUser-agent: dotbot\nCrawl-delay: 10\nUser-agent: AhrefsBot\nCrawl-delay: 10\n\nSitemap: https://business.thecrimson.com/sitemap.xml\n\n# Auto generated, go to SEO Tools > Robots.txt Editor to change this"
+    "text": "User-agent: *\nAllow: /\nDisallow: *?lightbox=\n\n# Optimization for Google Ads Bot\nUser-agent: AdsBot-Google-Mobile\nUser-agent: AdsBot-Google\nDisallow: /_partials*\nDisallow: /pro-gallery-webapp/v1/galleries/*\n\n# Block PetalBot\nUser-agent: PetalBot\nDisallow: /\n\n# Crawl delay for overly enthusiastic bots\nUser-agent: dotbot\nCrawl-delay: 10\nUser-agent: AhrefsBot\nCrawl-delay: 10\n\nSitemap: https://business.thecrimson.com/sitemap.xml\n\n# Auto generated, go to SEO Tools > Robots.txt Editor to change this",
+    "crawl_delay_s": 0
    },
    "page": {
-    "requested_at": "2026-10-12T22:14:49.541+05:30",
+    "requested_at": "2026-10-12T22:34:46.651+05:30",
+    "spacing_applied_s": 1.0,
     "status": 200,
     "content_type": "text/html; charset=UTF-8",
     "location": null,

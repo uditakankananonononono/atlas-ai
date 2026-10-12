@@ -293,7 +293,10 @@ def execute_stats_request(plan, sitekey, *, timeout=TRANSPORT_TIMEOUT_S, base_ur
 
     Refusals are ValueError('APPLY_REFUSED_*') with no chained exception, so the sitekey (which is in
     the request URL) is not reachable from __context__/__cause__ or a traceback. `timeout` bounds the
-    WHOLE call (connect, headers and body), not just each socket operation. base_url overrides the
+    WHOLE call (connect, headers and body) as seen by the CALLER: the call returns within `timeout`
+    (outer future timeout). Residue: urllib cannot cancel the worker, so after a refusal the worker thread may
+    outlive the call, for body reads until its next read1 (deadline check) and for connect/header stalls until the
+    per-operation timeout (`timeout`) trips or the server finishes. It holds no result and nothing waits on it. base_url overrides the
     host only when allow_loopback is True and the host is 127.0.0.1/localhost over http."""
     plan = _validated_plan(plan)
     if not isinstance(sitekey, str) or not re.fullmatch(r"[A-Za-z0-9]{6,64}", sitekey):

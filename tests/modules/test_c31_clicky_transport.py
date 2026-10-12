@@ -70,6 +70,15 @@ class H(BaseHTTPRequestHandler):
             return self._send(200, "[]")
         if mode == "countries":
             return self._send(204, "")
+        if mode == "searches-keywords":   # header drip: each socket read gets data within 0.2s, headers take ~2s in total
+            try:
+                self.wfile.write(b"HTTP/1.1 200 OK\r\n"); self.wfile.flush()
+                for i in range(10):
+                    time.sleep(0.2); self.wfile.write(b"X-Drip-%d: 1\r\n" % i); self.wfile.flush()
+                self.wfile.write(b"Content-Length: 2\r\n\r\n[]"); self.wfile.flush()
+            except OSError:
+                pass
+            return
         if mode == "visitors":      # slow drip: 1 byte every 0.1s, would run ~20s
             self.send_response(200); self.send_header("Content-Length", "200"); self.end_headers()
             try:
@@ -154,6 +163,21 @@ def test_total_timeout_bounds_slow_drip(server):
     assert time.monotonic() - t0 < 2.0     # per-op timeout alone would allow ~20s
     time.sleep(0.8)
     assert not [t for t in threading.enumerate() if t.name.startswith("ThreadPoolExecutor")]   # worker stopped reading too
+
+
+def test_total_timeout_bounds_header_drip_whole_call(server):
+    """Per-operation timeouts alone (0.5s) never fire here: each read gets data within 0.2s. Only the caller-return
+    bound ends the call, so removing the outer future timeout (mutant C5) must fail this test."""
+    plan = clicky.plan_stats_request(123, "searches-keywords")
+    t0 = time.monotonic()
+    with pytest.raises(ValueError, match="APPLY_REFUSED_TRANSPORT"):
+        clicky.execute_stats_request(plan, KEY, timeout=0.5, base_url=server, allow_loopback=True)
+    assert time.monotonic() - t0 < 1.0
+    # worker residue is bounded: it cannot be cancelled, but it ends once the server finishes or its own bounds trip
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline and [t for t in threading.enumerate() if t.name.startswith("ThreadPoolExecutor")]:
+        time.sleep(0.1)
+    assert not [t for t in threading.enumerate() if t.name.startswith("ThreadPoolExecutor")]
 
 
 def test_connection_refused_does_not_echo_url_or_key():

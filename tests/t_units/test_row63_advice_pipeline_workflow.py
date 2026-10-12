@@ -32,6 +32,8 @@ class H(BaseHTTPRequestHandler):
 
     def do_GET(self):
         HITS.append(self.path)
+        if self.path == '/advice/redir':
+            self.send_response(302); self.send_header('Location', '/advice/essays'); self.send_header('Content-Length', '0'); self.end_headers(); return
         body = (ROBOTS_OVERRIDE.get('robots', ROBOTS) if self.path == '/robots.txt' else PAGES.get(self.path))
         if self.path == '/robots.txt' and ROBOTS_OVERRIDE.get('missing'):
             body = None
@@ -56,15 +58,16 @@ def make(port, clock=None):
 
     def transport(url, limit):
         p = urlsplit(url)
-        assert p.scheme == 'https' and p.netloc == 'advice.example.org'   # only the permitted origin is ever requested
+        assert p.scheme == 'https' and p.netloc in ('advice.example.org', 'other.example.org')   # only the permitted origin is ever requested
         try:
             with opener.open('http://127.0.0.1:%d%s' % (port, p.path), timeout=5) as r:
                 return m.FetchResponse(r.status, r.read(limit + 1).decode(), {})
         except urllib.error.HTTPError as e:
             return m.FetchResponse(e.code, '', {})
     permit = m.SourcePermit('adv', 'https://advice.example.org', 'CC-BY-4.0', 'https://advice.example.org/terms', '2026-10-12', True)
+    permit2 = m.SourcePermit('adv2', 'https://other.example.org', 'CC-BY-4.0', 'https://other.example.org/terms', '2026-10-12', True)
     t = [0.0]
-    fetcher = m.PublicFetcher({'adv': permit}, transport, clock=clock or (lambda: t[0]))
+    fetcher = m.PublicFetcher({'adv': permit, 'adv2': permit2}, transport, clock=clock or (lambda: t[0]))
     return fetcher, permit, t
 
 
@@ -153,13 +156,14 @@ def test_shared_policy_unavailable_is_distinguishable(port, monkeypatch):
     assert str(e.value) == 'FLEET_REFUSED_UNAVAILABLE'
 
 
-def test_rate_limit_boundary_and_host_independence(port):
+def test_rate_limit_boundary_and_other_host_is_independent(port):
     t = [0.0]
     fetcher, permit, _ = make(port, clock=lambda: t[0])
     fetcher.fetch('adv', 'https://advice.example.org/advice/essays')
     t[0] = 59.9
     with pytest.raises(m.Refusal, match='RATELIMIT'):
         fetcher.fetch('adv', 'https://advice.example.org/advice/grants')
+    assert fetcher.fetch('adv2', 'https://other.example.org/advice/grants')      # a different host is not limited by the first
     t[0] = 60.0
     assert fetcher.fetch('adv', 'https://advice.example.org/advice/grants')
 
@@ -188,3 +192,49 @@ def test_robots_not_200_refuses_before_page_request(port):
     finally:
         ROBOTS_OVERRIDE.clear()
     assert HITS == ['/robots.txt']
+
+
+def test_redirect_response_is_refused_not_followed(port):
+    HITS.clear()
+    fetcher, _, _ = make(port)
+    with pytest.raises(m.Refusal, match='TREND_REFUSED_FETCH'):
+        fetcher.fetch('adv', 'https://advice.example.org/advice/redir')
+    assert HITS == ['/robots.txt', '/advice/redir']          # the Location target was never requested
+
+
+def test_robots_body_over_limit_is_refused(port):
+    fetcher, _, t = make(port)
+    ROBOTS_OVERRIDE['robots'] = 'User-agent: *\n' + '#' * 300 + '\n'
+    try:
+        small = m.PublicFetcher(fetcher.permits, fetcher.transport, clock=lambda: t[0], limit=100)
+        with pytest.raises(m.Refusal, match='TREND_REFUSED_SCRAPE'):
+            small.fetch('adv', 'https://advice.example.org/advice/essays')
+    finally:
+        ROBOTS_OVERRIDE.clear()
+
+
+@pytest.mark.parametrize('flag,code', [('paywalled', 'TREND_REFUSED_PAYWALL'), ('piracy', 'TREND_REFUSED_PIRACY'),
+                                       ('credentials', 'TREND_REFUSED_SCRAPE'), ('logged_in', 'TREND_REFUSED_SCRAPE')])
+def test_t3_record_flags_are_refused(port, flag, code):
+    _, permit, _ = make(port)
+    with pytest.raises(m.Refusal, match=code):
+        m.TrainingUnits({'adv': permit}, policy=lambda a: None).run('T3', {'records': [dict(REC, **{flag: True})]})
+
+
+def test_t3_dedup_and_candidate_cap(port):
+    _, permit, _ = make(port)
+    u = m.TrainingUnits({'adv': permit}, policy=lambda a: None)
+    out = u.run('T3', {'records': [REC, REC]})
+    assert len(out['records']) == 1 and len(out['concept_candidates']) == 1
+    big = dict(REC, text='\n'.join('Always verify item %d.' % i for i in range(700)))
+    capped = u.run('T3', {'records': [big]})
+    assert len(capped['concept_candidates']) == 500
+
+
+def test_t3_bad_date_and_oversize_text_are_refused(port):
+    _, permit, _ = make(port)
+    u = m.TrainingUnits({'adv': permit}, policy=lambda a: None)
+    with pytest.raises(m.Refusal, match='TREND_REFUSED_DATE'):
+        u.run('T3', {'records': [dict(REC, as_of='12/10/2026')]})
+    with pytest.raises(m.Refusal, match='TREND_REFUSED_OVERSIZE'):
+        u.run('T3', {'records': [dict(REC, text='x' * 100001)]})

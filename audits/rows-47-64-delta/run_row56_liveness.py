@@ -18,7 +18,9 @@ from app.modules.m23_study_abroad.admitted_cases import USER_AGENT, cases
 from app.modules.m23_study_abroad.admitted_cases_bounded import (PAGE_LIMIT_BYTES, ROBOTS_LIMIT_BYTES, TIMEOUT_SECONDS,
                                                                   BodyTooLarge, read_bounded)
 
-LAST = [0.0]
+LAST = {}
+DELAY = {}      # per-host minimum spacing in seconds (robots Crawl-delay, at least 1)
+MAX_CRAWL_DELAY = 30
 
 
 def stamp():
@@ -26,12 +28,13 @@ def stamp():
 
 
 def get(client, url, limit):
-    wait = 1.0 - (time.monotonic() - LAST[0])
+    host = urlparse(url).netloc
+    wait = DELAY.get(host, 1.0) - (time.monotonic() - LAST.get(host, -1e9))
     if wait > 0:
         time.sleep(wait)
     started, t0 = stamp(), time.monotonic()
-    LAST[0] = t0
-    rec = {"url": url, "requested_at": started}
+    LAST[host] = t0
+    rec = {"url": url, "requested_at": started, "spacing_applied_s": DELAY.get(host, 1.0)}
     with client.stream("GET", url) as r:
         rec.update(status=r.status_code, content_type=r.headers.get("content-type", ""), location=r.headers.get("location"))
         if r.status_code == 200:
@@ -58,15 +61,21 @@ def main(out):
                     row["outcome"] = "robots_unverified"
                 else:
                     text = rbody.decode("utf-8", errors="replace")
-                    row["robots"]["text"] = text[:20000]
+                    row["robots"]["text"] = text
                     rp = RobotFileParser(); rp.parse(text.splitlines())
+                    delay = rp.crawl_delay(USER_AGENT) or rp.crawl_delay("*") or 0
+                    row["robots"]["crawl_delay_s"] = delay
+                    DELAY[p.netloc] = max(1.0, float(delay))
                     if not rp.can_fetch(USER_AGENT, c["url"]):
                         row["outcome"] = "robots_denied"
+                    elif delay > MAX_CRAWL_DELAY:
+                        row["outcome"] = "crawl_delay_too_long"
                     else:
                         prec, pbody = get(client, c["url"], PAGE_LIMIT_BYTES)
                         row["page"] = {k: v for k, v in prec.items() if k != "url"}
-                        row["outcome"] = ("page_reachable" if prec["status"] == 200 and "text/html" in prec["content_type"].lower()
-                                          else "unavailable_or_unsupported")
+                        ok = prec["status"] == 200 and "text/html" in prec["content_type"].lower() and pbody is not None
+                        row["outcome"] = ("page_reachable" if ok else
+                                          "page_too_large_not_read" if prec.get("too_large") else "unavailable_or_unsupported")
             except (httpx.HTTPError, ValueError, UnicodeError) as exc:
                 row["outcome"] = "fetch_failed"; row["error_class"] = type(exc).__name__
             results.append(row)
