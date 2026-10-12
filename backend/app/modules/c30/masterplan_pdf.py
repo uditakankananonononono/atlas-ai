@@ -7,8 +7,10 @@ page geometry (Courier base-14, fixed metrics, so layout is deterministic),
 emits a valid PDF (xref table, byte offsets, page tree), and checks its own
 output with a strict structural parser that counts page objects. It never
 authors research: all text is caller-supplied via the pinned assembler, and
-target_met is computed from the counted pages, never asserted. stdlib only,
-offline, deterministic.
+target_met is computed from the counted pages, never asserted. Claim
+boundary: this is a multi-batch PDF pagination engine, demonstrated on
+generated template content; it lays out caller-supplied research, never
+authors it. stdlib only, offline, deterministic.
 """
 from __future__ import annotations
 
@@ -197,6 +199,9 @@ def assemble_pdf_many(requests, title="Masterplan"):
              "target_met computed from the counted page objects, never asserted"],
             ["research authorship - every byte of text is caller-supplied through the "
              "pinned assembler; this module adds layout only",
+             "research substance at 5,000+ pages - the multi-batch demonstration "
+             "paginates generated template content; it shows pagination capacity, "
+             "not a 5,000-page body of research",
              "typographic fonts beyond base-14 Courier; latin-1 text only",
              "persistence and delivery - bytes are returned to the caller"],
             "pinned masterplan.run output (caller-supplied sections, %d batch(es))"

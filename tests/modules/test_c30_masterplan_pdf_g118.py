@@ -1,4 +1,5 @@
-"""G118: rendered pagination and a 5,000+ page PDF masterplan."""
+"""G118: multi-batch PDF pagination engine, demonstrated on generated
+template content; lays out caller-supplied research, never authors it."""
 from __future__ import annotations
 
 import re
@@ -28,7 +29,7 @@ def test_layout_geometry_is_exact():
     assert mp.LINES_PER_PAGE == int(648 / 14) == 46
 
 
-def test_pagination_is_real_wrap_not_estimate():
+def test_pagination_wraps_words_not_estimates():
     pages = mp.paginate("alpha beta gamma\n\n" + "word " * 400, title="T")
     total_lines = sum(len(p) for p in pages)
     wrapped = len(mp._wrap_paragraph("word " * 399 + "word", 70))
@@ -37,7 +38,7 @@ def test_pagination_is_real_wrap_not_estimate():
     assert all(len(line) <= 70 for p in pages for line in p)
 
 
-def test_pdf_is_structurally_valid_and_self_verified():
+def test_pdf_is_structurally_valid_and_self_checked():
     req = _request(600)
     out = mp.assemble_pdf(req, title="Masterplan")
     body = req["volumes"][0]["sections"][0]["body"]
@@ -66,9 +67,10 @@ def test_pypdf_cross_checks_real_pages_and_text():
     assert "FINDINGS" in text.upper()
 
 
-def test_five_thousand_plus_real_pages():
-    # one pinned batch caps at 15M body chars (~4.6k dense pages), so the 5,000+
-    # page document is bound from two batches - the stated volume model
+def test_multi_batch_pagination_capacity_5000_plus_pages():
+    # capacity demonstration on generated template content (see module claim
+    # boundary): one pinned batch caps at 15M body chars (~4.6k dense pages),
+    # so the 5,000+ page document is bound from two batches
     out = mp.assemble_pdf_many([_request(200_000), _request(200_000)])
     assert out["batch_count"] == 2
     assert out["real_page_count"] >= 5000
