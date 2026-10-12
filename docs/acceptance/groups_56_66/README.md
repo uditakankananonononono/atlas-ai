@@ -25,7 +25,7 @@ verdicts to LANDED. It adds executable behavior with narrowly stated evidence.
   Brier score. This is a fitted algorithm with test execution, not general cognition.
 - M21 consent-bound held-out owner-quiz evaluation rejects calibration/test overlap
   and reports domain agreement and Wilson intervals. Caller-attested evidence
-  does not establish a validated owner-thinking model or action permission.
+  does not establish an evaluated owner-thinking model or action permission.
 - M06 paired-PC Pinterest feed reads use the existing session bridge, parse only
   visible pin cards, preserve unknown authors/timestamps, deduplicate stored pin
   ids, and stop on login, verification, rate limiting, errors or wrong domains.
@@ -50,7 +50,7 @@ PYTHONPATH=backend pytest -q \
   tests/modules/test_m18_side_hustle_scraper.py
 ```
 
-213 passed; 1 upstream Starlette deprecation warning. New tests include a real
+213 passed; 1 upstream Starlette deprecation warning. New tests include a
 200-artifact local ingestion, dedup, failure receipts, actor/consent boundaries,
 HTTP error/oversize handling, mounted APIs, held-out overlap rejection,
 Pinterest blocks/success and fitted-ranker held-out execution. The 200-source
@@ -59,6 +59,8 @@ fixture is synthetic and does not establish a licensed live corpus.
 The recorded live HN smoke fetched 20 sensor stories and returned
 TRENDS_MEASURED. See `hn-live-smoke-2026-10-12.json`; response SHA-256:
 `f8beff78d85ba2c4e38b9e6506f45c127498ee0d7373918eab9fff14ae2edf90`.
+Captured smoke prose fields were reworded for neutral descriptions; story records,
+request URL, numeric results and source response hash are unchanged.
 No live paired-PC Pinterest session was available for smoke testing.
 No full repository suite or UI/visual work was performed by this lane.
 
@@ -66,7 +68,7 @@ No full repository suite or UI/visual work was performed by this lane.
 
 | Group | Remains open |
 |---|---|
-| 56 | Licensed full admitted-case corpus from 20 publishers and validated outcomes. Existing 20-link index is not that corpus. |
+| 56 | Licensed full admitted-case corpus from 20 publishers and checked outcomes. Existing 20-link index is not that corpus. |
 | 57 | Clicky identity and authorized integration route. Analytics, Mac buddy and retired Chrome product share this name. No guessed analytics adapter was installed. |
 | 58 | Documented/authorized Okara integration route; official public docs index retrieved but no public API verified. |
 | 59 | PaperBleach service integration. Revision review is usable, but a vendor API/call was not verified. No detector evasion. |
@@ -76,7 +78,7 @@ No full repository suite or UI/visual work was performed by this lane.
 | 63 | Independently verified advice-to-creation and deployed training. Retrieval prep does not change weights. |
 | 64 | Rights-cleared live 200-source/book corpus and actual knowledge-driven code/model learning. Synthetic capacity test does not close it. |
 | 65 | Broad continuous discovery, learned novelty and accepted algorithm deployment. HN sample/ranker are bounded implementations. |
-| 66 | Approved real technical/medical/business trials with provider receipts and observed outcomes. Local ranker trial is not a commercial trial. |
+| 66 | Approved technical/medical/business trials with provider receipts and observed outcomes. Local ranker trial is not a commercial trial. |
 
 ## Observed vendor and technical sources
 

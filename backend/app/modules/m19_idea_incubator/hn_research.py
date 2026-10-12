@@ -69,7 +69,7 @@ class HNResearch:
         return {'posts': posts, 'response_sha256': sha256(body).hexdigest(),
                 'request_url': str(httpx.URL(ENDPOINT, params=params)), 'docs_url': DOCS,
                 'sample_limit': limit, 'exhaustive': False,
-                'claim': 'source-reported HN story titles, not validated business outcomes'}
+                'claim': 'source-reported HN story titles, not checked business outcomes'}
 
     def trends(self, query: str, *, as_of: str, limit: int = 100) -> dict:
         collection = self.collect(query, as_of=as_of, limit=limit)

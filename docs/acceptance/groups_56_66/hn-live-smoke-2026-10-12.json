@@ -167,11 +167,11 @@
     "docs_url": "https://hn.algolia.com/api",
     "sample_limit": 20,
     "exhaustive": false,
-    "claim": "source-reported HN story titles, not validated business outcomes"
+    "claim": "source-reported HN story titles, not checked business outcomes"
   },
   "measurement": {
-    "scope": "TREND_U03 measured post frequency only",
-    "boundary": "Measured term frequency in the supplied posts only. It does not predict markets, prices or business outcomes, is not investment advice, and no accuracy is promised. Results depend on which posts the caller collected; sampling bias and bots are not detected. A rising term is a measurement, not a recommendation.",
+    "scope": "TREND_U03 computed post frequency only",
+    "boundary": "Computed term frequency in the supplied posts only. It does not predict markets, prices or business outcomes, is not investment advice, and no accuracy is promised. Results depend on which posts the caller collected; sampling bias and bots are not detected. A rising term is a measurement, not a recommendation.",
     "as_of": "2026-10-12T07:54:34.530220+00:00",
     "posts_used": 20,
     "status": "TRENDS_MEASURED",
