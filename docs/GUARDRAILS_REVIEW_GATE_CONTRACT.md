@@ -44,4 +44,10 @@ approval, no spend before issue, no use of unknown grants).
 - The ledger is tamper-evident, not tamper-proof; safe storage of the
   serialized ledger is the caller's job.
 - Admission/spend records are committed write-ahead via the `on_commit` hook BEFORE the effect runs and are retained on ANY exception the effect raises; an effect that fails after admission reconciles as spent-pending-review, never silently re-usable. Without a wired `on_commit`/persist sink the ledger lives in memory only.
-- `reviewer` / `granted_by` / `verified_by` labels are caller-supplied DECLARATIONS, not authentication. A record carrying `authority_ref` (an approval-store reference) requires the caller-bound `authority_check` hook and fails closed without it; the hook accepts only with a strict True or a verified-permit object (truthy non-True values reject), and only an accepted reference is ledgered as `authority_validated=True`.
+- `reviewer` / `granted_by` / `verified_by` labels are caller-supplied DECLARATIONS, not authentication. A record carrying `authority_ref` (an approval-store reference) Fail-closed coverage, exactly as coded: (a) a record carrying
+  `authority_ref` with NO hook configured fails (`authority_unverifiable`); (b) when a hook IS configured,
+  `record_decision`, `grant_preauthorization`, `issue_permit` and `execute` ALL require a validated
+  `authority_ref` and fail closed without one (coded ValueError at decision/grant/issuance; a ledgered
+  GuardrailRefusal at execution); (c) the hook receives (authority_ref, payload_sha256) - the reviewed or
+  granted action's exact payload hash - and accepts only with a strict True or a verified-permit object.
+  With no hook configured, records without `authority_ref` remain unvalidated declarations.

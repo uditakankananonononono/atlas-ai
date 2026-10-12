@@ -48,7 +48,7 @@ _REFUSAL_KEYS = {"kind", "action_id", "at", "reason_code", "permit_id"}
 REFUSAL_REASONS = ("review_required", "unknown_permit", "permit_invalid")
 
 LIMITS = (
-    "Reviewer and grantor identities are caller-supplied DECLARATIONS, not authentication; bind decisions and grants to the approval store with authority_ref + a caller-bound authority_check hook, which fails closed when absent.",
+    "Reviewer and grantor identities are caller-supplied DECLARATIONS, not authentication. When an authority_check hook is supplied, record_decision, grant_preauthorization, issue_permit and execute ALL fail closed without a validated authority_ref; the hook receives (authority_ref, payload_sha256) and must accept with a strict True or a verified-permit object. With no hook, records without authority_ref remain unvalidated declarations.",
     "Records live in memory until the caller persists them (on_commit write-ahead or dumps); the gate itself holds no durable store.",
     "A permit or preauthorization covers exactly one category + payload hash; it authorizes nothing outside execute() and no external system is notified.",
     "Preauthorization scope is exact-hash only: a changed payload needs a new grant; there are no wildcard scopes.",
@@ -78,18 +78,25 @@ def _check_action(action):
             "summary": action["summary"], "payload_sha256": digest}
 
 
-def _authority(authority_ref, authority_check):
-    """Validate an optional approval-store reference through the caller hook.
+def _authority(authority_ref, authority_check, action_digest):
+    """Validate an approval-store reference through the caller hook.
 
-    Returns (ref, validated). A supplied ref with no hook fails closed; a
-    hook rejection fails closed. No ref: the actor label stays a declaration.
+    The hook receives (authority_ref, action_digest) so an approval binds to
+    the exact action content, and must accept with a strict True or a
+    verified-permit object. Fail-closed coverage: a supplied ref with no hook
+    fails; a hook rejection fails; and when a hook IS configured, a missing
+    ref fails too - configured means every decision/grant must be validated.
+    With no hook configured, a missing ref keeps the actor label a
+    declaration (authority_validated=False). Returns (ref, validated).
     """
     if authority_ref is None:
+        if authority_check is not None:
+            _fail("authority_required:authority_ref")
         return None, False
     text(authority_ref, "authority_ref", fail=_fail, max_len=256)
     if authority_check is None:
         _fail("authority_unverifiable:authority_ref")
-    if not hook_accepted(authority_check(authority_ref)):
+    if not hook_accepted(authority_check(authority_ref, action_digest)):
         _fail("authority_rejected:authority_ref")
     return authority_ref, True
 
@@ -305,8 +312,9 @@ def record_decision(ledger, *, review_id, decision, reviewer, rationale, now,
 
     reviewer is a caller-supplied DECLARATION, not authentication. To bind the
     decision to the approval store, pass authority_ref (e.g. a Module 0
-    approval id); the caller-bound authority_check hook must confirm it and
-    the gate fails closed without one."""
+    approval id); the caller-bound authority_check hook receives
+    (authority_ref, reviewed-action payload hash) and must confirm it. When
+    a hook is configured, a missing authority_ref fails closed too."""
     check_ledger(ledger)
     rid = ident(review_id, "review_id", fail=_fail)
     if decision not in DECISIONS:
@@ -321,18 +329,20 @@ def record_decision(ledger, *, review_id, decision, reviewer, rationale, now,
         _fail(f"review {rid!r} already has a decision")
     if decided_at < instant(opened["opened_at"], "opened_at", fail=_fail):
         _fail(f"review {rid!r} decision is before it opened")
-    ref, validated = _authority(authority_ref, authority_check)
+    ref, validated = _authority(authority_ref, authority_check, opened["payload_sha256"])
     record = {"kind": "review_decision", "review_id": rid, "decision": decision,
               "reviewer": reviewer, "rationale": rationale, "decided_at": iso(decided_at),
               "authority_ref": ref, "authority_validated": validated}
     return _ledger.append(ledger, record)
 
 
-def issue_permit(ledger, action, *, review_id, now):
+def issue_permit(ledger, action, *, review_id, now, authority_check=None):
     """Issue the single-use permit for an approved, unexpired, hash-exact review.
 
-    Returns (ledger, permit dict). The permit is a local record that the gate
-    was passed; it authorizes nothing by itself.
+    When authority_check is supplied (the caller runs an approval store), the
+    decision must be authority-validated - an unvalidated declaration cannot
+    mint a permit. Returns (ledger, permit dict). The permit is a local
+    record that the gate was passed; it authorizes nothing by itself.
     """
     check_ledger(ledger)
     checked = _check_action(action)
@@ -345,6 +355,8 @@ def issue_permit(ledger, action, *, review_id, now):
         _fail(f"review {rid!r} has no decision")
     if decision["decision"] != "approved":
         _fail(f"review {rid!r} was rejected")
+    if authority_check is not None and not decision["authority_validated"]:
+        _fail(f"review {rid!r} decision is not authority-validated")
     if permit is not None:
         _fail(f"review {rid!r} already has an execution permit")
     if (opened["action_id"] != checked["action_id"] or opened["category"] != checked["category"]
@@ -373,8 +385,9 @@ def grant_preauthorization(ledger, action, *, preauth_id, granted_by, now, valid
     Exact-hash scope only; there are no wildcards. Returns the extended ledger.
 
     granted_by is a caller-supplied DECLARATION, not authentication. Bind the
-    grant to the approval store with authority_ref + authority_check (fails
-    closed without a hook)."""
+    grant to the approval store with authority_ref + authority_check (the
+    hook receives the granted action's payload hash; fails closed without a
+    hook, and with a hook configured a missing authority_ref fails too)."""
     check_ledger(ledger)
     checked = _check_action(action)
     pid = ident(preauth_id, "preauth_id", fail=_fail)
@@ -385,7 +398,7 @@ def grant_preauthorization(ledger, action, *, preauth_id, granted_by, now, valid
     for entry in ledger:
         if entry["record"].get("preauth_id") == pid and entry["record"]["kind"] == "preauthorization":
             _fail(f"preauthorization {pid!r} already exists")
-    ref, validated = _authority(authority_ref, authority_check)
+    ref, validated = _authority(authority_ref, authority_check, checked["payload_sha256"])
     record = {"kind": "preauthorization", "preauth_id": pid, "category": checked["category"],
               "payload_sha256": checked["payload_sha256"], "granted_by": granted_by,
               "granted_at": iso(granted_at), "expires_at": iso(granted_at + timedelta(hours=hours)),
@@ -414,7 +427,8 @@ def revoke_preauthorization(ledger, *, preauth_id, revoked_by, rationale, now):
     return _ledger.append(ledger, record)
 
 
-def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None):
+def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None,
+            authority_check=None):
     """The enforcement point: run effect(action) for a contact, application,
     submission or account action only under a valid permit or a live
     preauthorization.
@@ -461,6 +475,9 @@ def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None):
                         + timedelta(hours=opened["valid_hours"]))
             if at > deadline:
                 reasons.append("review validity window has expired")
+        if authority_check is not None and (decision is None
+                                            or not decision["authority_validated"]):
+            reasons.append("decision is not authority-validated")
         if reasons:
             refuse("permit_invalid",
                    f"permit {pid!r} does not cover this action: " + "; ".join(reasons),
@@ -478,6 +495,10 @@ def execute(ledger, action, *, effect, now, permit_id=None, on_commit=None):
             raise attach_ledger(exc, ledger)
 
     grant = _live_preauth(ledger, checked["category"], checked["payload_sha256"], at)
+    if grant is not None and authority_check is not None and not grant["authority_validated"]:
+        refuse("review_required",
+               f"preauthorization {grant['preauth_id']!r} is not authority-validated",
+               {"action_id": checked["action_id"], "preauth_id": grant["preauth_id"]})
     if grant is None:
         refuse("review_required",
                f"{checked['category']} action {checked['action_id']!r} requires explicit review or a "

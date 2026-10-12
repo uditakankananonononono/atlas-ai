@@ -16,7 +16,8 @@ verified owner accounts are usable. It cannot authenticate the account itself
 from __future__ import annotations
 
 from . import ledger as _ledger
-from ._fields import hook_accepted, ident, instant, iso, make_fail, text
+from ._fields import (hook_accepted, ident, instant, iso, make_fail,
+                      payload_sha256, text)
 from .errors import GuardrailRefusal, attach_ledger
 
 PREFIX = "ACCTGATE"
@@ -157,12 +158,17 @@ def verify_binding(ledger, service, account_identity, *, verified_by, now, evide
     at = iso(instant(now, "now", fail=_fail))
     if _state(ledger, service, account_identity) not in ("registered", "verified"):
         _fail(f"binding ({service!r}, {account_identity!r}) is not registered")
+    binding_digest = payload_sha256({"service": service, "account_identity": account_identity})
     validated = False
+    if authority_ref is None and authority_check is not None:
+        _fail("authority_required:authority_ref")
     if authority_ref is not None:
         authority_ref = text(authority_ref, "authority_ref", fail=_fail, max_len=MAX_REF)
         if authority_check is None:
             _fail("authority_unverifiable:authority_ref")
-        validated = hook_accepted(authority_check(authority_ref))
+        # the hook receives (authority_ref, binding digest) so the approval
+        # binds to this exact (service, account_identity) pair
+        validated = hook_accepted(authority_check(authority_ref, binding_digest))
         if not validated:
             _fail("authority_rejected:authority_ref")
     record = {"kind": "binding_verified", "service": service, "account_identity": account_identity,

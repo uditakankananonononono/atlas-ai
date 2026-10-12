@@ -54,7 +54,12 @@ to the action's exact content.
 Reviewer / verified_by / granted_by labels are caller-supplied
 DECLARATIONS, not authentication. A record carrying `authority_ref` is
 validated through `authority_check` and ledgered as
-`authority_validated=True` only when the hook accepts it.
+`authority_validated=True` only when the hook accepts it. Configuring
+`authority_check` makes the enforcer validated-only for the review and
+account flows: record_decision, grant_preauthorization, issue_permit,
+execute_reviewed and verify_account without a validated authority_ref all
+fail closed (coded ValueError at decision/grant/issuance/verification; a
+ledgered GuardrailRefusal at execution).
 
 ## Scope honesty
 

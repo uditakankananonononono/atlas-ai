@@ -109,7 +109,7 @@ def test_review_authority_hook_truthy_non_true_fails():
                                     decision="approved", reviewer="u",
                                     rationale="ok", now=T0,
                                     authority_ref="m00-1",
-                                    authority_check=lambda ref: 1)
+                                    authority_check=lambda ref, digest: 1)
 
 
 def test_owner_authority_hook_truthy_non_true_fails():
@@ -117,16 +117,16 @@ def test_owner_authority_hook_truthy_non_true_fails():
         owner_account_gate.verify_binding(_account_ledger(), "github", "owner",
                                           verified_by="u", now=T0,
                                           authority_ref="m00-1",
-                                          authority_check=lambda ref: "yes")
+                                          authority_check=lambda ref, digest: "yes")
 
 
 def test_hooks_accept_structured_permit_objects():
     ledger = review_gate.record_decision(
         _review_ledger(), review_id="R1", decision="approved", reviewer="u",
         rationale="ok", now=T0, authority_ref="m00-1",
-        authority_check=lambda ref: {"verified": True, "permit": ref})
+        authority_check=lambda ref, digest: {"verified": True, "permit": ref})
     assert ledger[-1]["record"]["authority_validated"] is True
     ledger = owner_account_gate.verify_binding(
         _account_ledger(), "github", "owner", verified_by="u", now=T0,
-        authority_ref="m00-1", authority_check=lambda ref: {"verified": True})
+        authority_ref="m00-1", authority_check=lambda ref, digest: {"verified": True})
     assert ledger[-1]["record"]["authority_validated"] is True

@@ -184,7 +184,7 @@ def test_persist_sink_covers_refusals_and_all_gates():
 
 
 def test_authority_check_threaded_to_decisions_and_verifications():
-    e = GuardrailEnforcer(authority_check=lambda ref: ref.startswith("m00-"))
+    e = GuardrailEnforcer(authority_check=lambda ref, digest: ref.startswith("m00-"))
     e.open_review(ACTION, review_id="R1", reviewer="udita", now=T0)
     with pytest.raises(ValueError, match="REVGATE:authority_rejected"):
         e.record_decision(review_id="R1", decision="approved", reviewer="udita",
@@ -216,11 +216,24 @@ def test_persist_sink_failure_propagates():
 
 def test_loads_restores_hooks_and_sink():
     commits = []
-    e = GuardrailEnforcer(authority_check=lambda ref: True,
+    e = GuardrailEnforcer(authority_check=lambda ref, digest: True,
                           persist=lambda name, led: commits.append(name))
     e.register_account("github", "owner", registered_by="u", now=T0)
-    restored = GuardrailEnforcer.loads(e.dumps(), authority_check=lambda ref: True,
+    restored = GuardrailEnforcer.loads(e.dumps(), authority_check=lambda ref, digest: True,
                                        persist=lambda name, led: commits.append(("r", name)))
     restored.verify_account("github", "owner", verified_by="u", now=T0,
                             authority_ref="m00-1")
     assert ("r", "accounts") in commits
+
+
+def test_enforcer_authority_configured_end_to_end():
+    e = GuardrailEnforcer(authority_check=lambda ref, digest: ref.startswith("m00-"))
+    e.open_review(ACTION, review_id="R1", reviewer="udita", now=T0)
+    with pytest.raises(ValueError, match="REVGATE:authority_required"):
+        e.record_decision(review_id="R1", decision="approved", reviewer="udita",
+                          rationale="ok", now=T0)  # hook configured, no ref
+    e.record_decision(review_id="R1", decision="approved", reviewer="udita",
+                      rationale="ok", now=T0, authority_ref="m00-9")
+    permit = e.issue_permit(ACTION, review_id="R1", now=T0)
+    assert e.execute_reviewed(ACTION, effect=lambda a: "done", now=T1,
+                              permit_id=permit["permit_id"]) == "done"

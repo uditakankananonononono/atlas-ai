@@ -64,9 +64,14 @@ class GuardrailEnforcer:
     - approval_check: bio gate approval_ref validation.
     - review_check: outbound gate needs_review confirmation.
     - authority_check: approval-store binding for review decisions,
-      preauthorization grants and account verifications (e.g. a Module 0
-      approval id lookup); gates treat actor labels as DECLARATIONS without
-      it.
+      preauthorization grants, permit issuance, reviewed execution and
+      account verifications (e.g. a Module 0 approval id lookup); gates
+      treat actor labels as DECLARATIONS without it. Configuring this hook
+      makes authority validated-only: decisions, grants, permits, reviewed
+      executions and account verifications without a validated authority_ref
+      all fail closed. The hook receives (authority_ref, digest) - the
+      reviewed action's payload hash, or the (service, account) binding
+      digest for account verification.
     - persist: a sink persist(ledger_name, ledger) invoked after EVERY ledger
       mutation, write-ahead: admissions and spends are committed before the
       guarded effect runs. Without a sink the ledgers are in-memory state
@@ -179,7 +184,8 @@ class GuardrailEnforcer:
 
     def execute_reviewed(self, action, *, effect, now, permit_id=None):
         return self._capture("review", lambda led, commit: review_gate.execute(
-            led, action, effect=effect, now=now, permit_id=permit_id, on_commit=commit))
+            led, action, effect=effect, now=now, permit_id=permit_id, on_commit=commit,
+            authority_check=self.authority_check))
 
     # ---- group 138 --------------------------------------------------------
     def emit_text(self, emission_id, body, *, channel, now):
