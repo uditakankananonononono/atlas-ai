@@ -35,26 +35,35 @@ def execute_approved_action(approval_id: str, effect_id: str) -> dict[str, objec
     """
     from app.modules.m00_approval_center.service import default_service
     service = default_service()
-    view = service.get(approval_id)
+    import copy
+    view = copy.deepcopy(service.get(approval_id))
     status = view["status"].value if hasattr(view["status"], "value") else view["status"]
     if status != "approved": raise ValueError("approval is not approved")
-    from app.runtime.approved_execution import EFFECT_ACTION_KINDS
+    from app.runtime.approved_execution import ACTION_ALLOWLIST, EFFECT_ACTION_KINDS, LOCAL_ACTION_TYPES
     kind = EFFECT_ACTION_KINDS.get(str(view["action_type"]))
     if kind is None:
+        if (str(view["action_type"]) not in LOCAL_ACTION_TYPES
+                or view["module_id"] != ACTION_ALLOWLIST[str(view["action_type"])][0]):
+            raise PermissionError("unclassified worker action (fail closed)")
         return _execute_permitted(approval_id, effect_id, view)
     from datetime import datetime, timezone
     from app.runtime.approved_execution_routes import outbound_declarations
     enforcer, check = _outbound_enforcer(service, view["user_id"])
     now = datetime.now(timezone.utc)
-    action = {"id": f"{effect_id}"[:64], "platform": kind[0], "kind": kind[1],
+    from app.runtime.guardrails._fields import ident, make_fail
+    ident(effect_id, "effect_id", fail=make_fail("WORKER"))
+    action = {"id": effect_id, "platform": kind[0], "kind": kind[1],
               "at": int(now.timestamp()), "count": 1, "approval_id": approval_id,
-              "module_id": view["module_id"], "action_type": view["action_type"],
+              "module_id": view["module_id"], "approval_module_id": view["module_id"],
+              "user_id": view["user_id"], "action_type": view["action_type"],
               "effect_id": effect_id, "payload": view["payload"]}
     fields = {k: v for k, v in action.items() if k != "id"}
     check.bind(approval_id, fields)
     return enforcer.dispatch_outbound(
         action, outbound_declarations(),
-        effect=lambda a: _execute_permitted(approval_id, effect_id, view),
+        effect=lambda a: _execute_permitted(a["approval_id"], a["effect_id"],
+            {"id": a["approval_id"], "module_id": a["module_id"], "action_type": a["action_type"],
+             "payload": a["payload"], "user_id": a["user_id"]}),
         now=now.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=approval_id)
 
 

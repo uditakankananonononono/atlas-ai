@@ -16,6 +16,8 @@ readback payload, so what ran is reconstructable without trusting logs.
 from __future__ import annotations
 
 import json
+import copy
+from types import MappingProxyType
 import os
 import sqlite3
 import threading
@@ -32,11 +34,11 @@ from .production import build_runtime
 # The only approval action types this dispatcher may execute, mapped to the
 # production adapter (module_id, operation) that runs them. Anything not
 # listed here is refused, however approved it is.
-ACTION_ALLOWLIST: dict[str, tuple[int, str]] = {
+ACTION_ALLOWLIST = MappingProxyType({
     "execute_product_plan": (20, "prepare_goal_work"),
     "prepare_goal_work": (0, "prepare_goal_work"),
     "research_request": (4, "research"),
-}
+})
 
 TERMINAL_RECEIPT_STATES = ("started", "succeeded")
 
@@ -112,15 +114,17 @@ def _jsonable(value: Any) -> Any:
 # NEVER run on an approved M00 item alone: they must go through a
 # GuardrailEnforcer (platform terms, rate limits, consent, owner effect
 # authority bound to the action digest, one ledger). No enforcer configured ->
-# refused, fail closed. Non-listed types keep the existing approval-only path.
-EFFECT_ACTION_KINDS: dict[str, tuple[str, str]] = {
+# refused, fail closed. Only the fixed local ACTION_ALLOWLIST bypasses egress admission;
+# unknown types fail closed even when added to a dispatcher target allowlist.
+EFFECT_ACTION_KINDS = MappingProxyType({
     "send_email_reply": ("gmail", "send"),
     "publish_social_post": ("social", "post"),
     "submit_application": ("applications", "submit"),
     "send_outreach_message": ("outreach", "send"),
     "create_subscription_checkout": ("stripe", "payment"),
     "create_invoice": ("stripe", "payment"),
-}
+})
+LOCAL_ACTION_TYPES = frozenset(ACTION_ALLOWLIST)
 
 
 class M00AuthorityCheck:
@@ -129,9 +133,11 @@ class M00AuthorityCheck:
     Accepts (authority_ref, action_digest) only when authority_ref is an M00
     approval that is CURRENTLY approved, belongs to this tenant, has the bound
     action_type, and whose current payload reproduces the exact digest of the
-    action the dispatcher bound for it. Editing the payload after approval, a
-    different action, an unbound ref or any lookup error all reject (fail
-    closed). Not authentication of the approver: it trusts the M00 center.
+    action the dispatcher bound at execution time. Edits between the initial
+    execution read and the hook read reject; this does NOT bind the payload
+    the owner reviewed or detect edits before execution. Module, tenant and
+    action_type drift, unbound refs and lookup errors reject (fail closed).
+    Not authentication of the approver: it trusts the M00 center.
     """
 
     def __init__(self, center: Any, tenant_id: str) -> None:
@@ -140,7 +146,7 @@ class M00AuthorityCheck:
         self._bound: dict[str, dict[str, Any]] = {}
 
     def bind(self, approval_id: str, fields: dict[str, Any]) -> None:
-        self._bound[approval_id] = dict(fields)
+        self._bound[approval_id] = copy.deepcopy(fields)
 
     def __call__(self, authority_ref: Any, action_digest: Any) -> bool:
         from app.runtime.guardrails._fields import payload_sha256
@@ -151,11 +157,12 @@ class M00AuthorityCheck:
             view = self.center.get(authority_ref)
             if (view.get("user_id") != self.tenant_id
                     or str(getattr(view.get("status"), "value", view.get("status"))) != ApprovalStatus.APPROVED.value
-                    or str(view.get("action_type")) != fields["action_type"]):
+                    or str(view.get("action_type")) != fields["action_type"]
+                    or view.get("module_id") != fields["approval_module_id"]):
                 return False
-            current = dict(fields)
-            current["payload"] = dict(view.get("payload") or {})
-            return payload_sha256(current) == action_digest
+            current = copy.deepcopy(fields)
+            current["payload"] = copy.deepcopy(view.get("payload") or {})
+            return payload_sha256(fields) == action_digest == payload_sha256(current)
         except Exception:
             return False
 
@@ -180,14 +187,15 @@ class ApprovedExecutionDispatcher:
         self.enforcer = enforcer
         self.authority_binder = authority_binder
         self.outbound_declarations = outbound_declarations or {}
-        self.effect_kinds = dict(EFFECT_ACTION_KINDS if effect_kinds is None else effect_kinds)
+        if effect_kinds is not None:
+            raise ValueError("effect classification is fixed; effect_kinds overrides are forbidden")
         if store is None:
             root = Path(os.getenv("ATLAS_RUNTIME_DATA_DIR", "/tmp/atlas-runtime"))
             store = ReceiptStore(str(root / f"receipts-{tenant_id}.sqlite"))
         self.store = store
 
     def execute(self, approval_id: str) -> dict[str, Any]:
-        view = self.center.get(approval_id)  # raises ApprovalNotFoundError
+        view = copy.deepcopy(self.center.get(approval_id))  # snapshot, no nested aliases
         if view.get("user_id") != self.tenant_id:
             from app.modules.m00_approval_center.service import ApprovalNotFoundError
             raise ApprovalNotFoundError(approval_id)
@@ -208,7 +216,13 @@ class ApprovedExecutionDispatcher:
                               readback={"error": f"action_type {action_type!r} is not allowlisted"})
             raise ValueError(f"action_type {action_type!r} is not allowlisted for execution")
         module_id, operation = target
-        effect_kind = self.effect_kinds.get(action_type)
+        effect_kind = EFFECT_ACTION_KINDS.get(action_type)
+        if effect_kind is None and (action_type not in LOCAL_ACTION_TYPES
+                                    or target != ACTION_ALLOWLIST[action_type]):
+            self.store.record(receipt_id=receipt_id, tenant_id=self.tenant_id,
+                              approval_id=approval_id, action_type=action_type,
+                              state="failed", readback={"error": "unclassified action (fail closed)"})
+            raise PermissionError(f"unclassified action_type {action_type!r}")
         if effect_kind is not None and self.enforcer is None:
             self.store.record(receipt_id=receipt_id, tenant_id=self.tenant_id,
                               approval_id=approval_id, action_type=action_type,
@@ -235,7 +249,12 @@ class ApprovedExecutionDispatcher:
                 action = {"id": receipt_id, "platform": platform, "kind": kind,
                           "at": int(now.timestamp()), "count": 1,
                           "approval_id": approval_id, "action_type": action_type,
-                          "payload": dict(view.get("payload") or {})}
+                          "approval_module_id": view["module_id"],
+                          "context": {"tenant_id": self.tenant_id, "actor_id": self.actor_id,
+                                      "correlation_id": receipt_id},
+                          "handoff": {"source_module": 0, "target_module": module_id,
+                                      "operation": operation, "evidence": handoff.evidence},
+                          "payload": copy.deepcopy(view.get("payload") or {})}
                 if self.authority_binder is not None:
                     self.authority_binder.bind(
                         approval_id, {k: v for k, v in action.items() if k != "id"})
@@ -244,7 +263,9 @@ class ApprovedExecutionDispatcher:
                 # validated by the enforcer's authority_check hook).
                 result = self.enforcer.dispatch_outbound(
                     action, self.outbound_declarations,
-                    effect=lambda a: asyncio.run(self.runtime.dispatch(context, handoff)),
+                    effect=lambda a: asyncio.run(self.runtime.dispatch(
+                        RuntimeContext(**a["context"]),
+                        Handoff(**a["handoff"], payload=a["payload"]))),
                     now=now.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=approval_id)
         except Exception as exc:
             self.store.record(receipt_id=receipt_id, tenant_id=self.tenant_id,

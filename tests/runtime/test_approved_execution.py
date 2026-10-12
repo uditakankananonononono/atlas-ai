@@ -117,7 +117,9 @@ def test_non_allowlisted_action_is_refused_and_audited(tmp_path):
     receipt = dispatcher.readback(view["id"])
     assert receipt["state"] == "failed" and "not allowlisted" in receipt["readback"]["error"]
     dispatcher.allowlist["browse_the_web"] = (20, "prepare_goal_work")
-    assert dispatcher.execute(view["id"])["state"] == "succeeded"
+    with pytest.raises(PermissionError, match="unclassified"):
+        dispatcher.execute(view["id"])
+    assert dispatcher.readback(view["id"])["state"] == "failed"
 
 
 def test_allowlist_maps_only_to_registered_adapters():
@@ -236,9 +238,19 @@ def test_person_facing_action_refused_when_authority_rejects(tmp_path):
 def test_person_facing_action_runs_with_validated_authority_and_ledgers(tmp_path):
     rt = _SpyRuntime()
     seen = []
-    enf = GuardrailEnforcer(authority_check=lambda ref, dig: seen.append(ref) or True)
+    from app.runtime.guardrails._fields import payload_sha256
+    expected = {}
+    def check(ref, dig):
+        seen.append(ref)
+        return dig == payload_sha256(expected)
+    enf = GuardrailEnforcer(authority_check=check)
     d = _effect_dispatcher(tmp_path, enf, rt)
     aid = _approved(d, "send_email_reply")
+    real = enf.dispatch_outbound
+    def dispatch(action, *args, **kwargs):
+        expected.update({k: v for k, v in action.items() if k != "id"})
+        return real(action, *args, **kwargs)
+    enf.dispatch_outbound = dispatch
     receipt = d.execute(aid)
     assert receipt["state"] == "succeeded" and rt.calls == ["send"]
     assert seen == [aid]
@@ -266,7 +278,7 @@ def test_prod_path_dispatches_approved_unmodified_send(tmp_path):
     assert d.execute(aid)["state"] == "succeeded" and rt.calls == ["send"]
 
 
-def test_prod_path_refuses_when_payload_edited_after_approval(tmp_path):
+def test_prod_path_refuses_when_payload_edited_after_execution_bind(tmp_path):
     rt = _SpyRuntime()
     d = _prod_like(tmp_path, rt)
     aid = _approved(d, "send_email_reply")
@@ -317,3 +329,102 @@ def test_build_dispatcher_carries_enforcer_and_default_declares_only_gmail(tmp_p
     assert d.enforcer is not None and isinstance(d.authority_binder, M00AuthorityCheck)
     assert set(d.outbound_declarations["tos"]) == {"gmail"}
     assert "social" not in d.outbound_declarations["tos"]
+
+
+@pytest.mark.parametrize("override", [{}, {"send_email_reply": ("github", "read")}])
+def test_effect_classification_cannot_be_overridden(tmp_path, override):
+    with pytest.raises(ValueError, match="classification is fixed"):
+        ApprovedExecutionDispatcher("tenant-a", center=FakeCenter(), runtime=_SpyRuntime(),
+                                    store=ReceiptStore(str(tmp_path / "fixed.sqlite")), effect_kinds=override)
+
+
+def test_fixed_effect_inventory_is_immutable():
+    from app.runtime.approved_execution import EFFECT_ACTION_KINDS
+    with pytest.raises(TypeError):
+        EFFECT_ACTION_KINDS["send_email_reply"] = ("github", "read")
+
+
+@pytest.mark.parametrize("field", ["payload", "module_id", "action_type", "user_id"])
+def test_prod_hook_rejects_nested_and_identity_drift_after_bind(tmp_path, field):
+    rt = _SpyRuntime()
+    d = _prod_like(tmp_path, rt)
+    aid = _approved(d, "send_email_reply")
+    d.center.views[aid]["payload"] = {"nested": {"to": ["owner"]}}
+    orig = d.enforcer.dispatch_outbound
+    def drift(action, *args, **kwargs):
+        if field == "payload":
+            d.center.views[aid]["payload"]["nested"]["to"].append("attacker")
+        else:
+            d.center.views[aid][field] = {"module_id": 99, "action_type": "publish_social_post",
+                                           "user_id": "other"}[field]
+        return orig(action, *args, **kwargs)
+    d.enforcer.dispatch_outbound = drift
+    with pytest.raises(GuardrailRefusal, match="authority_rejected"):
+        d.execute(aid)
+    assert rt.calls == []
+
+
+def test_dispatcher_effect_uses_only_canonical_gate_action(tmp_path):
+    class Runtime:
+        async def dispatch(self, context, handoff):
+            assert context.tenant_id == "canonical-tenant"
+            assert context.actor_id == "canonical-actor"
+            assert context.correlation_id == "canonical-receipt"
+            assert handoff.target_module == 99 and handoff.operation == "canonical-operation"
+            assert handoff.payload == {"nested": {"to": ["canonical"]}}
+            return {"canonical": True}
+    class Gate:
+        def dispatch_outbound(self, action, declarations, *, effect, **kwargs):
+            # Contract probe, not a real admission: detects a detached closure.
+            action["context"] = {"tenant_id": "canonical-tenant", "actor_id": "canonical-actor",
+                                 "correlation_id": "canonical-receipt"}
+            action["handoff"]["target_module"] = 99
+            action["handoff"]["operation"] = "canonical-operation"
+            action["payload"] = {"nested": {"to": ["canonical"]}}
+            return effect(action)
+    d = _effect_dispatcher(tmp_path, Gate(), Runtime())
+    assert d.execute(_approved(d, "send_email_reply"))["readback"]["result"] == {"canonical": True}
+
+
+def test_authority_binder_deep_copies_execution_fields():
+    from app.runtime.guardrails._fields import payload_sha256
+    center = FakeCenter()
+    v = center.submit(module_id=10, action_type="send_email_reply", payload={"nested": {"to": ["owner"]}})
+    center.set_status(v["id"], "approved")
+    check = M00AuthorityCheck(center, "tenant-a")
+    fields = {"action_type": "send_email_reply", "approval_module_id": 10, "payload": v["payload"]}
+    check.bind(v["id"], fields)
+    digest = payload_sha256(fields)
+    fields["payload"]["nested"]["to"].append("attacker")
+    assert check._bound[v["id"]]["payload"] == {"nested": {"to": ["owner"]}}
+    assert check(v["id"], digest) is False
+    assert check(v["id"], payload_sha256(fields)) is False
+
+
+@pytest.mark.parametrize("section", ["context", "handoff", "payload"])
+def test_execution_context_target_and_nested_payload_are_digest_bound(tmp_path, section):
+    rt = _SpyRuntime()
+    d = _prod_like(tmp_path, rt)
+    aid = _approved(d, "send_email_reply")
+    real = d.enforcer.dispatch_outbound
+    def tamper(action, *args, **kwargs):
+        if section == "context":
+            action[section]["tenant_id"] = "attacker"
+        elif section == "handoff":
+            action[section]["operation"] = "attacker"
+        else:
+            action[section]["to"] = {"nested": ["attacker"]}
+        return real(action, *args, **kwargs)
+    d.enforcer.dispatch_outbound = tamper
+    with pytest.raises(GuardrailRefusal, match="authority_rejected"):
+        d.execute(aid)
+    assert rt.calls == []
+
+
+def test_local_action_cannot_be_redirected_to_an_effect_target(tmp_path):
+    rt = _SpyRuntime()
+    d = make_dispatcher(tmp_path, runtime=rt, allowlist={"prepare_goal_work": (10, "send")})
+    aid = approved_goal(d.center, "prepare_goal_work")
+    with pytest.raises(PermissionError, match="unclassified"):
+        d.execute(aid)
+    assert rt.calls == []

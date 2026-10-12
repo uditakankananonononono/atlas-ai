@@ -559,13 +559,13 @@ def test_worker_same_effect_retry_invokes_local_executor_twice(service, monkeypa
     from app.workers.tasks import execute_approved_action
     monkeypatch.setattr(action_registry, '_EXECUTORS', {})
     monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
-    view = service.submit(module_id=5, action_type='fixture_repeat', payload={'value': 1}, user_id='udita')
+    view = service.submit(module_id=0, action_type='prepare_goal_work', payload={'value': 1}, user_id='udita')
     service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
     calls = []
     def local_executor(payload):
         calls.append(dict(payload))
         return {'call': len(calls)}
-    action_registry.register_executor(5, 'fixture_repeat', local_executor)
+    action_registry.register_executor(0, 'prepare_goal_work', local_executor)
     first = execute_approved_action.run(view['id'], 'repeat-effect')
     second = execute_approved_action.run(view['id'], 'repeat-effect')
     assert first['result']['call'] == 1 and second['result']['call'] == 2
@@ -578,7 +578,7 @@ def test_worker_missing_executor_consumes_actual_permit_before_lookup(service, m
     from app.workers.tasks import execute_approved_action
     monkeypatch.setattr(action_registry, '_EXECUTORS', {})
     monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
-    view = service.submit(module_id=5, action_type='fixture_missing_executor', payload={}, user_id='udita')
+    view = service.submit(module_id=0, action_type='prepare_goal_work', payload={}, user_id='udita')
     service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
     with pytest.raises(LookupError, match='no approved-action executor'):
         execute_approved_action.run(view['id'], 'missing-executor-effect')
@@ -590,7 +590,7 @@ def test_worker_failed_executor_can_be_retried_with_same_permit(service, monkeyp
     from app.workers.tasks import execute_approved_action
     monkeypatch.setattr(action_registry, '_EXECUTORS', {})
     monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
-    view = service.submit(module_id=5, action_type='fixture_failing_executor', payload={}, user_id='udita')
+    view = service.submit(module_id=0, action_type='prepare_goal_work', payload={}, user_id='udita')
     service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
     calls = []
     def local_executor(payload):
@@ -598,7 +598,7 @@ def test_worker_failed_executor_can_be_retried_with_same_permit(service, monkeyp
         if len(calls) == 1:
             raise RuntimeError('fixture after local effect')
         return {'call': len(calls)}
-    action_registry.register_executor(5, 'fixture_failing_executor', local_executor)
+    action_registry.register_executor(0, 'prepare_goal_work', local_executor)
     with pytest.raises(RuntimeError, match='fixture'):
         execute_approved_action.run(view['id'], 'failed-effect')
     assert execute_approved_action.run(view['id'], 'failed-effect')['result'] == {'call': 2}
@@ -622,13 +622,13 @@ def test_worker_malformed_result_retry_reexecutes_local_effect(service, monkeypa
     from app.workers.tasks import execute_approved_action
     monkeypatch.setattr(action_registry, '_EXECUTORS', {})
     monkeypatch.setattr('app.modules.m00_approval_center.service.default_service', lambda: service)
-    view = service.submit(module_id=5, action_type='fixture_bad_result', payload={}, user_id='udita')
+    view = service.submit(module_id=0, action_type='prepare_goal_work', payload={}, user_id='udita')
     service.decide(view['id'], ApprovalStatus.APPROVED, decided_by='udita')
     calls = []
     def local_executor(payload):
         calls.append(1)
         return None if len(calls) == 1 else {'call': len(calls)}
-    action_registry.register_executor(5, 'fixture_bad_result', local_executor)
+    action_registry.register_executor(0, 'prepare_goal_work', local_executor)
     with pytest.raises(TypeError, match='mapping'):
         execute_approved_action.run(view['id'], 'malformed-effect')
     assert execute_approved_action.run(view['id'], 'malformed-effect')['result'] == {'call': 2}

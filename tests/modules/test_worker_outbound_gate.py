@@ -79,8 +79,77 @@ def test_non_person_facing_action_is_not_gated(world, monkeypatch):
     from app.workers import action_registry
     from app.workers.tasks import execute_approved_action
     service, _, _ = world
-    action_registry.register_executor(5, "fixture_local", lambda p: {"ok": 1})
+    action_registry.register_executor(0, "prepare_goal_work", lambda p: {"ok": 1})
     monkeypatch.delenv("ATLAS_OUTBOUND_DECLARATIONS")
-    v = service.submit(module_id=5, action_type="fixture_local", payload={}, user_id="udita")
+    v = service.submit(module_id=0, action_type="prepare_goal_work", payload={}, user_id="udita")
     service.decide(v["id"], ApprovalStatus.APPROVED, decided_by="udita")
     assert execute_approved_action.run(v["id"], "e4")["result"] == {"ok": 1}
+
+
+def test_unknown_worker_action_refused_before_permit(world):
+    from app.workers import tasks, action_registry
+    service, calls, _ = world
+    action_registry.register_executor(5, "unknown_send", lambda p: calls.append(p) or {})
+    v = service.submit(module_id=5, action_type="unknown_send", payload={}, user_id="udita")
+    service.decide(v["id"], ApprovalStatus.APPROVED, decided_by="udita")
+    with pytest.raises(PermissionError, match="unclassified"):
+        tasks.execute_approved_action.run(v["id"], "unknown")
+    assert calls == [] and "effect_consumed" not in _events(service, v["id"])
+
+
+def test_worker_rate_history_is_retained_across_tasks(world):
+    from app.workers import tasks
+    service, calls, path = world
+    decl = json.loads(path.read_text())
+    decl["rate_limits"]["social"]["post"]["max"] = 1
+    path.write_text(json.dumps(decl))
+    first, second = _approved(service), _approved(service)
+    tasks.execute_approved_action.run(first, "first")
+    with pytest.raises(GuardrailRefusal, match="refused:denied"):
+        tasks.execute_approved_action.run(second, "second")
+    assert calls == [{"text": "hi"}]
+    assert "effect_consumed" not in _events(service, second)
+    assert len(tasks._outbound_enforcer(service, "udita")[0].ledger("outbound")) == 2
+
+
+def test_worker_long_effect_id_refused_without_truncation(world):
+    from app.workers.tasks import execute_approved_action
+    service, calls, _ = world
+    aid = _approved(service)
+    with pytest.raises(ValueError, match="bad_id:effect_id"):
+        execute_approved_action.run(aid, "a" * 65)
+    assert calls == [] and "effect_consumed" not in _events(service, aid)
+
+
+def test_worker_callback_consumes_canonical_action(world, monkeypatch):
+    from app.workers import tasks
+    service, calls, _ = world
+    aid = _approved(service)
+    enforcer, _ = tasks._outbound_enforcer(service, "udita")
+    def gate(action, declarations, *, effect, **kwargs):
+        # Contract probe, not a real admission.
+        action["payload"] = {"nested": {"to": ["canonical"]}}
+        action["module_id"] = 99
+        action["user_id"] = "canonical-tenant"
+        action["action_type"] = "canonical-operation"
+        action["effect_id"] = "canonical-effect"
+        return effect(action)
+    monkeypatch.setattr(enforcer, "dispatch_outbound", gate)
+    def permitted(approval_id, effect_id, view):
+        assert approval_id == aid and effect_id == "canonical-effect"
+        assert view == {"id": aid, "module_id": 99, "user_id": "canonical-tenant",
+                        "action_type": "canonical-operation", "payload": {"nested": {"to": ["canonical"]}}}
+        return {"canonical": True}
+    monkeypatch.setattr(tasks, "_execute_permitted", permitted)
+    assert tasks.execute_approved_action.run(aid, "canonical-test") == {"canonical": True}
+
+
+def test_worker_local_name_cannot_be_reused_on_effect_module(world):
+    from app.workers import tasks, action_registry
+    service, calls, _ = world
+    action_registry.register_executor(10, "prepare_goal_work", lambda p: calls.append(p) or {})
+    v = service.submit(module_id=10, action_type="prepare_goal_work", payload={}, user_id="udita")
+    service.decide(v["id"], ApprovalStatus.APPROVED, decided_by="udita")
+    with pytest.raises(PermissionError, match="unclassified"):
+        tasks.execute_approved_action.run(v["id"], "wrong-module")
+    assert calls == [] and "effect_consumed" not in _events(service, v["id"])

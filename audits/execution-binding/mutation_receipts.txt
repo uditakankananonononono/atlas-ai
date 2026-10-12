@@ -1,0 +1,14 @@
+BASELINE tests/runtime/test_approved_execution.py tests/modules/test_worker_outbound_gate.py -> rc=0 39 passed, 1 warning in 11.39s
+X1 allow classification override | approved_execution.py | CAUGHT | rc=1 | 2 failed, 1 warning in 4.67s | failing: test_effect_classification_cannot_be_overridden[override0]; test_effect_classification_cannot_be_overridden[override1]
+X2 unknown dispatcher default allow | approved_execution.py | CAUGHT | rc=1 | 1 failed, 1 warning in 4.73s | failing: test_non_allowlisted_action_is_refused_and_audited
+X3 shallow authority bind | approved_execution.py | CAUGHT | rc=1 | 1 failed, 1 warning in 4.76s | failing: test_authority_binder_deep_copies_execution_fields
+X4 ignore module identity drift | approved_execution.py | CAUGHT | rc=1 | 1 failed, 3 passed, 1 warning in 4.32s | failing: test_prod_hook_rejects_nested_and_identity_drift_after_bind[module_id]
+X5 detached dispatcher callback | approved_execution.py | CAUGHT | rc=1 | 1 failed, 1 warning in 4.52s | failing: test_dispatcher_effect_uses_only_canonical_gate_action
+X6 reset worker ledger each task | tasks.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.37s | failing: test_worker_rate_history_is_retained_across_tasks
+X7 allow unknown worker action | tasks.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.34s | failing: test_unknown_worker_action_refused_before_permit
+X8 truncate claim id | tasks.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.35s | failing: test_worker_long_effect_id_refused_without_truncation
+X9 skip bound digest | approved_execution.py | CAUGHT | rc=1 | 1 failed, 1 warning in 4.48s | failing: test_authority_binder_deep_copies_execution_fields
+X10 redirect local dispatcher target | approved_execution.py | CAUGHT | rc=1 | 1 failed, 1 warning in 4.53s | failing: test_local_action_cannot_be_redirected_to_an_effect_target
+X11 reuse local worker name on effect module | tasks.py | CAUGHT | rc=1 | 1 failed, 1 warning in 0.34s | failing: test_worker_local_name_cannot_be_reused_on_effect_module
+counts: CAUGHT=11, SURVIVED=0, INVALID=0, NOT-APPLICABLE=0
+mutated files byte-identical to pre-run state (sha256): True
