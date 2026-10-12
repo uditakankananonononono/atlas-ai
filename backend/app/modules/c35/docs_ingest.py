@@ -1,14 +1,38 @@
 """S4.2 supplied bookmark/waiver Doc exports. No retrieval or dispatch."""
 from __future__ import annotations
+import json
+import os
 import re
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from app.modules.c30 import policy
 
 PREFIX='APPLY'
-PINNED_DOC_URLS=frozenset({
- 'https://docs.google.com/document/d/1egtDk7S8I0srRFYgWCUwY_veBpXuw8VCutCTF1wsVzU/edit?usp=sharing',
- 'https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0',
-})
+PINNED_DOC_URLS_ENV='ATLAS_C35_PINNED_DOC_URLS'
+
+
+def _configured_doc_urls():
+    """Read an exact allowlist from deployment configuration, never request data.
+
+    JSON array of HTTPS Google Doc edit URLs. No owner-specific defaults.
+    Reading per invocation permits config changes without module reload.
+    """
+    raw=os.environ.get(PINNED_DOC_URLS_ENV)
+    if raw is None or not raw.strip():_refuse('DOC_CONFIG_MISSING')
+    if len(raw)>4096:_refuse('DOC_CONFIG_INVALID')
+    try:urls=json.loads(raw)
+    except (ValueError,TypeError):_refuse('DOC_CONFIG_INVALID')
+    if type(urls) is not list or not 1<=len(urls)<=16:_refuse('DOC_CONFIG_INVALID')
+    checked=[]
+    for url in urls:
+        if type(url) is not str or len(url)>512 or any(ord(c)<33 or ord(c)==127 for c in url):_refuse('DOC_CONFIG_INVALID')
+        try:parts=urlsplit(url)
+        except ValueError:_refuse('DOC_CONFIG_INVALID')
+        if (parts.scheme!='https' or parts.netloc!='docs.google.com' or parts.fragment or
+            not re.fullmatch(r'/document/d/[A-Za-z0-9_-]+/edit',parts.path)):_refuse('DOC_CONFIG_INVALID')
+        checked.append(url)
+    if len(set(checked))!=len(checked):_refuse('DOC_CONFIG_INVALID')
+    return frozenset(checked)
+
 # First matching host keyword group wins. Labels do not affect classification.
 HOST_KEYWORDS=(
  ('scholarship',('scholarship',)),
@@ -70,11 +94,12 @@ def run(request:dict)->dict:
     if docs is None or docs==[]:_refuse('NOSOURCE')
     if type(docs) is not list:_refuse('BAD_TYPE:docs')
     as_of=policy.clean_text(request.get('as_of'),PREFIX,'as_of',128)
+    pinned_doc_urls=_configured_doc_urls()
     index=[];by_url={};templates=[];found=duplicates=0
     for doc in docs:
         if type(doc) is not dict or set(doc)!={'doc_url','text'}:_refuse('BAD_TYPE:doc')
         doc_url=policy.clean_text(doc['doc_url'],PREFIX,'doc_url',512)
-        if doc_url not in PINNED_DOC_URLS:_refuse('URL_NOT_PINNED')
+        if doc_url not in pinned_doc_urls:_refuse('URL_NOT_PINNED')
         text=policy.clean_text(doc['text'],PREFIX,'text',2_000_000,allow_ws=True)
         for line in text.splitlines():
             for match in LINK_RE.finditer(line):

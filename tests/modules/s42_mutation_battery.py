@@ -7,7 +7,7 @@ R=Path(__file__).resolve().parents[2];P=R/'backend/app/modules/c35/docs_ingest.p
 cmd=[sys.executable,'-m','pytest','tests/modules/test_c35_docs_ingest_s42.py','-q']
 original=P.read_text()
 mutations=[
-('pin_check','if doc_url not in PINNED_DOC_URLS:','if False:'),
+('pin_check','if doc_url not in pinned_doc_urls:','if False:'),
 ('host_lower',"authority=host.lower()","authority=parts.netloc"),
 ('drop_fragment',"query,''))","query,parts.fragment))"),
 ('trailing_slash',"parts.path.rstrip('/')","parts.path"),

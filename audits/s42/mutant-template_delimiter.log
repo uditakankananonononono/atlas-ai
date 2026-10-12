@@ -13,7 +13,7 @@ __________________ test_25_links_two_templates_and_duplicates __________________
         assert out['index'][-1]['url']=='https://grants.example/call?year=2026'
 >       assert len(out['waiver_templates'])==2
 E       AssertionError: assert 1 == 2
-E        +  where 1 = len([{'doc_url': 'https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0', 'placehol...uest\nDear {school}, I am {name}. Please waive fees for {opportunity}.\n\nwaiver request\nAsk {school} for {name}.\n'}])
+E        +  where 1 = len([{'doc_url': 'https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit?tab=t.0', 'placehol...uest\nDear {school}, I am {name}. Please waive fees for {opportunity}.\n\nwaiver request\nAsk {school} for {name}.\n'}])
 
 tests/modules/test_c35_docs_ingest_s42.py:33: AssertionError
 _________ test_template_casefold_blank_delimiter_and_exact_whitespace __________

@@ -1,8 +1,8 @@
 ...FFFF.............................                                     [100%]
 =================================== FAILURES ===================================
-_ test_pin_exact_equality[https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0&evil=1] _
+_ test_pin_exact_equality[https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit?tab=t.0&evil=1] _
 
-doc_url = 'https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0&evil=1'
+doc_url = 'https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit?tab=t.0&evil=1'
 
     @pytest.mark.parametrize('doc_url',[BOOKMARK+'&evil=1',BOOKMARK.split('?')[0],WAIVER+')','https://docs.google.com/document/d/random/edit'])
 >   def test_pin_exact_equality(doc_url):refuse('APPLY_REFUSED_URL_NOT_PINNED',lambda:m.run(req('https://x.example',doc_url)))
@@ -20,9 +20,9 @@ f = <function test_pin_exact_equality.<locals>.<lambda> at 0x7f472dd518a0>
 E       Failed: DID NOT RAISE <class 'ValueError'>
 
 tests/modules/test_c35_docs_ingest_s42.py:15: Failed
-_ test_pin_exact_equality[https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit] _
+_ test_pin_exact_equality[https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit] _
 
-doc_url = 'https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit'
+doc_url = 'https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit'
 
     @pytest.mark.parametrize('doc_url',[BOOKMARK+'&evil=1',BOOKMARK.split('?')[0],WAIVER+')','https://docs.google.com/document/d/random/edit'])
 >   def test_pin_exact_equality(doc_url):refuse('APPLY_REFUSED_URL_NOT_PINNED',lambda:m.run(req('https://x.example',doc_url)))
@@ -40,9 +40,9 @@ f = <function test_pin_exact_equality.<locals>.<lambda> at 0x7f472dcac9a0>
 E       Failed: DID NOT RAISE <class 'ValueError'>
 
 tests/modules/test_c35_docs_ingest_s42.py:15: Failed
-_ test_pin_exact_equality[https://docs.google.com/document/d/1egtDk7S8I0srRFYgWCUwY_veBpXuw8VCutCTF1wsVzU/edit?usp=sharing)] _
+_ test_pin_exact_equality[https://docs.google.com/document/d/SYNTHETIC_WAIVER_FIXTURE/edit?usp=sharing)] _
 
-doc_url = 'https://docs.google.com/document/d/1egtDk7S8I0srRFYgWCUwY_veBpXuw8VCutCTF1wsVzU/edit?usp=sharing)'
+doc_url = 'https://docs.google.com/document/d/SYNTHETIC_WAIVER_FIXTURE/edit?usp=sharing)'
 
     @pytest.mark.parametrize('doc_url',[BOOKMARK+'&evil=1',BOOKMARK.split('?')[0],WAIVER+')','https://docs.google.com/document/d/random/edit'])
 >   def test_pin_exact_equality(doc_url):refuse('APPLY_REFUSED_URL_NOT_PINNED',lambda:m.run(req('https://x.example',doc_url)))
@@ -81,8 +81,8 @@ E       Failed: DID NOT RAISE <class 'ValueError'>
 
 tests/modules/test_c35_docs_ingest_s42.py:15: Failed
 =========================== short test summary info ============================
-FAILED tests/modules/test_c35_docs_ingest_s42.py::test_pin_exact_equality[https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0&evil=1]
-FAILED tests/modules/test_c35_docs_ingest_s42.py::test_pin_exact_equality[https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit]
-FAILED tests/modules/test_c35_docs_ingest_s42.py::test_pin_exact_equality[https://docs.google.com/document/d/1egtDk7S8I0srRFYgWCUwY_veBpXuw8VCutCTF1wsVzU/edit?usp=sharing)]
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_pin_exact_equality[https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit?tab=t.0&evil=1]
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_pin_exact_equality[https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit]
+FAILED tests/modules/test_c35_docs_ingest_s42.py::test_pin_exact_equality[https://docs.google.com/document/d/SYNTHETIC_WAIVER_FIXTURE/edit?usp=sharing)]
 FAILED tests/modules/test_c35_docs_ingest_s42.py::test_pin_exact_equality[https://docs.google.com/document/d/random/edit]
 4 failed, 32 passed in 0.43s

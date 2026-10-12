@@ -9,7 +9,7 @@
     "index": [
       {
         "doc_urls": [
-          "https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0"
+          "https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit?tab=t.0"
         ],
         "kind": "unknown",
         "label": "A https://EXAMPLE.org/path/?utm_source=a#x",
@@ -35,7 +35,7 @@
     },
     "waiver_templates": [
       {
-        "doc_url": "https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0",
+        "doc_url": "https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit?tab=t.0",
         "placeholders": [
           "name",
           "opportunity",

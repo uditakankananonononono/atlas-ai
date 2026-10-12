@@ -2,7 +2,7 @@
 =================================== FAILURES ===================================
 _____________ test_refusals[data8-APPLY_REFUSED_BAD_TYPE:request] ______________
 
-data = {'action': 'send', 'as_of': 'd', 'docs': [{'doc_url': 'https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0', 'text': 'x'}]}
+data = {'action': 'send', 'as_of': 'd', 'docs': [{'doc_url': 'https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit?tab=t.0', 'text': 'x'}]}
 code = 'APPLY_REFUSED_BAD_TYPE:request'
 
     @pytest.mark.parametrize('data,code',[

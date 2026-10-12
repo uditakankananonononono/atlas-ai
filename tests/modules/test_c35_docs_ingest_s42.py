@@ -7,8 +7,12 @@ import pytest
 P=Path(__file__).resolve().parents[2]/'backend/app/modules/c35/docs_ingest.py'
 spec=importlib.util.spec_from_file_location('c35_docs_ingest_test',P)
 m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)
-BOOKMARK='https://docs.google.com/document/d/1OsKMZD9Wj6ebH3v0dMaFCwGrLRhvknT_o4_7sukNUT4/edit?tab=t.0'
-WAIVER='https://docs.google.com/document/d/1egtDk7S8I0srRFYgWCUwY_veBpXuw8VCutCTF1wsVzU/edit?usp=sharing'
+BOOKMARK='https://docs.google.com/document/d/SYNTHETIC_BOOKMARK_FIXTURE/edit?tab=t.0'
+WAIVER='https://docs.google.com/document/d/SYNTHETIC_WAIVER_FIXTURE/edit?usp=sharing'
+
+@pytest.fixture(autouse=True)
+def configured_owner_pins(monkeypatch):
+    monkeypatch.setenv(m.PINNED_DOC_URLS_ENV,json.dumps([BOOKMARK,WAIVER]))
 
 def req(text,doc_url=BOOKMARK):return {'as_of':'2026-10-11','docs':[{'doc_url':doc_url,'text':text}]}
 def refuse(code,f):
@@ -151,3 +155,37 @@ def test_ipv6_bracket_authority():
 
 def test_ipv6_brackets_and_port_preserved():
     assert m.run(req('https://[2001:DB8::1]:8443/Path/'))['index'][0]['url']=='https://[2001:db8::1]:8443/Path'
+
+
+def test_configuration_missing_refuses_without_default(monkeypatch):
+    monkeypatch.delenv(m.PINNED_DOC_URLS_ENV)
+    refuse('APPLY_REFUSED_DOC_CONFIG_MISSING',lambda:m.run(req('https://x.example')))
+
+
+@pytest.mark.parametrize('raw',['', 'not json', '{}', '[]', '[null]', '[1]', '["https://evil.example/doc"]',
+    '["http://docs.google.com/document/d/FIXTURE/edit"]',
+    '["https://docs.google.com.evil.example/document/d/FIXTURE/edit"]',
+    '["https://docs.google.com/document/d/FIXTURE/edit#fragment"]',
+    '["https://user@docs.google.com/document/d/FIXTURE/edit"]'])
+def test_bad_configuration_refuses(monkeypatch,raw):
+    monkeypatch.setenv(m.PINNED_DOC_URLS_ENV,raw)
+    code='APPLY_REFUSED_DOC_CONFIG_MISSING' if not raw else 'APPLY_REFUSED_DOC_CONFIG_INVALID'
+    refuse(code,lambda:m.run(req('https://x.example')))
+
+
+def test_config_refreshes_without_reload(monkeypatch):
+    custom='https://docs.google.com/document/d/SYNTHETIC_CUSTOM_FIXTURE/edit?tab=t.0'
+    monkeypatch.setenv(m.PINNED_DOC_URLS_ENV,json.dumps([custom]))
+    assert m.run(req('https://x.example',custom))['index']
+    refuse('APPLY_REFUSED_URL_NOT_PINNED',lambda:m.run(req('https://x.example')))
+
+
+def test_request_cannot_override_configuration():
+    r=req('https://x.example')
+    r['pinned_doc_urls']=[BOOKMARK]
+    refuse('APPLY_REFUSED_BAD_TYPE:request',lambda:m.run(r))
+
+
+def test_duplicate_configuration_refuses(monkeypatch):
+    monkeypatch.setenv(m.PINNED_DOC_URLS_ENV,json.dumps([BOOKMARK,BOOKMARK]))
+    refuse('APPLY_REFUSED_DOC_CONFIG_INVALID',lambda:m.run(req('https://x.example')))
