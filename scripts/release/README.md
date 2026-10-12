@@ -38,3 +38,20 @@ checkout observation. A timeout still does not isolate descendants: a survivor
 can append to selector.log after its recorded hash. The hash covers observed
 bytes, not a promise of a permanently frozen log. Trusted checkout only, not a
 sandbox; local hooks and test code can have effects.
+
+Additional trusted-local limits: JUnit counts are test-reported input from a
+file the test process can write. The JUnit file is not hash-bound in the receipt,
+and its counts are not cross-checked against the log summary. PASS therefore
+uses trusted-local reported counts, not an independent execution attestation.
+
+The executable SHA256 binds the selected executable bytes at two checks, not
+its dependencies, environment, wrapper target or absence of a change between
+checks and execution. A shim can invoke other unbound executables. The version
+probe uses the parent environment, not the controlled test environment. Neither
+the version nor the executable hash attests pytest, site-packages, standard
+library or shared-library bytes.
+
+HEAD and nonignored status checks do not bind Git metadata such as configuration,
+exclude rules or hooks. Changes to .git/config, .git/info/exclude or .git/hooks
+are outside this state observation. These limits matter for hostile test code;
+the helper remains for trusted local, non-hostile tests, not a sandbox.
