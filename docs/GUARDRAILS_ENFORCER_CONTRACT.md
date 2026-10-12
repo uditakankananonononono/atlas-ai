@@ -7,7 +7,7 @@ guarded operations as one surface:
 | Operation | Gate | Group |
 |---|---|---|
 | run_bio_work / admit_bio_work | bio_gate | 134 + 135 |
-| dispatch_outbound | outbound_gate | 136 |
+| dispatch_outbound | outbound_gate | 136 (send/post/submit/invite/account/payment kinds also require validated owner effect authority) |
 | open_review / record_decision / issue_permit / grant_preauthorization / revoke_preauthorization / execute_reviewed | review_gate | 137 |
 | emit_text | claim_lint_gate | 138 |
 | register_account / verify_account / revoke_account / call_service | owner_account_gate | 139 |
@@ -58,7 +58,10 @@ validated through `authority_check` and ledgered as
 
 TWO MODES, no third path. An enforcer WITHOUT authority_check is in RECORD
 mode: it ledgers declarations and CANNOT execute effects - execute_reviewed
-and call_service refuse unconditionally (ledgered refusals). An enforcer
+and call_service refuse unconditionally (ledgered refusals), and
+person-facing outbound kinds (send/post/submit/invite/account/payment)
+refuse at dispatch_outbound. Public-read outbound kinds still dispatch on
+policy admission alone - exactly matching the outbound gate's enforcement. An enforcer
 WITH authority_check is in GATE mode: record_decision,
 grant_preauthorization, issue_permit, execute_reviewed and verify_account
 without a validated authority_ref all fail closed (coded ValueError at

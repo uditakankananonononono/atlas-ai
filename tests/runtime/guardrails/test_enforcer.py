@@ -240,3 +240,27 @@ def test_enforcer_authority_configured_end_to_end():
     permit = e.issue_permit(ACTION, review_id="R1", now=T0)
     assert e.execute_reviewed(ACTION, effect=lambda a: "done", now=T1,
                               permit_id=permit["permit_id"]) == "done"
+
+
+def test_outbound_effect_kinds_require_authority_through_enforcer():
+    post = {"id": "p1", "platform": "github", "kind": "post", "at": 100, "count": 1}
+    decl = {"tos": {"github": {"allowed_kinds": ["read", "post"],
+                               "automation_allowed": True}},
+            "rate_limits": {"github": {"read": {"max": 10, "window_seconds": 60},
+                                       "post": {"max": 10, "window_seconds": 60}}},
+            "consent": [], "recent_actions": []}
+    # RECORD-mode enforcer: person-facing effects refuse; reads still dispatch
+    rec = GuardrailEnforcer()
+    assert rec.dispatch_outbound({"id": "r1", "platform": "github", "kind": "read",
+                                  "at": 100, "count": 1}, decl,
+                                 effect=lambda a: "read-ok", now=T0) == "read-ok"
+    with pytest.raises(GuardrailRefusal) as held:
+        rec.dispatch_outbound(post, decl, effect=lambda a: None, now=T0)
+    assert held.value.code == "OUTGATE:refused:authority_hook_required"
+    # GATE-mode enforcer: needs authority_ref, then dispatches
+    gate = GuardrailEnforcer(authority_check=lambda ref, digest: ref == "m00-1")
+    with pytest.raises(GuardrailRefusal) as held:
+        gate.dispatch_outbound(dict(post, id="p2"), decl, effect=lambda a: None, now=T0)
+    assert held.value.code == "OUTGATE:refused:authority_required"
+    assert gate.dispatch_outbound(dict(post, id="p3"), decl, effect=lambda a: "posted",
+                                  now=T0, authority_ref="m00-1") == "posted"

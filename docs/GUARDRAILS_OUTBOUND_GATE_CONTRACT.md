@@ -8,8 +8,8 @@ history. This document scopes the mechanism only.
 ## Enforcement surface
 
 `dispatch(action, declarations, effect=..., now=..., ledger=...,
-review_check=...)`. The action is a P70 action dict plus an `id` field. The
-gate:
+review_check=..., authority_ref=..., authority_check=...)`. The action is a
+P70 action dict plus an `id` field. The gate:
 
 1. rebuilds `recent_actions` for the action's platform from its own ledger's
    dispatched records (each contributing its declared `at`, count 1) and
@@ -19,19 +19,33 @@ gate:
 2. runs P70 `preflight` over the merged declarations;
 3. `deny` -> `GuardrailRefusal("OUTGATE:refused:denied")` with the failed
    check names; the effect is never called;
-4. `needs_review` -> requires `review_check(action)` to accept (strict True
+4. OWNER EFFECT AUTHORITY for person-facing EFFECT_KINDS - exactly
+   `send`, `post`, `submit`, `invite`, `account`, `payment`: ToS-allow is
+   never sufficient for these. No `authority_check` hook ->
+   `refused:authority_hook_required`; no `authority_ref` ->
+   `refused:authority_required`; hook rejection ->
+   `refused:authority_rejected`. The hook receives (authority_ref,
+   action_digest), the sha256 of the canonical action content, and accepts
+   only with a strict True or a verified-permit object. EVERY OTHER KIND
+   (public reads, local computation) skips this step - it is policy
+   admission only and is NOT owner-gated;
+5. `needs_review` -> requires `review_check(action)` to accept (strict True
    or a verified-permit object), else
-   `refused:review_required` (no hook: fail closed);
-5. `allow` (or approved review) -> the effect runs and the decision is
-   ledgered as `dispatched` / `dispatched:after_review`.
+   `refused:review_required` (no hook: fail closed); an EFFECT_KIND under a
+   review policy must pass BOTH authority and review;
+6. `allow` (or approved review, with validated authority for EFFECT_KINDS)
+   -> the effect runs and the decision is ledgered as `dispatched` /
+   `dispatched:after_review`.
 
 `history(ledger, platform)` exposes the rebuilt rate history.
 
 ## Ledger
 
 Hash-chained `decision` records carrying platform, kind, both timestamps,
-the preflight verdict, failed check names, review booleans and the final
-verdict. `dumps`/`loads` re-verifies chain and content.
+the preflight verdict, failed check names, review booleans, the action
+digest, authority fields (ref, checked, accepted) and the final verdict.
+`dumps`/`loads` re-verifies chain and content, including
+accepted-without-reference forgeries.
 
 ## Limits (named, none hidden)
 
@@ -40,6 +54,9 @@ verdict. `dumps`/`loads` re-verifies chain and content.
 - `review_check` is caller-bound: only a strict True or a verified-permit
   object accepts (truthy non-True values reject); the gate records the verdict and
   never authenticates a review.
+- Owner effect authority covers exactly EFFECT_KINDS (send, post,
+  submit, invite, account, payment); every other kind is policy admission
+  only, and this gate makes no owner-gating claim about it.
 - Ledger-derived rate history covers actions that went through this gate
   only; actions performed outside it are invisible to it.
 - The ledger is an unkeyed hash chain: tamper-evident, not tamper-proof. A rehashed edit is not detectable; safe storage of the serialized ledger is the caller's job.

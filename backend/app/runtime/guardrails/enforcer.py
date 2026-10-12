@@ -10,7 +10,9 @@ one surface, so a caller wiring runtime effects through GuardrailEnforcer
 gets every guardrail firing at one place with one audit trail:
 
 - run_bio_work          groups 134+135 (in-silico-only, prohibited bio)
-- dispatch_outbound     group 136 (platform terms, rate limits, consent)
+- dispatch_outbound     group 136 (platform terms, rate limits, consent;
+                          send/post/submit/invite/account/payment kinds
+                          also require validated owner effect authority)
 - execute_reviewed      group 137 (explicit review for contact/application/
                         submission/account actions, permits + preauthorizations)
 - emit_text             group 138 (no false sentience/AGI claims)
@@ -145,10 +147,11 @@ class GuardrailEnforcer:
         return record
 
     # ---- group 136 --------------------------------------------------------
-    def dispatch_outbound(self, action, declarations, *, effect, now):
+    def dispatch_outbound(self, action, declarations, *, effect, now, authority_ref=None):
         return self._capture("outbound", lambda led, commit: outbound_gate.dispatch(
             action, declarations, effect=effect, now=now, ledger=led,
-            review_check=self.review_check, on_commit=commit))
+            review_check=self.review_check, on_commit=commit,
+            authority_ref=authority_ref, authority_check=self.authority_check))
 
     # ---- group 137 --------------------------------------------------------
     def open_review(self, action, *, review_id, reviewer, now, valid_hours=24):
