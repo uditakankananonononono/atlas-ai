@@ -1,0 +1,49 @@
+{
+  "row": 69,
+  "selectors": [
+    "tests/modules/test_c32_ideate_s26.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "supplied combinatorial concepts, not trained creativity",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "training",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "policy.check(\"spend\", PREFIX)",
+      "new": "pass"
+    },
+    {
+      "id": "pairs",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "range(i + 1, len(cleaned))",
+      "new": "range(i, len(cleaned))"
+    },
+    {
+      "id": "novelty",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "1.0 - _jaccard(_words(idea), prior_words)",
+      "new": "_jaccard(_words(idea), prior_words)"
+    },
+    {
+      "id": "rank",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "(-d[\"novelty\"], d[\"idea\"])",
+      "new": "(d[\"novelty\"], d[\"idea\"])"
+    },
+    {
+      "id": "cap",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "if len(concepts) > MAX_CONCEPTS:",
+      "new": "if False:"
+    }
+  ]
+}
