@@ -70,3 +70,50 @@ def test_missing_line_not_scoped_pass(repo):
     assert out['lines'][1]['check_status']=='UNVERIFIED'
     assert out['lines'][1]['checks']==[]
     assert not out['lines'][0]['test_line_pairing_verified']
+
+
+def test_actual_mixed_pass_fail_receipts(repo):
+    root,check=repo
+    (root/'tests/test_bad.py').write_text('def test_bad(): assert False')
+    subprocess.run(['git','-C',str(root),'add','.'],check=True)
+    subprocess.run(['git','-C',str(root),'commit','-qm','failure fixture'],check=True)
+    line=source_inventory(root,'source.txt')['rows'][1]
+    bad=dict(check,id='bad',line_id=line['id'],line_sha256=line['sha256'],test_paths=['tests/test_bad.py'])
+    out=audit_selected_checks(root,'source.txt',[check,bad])
+    assert out['scoped_passing_lines']==1
+    assert out['lines'][1]['checks'][0]['run']['counts']['failures']==1
+    assert not out['candy_gate']['release']
+
+
+def test_postrun_inventory_error_preserves_receipts(repo,monkeypatch):
+    from app.modules.instinct_doc import executed_acceptance as mod
+    root,check=repo;original=mod.source_inventory;calls=[]
+    def fail_second(*a):
+        calls.append(1)
+        if len(calls)>1:raise OSError('injected post-read')
+        return original(*a)
+    monkeypatch.setattr(mod,'source_inventory',fail_second)
+    out=mod.audit_selected_checks(root,'source.txt',[check])
+    assert out['post_run_source_error']=='OSError'
+    assert out['lines'][0]['checks'][0]['run']['counts']['tests']==1
+    assert out['scoped_passing_lines']==0
+
+
+def test_helper_exception_and_head_drift_unverified(repo,monkeypatch):
+    from app.modules.instinct_doc import executed_acceptance as mod
+    root,check=repo
+    def failed(*a):raise RuntimeError('injected helper')
+    monkeypatch.setattr(mod,'execute_tests',failed)
+    out=mod.audit_selected_checks(root,'source.txt',[check])
+    assert out['lines'][0]['checks'][0]['run']['error']=='RuntimeError'
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:{'status':'SCOPED_PASS','head':'other','tree_digest':'other'})
+    assert mod.audit_selected_checks(root,'source.txt',[check])['scoped_passing_lines']==0
+
+
+def test_inventory_bytes_hash_and_disclosures(repo):
+    import hashlib
+    root,check=repo
+    out=audit_selected_checks(root,'source.txt',[check])
+    assert out['source_artifact_sha256']==hashlib.sha256((root/'source.txt').read_bytes()).hexdigest()
+    assert out['source_path']=='source.txt' and out['head'] and out['tree_digest']
+    assert not out['aggregate_budget_enforced'] and not out['execution_is_sandboxed']

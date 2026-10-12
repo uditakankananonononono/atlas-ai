@@ -1,6 +1,6 @@
 """Execute source-line-bound scoped checks; do not certify semantic fulfillment."""
 from pathlib import Path
-from .repo_evidence import source_inventory, execute_tests, EvidenceError, snapshot, safe_file
+from .repo_evidence import source_inventory, execute_tests, EvidenceError, snapshot, safe_file, digest
 
 
 def audit_selected_checks(root, source_path, checks):
@@ -9,6 +9,7 @@ def audit_selected_checks(root, source_path, checks):
     lines = {row['id']: row['sha256'] for row in source['rows']}
     if type(checks) is not list or len(checks) > 1000:
         raise EvidenceError('checks must be a bounded list')
+    source_artifact_sha256 = digest(safe_file(root, source_path).read_bytes())
     snap = snapshot(root)
     seen, bindings = set(), {}
     for check in checks:
@@ -34,8 +35,14 @@ def audit_selected_checks(root, source_path, checks):
         except Exception as exc:
             run = {'status': 'UNVERIFIED', 'head': None, 'tree_digest': None, 'error': type(exc).__name__}
         bindings.setdefault(check['line_id'], []).append({'id': ident, 'run': run})
-    after = source_inventory(root, source_path)
-    source_stable = after['sha256'] == source['sha256'] and after['rows'] == source['rows']
+    rehash_error = None
+    try:
+        after = source_inventory(root, source_path)
+        after_bytes_hash = digest(safe_file(root, source_path).read_bytes())
+        source_stable = after_bytes_hash == source_artifact_sha256 and after['sha256'] == source['sha256'] and after['rows'] == source['rows']
+    except Exception as exc:
+        source_stable = False
+        rehash_error = type(exc).__name__
     rows = []
     for line_id, sha in lines.items():
         executions = bindings.get(line_id, [])
@@ -46,7 +53,9 @@ def audit_selected_checks(root, source_path, checks):
                      'reason': 'Scoped execution observed; semantic acceptance remains a separate blocker' if passed else 'Missing or nonpassing selected check'})
     blockers = [{'line_id': row['line_id'], 'status': 'UNVERIFIED',
                  'reason': row['reason']} for row in rows]
-    return {'source_path': source_path, 'source_sha256': source['sha256'],
+    return {'source_path': source_path, 'source_sha256': source['sha256'], 'source_artifact_sha256': source_artifact_sha256,
+            'source_artifact_hash_scope': 'Actual local inventory bytes; declared export hash is separate',
+            'post_run_source_error': rehash_error,
             'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],
             'source_stable_after_runs': source_stable,
             'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,

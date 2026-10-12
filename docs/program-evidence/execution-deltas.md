@@ -20,3 +20,17 @@ Aggregate time/disk budgets are NOT enforced, and execution is NOT sandboxed;
 only trusted repository code is allowed. Per-run timeout/output limits do not
 bound aggregate work or temporary disk writes. Maximum counts remain resource
 caps, not a claim of safe execution for arbitrary untrusted inputs.
+
+## Remaining row blockers
+
+- Row129: no authenticated external ChatGPT judge access/transcripts, semantic
+  grading definition or before/after novelty improvement evidence supplied.
+  Local reports cannot create that evidence. Literal state PARTIAL.
+- Row130: per-module plans exist, but no independently accepted module criteria,
+  executed improvement coverage or externally checked resulting gains supplied.
+  Proposed plans are not executed self-improvement. Literal state PARTIAL.
+
+Acceptance audit retains completed run receipts even if the post-run source read
+fails. `source_artifact_sha256` hashes actual local inventory bytes; a manifest's
+export hash is separately declared metadata, not authenticated original bytes.
+Source drift/read errors suppress scoped promotion while preserving evidence.
