@@ -1,0 +1,50 @@
+{
+  "row": 68,
+  "selectors": [
+    "tests/modules/test_c32_ingest_s20.py",
+    "tests/modules/test_c32_ingest_stream_s20.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "offline supplied records and local store ingestion",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "dedupe",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "if rid in seen_ids:\n            duplicates += 1",
+      "new": "if False:\n            duplicates += 1"
+    },
+    {
+      "id": "resume",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "resumed = _checkpoint(checkpoint)\n        skip = resumed[\"shard\"] * shard_size + resumed[\"offset\"]\n    else:\n        resumed = None\n        skip = 0\n    records = _check_records(records)",
+      "new": "resumed = _checkpoint(checkpoint)\n        skip = 0\n    else:\n        resumed = None\n        skip = 0\n    records = _check_records(records)"
+    },
+    {
+      "id": "batch",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "batch = list(itertools.islice(it, shard_size))",
+      "new": "batch = list(it)"
+    },
+    {
+      "id": "bytes",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "if len(rid.encode(\"utf-8\")) + len(text.encode(\"utf-8\")) > MAX_RECORD_BYTES:",
+      "new": "if False:"
+    },
+    {
+      "id": "checkpoint",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "consumed += len(batch)",
+      "new": "consumed += 0"
+    }
+  ]
+}
