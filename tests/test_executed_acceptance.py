@@ -41,3 +41,32 @@ def test_fake_semantic_label_and_stale_source_refused(repo):
     with pytest.raises(EvidenceError):audit_selected_checks(root,'source.txt',[check])
     check.pop('semantic_verified');check['line_sha256']='0'*64
     with pytest.raises(EvidenceError):audit_selected_checks(root,'source.txt',[check])
+
+
+def test_later_invalid_shape_runs_nothing(repo, monkeypatch):
+    from app.modules.instinct_doc import executed_acceptance as mod
+    root,check=repo;calls=[]
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:calls.append(a))
+    with pytest.raises(EvidenceError):mod.audit_selected_checks(root,'source.txt',[check,{'id':'bad'}])
+    assert calls==[]
+
+
+def test_mixed_failure_and_source_mutation_not_promoted(repo,monkeypatch):
+    from app.modules.instinct_doc import executed_acceptance as mod
+    from app.modules.instinct_doc.repo_evidence import snapshot
+    root,check=repo;snap=snapshot(root)
+    def changed(*a):
+        (root/'source.txt').write_text('changed\n')
+        return {'status':'SCOPED_PASS','head':snap['head'],'tree_digest':snap['tree_digest']}
+    monkeypatch.setattr(mod,'execute_tests',changed)
+    out=mod.audit_selected_checks(root,'source.txt',[check])
+    assert not out['source_stable_after_runs'] and out['scoped_passing_lines']==0
+    assert all(r['check_status']=='UNVERIFIED' for r in out['lines'])
+
+
+def test_missing_line_not_scoped_pass(repo):
+    root,check=repo
+    out=audit_selected_checks(root,'source.txt',[check])
+    assert out['lines'][1]['check_status']=='UNVERIFIED'
+    assert out['lines'][1]['checks']==[]
+    assert not out['lines'][0]['test_line_pairing_verified']
