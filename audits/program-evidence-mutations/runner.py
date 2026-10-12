@@ -1,4 +1,4 @@
-"""Assertion-failure-only mutation receipt runner for trusted local checkouts."""
+"""rc1 plus FAILED-only mutation receipt runner, including product crash failures for trusted local checkouts."""
 from pathlib import Path
 import hashlib
 import json
