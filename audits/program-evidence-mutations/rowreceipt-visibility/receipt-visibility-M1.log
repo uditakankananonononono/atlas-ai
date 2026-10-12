@@ -1,0 +1,10 @@
+.................F....                                                   [100%]
+=================================== FAILURES ===================================
+______ test_unknown_or_untyped_line_binding_never_executes[unknown-None] _______
+tests/test_executed_acceptance.py:173: in test_unknown_or_untyped_line_binding_never_executes
+    with pytest.raises(EvidenceError,match='source line hash mismatch'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EvidenceError
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_unknown_or_untyped_line_binding_never_executes[unknown-None]
+1 failed, 21 passed in 4.52s

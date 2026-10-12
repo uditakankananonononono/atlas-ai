@@ -1,0 +1,9 @@
+........F............                                                    [100%]
+=================================== FAILURES ===================================
+_______________ test_helper_exception_and_head_drift_unverified ________________
+tests/test_executed_acceptance.py:108: in test_helper_exception_and_head_drift_unverified
+    assert out['lines'][0]['checks'][0]['run']['error']=='RuntimeError'
+E   AssertionError: assert None == 'RuntimeError'
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_helper_exception_and_head_drift_unverified
+1 failed, 20 passed in 5.20s

@@ -1,0 +1,9 @@
+.....................F                                                   [100%]
+=================================== FAILURES ===================================
+________________ test_actual_source_byte_hash_remains_required _________________
+tests/test_acceptance_receipt_visibility_sensitivity.py:16: in test_actual_source_byte_hash_remains_required
+    assert out['source_stable_after_runs'] is False
+E   assert True is False
+=========================== short test summary info ============================
+FAILED tests/test_acceptance_receipt_visibility_sensitivity.py::test_actual_source_byte_hash_remains_required
+1 failed, 21 passed in 4.56s

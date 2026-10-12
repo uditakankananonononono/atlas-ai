@@ -1,0 +1,108 @@
+{
+  "row": "receipt-visibility",
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_executed_acceptance.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "portable_path_normalization": "portable-path-normalized: command interpreter path normalized for delivery",
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "baseline.log"
+  },
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "restored-baseline.log"
+  },
+  "mutants": [
+    {
+      "id": "receipt-visibility-M1",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "mutant_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_unknown_or_untyped_line_binding_never_executes[unknown-None]"
+      ],
+      "log": "receipt-visibility-M1.log"
+    },
+    {
+      "id": "receipt-visibility-M2",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "mutant_sha256": "72f50cf42d821b02a35289ee5d0a87ac6552b8c1ae9a139c0689da0d97f14f0e",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[None]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt1]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt2]"
+      ],
+      "log": "receipt-visibility-M2.log"
+    },
+    {
+      "id": "receipt-visibility-M3",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "mutant_sha256": "ab90f77faf122d66a9d178d52d17912b73ea1354d9f1de22f21857a36b0ccd10",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts"
+      ],
+      "log": "receipt-visibility-M3.log"
+    },
+    {
+      "id": "receipt-visibility-M4",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "mutant_sha256": "a5d3074b9547db174a36e5aecdaf113dd705a730397bba1d234f636794b3c57e",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_helper_exception_and_head_drift_unverified"
+      ],
+      "log": "receipt-visibility-M4.log"
+    },
+    {
+      "id": "receipt-visibility-M5",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "mutant_sha256": "f12d9d67cabfe06f5c85a09bcf86f49df0ba2574390292d73beef16de0c1ba32",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true,
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_test_ids": [],
+      "log": "receipt-visibility-M5.log"
+    }
+  ],
+  "counts": {
+    "CAUGHT": 4,
+    "SURVIVED": 1,
+    "INVALID": 0,
+    "NOT-APPLICABLE": 0
+  },
+  "evidence_tier": "Local offline Git/files and actual pytest subprocess tests; explicitly controlled injected receipt/error/drift cases. No external evidence.",
+  "limits": "Sensitivity to these5 named faults only; non-atomic snapshots, no aggregate sandbox/budget or semantic acceptance. Literal rows remain PARTIAL."
+}

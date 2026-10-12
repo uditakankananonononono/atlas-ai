@@ -1,0 +1,46 @@
+{
+  "row": "receipt-visibility",
+  "tests": [
+    "tests/test_executed_acceptance.py",
+    "tests/test_acceptance_receipt_visibility_sensitivity.py"
+  ],
+  "tier": "Local offline Git/files and actual pytest subprocess tests; explicitly controlled injected receipt/error/drift cases. No external evidence.",
+  "limits": "Sensitivity to these5 named faults only; non-atomic snapshots, no aggregate sandbox/budget or semantic acceptance. Literal rows remain PARTIAL.",
+  "mutants": [
+    {
+      "id": "receipt-visibility-M1",
+      "name": "unknown-line-null-gap",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "if not isinstance(check['line_id'], str) or check['line_id'] not in lines or not isinstance(check['line_sha256'], str) or lines[check['line_id']] != check['line_sha256']:",
+      "new": "if not isinstance(check['line_id'], str) or lines.get(check['line_id']) != check['line_sha256']:"
+    },
+    {
+      "id": "receipt-visibility-M2",
+      "name": "malformed-return",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "if type(run) is not dict or not all(isinstance(run.get(key), str) for key in ('status', 'head', 'tree_digest')):",
+      "new": "if False:"
+    },
+    {
+      "id": "receipt-visibility-M3",
+      "name": "drop-postread-error",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "rehash_error = type(exc).__name__",
+      "new": "rehash_error = None"
+    },
+    {
+      "id": "receipt-visibility-M4",
+      "name": "drop-helper-error-detail",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'error': type(exc).__name__",
+      "new": "'error': None"
+    },
+    {
+      "id": "receipt-visibility-M5",
+      "name": "ignore-source-bytes",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "after_bytes_hash == source_artifact_sha256 and after['sha256']",
+      "new": "True and after['sha256']"
+    }
+  ]
+}
