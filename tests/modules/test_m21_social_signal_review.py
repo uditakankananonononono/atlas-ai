@@ -43,3 +43,12 @@ def test_since_is_timezone_explicit(tmp_path):
     import pytest
     with pytest.raises(ValueError):
         review_signals(store, "a", since=datetime(2026,9,27))
+
+
+def test_threshold_limit_and_exact_excerpt_on_stored_cards():
+    class Store:
+        def list_signals(self,*args,**kwargs):
+            return [dict(id=i,platform='linkedin',handle='fixture',source_url='https://example.org/'+str(i),observed_at='fixture',text='x'*700,signal_score=score) for i,score in [(0,.1),(1,.9),(2,.8)]]
+    out=review_signals(Store(),'t',min_score=.5,limit=1)
+    assert len(out['cards'])==1 and out['cards'][0]['id']==1
+    assert out['cards'][0]['text_excerpt']=='x'*600
