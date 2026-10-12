@@ -1,0 +1,142 @@
+{
+  "tree": "b6503ec7d81f4ea49adfe7ecd219de6a61f079c6",
+  "status": "?? audits/program-evidence-mutations/deepening/row124.json\n?? audits/program-evidence-mutations/deepening/row124/\n?? audits/program-evidence-mutations/deepening/row125.json\n",
+  "file_sha256": {
+    "tests/test_integration_evidence_binding.py": "2d54cd1f49ad05feb848f6740ee9ed26eec033f11236b65a90d3e5081e101bcc",
+    "backend/app/modules/instinct_doc/integrations_register_p255.py": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+    "audits/program-evidence-mutations/deepening/row125.json": "2d97857830563185203883fc83674460d73ad4c7951da42dd7b4ef0be544302a",
+    "audits/program-evidence-mutations/deepening/replay.py": "37772fd0017ea5e7c7b103d1d5a1d04b5a9a1d932180227b252e9523d134dc3e"
+  },
+  "base": "5ba4db1797fa0be4d935648ac2bc5752d2ca9a5a",
+  "config_sha256": "2d97857830563185203883fc83674460d73ad4c7951da42dd7b4ef0be544302a",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_integration_evidence_binding.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "portable_path_normalization": "interpreter normalized to python; delivered logs strip whitespace and replace listed private paths only",
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "baseline.log",
+    "original_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+    "delivered_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+    "normalizations": []
+  },
+  "mutants": [
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D125-M1.log",
+      "original_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+      "delivered_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+      "normalizations": [],
+      "id": "D125-M1",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "6b51e3e3d7ddb3429978cd40a22aee99ee6a1aa462ddd5993eac07d3608cd8c3",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    },
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D125-M2.log",
+      "original_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+      "delivered_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+      "normalizations": [],
+      "id": "D125-M2",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "1012f590ed6bd45557d8c199721add455608e44c900c2f8e180b1938644a23ba",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    },
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D125-M3.log",
+      "original_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+      "delivered_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+      "normalizations": [],
+      "id": "D125-M3",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "280479afee6b2b38fd569771d667d39a76c535fd94682d15af962c5fbc623c05",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_integration_evidence_binding.py::test_nul_path_per_file_error"
+      ],
+      "log": "D125-M4.log",
+      "original_sha256": "a3e6e7bf4dc82aae76387ccc2342d2829a03fe7ac667f098f0d660015e947d1b",
+      "delivered_sha256": "a6961611e19c7efb2420c66a5f400d3c1624b0ea5cadcaa021b187a90e88ff8c",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D125-M4",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "ccce228cd597d1c7d9d4f053843354da4ada9bdb41d0293b17e0618d00e7d67f",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_integration_evidence_binding.py::test_local_artifacts_do_not_authenticate_live_use"
+      ],
+      "log": "D125-M5.log",
+      "original_sha256": "cc1a3fb7139cec4bc6dd0abb863af03e748787ef4f713626b3d1937c8e0d3f89",
+      "delivered_sha256": "cf6dcc4ec8ced78f26cfec273dc6034a7514cb7a6e70a324362fc2b434bf20d3",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D125-M5",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "07f77bdbb53f722e8cf5d8f79c1c3c80e661c921ac3fe729a86c36017727410d",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    }
+  ],
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "restored-baseline.log",
+    "original_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+    "delivered_sha256": "edea1fe2e925f38d64cba1ee0f8ba3f25b2723ff28e7e65063c9b7b3e2414e63",
+    "normalizations": []
+  },
+  "counts": {
+    "CAUGHT": 2,
+    "SURVIVED": 3,
+    "INVALID": 0
+  }
+}

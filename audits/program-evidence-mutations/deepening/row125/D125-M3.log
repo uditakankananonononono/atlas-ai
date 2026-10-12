@@ -1,0 +1,10 @@
+...........F                                                             [100%]
+=================================== FAILURES ===================================
+_____________ test_integration_reference_edges_refused[duplicates] _____________
+tests/test_row125_validation_deepening.py:10: in test_integration_reference_edges_refused
+    with pytest.raises(ValueError):bind_local_evidence(register,tmp_path,[binding])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ============================
+FAILED tests/test_row125_validation_deepening.py::test_integration_reference_edges_refused[duplicates]
+1 failed, 11 passed in 0.09s

@@ -1,0 +1,43 @@
+{
+  "row": 125,
+  "tests": [
+    "tests/test_integration_evidence_binding.py"
+  ],
+  "mutants": [
+    {
+      "id": "D125-M1",
+      "name": "reference-count-edge",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "len(v) > 1000",
+      "new": "len(v) > 1001"
+    },
+    {
+      "id": "D125-M2",
+      "name": "reference-length-edge",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "len(x) <= 128",
+      "new": "len(x) <= 129"
+    },
+    {
+      "id": "D125-M3",
+      "name": "duplicate-references",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "len(set(v)) != len(v)",
+      "new": "False"
+    },
+    {
+      "id": "D125-M4",
+      "name": "adapter-required",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "if out['adapter_sha256'] and out['use_evidence_sha256']:",
+      "new": "if out['use_evidence_sha256']:"
+    },
+    {
+      "id": "D125-M5",
+      "name": "reference-retention",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "'row_ids': row['row_ids']",
+      "new": "'row_ids': []"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+F...........                                                             [100%]
+=================================== FAILURES ===================================
+______________ test_local_artifacts_do_not_authenticate_live_use _______________
+tests/test_integration_evidence_binding.py:24: in test_local_artifacts_do_not_authenticate_live_use
+    assert out['integration_references']['one']['row_ids'] == ['row']
+E   AssertionError: assert [] == ['row']
+E
+E     Right contains one more item: 'row'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_integration_evidence_binding.py::test_local_artifacts_do_not_authenticate_live_use
+1 failed, 11 passed in 0.09s

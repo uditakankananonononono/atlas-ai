@@ -1,0 +1,150 @@
+{
+  "tree": "b6503ec7d81f4ea49adfe7ecd219de6a61f079c6",
+  "status": "?? audits/program-evidence-mutations/deepening/row124.json\n?? audits/program-evidence-mutations/deepening/row124/\n?? audits/program-evidence-mutations/deepening/row125.json\n?? audits/program-evidence-mutations/deepening/row125/\n?? tests/test_row124_validation_deepening.py\n?? tests/test_row125_validation_deepening.py\n",
+  "file_sha256": {
+    "tests/test_integration_evidence_binding.py": "2d54cd1f49ad05feb848f6740ee9ed26eec033f11236b65a90d3e5081e101bcc",
+    "tests/test_row125_validation_deepening.py": "7eece3157d8b08555bb4f524f690246f431f898a0bb0c94ef1887b40b5e2c734",
+    "backend/app/modules/instinct_doc/integrations_register_p255.py": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+    "audits/program-evidence-mutations/deepening/row125.json": "0928e271c981147b3cc2a94da06d402589873f57800b7388d06e72d4b4d8f1f1",
+    "audits/program-evidence-mutations/deepening/replay.py": "37772fd0017ea5e7c7b103d1d5a1d04b5a9a1d932180227b252e9523d134dc3e"
+  },
+  "base": "5ba4db1797fa0be4d935648ac2bc5752d2ca9a5a",
+  "config_sha256": "0928e271c981147b3cc2a94da06d402589873f57800b7388d06e72d4b4d8f1f1",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_integration_evidence_binding.py",
+    "tests/test_row125_validation_deepening.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "portable_path_normalization": "interpreter normalized to python; delivered logs strip whitespace and replace listed private paths only",
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "baseline.log",
+    "original_sha256": "7a31e66378c8cfe7c15128f94cc1506ce059a413da978d80115e1e55e5e976e5",
+    "delivered_sha256": "7a31e66378c8cfe7c15128f94cc1506ce059a413da978d80115e1e55e5e976e5",
+    "normalizations": []
+  },
+  "mutants": [
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_row125_validation_deepening.py::test_integration_reference_edges_refused[count]"
+      ],
+      "log": "D125-M1.log",
+      "original_sha256": "2c3ebaa21f21f083a734f4edcdceb5e0326190b2f76296d6dfc6af327b1d56c6",
+      "delivered_sha256": "2c3ebaa21f21f083a734f4edcdceb5e0326190b2f76296d6dfc6af327b1d56c6",
+      "normalizations": [],
+      "id": "D125-M1",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "6b51e3e3d7ddb3429978cd40a22aee99ee6a1aa462ddd5993eac07d3608cd8c3",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_row125_validation_deepening.py::test_integration_reference_edges_refused[length]"
+      ],
+      "log": "D125-M2.log",
+      "original_sha256": "f2b478b47be1eaa2d4c57c5d550e85f8f7304a9d10c6a6201b6e103128d62298",
+      "delivered_sha256": "f2b478b47be1eaa2d4c57c5d550e85f8f7304a9d10c6a6201b6e103128d62298",
+      "normalizations": [],
+      "id": "D125-M2",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "1012f590ed6bd45557d8c199721add455608e44c900c2f8e180b1938644a23ba",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_row125_validation_deepening.py::test_integration_reference_edges_refused[duplicates]"
+      ],
+      "log": "D125-M3.log",
+      "original_sha256": "4790750f4389e6eea4387dc0ad04c7b5ba048957737f6ae13491c6980b273b17",
+      "delivered_sha256": "4790750f4389e6eea4387dc0ad04c7b5ba048957737f6ae13491c6980b273b17",
+      "normalizations": [],
+      "id": "D125-M3",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "280479afee6b2b38fd569771d667d39a76c535fd94682d15af962c5fbc623c05",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_integration_evidence_binding.py::test_nul_path_per_file_error"
+      ],
+      "log": "D125-M4.log",
+      "original_sha256": "7ba062938d35cf2c4fa03d488ffbc8eb9b7a01224676e99b8468ec0f74ebc2ef",
+      "delivered_sha256": "afad604cc5a2f59bea4c11df7a580d028c8bad52db7045eb0435fc1f5603b229",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D125-M4",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "ccce228cd597d1c7d9d4f053843354da4ada9bdb41d0293b17e0618d00e7d67f",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_integration_evidence_binding.py::test_local_artifacts_do_not_authenticate_live_use"
+      ],
+      "log": "D125-M5.log",
+      "original_sha256": "7bba9854849ed5824dcc9f257994517e9a72258f844bd0c260fd934321df7db5",
+      "delivered_sha256": "d97800abdcd968fa453fcde46ff0109781c8e7e4c94c599599cb4bf4e61ed9a9",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D125-M5",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "mutant_sha256": "07f77bdbb53f722e8cf5d8f79c1c3c80e661c921ac3fe729a86c36017727410d",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true
+    }
+  ],
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "restored-baseline.log",
+    "original_sha256": "7a31e66378c8cfe7c15128f94cc1506ce059a413da978d80115e1e55e5e976e5",
+    "delivered_sha256": "7a31e66378c8cfe7c15128f94cc1506ce059a413da978d80115e1e55e5e976e5",
+    "normalizations": []
+  },
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0
+  }
+}
