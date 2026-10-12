@@ -37,8 +37,10 @@ _ENGLISH_NOTES = {
         "English proficiency: not required at Stanford; any English-proficiency "
         "exam may be self-reported - never a substitute for the SAT/ACT",
     "Rice University":
-        "English proficiency: demonstration required at Rice (TOEFL 100 / "
-        "IELTS 7 / Duolingo 130) - separate from the SAT/ACT",
+        "English proficiency: demonstration required at Rice - check the current "
+        "minimum-score table on the official page (TOEFL reporting moved to the "
+        "5.0 scale for tests after January 21, 2026) and whether a language "
+        "waiver applies; separate from the SAT/ACT",
 }
 
 
@@ -50,10 +52,18 @@ def _route_actions(row, profile):
     actions = ["read the official page and confirm current cycle rules",
                "prepare transcripts: CBSE Class X-XII marksheets (predicted if pending)"]
     if profile.get("sat") is None:
-        actions.insert(0, "register for the SAT or ACT - a standardized-test credential "
-                          "is required for every kept route; English-proficiency exams "
-                          "(IELTS/TOEFL) are a separate credential and never substitute "
-                          "for it")
+        if row["university"] == "Princeton University":
+            actions.insert(0, "register for the SAT or ACT - at Princeton it is optional "
+                              "for the 2026-27 cycle (fall 2027 entry) and required from "
+                              "2027-28 (fall 2028 entry); every other kept route requires "
+                              "a standardized-test credential; English-proficiency exams "
+                              "(IELTS/TOEFL) never substitute for it")
+        else:
+            actions.insert(0, "register for the SAT or ACT - a standardized-test credential "
+                              "is required at this route (Princeton is the exception: "
+                              "optional for its 2026-27 cycle); English-proficiency exams "
+                              "(IELTS/TOEFL) are a separate credential and never "
+                              "substitute for it")
     if row["university"] == "Princeton University":
         actions.append("Princeton testing cycle: SAT/ACT optional for 2026-27 (fall 2027 "
                        "entry); required from 2027-28 (fall 2028 entry)")
@@ -119,8 +129,10 @@ def build_plan(profile, as_of):
     gaps = []
     if profile.get("sat") is None:
         gaps.append("no SAT score in profile - kept routes require a standardized-test "
-                    "credential (SAT or ACT); English-proficiency exams (IELTS/TOEFL) are "
-                    "a separate credential and never substitute for it")
+                    "credential (SAT or ACT), with one cycle exception: Princeton is "
+                    "test-optional for 2026-27 (fall 2027 entry) and requires it from "
+                    "2027-28 (fall 2028 entry); English-proficiency exams (IELTS/TOEFL) "
+                    "are a separate credential and never substitute for it")
     if profile.get("ielts") is None:
         gaps.append("no English-proficiency score in profile - required at Yale, "
                     "Princeton and Rice when schooling is not English-medium; optional "

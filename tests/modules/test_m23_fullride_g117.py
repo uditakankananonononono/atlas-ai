@@ -213,9 +213,24 @@ def test_plan_never_presents_ielts_as_an_admission_exam():
 
 def test_plan_without_sat_requires_standardized_credential_not_english():
     plan = fullride_plan.build_plan({"curriculum": "CBSE", "ielts": 8}, "2026-10-12")
+    texts = plan["gaps"] + [a for c in plan["countries"]
+                            for r in c["routes"] for a in r["actions"]]
     assert any("register for the SAT or ACT" in g and "never substitute" in g
-               for g in plan["gaps"] + [a for c in plan["countries"]
-                                        for r in c["routes"] for a in r["actions"]])
+               for g in texts)
+    # the generic required wording never contradicts Princeton's cycle line
+    assert not any("required for every kept route" in g for g in texts)
+    princeton = next(r for c in plan["countries"] for r in c["routes"]
+                     if r["university"] == "Princeton University")
+    assert any("optional" in a and "2026-27" in a for a in princeton["actions"])
+    assert any("test-optional for 2026-27" in g for g in plan["gaps"])
+
+
+def test_rice_english_note_carries_no_hardcoded_thresholds():
+    """Thresholds move (TOEFL 5.0 scale from January 2026): the note references
+    the current official table instead of freezing numbers."""
+    note = fullride_plan._ENGLISH_NOTES["Rice University"]
+    assert "TOEFL 100" not in note and "IELTS 7" not in note and "Duolingo 130" not in note
+    assert "official page" in note and "waiver" in note
 
 
 def test_no_test_credential_refuses_and_plan_deterministic():
