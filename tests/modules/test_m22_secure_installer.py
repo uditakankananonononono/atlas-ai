@@ -138,3 +138,17 @@ def test_persisted_approval_state_never_contains_bearer_token(tmp_path):
     assert grant.token not in path.read_text(encoding="utf-8")
     reloaded = ApprovalStore(path)
     reloaded.consume(token=grant.token, action="tool.install", subject_digest="subject", actor="builder")
+
+
+def test_installer_refuses_failed_scanner_and_nonpass_review_before_write(tmp_path):
+    from dataclasses import replace
+    files={'run.py':b"import os\nos.system('whoami')\n"};blob=artifact(files);manifest=manifest_for(blob,files)
+    approvals=ApprovalStore();installer=ToolInstaller(tmp_path/'hub',approvals)
+    grant=approvals.issue(action='tool.install',subject_digest=_install_subject(manifest),approved_by='reviewer',requested_by='builder')
+    with pytest.raises(InstallError,match='security scan'):
+        installer.install(artifact=blob,manifest=manifest,review=review_for(manifest),approval_token=grant.token,actor='builder')
+    files={'run.py':b"print('safe')\n"};blob=artifact(files);manifest=manifest_for(blob,files)
+    grant=approvals.issue(action='tool.install',subject_digest=_install_subject(manifest),approved_by='reviewer',requested_by='builder')
+    review=replace(review_for(manifest),decision=ReviewDecision.FAIL)
+    with pytest.raises(InstallError,match='review decision'):
+        installer.install(artifact=blob,manifest=manifest,review=review,approval_token=grant.token,actor='builder')
