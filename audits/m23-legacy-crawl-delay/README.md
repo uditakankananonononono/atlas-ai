@@ -13,15 +13,14 @@ Run (repo root): `ATLAS_DEV_NO_AUTH=1 ATLAS_ENV=development python3 -m pytest te
 Mutation receipts: `python3 audits/m23-legacy-crawl-delay/run_mutations.py` -> mutation_receipts.txt. 8 mutants (L1-L8) on
 admitted_cases.py. CAUGHT only on pytest rc=1 with FAILED lines; rc 2/4/5 or timeout = INVALID. Result: CAUGHT=8,
 SURVIVED=0, INVALID=0, SHA-256 restore check passes. L2 drops the injected sleep, so it really sleeps and takes ~35s.
-A first run also had a mutant L9 (transport=None) that was dropped because it could issue real HTTP requests; it was
-caught but is not in the harness or receipts.
+L9 was removed before release; see the warning in Limits.
 
 ## Limits: what stays untested
-- No live fetch; all HTTP is faked with MockTransport.
+- No live fetch applies to the FINAL released test selector and run_mutations.py only: all HTTP there is faked with MockTransport. WARNING: an earlier, unreleased run of this harness included a mutant (L9, transport=None) that may have attempted REAL, unrecorded HTTP requests from the build sandbox. That mutant was removed and is not in the receipts.
 - Injected `sleep` only; the default `time.sleep` path and real timing are not tested.
 - Delegation is checked by behavior and by a monkeypatched sentinel; nothing stops a future caller from adding a new
   fetch path elsewhere in the module.
-- The legacy function is still importable and callable by non-test code. This patch makes it safe, it does not forbid it.
+- The legacy function is still importable and callable by non-test code. This patch removes the duplicate unbounded fetch path; the helper inherits the bounded helper's limits and is not forbidden.
 - No cross-call per-host pacing; the sync route can still block up to 30s (see audits/m23-crawl-delay/README.md).
 - Crawl-delay forms the stdlib parser ignores (non-digit, negative, decimal) count as no delay.
 - Behavior change: the legacy helper now returns the bounded helper's closed status set and result shape, and raises
