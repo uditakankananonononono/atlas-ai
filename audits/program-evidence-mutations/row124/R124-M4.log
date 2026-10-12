@@ -1,0 +1,12 @@
+.F.............                                                          [100%]
+=================================== FAILURES ===================================
+__________________ test_executed_reader_required_for_verified __________________
+tests/test_dataset_artifact_binding.py:34: in test_executed_reader_required_for_verified
+    assert result['entries'][0]['source_sha256'] == result['entries'][0]['artifact_sha256']
+E   AssertionError: assert '7cde7fb64fd8...a4f6c75fac108' == '000000000000...0000000000000'
+E
+E     - 0000000000000000000000000000000000000000000000000000000000000000
+E     + 7cde7fb64fd82bd152710cf238e017b9ab46c0592483edc067ba4f6c75fac108
+=========================== short test summary info ============================
+FAILED tests/test_dataset_artifact_binding.py::test_executed_reader_required_for_verified
+1 failed, 14 passed in 0.08s

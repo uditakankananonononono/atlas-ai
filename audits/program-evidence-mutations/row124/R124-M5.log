@@ -1,0 +1,12 @@
+F..............                                                          [100%]
+=================================== FAILURES ===================================
+______________________ test_every_declared_row_has_status ______________________
+tests/test_dataset_artifact_binding.py:20: in test_every_declared_row_has_status
+    assert result['unbound_entry_ids'] == ['b']
+E   AssertionError: assert [] == ['b']
+E
+E     Right contains one more item: 'b'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_dataset_artifact_binding.py::test_every_declared_row_has_status
+1 failed, 14 passed in 0.08s

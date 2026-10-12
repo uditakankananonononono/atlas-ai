@@ -1,0 +1,108 @@
+{
+  "row": 124,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_dataset_artifact_binding.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "baseline.log"
+  },
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "restored-baseline.log"
+  },
+  "mutants": [
+    {
+      "id": "R124-M1",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "mutant_sha256": "b1f6e63ab88f10eb51458166437432966f213892c45b8c7e85f0054879ddc546",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_dataset_artifact_binding.py::test_mismatch_and_fake_receipts_refuse[different]"
+      ],
+      "log": "R124-M1.log"
+    },
+    {
+      "id": "R124-M2",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "mutant_sha256": "7a5a6e1fb65b4a47e2a9edd72b7ab462e175683e9db8d41a75293bb8341f7955",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_dataset_artifact_binding.py::test_empty_match_excluded_and_private_metadata_omitted"
+      ],
+      "log": "R124-M2.log"
+    },
+    {
+      "id": "R124-M3",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "mutant_sha256": "f937964e43aa9d79b3fc4108097abb071c406c7db974286dc66817f67bffe887",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_dataset_artifact_binding.py::test_empty_match_excluded_and_private_metadata_omitted"
+      ],
+      "log": "R124-M3.log"
+    },
+    {
+      "id": "R124-M4",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "mutant_sha256": "344eb1bab182a97bab93f5cfa7774e8d183fc0dcda7ed418180e23ecc8742139",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_dataset_artifact_binding.py::test_executed_reader_required_for_verified"
+      ],
+      "log": "R124-M4.log"
+    },
+    {
+      "id": "R124-M5",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "mutant_sha256": "bcb6ad6d23e47dd18c9cc2277ff0fb382b0347af2c9a6e970eb9aa5d3022d58e",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_dataset_artifact_binding.py::test_every_declared_row_has_status"
+      ],
+      "log": "R124-M5.log"
+    }
+  ],
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0,
+    "NOT-APPLICABLE": 0
+  },
+  "evidence_tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "portable_path_normalization": "portable-path-normalized: command[0] replaced for delivery; original private receipt retained, bytes changed"
+}

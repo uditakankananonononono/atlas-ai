@@ -1,0 +1,45 @@
+{
+  "row": 124,
+  "tests": [
+    "tests/test_dataset_artifact_binding.py"
+  ],
+  "tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "mutants": [
+    {
+      "id": "R124-M1",
+      "name": "byte match",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "if fetched == artifact and artifact:",
+      "new": "if artifact:"
+    },
+    {
+      "id": "R124-M2",
+      "name": "empty match",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "if fetched == artifact and artifact:",
+      "new": "if fetched == artifact:"
+    },
+    {
+      "id": "R124-M3",
+      "name": "authentication caveat",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "'source_authenticity_verified': False, 'source_metadata_redacted': True,",
+      "new": "'source_authenticity_verified': True, 'source_metadata_redacted': True,"
+    },
+    {
+      "id": "R124-M4",
+      "name": "hash content",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "result['artifact_sha256'] = digest(artifact)",
+      "new": "result['artifact_sha256'] = '0' * 64"
+    },
+    {
+      "id": "R124-M5",
+      "name": "unbound list",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "'unbound_entry_ids': sorted(known - set(by_id)),",
+      "new": "'unbound_entry_ids': [],"
+    }
+  ]
+}

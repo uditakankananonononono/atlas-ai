@@ -1,0 +1,9 @@
+.............F.                                                          [100%]
+=================================== FAILURES ===================================
+____________ test_empty_match_excluded_and_private_metadata_omitted ____________
+tests/test_dataset_artifact_binding.py:97: in test_empty_match_excluded_and_private_metadata_omitted
+    assert not row['source_authenticity_verified']
+E   assert not True
+=========================== short test summary info ============================
+FAILED tests/test_dataset_artifact_binding.py::test_empty_match_excluded_and_private_metadata_omitted
+1 failed, 14 passed in 0.09s
