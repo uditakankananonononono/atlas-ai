@@ -1,4 +1,4 @@
-# E4 step 1: Colab cells (UNTESTED until run; see RESULTS.md)
+# E4 step 1: Colab cells (run once on 2026-10-12 with the jax/flax pin below; see RESULTS.md)
 
 Free-tier T4 only. Runtime > Change runtime type > T4 GPU. Do not upgrade, do not mount Drive.
 Run each block as its own cell. Nothing here sends data anywhere except downloads from GitHub and Hugging Face.
@@ -7,7 +7,7 @@ Run each block as its own cell. Nothing here sends data anywhere except download
 ```python
 import os
 os.environ["NEEDLE_TELEMETRY"] = "0"; os.environ["DO_NOT_TRACK"] = "1"
-!pip -q install "cactus-needle[train,gpu]==3.0.5"
+!pip -q install "cactus-needle[train,gpu]==3.0.5" "jax[cuda12]==0.9.0" "flax==0.10.7" 2>&1 | tail -2
 !git clone -q --depth 1 https://github.com/uditakankananonononono/atlas-ai.git
 !cd atlas-ai && git rev-parse --short HEAD
 !needle download needle3.safetensors --out /content/ck
