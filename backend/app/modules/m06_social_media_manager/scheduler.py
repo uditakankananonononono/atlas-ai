@@ -23,6 +23,8 @@ media is attached, instead of posting empty containers.
 from __future__ import annotations
 
 import asyncio
+
+from app.runtime.guardrails.errors import GuardrailRefusal
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -145,6 +147,43 @@ def _aware(moment: datetime) -> datetime:
     return moment
 
 
+class _ApprovalAuthority:
+    """authority_check hook: the schedule entry's approval must be approved NOW and bound.
+
+    Binds approval_id -> action digest just before dispatch; unbound refs, a
+    non-approved decision or a digest mismatch reject (fail closed). Trusts the
+    decision lookup (M00); it does not authenticate the approver.
+    """
+
+    def __init__(self, decisions) -> None:
+        self._decisions = decisions
+        self._bound: dict[str, str] = {}
+
+    def bind(self, approval_id: str, digest: str) -> None:
+        self._bound[approval_id] = digest
+
+    def __call__(self, authority_ref, action_digest) -> bool:
+        try:
+            return (self._bound.get(authority_ref) == action_digest
+                    and self._decisions.status_of(authority_ref) == "approved")
+        except Exception:
+            return False
+
+
+# Declared (NOT verified) platform rules for the official-API publish adapters in
+# adapters.py. Owner-overridable via Scheduler(outbound_declarations=...). These
+# are a policy declaration, not a legal or ToS compliance finding.
+_PUBLISH_PLATFORMS = ("instagram", "twitter", "tiktok", "linkedin")
+
+
+def default_outbound_declarations() -> dict:
+    return {
+        "tos": {p: {"allowed_kinds": ["post"], "automation_allowed": True} for p in _PUBLISH_PLATFORMS},
+        "rate_limits": {p: {"post": {"max": 25, "window_seconds": 86400}} for p in _PUBLISH_PLATFORMS},
+        "consent": [], "recent_actions": [],
+    }
+
+
 class Scheduler:
     """Decision sync, due-scan, and the approval-verified execution gate."""
 
@@ -155,7 +194,16 @@ class Scheduler:
         decisions: ApprovalDecisionLookup,
         adapter_factory: AdapterFactory,
         clock: Callable[[], datetime] | None = None,
+        enforcer=None,
+        outbound_declarations: dict | None = None,
     ) -> None:
+        from app.runtime.guardrails.enforcer import GuardrailEnforcer
+        self._authority = _ApprovalAuthority(decisions)
+        # Fail closed by default: every platform write goes through the
+        # guardrail outbound gate. A caller-supplied enforcer must carry its own
+        # authority_check; this scheduler binds approval digests only on the default.
+        self._enforcer = enforcer or GuardrailEnforcer(authority_check=self._authority)
+        self._declarations = outbound_declarations or default_outbound_declarations()
         self._repository = repository
         self._decisions = decisions
         self._adapters = adapter_factory
@@ -283,19 +331,33 @@ class Scheduler:
                 continue
             try:
                 adapter = self._adapters.for_platform(entry.platform)
-                result = asyncio.run(
-                    adapter.publish(
-                        PublishRequest(
-                            platform=entry.platform.value,
-                            text=entry.text,
-                            format=entry.format,
-                            link=entry.link,
-                            media_urls=tuple(entry.media_urls),
-                            alt_texts=tuple(entry.alt_texts),
-                            thread_chunks=tuple(entry.thread_chunks),
-                        )
-                    )
+                request = PublishRequest(
+                    platform=entry.platform.value,
+                    text=entry.text,
+                    format=entry.format,
+                    link=entry.link,
+                    media_urls=tuple(entry.media_urls),
+                    alt_texts=tuple(entry.alt_texts),
+                    thread_chunks=tuple(entry.thread_chunks),
                 )
+                moment = _aware(self._clock())
+                action = {"id": f"{entry.id}-{int(moment.timestamp())}", "platform": entry.platform.value,
+                          "kind": "post", "at": int(moment.timestamp()), "count": 1,
+                          "schedule_id": entry.id, "approval_id": entry.approval_id,
+                          "text": entry.text, "link": entry.link,
+                          "media_urls": list(entry.media_urls), "thread_chunks": list(entry.thread_chunks)}
+                from app.runtime.guardrails._fields import payload_sha256
+                self._authority.bind(entry.approval_id,
+                                     payload_sha256({k: v for k, v in action.items() if k != "id"}))
+                result = self._enforcer.dispatch_outbound(
+                    action, self._declarations,
+                    effect=lambda a, _r=request: asyncio.run(adapter.publish(_r)),
+                    now=moment.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=entry.approval_id)
+            except GuardrailRefusal as refusal:
+                entry.status = STATUS_FAILED
+                entry.failure = f"guardrail refused publish: {refusal.code}"
+                self._repository.save_schedule(entry)
+                continue
             except AdapterError as error:
                 entry.status = STATUS_FAILED
                 entry.failure = str(error)
