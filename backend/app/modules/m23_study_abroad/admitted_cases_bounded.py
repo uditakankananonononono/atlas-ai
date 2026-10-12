@@ -34,7 +34,7 @@ class HostPacer:
     (robots + Crawl-delay sleep + page), later callers block on a condition variable for at most max_wait real
     seconds, then are refused. The admitted call must also wait until the host's last known Crawl-delay has passed
     since the previous call's NETWORK PHASE ended (release() runs before the post-fetch status, content-type and HTML parsing); if that remaining wait exceeds max_wait it is refused instead. Because the
-    host is held for the network phase (robots, Crawl-delay sleep, page), two calls can never overlap, and a host with no known delay gets a single-flight
+    host is held for the network phase (robots, Crawl-delay sleep, page), two calls' NETWORK PHASES can never overlap (their post-fetch parsing and return can; this is not function-return exclusivity), and a host with no known delay gets a single-flight
     first robots fetch: the others queue and then use the delay it learned. release() records the finish time and
     the delay learned from robots.txt (None keeps the last known delay) and wakes waiters. Nothing is persisted or
     shared across processes."""
