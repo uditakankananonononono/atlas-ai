@@ -1,0 +1,84 @@
+BASELINE tests/modules/test_c31_clicky_a3.py -> rc=0 21 passed in 0.12s
+BASELINE tests/modules/test_c31_okara_a3.py -> rc=0 20 passed in 0.12s
+K1 free tier not required at identify | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.14s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_paid_or_unknown_tier_refuses_spend
+    old: 'if clean["free_tier"] is not True:\n        policy.check("spend", PREFIX)'
+    new: 'if False:\n        policy.check("spend", PREFIX)'
+K2 unknown endpoint accepted | row 57 | clicky.py | CAUGHT | rc=1 | 2 failed, 19 passed in 0.16s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_identified_endpoints_frozen_copy, tests/modules/test_c31_clicky_a3.py::Clicky::test_plan_refuses_unknown_endpoint_and_unidentified
+    old: 'if endpoint_key not in clean["endpoints"]:'
+    new: 'if False:'
+K3 params cap removed | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.19s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_validation_and_caps
+    old: 'if len(params) > MAX_PARAMS:'
+    new: 'if False:'
+K4 bool param value accepted | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.15s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_params_fully_validated
+    old: 'if isinstance(v, bool) or not isinstance(v, (str, int, float)):'
+    new: 'if not isinstance(v, (str, int, float)):'
+K5 non-finite float accepted | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.14s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_params_fully_validated
+    old: 'if isinstance(v, float) and not math.isfinite(v):'
+    new: 'if False:'
+K6 params not sorted | row 57 | clicky.py | SURVIVED | rc=0 | 21 passed in 0.12s | failing: -
+    old: 'for k in sorted(keyed):'
+    new: 'for k in keyed:'
+K7 http error status accepted | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.16s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_parse_rejects_error_status_and_bad_json
+    old: 'if status < 200 or status >= 300:'
+    new: 'if status >= 500:'
+K8 NaN constant accepted | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.15s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_parse_strict_json
+    old: 'data = json.loads(body, parse_constant=_strict_constant)'
+    new: 'data = json.loads(body)'
+K9 body size cap removed | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.15s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_status_and_body_typed
+    old: 'if not isinstance(body, str) or len(body) > MAX_BODY:'
+    new: 'if not isinstance(body, str):'
+K10 api_base slash not stripped | row 57 | clicky.py | SURVIVED | rc=0 | 21 passed in 0.12s | failing: -
+    old: 'clean["api_base"].rstrip("/") + spec["path"]'
+    new: 'clean["api_base"] + spec["path"]'
+K11 method restriction removed | row 57 | clicky.py | CAUGHT | rc=1 | 2 failed, 19 passed in 0.19s | failing: tests/modules/test_c31_clicky_a3.py::Clicky::test_method_whitelist, tests/modules/test_c31_clicky_a3.py::Clicky::test_plan_entry_revalidates_descriptor
+    old: 'if method not in ("GET", "POST"):\n            raise ValueError("APPLY_REFUSED_BAD_TYPE:method")\n        clean_endpoints'
+    new: 'if False:\n            raise ValueError("APPLY_REFUSED_BAD_TYPE:method")\n        clean_endpoints'
+O1 free tier not required at identify | row 58 | okara.py | CAUGHT | rc=1 | 1 failed, 19 passed in 0.14s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_paid_or_unknown_tier_refuses_spend
+    old: 'if clean["free_tier"] is not True:\n        policy.check("spend", PREFIX)'
+    new: 'if False:\n        policy.check("spend", PREFIX)'
+O2 unknown endpoint accepted | row 58 | okara.py | CAUGHT | rc=1 | 2 failed, 18 passed in 0.15s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_identified_endpoints_frozen_copy, tests/modules/test_c31_okara_a3.py::Okara::test_plan_refuses_unknown_endpoint_and_unidentified
+    old: 'if endpoint_key not in clean["endpoints"]:'
+    new: 'if False:'
+O3 params cap removed | row 58 | okara.py | CAUGHT | rc=1 | 1 failed, 19 passed in 0.15s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_validation_and_caps
+    old: 'if len(params) > MAX_PARAMS:'
+    new: 'if False:'
+O4 bool param value accepted | row 58 | okara.py | CAUGHT | rc=1 | 1 failed, 19 passed in 0.14s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_params_fully_validated
+    old: 'if isinstance(v, bool) or not isinstance(v, (str, int, float)):'
+    new: 'if not isinstance(v, (str, int, float)):'
+O5 non-finite float accepted | row 58 | okara.py | CAUGHT | rc=1 | 1 failed, 19 passed in 0.14s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_params_fully_validated
+    old: 'if isinstance(v, float) and not math.isfinite(v):'
+    new: 'if False:'
+O6 params not sorted | row 58 | okara.py | SURVIVED | rc=0 | 20 passed in 0.11s | failing: -
+    old: 'for k in sorted(keyed):'
+    new: 'for k in keyed:'
+O7 http error status accepted | row 58 | okara.py | CAUGHT | rc=1 | 1 failed, 19 passed in 0.14s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_parse_rejects_error_status_and_bad_json
+    old: 'if status < 200 or status >= 300:'
+    new: 'if status >= 500:'
+O8 NaN constant accepted | row 58 | okara.py | CAUGHT | rc=1 | 1 failed, 19 passed in 0.14s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_parse_strict_json
+    old: 'data = json.loads(body, parse_constant=_strict_constant)'
+    new: 'data = json.loads(body)'
+O9 body size cap removed | row 58 | okara.py | CAUGHT | rc=1 | 1 failed, 19 passed in 0.16s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_status_and_body_typed
+    old: 'if not isinstance(body, str) or len(body) > MAX_BODY:'
+    new: 'if not isinstance(body, str):'
+O10 api_base slash not stripped | row 58 | okara.py | SURVIVED | rc=0 | 20 passed in 0.12s | failing: -
+    old: 'clean["api_base"].rstrip("/") + spec["path"]'
+    new: 'clean["api_base"] + spec["path"]'
+O11 method restriction removed | row 58 | okara.py | CAUGHT | rc=1 | 2 failed, 18 passed in 0.14s | failing: tests/modules/test_c31_okara_a3.py::Okara::test_method_whitelist, tests/modules/test_c31_okara_a3.py::Okara::test_plan_entry_revalidates_descriptor
+    old: 'if method not in ("GET", "POST"):\n            raise ValueError("APPLY_REFUSED_BAD_TYPE:method")\n        clean_endpoints'
+    new: 'if False:\n            raise ValueError("APPLY_REFUSED_BAD_TYPE:method")\n        clean_endpoints'
+K12 stats limit upper bound dropped | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.15s | failing: tests/modules/test_c31_clicky_a3.py::test_documented_stats_request_shape_never_embeds_key_and_bounds_history
+    old: 'not 1 <= limit <= FREE_MAX_LIMIT'
+    new: 'not 1 <= limit'
+K13 history bound widened | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.13s | failing: tests/modules/test_c31_clicky_a3.py::test_documented_stats_request_shape_never_embeds_key_and_bounds_history
+    old: 'int(m.group(1)) <= FREE_MAX_HISTORY_DAYS'
+    new: 'int(m.group(1)) <= 365'
+K14 undocumented stats type accepted | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.13s | failing: tests/modules/test_c31_clicky_a3.py::test_documented_stats_request_shape_never_embeds_key_and_bounds_history
+    old: 'if t not in DOCUMENTED_TYPES:'
+    new: 'if False:'
+K15 bool site_id accepted | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.15s | failing: tests/modules/test_c31_clicky_a3.py::test_documented_stats_request_shape_never_embeds_key_and_bounds_history
+    old: 'if isinstance(site_id, bool) or not isinstance(site_id, int) or site_id <= 0:'
+    new: 'if not isinstance(site_id, int) or site_id <= 0:'
+K16 absolute dates accepted | row 57 | clicky.py | CAUGHT | rc=1 | 1 failed, 20 passed in 0.15s | failing: tests/modules/test_c31_clicky_a3.py::test_documented_stats_request_shape_never_embeds_key_and_bounds_history
+    old: 'if not _history_days_ok(date):'
+    new: 'if False:'
+TOTAL mutants=27 CAUGHT=23 SURVIVED=4 INVALID=0 NOT-APPLICABLE=0 | SHA restore True
