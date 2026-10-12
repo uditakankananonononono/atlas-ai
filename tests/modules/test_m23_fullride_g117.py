@@ -97,6 +97,18 @@ def test_flag_basis_matches_what_the_quote_establishes():
     assert china and "CSCA" in china["basis"]
 
 
+def test_full_ride_projection_never_blends_commentary():
+    for uni, ev in fc.EVIDENCE.items():
+        if ev["full_ride"]:
+            fb = fc.flag_basis(uni, "full_ride")
+            for marker in ("Note:", "Excluded from the kept plan", "not automatic"):
+                assert marker not in fb["basis"], (uni, marker)
+            assert fb["basis"] == ev["basis"]
+        # commentary, when present, lives in the separate notes field
+        if "notes" in ev:
+            assert ev["notes"] not in ev["basis"]
+
+
 def test_flag_status_distinguishes_negative_from_not_established():
     assert fc.flag_status("Hungarian Government", "full_ride") == "established_negative"
     assert fc.flag_status("Hungarian Government", "accepts_cbse") == "not_established"
@@ -132,7 +144,7 @@ def test_award_type_schema_distinguishes_need_based_from_full_cost():
     assert fc.award_type("University of Toronto") == "full_cost_award"
     assert "qualifies for financial assistance" in fc.EVIDENCE["Stanford University"]["basis"]
     assert "$100,000 family income and below" in fc.EVIDENCE["Harvard University"]["basis"]
-    assert "school nomination" in fc.EVIDENCE["University of Toronto"]["basis"]
+    assert "school nomination" in fc.EVIDENCE["University of Toronto"]["notes"]
 
 
 def test_corrections_are_encoded():
@@ -140,7 +152,9 @@ def test_corrections_are_encoded():
     assert ev["Hungarian Government"]["full_ride"] is False
     assert "does not fully cover all costs of living" in ev["Hungarian Government"]["basis"]
     assert ev["Chinese Government (CSC)"]["requires_extra_written_test"] is True
-    assert "CSCA" in ev["Chinese Government (CSC)"]["basis"]
+    assert ev["Chinese Government (CSC)"]["full_ride"] is False
+    assert "CSCA" in fc.flag_basis("Chinese Government (CSC)",
+                                   "requires_extra_written_test")["basis"]
     kz = [r for r in fc.corpus_rows() if r["country"] == "Kazakhstan"]
     assert "Bolashak is the citizen outbound" in kz[0]["scholarship"]
     assert ev["University of Oxford"]["requires_extra_written_test"] is True

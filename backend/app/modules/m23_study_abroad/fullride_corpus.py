@@ -403,9 +403,9 @@ EVIDENCE = {
         "accepts_cbse": False, "accepts_sat": False, "accepts_ielts": False,
         "checked_url": "https://future.utoronto.ca/pearson/",
         "basis": "Pearson Scholarships cover tuition, books, incidental fees, and full "
-                 "residence support for four years. Note: the Pearson requires school "
-                 "nomination plus a separate competitive application - it is not "
-                 "automatic eligibility",
+                 "residence support for four years",
+        "notes": "the Pearson requires school nomination plus a separate competitive "
+                 "application - it is not automatic eligibility",
         "flag_basis": {}},
     "University of Oxford": {
         "award_type": "full_cost_award",
@@ -413,8 +413,8 @@ EVIDENCE = {
         "accepts_cbse": False, "accepts_sat": False, "accepts_ielts": False,
         "checked_url": "https://www.ox.ac.uk/admissions/undergraduate/fees-and-funding/oxford-support",
         "basis": "Reach Oxford Scholarship (students from low-income countries): course "
-                 "fee, annual grant towards living costs and one return air fare per year. "
-                 "Excluded from the kept plan: many Oxford courses require written "
+                 "fee, annual grant towards living costs and one return air fare per year",
+        "notes": "excluded from the kept plan: many Oxford courses require written "
                  "admissions tests, which the request rules out",
         "flag_basis": {
             "requires_extra_written_test": _fb(
@@ -432,17 +432,20 @@ EVIDENCE = {
         "established_negative": ["full_ride"],
         "checked_url": "https://stipendiumhungaricum.hu/",
         "basis": "all your tuition fees will be covered, and your accommodation costs will "
-                 "be supported - a contribution, not a full ride; the programme FAQ states "
-                 "the stipend does not fully cover all costs of living",
+                 "be supported; the programme FAQ states the stipend does not fully cover "
+                 "all costs of living",
+        "notes": "a contribution, not a full ride - full_ride is established_negative on "
+                 "the page's own wording",
         "flag_basis": {}},
     "Chinese Government (CSC)": {
-        "award_type": "full_cost_award",
-        "full_ride": True, "requires_extra_written_test": True,
+        "award_type": None,
+        "full_ride": False, "requires_extra_written_test": True,
         "accepts_cbse": False, "accepts_sat": False, "accepts_ielts": False,
         "checked_url": "https://english.shanghai.gov.cn/en-FAQs-StudyinShanghai/20251218/134bb78943f640519e2185ff83051f5d.html",
-        "basis": "CSCA is a mandatory requirement for applicants to undergraduate programs "
-                 "at Chinese Government Scholarship universities for the 2026 and 2027 "
-                 "academic years",
+        "basis": "no official coverage quote captured in this pass - coverage not "
+                 "established",
+        "notes": "the CSCA exam requirement is documented (flag_basis); the CSCA text "
+                 "says nothing about cost coverage, so full_ride is not established",
         "flag_basis": {
             "requires_extra_written_test": _fb(
                 "CSCA is a mandatory requirement for applicants to undergraduate programs "
