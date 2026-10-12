@@ -1,0 +1,97 @@
+{
+  "model": {
+    "schema": 1,
+    "kind": "multinomial_naive_bayes_advice_topics",
+    "labels": [
+      "essay",
+      "funding"
+    ],
+    "class_documents": {
+      "essay": 5,
+      "funding": 5
+    },
+    "token_counts": {
+      "essay": {
+        "essay": 5,
+        "reflection": 5,
+        "identity": 5,
+        "narrative": 5,
+        "unique0": 1,
+        "unique2": 1,
+        "unique4": 1,
+        "unique6": 1,
+        "unique8": 1
+      },
+      "funding": {
+        "deadline": 5,
+        "scholarship": 5,
+        "calendar": 5,
+        "funding": 5,
+        "unique1": 1,
+        "unique3": 1,
+        "unique5": 1,
+        "unique7": 1,
+        "unique9": 1
+      }
+    },
+    "vocabulary": [
+      "calendar",
+      "deadline",
+      "essay",
+      "funding",
+      "identity",
+      "narrative",
+      "reflection",
+      "scholarship",
+      "unique0",
+      "unique1",
+      "unique2",
+      "unique3",
+      "unique4",
+      "unique5",
+      "unique6",
+      "unique7",
+      "unique8",
+      "unique9"
+    ],
+    "training_examples": 10,
+    "training_source_domains": [
+      "source0.example",
+      "source1.example",
+      "source2.example",
+      "source3.example",
+      "source4.example",
+      "source5.example",
+      "source6.example",
+      "source7.example",
+      "source8.example",
+      "source9.example"
+    ],
+    "corpus_sha256": "c65ab039f81f53dcb6e896645cd37f5c89a1f4957cd7032fe7814aff840120a5",
+    "source_manifest_sha256": "53b02871f5dd65f2fd278ba3228febd87bbb875c9add69d9ee5c68c80449bfe6",
+    "rights_verified": false,
+    "evaluation": {
+      "heldout_count": 2,
+      "accuracy": 1.0,
+      "cases": [
+        {
+          "id": "h1",
+          "source_id": "s0",
+          "expected": "essay",
+          "predicted": "essay",
+          "correct": true
+        },
+        {
+          "id": "h2",
+          "source_id": "s1",
+          "expected": "funding",
+          "predicted": "funding",
+          "correct": true
+        }
+      ],
+      "split_provenance": "caller-declared; temporal/source independence not verified"
+    },
+    "artifact_sha256": "5a61111eaee1f6cc8c62039210ca7656177a2dc33d6ce60a27c024873183b4fb"
+  },
+  "evidence_note": "Synthetic author-owned test fixtures at .example domains, NOT ten real admissions websites."
+}
