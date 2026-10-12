@@ -1,0 +1,46 @@
+{
+  "row": 132,
+  "tests": [
+    "tests/test_executed_acceptance.py",
+    "tests/test_row132_mutation_sensitivity.py"
+  ],
+  "tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "mutants": [
+    {
+      "id": "R132-M1",
+      "name": "blocker coverage",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "for row in rows]",
+      "new": "for row in rows if row['check_status'] != 'SCOPED_PASS']"
+    },
+    {
+      "id": "R132-M2",
+      "name": "blocker status",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'status': 'UNVERIFIED',\n                 'reason': row['reason']}",
+      "new": "'status': 'RESOLVED',\n                 'reason': row['reason']}"
+    },
+    {
+      "id": "R132-M3",
+      "name": "read-error receipt",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "bindings.setdefault(check['line_id'], []).append({'id': ident, 'run': run})",
+      "new": "bindings.setdefault(check['line_id'], []).append({'id': ident, 'run': run})\n        if run['status'] == 'UNVERIFIED': bindings.clear()"
+    },
+    {
+      "id": "R132-M4",
+      "name": "post error kept",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "rehash_error = type(exc).__name__",
+      "new": "rehash_error = None"
+    },
+    {
+      "id": "R132-M5",
+      "name": "semantic count",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'semantic_verified_lines': 0,",
+      "new": "'semantic_verified_lines': len(rows),"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+.................F                                                       [100%]
+=================================== FAILURES ===================================
+_____________________ test_every_blocker_status_unverified _____________________
+tests/test_row132_mutation_sensitivity.py:8: in test_every_blocker_status_unverified
+    assert all(row['status']=='UNVERIFIED' for row in out['blockers'])
+E   assert False
+E    +  where False = all(<generator object test_every_blocker_status_unverified.<locals>.<genexpr> at 0x7f972909b370>)
+=========================== short test summary info ============================
+FAILED tests/test_row132_mutation_sensitivity.py::test_every_blocker_status_unverified
+1 failed, 17 passed in 4.77s

@@ -1,0 +1,9 @@
+.......F..........                                                       [100%]
+=================================== FAILURES ===================================
+_______________ test_postrun_inventory_error_preserves_receipts ________________
+tests/test_executed_acceptance.py:97: in test_postrun_inventory_error_preserves_receipts
+    assert out['post_run_source_error']=='OSError'
+E   AssertionError: assert None == 'OSError'
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts
+1 failed, 17 passed in 4.65s

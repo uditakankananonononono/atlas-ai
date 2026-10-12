@@ -1,0 +1,10 @@
+F.................                                                       [100%]
+=================================== FAILURES ===================================
+___________________ test_pass_and_missing_line_keep_blockers ___________________
+tests/test_executed_acceptance.py:24: in test_pass_and_missing_line_keep_blockers
+    assert len(out['blockers'])==2
+E   AssertionError: assert 1 == 2
+E    +  where 1 = len([{'line_id': 'export:L2', 'status': 'UNVERIFIED', 'reason': 'Missing or nonpassing selected check'}])
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers
+1 failed, 17 passed in 4.72s

@@ -1,0 +1,114 @@
+{
+  "row": 132,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_executed_acceptance.py",
+    "tests/test_row132_mutation_sensitivity.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "baseline.log"
+  },
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "restored-baseline.log"
+  },
+  "mutants": [
+    {
+      "id": "R132-M1",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "2b1090e963220034a10a8b6247cb74a74a635743713eb8f2431c69664827168e",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers"
+      ],
+      "log": "R132-M1.log"
+    },
+    {
+      "id": "R132-M2",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "5921d160aee0dc28cdde54a2554e9b1b274cb178dc4990858677f30895ed48eb",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_row132_mutation_sensitivity.py::test_every_blocker_status_unverified"
+      ],
+      "log": "R132-M2.log"
+    },
+    {
+      "id": "R132-M3",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "474943b4f3d2a6251ec85f0e4859dd8bb56fc5ba198ad74f25a228d49ac1803c",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_actual_mixed_pass_fail_receipts",
+        "tests/test_executed_acceptance.py::test_helper_exception_and_head_drift_unverified",
+        "tests/test_executed_acceptance.py::test_same_line_pass_and_fail_requires_all",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[None]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt1]",
+        "tests/test_executed_acceptance.py::test_malformed_receipt_confined[receipt2]"
+      ],
+      "log": "R132-M3.log"
+    },
+    {
+      "id": "R132-M4",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "631d4c261b34f03ec68370d7adb55e2580fe03cccb39df0f762bd66750cd732f",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts"
+      ],
+      "log": "R132-M4.log"
+    },
+    {
+      "id": "R132-M5",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "before_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "mutant_sha256": "1d9a5bdf6915818e7c786ea327fca9758b8473fa4907ea517494e20a5d4334e5",
+      "restored_sha256": "43849211e80287c57c5e8fddf7c0a24c58463f69f49405e30420035ed6af92ef",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_executed_acceptance.py::test_pass_and_missing_line_keep_blockers"
+      ],
+      "log": "R132-M5.log"
+    }
+  ],
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0,
+    "NOT-APPLICABLE": 0
+  },
+  "evidence_tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "portable_path_normalization": "portable-path-normalized: command[0] replaced for delivery; original private receipt retained, bytes changed"
+}
