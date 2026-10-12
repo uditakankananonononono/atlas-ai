@@ -1,0 +1,115 @@
+{
+  "row": 125,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_integration_evidence_binding.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "baseline.log"
+  },
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "restored-baseline.log"
+  },
+  "mutants": [
+    {
+      "id": "R125-M1",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "mutant_sha256": "cb6bb77243a6ed2ed8130cf829cab772774be3b271d355977df35fff59da1b8a",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_integration_evidence_binding.py::test_local_artifacts_do_not_authenticate_live_use"
+      ],
+      "log": "R125-M1.log"
+    },
+    {
+      "id": "R125-M2",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "mutant_sha256": "065d76107de9e9a4de077bf407c7bc1f963af6b8582cf0d0a141c2911dc2b205",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[]",
+        "tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[absent]",
+        "tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[../escape]",
+        "tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[/etc/passwd]"
+      ],
+      "log": "R125-M2.log"
+    },
+    {
+      "id": "R125-M3",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "mutant_sha256": "18c09a5e1c9081d911a3b9ef3952c20ff697aef43b5d66a7138a659631c26070",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[absent]",
+        "tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[../escape]",
+        "tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[/etc/passwd]",
+        "tests/test_integration_evidence_binding.py::test_exact_hash_and_content_change",
+        "tests/test_integration_evidence_binding.py::test_nul_path_per_file_error"
+      ],
+      "log": "R125-M3.log"
+    },
+    {
+      "id": "R125-M4",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "mutant_sha256": "584c7daade4bcd1970e13ba9e83ddf711a035cfdbb7bc874ef87d6c75b5abe00",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_integration_evidence_binding.py::test_local_artifacts_do_not_authenticate_live_use"
+      ],
+      "log": "R125-M4.log"
+    },
+    {
+      "id": "R125-M5",
+      "target": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "before_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "mutant_sha256": "637e17d8722b84f587d117475164fc228a59ad428ef90d89e0d8e9b0244e5f5c",
+      "restored_sha256": "c1c6dba0bd1cdc4da89e4c171d5d0eb896d18fde132ab1aa3ea83e2ae41a6fe8",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_integration_evidence_binding.py::test_nul_path_per_file_error"
+      ],
+      "log": "R125-M5.log"
+    }
+  ],
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0,
+    "NOT-APPLICABLE": 0
+  },
+  "evidence_tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "portable_path_normalization": "portable-path-normalized: command[0] replaced for delivery; original private receipt retained, bytes changed"
+}

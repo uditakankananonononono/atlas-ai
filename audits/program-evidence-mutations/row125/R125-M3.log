@@ -1,0 +1,44 @@
+..FFF..FF                                                                [100%]
+=================================== FAILURES ===================================
+__________________ test_missing_unsafe_use_unverified[absent] __________________
+tests/test_integration_evidence_binding.py:31: in test_missing_unsafe_use_unverified
+    assert bind_local_evidence(r, tmp_path, [b])['entries'][0]['status'] == 'UNVERIFIED'
+E   AssertionError: assert 'DECLARED-ONLY' == 'UNVERIFIED'
+E
+E     - UNVERIFIED
+E     + DECLARED-ONLY
+________________ test_missing_unsafe_use_unverified[../escape] _________________
+tests/test_integration_evidence_binding.py:31: in test_missing_unsafe_use_unverified
+    assert bind_local_evidence(r, tmp_path, [b])['entries'][0]['status'] == 'UNVERIFIED'
+E   AssertionError: assert 'DECLARED-ONLY' == 'UNVERIFIED'
+E
+E     - UNVERIFIED
+E     + DECLARED-ONLY
+_______________ test_missing_unsafe_use_unverified[/etc/passwd] ________________
+tests/test_integration_evidence_binding.py:31: in test_missing_unsafe_use_unverified
+    assert bind_local_evidence(r, tmp_path, [b])['entries'][0]['status'] == 'UNVERIFIED'
+E   AssertionError: assert 'DECLARED-ONLY' == 'UNVERIFIED'
+E
+E     - UNVERIFIED
+E     + DECLARED-ONLY
+______________________ test_exact_hash_and_content_change ______________________
+tests/test_integration_evidence_binding.py:54: in test_exact_hash_and_content_change
+    assert first['adapter_sha256'] == hashlib.sha256(b'def adapter(): pass\n').hexdigest()
+E   AssertionError: assert '000000000000...0000000000000' == '0cab2192b228...f7ca14d9f4239'
+E
+E     - 0cab2192b2285ba061e49617a8a798807416cab0ba49d8b0ef1f7ca14d9f4239
+E     + 0000000000000000000000000000000000000000000000000000000000000000
+_________________________ test_nul_path_per_file_error _________________________
+tests/test_integration_evidence_binding.py:66: in test_nul_path_per_file_error
+    assert out['entries'][0]['status'] == 'UNVERIFIED'
+E   AssertionError: assert 'DECLARED-ONLY' == 'UNVERIFIED'
+E
+E     - UNVERIFIED
+E     + DECLARED-ONLY
+=========================== short test summary info ============================
+FAILED tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[absent]
+FAILED tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[../escape]
+FAILED tests/test_integration_evidence_binding.py::test_missing_unsafe_use_unverified[/etc/passwd]
+FAILED tests/test_integration_evidence_binding.py::test_exact_hash_and_content_change
+FAILED tests/test_integration_evidence_binding.py::test_nul_path_per_file_error
+5 failed, 4 passed in 0.08s

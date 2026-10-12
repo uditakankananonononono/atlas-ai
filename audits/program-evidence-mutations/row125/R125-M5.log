@@ -1,0 +1,9 @@
+........F                                                                [100%]
+=================================== FAILURES ===================================
+_________________________ test_nul_path_per_file_error _________________________
+tests/test_integration_evidence_binding.py:67: in test_nul_path_per_file_error
+    assert 'adapter_path' in out['entries'][0]['file_errors']
+E   AssertionError: assert 'adapter_path' in {}
+=========================== short test summary info ============================
+FAILED tests/test_integration_evidence_binding.py::test_nul_path_per_file_error
+1 failed, 8 passed in 0.07s

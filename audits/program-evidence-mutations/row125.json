@@ -1,0 +1,45 @@
+{
+  "row": 125,
+  "tests": [
+    "tests/test_integration_evidence_binding.py"
+  ],
+  "tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "mutants": [
+    {
+      "id": "R125-M1",
+      "name": "live claim",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "'live_working_use_verified': False,",
+      "new": "'live_working_use_verified': True,"
+    },
+    {
+      "id": "R125-M2",
+      "name": "missing evidence",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "if out['adapter_sha256'] and out['use_evidence_sha256']:",
+      "new": "if out['adapter_sha256']:"
+    },
+    {
+      "id": "R125-M3",
+      "name": "hash binding",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "out[target] = digest(safe_file(root, item[field]).read_bytes()) if item[field] else None",
+      "new": "out[target] = '0' * 64 if item[field] else None"
+    },
+    {
+      "id": "R125-M4",
+      "name": "unbound list",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "'unbound_entry_ids': sorted(known - set(by_id)),",
+      "new": "'unbound_entry_ids': [],"
+    },
+    {
+      "id": "R125-M5",
+      "name": "failure detail",
+      "file": "backend/app/modules/instinct_doc/integrations_register_p255.py",
+      "old": "out['file_errors'][field] = type(exc).__name__ + ': ' + str(exc)[:200]",
+      "new": "pass"
+    }
+  ]
+}

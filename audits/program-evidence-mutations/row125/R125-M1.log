@@ -1,0 +1,9 @@
+F........                                                                [100%]
+=================================== FAILURES ===================================
+______________ test_local_artifacts_do_not_authenticate_live_use _______________
+tests/test_integration_evidence_binding.py:22: in test_local_artifacts_do_not_authenticate_live_use
+    assert not out['entries'][0]['live_working_use_verified']
+E   assert not True
+=========================== short test summary info ============================
+FAILED tests/test_integration_evidence_binding.py::test_local_artifacts_do_not_authenticate_live_use
+1 failed, 8 passed in 0.07s
