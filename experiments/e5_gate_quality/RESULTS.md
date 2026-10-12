@@ -1,6 +1,8 @@
 # E5: does the improvement gate catch bad patches that tests alone accept?
 
-Scope: `backend/app/self_improve/improvement_gate.py` as landed on the default branch at the clone point (HEAD ef1f6af). Synthetic corpus authored by the experimenter, 12 small function templates, 73 patches. Deterministic run, so there is no seed noise; the variance this run cannot measure is corpus authorship. Nothing here is a statement about real patches.
+Source pin: atlas-ai commit ef1f6af (default branch HEAD when cloned for this run); gate file `backend/app/self_improve/improvement_gate.py` unchanged since the clone.
+
+Scope: that gate only. Synthetic corpus authored by the experimenter, 12 small function templates, 73 patches. Deterministic run, so there is no seed noise; the variance this run cannot measure is corpus authorship. Nothing here is a statement about patches outside this corpus.
 
 ## Setup (frozen before scoring)
 - Mutant generator: `mutants.py`, patch-independent line operators, fixed.
@@ -22,10 +24,10 @@ Scope: `backend/app/self_improve/improvement_gate.py` as landed on the default b
 | F, test count dropped below baseline: T0 accepted 12/12; T1 and GATE refused 12/12 (structural rule, not mutation) | VERIFIED |
 | G, omission bug with line-complete tests: GATE accepted 1/1 | VERIFIED |
 | Mutation evidence adds catches beyond T1 only in C (6 of 12) on this corpus | VERIFIED |
-| Mutation evidence cost: 2 of 12 well-tested correct patches refused (clamp: 2 surviving mutants that I judged equivalent by reading, not proven; window_sum: a real test gap, n=1 untested) | VERIFIED |
+| Mutation evidence cost: 2 of 12 well-tested correct patches refused (clamp: 2 surviving mutants that I judged equivalent by reading, not proven; window_sum: the thorough tests do not exercise n=1, so the surviving mutant reflects a gap in the authored tests) | VERIFIED |
 | In the 6 accepted C patches and the G patch, the supplied tests killed every generated mutant of the buggy code | VERIFIED |
 | Those accepted bugs are mostly omissions or changed semantics that line mutants cannot reveal (my reading of the 7 cases, not a tested classification) | UNVERIFIED |
-| The gate generalizes to real self-improvement patches | UNVERIFIED |
+| The gate's catch rates on this corpus apply to patches outside it | UNVERIFIED |
 | The 50% catch rate on C applies outside this corpus | UNVERIFIED |
 | Hypothesis supported for under-tested changed lines: GATE refused 6 of 12 C patches that T1 accepted | VERIFIED |
 | Hypothesis falsified for omission bugs: 6 C patches and G passed the gate | VERIFIED |
