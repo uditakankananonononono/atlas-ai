@@ -188,3 +188,7 @@ def search_student_insights(request: StudentInsightRequest, tenant: TenantContex
         return result
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+# Owner-session student adapters; no duplicate submit API.
+from .student_browser_routes import install_routes as _install_student_browser_routes
+_install_student_browser_routes(router)
