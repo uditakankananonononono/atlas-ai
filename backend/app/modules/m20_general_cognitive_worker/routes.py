@@ -1761,3 +1761,12 @@ from .design_for_six_sigma_routes1530 import router as dfss_router_1530
 router.include_router(dfss_router_1530)
 from .qa_evidence_routes1535 import router as qa_evidence_router_1535
 router.include_router(qa_evidence_router_1535)
+
+from .mechanical_design_routes1510 import router as mechanical_design_routes1510_router
+router.include_router(mechanical_design_routes1510_router)
+from .cad_modeling_routes1511 import router as cad_modeling_routes1511_router
+router.include_router(cad_modeling_routes1511_router)
+from .axial_fea_routes1512 import router as axial_fea_routes1512_router
+router.include_router(axial_fea_routes1512_router)
+from .flow_balance_routes1513 import router as flow_balance_routes1513_router
+router.include_router(flow_balance_routes1513_router)
