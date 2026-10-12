@@ -1,7 +1,11 @@
 """Isolated actual entry functions: scoped zero-effect refusal, not full integration.
 
-Mutation proof removes the exact refusal from the source AST and reruns the
-same assertion. A mutant must fail; no mutated provider traffic is possible.
+Isolated guard-removal checks remove the exact refusal from the source AST and
+rerun the refusal check. Accepted mutant failures include ProviderTouched
+(RuntimeError), NameError, AttributeError, TypeError and pytest.fail.Exception;
+these are exception/failure-discriminating checks, not assertion-only kills or
+an external pytest FAILED receipt classifier. SKIP classification is not applicable
+to this in-process helper. No mutated provider traffic is possible.
 """
 import ast,asyncio,copy,pathlib,types
 import pytest
