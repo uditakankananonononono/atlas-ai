@@ -1,0 +1,50 @@
+BASELINE tests/modules/test_c37_patents_v2.py tests/modules/test_c37_patents_text_deepening.py -> rc=0 113 passed, 50 subtests passed in 0.49s
+T1 owner check removed | row 62 | patents.py | CAUGHT | rc=1 | 4 failed, 109 passed, 50 subtests passed in 0.56s | failing: tests/modules/test_c37_patents_v2.py::TestRefusals::test_not_owner, tests/modules/test_c37_patents_v2.py::TestRefusals::test_owner_missing, tests/modules/test_c37_patents_v2.py::TestRefusals::test_owner_value_never_echoed
+    old: 'if inv.get("owner") != "self" or not _is_str(inv.get("owner")):'
+    new: 'if False:'
+T2 draft label dropped from claims | row 62 | patents.py | CAUGHT | rc=1 | 2 failed, 111 passed, 50 subtests passed in 0.51s | failing: tests/modules/test_c37_patents_v2.py::TestHappy::test_draft_label_on_every_claim_and_set, tests/modules/test_c37_patents_v2.py::TestRefusals::test_claim_objects_have_exactly_number_text_label
+    old: '"text": t, "label": DRAFT}'
+    new: '"text": t, "label": ""}'
+T3 single-component claim body joined wrong | row 62 | patents.py | CAUGHT | rc=1 | 1 failed, 112 passed, 50 subtests passed in 0.51s | failing: tests/modules/test_c37_patents_v2.py::TestHappy::test_one_and_two_components
+    old: '    if len(components) == 1:\n        body = components[0]'
+    new: '    if False:\n        body = components[0]'
+T4 dependent claims numbered from 1 | row 62 | patents.py | CAUGHT | rc=1 | 1 failed, 112 passed, 50 subtests passed in 0.50s | failing: tests/modules/test_c37_patents_v2.py::TestHappy::test_claims_exact
+    old: 'enumerate(features, start=2)'
+    new: 'enumerate(features, start=1)'
+T5 dependent claim text loses 'of claim 1' | row 62 | patents.py | CAUGHT | rc=1 | 1 failed, 112 passed, 50 subtests passed in 0.54s | failing: tests/modules/test_c37_patents_v2.py::TestHappy::test_claims_exact
+    old: '"%d. The %s of claim 1, wherein %s."'
+    new: '"%d. The %s, wherein %s."'
+T6 https-only url check removed | row 62 | patents.py | CAUGHT | rc=1 | 2 failed, 111 passed, 50 subtests passed in 0.52s | failing: tests/modules/test_c37_patents_v2.py::TestRefusals::test_bad_url, tests/modules/test_c37_patents_v2.py::TestRefusals::test_reasons_carry_only_schema_names
+    old: 'not value.startswith("https://")'
+    new: 'not value.startswith("http")'
+T7 duplicate prior-art ids allowed | row 62 | patents.py | CAUGHT | rc=1 | 1 failed, 112 passed, 50 subtests passed in 0.50s | failing: tests/modules/test_c37_patents_v2.py::TestRefusals::test_duplicate_prior_art_ids
+    old: '        if pid in seen:\n            _refuse'
+    new: '        if False:\n            _refuse'
+T8 novelty source not checked | row 62 | patents.py | CAUGHT | rc=1 | 6 failed, 112 passed, 45 subtests passed in 0.68s | failing: tests/modules/test_c37_patents_v2.py::TestRefusals::test_novelty_input_bad
+    old: 'or nov.get("source") != "c32.ideate"'
+    new: ''
+T9 novelty range upper bound dropped | row 62 | patents.py | CAUGHT | rc=1 | 3 failed, 110 passed, 50 subtests passed in 0.55s | failing: tests/modules/test_c37_patents_v2.py::TestRefusals::test_novelty_input_bad, tests/modules/test_c37_patents_v2.py::TestResolvedOutputPins::test_types_dates_and_novelty, tests/modules/test_c37_patents_v2.py::TestCallerBoundaryRepair::test_huge_novelty_integer
+    old: 'not 0 <= v <= 1'
+    new: 'not 0 <= v'
+T10 novelty value not rounded | row 62 | patents.py | CAUGHT | rc=1 | 2 failed, 111 passed, 50 subtests passed in 0.51s | failing: tests/modules/test_c37_patents_v2.py::TestHappy::test_novelty_value_rounded_six_places, tests/modules/test_c37_patents_v2.py::TestResolvedOutputPins::test_types_dates_and_novelty
+    old: '"value": round(v, 6)'
+    new: '"value": v'
+T11 calendar-invalid dates accepted | row 62 | patents.py | CAUGHT | rc=1 | 2 failed, 111 passed, 50 subtests passed in 0.53s | failing: tests/modules/test_c37_patents_v2.py::TestRefusals::test_as_of, tests/modules/test_c37_patents_v2.py::TestResolvedOutputPins::test_types_dates_and_novelty
+    old: '        datetime.strptime(value, "%Y-%m-%d")\n    except ValueError:'
+    new: '        pass\n    except ValueError:'
+T12 control characters allowed in text | row 62 | patents.py | CAUGHT | rc=1 | 1 failed, 112 passed, 50 subtests passed in 0.49s | failing: tests/modules/test_c37_patents_text_deepening.py::test_unicode_text_helper_refuses_blank_and_controls_directly
+    old: '{"Cc", "Cf", "Zl", "Zp"} for c in value)'
+    new: '{"Zl"} for c in value)'
+T13 owner assertion not labeled unverified | row 62 | patents.py | CAUGHT | rc=1 | 1 failed, 112 passed, 50 subtests passed in 0.50s | failing: tests/modules/test_c37_patents_v2.py::TestHappy::test_owner_assertion_and_scope
+    old: '"owner_assertion": UNVERIFIED'
+    new: '"owner_assertion": "verified"'
+T14 whitespace-only text allowed | row 62 | patents.py | CAUGHT | rc=1 | 1 failed, 112 passed, 50 subtests passed in 0.52s | failing: tests/modules/test_c37_patents_text_deepening.py::test_unicode_text_helper_refuses_blank_and_controls_directly
+    old: 'if not value.strip() or any('
+    new: 'if any('
+T15 unhostnamed url allowed | row 62 | patents.py | CAUGHT | rc=1 | 1 failed, 112 passed, 50 subtests passed in 0.49s | failing: tests/modules/test_c37_patents_v2.py::TestRefusals::test_bad_url
+    old: '    if not host:\n        _refuse'
+    new: '    if False:\n        _refuse'
+T16 prior-art cap removed | row 62 | patents.py | CAUGHT | rc=1 | 2 failed, 111 passed, 50 subtests passed in 0.53s | failing: tests/modules/test_c37_patents_v2.py::TestResourcePins::test_collection_count_before_copy_and_scan, tests/modules/test_c37_patents_v2.py::TestPreflightSeamPins::test_list_count_admission_before_content_refusal
+    old: '"prior_art": PA_CAP}'
+    new: '"prior_art": 10**9}'
+TOTAL mutants=16 CAUGHT=16 SURVIVED=0 INVALID=0 NOT-APPLICABLE=0 | SHA restore True
