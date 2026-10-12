@@ -1740,3 +1740,19 @@ from .response_surface_methodology1541_routes import router as response_surface_
 router.include_router(response_surface_methodology1541_router)
 from .robust_design1542_routes import router as robust_design1542_router
 router.include_router(robust_design1542_router)
+from .bdd686_routes import router as bdd686_routes_router
+router.include_router(bdd686_routes_router)
+from .tdd687_routes import router as tdd687_routes_router
+router.include_router(tdd687_routes_router)
+from .atdd688_routes import router as atdd688_routes_router
+router.include_router(atdd688_routes_router)
+from .rename689_routes import router as rename689_routes_router
+router.include_router(rename689_routes_router)
+from .code_review690_routes import router as code_review690_routes_router
+router.include_router(code_review690_routes_router)
+from .pair691_routes import router as pair691_routes_router
+router.include_router(pair691_routes_router)
+from .mob692_routes import router as mob692_routes_router
+router.include_router(mob692_routes_router)
+from .debt693_routes import router as debt693_routes_router
+router.include_router(debt693_routes_router)
