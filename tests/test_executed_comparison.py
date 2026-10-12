@@ -33,3 +33,42 @@ def test_failed_comparator_cannot_rank(repo):
 def test_supplied_score_and_repeat_bounds_refused(repo):
     with pytest.raises(EvidenceError): compare_selected_tests(repo, [{'id':'a','test_paths':[], 'score':1}, {'id':'b','test_paths':[]}])
     with pytest.raises(EvidenceError): compare_selected_tests(repo, [], repeats=0)
+
+
+def test_invalid_later_subject_does_not_execute(repo, monkeypatch):
+    from app.modules.instinct_doc import executed_comparison as mod
+    calls=[]
+    monkeypatch.setattr(mod,'execute_tests',lambda *a,**k:calls.append(a))
+    with pytest.raises(EvidenceError):
+        mod.compare_selected_tests(repo,[{'id':'ok','test_paths':['tests/test_a.py']},{'id':'bad','test_paths':['missing']}])
+    assert calls==[]
+
+
+def test_cross_subject_drift_and_bad_duration_unverified(repo, monkeypatch):
+    from app.modules.instinct_doc import executed_comparison as mod
+    from app.modules.instinct_doc.repo_evidence import snapshot
+    snap=snapshot(repo);calls=[]
+    def injected(*args):
+        calls.append(1)
+        return {'head':snap['head'],'tree_digest':snap['tree_digest'] if len(calls)==1 else 'drift','status':'SCOPED_PASS','duration_seconds':1}
+    monkeypatch.setattr(mod,'execute_tests',injected)
+    out=mod.compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=1)
+    assert not out['cross_subject_coherent']
+    assert all(r['status']=='UNVERIFIED' and r['median_seconds'] is None for r in out['subjects'])
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:{'head':snap['head'],'tree_digest':snap['tree_digest'],'status':'SCOPED_PASS','duration_seconds':float('nan')})
+    out=mod.compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=1)
+    assert all(r['status']=='UNVERIFIED' for r in out['subjects'])
+
+
+def test_helper_exception_keeps_bounded_failure(repo, monkeypatch):
+    from app.modules.instinct_doc import executed_comparison as mod
+    def failed(*a):raise RuntimeError('injected failure')
+    monkeypatch.setattr(mod,'execute_tests',failed)
+    out=mod.compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=1)
+    assert all(r['status']=='UNVERIFIED' for r in out['subjects'])
+    assert not out['aggregate_budget_enforced'] and not out['execution_is_sandboxed']
+
+
+@pytest.mark.parametrize('repeats',[True,-1,0,6])
+def test_repeat_bounds(repo,repeats):
+    with pytest.raises(EvidenceError):compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=repeats)
