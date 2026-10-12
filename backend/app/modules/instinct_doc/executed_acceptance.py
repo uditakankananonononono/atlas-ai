@@ -19,7 +19,7 @@ def audit_selected_checks(root, source_path, checks):
         if not isinstance(ident, str) or not ident.strip() or len(ident) > 128 or ident in seen:
             raise EvidenceError('invalid or duplicate check id')
         seen.add(ident)
-        if not isinstance(check['line_id'], str) or lines.get(check['line_id']) != check['line_sha256']:
+        if not isinstance(check['line_id'], str) or check['line_id'] not in lines or not isinstance(check['line_sha256'], str) or lines[check['line_id']] != check['line_sha256']:
             raise EvidenceError('source line hash mismatch')
         paths = check['test_paths']
         if type(paths) is not list or not 1 <= len(paths) <= 100 or not all(isinstance(path, str) for path in paths):

@@ -162,3 +162,14 @@ def test_final_tree_drift_rejects_unchanged_source(repo,monkeypatch):
     out=mod.audit_selected_checks(root,'source.txt',[check])
     assert out['source_stable_after_runs'] and not out['tree_stable_after_runs']
     assert out['scoped_passing_lines']==0
+
+
+@pytest.mark.parametrize('line_id,sha',[('unknown',None),('unknown','0'*64),('export:L1',None),('export:L1',[])])
+def test_unknown_or_untyped_line_binding_never_executes(repo,monkeypatch,line_id,sha):
+    from app.modules.instinct_doc import executed_acceptance as mod
+    root,check=repo;calls=[]
+    check['line_id'],check['line_sha256']=line_id,sha
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:calls.append(a))
+    with pytest.raises(EvidenceError,match='source line hash mismatch'):
+        mod.audit_selected_checks(root,'source.txt',[check])
+    assert calls==[]
