@@ -20,8 +20,8 @@ Replay from a trusted repository root with the selected interpreter:
 `python audits/program-evidence-mutations/task-history/replay.py`.
 Do not use on untrusted repositories. Original raw logs retained privately;
 delivered logs intentionally strip trailing whitespace and replace private paths
-if listed. receipt.json records every changed line/path pair and original plus
-delivered SHA256 for every log. Command interpreter is normalized to python;
+if listed. The retained receipt.json lists changed line/path pairs and original plus
+delivered SHA256 for the supplied logs. Command interpreter is normalized to python;
 no claim that this is the original absolute command. Local receipt-bound outcomes
 are not independent acceptance or universal restoration guarantees.
 
@@ -40,8 +40,8 @@ are not independent acceptance or universal restoration guarantees.
 29d951f0 is the original run HEAD, not the landing base. LAND-113 was composed
 on a9cc5d54 and landed at a27d352f. Historical receipts retain their original
 identity; they are not relabeled as a fresh mutation run on the landing tree.
-The new test and replay were untracked at original run HEAD, so that Git object
-cannot retrospectively bind their executed bytes. The original receipt did not
+The new test and replay were untracked at original run HEAD; the available
+Git object has not established their executed-byte identity. The original receipt did not
 hash test files or the checkout tree; this provenance gap is not backfilled.
 `reconciliation/record.json` records local Git HEAD/tree and selected file hashes
 for the historical run HEAD, compose base, landed tip and current 27511b4a.
@@ -64,5 +64,5 @@ as present, not exact value/format. No deeper shallow history, grafted merge,
 public remote or authenticated task-time acceptance follows.
 
 An initial hash-pair mismatch report was a comparison error, disproved
-by direct reads. All seven historical original/delivered pairs remain equal with
+by direct reads. The seven supplied historical original/delivered pairs were observed equal with
 no listed normalizations; no retained mismatch was found or silently repaired.

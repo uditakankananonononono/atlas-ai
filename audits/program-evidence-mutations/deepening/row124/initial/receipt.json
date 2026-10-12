@@ -1,0 +1,134 @@
+{
+  "tree": "b6503ec7d81f4ea49adfe7ecd219de6a61f079c6",
+  "status": "?? audits/program-evidence-mutations/deepening/row124.json\n?? audits/program-evidence-mutations/deepening/row125.json\n",
+  "file_sha256": {
+    "tests/test_dataset_artifact_binding.py": "d061ae5e1423ad7344167f84f5f70a235bd6a419704bca80b7d200a7de614a2f",
+    "backend/app/modules/instinct_doc/dataset_register_p254.py": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+    "audits/program-evidence-mutations/deepening/row124.json": "4b08e8a60dc2dfbc57e78d9f0ceec1b61e5a8c5d4840b90fd29c03ea28279a00",
+    "audits/program-evidence-mutations/deepening/replay.py": "37772fd0017ea5e7c7b103d1d5a1d04b5a9a1d932180227b252e9523d134dc3e"
+  },
+  "base": "5ba4db1797fa0be4d935648ac2bc5752d2ca9a5a",
+  "config_sha256": "4b08e8a60dc2dfbc57e78d9f0ceec1b61e5a8c5d4840b90fd29c03ea28279a00",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_dataset_artifact_binding.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "portable_path_normalization": "interpreter normalized to python; delivered logs strip whitespace and replace listed private paths only",
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "baseline.log",
+    "original_sha256": "ef0631201b0665680a41ea773cf4785ad0b980d4a4b118c1e56a17d5270b7751",
+    "delivered_sha256": "ef0631201b0665680a41ea773cf4785ad0b980d4a4b118c1e56a17d5270b7751",
+    "normalizations": []
+  },
+  "mutants": [
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D124-M1.log",
+      "original_sha256": "ef0631201b0665680a41ea773cf4785ad0b980d4a4b118c1e56a17d5270b7751",
+      "delivered_sha256": "ef0631201b0665680a41ea773cf4785ad0b980d4a4b118c1e56a17d5270b7751",
+      "normalizations": [],
+      "id": "D124-M1",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "mutant_sha256": "19b17616ce794aa3449c41fe397ae15ef715cbf168037ad49f040723532c5c25",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true
+    },
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D124-M2.log",
+      "original_sha256": "ef0631201b0665680a41ea773cf4785ad0b980d4a4b118c1e56a17d5270b7751",
+      "delivered_sha256": "ef0631201b0665680a41ea773cf4785ad0b980d4a4b118c1e56a17d5270b7751",
+      "normalizations": [],
+      "id": "D124-M2",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "mutant_sha256": "3aaa97b79a23fb5244e70a359f6269d73a25ef4566be8632df03887f47021679",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true
+    },
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D124-M3.log",
+      "original_sha256": "dea22775e6af6b2bc8885d0383cdc542b1e1eb053550128f75fd9153e40fe45c",
+      "delivered_sha256": "dea22775e6af6b2bc8885d0383cdc542b1e1eb053550128f75fd9153e40fe45c",
+      "normalizations": [],
+      "id": "D124-M3",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "mutant_sha256": "cc3e3487dd5c468c1fd8b5ffce0f9dc82288eaea15d092262ffd212d932667d2",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true
+    },
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D124-M4.log",
+      "original_sha256": "dea22775e6af6b2bc8885d0383cdc542b1e1eb053550128f75fd9153e40fe45c",
+      "delivered_sha256": "dea22775e6af6b2bc8885d0383cdc542b1e1eb053550128f75fd9153e40fe45c",
+      "normalizations": [],
+      "id": "D124-M4",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "mutant_sha256": "1b139d66758bfe84582a9ef3ff8271880b67492ba31c34a00e13b6a6bcb2d0a6",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_dataset_artifact_binding.py::test_crosslist_shared_artifact_references"
+      ],
+      "log": "D124-M5.log",
+      "original_sha256": "8097f053a0fb24fadf4d237bb2e9d4540ef8140c677b920896b11fcc7e521bcb",
+      "delivered_sha256": "b4b10b7fe1138de34f806ddc92bb31585e9d3adc3535eb23536b7a5a96f13083",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D124-M5",
+      "target": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "mutant_sha256": "bc6546398a32e79ab5d7f2b98bdf64c33bd85b0a6477845f6ecdb4f7f8e84c79",
+      "before_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restored_sha256": "a5aed1a24710a74d4c79fafb51837374532ae37f846c1234a3ac72f5bb159225",
+      "restore_verified": true
+    }
+  ],
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "restored-baseline.log",
+    "original_sha256": "dea22775e6af6b2bc8885d0383cdc542b1e1eb053550128f75fd9153e40fe45c",
+    "delivered_sha256": "dea22775e6af6b2bc8885d0383cdc542b1e1eb053550128f75fd9153e40fe45c",
+    "normalizations": []
+  },
+  "counts": {
+    "CAUGHT": 1,
+    "SURVIVED": 4,
+    "INVALID": 0
+  }
+}

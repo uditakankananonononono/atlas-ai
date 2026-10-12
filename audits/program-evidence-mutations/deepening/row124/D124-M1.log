@@ -1,0 +1,10 @@
+...............F...                                                      [100%]
+=================================== FAILURES ===================================
+_________________ test_dataset_reference_edges_refused[count] __________________
+tests/test_row124_validation_deepening.py:10: in test_dataset_reference_edges_refused
+    with pytest.raises(ValueError):bind_artifacts(register,tmp_path,[binding])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ============================
+FAILED tests/test_row124_validation_deepening.py::test_dataset_reference_edges_refused[count]
+1 failed, 18 passed in 0.11s

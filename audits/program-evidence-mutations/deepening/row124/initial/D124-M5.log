@@ -1,0 +1,14 @@
+........F......                                                          [100%]
+=================================== FAILURES ===================================
+__________________ test_crosslist_shared_artifact_references ___________________
+tests/test_dataset_artifact_binding.py:56: in test_crosslist_shared_artifact_references
+    assert references == {'entry_ids': ['a', 'b'], 'project_ids': ['p1', 'p2'], 'row_ids': ['row-1', 'row-2']}
+E   AssertionError: assert {'entry_ids':...'row_ids': []} == {'entry_ids':...-1', 'row-2']}
+E
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'row_ids': []} != {'row_ids': ['row-1', 'row-2']}
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_dataset_artifact_binding.py::test_crosslist_shared_artifact_references
+1 failed, 14 passed in 0.08s

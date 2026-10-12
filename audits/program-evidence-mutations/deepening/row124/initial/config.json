@@ -1,0 +1,43 @@
+{
+  "row": 124,
+  "tests": [
+    "tests/test_dataset_artifact_binding.py"
+  ],
+  "mutants": [
+    {
+      "id": "D124-M1",
+      "name": "reference-count-edge",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "len(values) > 1000",
+      "new": "len(values) > 1001"
+    },
+    {
+      "id": "D124-M2",
+      "name": "reference-length-edge",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "len(v) <= 128",
+      "new": "len(v) <= 129"
+    },
+    {
+      "id": "D124-M3",
+      "name": "duplicate-references",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "len(values) != len(set(values))",
+      "new": "False"
+    },
+    {
+      "id": "D124-M4",
+      "name": "reader-size-edge",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "len(fetched) > 8_000_000",
+      "new": "len(fetched) > 8_000_001"
+    },
+    {
+      "id": "D124-M5",
+      "name": "content-reference-retention",
+      "file": "backend/app/modules/instinct_doc/dataset_register_p254.py",
+      "old": "'row_ids': sorted(bucket['row_ids'])",
+      "new": "'row_ids': []"
+    }
+  ]
+}
