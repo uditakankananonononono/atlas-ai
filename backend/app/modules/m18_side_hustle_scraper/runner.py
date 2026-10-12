@@ -24,7 +24,7 @@ class HustleRun:
 
 def _id(run_id:str,kind:str)->str:return sha256(f"{run_id}:{kind}".encode()).hexdigest()[:20]
 class HustleRunner:
- def __init__(self,approvals:ApprovalService|None=None):self.approvals=approvals or default_service();self._runs={}
+ def __init__(self,approvals:ApprovalService|None=None,*,receipt_verifier=None):self.approvals=approvals or default_service();self._runs={};self._receipt_verifier=receipt_verifier
  def create(self,*,title:str,first_experiment:str,max_budget:float=0,source_urls:list[str]|None=None)->HustleRun:
   if not title.strip() or not first_experiment.strip():raise ValueError("title and first_experiment are required")
   if max_budget<0:raise ValueError("max_budget cannot be negative")
@@ -47,12 +47,14 @@ class HustleRunner:
  def request_action(self,run_id:str,step_id:str,user_id:str)->ExperimentStep:
   step=self._step(run_id,step_id)
   if not step.external_action:raise ValueError("step has no external action")
+  if step.kind=="budget":raise ValueError("spend execution is unavailable: an exact merchant/item/total/undo-terms budget-accounting adapter is required")
   payload={"run_id":run_id,"step_id":step.id,"artifact":step.artifact,"exact_action":step.external_action}
   gate=self.approvals.gate(module_id=18,action_type=step.external_action["action_type"],payload=payload,user_id=user_id,idempotency_key=f"m18:{run_id}:{step.id}")
   step.approval_id=gate["approval"]["id"] if gate.get("approval") else None;step.state=StepState.BLOCKED;return step
  def authorize_action(self,run_id:str,step_id:str,user_id:str,actor:str)->dict[str,Any]:
   step=self._step(run_id,step_id)
   if not step.approval_id or not step.external_action:raise ValueError("step has no reviewed approval")
+  if step.kind=="budget":raise ValueError("spend execution is unavailable: an exact merchant/item/total/undo-terms budget-accounting adapter is required")
   payload={"run_id":run_id,"step_id":step.id,"artifact":step.artifact,"exact_action":step.external_action}
   permit=self.approvals.consume_effect(step.approval_id,module_id=18,action_type=step.external_action["action_type"],payload=payload,user_id=user_id,effect_id=f"m18:{run_id}:{step.id}",actor=actor)
   step.state=StepState.COMPLETED
@@ -63,6 +65,12 @@ class HustleRunner:
   if status not in {"succeeded","failed","unknown"}:raise ValueError("receipt status must be succeeded, failed, or unknown")
   if len(payload_sha256)!=64 or any(c not in "0123456789abcdef" for c in payload_sha256.lower()):raise ValueError("payload_sha256 must be a SHA-256 hex digest")
   receipt={"step_id":step_id,"approval_id":step.approval_id,"adapter":adapter,"provider_receipt_id":provider_receipt_id,"status":status,"observed_at":observed_at,"payload_sha256":payload_sha256.lower()}
+  if status=="succeeded":
+   if not callable(self._receipt_verifier):raise ValueError("trusted provider receipt verification is required for succeeded status")
+   import copy
+   verified=self._receipt_verifier(copy.deepcopy(receipt),copy.deepcopy(step.external_action),copy.deepcopy(step.artifact))
+   if verified is not True:raise ValueError("provider receipt verification failed")
+  receipt["verification"]="trusted host provider check" if status=="succeeded" else "unverified caller observation"
   receipt["receipt_sha256"]=sha256(repr(sorted(receipt.items())).encode()).hexdigest();self.get(run_id).receipts.append(receipt);return receipt
  def record_outcome(self,run_id:str,*,metric:str,value:float,unit:str,observed_at:str,source_url:str|None=None,receipt_sha256:str|None=None)->dict[str,Any]:
   run=self.get(run_id)
@@ -102,7 +110,7 @@ class DurableRunStore:
   with self._db() as db:ids=[x[0] for x in db.execute('SELECT run_id FROM hustle_runs WHERE tenant_id=? ORDER BY updated_at DESC',(tenant_id,)).fetchall()]
   return [self.load(tenant_id,x) for x in ids]
 class DurableHustleRunner(HustleRunner):
- def __init__(self,tenant_id:str,store:DurableRunStore,approvals:ApprovalService|None=None):super().__init__(approvals);self.tenant_id=tenant_id;self.store=store
+ def __init__(self,tenant_id:str,store:DurableRunStore,approvals:ApprovalService|None=None,*,receipt_verifier=None):super().__init__(approvals,receipt_verifier=receipt_verifier);self.tenant_id=tenant_id;self.store=store
  def get(self,run_id:str)->HustleRun:
   if run_id not in self._runs:self._runs[run_id]=self.store.load(self.tenant_id,run_id)
   return self._runs[run_id]

@@ -1,4 +1,5 @@
 import json
+import pytest
 from app.modules.m18_side_hustle_scraper.wiring import build_collectors
 from app.modules.m18_side_hustle_scraper.runner import HustleRunner,StepState
 from app.modules.m00_approval_center.service import Service as ApprovalService
@@ -23,6 +24,10 @@ def test_runner_produces_artifacts_and_blocks_every_effect_for_approval():
  assert all(s.artifact for s in run.steps)
  external=[s for s in run.steps if s.external_action]
  for step in external:
+  if step.kind=="budget":
+   with pytest.raises(ValueError,match="spend"):runner.request_action(run.id,step.id,'owner')
+   assert step.approval_id is None
+   continue
   runner.request_action(run.id,step.id,'owner');assert step.state is StepState.BLOCKED and step.approval_id
   assert approvals.get(step.approval_id)['status']=='pending'
  assert runner.complete_preparation(run.id,run.steps[-1].id).state is StepState.COMPLETED

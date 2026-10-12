@@ -50,23 +50,24 @@ def persist_revision(body:RevisionAcceptance,tenant:TenantContext=Depends(requir
  try:return {'tenant_id':tenant.tenant_id,**persist_revision_acceptance(body,store)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
 from .publication_gate import PublicationGateRequest,publish_through_gate
+from .publication_key_registry import PublicationKeyRegistry,RegisterPublicationKey
+def get_publication_key_registry(tenant:TenantContext=Depends(require_tenant)):return PublicationKeyRegistry(tenant.tenant_id)
 class UnconfiguredPublicationAdapter:
  def publish(self,*args):raise ValueError('publication adapter is not configured')
 def get_publication_adapter():return UnconfiguredPublicationAdapter()
 @router.post('/revision-publication/execute')
-def execute_revision_publication(body:PublicationGateRequest,tenant:TenantContext=Depends(require_tenant),adapter=Depends(get_publication_adapter),store=Depends(get_revision_store)):
+def execute_revision_publication(body:PublicationGateRequest,tenant:TenantContext=Depends(require_tenant),adapter=Depends(get_publication_adapter),store=Depends(get_revision_store),registry=Depends(get_publication_key_registry)):
  try:
   row=store.get(body.essay_id,body.to_version)
   if row is None:raise ValueError('persisted revision acceptance is required before publication')
-  return {'tenant_id':tenant.tenant_id,**publish_through_gate(body,adapter,row.payload)}
+  return {'tenant_id':tenant.tenant_id,**publish_through_gate(body,adapter,row.payload,key_registry=registry)}
  except ValueError as error:raise HTTPException(409,str(error)) from error
 from .publication_receipt_auth import VerifyPublicationReceipt,verify_publication_receipt
 @router.post('/revision-publication/receipts/verify')
-def verify_revision_publication_receipt(body:VerifyPublicationReceipt,tenant:TenantContext=Depends(require_tenant)):
- try:return {'tenant_id':tenant.tenant_id,**verify_publication_receipt(body)}
+def verify_revision_publication_receipt(body:VerifyPublicationReceipt,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_publication_key_registry)):
+ try:return {'tenant_id':tenant.tenant_id,**registry.verify(body.receipt,essay_id=body.expected_essay_id,revision_sha256=body.expected_revision_sha256,audience_boundary=body.expected_audience_boundary)}
  except ValueError as error:raise HTTPException(422,str(error)) from error
-from .publication_key_registry import PublicationKeyRegistry,RegisterPublicationKey
-def get_publication_key_registry(tenant:TenantContext=Depends(require_tenant)):return PublicationKeyRegistry(tenant.tenant_id)
+
 @router.post('/revision-publication/provider-keys')
 def register_publication_key(body:RegisterPublicationKey,tenant:TenantContext=Depends(require_tenant),registry=Depends(get_publication_key_registry)):
  try:

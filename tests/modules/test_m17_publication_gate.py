@@ -4,14 +4,17 @@ from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 from app.core.database import Base
 from app.main import app
-from app.modules.m17_narrative_architect.routes import get_publication_adapter,get_revision_store
+from app.modules.m17_narrative_architect.routes import get_publication_adapter,get_revision_store,get_publication_key_registry
 from app.modules.m17_narrative_architect.revision_store import RevisionStore
 C=TestClient(app);U='/api/v1/narrative-architect/revision-publication/execute';P='/api/v1/narrative-architect/evidence-completeness/revision-acceptance/persist';H={'X-Atlas-Tenant':'owner','X-Atlas-Actor':'u'}
-class Adapter:
- def publish(self,audience,revision):return {'audience_boundary':audience,'revision_sha256':revision,'provider_id':'p'}
+from publication_fixture_helpers import SignedAdapter,register
+from app.modules.m17_narrative_architect.publication_key_registry import PublicationKeyRegistry
+Adapter=SignedAdapter
 def setup_function():
  e=create_engine('sqlite://',connect_args={'check_same_thread':False},poolclass=StaticPool);Base.metadata.create_all(e);sessions=sessionmaker(bind=e,expire_on_commit=False)
  app.dependency_overrides[get_revision_store]=lambda:RevisionStore('owner',sessions)
+ registry=register(PublicationKeyRegistry('owner',sessions))
+ app.dependency_overrides[get_publication_key_registry]=lambda:registry
  app.dependency_overrides[get_publication_adapter]=lambda:Adapter()
 def teardown_function():app.dependency_overrides.clear()
 def acc(essay_id='e',disclosure=True):
@@ -28,6 +31,6 @@ def test_fails_closed_without_review_or_disclosure_approval():
  a2=persist(essay_id='e2',disclosure=False);r=C.post(U,json=p(a2,essay_id='e2'),headers=H);assert r.status_code==409 and 'disclosure approval' in r.text
  persist(essay_id='e3');r=C.post(U,json=p('d'*64,essay_id='e3'),headers=H);assert r.status_code==409 and 'does not match persisted revision acceptance' in r.text
 def test_rejects_mismatched_publication_receipt():
- class Bad:
-  def publish(self,a,r):return {'audience_boundary':'public','revision_sha256':r}
- a=persist();app.dependency_overrides[get_publication_adapter]=lambda:Bad();r=C.post(U,json=p(a),headers=H);assert r.status_code==409 and 'does not match approved audience and revision' in r.text
+ class Bad(SignedAdapter):
+  def prepare(self,a,r):return self.receipt('public',r)
+ a=persist();app.dependency_overrides[get_publication_adapter]=lambda:Bad();r=C.post(U,json=p(a),headers=H);assert r.status_code==409 and 'binding mismatch' in r.text

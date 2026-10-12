@@ -26,3 +26,13 @@ class PublicationKeyRegistry:
    row=db.scalar(select(PublicationKeyRow).where(PublicationKeyRow.tenant_id==self.tenant_id,PublicationKeyRow.provider==provider,PublicationKeyRow.key_id==key_id))
    if not row:raise ValueError('publication key not found')
    row.active=False;row.retired_at=datetime.now(timezone.utc);db.flush();return row
+
+ def verify(self,receipt,*,essay_id,revision_sha256,audience_boundary):
+  """Resolve an active configured provider/key, never caller-supplied trust bytes."""
+  from .publication_receipt_auth import SignedPublicationReceipt,VerifyPublicationReceipt,verify_publication_receipt
+  value=SignedPublicationReceipt.model_validate(receipt)
+  with self.sessions() as db:
+   row=db.scalar(select(PublicationKeyRow).where(PublicationKeyRow.tenant_id==self.tenant_id,PublicationKeyRow.provider==value.provider,PublicationKeyRow.key_id==value.key_id,PublicationKeyRow.active.is_(True)))
+   if row is None:raise ValueError('active configured publication provider key required')
+   keys={value.key_id:base64.b64encode(row.public_key).decode()}
+  return verify_publication_receipt(VerifyPublicationReceipt(expected_essay_id=essay_id,expected_revision_sha256=revision_sha256,expected_audience_boundary=audience_boundary,receipt=value,trusted_ed25519_public_keys=keys))
