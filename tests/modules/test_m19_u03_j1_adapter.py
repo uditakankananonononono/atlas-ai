@@ -258,7 +258,7 @@ def test_ts_text_fields_still_compared_exactly():
         assert "no returned prediction" in err(lambda ret=ret: ad.bind_ids(pending, ret))
 
 
-# ---- closing pins (auditor-5 named survivors, tests only) ----
+# ---- closing pins (additional boundary cases, tests only) ----
 def test_pin_source_type_and_length_bounds():
     preds = u03_predictions()
     assert "source" in err(lambda: ad.to_j1_predictions(preds, source=5))
@@ -342,7 +342,7 @@ def test_pin_scoring_value_errors_are_wrapped_as_adapter_error():
 
 
 def test_pin_bound_probability_echoed_and_passed_through_to_scoring(monkeypatch):
-    # auditor EQ mutants 276/281: a constant-0 probability in the bound record, or a dropped
+    # boundary mutants 276/281: a constant-0 probability in the bound record, or a dropped
     # confidence on the way into the scorer, must not survive.
     preds = u03_predictions(conf=0.7)
     bound = bound_from(preds)

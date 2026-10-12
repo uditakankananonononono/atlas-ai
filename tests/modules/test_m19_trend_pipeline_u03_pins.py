@@ -202,7 +202,7 @@ def test_naive_and_offset_less_timestamps_are_refused():
     refused(lambda: tp.extract_trends([dict(P(0, "aurora"), posted_at="2026-03-30T00:00:00")], as_of=AS_OF), "posted_at")
 
 
-# ---- closing pins (auditor-5 named survivors, tests only) ----------------------
+# ---- closing pins (additional boundary cases, tests only) ----------------------
 def test_pin_bigrams_never_skip_an_ineligible_token():
     t = terms([P(i, "cat ab dog") for i in range(3)])
     assert "cat" in t and "dog" in t and "ab" not in t
@@ -229,7 +229,7 @@ def test_pin_as_of_is_echoed_raw_not_normalized():
     assert r["as_of"] == "2026-03-31T05:30:00+05:30"
     assert r["posts_used"] == 3
     # a Z-suffixed input re-serializes to +00:00 under isoformat(), so a plain
-    # re-serialization mutant cannot survive this echo check (auditor-5 100)
+    # re-serialization mutant cannot survive this echo check
     z = tp.extract_trends([P(i, "aurora") for i in range(3)], as_of="2026-03-31T00:00:00Z")
     assert z["as_of"] == "2026-03-31T00:00:00Z"
 

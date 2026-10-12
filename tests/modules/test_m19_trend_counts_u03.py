@@ -132,7 +132,7 @@ def test_late_sources_sorted_with_many_sources():
     assert r["trends"][0]["sources"] == sorted(names)
 
 
-# ---- closing pins (auditor-5 named survivors, tests only) ----
+# ---- closing pins (additional boundary cases, tests only) ----
 def test_pin_max_rows_199999_and_200000_accepted():
     rows = [row("a", 40, 1, f"s{i}") for i in range(199999)]
     assert run(rows)["excluded"]["out_of_window"] == 199999
