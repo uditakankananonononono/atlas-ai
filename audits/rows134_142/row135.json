@@ -1,0 +1,45 @@
+{
+  "row": 135,
+  "selectors": [
+    "tests/runtime/guardrails/test_bio_gate.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "local choke-point tests only, fixture effects",
+    "no external approval/provider truth",
+    "not universal runtime adoption",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "prohibited_screen",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "if p69_verdict != \"clear\":",
+      "new": "if False:"
+    },
+    {
+      "id": "screen_text",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "\"text\": checked[\"text\"]",
+      "new": "\"text\": \"ordinary chart\""
+    },
+    {
+      "id": "prohibited_verdict",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "verdict = \"refused:prohibited_bio\"",
+      "new": "verdict = \"admitted:in_silico\""
+    },
+    {
+      "id": "category_binding",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "p69_category = screened[\"category\"]",
+      "new": "p69_category = None"
+    },
+    {
+      "id": "effect_gate",
+      "path": "backend/app/runtime/guardrails/bio_gate.py",
+      "old": "if not verdict.startswith(\"admitted:\"):",
+      "new": "if False:"
+    }
+  ]
+}
