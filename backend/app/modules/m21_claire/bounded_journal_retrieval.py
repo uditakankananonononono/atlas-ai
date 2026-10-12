@@ -27,7 +27,7 @@ Contract (for the integrator - wiring is owned elsewhere and unchanged here):
     carried through every hit and the summary. No returned decision grants
     permission for external action.
   * Hit ordering matches ``PersistentJournal.retrieve``: score descending,
-    then id ascending on ties, zero/negative scores dropped, then the caller's
+    then newest topic first on equal scores (exact-duplicate text keeps id ascending; see tie_ranked), zero/negative scores dropped, then the caller's
     ``limit`` applied.
 
 Open dependency decisions (stated, not invented):
@@ -47,7 +47,7 @@ from datetime import datetime
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from .persistent_journal import JournalEntry, lexical_vector
+from .persistent_journal import JournalEntry, lexical_vector, tie_ranked
 
 MAX_LIMIT = 20            # same ceiling as PersistentJournal.retrieve
 DEFAULT_SCAN_CAP = 500    # rows read before scoring when the caller sets no cap
@@ -160,7 +160,7 @@ def bounded_retrieve(
 
     q = lexical_vector(b.query)
     scored = [(sum(a * c for a, c in zip(q, row.vector)), row) for row in rows]
-    scored.sort(key=lambda item: (-item[0], item[1].id))
+    scored = tie_ranked(scored)
     positive = [(score, row) for score, row in scored if score > 0]
     top = positive[: b.limit]
 

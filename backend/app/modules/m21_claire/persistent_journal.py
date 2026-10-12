@@ -13,6 +13,24 @@ from sqlalchemy import DateTime, Integer, JSON, String, Text, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 
+
+def tie_ranked(scored: list) -> list:
+    """Order (score, row) pairs: score descending; equal scores go to the NEWEST topic first.
+
+    Contract: for same-score entries whose normalized decision text differs, the newer id ranks
+    first (a later decision on the same topic outranks an earlier one). Entries with identical
+    normalized text are exact duplicates and keep the older-id-first order. The ordering depends
+    only on score, id and text, so it is deterministic. It does not reorder entries whose scores
+    differ: a newer entry that scores lower for the query still ranks lower.
+    """
+    def norm(row):
+        return " ".join(str(row.decision).casefold().split())
+    newest: dict = {}
+    for score, row in scored:
+        key = (score, norm(row))
+        newest[key] = max(newest.get(key, 0), row.id)
+    return sorted(scored, key=lambda item: (-item[0], -newest[(item[0], norm(item[1]))], item[1].id))
+
 class JournalBase(DeclarativeBase):
     pass
 
@@ -84,8 +102,8 @@ class PersistentJournal:
         kind="decision" (default) returns the EFFECTIVE view: a decision that a later
         correction replaced is dropped and the correction takes its place; a decision
         re-captured later with the same text replaces the older copy (newest wins). Other
-        exact score ties still go to the older id, as before (bounded and cursor retrieval
-        and their tests rely on that order). kind="correction" and include_superseded=True
+        exact score ties go to the newest topic (see tie_ranked); exact-duplicate text ties keep
+        the older id. kind="correction" and include_superseded=True
         keep the raw single-kind ranking that existed before.
 
         A correction supersedes an earlier entry when its original text equals that entry's
@@ -106,7 +124,7 @@ class PersistentJournal:
                 JournalEntry.kind.in_(kinds))))
         if not effective:
             scored = [(sum(a * b for a, b in zip(q, row.vector)), row) for row in rows]
-            scored.sort(key=lambda item: (-item[0], item[1].id))
+            scored = tie_ranked(scored)
             return [{"id": row.id, "decision": row.decision, "reason": row.reason,
                      "source_reference": row.source_reference, "score": round(score, 4),
                      "retrieval": "lexical_not_semantic"} for score, row in scored[:k] if score > 0]
@@ -148,7 +166,7 @@ class PersistentJournal:
             else:
                 score = sum(a * b for a, b in zip(q, r.vector))
             scored.append((score, r))
-        scored.sort(key=lambda item: (-item[0], item[1].id))  # same order as the raw ranking
+        scored = tie_ranked(scored)
         out = []
         for score, r in scored:
             if score <= 0:

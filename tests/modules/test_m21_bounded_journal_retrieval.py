@@ -90,7 +90,7 @@ def test_bounded_scan_reports_honest_truncation(tmp_path):
     assert out["omitted_by_scan_cap"] == 20
     assert out["omitted_by_limit"] == 5  # 10 positive scores, 5 returned
     assert len(out["hits"]) == 5
-    # newest-first scan window, ties broken by ascending id like retrieve()
+    # newest-first scan window; identical-text duplicates tie to ascending id (tie_ranked)
     assert [h["id"] for h in out["hits"]] == [21, 22, 23, 24, 25]
     assert out["retrieval"] == "lexical_not_semantic"
     assert out["external_action_permission"] is False

@@ -4,7 +4,7 @@ Python materializes at most scan_cap+1 rows. SQL may examine more rows to satisf
 filters; no DB CPU/index/latency guarantee. Probe row not scored or cursor-consumed.
 """
 from sqlalchemy import select
-from .persistent_journal import JournalEntry,lexical_vector
+from .persistent_journal import JournalEntry,lexical_vector,tie_ranked
 from .bounded_journal_retrieval import validate_retrieval_bounds,_predicates
 
 
@@ -16,7 +16,7 @@ def cursor_retrieve(session,*,tenant_id,actor_id,query,limit=5,kind='decision',s
     rows=scanned[:b.scan_cap]
     q=lexical_vector(b.query)
     scored=[(sum(a*c for a,c in zip(q,row.vector)),row) for row in rows]
-    scored.sort(key=lambda x:(-x[0],x[1].id))
+    scored=tie_ranked(scored)
     positive=[(score,row) for score,row in scored if score>0]
     hits=[{'id':row.id,'decision':row.decision,'reason':row.reason,'source_reference':row.source_reference,'score':round(score,4),'created_at':row.created_at.isoformat() if row.created_at else None,'retrieval':'lexical_not_semantic'} for score,row in positive[:b.limit]]
     oldest=min((row.id for row in rows),default=None)

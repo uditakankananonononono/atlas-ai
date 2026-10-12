@@ -119,3 +119,45 @@ def test_hit_shape_and_limits_still_enforced(tmp_path):
         assert False
     except ValueError:
         pass
+
+
+def _s3_cases(tmp_path):
+    from sqlalchemy.orm import Session
+    s = _store(tmp_path, "s3.db")
+    j = PersistentJournal("t", "a", s)
+    old = j.capture("alpha beta gamma", "first", "ctx", "m1")
+    new = j.capture("gamma beta alpha", "second", "ctx", "m2")     # same words, different newer text: equal score
+    dup1 = j.capture("delta epsilon", "r", "ctx", "m3")
+    dup2 = j.capture("delta epsilon", "r", "ctx", "m4")            # exact duplicate text of dup1
+    return s, j, old["id"], new["id"], dup1["id"], dup2["id"]
+
+
+def test_s3_same_topic_different_newer_text_wins_ties_in_all_retrieval_paths(tmp_path):
+    from app.modules.m21_claire.bounded_journal_retrieval import bounded_retrieve
+    from app.modules.m21_claire.cursor_journal_retrieval import cursor_retrieve
+    s, j, old, new, _, _ = _s3_cases(tmp_path)
+    assert [h["id"] for h in j.retrieve("alpha beta gamma", k=3)][:2] == [new, old]
+    with s() as db:
+        b = bounded_retrieve(db, tenant_id="t", actor_id="a", query="alpha beta gamma", limit=5)
+        c = cursor_retrieve(db, tenant_id="t", actor_id="a", query="alpha beta gamma", limit=5)
+    assert [h["id"] for h in b["hits"]][:2] == [new, old]
+    assert [h["id"] for h in c["hits"]][:2] == [new, old]
+
+
+def test_s3_exact_duplicate_text_keeps_older_id_in_bounded_and_cursor(tmp_path):
+    from app.modules.m21_claire.bounded_journal_retrieval import bounded_retrieve
+    from app.modules.m21_claire.cursor_journal_retrieval import cursor_retrieve
+    s, j, _, _, d1, d2 = _s3_cases(tmp_path)
+    with s() as db:
+        b = bounded_retrieve(db, tenant_id="t", actor_id="a", query="delta epsilon", limit=5)
+        c = cursor_retrieve(db, tenant_id="t", actor_id="a", query="delta epsilon", limit=5)
+    assert [h["id"] for h in b["hits"]] == [d1, d2]
+    assert [h["id"] for h in c["hits"]] == [d1, d2]
+    assert [h["id"] for h in j.retrieve("delta epsilon")] == [d2]   # effective view: newest copy only
+
+
+def test_s3_scores_still_dominate_recency(tmp_path):
+    j = PersistentJournal("t", "a", _store(tmp_path))
+    exact = j.capture("alpha beta gamma", "r", "ctx", "m1")
+    j.capture("alpha zzzz qqqq", "r", "ctx", "m2")    # newer but lower score for the query
+    assert j.retrieve("alpha beta gamma")[0]["id"] == exact["id"]
