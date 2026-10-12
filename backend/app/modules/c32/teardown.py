@@ -69,3 +69,45 @@ def teardown(doc):
                 ["fixed-checklist teardown over supplied text"],
                 ["fetching brand pages", "affiliate signup", "founder history beyond supplied text"],
                 "supplied brand page text/bundle")}
+
+
+def teardown_sources(brand, sources):
+    """Per-source evidence spans. Conflicting documents remain separate.
+
+    All facts are source-stated, not established by the keyword extractor.
+    Does not fetch or enroll in affiliate programs.
+    """
+    import re
+    from urllib.parse import urlsplit
+    name = policy.clean_text(brand, PREFIX, 'brand', 128)
+    if type(sources) is not list or not 1 <= len(sources) <= MAX_SOURCES:
+        raise ValueError('TREND_REFUSED_BAD_TYPE:sources')
+    cleaned, seen = [], set()
+    for source in sources:
+        if type(source) is not dict or set(source) != {'url', 'text'}:
+            raise ValueError('TREND_REFUSED_BAD_TYPE:source')
+        url = policy.clean_text(source['url'], PREFIX, 'url', 512)
+        parts = urlsplit(url)
+        if parts.scheme != 'https' or not parts.hostname or parts.username or parts.password or parts.port not in (None, 443):
+            raise ValueError('TREND_REFUSED_BAD_URL')
+        if url in seen:
+            raise ValueError('TREND_REFUSED_DUPLICATE_SOURCE')
+        seen.add(url)
+        text = policy.clean_text(source['text'], PREFIX, 'text', MAX_TEXT, allow_ws=True)
+        cleaned.append((url, text))
+    dimensions = {key: [] for key in DIMENSIONS}
+    affiliate = []
+    for url, text in cleaned:
+        for sentence in re.finditer(r'[^.!?\n]+(?:[.!?]|$)', text):
+            quote = sentence.group().strip()
+            low = quote.lower()
+            row = {'url': url, 'quote': sentence.group(), 'start': sentence.start(),
+                   'end': sentence.end(), 'basis': 'source-stated, not independently verified'}
+            for dimension, keywords in DIMENSIONS.items():
+                if any(re.search(r'\b' + re.escape(k) + r'\b', low) for k in keywords):
+                    dimensions[dimension].append(dict(row))
+            if re.search(r'\b(?:affiliate|commission|partner program)\b', low):
+                affiliate.append(dict(row))
+    return {'brand': name, 'dimensions': dimensions, 'affiliate_mentions': affiliate,
+            'source_count': len(cleaned), 'missing_dimensions': [k for k, v in dimensions.items() if not v],
+            'claims_business_success': False, 'signup_performed': False}

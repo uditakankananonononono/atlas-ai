@@ -47,3 +47,33 @@ def tag(text):
                 ["lexicon/rule emotion and motive tagging", "documented validity limits"],
                 ["feeling anything", "clinical or diagnostic claims"],
                 "supplied text")}
+
+
+def tag_evidence(text):
+    """Whole-token cue evidence with negation; never a personality diagnosis.
+
+    The legacy tag function is preserved for callers expecting raw substring
+    counts. This path does not count 'mad' in 'made' or 'sad' in 'saddle'.
+    """
+    import re
+    body = policy.clean_text(text, PREFIX, 'text', 200000, allow_ws=True)
+    tokens = list(re.finditer(r"[A-Za-z]+(?:'[A-Za-z]+)?", body.lower()))
+    evidence = {'emotions': {}, 'motives': {}}
+    for group, lexicon in (('emotions', EMOTIONS), ('motives', MOTIVES)):
+        for category, words in lexicon.items():
+            hits = []
+            for i, token in enumerate(tokens):
+                if token.group() not in words:
+                    continue
+                previous = tokens[max(0, i - 3):i]
+                # Do not carry negation across a sentence boundary.
+                previous = [p for p in previous if not any(c in body[p.end():token.start()] for c in '.!?;\n')]
+                negated = any(p.group() in ('not', 'no', 'never', "isn't", "wasn't", "don't") for p in previous)
+                hits.append({'cue': token.group(), 'start': token.start(), 'end': token.end(),
+                             'negated': negated})
+            evidence[group][category] = hits
+    counts = {group: {category: sum(not h['negated'] for h in hits)
+                      for category, hits in categories.items()}
+              for group, categories in evidence.items()}
+    return {**counts, 'evidence': evidence, 'claims_feeling': False, 'validity_limits': VALIDITY_LIMITS,
+            'method': 'whole-token lexicon with three-token sentence-bounded negation'}
