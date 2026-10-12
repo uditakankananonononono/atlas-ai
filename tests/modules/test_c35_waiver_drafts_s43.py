@@ -31,7 +31,7 @@ def op(i, fee, email="x@y.org", **kw):
 
 
 def req(**kw):
-    r = {"as_of": "2026-10-11", "profile": {"name": "Udita", "school": "Test School"},
+    r = {"as_of": "2026-10-11", "profile": {"name": "UserA", "school": "Test School"},
          "opportunities": [op("o1", "USD 25")], "template": TEMPLATE}
     r.update(kw)
     return r
@@ -74,7 +74,7 @@ class Success(unittest.TestCase):
         self.assertEqual(d["status"], "awaiting_exact_draft_approval")
         self.assertIs(d["needs_recipient"], False)
         self.assertIs(d["recipient_invalid"], False)
-        self.assertEqual(d["body"], "Dear Admissions Team, I am Udita from Test School. "
+        self.assertEqual(d["body"], "Dear Admissions Team, I am UserA from Test School. "
                          "I request a fee waiver for Contest o1 (fee USD 25, deadline 2026-12-01).")
 
     def test_contact_name_used(self):
@@ -174,7 +174,7 @@ class Success(unittest.TestCase):
         r = req(template="Hello {name} re {opportunity}", opportunities=[
             {"id": "o1", "title": "T", "fee": "5"}])  # no deadline, no email: fine
         d = m.run(r)["drafts"][0]
-        self.assertEqual(d["body"], "Hello Udita re T")
+        self.assertEqual(d["body"], "Hello UserA re T")
 
     def test_value_with_braces_not_reexpanded(self):
         r = req(template="Hi {name}", profile={"name": "A{school}B", "school": "S"})
@@ -182,7 +182,7 @@ class Success(unittest.TestCase):
 
     def test_template_whitespace_preserved(self):
         r = req(template="Dear {contact},\n\n\tI am {name}.\n")
-        self.assertEqual(m.run(r)["drafts"][0]["body"], "Dear Admissions Team,\n\n\tI am Udita.\n")
+        self.assertEqual(m.run(r)["drafts"][0]["body"], "Dear Admissions Team,\n\n\tI am UserA.\n")
 
 
 class Fee(unittest.TestCase):

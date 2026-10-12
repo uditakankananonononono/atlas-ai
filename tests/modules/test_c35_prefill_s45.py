@@ -7,7 +7,7 @@ m = importlib.util.module_from_spec(_spec)
 sys.modules["c35_prefill"] = m
 _spec.loader.exec_module(m)
 
-PROFILE = {"name": "Udita Phookan", "school": "Cotton University",
+PROFILE = {"name": "Sample Student", "school": "Sample School",
            "email": "u@example.com", "gpa": "9.2"}
 
 def opp(i, **kw):
@@ -94,7 +94,7 @@ class Behavior(unittest.TestCase):
 
     def test_packets_fill_and_missing(self):
         pk = {p["id"]: p for p in self.out["packets"]}
-        self.assertEqual(pk["o1"]["filled"], {"name": "Udita Phookan", "school": "Cotton University"})
+        self.assertEqual(pk["o1"]["filled"], {"name": "Sample Student", "school": "Sample School"})
         self.assertEqual(pk["o1"]["missing_fields"], [])
         self.assertEqual(pk["o7"]["missing_fields"], ["sat_score"])
         self.assertEqual(pk["o15"]["missing_fields"], ["GPA"])  # exact-key match only

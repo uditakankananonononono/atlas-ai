@@ -23,7 +23,7 @@ def op(i, fee="USD 25", **kw):
 
 
 def req(**kw):
-    r = {"as_of": "2026-10-11", "profile": {"name": "Udita", "school": "Test School"},
+    r = {"as_of": "2026-10-11", "profile": {"name": "UserA", "school": "Test School"},
          "opportunities": [op("o1")], "template": TEMPLATE}
     r.update(kw)
     return r
