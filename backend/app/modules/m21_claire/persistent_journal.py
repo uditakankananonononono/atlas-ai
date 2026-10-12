@@ -78,19 +78,93 @@ class PersistentJournal:
                     "source_reference": row.source_reference, "few_shot_example": True,
                     "external_action_permission": False}
 
-    def retrieve(self, query: str, k: int = 5, kind: str = "decision") -> list[dict]:
+    def retrieve(self, query: str, k: int = 5, kind: str = "decision", include_superseded: bool = False) -> list[dict]:
+        """Rank journal entries by lexical similarity.
+
+        kind="decision" (default) returns the EFFECTIVE view: a decision that a later
+        correction replaced is dropped and the correction takes its place; a decision
+        re-captured later with the same text replaces the older copy (newest wins). Other
+        exact score ties still go to the older id, as before (bounded and cursor retrieval
+        and their tests rely on that order). kind="correction" and include_superseded=True
+        keep the raw single-kind ranking that existed before.
+
+        A correction supersedes an earlier entry when its original text equals that entry's
+        current text (decision text for a decision, corrected text for an earlier correction),
+        compared case-folded with whitespace collapsed, and the correction has the higher id.
+        This needs no stored link, so it also works on existing stores. A correction whose
+        original text matches nothing earlier supersedes nothing and is returned only for
+        kind="correction". Lexical matching, not meaning: reworded originals are not linked.
+        """
         if not query.strip() or not 1 <= k <= 20:
             raise ValueError("nonempty query and limit 1-20 required")
         q = lexical_vector(query)
+        effective = kind == "decision" and not include_superseded
+        kinds = ("decision", "correction") if effective else (kind,)
         with self.sessions() as db:
             rows = list(db.scalars(select(JournalEntry).where(
                 JournalEntry.tenant_id == self.tenant_id, JournalEntry.actor_id == self.actor_id,
-                JournalEntry.kind == kind)))
-        scored = [(sum(a * b for a, b in zip(q, row.vector)), row) for row in rows]
-        scored.sort(key=lambda item: (-item[0], item[1].id))
-        return [{"id": row.id, "decision": row.decision, "reason": row.reason,
-                 "source_reference": row.source_reference, "score": round(score, 4),
-                 "retrieval": "lexical_not_semantic"} for score, row in scored[:k] if score > 0]
+                JournalEntry.kind.in_(kinds))))
+        if not effective:
+            scored = [(sum(a * b for a, b in zip(q, row.vector)), row) for row in rows]
+            scored.sort(key=lambda item: (-item[0], item[1].id))
+            return [{"id": row.id, "decision": row.decision, "reason": row.reason,
+                     "source_reference": row.source_reference, "score": round(score, 4),
+                     "retrieval": "lexical_not_semantic"} for score, row in scored[:k] if score > 0]
+        return self._effective_hits(rows, q, k)
+
+    @staticmethod
+    def _norm(text: str) -> str:
+        return " ".join(text.casefold().split())
+
+    def _effective_hits(self, rows: list, q: list, k: int) -> list[dict]:
+        corrections = [r for r in rows if r.kind == "correction"]
+        by_original: dict[str, list] = {}
+        for c in corrections:
+            by_original.setdefault(self._norm(c.decision), []).append(c)
+        superseded_by: dict[int, list] = {}  # entry id -> corrections that replace it
+        replaces: dict[int, list] = {}       # correction id -> ids it replaces
+        for r in rows:
+            current = self._norm(r.decision if r.kind == "decision" else r.reason)
+            for c in by_original.get(current, []):
+                if c.id > r.id:
+                    superseded_by.setdefault(r.id, []).append(c)
+                    replaces.setdefault(c.id, []).append(r.id)
+        newest_by_text: dict[str, int] = {}
+        for r in rows:
+            if r.kind == "decision":
+                key = self._norm(r.decision)
+                newest_by_text[key] = max(newest_by_text.get(key, 0), r.id)
+        scored = []
+        for r in rows:
+            if r.id in superseded_by:
+                continue  # replaced by a later correction; the stale text must not surface
+            if r.kind == "decision" and newest_by_text[self._norm(r.decision)] != r.id:
+                continue  # same decision text captured again later: the newest copy wins
+            if r.kind == "correction":
+                if r.id not in replaces:
+                    continue  # unlinked correction: a few-shot example, not a decision
+                score = max(sum(a * b for a, b in zip(q, r.vector)),
+                            sum(a * b for a, b in zip(q, lexical_vector(r.reason + " " + r.context))))
+            else:
+                score = sum(a * b for a, b in zip(q, r.vector))
+            scored.append((score, r))
+        scored.sort(key=lambda item: (-item[0], item[1].id))  # same order as the raw ranking
+        out = []
+        for score, r in scored:
+            if score <= 0:
+                continue
+            hit = {"id": r.id, "source_reference": r.source_reference, "score": round(score, 4),
+                   "retrieval": "lexical_not_semantic"}
+            if r.kind == "correction":
+                hit.update({"kind": "correction", "decision": r.reason,
+                            "reason": "owner correction of an earlier entry",
+                            "stale_original": r.decision, "supersedes": sorted(replaces[r.id])})
+            else:
+                hit.update({"kind": "decision", "decision": r.decision, "reason": r.reason})
+            out.append(hit)
+            if len(out) == k:
+                break
+        return out
 
     def delete(self, entry_id: int) -> bool:
         with self.sessions.begin() as db:
