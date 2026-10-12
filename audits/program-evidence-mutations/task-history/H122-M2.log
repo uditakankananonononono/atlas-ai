@@ -1,0 +1,14 @@
+........F.F                                                              [100%]
+=================================== FAILURES ===================================
+___________________ test_dirty_disclosure_and_root_boundary ____________________
+tests/test_task_progress_evidence.py:80: in test_dirty_disclosure_and_root_boundary
+    assert out['tasks'][0]['events'][0]['root_or_shallow_boundary']
+E   assert False
+_______________ test_depth_one_clone_discloses_history_boundary ________________
+tests/test_task_history_sensitivity.py:21: in test_depth_one_clone_discloses_history_boundary
+    assert event['root_or_shallow_boundary'] is True
+E   assert False is True
+=========================== short test summary info ============================
+FAILED tests/test_task_progress_evidence.py::test_dirty_disclosure_and_root_boundary
+FAILED tests/test_task_history_sensitivity.py::test_depth_one_clone_discloses_history_boundary
+2 failed, 9 passed in 0.75s

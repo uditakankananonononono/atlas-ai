@@ -1,0 +1,14 @@
+F.........F                                                              [100%]
+=================================== FAILURES ===================================
+______________________ test_task_commit_changes_computed _______________________
+tests/test_task_progress_evidence.py:31: in test_task_commit_changes_computed
+    assert not task['completion_verified']
+E   assert not True
+_______________ test_depth_one_clone_discloses_history_boundary ________________
+tests/test_task_history_sensitivity.py:25: in test_depth_one_clone_discloses_history_boundary
+    assert result['tasks'][0]['completion_verified'] is False
+E   assert True is False
+=========================== short test summary info ============================
+FAILED tests/test_task_progress_evidence.py::test_task_commit_changes_computed
+FAILED tests/test_task_history_sensitivity.py::test_depth_one_clone_discloses_history_boundary
+2 failed, 9 passed in 0.59s

@@ -1,0 +1,44 @@
+{
+  "base": "29d951f0",
+  "tests": [
+    "tests/test_task_progress_evidence.py",
+    "tests/test_task_history_sensitivity.py"
+  ],
+  "mutants": [
+    {
+      "id": "H122-M1",
+      "name": "shallow-disclosure",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "'shallow_history': shallow,",
+      "new": "'shallow_history': False,"
+    },
+    {
+      "id": "H122-M2",
+      "name": "boundary-label",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "'root_or_shallow_boundary': root_boundary}",
+      "new": "'root_or_shallow_boundary': False}"
+    },
+    {
+      "id": "H122-M3",
+      "name": "timestamp-retention",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "'commit_at': at, 'task_time_anchor_verified': False,",
+      "new": "'commit_at': '', 'task_time_anchor_verified': False,"
+    },
+    {
+      "id": "H122-M4",
+      "name": "truncation-disclosure",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "'history_may_be_truncated': shallow or len(commits) == limit,",
+      "new": "'history_may_be_truncated': False,"
+    },
+    {
+      "id": "H122-M5",
+      "name": "completion-nonpromotion",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "'completion_verified': False,\n                     'current_files':",
+      "new": "'completion_verified': True,\n                     'current_files':"
+    }
+  ]
+}

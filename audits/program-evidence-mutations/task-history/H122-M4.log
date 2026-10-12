@@ -1,0 +1,14 @@
+.......F..F                                                              [100%]
+=================================== FAILURES ===================================
+________________________ test_bounded_history_disclosed ________________________
+tests/test_task_progress_evidence.py:70: in test_bounded_history_disclosed
+    assert result['history_may_be_truncated']
+E   assert False
+_______________ test_depth_one_clone_discloses_history_boundary ________________
+tests/test_task_history_sensitivity.py:18: in test_depth_one_clone_discloses_history_boundary
+    assert result['history_may_be_truncated'] is True
+E   assert False is True
+=========================== short test summary info ============================
+FAILED tests/test_task_progress_evidence.py::test_bounded_history_disclosed
+FAILED tests/test_task_history_sensitivity.py::test_depth_one_clone_discloses_history_boundary
+2 failed, 9 passed in 0.60s

@@ -1,0 +1,128 @@
+{
+  "base": "29d951f020771ba6ed2e8bec6309345cd88b340d",
+  "config_sha256": "46b758b382e365862a2db28665fdd216e36fd006877e407804602b500f9aa348",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_task_progress_evidence.py",
+    "tests/test_task_history_sensitivity.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "portable_path_normalization": "interpreter normalized to python; delivered logs strip whitespace and replace listed private paths only",
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "baseline.log",
+    "original_sha256": "9e6ab3c6054abf0e7b92bcd34f7b6ee42528e1ac7dca0236ab2f8fa33885fced",
+    "delivered_sha256": "9e6ab3c6054abf0e7b92bcd34f7b6ee42528e1ac7dca0236ab2f8fa33885fced",
+    "normalizations": []
+  },
+  "mutants": [
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_task_history_sensitivity.py::test_depth_one_clone_discloses_history_boundary"
+      ],
+      "log": "H122-M1.log",
+      "original_sha256": "c4a4d1faa4e982da14f7da6f44720cfb6831ec7cc3d24480a8b60400c47055fb",
+      "delivered_sha256": "c4a4d1faa4e982da14f7da6f44720cfb6831ec7cc3d24480a8b60400c47055fb",
+      "normalizations": [],
+      "id": "H122-M1",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_task_progress_evidence.py::test_dirty_disclosure_and_root_boundary",
+        "tests/test_task_history_sensitivity.py::test_depth_one_clone_discloses_history_boundary"
+      ],
+      "log": "H122-M2.log",
+      "original_sha256": "a23d01c3eaf28c0d82a9ce64820488ee7df709da03b067299d01802f25fbe128",
+      "delivered_sha256": "a23d01c3eaf28c0d82a9ce64820488ee7df709da03b067299d01802f25fbe128",
+      "normalizations": [],
+      "id": "H122-M2",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_task_progress_evidence.py::test_nonascii_tab_path_event",
+        "tests/test_task_history_sensitivity.py::test_depth_one_clone_discloses_history_boundary"
+      ],
+      "log": "H122-M3.log",
+      "original_sha256": "addbc716ccb23c611bc384b42c581b016deeacd89b91c9fa8639b3acb80577eb",
+      "delivered_sha256": "addbc716ccb23c611bc384b42c581b016deeacd89b91c9fa8639b3acb80577eb",
+      "normalizations": [],
+      "id": "H122-M3",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_task_progress_evidence.py::test_bounded_history_disclosed",
+        "tests/test_task_history_sensitivity.py::test_depth_one_clone_discloses_history_boundary"
+      ],
+      "log": "H122-M4.log",
+      "original_sha256": "0e2848c12a0d43ca3115a237018fcc241a52948aae03be7042489ae9c3b4728a",
+      "delivered_sha256": "0e2848c12a0d43ca3115a237018fcc241a52948aae03be7042489ae9c3b4728a",
+      "normalizations": [],
+      "id": "H122-M4",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_task_progress_evidence.py::test_task_commit_changes_computed",
+        "tests/test_task_history_sensitivity.py::test_depth_one_clone_discloses_history_boundary"
+      ],
+      "log": "H122-M5.log",
+      "original_sha256": "03459a062566a0bfce6c3f7aae3ca6adeafd0930757441b2fa858b8e1b3609c2",
+      "delivered_sha256": "03459a062566a0bfce6c3f7aae3ca6adeafd0930757441b2fa858b8e1b3609c2",
+      "normalizations": [],
+      "id": "H122-M5",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true
+    }
+  ],
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "restored-baseline.log",
+    "original_sha256": "a19a7ef5b8709585198e3a47d163ea7b74e4da482d0a00e9e8c0ddae64130ba4",
+    "delivered_sha256": "a19a7ef5b8709585198e3a47d163ea7b74e4da482d0a00e9e8c0ddae64130ba4",
+    "normalizations": []
+  },
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0
+  }
+}
