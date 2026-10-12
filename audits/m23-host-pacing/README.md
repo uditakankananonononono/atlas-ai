@@ -73,5 +73,6 @@ state and exclusion intact; idle reset and force reset; mutants Q20-Q23.
 - A page skipped as `crawl_delay_too_long` records the long delay, so retries inside that window wait or are refused.
 - Hosts are keyed by hostname only. Waiters are not served in FIFO order (condition-variable wake order).
 - Crawl-delay forms the stdlib `RobotFileParser` ignores (non-digit, negative, decimal) count as no delay.
+- Injected `sleep` errors are NOT uniformly propagated: inside the call, a `ValueError` or `UnicodeError` or `httpx.HTTPError` raised by `sleep` is converted to a `fetch_failed` row (the call's broad except), while other types (tested: `RuntimeError`) propagate. Only RuntimeError is tested; the conversion of ValueError from `sleep` is by code reading, not a test. The host is released either way.
 - An exception that escapes the call still releases the host (tested for in-call and spacing sleep), but a killed thread
   or process cannot.

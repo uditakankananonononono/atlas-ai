@@ -21,9 +21,9 @@ Mutated files are SHA-256 checked as restored. M12 takes ~50s because the mutant
 ## Limits: what stays untested
 - No live fetch. All HTTP is faked.
 - `sleep` is injected, so real wall-clock timing is not tested (only the requested seconds and call order).
-- One robots plus one page request per call: there is no cross-call, per-host pacing.
+- HISTORICAL SCOPE (this package alone): one robots plus one page request per call, no cross-call pacing inside this package. Cross-call per-host pacing was added later by the separate HostPacer change (see audits/m23-host-pacing/README.md); read this line as the scope of this package, not the current combined behavior.
 - The legacy unbounded `admitted_cases.fetch_case_metadata` (used by tests/modules/test_m23_admitted_cases.py, shadowed in
-  routes.py by the bounded import) still ignores Crawl-delay.
+  routes.py by the bounded import) still ignored Crawl-delay at the time of this package only; the later legacy-delegation change (audits/m23-legacy-crawl-delay/) routes it through the bounded helper. Current behavior is described there, not here.
 - 30s is only the DEFAULT cap on the requested Crawl-delay sleep. It is not a wall-clock bound for the route. A call also
   spends time on the robots request, the page request and parsing (httpx timeouts are per phase, with no total deadline),
   and `max_crawl_delay` can be set up to 120s. Nominal per-call time is about 2*T + D (T = httpx timeout per phase, 8s;
