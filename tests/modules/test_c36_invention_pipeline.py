@@ -61,3 +61,12 @@ def test_brief_cap_enforced():
             for i in range(4)]
     out = ip.run({"as_of": "2026-10-12", "documents": docs, "max_briefs": 3})
     assert len(out["briefs"]) <= 3
+
+def test_exact_concept_spans_nonvacuous_cap_and_doc_bound():
+    out=ip.run({'as_of':'2026-10-12','documents':DOCS,'max_briefs':1})
+    assert len(out['briefs'])==1
+    texts={d['id']:d['text'] for d in DOCS}
+    for concept,spans in out['briefs'][0]['provenance']['spans'].items():
+        for span in spans:assert texts[span['doc']][span['start']:span['end']].lower()==concept
+    with pytest.raises(ValueError,match='documents'):
+        ip.run({'as_of':'2026-10-12','documents':DOCS*501})
