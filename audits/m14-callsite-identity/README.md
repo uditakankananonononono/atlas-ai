@@ -51,3 +51,18 @@ audits/m14-callsite-identity/run-05.log: original SHA-256 81ebf3098d8475e16bffa0
 audits/m14-callsite-identity/run-06.log: original SHA-256 b47f61dd4f14da1dd7bf67c43eb61cf94135193da63864492d2681ea52ea039a; delivered SHA-256 ae06e8623bc2161d5272bad0e628867febbe3f1266f902eb4e5620ec7e8c4370.
 audits/m14-callsite-identity/run-07.log: original SHA-256 397cf3bf5d402d566ccf0fb83e51fccaf42a52228a5885c99fcde367980bd5e6; delivered SHA-256 6466b0a079c4161a0fb721418119c2ab09d4d55d73dc4d52aeae8abe9c024948.
 Original raw bytes are retained privately; all seven delivered log files are intentionally changed by the disclosed whitespace/path normalization, not presented as byte-exact raw output.
+
+## Development, replay and composition history
+
+The original development base was 41098321. The replay workspace commit was
+5eafc0e1, distinct from the landed-parent identifier. Final composition was onto
+bc034bf0, followed by landed commit 29d951f0. Source/test/runner SHA-256 values
+identify the exercised bytes; the replay workspace and landed tree are not asserted
+to be the same tree. Historical provenance.json is retained unchanged, not altered
+to imply that the recorded runs executed on the landed tree.
+
+The OLD-six survivor result is a carried, separately reported result with NO delivered
+old-test logs. The privately retained originals cover only the seven NEW runs and do
+not prove the OLD-six claim. The delivered NEW logs contain one baseline and six
+exact expected-id assertion failures; they do not independently establish OLD-test
+survival or reconstruct absent OLD-test evidence.
