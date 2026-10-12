@@ -1,0 +1,43 @@
+{
+  "row": 121,
+  "tests": [
+    "tests/test_executed_acceptance.py"
+  ],
+  "mutants": [
+    {
+      "id": "D121-M1",
+      "name": "check-count-bound",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "len(checks) > 1000",
+      "new": "len(checks) > 1001"
+    },
+    {
+      "id": "D121-M2",
+      "name": "id-length-bound",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "len(ident) > 128",
+      "new": "len(ident) > 129"
+    },
+    {
+      "id": "D121-M3",
+      "name": "path-count-bound",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "1 <= len(paths) <= 100",
+      "new": "1 <= len(paths) <= 101"
+    },
+    {
+      "id": "D121-M4",
+      "name": "budget-nonclaim",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'aggregate_budget_enforced': False",
+      "new": "'aggregate_budget_enforced': True"
+    },
+    {
+      "id": "D121-M5",
+      "name": "sandbox-nonclaim",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'execution_is_sandboxed': False",
+      "new": "'execution_is_sandboxed': True"
+    }
+  ]
+}

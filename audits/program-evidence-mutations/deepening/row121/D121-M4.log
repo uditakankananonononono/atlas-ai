@@ -1,0 +1,9 @@
+.........F..............                                                 [100%]
+=================================== FAILURES ===================================
+__________________ test_inventory_bytes_hash_and_disclosures ___________________
+tests/test_executed_acceptance.py:119: in test_inventory_bytes_hash_and_disclosures
+    assert not out['aggregate_budget_enforced'] and not out['execution_is_sandboxed']
+E   assert (not True)
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_inventory_bytes_hash_and_disclosures
+1 failed, 23 passed in 4.65s

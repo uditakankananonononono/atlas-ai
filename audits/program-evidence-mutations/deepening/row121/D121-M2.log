@@ -1,0 +1,10 @@
+......................F.                                                 [100%]
+=================================== FAILURES ===================================
+________________ test_acceptance_exact_upper_edges_refused[id] _________________
+tests/test_row121_validation_deepening.py:18: in test_acceptance_exact_upper_edges_refused
+    with pytest.raises(EvidenceError):m.audit_selected_checks(root,'source.txt',checks)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EvidenceError
+=========================== short test summary info ============================
+FAILED tests/test_row121_validation_deepening.py::test_acceptance_exact_upper_edges_refused[id]
+1 failed, 23 passed in 4.55s
