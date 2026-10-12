@@ -1,0 +1,49 @@
+{
+  "row": 73,
+  "selectors": [
+    "tests/modules/test_c31_deploy_s17.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "logical supplied-job wave plan, not1000 operational workers",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "spend",
+      "path": "backend/app/modules/c31/deploy.py",
+      "old": "if spend:",
+      "new": "if False:"
+    },
+    {
+      "id": "fleet",
+      "path": "backend/app/modules/c31/deploy.py",
+      "old": "if len(jobs) > FLEET_SIZE:",
+      "new": "if False:"
+    },
+    {
+      "id": "duplicate",
+      "path": "backend/app/modules/c31/deploy.py",
+      "old": "if jid in seen:",
+      "new": "if False:"
+    },
+    {
+      "id": "waves",
+      "path": "backend/app/modules/c31/deploy.py",
+      "old": "parsed[start:start + actual_concurrency]",
+      "new": "parsed[start:start + 1]"
+    },
+    {
+      "id": "total",
+      "path": "backend/app/modules/c31/deploy.py",
+      "old": "sum(j[\"cost\"] for j in parsed)",
+      "new": "0"
+    }
+  ]
+}
