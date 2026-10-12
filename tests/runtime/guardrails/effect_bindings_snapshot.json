@@ -1,0 +1,258 @@
+{
+ "apply/pitch_execution.py": {
+  "evidence": "write-capable calls found: ['method:POST', 'send']",
+  "status": "UNGATED"
+ },
+ "auth/context.py": {
+  "evidence": "auth key-set read; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "collectors/base.py": {
+  "evidence": "collector base: reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "core/embeddings.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "core/model_catalog.py": {
+  "evidence": "model catalog read; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "core/providers.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "integrations/acceptance.py": {
+  "evidence": "write-capable calls found: ['delete']",
+  "status": "UNGATED"
+ },
+ "integrations/google_grounding.py": {
+  "evidence": "grounding read; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "market/sources.py": {
+  "evidence": "public market-data reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/c30/public_http.py": {
+  "evidence": "public-source read helper with address validation; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/instinct_doc/g67_76/feed_ingest.py": {
+  "evidence": "feed read with address validation; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m01_opportunity_discovery/free_source_match.py": {
+  "evidence": "public opportunity-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m01_opportunity_discovery/http.py": {
+  "evidence": "public opportunity-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m01_opportunity_discovery/nlp_stack.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "modules/m01_opportunity_discovery/service.py": {
+  "evidence": "write-capable calls found: ['post', 'submit']",
+  "status": "UNGATED"
+ },
+ "modules/m01_opportunity_discovery/student_platforms.py": {
+  "evidence": "public opportunity-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m02_competition_manager/npass_critique.py": {
+  "evidence": "write-capable calls found: ['method:POST']",
+  "status": "UNGATED"
+ },
+ "modules/m03_grant_writer/corpus.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "modules/m03_grant_writer/routes.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "modules/m04_research_scientist/approved_sandbox.py": {
+  "evidence": "write-capable calls found: ['stream']",
+  "status": "UNGATED"
+ },
+ "modules/m04_research_scientist/tools/adapters.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "modules/m05_outreach_manager/delivery.py": {
+  "evidence": "write-capable calls found: ['send', 'send_message']",
+  "status": "UNGATED"
+ },
+ "modules/m05_outreach_manager/discovery.py": {
+  "evidence": "public contact-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m05_outreach_manager/enrichment.py": {
+  "evidence": "public enrichment reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m05_outreach_manager/routes.py": {
+  "evidence": "write-capable calls found: ['method:POST', 'post', 'put']",
+  "status": "UNGATED"
+ },
+ "modules/m05_outreach_manager/service.py": {
+  "evidence": "write-capable calls found: ['put']",
+  "status": "UNGATED"
+ },
+ "modules/m06_social_media_manager/adapters.py": {
+  "evidence": "write method .publish( called only from gated callers ['modules/m06_social_media_manager/scheduler.py']; refusal tests exist (package-scoped check; other adapter methods, e.g. fetch_metrics, are reads)",
+  "status": "GATED"
+ },
+ "modules/m06_social_media_manager/service.py": {
+  "evidence": "write-capable calls found: ['put']",
+  "status": "UNGATED"
+ },
+ "modules/m07_brand_collaboration/discovery.py": {
+  "evidence": "public brand-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m09_knowledge_workspace/revision_store.py": {
+  "evidence": "write-capable calls found: ['put', 'stream']",
+  "status": "UNGATED"
+ },
+ "modules/m10_email_assistant/attestation_timestamps.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "modules/m10_email_assistant/drift_probe.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "modules/m10_email_assistant/gmail.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "modules/m10_email_assistant/routes.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "modules/m10_email_assistant/service.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "modules/m11_calendar_intelligence/caldav.py": {
+  "evidence": "write-capable calls found: ['request']",
+  "status": "UNGATED"
+ },
+ "modules/m11_calendar_intelligence/google_calendar.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "modules/m11_calendar_intelligence/google_refresh_lane.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "modules/m11_calendar_intelligence/governed_risk_ingest.py": {
+  "evidence": "write-capable calls found: ['stream']",
+  "status": "UNGATED"
+ },
+ "modules/m11_calendar_intelligence/routes.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "modules/m12_ai_research_lab/checkpoint_loop.py": {
+  "evidence": "local hostname lookup only; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m13_browser_agent/pc_daemon/daemon.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "modules/m13_browser_agent/playwright_adapter.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "modules/m13_browser_agent/security.py": {
+  "evidence": "address validation (DNS lookup only); no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m18_side_hustle_scraper/lane_http.py": {
+  "evidence": "public listing reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m19_idea_incubator/hn_research.py": {
+  "evidence": "write-capable calls found: ['stream']",
+  "status": "UNGATED"
+ },
+ "modules/m19_idea_incubator/luxury_priorart.py": {
+  "evidence": "public research-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m19_idea_incubator/luxury_sources.py": {
+  "evidence": "public research-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m21_claire/meemee_webhook_security.py": {
+  "evidence": "webhook address validation (DNS lookup only); no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m22_tools_hub/collectors.py": {
+  "evidence": "public tool-registry reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m22_tools_hub/registry.py": {
+  "evidence": "public tool-registry reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m22_tools_hub/sources.py": {
+  "evidence": "public tool-registry reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m22_tools_hub/sources_extra.py": {
+  "evidence": "public tool-registry reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m23_study_abroad/admitted_cases.py": {
+  "evidence": "public admissions-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m23_study_abroad/admitted_cases_bounded.py": {
+  "evidence": "write-capable calls found: ['stream']",
+  "status": "UNGATED"
+ },
+ "modules/m23_study_abroad/public_source_audit.py": {
+  "evidence": "public admissions-source reads; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m23_study_abroad/routes.py": {
+  "evidence": "write-capable calls found: ['post']",
+  "status": "UNGATED"
+ },
+ "modules/m24_billing/cancellation.py": {
+  "evidence": "write-capable calls found: ['method:DELETE', 'send']",
+  "status": "UNGATED"
+ },
+ "modules/m24_billing/checkout_dispatcher.py": {
+  "evidence": "write-capable calls found: ['method:POST', 'send']",
+  "status": "UNGATED"
+ },
+ "modules/m24_billing/invoice_dispatcher.py": {
+  "evidence": "write-capable calls found: ['method:POST', 'send']",
+  "status": "UNGATED"
+ },
+ "modules/m24_billing/reconciliation.py": {
+  "evidence": "provider lookup reads (reconciliation evidence); no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ },
+ "modules/m24_billing/stripe_client.py": {
+  "evidence": "imports app.runtime.guardrails",
+  "status": "GATED"
+ },
+ "platform/browser_fallback.py": {
+  "evidence": "read-only by static scan but NO named reason: unreviewed",
+  "status": "UNGATED"
+ },
+ "platform/vault_dev_adapter.py": {
+  "evidence": "dev vault read; no write-method call found by static scan (not certified)",
+  "status": "EXEMPT-BY-DESIGN"
+ }
+}
