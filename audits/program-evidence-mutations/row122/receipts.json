@@ -1,0 +1,110 @@
+{
+  "row": 122,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_task_progress_evidence.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "baseline.log"
+  },
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_test_ids": [],
+    "log": "restored-baseline.log"
+  },
+  "mutants": [
+    {
+      "id": "R122-M1",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "mutant_sha256": "ebd34e7fb176e20cf0eafd0286c6a89522561982fa23ff5b5857f5a9b36e7c16",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_task_progress_evidence.py::test_stale_source_hash_refused"
+      ],
+      "log": "R122-M1.log"
+    },
+    {
+      "id": "R122-M2",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "mutant_sha256": "ea3e27d32e5a78293d53e2923e7251751dc85f3712c998b138de044c2c3578a9",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_task_progress_evidence.py::test_untracked_selector_refused"
+      ],
+      "log": "R122-M2.log"
+    },
+    {
+      "id": "R122-M3",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "mutant_sha256": "56c3c333144b1cd80e806916d4de69d4eee3316b34c27c0fa7923711759ca69f",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_task_progress_evidence.py::test_duplicate_task_or_supplied_done_refused"
+      ],
+      "log": "R122-M3.log"
+    },
+    {
+      "id": "R122-M4",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "mutant_sha256": "0285b1b67251ecd89c04ab9f907f97a4e677640c38ebd0d2e2b8c082e59e2bad",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_task_progress_evidence.py::test_dirty_disclosure_and_root_boundary"
+      ],
+      "log": "R122-M4.log"
+    },
+    {
+      "id": "R122-M5",
+      "target": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "before_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "mutant_sha256": "58235a4c00f37c3f78af843b3e8d10e603f89ac30fe233b7ecaa89daad5a738e",
+      "restored_sha256": "1a9ab2d002e8c6beed1bdd74bbbb3d9c83420cc821a99582b2ac794828da21dd",
+      "restore_verified": true,
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_test_ids": [
+        "tests/test_task_progress_evidence.py::test_task_commit_changes_computed",
+        "tests/test_task_progress_evidence.py::test_dirty_disclosure_and_root_boundary",
+        "tests/test_task_progress_evidence.py::test_nonascii_tab_path_event"
+      ],
+      "log": "R122-M5.log"
+    }
+  ],
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0,
+    "NOT-APPLICABLE": 0
+  },
+  "evidence_tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "portable_path_normalization": "portable-path-normalized: command[0] replaced for delivery; original private receipt retained, bytes changed"
+}

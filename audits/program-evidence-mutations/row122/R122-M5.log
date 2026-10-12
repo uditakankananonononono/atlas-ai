@@ -1,0 +1,24 @@
+F.......FF                                                               [100%]
+=================================== FAILURES ===================================
+______________________ test_task_commit_changes_computed _______________________
+tests/test_task_progress_evidence.py:29: in test_task_commit_changes_computed
+    assert task['status'] == 'CHANGE_OBSERVED'
+E   AssertionError: assert 'UNVERIFIED' == 'CHANGE_OBSERVED'
+E
+E     - CHANGE_OBSERVED
+E     + UNVERIFIED
+___________________ test_dirty_disclosure_and_root_boundary ____________________
+tests/test_task_progress_evidence.py:80: in test_dirty_disclosure_and_root_boundary
+    assert out['tasks'][0]['events'][0]['root_or_shallow_boundary']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+_________________________ test_nonascii_tab_path_event _________________________
+tests/test_task_progress_evidence.py:91: in test_nonascii_tab_path_event
+    event = task_progress(root, 'source.txt', [selector])['tasks'][0]['events'][0]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+=========================== short test summary info ============================
+FAILED tests/test_task_progress_evidence.py::test_task_commit_changes_computed
+FAILED tests/test_task_progress_evidence.py::test_dirty_disclosure_and_root_boundary
+FAILED tests/test_task_progress_evidence.py::test_nonascii_tab_path_event - I...
+3 failed, 7 passed in 0.56s

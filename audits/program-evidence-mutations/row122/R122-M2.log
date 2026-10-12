@@ -1,0 +1,12 @@
+......F...                                                               [100%]
+=================================== FAILURES ===================================
+_______________________ test_untracked_selector_refused ________________________
+tests/test_task_progress_evidence.py:64: in test_untracked_selector_refused
+    task_progress(root, 'source.txt', [selector])
+backend/app/modules/instinct_doc/repo_evidence.py:378: in task_progress
+    'current_files': {path: snap['files'][path] for path in selector['paths']}})
+                            ^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'new.py'
+=========================== short test summary info ============================
+FAILED tests/test_task_progress_evidence.py::test_untracked_selector_refused
+1 failed, 9 passed in 0.54s

@@ -1,0 +1,9 @@
+........F.                                                               [100%]
+=================================== FAILURES ===================================
+___________________ test_dirty_disclosure_and_root_boundary ____________________
+tests/test_task_progress_evidence.py:78: in test_dirty_disclosure_and_root_boundary
+    assert out['dirty']
+E   assert False
+=========================== short test summary info ============================
+FAILED tests/test_task_progress_evidence.py::test_dirty_disclosure_and_root_boundary
+1 failed, 9 passed in 0.51s

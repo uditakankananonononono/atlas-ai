@@ -1,0 +1,10 @@
+.F........                                                               [100%]
+=================================== FAILURES ===================================
+________________________ test_stale_source_hash_refused ________________________
+tests/test_task_progress_evidence.py:38: in test_stale_source_hash_refused
+    with pytest.raises(EvidenceError, match='source hash'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EvidenceError
+=========================== short test summary info ============================
+FAILED tests/test_task_progress_evidence.py::test_stale_source_hash_refused
+1 failed, 9 passed in 0.54s

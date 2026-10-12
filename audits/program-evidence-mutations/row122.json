@@ -1,0 +1,45 @@
+{
+  "row": 122,
+  "tests": [
+    "tests/test_task_progress_evidence.py"
+  ],
+  "tier": "Local offline Git/file and subprocess tests plus explicit controlled injected receipt/failure cases; no external live evidence",
+  "limits": "Mutation sensitivity only, not semantic completion, authenticated provenance, live integration use or AGI. Literal row remains PARTIAL.",
+  "mutants": [
+    {
+      "id": "R122-M1",
+      "name": "hash binding",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "if not isinstance(selector['line_id'], str) or not isinstance(selector['line_sha256'], str) or lines.get(selector['line_id']) != selector['line_sha256']:",
+      "new": "if False:"
+    },
+    {
+      "id": "R122-M2",
+      "name": "untracked path",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "if path not in snap['files']:\n                raise EvidenceError('task path must be tracked')",
+      "new": "if False:\n                raise EvidenceError('task path must be tracked')"
+    },
+    {
+      "id": "R122-M3",
+      "name": "duplicate id",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "or task_id in seen:",
+      "new": "or False:"
+    },
+    {
+      "id": "R122-M4",
+      "name": "dirty disclosure",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": "'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],",
+      "new": "'tree_digest': snap['tree_digest'], 'dirty': False,"
+    },
+    {
+      "id": "R122-M5",
+      "name": "path split",
+      "file": "backend/app/modules/instinct_doc/repo_evidence.py",
+      "old": ".decode().split('\\0')) - {''}",
+      "new": ".decode().splitlines()) - {''}"
+    }
+  ]
+}
