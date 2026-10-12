@@ -93,3 +93,22 @@ def test_final_snapshot_rehash_rejects_last_run_change(repo,monkeypatch):
     out=mod.compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=1)
     assert not out['final_snapshot_stable']
     assert all(row['median_seconds'] is None for row in out['subjects'])
+
+
+def test_huge_duration_overflow_confined(repo,monkeypatch):
+    from app.modules.instinct_doc import executed_comparison as mod
+    from app.modules.instinct_doc.repo_evidence import snapshot
+    snap=snapshot(repo)
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:{'head':snap['head'],'tree_digest':snap['tree_digest'],'status':'SCOPED_PASS','duration_seconds':10**10000})
+    out=mod.compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=1)
+    assert all(row['status']=='UNVERIFIED' for row in out['subjects'])
+
+
+def test_large_even_duration_avoids_average_overflow(repo,monkeypatch):
+    from app.modules.instinct_doc import executed_comparison as mod
+    from app.modules.instinct_doc.repo_evidence import snapshot
+    snap=snapshot(repo)
+    monkeypatch.setattr(mod,'execute_tests',lambda *a:{'head':snap['head'],'tree_digest':snap['tree_digest'],'status':'SCOPED_PASS','duration_seconds':1.7e308})
+    out=mod.compare_selected_tests(repo,[{'id':'a','test_paths':['tests/test_a.py']},{'id':'b','test_paths':['tests/test_b.py']}],repeats=2)
+    assert all(row['median_seconds']==1.7e308 for row in out['subjects'])
+    assert 'not atomic' in out['rehash_boundary']

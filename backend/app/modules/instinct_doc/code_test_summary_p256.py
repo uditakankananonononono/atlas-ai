@@ -105,7 +105,7 @@ def summarize_projects(projects):
     )
 
 
-def inspect_projects(root, projects, *, execute=False):
+def inspect_projects(root, projects, *, execute=False, max_initial_bytes=16_000_000):
     """Compute selected project file counts and optional test-run observations.
 
     Project/path mappings are operator scope. This does not authenticate the
@@ -113,6 +113,8 @@ def inspect_projects(root, projects, *, execute=False):
     """
     from pathlib import Path
     from .repo_evidence import safe_file, snapshot, execute_tests, EvidenceError, digest
+    if type(max_initial_bytes) is not int or not 1 <= max_initial_bytes <= 64_000_000:
+        raise _err('initial byte budget must be 1..64000000')
     if type(execute) is not bool:
         raise _err('execute must be boolean')
     if type(projects) is not list or len(projects) > MAX_PROJECTS:
@@ -133,10 +135,25 @@ def inspect_projects(root, projects, *, execute=False):
                 raise _err("paths must be unique bounded lists")
         if set(item["code_paths"]) & set(item["test_paths"]): raise _err("code and test paths must not overlap")
     initial_bytes = {}
+    retained_bytes = 0
+    budget_rejected = set()
     for item in projects:
         for path in item['code_paths'] + item['test_paths']:
             try:
-                initial_bytes[path] = safe_file(root, path).read_bytes()
+                if path in initial_bytes or path in budget_rejected:
+                    continue
+                file = safe_file(root, path)
+                size = file.stat().st_size
+                if size > max_initial_bytes - retained_bytes:
+                    budget_rejected.add(path)
+                    continue
+                with file.open('rb') as stream:
+                    data = stream.read(max_initial_bytes - retained_bytes + 1)
+                if len(data) > max_initial_bytes - retained_bytes:
+                    budget_rejected.add(path)
+                    continue
+                initial_bytes[path] = data
+                retained_bytes += len(data)
             except (EvidenceError, OSError, ValueError):
                 pass
     seen.clear()
@@ -154,6 +171,8 @@ def inspect_projects(root, projects, *, execute=False):
                 raise _err('paths must be unique bounded lists')
             for path in paths:
                 try:
+                    if path in budget_rejected:
+                        raise EvidenceError('initial byte budget exceeded')
                     if path not in snap['files']:
                         raise EvidenceError('path is not tracked')
                     data = safe_file(root, path).read_bytes()
@@ -176,14 +195,15 @@ def inspect_projects(root, projects, *, execute=False):
                      'test_files': sum(v['kind'] == 'test_paths' for v in files.values()),
                      'test_lines': sum(v['lines'] for v in files.values() if v['kind'] == 'test_paths'),
                      'execution': run, 'coverage_percent': None,
-                     'status': 'SCOPED_PASS' if run and run['status'] == 'SCOPED_PASS' and run.get('head') == snap['head'] and run.get('tree_digest') == snap['tree_digest'] else 'UNVERIFIED',
+                     'status': 'SCOPED_PASS' if not snap['dirty'] and run and run['status'] == 'SCOPED_PASS' and run.get('head') == snap['head'] and run.get('tree_digest') == snap['tree_digest'] else 'UNVERIFIED',
                      'selection_pairing_verified': False,
                      'snapshot_coherent': None if run is None else (run.get('head') == snap['head'] and run.get('tree_digest') == snap['tree_digest']),
                      'completion_verified': False,
                      'dirty_scope': 'Top-level repository status only; nested untracked repositories not inspected',
-                     'failure_reason': 'missing_or_drifted_file' if errors else 'not_executed' if run is None else run.get('error') or ('execution_not_passing' if run.get('status') != 'SCOPED_PASS' else 'snapshot_drift' if run.get('head') != snap['head'] or run.get('tree_digest') != snap['tree_digest'] else None),
+                     'failure_reason': 'dirty_initial_tree' if snap['dirty'] else 'missing_or_drifted_file' if errors else 'not_executed' if run is None else run.get('error') or ('execution_not_passing' if run.get('status') != 'SCOPED_PASS' else 'snapshot_drift' if run.get('head') != snap['head'] or run.get('tree_digest') != snap['tree_digest'] else None),
                      'scope_declared': True})
-    return {'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,
+    return {'initial_byte_budget': max_initial_bytes, 'retained_initial_bytes': retained_bytes,
+            'byte_budget_rejected_paths': sorted(budget_rejected), 'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,
             'execution_scope': 'Trusted checkout only; up to 256 per-run bounded calls, no aggregate time/disk budget. Test code may have effects.',
             'projects': rows, 'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],
             'boundary': 'Selected tracked source counts and opt-in test execution only; path pairing is operator-declared and current file hash may differ from starting snapshot; no exhaustive project scope, empirical coverage or whole-project completion.'}

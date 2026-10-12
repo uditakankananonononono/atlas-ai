@@ -40,6 +40,10 @@ def compare_selected_tests(root, subjects, repeats=3):
                 receipt = execute_tests(root, subject['test_paths'])
                 if type(receipt) is not dict or not all(isinstance(receipt.get(key), str) for key in ('head', 'tree_digest', 'status')) or type(receipt.get('duration_seconds')) not in (int, float):
                     raise EvidenceError('malformed execution receipt')
+                duration = float(receipt['duration_seconds'])
+                if not math.isfinite(duration) or duration < 0:
+                    raise EvidenceError('invalid duration')
+                receipt['duration_seconds'] = duration
                 runs.append(receipt)
             except Exception as exc:
                 runs.append({'status': 'UNVERIFIED', 'head': None, 'tree_digest': None,
@@ -47,7 +51,7 @@ def compare_selected_tests(root, subjects, repeats=3):
         coherent = len({(run['head'], run['tree_digest']) for run in runs}) == 1
         passed = coherent and all(run['status'] == 'SCOPED_PASS' and type(run['duration_seconds']) in (int, float) and math.isfinite(run['duration_seconds']) and run['duration_seconds'] >= 0 for run in runs)
         rows.append({'id': ident, 'runs': runs, 'status': 'SCOPED_PASS' if passed else 'UNVERIFIED',
-                     'median_seconds': median(run['duration_seconds'] for run in runs) if passed else None,
+                     'median_seconds': sorted(run['duration_seconds'] for run in runs)[len(runs)//2] if passed else None,
                      'semantic_workload_equivalence_verified': False, 'field_leader_verified': False})
     snapshots = {(run['head'], run['tree_digest']) for row in rows for run in row['runs']}
     try:
@@ -61,6 +65,8 @@ def compare_selected_tests(root, subjects, repeats=3):
             row['status'], row['median_seconds'] = 'UNVERIFIED', None
     return {'final_snapshot_stable': final_stable, 'cross_subject_coherent': cross_coherent,
             'aggregate_budget_enforced': False, 'execution_is_sandboxed': False,
+            'rehash_boundary': 'Before/after snapshots are not atomic and cannot prove absence of transient restored changes.',
+            'duration_summary': 'Upper middle observed duration; avoids averaging overflow for even repeats',
             'execution_scope': 'Trusted checkout only. At most 50 per-run bounded calls; no aggregate time/disk budget. Test code can have effects. Returned output may be truncated.',
             'subjects': rows, 'repeats': repeats, 'winner': None,
             'benchmark_victory_verified': False,

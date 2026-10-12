@@ -100,3 +100,36 @@ def test_file_drift_between_snapshot_and_read_refused(repo,monkeypatch):
     monkeypatch.setattr(evidence,'snapshot',changed)
     row=inspect_projects(root,[item])['projects'][0]
     assert row['errors'] and row['failure_reason']=='missing_or_drifted_file'
+
+
+def test_initial_byte_budget_is_hard_cap(repo):
+    root,item=repo
+    out=inspect_projects(root,[item],max_initial_bytes=4)
+    assert out['retained_initial_bytes']<=4
+    assert out['byte_budget_rejected_paths']
+    assert out['projects'][0]['status']=='UNVERIFIED'
+
+
+def test_cross_project_later_byte_change_detected(repo,monkeypatch):
+    from app.modules.instinct_doc import repo_evidence as evidence
+    root,item=repo;original=evidence.safe_file;reads=[]
+    class ChangedFile:
+        def read_bytes(self):return b'other bytes'
+    def delayed(path,name):
+        reads.append(name)
+        # Initial capture and first project's read succeed; second read changes.
+        if name=='core.py' and reads.count(name)==4:return ChangedFile()
+        return original(path,name)
+    monkeypatch.setattr(evidence,'safe_file',delayed)
+    out=inspect_projects(root,[item,dict(item,id='P2')])
+    assert not out['projects'][0]['errors']
+    assert out['projects'][1]['errors']
+
+
+def test_dirty_success_not_promoted(repo):
+    root,item=repo
+    (root/'core.py').write_text('x=2\n')
+    row=inspect_projects(root,[item],execute=True)['projects'][0]
+    assert row['execution']['status']=='SCOPED_PASS'
+    assert row['status']=='UNVERIFIED'
+    assert row['failure_reason']=='dirty_initial_tree'
