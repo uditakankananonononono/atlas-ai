@@ -1,0 +1,45 @@
+{
+  "row": 90,
+  "selectors": [
+    "tests/modules/test_group90_product_evidence.py",
+    "tests/release/test_scoped_mutations.py"
+  ],
+  "timeout_seconds": 40,
+  "limits": [
+    "supplied-text regex extraction only",
+    "no platform retrieval, chemical safety or business outcomes",
+    "full repository regression untested"
+  ],
+  "mutations": [
+    {
+      "id": "source_hash",
+      "path": "backend/app/modules/c32/product_evidence.py",
+      "old": "digest=hashlib.sha256(text.encode()).hexdigest()",
+      "new": "digest='0'*64"
+    },
+    {
+      "id": "span_start",
+      "path": "backend/app/modules/c32/product_evidence.py",
+      "old": "'start':match.start()",
+      "new": "'start':0"
+    },
+    {
+      "id": "conflicts",
+      "path": "backend/app/modules/c32/product_evidence.py",
+      "old": "if len(variants)>1:",
+      "new": "if False:"
+    },
+    {
+      "id": "percentage_bound",
+      "path": "backend/app/modules/c32/product_evidence.py",
+      "old": "if not 0<=value<=100:",
+      "new": "if False:"
+    },
+    {
+      "id": "safety_scope",
+      "path": "backend/app/modules/c32/product_evidence.py",
+      "old": "'ingredient_safety_assessed':False",
+      "new": "'ingredient_safety_assessed':True"
+    }
+  ]
+}
