@@ -1,0 +1,49 @@
+{
+  "row": 75,
+  "selectors": [
+    "tests/modules/test_c31_adapter_runtime_r75.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "local allowlisted cat/sleep/python fixtures; caller mark is not permission",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "paid",
+      "path": "backend/app/modules/c31/adapter_runtime.py",
+      "old": "if bool(spec.get(\"paid\", False)):",
+      "new": "if False:"
+    },
+    {
+      "id": "review",
+      "path": "backend/app/modules/c31/adapter_runtime.py",
+      "old": "if spec.get(\"caller_marked_reviewed\") is not True:",
+      "new": "if False:"
+    },
+    {
+      "id": "allowlist",
+      "path": "backend/app/modules/c31/adapter_runtime.py",
+      "old": "if not os.path.isabs(exe) or exe not in allowlist:",
+      "new": "if False:"
+    },
+    {
+      "id": "cap",
+      "path": "backend/app/modules/c31/adapter_runtime.py",
+      "old": "room = MAX_OUT - len(bufs[key])",
+      "new": "room = MAX_OUT"
+    },
+    {
+      "id": "timeout",
+      "path": "backend/app/modules/c31/adapter_runtime.py",
+      "old": "timed_out = True",
+      "new": "timed_out = False"
+    }
+  ]
+}
