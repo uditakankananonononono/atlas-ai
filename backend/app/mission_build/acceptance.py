@@ -2,7 +2,8 @@
 
 Review reports preserve missing entries and recorded gaps. Names, aliases,
 file existence and self-attested pass booleans do not count as acceptance.
-Receipts must be supplied by the host's test runner, not web content.
+Checks that supplied receipts match the source and test digests; it does not
+authenticate who produced them or run anything.
 """
 import hashlib
 import json
@@ -58,4 +59,4 @@ def inspect_manifest(entries,receipts,*,expected_modules=None,per_module=None,re
             'concept_deficit':max(0,required_concepts-accepted) if required_concepts is not None else None,
             'manifest_sha256':_digest(entries),'receipts_sha256':_digest(receipts),
             'independent_execution_verified':False,'literal_requirement_closed':False,
-            'scope':'Validation of supplied host-runner receipt bindings, not execution or independent review.'}
+            'scope':'Checks that supplied receipts match source/test digests; not execution, receipt authenticity or independent review.'}

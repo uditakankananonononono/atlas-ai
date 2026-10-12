@@ -50,7 +50,7 @@ The resulting model says `rights_verified=false`. A public source URL is never
 sufficient permission. Domain diversity and class coverage do not establish
 independent temporal/site held-out evaluation or prevent all paraphrase leakage.
 
-The acceptance checker validates supplied host-runner receipt bindings, not
+The acceptance checker checks that supplied receipts match source/test digests, not
 receipt authenticity, actual runner invocation, source semantics, or independent
 review. It always keeps `literal_requirement_closed=false`.
 

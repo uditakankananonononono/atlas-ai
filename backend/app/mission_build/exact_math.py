@@ -1,4 +1,4 @@
-"""Exact, bounded polynomial arithmetic with independently replayable certificates.
+"""Exact, bounded polynomial arithmetic with certificates that deterministically recompute under the same analyze().
 
 No eval, no symbolic-string execution, and no claim of universal solving.
 Coefficients are rational integers/strings, ascending by power.

@@ -1,6 +1,6 @@
 """Durable private computation jobs for Claire's merged runtime.
 
-Claim is transactional across instances. Expired running work becomes unknown,
+Claim is transactional across connections to one shared SQLite file. Expired running work becomes unknown,
 never silently retried: a previous worker may already have acted. No adapters,
 network calls, file tools or approval-consuming actions are executed here.
 """

@@ -1,13 +1,20 @@
 from fastapi import APIRouter,Depends,HTTPException
+from app.auth.context import TenantContext,require_tenant
 from app.core.approvals import approvals
 from app.modules.m20_general_cognitive_worker.routes import get_service as cognitive_service
 from .schemas import GoalIn,EnvironmentChangeIn
 from .service import Service
-router=APIRouter(prefix="/claire",tags=["claire"]);_service=None
-def get_service():
- global _service
- if _service is None:_service=Service(cognitive_service(),approvals)
- return _service
+# Tenant authentication for every route on this router, including /goals, /goals/{id}/realize,
+# /goals/{id}/environment-changes and /devices*, is applied where the router is included:
+# app.main mounts each module spec's router with dependencies=[Depends(require_tenant)].
+# Routes here do not repeat it; tests/modules/test_m21_claire_route_auth.py asserts it by request.
+# The goal Service and the pairing state are kept per tenant (see get_service and _pairing_for).
+router=APIRouter(prefix="/claire",tags=["claire"]);_services={}
+def get_service(tenant:TenantContext=Depends(require_tenant)):
+ # One Service per tenant. The cognitive service is resolved for that tenant; calling it
+ # without one received an unresolved Depends and failed on first use.
+ if tenant.tenant_id not in _services:_services[tenant.tenant_id]=Service(cognitive_service(tenant),approvals)
+ return _services[tenant.tenant_id]
 @router.post("/goals",status_code=201)
 def intake(req:GoalIn,s:Service=Depends(get_service)):
  try:return s.intake(req.goal,req.acceptance,req.limits)
@@ -24,7 +31,6 @@ def environment_change(goal_id:str,req:EnvironmentChangeIn,s:Service=Depends(get
 
 from typing import Any
 from pydantic import BaseModel,Field
-from app.auth.context import TenantContext,require_tenant
 from .owner_workflow_279_329 import claire_owner_workflow_279_329,preference_feedback_4_6_9
 class ClaireOwnerWorkflowIn(BaseModel):
     row_id:int=Field(ge=279,le=329)
@@ -52,26 +58,29 @@ router.include_router(atomic_concepts_router_47_69)
 
 from .local_client_protocol import PairingService
 from pydantic import BaseModel
-_pairing=PairingService()
+_pairings={}
+def _pairing_for(tenant:TenantContext=Depends(require_tenant)):
+ if tenant.tenant_id not in _pairings:_pairings[tenant.tenant_id]=PairingService()
+ return _pairings[tenant.tenant_id]
 class PairConfirmIn(BaseModel):
  server_nonce:str;code:str;name:str;certificate_fingerprint:str;capabilities:set[str]
 @router.post('/devices/pairing-challenge')
-def pairing_challenge(ttl_seconds:int=300):
+def pairing_challenge(ttl_seconds:int=300,_pairing=Depends(_pairing_for)):
  c=_pairing.challenge(max(60,min(ttl_seconds,600)));return {'server_nonce':c.server_nonce,'code':c.code,'expires_at':c.expires_at}
 @router.post('/devices/pair')
-def pair_device(body:PairConfirmIn):
+def pair_device(body:PairConfirmIn,_pairing=Depends(_pairing_for)):
  try:return _pairing.confirm(body.server_nonce,body.code,body.name,body.certificate_fingerprint,body.capabilities)
  except (KeyError,ValueError) as e:raise HTTPException(422,str(e))
 @router.get('/devices')
-def devices():return list(_pairing.devices.values())
+def devices(_pairing=Depends(_pairing_for)):return list(_pairing.devices.values())
 @router.delete('/devices/{device_id}')
-def revoke_device(device_id:str):
+def revoke_device(device_id:str,_pairing=Depends(_pairing_for)):
  try:_pairing.revoke(device_id);return {'device_id':device_id,'revoked':True}
  except KeyError:raise HTTPException(404,'device not found')
 
 class DeviceReceiptIn(BaseModel):events:list[dict[str,Any]]=Field(min_length=1,max_length=10000)
 @router.post('/devices/{device_id}/verify-receipt')
-def verify_device_receipt(device_id:str,body:DeviceReceiptIn):
+def verify_device_receipt(device_id:str,body:DeviceReceiptIn,_pairing=Depends(_pairing_for)):
  try:return _pairing.verify_receipt(device_id,body.events)
  except KeyError:raise HTTPException(404,'device not found')
  except ValueError as error:raise HTTPException(422,str(error)) from error
