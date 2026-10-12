@@ -59,6 +59,16 @@ class AdapterRuntime(unittest.TestCase):
     def test_small_output_not_truncated(self):
         self.assertFalse(m.run(spec(), [CAT], "hi")["truncated"])
 
+    def test_timeout_kills_process_group_and_returns(self):
+        import time
+        SH = shutil.which("sh")
+        t0 = time.time()
+        out = m.run(spec(name="sh", executable=SH,
+                         args=["-c", "sleep 30 & sleep 30"], timeout=0.5), [SH])
+        self.assertTrue(out["timed_out"])
+        self.assertLess(time.time() - t0, 6)
+        self.assertFalse(out["drain_may_be_incomplete"])
+
     def test_no_shell_metachar_expansion(self):
         out = m.run(spec(args=["/nonexistent;echo pwned"]), [CAT])
         self.assertNotIn("pwned", out["stdout"])

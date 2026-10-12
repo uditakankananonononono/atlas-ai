@@ -4,10 +4,14 @@ This module is NOT wired into c31.integrate: integrate.select still emits its
 NotImplementedError adapter stub, and nothing calls this runtime yet.
 
 Runs an allowlisted local command. No shell, absolute executable path from a
-supplied allowlist, scrubbed environment, wall-clock timeout, paid tools
-refused. Stdout and stderr are read in chunks and at most MAX_OUT bytes of
-each are kept; the rest is drained and discarded, so memory stays bounded
-and "truncated" is reported. The "caller_marked_reviewed" flag is a caller
+supplied allowlist, scrubbed environment, paid tools refused. Timeout limits
+the wait for the direct child; on expiry the child's process group is killed
+(best effort: a descendant that left the group is not killed). Stdout and
+stderr are read in chunks and at most MAX_OUT bytes of each are retained per
+run; the rest is read and discarded. Reader threads are joined for at most
+2s each, so output draining may be left unfinished if a descendant holds the
+pipes; those daemon threads are not force-closed. "truncated" reports
+discarded bytes. Peak process memory is not measured. The "caller_marked_reviewed" flag is a caller
 assertion that the spec was looked at; it is NOT owner permission and grants
 no authority. The caller must hold real owner approval before calling run().
 It executes locally only; it does not discover, download or install tools.
@@ -52,7 +56,7 @@ def _spec(spec, allowlist):
 
 
 def run(spec, allowlist, stdin_text=""):
-    """Execute one reviewed adapter. Returns exit code, capped stdout/stderr
+    """Execute one allowlisted adapter the caller marked reviewed. Returns exit code, capped stdout/stderr
     and a timed_out flag. Raises ADAPTER_REFUSED_* on any spec violation."""
     if isinstance(allowlist, bool) or not isinstance(allowlist, (list, tuple, set, frozenset)):
         raise ValueError("ADAPTER_REFUSED_BAD_TYPE:allowlist")
@@ -61,7 +65,8 @@ def run(spec, allowlist, stdin_text=""):
         raise ValueError("ADAPTER_REFUSED_BAD_TYPE:stdin")
     env = {"PATH": "/usr/bin:/bin", "LC_ALL": "C"}
     proc = subprocess.Popen([exe] + args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, env=env, shell=False, cwd="/tmp")
+                            stderr=subprocess.PIPE, env=env, shell=False, cwd="/tmp",
+                            start_new_session=True)
     bufs = {"out": bytearray(), "err": bytearray()}
     over = {"out": False, "err": False}
 
@@ -97,7 +102,10 @@ def run(spec, allowlist, stdin_text=""):
         proc.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
         timed_out = True
-        proc.kill()
+        try:
+            os.killpg(proc.pid, 9)
+        except OSError:
+            proc.kill()
         proc.wait()
     for t in threads:
         t.join(2.0)
@@ -107,8 +115,9 @@ def run(spec, allowlist, stdin_text=""):
             "stdout": out.decode("utf-8", "replace"),
             "stderr": err.decode("utf-8", "replace"),
             "truncated": over["out"] or over["err"],
+            "drain_may_be_incomplete": any(t.is_alive() for t in threads),
             "scope": policy.scope(
-                ["local execution of one reviewed allowlisted executable"],
+                ["local execution of one allowlisted executable the caller marked reviewed (not owner permission)"],
                 ["tool discovery", "download or install", "network control",
                  "arbitrary tool rebuild", "spend (refused)"],
                 "supplied adapter spec and allowlist")}
