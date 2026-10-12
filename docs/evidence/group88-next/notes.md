@@ -1,0 +1,2 @@
+Current competitor identity resolved. Execution distinction: an open client license does not make paid API execution authorized. Strawberry desktop docs do not establish a benchmark automation API. Browser Use open-source integration is possible, but needs actual library/model/browser execution on matched tasks rather than renamed Atlas workers.
+Unblocked Atlas improvement is isolated Python workers: existing callables run in threads and cannot be safely killed; added optional worker executes registered source through existing M04 namespace backend.
