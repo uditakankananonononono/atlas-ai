@@ -51,3 +51,40 @@ def test_real_worker_computes_and_durable_result_reloads(tmp_path):
     a.enqueue('polynomial',{'coefficients':[True]})
     assert execute_one(a,'worker')['result']['status']=='computation_failed'
     assert execute_one(a,'worker') is None
+
+
+def test_worker_records_any_exception_type_as_failed_result(tmp_path,monkeypatch):
+    from app.mission_build import worker
+    a=DurableJobs(str(tmp_path/'jobs.db'),'t','a')
+    ident=a.enqueue('polynomial',{'coefficients':[1]})
+    def boom(payload):raise RuntimeError('unexpected runtime fault')
+    monkeypatch.setattr(worker,'analyze',boom)
+    r=worker.execute_one(a,'w')
+    assert r['status']=='done' and r['result']['status']=='computation_failed'
+    assert r['result']['error_type']=='RuntimeError' and 'unexpected runtime fault' in r['result']['error']
+    assert worker.execute_one(a,'w') is None   # not left running for a later claim
+
+
+def test_worker_keeps_computed_result_when_lease_expires_before_finish(tmp_path,monkeypatch):
+    from app.mission_build import worker
+    now=[1000.0]
+    a=DurableJobs(str(tmp_path/'jobs.db'),'t','a',lambda:now[0])
+    ident=a.enqueue('polynomial',{'coefficients':[1]})
+    def slow(payload):
+        now[0]+=10_000   # lease (60s) expires while computing
+        return {'value':'computed'}
+    monkeypatch.setattr(worker,'analyze',slow)
+    r=worker.execute_one(a,'w')
+    assert r['id']==ident and r['status']=='result_not_persisted'
+    assert r['outcome']['status']=='computed' and r['outcome']['result']=={'value':'computed'}
+    assert 'expired' in r['persist_error']
+
+
+def test_worker_unserializable_result_is_stored_as_failure(tmp_path,monkeypatch):
+    from app.mission_build import worker
+    a=DurableJobs(str(tmp_path/'jobs.db'),'t','a')
+    a.enqueue('polynomial',{'coefficients':[1]})
+    monkeypatch.setattr(worker,'analyze',lambda p:{'value':float('nan')})
+    r=worker.execute_one(a,'w')
+    assert r['status']=='done' and r['result']['status']=='computation_failed'
+    assert r['result']['error'].startswith('result could not be stored: ')
