@@ -84,3 +84,9 @@ is pre-existing B3 fixture debt, not a nine-gate regression. B3 owns its repair.
 The old-base 103-pass result above is historical evidence only and does not
 claim the current composition is green. Keep this test included; no guard
 weakening or deselection is used to change that result.
+
+With B3's r1 fixture repair applied, the full current composition (`3db0a1e8`
++ r1 + nine-gate code + docs + annotation) is **103 passed, 0 failed**,
+independently reproduced in 7.43 seconds using the inclusive selector above. This
+closes the fixture debt; the without-r1 102P/1F result remains recorded as the
+earlier red checkpoint, and the old-base 103P result remains historical.
