@@ -225,3 +225,64 @@ null and are excluded from constrained filters by default. These operations
 are fully unit-tested, and the combined fetch/annotation route was live-smoked
 against Fastweb and ChallengeRocket. It does not claim per-listing detail-page
 verification, personalized eligibility, or automatic application submission.
+
+## Student owner-browser adapters (groups 47-54)
+
+`student_browser.py` adds a browser path separately from the public discovery
+registry. Public `launch_only` remains truthful: it is not an anonymous feed.
+`student_browser_routes.py` mounts these authenticated endpoints on M01:
+
+- POST `/opportunity-discovery/student-platforms/{platform_id}/browser-sessions`
+  with `owner_account_confirmed` and `terms_permit`. The owner logs in personally
+  in the paired browser. These booleans are the caller's attestation, not a legal
+  terms audit and not authority to submit an application.
+- POST `/opportunity-discovery/student-platforms/browser-sessions/{session_id}/read`
+  reads actual page links with provenance and returns a persisted new-item delta.
+  Minimum 60 seconds between reads of the same session, enforced atomically in
+  SQL; this is not a monitoring schedule or a cross-session platform quota.
+- POST `.../{session_id}/open` with an observed `link_id` creates a separate M13
+  session for that exact current-page link. Stale links, cross-owner sessions,
+  external sponsors, unexpected origins and credential-bearing URLs are refused.
+- POST `.../{session_id}/stage` accepts `ApplicationStageIn` (non-secret owner
+  fields and one live submit selector). M13 does real fill/readback and a masked
+  screenshot. Non-text controls require the owner; staging never clicks Submit.
+
+Resume after login and final approval/submission use the existing M02 application
+routes. Each application gets its own exact preview and approval. The adapter
+API has no blanket auto-apply, no secret payloads, no paid Autopilot calls, no
+newsletter subscriptions or outbound alerts. Site CAPTCHA/rate-limit evidence
+creates a sticky blocked checkpoint; later reads or stages do not retry it.
+
+Capabilities are exposed at GET
+`/opportunity-discovery/student-platforms/browser-capabilities`. All 17 registry
+entries have explicit link classifiers and origin boundaries. That is an
+implementation coverage statement, NOT authenticated live workflow success.
+Editorial platforms remain discovery sources rather than fake application APIs.
+Devpost event subdomains are accepted only from actual observed links; support
+pages are excluded from event classification. Sponsor forms can be reviewed as a
+separate M02 workflow, never silently widened into this adapter's origin scope.
+
+Vendor facts checked October 12, 2026:
+- RippleMatch documents account/profile-based recommendations. Its help page does
+  not establish unconditional auto-submit:
+  https://resources.ripplematch.com/what-is-ripplematch-and-how-does-it-work
+- Simplify Copilot documents supported-site autofill, owner review and owner
+  submission, not 100% universal autofill. Autopilot requires Simplify+:
+  https://help.simplify.jobs/articles/2415391-using-copilot-to-autofill-applications
+  https://help.simplify.jobs/articles/1784339-getting-started-with-autopilot
+  Atlas does not install or run the extension in this lane.
+- RaiseMe micro-scholarships are conditional institutional aid. It submits a
+  complete portfolio to followed colleges on their earning deadlines; that is
+  not an admission application or cash balance:
+  https://help.raise.me/hc/en-us/articles/115002095588-Micro-Scholarships-101
+- Bold documents free account/application workflows:
+  https://bold.org/how-it-works/
+- Devpost's weekly-new-hackathon newsletter is a notification setting requiring
+  login and owner choice. This adapter stages no unsupported checkbox:
+  https://help.devpost.com/article/111-manage-your-notification-settings
+
+Tests in `tests/modules/test_m01_student_browser.py` use actual ApplicationFlow
+and BrowserService with hermetic pages plus SQL checkpoints and mounted FastAPI
+routes. They prove execution mechanics and refusal paths, not live site account
+matching, vendor extension installation, scholarship earnings or submissions.
+Groups 47-54 remain PARTIAL until appropriate owner-account acceptance checks.
