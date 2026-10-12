@@ -1,0 +1,49 @@
+{
+  "row": 85,
+  "selectors": [
+    "tests/mission_build/test_jobs.py"
+  ],
+  "timeout_seconds": 60,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_PLUGINS": "pytest_asyncio.plugin"
+  },
+  "limits": [
+    "SQLite durable private-job fixtures, not full Meemee parity",
+    "literal requirement PARTIAL",
+    "whole repository and live provider outcomes untested",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "owner",
+      "path": "backend/app/mission_build/durable_jobs.py",
+      "old": "(ident,self.tenant,self.actor)).fetchone()",
+      "new": "(ident,self.tenant,'a')).fetchone()"
+    },
+    {
+      "id": "lease",
+      "path": "backend/app/mission_build/durable_jobs.py",
+      "old": "'running',now)).fetchall()",
+      "new": "'running',-1)).fetchall()"
+    },
+    {
+      "id": "worker",
+      "path": "backend/app/mission_build/durable_jobs.py",
+      "old": "'running',worker,version,now)",
+      "new": "'running','w',version,now)"
+    },
+    {
+      "id": "state",
+      "path": "backend/app/mission_build/durable_jobs.py",
+      "old": "'done',body,ident",
+      "new": "'queued',body,ident"
+    },
+    {
+      "id": "version",
+      "path": "backend/app/mission_build/durable_jobs.py",
+      "old": "'running',worker,version,now)",
+      "new": "'running',worker,version+1,now)"
+    }
+  ]
+}
