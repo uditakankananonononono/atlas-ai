@@ -33,6 +33,7 @@ Doc source line refs in the table: 76,52,153,174,177. The owner doc was not re-r
   - `tests/self_improve/test_sandbox.py`
   - `tests/self_improve/test_self_eval.py`
   - `tests/wiring8/test_engine_routes.py`
+  - `tests/wiring9/test_engine_routes.py`
 
 ## Snapshot update: groups 1-16 program evidence on main
 
