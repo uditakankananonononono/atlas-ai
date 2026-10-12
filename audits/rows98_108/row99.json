@@ -1,0 +1,44 @@
+{
+  "row": 99,
+  "selectors": [
+    "tests/modules/test_c35_registration_pipeline.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "supplied/local fixture mechanics, not external outcomes",
+    "whole repository untested",
+    "live provider contact not executed"
+  ],
+  "mutations": [
+    {
+      "id": "export_hash",
+      "path": "backend/app/modules/c35/registration_pipeline.py",
+      "old": "if _digest(_artifact_view(packet, packet[\"review\"].get(\"reviewed_by\"))) != approved:",
+      "new": "if False:"
+    },
+    {
+      "id": "state",
+      "path": "backend/app/modules/c35/registration_pipeline.py",
+      "old": "if packet[\"state\"] != \"owner_approved\":",
+      "new": "if False:"
+    },
+    {
+      "id": "overwrite",
+      "path": "backend/app/modules/c35/registration_pipeline.py",
+      "old": "if os.path.lexists(full):",
+      "new": "if False:"
+    },
+    {
+      "id": "approver",
+      "path": "backend/app/modules/c35/registration_pipeline.py",
+      "old": "\"reviewer\": reviewer",
+      "new": "\"reviewer\": None"
+    },
+    {
+      "id": "pre_review_hash",
+      "path": "backend/app/modules/c35/registration_pipeline.py",
+      "old": "if current != packet[\"artifact_hash\"]:",
+      "new": "if False:"
+    }
+  ]
+}

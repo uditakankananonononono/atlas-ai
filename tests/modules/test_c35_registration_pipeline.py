@@ -206,3 +206,8 @@ def test_export_refuses_approver_identity_mutation(tmp_path):
     store[pid]["review"]["reviewed_by"] = "Mallory"
     with pytest.raises(ValueError, match="APPLY_REFUSED_TAMPERED"):
         rp.export_handoff(store, pid, str(tmp_path))
+
+def test_export_refuses_changed_state_with_valid_prior_approval(tmp_path):
+    pkt=rp.build_packet(REQ);store={pkt['id']:pkt};rp.review(store,pkt['id'],'approve','Student')
+    pkt['state']='pending_review'
+    with pytest.raises(ValueError,match='APPLY_REFUSED_STATE'):rp.export_handoff(store,pkt['id'],str(tmp_path))
