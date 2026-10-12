@@ -609,3 +609,122 @@ def test_stale_ancestor_records_include_any_conclusion():
  d=base();d['checks'].append({'name':'ci','sha':S(2),'conclusion':'failure'})
  result=analyze_trunk(d)
  assert S(2) in br(result,'feat')['required_checks']['ci']['stale_ancestor_shas']
+
+
+# ---------- boundary and exact-output pins
+class TestBoundaryPins:
+    def test_caps_commits_2000_accepted_2001_refused(self):
+        d = {"source_ref": "s", "trunk": "main", "reference_time": REF,
+             "max_branch_age_hours": 24, "required_checks": ["ci"],
+             "commits": [{"sha": S(i), "parents": [S(i - 1)] if i > 1 else [], "committed_at": T(100)}
+                         for i in range(1, 2001)],
+             "branches": [{"name": "main", "tip": S(2000)}], "checks": []}
+        assert analyze_trunk(d)["trunk"]["commit_count"] == 2000
+        d["commits"] = d["commits"] + [{"sha": S(2001), "parents": [S(2000)], "committed_at": T(100)}]
+        assert msg(d) == "commits exceed 2000"
+
+    def test_caps_branches_64_accepted_65_refused(self):
+        d = base()
+        d["branches"] = [{"name": "main", "tip": S(3)}] + [{"name": f"b{i:02d}", "tip": S(3)} for i in range(63)]
+        assert len(analyze_trunk(d)["branches"]) == 64
+        d["branches"].append({"name": "b63", "tip": S(3)})
+        assert msg(d) == "branches exceed 64"
+
+    def test_caps_checks_512_accepted_513_refused(self):
+        d = base()
+        d["checks"] = [{"name": f"c{i:03d}", "sha": S(5), "conclusion": "success"} for i in range(512)]
+        r = analyze_trunk(d)
+        assert len([t for t in r["source_trace"] if t["kind"] == "check"]) == 512
+        d["checks"].append({"name": "c512", "sha": S(5), "conclusion": "success"})
+        assert msg(d) == "checks exceed 512"
+
+    def test_caps_required_16_accepted_17_refused(self):
+        d = base(); d["required_checks"] = [f"r{i:02d}" for i in range(16)]
+        assert len(analyze_trunk(d)["trunk"]["required_checks"]) == 16
+        d["required_checks"] = [f"r{i:02d}" for i in range(17)]
+        assert msg(d) == "required_checks exceed 16"
+
+    def test_caps_parents_8_accepted_9_refused(self):
+        kids = [C(i, [], 100 - i) for i in range(1, 9)]
+        d = {"source_ref": "s", "trunk": "main", "reference_time": REF,
+             "max_branch_age_hours": 24, "required_checks": ["ci"],
+             "commits": kids + [C(9, list(range(1, 9)), 10)],
+             "branches": [{"name": "main", "tip": S(9)}], "checks": []}
+        assert analyze_trunk(d)["trunk"]["tip"] == S(9)
+        d["commits"] = kids + [C(8, [], 50)] * 0 + [C(8, [], 50), C(9, list(range(1, 9)) + [8], 10)] \
+            if False else kids + [C(9, list(range(1, 10)), 10)]
+        assert msg(d) == f"commit {S(9)} parents exceed 8"
+
+    def test_limits_block_is_the_exact_five_strings(self):
+        assert analyze_trunk(base())["limits"] == [
+            "Analyzes only the supplied commit, branch and check records; nothing is read from git or GitHub, so record accuracy is the caller's claim.",
+            "Does not verify, enable or change GitHub branch protection or any protected-branch rule; branch_protection_verified is always false and trunk is never mutated.",
+            "Branch age is reference_time minus the oldest commit unique to the branch (not branch creation time); commit timestamps are caller-supplied author/committer claims.",
+            "Check coverage is exact-SHA only: a pass on an ancestor, descendant or sibling never covers a tip. Check provenance and runner trust are not verified.",
+            "Not a merge-readiness or release decision; human review is still required.",
+        ]
+
+    def test_branch_age_threshold_zero_refused_positive_accepted(self):
+        for ok in (1, 0.5):
+            d = base(); d["max_branch_age_hours"] = ok
+            assert analyze_trunk(d)["branches"]
+        d = base(); d["max_branch_age_hours"] = 0
+        assert msg(d) == "max_branch_age_hours must be a finite number in (0, 8760]"
+
+    def test_stale_boundary_at_exactly_one_hour(self):
+        d = base(); d["max_branch_age_hours"] = 1
+        # feat has exactly one unmerged commit; age is measured from it
+        d["commits"] = d["commits"][:3] + [{"sha": S(9), "parents": [S(2)], "committed_at": "2026-10-11T05:30:00Z"}]
+        d["branches"] = [{"name": "main", "tip": S(3)}, {"name": "feat", "tip": S(9)}]
+        d["checks"] = [c for c in d["checks"] if c["sha"] == S(3)]
+        assert br(analyze_trunk(d), "feat")["stale"] is False        # exactly 3600s old: not stale
+        d["commits"][3]["committed_at"] = "2026-10-11T05:29:59.999999Z"
+        r = analyze_trunk(d)
+        assert br(r, "feat")["stale"] is True and r["stale_branches"] == ["feat"]   # 1us more: stale
+
+    def test_duplicate_required_check_message_names_the_duplicated_name(self):
+        d = base(); d["required_checks"] = ["a", "b", "b"]
+        assert msg(d) == "required_checks has duplicate name 'b'"
+
+    def test_duplicate_parent_message_names_the_duplicated_parent(self):
+        d = {"source_ref": "s", "trunk": "main", "reference_time": REF,
+             "max_branch_age_hours": 24, "required_checks": ["ci"],
+             "commits": [C(1, [], 100), C(2, [], 90), C(3, [1, 2, 2], 30)],
+             "branches": [{"name": "main", "tip": S(3)}], "checks": []}
+        assert msg(d) == f"duplicate parent {S(2)} in commit {S(3)}"
+
+    def test_check_completed_at_equal_to_reference_time_accepted(self):
+        d = base()
+        d["checks"][0]["completed_at"] = "2026-10-11T06:30:00Z"   # == REF (06:30:00Z)
+        assert analyze_trunk(d)["branches"]
+        d["checks"][0]["completed_at"] = "2026-10-11T06:30:00.000001Z"
+        assert msg(d) == f"check ci@{S(5)} completed_at is after reference_time"
+
+    def test_check_completed_at_equal_to_commit_time_accepted(self):
+        d = base()
+        d["checks"][0]["completed_at"] = T(10)                    # == c5 committed_at
+        assert analyze_trunk(d)["branches"]
+        from datetime import datetime, timedelta, timezone
+        earlier = (datetime(2026, 10, 10, 20, 30, tzinfo=timezone.utc) - timedelta(microseconds=1))
+        d["checks"][0]["completed_at"] = earlier.strftime("%Y-%m-%dT%H:%M:%S") + ".999999Z"
+        assert msg(d) == f"check ci@{S(5)} completed_at precedes its commit"
+
+    def test_check_trace_id_is_name_at_sha(self):
+        r = analyze_trunk(base())
+        assert {"kind": "check", "id": f"ci@{S(5)}", "source_ref": "audit/repo-snapshot-1"} in r["source_trace"]
+
+    def test_branch_dict_exact_shape(self):
+        f = br(analyze_trunk(base()), "feat")
+        assert f == {
+            "name": "feat", "tip": S(5), "state": "diverged", "ahead": 2, "behind": 1,
+            "merge_bases": [S(2)], "unmerged_commits": [S(4), S(5)],
+            "merge_commits_in_unmerged": [], "oldest_unmerged_commit_at": T(20),
+            "age_seconds": 72000, "stale": False,
+            "required_checks": {"ci": {"status": "passed", "stale_ancestor_shas": []},
+                                "lint": {"status": "passed", "stale_ancestor_shas": []}},
+            "required_checks_covered": True,
+        }
+
+    def test_unreachable_commit_with_smallest_sha_is_reported(self):
+        d = base(); d["commits"].append(C(0, [], 50))
+        assert analyze_trunk(d)["unreachable_commits"] == [S(0)]
