@@ -1,9 +1,13 @@
 """Exact single-site mutation runner for trusted local repository tests.
 
-CAUGHT means rc=1 plus FAILED test IDs, with no ERROR/collection or skip outcome.
+CAUGHT means rc=1 plus FAILED test IDs, with no matched ERROR/collection,
+Interrupted or skip marker. Mixed FAILED plus SKIP is INVALID, not CAUGHT.
+FAILED includes product KeyError/RuntimeError, not just assertion failures.
 This is failed-test sensitivity, not an assertion-only exception classifier.
-Timeouts, crashes, missing replacement sites, skips and collection errors are
-not caught evidence. Every source restore is checked against its byte SHA256.
+rc=0 with a skipped-count summary is SURVIVED-WITH-SKIPS and does not release
+the baseline. Timeouts, process failures without qualifying rc=1/FAILED evidence,
+missing replacement sites and collection errors are not caught evidence.
+Every source restore is checked against its byte SHA256.
 """
 import argparse
 import hashlib
