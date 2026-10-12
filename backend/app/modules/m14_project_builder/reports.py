@@ -125,4 +125,9 @@ def render_status_report(context: StatusReportContext) -> str:
     else:
         lines.append("| No artifacts validated | UNVERIFIED |")
     lines.append("")
-    return "\n".join(lines)
+    body = "\n".join(lines)
+    # Direct renderer users get the same label refusal as service callers.
+    from app.runtime.guardrails.report_gate import emit_report
+    from uuid import uuid4
+    emit_report(uuid4().hex, body, now=stamp)
+    return body

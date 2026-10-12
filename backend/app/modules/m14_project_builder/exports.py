@@ -163,7 +163,7 @@ def render_readme(context: ReadmeContext) -> str:
         lines += [
             "## Milestones",
             "",
-            "| Milestone | Phase | Status | Planned start | Planned end | Progress |",
+            "| Milestone | Phase | State | Planned start | Planned end | Progress |",
             "| --- | --- | --- | --- | --- | --- |",
         ]
         for m in context.milestones:
@@ -204,7 +204,14 @@ def render_readme(context: ReadmeContext) -> str:
         "`content_sha256` covers the canonical entry listing.",
         "",
     ]
-    return "\n".join(lines)
+    lines += ["## Claims", "", "| Claim | Status |", "|---|---|",
+              "| Project state, milestones and artifact provenance are supplied records, not independently verified | UNVERIFIED |",
+              ""]
+    body = "\n".join(lines)
+    from app.runtime.guardrails.report_gate import emit_report
+    from uuid import uuid4
+    emit_report(uuid4().hex, body, now=stamp)
+    return body
 
 
 # Deterministic zip timestamp (DOS epoch) so identical content zips identically.

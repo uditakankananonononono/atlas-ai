@@ -285,9 +285,6 @@ class Service:
                 warnings.append(f"artifact {record.id} ({record.kind}) excluded from export: payload unavailable")
                 continue
             files[artifact_engine.storage_path(record)]=payload
-        root=(Path(base_dir) if base_dir else Path(tempfile.mkdtemp(prefix=f"atlas-m14-{project.id}-")))/project.id
-        root.mkdir(parents=True,exist_ok=True)
-        entries=export_engine.write_project_files(root,files,overwrite=True)
         milestones=tuple(_milestone_to_domain(v) for v in self.list_milestones(project))
         progress=None
         if milestones:
@@ -295,9 +292,15 @@ class Service:
         readme=export_engine.render_readme(export_engine.ReadmeContext(project_id=project.id,goal=project.goal,status=project.status,
             milestones=milestones,artifacts=tuple(records),overall_progress=progress,
             assumptions=tuple(project.plan.assumptions) if project.plan else (),risks=tuple(project.plan.risks) if project.plan else ()))
+        generated=datetime.now(timezone.utc)
+        # Validate exact renderer bytes even if an alternate renderer is installed.
+        self._report_gate().emit_report(uuid4().hex,readme,now=generated.strftime("%Y-%m-%dT%H:%M:%SZ"))
+        status_md=self.status_report(project).markdown
+        root=(Path(base_dir) if base_dir else Path(tempfile.mkdtemp(prefix=f"atlas-m14-{project.id}-")))/project.id
+        root.mkdir(parents=True,exist_ok=True)
+        entries=export_engine.write_project_files(root,files,overwrite=True)
         readme_bytes=readme.encode("utf-8")
         extra_entries=export_engine.write_project_files(root,{"README.md":readme_bytes},overwrite=True)
-        status_md=self.status_report(project).markdown
         extra_entries+=export_engine.write_project_files(root,{"STATUS.md":status_md.encode("utf-8")},overwrite=True)
         scope_md=(project.brief.get("scope") or {}).get("markdown")
         if scope_md:
