@@ -1,0 +1,16 @@
+....FF.                                                                  [100%]
+=================================== FAILURES ===================================
+__________________ test_delegate_site_must_be_unique[no site] __________________
+tests/release/test_pkg8_retained_body.py:43: in test_delegate_site_must_be_unique
+    with pytest.raises(ValueError,match='exactly once'):m.kwargs_mutant(src)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_delegate_site_must_be_unique[return fetch_case_metadata_bounded(case_id, transport, **kwargs)\nreturn fetch_case_metadata_bounded(case_id, transport, **kwargs)\n] _
+tests/release/test_pkg8_retained_body.py:43: in test_delegate_site_must_be_unique
+    with pytest.raises(ValueError,match='exactly once'):m.kwargs_mutant(src)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ============================
+FAILED tests/release/test_pkg8_retained_body.py::test_delegate_site_must_be_unique[no site]
+FAILED tests/release/test_pkg8_retained_body.py::test_delegate_site_must_be_unique[return fetch_case_metadata_bounded(case_id, transport, **kwargs)\nreturn fetch_case_metadata_bounded(case_id, transport, **kwargs)\n]
+2 failed, 5 passed in 0.05s

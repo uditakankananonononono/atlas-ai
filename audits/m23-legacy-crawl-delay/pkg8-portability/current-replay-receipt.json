@@ -1,0 +1,170 @@
+{
+  "base": "fc71886bfa289190ac2d9e491a582334d424c267",
+  "prior_source_pin": "715337337dc704cf18085128fef3ad24f8e88021",
+  "historical_body_comparison": "matched",
+  "target_before_sha256": "0d8b5658093b1ce77d12b97cb4dc080ee7317ae38a0df1c00692696d82ac03b4",
+  "old_body_sha256": "76e00134fa6e9d61c9e68c03747aef5d43d21074fa58fd0c70050f064c2cc9af",
+  "limits": [
+    "body-only restoration, current signature retained",
+    "MockTransport plus socket-deny, no live HTTP acceptance",
+    "rc1 plus FAILED is crash-inclusive sensitivity, not intended-failure-only"
+  ],
+  "baseline": {
+    "returncode": 0,
+    "failed_ids": [],
+    "command": [
+      "python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-p",
+      "socket_deny",
+      "tests/modules/test_m23_admitted_cases_legacy_delegation.py",
+      "tests/modules/test_m23_admitted_cases_crawl_delay.py",
+      "tests/modules/test_m23_admitted_cases_bounded.py",
+      "tests/modules/test_m23_admitted_cases.py",
+      "-q",
+      "-rf"
+    ],
+    "portable_path_normalization": "portable-path-normalized: interpreter only",
+    "log": "current-baseline.log",
+    "log_sha256": "31ac66f9c5f213461c8de137a1ca63fb973ac3d4e21d6723b2af3e5a39a573fd",
+    "caught": false,
+    "original_log_sha256": "31ac66f9c5f213461c8de137a1ca63fb973ac3d4e21d6723b2af3e5a39a573fd"
+  },
+  "probes": [
+    {
+      "returncode": 1,
+      "failed_ids": [
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_waits_the_robots_crawl_delay",
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_skips_delay_above_cap_without_requesting_page",
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_honors_boundary_30",
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_passes_cap_through",
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper",
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_module_has_no_own_http_client"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-p",
+        "socket_deny",
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py",
+        "tests/modules/test_m23_admitted_cases_crawl_delay.py",
+        "tests/modules/test_m23_admitted_cases_bounded.py",
+        "tests/modules/test_m23_admitted_cases.py",
+        "-q",
+        "-rf"
+      ],
+      "portable_path_normalization": "portable-path-normalized: interpreter only",
+      "log": "current-L8-true-legacy-body.log",
+      "log_sha256": "5dde5650a2bdc09b7eda6fcff43ccc714a61da547e04c6a3fc5d0f7f0a927709",
+      "caught": true,
+      "id": "L8-true-legacy-body",
+      "mutant_sha256": "f565349c2799ca982ea17fbd1c2d44451210ec1d0aa4c18bfbe764eba1044a1b",
+      "restore_sha256": "0d8b5658093b1ce77d12b97cb4dc080ee7317ae38a0df1c00692696d82ac03b4",
+      "restore_verified": true,
+      "original_log_sha256": "19e2ef2a1ea3fdc0f6d4b6bd487fe586bca78a18a29768e9dc978983e00e99b9"
+    },
+    {
+      "returncode": 1,
+      "failed_ids": [
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-p",
+        "socket_deny",
+        "tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper",
+        "-q",
+        "-rf"
+      ],
+      "portable_path_normalization": "portable-path-normalized: interpreter only",
+      "log": "current-L2-kwargs-sentinel.log",
+      "log_sha256": "27d2f03b3a0ea2176bf84345427f1fd54b33f3eaf6197d7441675f0daa611f42",
+      "caught": true,
+      "id": "L2-kwargs-sentinel",
+      "mutant_sha256": "2b780a9daa2e22b167e4ade2c264146fbbce2b42d16be0f2d08234a40667cf1c",
+      "restore_sha256": "0d8b5658093b1ce77d12b97cb4dc080ee7317ae38a0df1c00692696d82ac03b4",
+      "restore_verified": true,
+      "original_log_sha256": "65753e4c42b7a35501619fc687d81ae2c57d7c1c7c432d6fd5f4ab7ec451b4e2"
+    }
+  ],
+  "restored_baseline": {
+    "returncode": 0,
+    "failed_ids": [],
+    "command": [
+      "python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-p",
+      "socket_deny",
+      "tests/modules/test_m23_admitted_cases_legacy_delegation.py",
+      "tests/modules/test_m23_admitted_cases_crawl_delay.py",
+      "tests/modules/test_m23_admitted_cases_bounded.py",
+      "tests/modules/test_m23_admitted_cases.py",
+      "-q",
+      "-rf"
+    ],
+    "portable_path_normalization": "portable-path-normalized: interpreter only",
+    "log": "current-restored-baseline.log",
+    "log_sha256": "45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1",
+    "caught": false,
+    "original_log_sha256": "45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1"
+  },
+  "delivery_normalization": [
+    {
+      "file": "current-baseline.log",
+      "original_sha256": "31ac66f9c5f213461c8de137a1ca63fb973ac3d4e21d6723b2af3e5a39a573fd",
+      "delivered_sha256": "31ac66f9c5f213461c8de137a1ca63fb973ac3d4e21d6723b2af3e5a39a573fd",
+      "normalized_lines": [],
+      "path_replacements": []
+    },
+    {
+      "file": "current-L8-true-legacy-body.log",
+      "original_sha256": "19e2ef2a1ea3fdc0f6d4b6bd487fe586bca78a18a29768e9dc978983e00e99b9",
+      "delivered_sha256": "5dde5650a2bdc09b7eda6fcff43ccc714a61da547e04c6a3fc5d0f7f0a927709",
+      "normalized_lines": [
+        10,
+        12,
+        23,
+        34,
+        44,
+        61,
+        71,
+        73,
+        78
+      ],
+      "path_replacements": []
+    },
+    {
+      "file": "current-L2-kwargs-sentinel.log",
+      "original_sha256": "65753e4c42b7a35501619fc687d81ae2c57d7c1c7c432d6fd5f4ab7ec451b4e2",
+      "delivered_sha256": "27d2f03b3a0ea2176bf84345427f1fd54b33f3eaf6197d7441675f0daa611f42",
+      "normalized_lines": [
+        17
+      ],
+      "path_replacements": []
+    },
+    {
+      "file": "current-restored-baseline.log",
+      "original_sha256": "45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1",
+      "delivered_sha256": "45b37cf9a51b9b4407763b2661e8a098d18e57aa31702e334fd51aff35b9c3c1",
+      "normalized_lines": [],
+      "path_replacements": []
+    }
+  ]
+}

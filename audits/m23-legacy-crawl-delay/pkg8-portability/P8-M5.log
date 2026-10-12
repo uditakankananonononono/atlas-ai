@@ -1,0 +1,12 @@
+..F....                                                                  [100%]
+=================================== FAILURES ===================================
+________________ test_available_body_compares_without_overwrite ________________
+tests/release/test_pkg8_retained_body.py:32: in test_available_body_compares_without_overwrite
+    assert m.load_legacy_body()==(BODY.decode(),'matched')
+E   assert ('    """Chec...'unavailable') == ('    """Chec...n', 'matched')
+E
+E     At index 1 diff: 'unavailable' != 'matched'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/release/test_pkg8_retained_body.py::test_available_body_compares_without_overwrite
+1 failed, 6 passed in 0.05s

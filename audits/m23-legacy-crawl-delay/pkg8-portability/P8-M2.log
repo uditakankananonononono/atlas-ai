@@ -1,0 +1,20 @@
+F.F....                                                                  [100%]
+=================================== FAILURES ===================================
+_____________________ test_missing_pin_uses_retained_bytes _____________________
+tests/release/test_pkg8_retained_body.py:20: in test_missing_pin_uses_retained_bytes
+    assert body.encode()==BODY and status=='unavailable'
+E   assert (b'' == b'    """Chec...d\': False}\n'
+E
+E     Use -v to get more diff)
+________________ test_available_body_compares_without_overwrite ________________
+tests/release/test_pkg8_retained_body.py:32: in test_available_body_compares_without_overwrite
+    assert m.load_legacy_body()==(BODY.decode(),'matched')
+E   assert ('', 'matched') == ('    """Chec...n', 'matched')
+E
+E     At index 0 diff: '' != '    """Check robots and retrieve a title/description; never ingest the applicant\'s essay.\n\n    A known HTTPS catalog URL is the only possible target; redirects are not followed.\n    Unknown sites and login walls cannot become evidence through this function.\n    """\n    row = next((r for r in cases() if r[\'id\'] == case_id), None)\n    if row is None:\n        raise KeyError(case_id)\n    parsed = urlparse(row[\'url\'])\n    base = f\'{parsed.scheme}://{parsed.netloc}\'\n    with httpx.Client(timeout=8, follow_redirects=False, transport=transport,\n      ...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+=========================== short test summary info ============================
+FAILED tests/release/test_pkg8_retained_body.py::test_missing_pin_uses_retained_bytes
+FAILED tests/release/test_pkg8_retained_body.py::test_available_body_compares_without_overwrite
+2 failed, 5 passed in 0.05s

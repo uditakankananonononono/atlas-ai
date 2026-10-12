@@ -1,0 +1,16 @@
+.F.....                                                                  [100%]
+=================================== FAILURES ===================================
+______________ test_tampered_body_refused_before_git_or_mutation _______________
+tests/release/test_pkg8_retained_body.py:27: in test_tampered_body_refused_before_git_or_mutation
+    with pytest.raises(ValueError,match='SHA mismatch'):m.load_legacy_body()
+                                                        ^^^^^^^^^^^^^^^^^^^^
+audits/m23-legacy-crawl-delay/pkg8-followup/replay.py:26: in load_legacy_body
+    found=subprocess.run(['git','show',PIN+':backend/app/modules/m23_study_abroad/admitted_cases.py'],cwd=ROOT,capture_output=True,text=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/release/test_pkg8_retained_body.py:25: in no_git
+    def no_git(*args,**kw):pytest.fail('git reached before body hash refusal')
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: git reached before body hash refusal
+=========================== short test summary info ============================
+FAILED tests/release/test_pkg8_retained_body.py::test_tampered_body_refused_before_git_or_mutation
+1 failed, 6 passed in 0.05s

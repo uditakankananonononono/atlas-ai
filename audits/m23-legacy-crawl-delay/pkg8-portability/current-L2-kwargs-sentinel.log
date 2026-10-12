@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f5d6788d6d0>
+
+    def test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper(monkeypatch):
+        got = {}
+        def fake(case_id, transport=None, **kw):
+            got.update(case_id=case_id, transport=transport, kw=kw)
+            return {'live_status': 'sentinel'}
+        monkeypatch.setattr(admitted_cases_bounded, 'fetch_case_metadata_bounded', fake)
+        t = httpx.MockTransport(lambda r: httpx.Response(500))
+        assert admitted_cases.fetch_case_metadata('mit', t, page_limit=7)['live_status'] == 'sentinel'
+>       assert got == {'case_id': 'mit', 'transport': t, 'kw': {'page_limit': 7}}
+E       AssertionError: assert {'case_id': '...a0>, 'kw': {}} == {'case_id': '...ge_limit': 7}}
+E
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'kw': {}} != {'kw': {'page_limit': 7}}
+E         Use -v to get more diff
+
+tests/modules/test_m23_admitted_cases_legacy_delegation.py:66: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_m23_admitted_cases_legacy_delegation.py::test_legacy_helper_is_a_pure_delegate_to_the_bounded_helper
+1 failed in 0.36s

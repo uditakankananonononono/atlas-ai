@@ -1,0 +1,128 @@
+{
+  "base": "fc71886bfa289190ac2d9e491a582334d424c267",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/release/test_pkg8_retained_body.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "normalization": "Interpreter portable-normalized; trailing whitespace removed at listed lines; original raw logs privately retained. No path replacements.",
+  "baseline": {
+    "log": "baseline.log",
+    "rc": 0,
+    "failed_ids": [],
+    "original_sha256": "c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf",
+    "delivered_sha256": "c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf",
+    "normalized_lines": []
+  },
+  "mutants": [
+    {
+      "log": "P8-M1.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_tampered_body_refused_before_git_or_mutation"
+      ],
+      "original_sha256": "806835fbacebbe146d37428efcca9fc6426a7da3213fcec3046864090a06a934",
+      "delivered_sha256": "806835fbacebbe146d37428efcca9fc6426a7da3213fcec3046864090a06a934",
+      "normalized_lines": [],
+      "id": "P8-M1",
+      "old": "if sha(raw)!=BODY_SHA256:",
+      "new": "if False:",
+      "before_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "mutant_sha256": "b79bcb844790535087de4d92cbfa86e418bacefa420cd98d454fb4a44214b618",
+      "restored_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "caught": true
+    },
+    {
+      "log": "P8-M2.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_missing_pin_uses_retained_bytes",
+        "tests/release/test_pkg8_retained_body.py::test_available_body_compares_without_overwrite"
+      ],
+      "original_sha256": "40d729bea563ee594c536021474fd2585c44812be811faafe62f216269154790",
+      "delivered_sha256": "02acd0679b22dd7ee723ccc66c8e053dba6f8d69bd35e122220a43a9f7ca6a40",
+      "normalized_lines": [
+        7,
+        13,
+        15
+      ],
+      "id": "P8-M2",
+      "old": "return body,comparison",
+      "new": "return '',comparison",
+      "before_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "mutant_sha256": "722fa4cc0b39f1c009ae5f7941fdfb4f856f6acc1bfe1e05076d7b280d86ed5b",
+      "restored_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "caught": true
+    },
+    {
+      "log": "P8-M3.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_available_body_mismatch_refused_without_overwrite"
+      ],
+      "original_sha256": "08fc0c2fe8564cf2a627d5fff913feb7664452a02d4028c8e9bfaee58271df78",
+      "delivered_sha256": "08fc0c2fe8564cf2a627d5fff913feb7664452a02d4028c8e9bfaee58271df78",
+      "normalized_lines": [],
+      "id": "P8-M3",
+      "old": "if derived!=body:",
+      "new": "if False:",
+      "before_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "mutant_sha256": "9495ac185f7eaae6f2d3a40545343c290b147bf6c898f5396ff4b9dd66e83cb5",
+      "restored_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "caught": true
+    },
+    {
+      "log": "P8-M4.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_delegate_site_must_be_unique[no site]",
+        "tests/release/test_pkg8_retained_body.py::test_delegate_site_must_be_unique[return fetch_case_metadata_bounded(case_id, transport, **kwargs)\\nreturn fetch_case_metadata_bounded(case_id, transport, **kwargs)\\n]"
+      ],
+      "original_sha256": "0642d934e488e457dd45f8a4b1b0c080f6b8fdc4bdc473c4f5f1da4cb18e2034",
+      "delivered_sha256": "0642d934e488e457dd45f8a4b1b0c080f6b8fdc4bdc473c4f5f1da4cb18e2034",
+      "normalized_lines": [],
+      "id": "P8-M4",
+      "old": "if src.count(old)!=1:",
+      "new": "if False:",
+      "before_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "mutant_sha256": "4fe3a096ad472273e85d5835bb3e29ce1fd6aef67b606dba4b0faa57d8bdc62c",
+      "restored_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "caught": true
+    },
+    {
+      "log": "P8-M5.log",
+      "rc": 1,
+      "failed_ids": [
+        "tests/release/test_pkg8_retained_body.py::test_available_body_compares_without_overwrite"
+      ],
+      "original_sha256": "7aa98b33e947ba3cd190f300c6b13a26b06141e2bcd27a41a10d4f5ce07ff33d",
+      "delivered_sha256": "73a50d39f720787a2a87feb389c0db7ca62ecb93e2da597fd2b437ae47eb2747",
+      "normalized_lines": [
+        7
+      ],
+      "id": "P8-M5",
+      "old": "comparison='matched'",
+      "new": "comparison='unavailable'",
+      "before_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "mutant_sha256": "d15e0fbdffdbea21e2f7b7e9538cf6bbf5839549a3f937ea6a5e324eb5d3b3bd",
+      "restored_sha256": "674488d9170269d945f40091efa31498e4ef581b5ad239abea2a18f13d483f20",
+      "caught": true
+    }
+  ],
+  "restored_baseline": {
+    "log": "restored-baseline.log",
+    "rc": 0,
+    "failed_ids": [],
+    "original_sha256": "c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf",
+    "delivered_sha256": "c39efe51cd313bd35a816020dcd8c7ac1446c3b68b8b6f37038ffea4140f72bf",
+    "normalized_lines": []
+  }
+}

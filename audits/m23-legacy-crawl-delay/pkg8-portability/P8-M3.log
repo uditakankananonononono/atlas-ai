@@ -1,0 +1,10 @@
+...F...                                                                  [100%]
+=================================== FAILURES ===================================
+____________ test_available_body_mismatch_refused_without_overwrite ____________
+tests/release/test_pkg8_retained_body.py:38: in test_available_body_mismatch_refused_without_overwrite
+    with pytest.raises(ValueError,match='disagrees'):m.load_legacy_body()
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ============================
+FAILED tests/release/test_pkg8_retained_body.py::test_available_body_mismatch_refused_without_overwrite
+1 failed, 6 passed in 0.05s
