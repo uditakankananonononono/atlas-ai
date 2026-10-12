@@ -1,0 +1,24 @@
+........................................................................ [ 45%]
+............................................................F........... [ 91%]
+..............                                                           [100%]
+=================================== FAILURES ===================================
+_____________________ test_iso_calendar_year_zero_refuses ______________________
+
+    def test_iso_calendar_year_zero_refuses():
+>       refuse('APPLY_REFUSED_BAD_TYPE:as_of',req(as_of='0000-01-01'))
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:19:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'APPLY_REFUSED_BAD_TYPE:as_of'
+data = {'as_of': '0000-01-01', 'profile': {'name': 'N', 'school': 'S'}, 'template': 'Dear {contact}: {fee} for {opportunity}', 'opportunities': [{'id': 'o', 'title': 'Contest', 'fee': 'USD 25', 'contact_email': 'x@y.org'}]}
+
+    def refuse(code,data):
+>       with pytest.raises(ValueError) as e:m.run(data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:14: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_iso_calendar_year_zero_refuses
+1 failed, 157 passed in 2.03s

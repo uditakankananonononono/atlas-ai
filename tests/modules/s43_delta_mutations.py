@@ -1,28 +1,31 @@
-"""Named mutations for the repair delta; no authority or live execution."""
+"""Fresh scoped replay of six named S4.3 operators, not historical log recovery.
+
+Uses the shared FAILED-only runner: rc1 plus FAILED IDs, no ERROR/SKIP;
+records source SHA restore. Trusted local tests only, not a sandbox.
+"""
 from pathlib import Path
-import json,subprocess,sys
-R=Path(__file__).resolve().parents[2];P=R/'backend/app/modules/c35/waiver_drafts.py'
-cmd=[sys.executable,'-m','pytest','tests/modules/test_c35_waiver_drafts_s43.py','tests/modules/test_c35_waiver_drafts_s43_delta.py','-q']
-s=P.read_text();results=[]
-assert subprocess.run(cmd,cwd=R,capture_output=True).returncode==0
-mutants=[
-('year_zero','year < 1 or ','') ,
-('ascii_control_regression','unicodedata.category(c) in policy.FORBIDDEN_CATEGORIES','ord(c) < 32 or ord(c) == 127'),
-('controls_disabled','not any(unicodedata.category(c) in policy.FORBIDDEN_CATEGORIES for c in value)','True'),
-('recipient_invalid_flag','return None, True, True','return None, True, False'),
-('strict_recipient', 'if row["needs"]:', 'if False:'),
-('year_minimum_offbyone','year < 1 or ','year < 2 or '),
-]
-for name,old,new in mutants:
- assert old in s,name
- try:
-  P.write_text(s.replace(old,new,1))
-  for p in P.parent.glob('__pycache__/waiver_drafts*.pyc'):p.unlink()
-  done=subprocess.run(cmd,cwd=R,capture_output=True,text=True,timeout=15)
-  output=done.stdout+done.stderr
-  (R/'audits/s43-delta'/('mutant-'+name+'.log')).write_text('\n'.join(x.rstrip()for x in output.splitlines())+'\n')
-  results.append({'name':name,'outcome':'SURVIVED' if done.returncode==0 else 'assertion/error','exit_code':done.returncode})
- finally:
-  P.write_text(s)
-  for p in P.parent.glob('__pycache__/waiver_drafts*.pyc'):p.unlink()
-print(json.dumps({'mutants':len(results),'killed':sum(x['exit_code']!=0 for x in results),'results':results},indent=2))
+import argparse
+import importlib.util
+import json
+
+R=Path(__file__).resolve().parents[2]
+
+
+
+def replay(output):
+    output=Path(output)
+    # The old script wrote into a missing directory. Create the parent before
+    # the shared runner creates a fresh run directory; never overwrite logs.
+    output.parent.mkdir(parents=True,exist_ok=True)
+    loader=importlib.util.spec_from_file_location('s43_scoped_runner',R/'scripts/release/scoped_mutations.py')
+    runner=importlib.util.module_from_spec(loader);loader.loader.exec_module(runner)
+    return runner.execute(R/'audits/s43-delta/operators.json',output)
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output',default=str(R/'audits/s43-delta/fresh-run'))
+    args=parser.parse_args()
+    result=replay(args.output)
+    print(json.dumps(result,indent=2))
+    raise SystemExit(0 if result['all_caught'] else 1)

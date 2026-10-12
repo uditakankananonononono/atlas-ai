@@ -1,0 +1,378 @@
+....F.......F........................................................... [ 45%]
+.........F...................................................FFFF..FFFFF [ 91%]
+FFFFFFFFFFF...                                                           [100%]
+=================================== FAILURES ===================================
+_________________ Success.test_control_char_recipient_invalid __________________
+
+self = <test_c35_waiver_drafts_s43.Success testMethod=test_control_char_recipient_invalid>
+
+    def test_control_char_recipient_invalid(self):
+        for bad in ["a\x00@b.org", "a\x7f@b.org", "a@b\x01.org"]:
+            d = m.run(req(opportunities=[op("o1", "5", email=bad)]))["drafts"][0]
+>           self.assertIs(d["recipient_invalid"], True, repr(bad))
+E           AssertionError: False is not True : 'a\x00@b.org'
+
+tests/modules/test_c35_waiver_drafts_s43.py:114: AssertionError
+_____________________ Success.test_invalid_recipient_flags _____________________
+
+self = <test_c35_waiver_drafts_s43.Success testMethod=test_invalid_recipient_flags>
+
+    def test_invalid_recipient_flags(self):
+        for bad in ["not-an-email", "a@b", "a b@c.org", "a@@c.org", "@c.org", "a@.org"[:0] + "a@c .org"]:
+            d = m.run(req(opportunities=[op("o1", "5", email=bad)]))["drafts"][0]
+            self.assertIsNone(d["recipient"], bad)
+            self.assertIs(d["needs_recipient"], True, bad)
+>           self.assertIs(d["recipient_invalid"], True, bad)
+E           AssertionError: False is not True : not-an-email
+
+tests/modules/test_c35_waiver_drafts_s43.py:109: AssertionError
+_______________ Boundaries.test_control_char_boundary_recipient ________________
+
+self = <test_c35_waiver_drafts_s43.Boundaries testMethod=test_control_char_boundary_recipient>
+
+    def test_control_char_boundary_recipient(self):
+        for code in (0, 1, 9, 31, 127):
+            d = m.run(req(opportunities=[op("o1", "5", email="a%sb@c.org" % chr(code))]))["drafts"][0]
+>           self.assertIs(d["recipient_invalid"], True, code)
+E           AssertionError: False is not True : 0
+
+tests/modules/test_c35_waiver_drafts_s43.py:624: AssertionError
+__________ test_c1_control_recipient_invalid_not_silently_valid[\x80] __________
+
+char = '\x80'
+
+    @pytest.mark.parametrize('char',['\x80','\x81','\x9f'])
+    def test_c1_control_recipient_invalid_not_silently_valid(char):
+        r=req();r['opportunities'][0]['contact_email']='x'+char+'@y.org'
+        d=m.run(r)['drafts'][0]
+        assert d['recipient'] is None
+        assert d['needs_recipient'] is True
+>       assert d['recipient_invalid'] is True
+E       assert False is True
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:28: AssertionError
+__________ test_c1_control_recipient_invalid_not_silently_valid[\x81] __________
+
+char = '\x81'
+
+    @pytest.mark.parametrize('char',['\x80','\x81','\x9f'])
+    def test_c1_control_recipient_invalid_not_silently_valid(char):
+        r=req();r['opportunities'][0]['contact_email']='x'+char+'@y.org'
+        d=m.run(r)['drafts'][0]
+        assert d['recipient'] is None
+        assert d['needs_recipient'] is True
+>       assert d['recipient_invalid'] is True
+E       assert False is True
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:28: AssertionError
+__________ test_c1_control_recipient_invalid_not_silently_valid[\x9f] __________
+
+char = '\x9f'
+
+    @pytest.mark.parametrize('char',['\x80','\x81','\x9f'])
+    def test_c1_control_recipient_invalid_not_silently_valid(char):
+        r=req();r['opportunities'][0]['contact_email']='x'+char+'@y.org'
+        d=m.run(r)['drafts'][0]
+        assert d['recipient'] is None
+        assert d['needs_recipient'] is True
+>       assert d['recipient_invalid'] is True
+E       assert False is True
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:28: AssertionError
+_________ test_control_recipient_nonstrict_never_shared_clean_refusal __________
+
+    def test_control_recipient_nonstrict_never_shared_clean_refusal():
+        r=req();r['opportunities'][0]['contact_email']='x\x00@y.org'
+>       assert m.run(r)['drafts'][0]['recipient_invalid'] is True
+E       assert False is True
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:35: AssertionError
+______ test_raw_controls_never_stripped_into_valid_recipient[\x00x@y.org] ______
+
+email = '\x00x@y.org'
+
+    @pytest.mark.parametrize('email',['\x00x@y.org','x@y.org\x00','x\u2028@y.org','x\u2029@y.org'])
+    def test_raw_controls_never_stripped_into_valid_recipient(email):
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:57: AssertionError
+______ test_raw_controls_never_stripped_into_valid_recipient[x@y.org\x00] ______
+
+email = 'x@y.org\x00'
+
+    @pytest.mark.parametrize('email',['\x00x@y.org','x@y.org\x00','x\u2028@y.org','x\u2029@y.org'])
+    def test_raw_controls_never_stripped_into_valid_recipient(email):
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:57: AssertionError
+_____ test_raw_controls_never_stripped_into_valid_recipient[x\u2028@y.org] _____
+
+email = 'x\u2028@y.org'
+
+    @pytest.mark.parametrize('email',['\x00x@y.org','x@y.org\x00','x\u2028@y.org','x\u2029@y.org'])
+    def test_raw_controls_never_stripped_into_valid_recipient(email):
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:57: AssertionError
+_____ test_raw_controls_never_stripped_into_valid_recipient[x\u2029@y.org] _____
+
+email = 'x\u2029@y.org'
+
+    @pytest.mark.parametrize('email',['\x00x@y.org','x@y.org\x00','x\u2028@y.org','x\u2029@y.org'])
+    def test_raw_controls_never_stripped_into_valid_recipient(email):
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:57: AssertionError
+________________ test_raw_edge_controls_are_invalid[leading-\n] ________________
+
+control = '\n', edge = 'leading'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+________________ test_raw_edge_controls_are_invalid[leading-\t] ________________
+
+control = '\t', edge = 'leading'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+_______________ test_raw_edge_controls_are_invalid[leading-\r\n] _______________
+
+control = '\r\n', edge = 'leading'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+_______________ test_raw_edge_controls_are_invalid[leading-\x85] _______________
+
+control = '\x85', edge = 'leading'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+______________ test_raw_edge_controls_are_invalid[leading-\u2028] ______________
+
+control = '\u2028', edge = 'leading'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+______________ test_raw_edge_controls_are_invalid[leading-\u2029] ______________
+
+control = '\u2029', edge = 'leading'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+_______________ test_raw_edge_controls_are_invalid[trailing-\n] ________________
+
+control = '\n', edge = 'trailing'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+_______________ test_raw_edge_controls_are_invalid[trailing-\t] ________________
+
+control = '\t', edge = 'trailing'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+______________ test_raw_edge_controls_are_invalid[trailing-\r\n] _______________
+
+control = '\r\n', edge = 'trailing'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+______________ test_raw_edge_controls_are_invalid[trailing-\x85] _______________
+
+control = '\x85', edge = 'trailing'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+_____________ test_raw_edge_controls_are_invalid[trailing-\u2028] ______________
+
+control = '\u2028', edge = 'trailing'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+_____________ test_raw_edge_controls_are_invalid[trailing-\u2029] ______________
+
+control = '\u2029', edge = 'trailing'
+
+    @pytest.mark.parametrize('control',['\n','\t','\r\n','\x85','\u2028','\u2029'])
+    @pytest.mark.parametrize('edge',['leading','trailing'])
+    def test_raw_edge_controls_are_invalid(control,edge):
+        email=control+'a@b.co' if edge=='leading' else 'a@b.co'+control
+        r=req();r['opportunities'][0]['contact_email']=email
+        d=m.run(r)['drafts'][0]
+>       assert (d['recipient'],d['needs_recipient'],d['recipient_invalid'])==(None,True,True)
+E       assert (None, True, False) == (None, True, True)
+E
+E         At index 2 diff: False != True
+E         Use -v to get more diff
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:66: AssertionError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::Success::test_control_char_recipient_invalid
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::Success::test_invalid_recipient_flags
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::Boundaries::test_control_char_boundary_recipient
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_c1_control_recipient_invalid_not_silently_valid[\x80]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_c1_control_recipient_invalid_not_silently_valid[\x81]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_c1_control_recipient_invalid_not_silently_valid[\x9f]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_control_recipient_nonstrict_never_shared_clean_refusal
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_controls_never_stripped_into_valid_recipient[\x00x@y.org]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_controls_never_stripped_into_valid_recipient[x@y.org\x00]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_controls_never_stripped_into_valid_recipient[x\u2028@y.org]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_controls_never_stripped_into_valid_recipient[x\u2029@y.org]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[leading-\n]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[leading-\t]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[leading-\r\n]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[leading-\x85]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[leading-\u2028]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[leading-\u2029]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[trailing-\n]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[trailing-\t]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[trailing-\r\n]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[trailing-\x85]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[trailing-\u2028]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_raw_edge_controls_are_invalid[trailing-\u2029]
+23 failed, 135 passed in 2.18s

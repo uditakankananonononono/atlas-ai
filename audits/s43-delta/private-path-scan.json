@@ -1,0 +1,10 @@
+{
+  "claim": "Zero actual private path values across delivered files including this report",
+  "root_types": [
+    "HOME_ROOT",
+    "RUNTIME_OUTPUT_ROOT",
+    "PYTEST_TEMP_ROOT",
+    "ROOT_HOME"
+  ],
+  "hits": []
+}

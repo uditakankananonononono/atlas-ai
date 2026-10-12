@@ -1,0 +1,26 @@
+........................................................................ [ 45%]
+..................................................................F..... [ 91%]
+..............                                                           [100%]
+=================================== FAILURES ===================================
+____________________________ test_year_one_accepted ____________________________
+
+    def test_year_one_accepted():
+>       assert m.run(req(as_of='0001-01-01'))['scope']['as_of']=='0001-01-01'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:50:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/app/modules/c35/waiver_drafts.py:240: in run
+    _bad("as_of")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'as_of'
+
+    def _bad(name):
+>       raise ValueError("%s_REFUSED_BAD_TYPE:%s" % (PREFIX, name))
+E       ValueError: APPLY_REFUSED_BAD_TYPE:as_of
+
+backend/app/modules/c35/waiver_drafts.py:71: ValueError
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_year_one_accepted
+1 failed, 157 passed in 2.11s

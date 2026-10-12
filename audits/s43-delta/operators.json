@@ -1,0 +1,55 @@
+{
+  "row": "S4.3 validation delta",
+  "selectors": [
+    "tests/modules/test_c35_waiver_drafts_s43.py",
+    "tests/modules/test_c35_waiver_drafts_s43_delta.py"
+  ],
+  "timeout_seconds": 15,
+  "environment": {
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  },
+  "limits": [
+    "FRESH scoped evidence, not recovered historical evidence",
+    "Original missing logs remain a provenance gap",
+    "FAILED may include runtime exceptions; not assertion-only",
+    "direct pytest timeout does not isolate escaped descendants"
+  ],
+  "mutations": [
+    {
+      "id": "year_zero",
+      "path": "backend/app/modules/c35/waiver_drafts.py",
+      "old": "year < 1 or ",
+      "new": ""
+    },
+    {
+      "id": "ascii_control_regression",
+      "path": "backend/app/modules/c35/waiver_drafts.py",
+      "old": "unicodedata.category(c) in ('Cc', 'Zl', 'Zp')",
+      "new": "ord(c) < 32 or ord(c) == 127"
+    },
+    {
+      "id": "controls_disabled",
+      "path": "backend/app/modules/c35/waiver_drafts.py",
+      "old": "not any(unicodedata.category(c) in ('Cc', 'Zl', 'Zp') for c in value)",
+      "new": "True"
+    },
+    {
+      "id": "recipient_invalid_flag",
+      "path": "backend/app/modules/c35/waiver_drafts.py",
+      "old": "return None, True, True",
+      "new": "return None, True, False"
+    },
+    {
+      "id": "strict_recipient",
+      "path": "backend/app/modules/c35/waiver_drafts.py",
+      "old": "if row[\"needs\"]:",
+      "new": "if False:"
+    },
+    {
+      "id": "year_minimum_offbyone",
+      "path": "backend/app/modules/c35/waiver_drafts.py",
+      "old": "year < 1 or ",
+      "new": "year < 2 or "
+    }
+  ]
+}

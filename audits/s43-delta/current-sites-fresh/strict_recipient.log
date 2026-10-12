@@ -1,0 +1,180 @@
+..................................FF.F.................................. [ 45%]
+......F..................F.......F...........................FFF........ [ 91%]
+..............                                                           [100%]
+=================================== FAILURES ===================================
+________________________ Recipient.test_strict_invalid _________________________
+
+self = <test_c35_waiver_drafts_s43.Recipient testMethod=test_strict_invalid>
+
+    def test_strict_invalid(self):
+>       refused(self, req(strict=True, opportunities=[op("o1", "5", email="bad")]),
+                "APPLY_REFUSED_NORECIPIENT:contact_email")
+
+tests/modules/test_c35_waiver_drafts_s43.py:244:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/modules/test_c35_waiver_drafts_s43.py:41: in refused
+    with tc.assertRaises(ValueError) as cm:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: ValueError not raised
+________________________ Recipient.test_strict_missing _________________________
+
+self = <test_c35_waiver_drafts_s43.Recipient testMethod=test_strict_missing>
+
+    def test_strict_missing(self):
+>       refused(self, req(strict=True, opportunities=[op("o1", "5"), op("o2", "5", email=None)]),
+                "APPLY_REFUSED_NORECIPIENT:contact_email")
+
+tests/modules/test_c35_waiver_drafts_s43.py:240:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/modules/test_c35_waiver_drafts_s43.py:41: in refused
+    with tc.assertRaises(ValueError) as cm:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: ValueError not raised
+________________ Recipient.test_strict_reason_is_literal_not_id ________________
+
+self = <test_c35_waiver_drafts_s43.Recipient testMethod=test_strict_reason_is_literal_not_id>
+
+    def test_strict_reason_is_literal_not_id(self):
+>       refused(self, req(strict=True, opportunities=[op("o1", "5", email=None), op("o2", "5", email="bad")]),
+                "APPLY_REFUSED_NORECIPIENT:contact_email")
+
+tests/modules/test_c35_waiver_drafts_s43.py:248:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/modules/test_c35_waiver_drafts_s43.py:41: in refused
+    with tc.assertRaises(ValueError) as cm:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: ValueError not raised
+______________________ CheckOrder.test_7_only_when_strict ______________________
+
+self = <test_c35_waiver_drafts_s43.CheckOrder testMethod=test_7_only_when_strict>
+
+    def test_7_only_when_strict(self):
+>       refused(self, req(strict=True, opportunities=[op("o1", "5", email="bad")]),
+                "APPLY_REFUSED_NORECIPIENT:contact_email")
+
+tests/modules/test_c35_waiver_drafts_s43.py:520:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/modules/test_c35_waiver_drafts_s43.py:41: in refused
+    with tc.assertRaises(ValueError) as cm:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: ValueError not raised
+_____________ SchemaKeys.test_reasons_never_contain_ids_or_values ______________
+
+self = <test_c35_waiver_drafts_s43.SchemaKeys testMethod=test_reasons_never_contain_ids_or_values>
+
+    def test_reasons_never_contain_ids_or_values(self):
+        for r in [req(opportunities=[op("SECRET-ID", "5"), op("SECRET-ID", "5")]),
+                  req(opportunities=[op("SECRET-ID", "bad value!")]),
+                  req(strict=True, opportunities=[op("SECRET-ID", "5", email=None)]),
+                  req(opportunities=[op("SECRET-ID", "5", title=None)])]:
+>           with self.assertRaises(ValueError) as cm:
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: ValueError not raised
+
+tests/modules/test_c35_waiver_drafts_s43.py:717: AssertionError
+__________________________ FullOrder.test_10_over_11 ___________________________
+
+self = <test_c35_waiver_drafts_s43.FullOrder testMethod=test_10_over_11>
+
+    def test_10_over_11(self):
+        refused(self, req(strict=True, template="{zzz}", opportunities=[op("o1", "5", email=None)]),
+                "APPLY_REFUSED_UNFILLED:template")
+        refused(self, req(strict=True, opportunities=[{"id": "o1", "title": "T", "fee": "5"}]),
+                "APPLY_REFUSED_UNFILLED:deadline")
+>       refused(self, req(strict=True, opportunities=[op("o1", "5", email=None)]), "APPLY_REFUSED_NORECIPIENT:contact_email")
+
+tests/modules/test_c35_waiver_drafts_s43.py:846:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/modules/test_c35_waiver_drafts_s43.py:41: in refused
+    with tc.assertRaises(ValueError) as cm:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: ValueError not raised
+__________ test_c1_control_recipient_invalid_not_silently_valid[\x80] __________
+
+char = '\x80'
+
+    @pytest.mark.parametrize('char',['\x80','\x81','\x9f'])
+    def test_c1_control_recipient_invalid_not_silently_valid(char):
+        r=req();r['opportunities'][0]['contact_email']='x'+char+'@y.org'
+        d=m.run(r)['drafts'][0]
+        assert d['recipient'] is None
+        assert d['needs_recipient'] is True
+        assert d['recipient_invalid'] is True
+        r['strict']=True
+>       refuse('APPLY_REFUSED_NORECIPIENT:contact_email',r)
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:30:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'APPLY_REFUSED_NORECIPIENT:contact_email'
+data = {'as_of': '2026-10-11', 'profile': {'name': 'N', 'school': 'S'}, 'template': 'Dear {contact}: {fee} for {opportunity}', 'opportunities': [{'id': 'o', 'title': 'Contest', 'fee': 'USD 25', 'contact_email': 'x\x80@y.org'}], ...}
+
+    def refuse(code,data):
+>       with pytest.raises(ValueError) as e:m.run(data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:14: Failed
+__________ test_c1_control_recipient_invalid_not_silently_valid[\x81] __________
+
+char = '\x81'
+
+    @pytest.mark.parametrize('char',['\x80','\x81','\x9f'])
+    def test_c1_control_recipient_invalid_not_silently_valid(char):
+        r=req();r['opportunities'][0]['contact_email']='x'+char+'@y.org'
+        d=m.run(r)['drafts'][0]
+        assert d['recipient'] is None
+        assert d['needs_recipient'] is True
+        assert d['recipient_invalid'] is True
+        r['strict']=True
+>       refuse('APPLY_REFUSED_NORECIPIENT:contact_email',r)
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:30:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'APPLY_REFUSED_NORECIPIENT:contact_email'
+data = {'as_of': '2026-10-11', 'profile': {'name': 'N', 'school': 'S'}, 'template': 'Dear {contact}: {fee} for {opportunity}', 'opportunities': [{'id': 'o', 'title': 'Contest', 'fee': 'USD 25', 'contact_email': 'x\x81@y.org'}], ...}
+
+    def refuse(code,data):
+>       with pytest.raises(ValueError) as e:m.run(data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:14: Failed
+__________ test_c1_control_recipient_invalid_not_silently_valid[\x9f] __________
+
+char = '\x9f'
+
+    @pytest.mark.parametrize('char',['\x80','\x81','\x9f'])
+    def test_c1_control_recipient_invalid_not_silently_valid(char):
+        r=req();r['opportunities'][0]['contact_email']='x'+char+'@y.org'
+        d=m.run(r)['drafts'][0]
+        assert d['recipient'] is None
+        assert d['needs_recipient'] is True
+        assert d['recipient_invalid'] is True
+        r['strict']=True
+>       refuse('APPLY_REFUSED_NORECIPIENT:contact_email',r)
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:30:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'APPLY_REFUSED_NORECIPIENT:contact_email'
+data = {'as_of': '2026-10-11', 'profile': {'name': 'N', 'school': 'S'}, 'template': 'Dear {contact}: {fee} for {opportunity}', 'opportunities': [{'id': 'o', 'title': 'Contest', 'fee': 'USD 25', 'contact_email': 'x\x9f@y.org'}], ...}
+
+    def refuse(code,data):
+>       with pytest.raises(ValueError) as e:m.run(data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/modules/test_c35_waiver_drafts_s43_delta.py:14: Failed
+=========================== short test summary info ============================
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::Recipient::test_strict_invalid
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::Recipient::test_strict_missing
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::Recipient::test_strict_reason_is_literal_not_id
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::CheckOrder::test_7_only_when_strict
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::SchemaKeys::test_reasons_never_contain_ids_or_values
+FAILED tests/modules/test_c35_waiver_drafts_s43.py::FullOrder::test_10_over_11
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_c1_control_recipient_invalid_not_silently_valid[\x80]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_c1_control_recipient_invalid_not_silently_valid[\x81]
+FAILED tests/modules/test_c35_waiver_drafts_s43_delta.py::test_c1_control_recipient_invalid_not_silently_valid[\x9f]
+9 failed, 149 passed in 2.11s
