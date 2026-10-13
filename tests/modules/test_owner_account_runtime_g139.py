@@ -3,7 +3,19 @@ import concurrent.futures
 import threading
 import httpx
 import pytest
-from app.integrations.owner_account_runtime_g139 import OwnerAccountRuntime, AccountRefusal, binding_digest
+from app.integrations.owner_account_runtime_g139 import OwnerAccountRuntime as RawOwnerAccountRuntime, AccountRefusal, binding_digest
+
+
+def declared_reads(tenant, url):
+    from urllib.parse import urlsplit
+    host=urlsplit(url).netloc
+    return {'tos': {host: {'allowed_kinds':['read'], 'automation_allowed':True}},
+            'rate_limits': {host: {'read': {'max':100,'window_seconds':60}}}}
+
+
+def OwnerAccountRuntime(*args, **kwargs):
+    kwargs.setdefault('outbound_declarations', declared_reads)
+    return RawOwnerAccountRuntime(*args, **kwargs)
 
 
 @pytest.fixture
@@ -343,3 +355,57 @@ def test_proxy_environment_real_socket_without_injected_transport(tmp_path,monke
     finally:
         for s in (origin,proxy):s.shutdown();s.server_close()
         for t in threads:t.join(5)
+
+
+@pytest.mark.parametrize('policy',['absent','automation','rate','second_destination'])
+def test_outbound_policy_refusal_before_transport(tmp_path,policy):
+    calls=[]
+    def handler(request):
+        calls.append(request.url.path)
+        return httpx.Response(200,json={'id':123,'type':'User'})
+    def declarations(tenant,url):
+        d=declared_reads(tenant,url)
+        if policy=='automation':next(iter(d['tos'].values()))['automation_allowed']=False
+        if policy=='rate':d['rate_limits']={}
+        if policy=='second_destination' and url.endswith('/repos/a/b'):return {'tos':{}}
+        return d
+    kwargs={} if policy=='absent' else {'outbound_declarations':declarations}
+    gate=RawOwnerAccountRuntime(tmp_path/'db',authority=lambda *a:True,read_authority=lambda *a:True,
+                               credential=lambda *a:'token',transport=httpx.MockTransport(handler),**kwargs)
+    gate.bind('t','github','123','r')
+    with pytest.raises(AccountRefusal):gate.get('t','github','/repos/a/b')
+    assert calls==(['/user'] if policy=='second_destination' else [])
+
+
+def test_outbound_rate_history_survives_restart_and_counts_both_gets(tmp_path):
+    calls=[]
+    def handler(request):
+        calls.append(request.url.path)
+        return httpx.Response(200,json={'id':123,'type':'User'})
+    def declarations(tenant,url):
+        d=declared_reads(tenant,url)
+        next(iter(d['rate_limits'].values()))['read']['max']=2
+        return d
+    def factory():return RawOwnerAccountRuntime(tmp_path/'db',authority=lambda *a:True,read_authority=lambda *a:True,
+        credential=lambda *a:'token',transport=httpx.MockTransport(handler),outbound_declarations=declarations)
+    gate=factory();gate.bind('t','github','123','r')
+    assert gate.get('t','github','/repos/a/b').status_code==200
+    with pytest.raises(AccountRefusal):factory().get('t','github','/repos/a/b')
+    assert calls==['/user','/repos/a/b']
+
+
+def test_each_get_uses_isolated_canonical_gate_destination(setup,monkeypatch):
+    from app.runtime.guardrails.enforcer import GuardrailEnforcer
+    original=GuardrailEnforcer.dispatch_outbound
+    observed=[]
+    def dispatch(self,action,declarations,**kwargs):
+        observed.append(action['url'])
+        # Review canonical callback routing without allowing an arbitrary host.
+        effect=kwargs['effect']
+        kwargs['effect']=lambda canonical:effect({**canonical,'url':canonical['url']+'/canonical'})
+        return original(self,action,declarations,**kwargs)
+    monkeypatch.setattr(GuardrailEnforcer,'dispatch_outbound',dispatch)
+    gate,calls,_,_=setup
+    with pytest.raises(AccountRefusal):gate.get('tenant1','github','/repos/a/b')
+    assert observed==['https://api.github.com/user']
+    assert calls[0].url.path=='/user/canonical'

@@ -11,6 +11,10 @@ import hashlib
 import json
 import sqlite3
 import re
+import uuid
+from urllib.parse import urlsplit
+from app.runtime.guardrails.enforcer import GuardrailEnforcer, LEDGERS
+from app.runtime.guardrails import outbound_gate
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -50,12 +54,15 @@ class OwnerAccountRuntime:
     Lock contention waits up to 15 seconds, then raises AccountRefusal.
     Optional transport is for offline tests only, never a live-acceptance claim.
     """
-    def __init__(self, database, *, authority, read_authority, credential, transport=None):
+    def __init__(self, database, *, authority, read_authority, credential, transport=None, outbound_declarations=None):
         if not all(callable(x) for x in (authority, read_authority, credential)):
             raise ValueError('trusted callbacks required')
         self.database = str(Path(database))
         self.authority, self.read_authority = authority, read_authority
         self.credential, self.transport = credential, transport
+        if outbound_declarations is not None and not callable(outbound_declarations):
+            raise ValueError("trusted outbound declarations callback required")
+        self.outbound_declarations = outbound_declarations
         with self._transaction() as db:
             db.executescript('''CREATE TABLE IF NOT EXISTS owner_bindings_g139 (
                 tenant TEXT NOT NULL, service TEXT NOT NULL, subject TEXT NOT NULL,
@@ -64,7 +71,9 @@ class OwnerAccountRuntime:
                 CREATE TABLE IF NOT EXISTS owner_dispatch_g139 (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, tenant TEXT NOT NULL,
                 service TEXT NOT NULL, subject TEXT, path TEXT NOT NULL,
-                outcome TEXT NOT NULL, at TEXT NOT NULL);''')
+                outcome TEXT NOT NULL, at TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS owner_outbound_g139 (
+                tenant TEXT PRIMARY KEY, ledger TEXT NOT NULL);''')
 
     @contextmanager
     def _transaction(self):
@@ -128,8 +137,29 @@ class OwnerAccountRuntime:
             raise AccountRefusal('malformed Google subject')
         return sub
 
+    def _fetch(self, db, tenant, client, url, headers, limit):
+        now = datetime.now(timezone.utc)
+        declarations = (self.outbound_declarations(tenant, url)
+                        if self.outbound_declarations is not None else {'tos': {}})
+        prior = db.execute('SELECT ledger FROM owner_outbound_g139 WHERE tenant=?', (tenant,)).fetchone()
+        ledgers = {name: [] for name in LEDGERS}
+        if prior is not None:
+            ledgers['outbound'] = outbound_gate.loads(prior['ledger'])
+        def persist(name, ledger):
+            if name == 'outbound':
+                db.execute('INSERT INTO owner_outbound_g139 VALUES(?,?) ON CONFLICT(tenant) '
+                           'DO UPDATE SET ledger=excluded.ledger', (tenant, outbound_gate.dumps(ledger)))
+        gate = GuardrailEnforcer(ledgers=ledgers, persist=persist)
+        action = {'id': uuid.uuid4().hex, 'platform': urlsplit(url).netloc,
+                  'kind': 'read', 'at': now.timestamp(), 'count': 1,
+                  'automated': True, 'subjects': [], 'data_categories': [],
+                  'purpose': 'owner-account-read', 'url': url}
+        # The isolated canonical action owns the transport destination.
+        return gate.dispatch_outbound(action, declarations,
+            effect=lambda canonical: self._transport_fetch(client, canonical['url'], headers, limit), now=now.isoformat())
+
     @staticmethod
-    def _fetch(client, url, headers, limit):
+    def _transport_fetch(client, url, headers, limit):
         with client.stream('GET', url, headers=headers) as response:
             chunks, size = [], 0
             for chunk in response.iter_bytes():
@@ -171,7 +201,7 @@ class OwnerAccountRuntime:
                 if service == 'github': headers['X-GitHub-Api-Version'] = '2022-11-28'
                 with httpx.Client(timeout=10, follow_redirects=False, trust_env=False,
                                   transport=self.transport) as client:
-                    identity = self._fetch(client, identity_url, headers, 65536)
+                    identity = self._fetch(db, tenant, client, identity_url, headers, 65536)
                     if identity.status_code != 200:
                         raise AccountRefusal('provider identity unavailable')
                     if self._subject(service, identity) != subject:
@@ -183,7 +213,7 @@ class OwnerAccountRuntime:
                     if self.read_authority(tenant, service, subject, url) is not True:
                         raise AccountRefusal('read scope changed during probe')
                     outcome = 'AMBIGUOUS'
-                    response = self._fetch(client, url, headers, 10485760)
+                    response = self._fetch(db, tenant, client, url, headers, 10485760)
                     outcome = 'DISPATCHED'
             except Exception:
                 response = None

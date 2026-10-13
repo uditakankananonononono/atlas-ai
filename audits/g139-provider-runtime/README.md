@@ -91,3 +91,25 @@ proxy loopback servers and a test-only provider destination override; it catches
 the proxy mutation. The lock-timeout test is excluded from the mutation selector
 to avoid nine unnecessary 15-second waits; it runs in the full selected baseline.
 No live provider/TLS verification is claimed by loopback tests.
+
+## Egress composition repair
+
+Both the provider identity GET and resource GET now route through
+GuardrailEnforcer.dispatch_outbound before client.stream. A trusted operator
+outbound_declarations(tenant, exact_url) callback must supply read/automation/rate
+policy per destination; absent policy defaults to denial before any transport.
+It does not grant owner identity or read/disclosure authority. No public-host
+blanket allowlist is supplied. Effect callbacks use the gate's isolated canonical
+URL. Outbound rate history is persisted per tenant in SQLite and loaded on each
+GET, so both requests count and instance restarts do not reset the history.
+The same transaction/write-lock scope and crash limits apply to this ledger.
+A declared policy is not legal compliance or provider ToS verification.
+The static binding snapshot changes only the newly added g139 path to GATED;
+this is declared AST wiring evidence, not global completeness or domination.
+
+Builder composition run against main c95aba26 plus repaired g139: 303 selected
+tests passed (245 guardrail tests collected by this selector plus 58 g139 runtime
+tests). Two first-run failures were missing asn1crypto/playwright dependencies;
+installing them cleared those imports. No baseline changes were made. The final
+11 exact-site mutation runs all caught, including operation redirect and proxy.
+This is a local builder run, not full-repo or independent audit acceptance.

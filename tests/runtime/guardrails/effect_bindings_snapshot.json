@@ -31,6 +31,10 @@
   "evidence": "grounding read; no write-method call found by static scan (not certified)",
   "status": "EXEMPT-BY-DESIGN"
  },
+ "integrations/owner_account_runtime_g139.py": {
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
+  "status": "GATED"
+ },
  "market/sources.py": {
   "evidence": "public market-data reads; no write-method call found by static scan (not certified)",
   "status": "EXEMPT-BY-DESIGN"
