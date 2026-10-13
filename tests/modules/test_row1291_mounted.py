@@ -103,3 +103,8 @@ def test_row1291_mounted_repeat_tenant_isolation(client,oidc_auth_headers):
 def test_row1291_mounted_empty_probe(client, oidc_auth_headers):
     assert client.post(PATH, headers=oidc_auth_headers(), json={}).status_code == 422
     assert client.post(PATH, json={}).status_code == 401
+
+
+def test_row1291_mounted_uppercase_content_type(client, oidc_auth_headers):
+    response = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'APPLICATION/JSON'}, content=json.dumps(request()))
+    assert response.status_code == 200, response.text
