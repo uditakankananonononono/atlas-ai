@@ -83,6 +83,10 @@ def _operation(row, x):
  if row==876:return {'adjacency':{n:[e['to'] for e in x.get('typed_edges',[]) if e['from']==n] for n in x.get('nodes',[])},'edge_types':sorted({e['type'] for e in x.get('typed_edges',[])})}
  if row==877:return {'assimilated':x.get('compatible_information',[]),'accommodated':x.get('schema_changes',[]),'schema_version':int(x.get('prior_version',0))+1}
  if row==878:return {'entities':x.get('entities',[]),'predictions':x.get('predictions',[]),'assumptions_to_test':x.get('assumptions',[])}
+ if row==879 and 'model_update_training' in x:
+  from .model_update879 import fit_update
+  try:return fit_update(x['model_update_training'])
+  except (ValueError,TypeError) as exc:raise CognitiveLearningError(str(exc))from exc
  if row==879:
   predicted=_number(x['predicted'],'predicted');observed=_number(x['observed'],'observed');rate=_number(x.get('learning_rate',.5),'learning_rate',0,1);err=observed-predicted;return {'prediction_error':err,'revised_estimate':predicted+rate*err,'transition':'prior_model->evidence_checked->revised_model'}
  if row==880:
