@@ -1,0 +1,26 @@
+outside=True noise=0.0 split=development
+beam_random n=2 {"correct": 0.0, "cost": 26.81470622074315, "exhausted": 0.5, "predictive_accuracy": 0.375, "queries": 9.0, "search_evaluations": 21720.0}
+beam_eig_cost n=2 {"correct": 0.0, "cost": 12.71380080405208, "exhausted": 1.0, "predictive_accuracy": 0.0, "queries": 7.5, "search_evaluations": 18462.0}
+exhaustive_random n=2 {"correct": 0.0, "cost": 26.81470622074315, "exhausted": 0.5, "predictive_accuracy": 0.375, "queries": 9.0, "search_evaluations": 40440.0}
+exhaustive_eig_cost n=2 {"correct": 0.0, "cost": 12.71380080405208, "exhausted": 1.0, "predictive_accuracy": 0.0, "queries": 7.5, "search_evaluations": 34374.0}
+paired world-cluster beam_eig_cost minus beam_random: correct +0.000000 CI [+0.000000,+0.000000]
+paired world-cluster beam_eig_cost minus beam_random: predictive_accuracy -0.375000 CI [-0.375000,-0.375000]
+paired world-cluster beam_eig_cost minus beam_random: cost -14.100905 CI [-14.100905,-14.100905]
+paired world-cluster beam_eig_cost minus beam_random: search_evaluations -3258.000000 CI [-3258.000000,-3258.000000]
+paired world-cluster beam_eig_cost minus exhaustive_eig_cost: correct +0.000000 CI [+0.000000,+0.000000]
+paired world-cluster beam_eig_cost minus exhaustive_eig_cost: predictive_accuracy +0.000000 CI [+0.000000,+0.000000]
+paired world-cluster beam_eig_cost minus exhaustive_eig_cost: cost +0.000000 CI [+0.000000,+0.000000]
+paired world-cluster beam_eig_cost minus exhaustive_eig_cost: search_evaluations -15912.000000 CI [-15912.000000,-15912.000000]
+outside=True noise=0.0 split=heldout
+beam_random n=38 {"correct": 0.0, "cost": 27.40167267570551, "exhausted": 0.7368421052631579, "predictive_accuracy": 0.22697368421052633, "queries": 9.157894736842104, "search_evaluations": 22062.947368421053}
+beam_eig_cost n=38 {"correct": 0.0, "cost": 25.78368104317155, "exhausted": 0.5789473684210527, "predictive_accuracy": 0.3684210526315789, "queries": 10.657894736842104, "search_evaluations": 25320.947368421053}
+exhaustive_random n=38 {"correct": 0.0, "cost": 27.40167267570551, "exhausted": 0.7368421052631579, "predictive_accuracy": 0.22697368421052633, "queries": 9.157894736842104, "search_evaluations": 41078.52631578947}
+exhaustive_eig_cost n=38 {"correct": 0.0, "cost": 26.297292168309568, "exhausted": 0.5263157894736842, "predictive_accuracy": 0.4144736842105263, "queries": 10.894736842105264, "search_evaluations": 48102.31578947369}
+paired world-cluster beam_eig_cost minus beam_random: correct +0.000000 CI [+0.000000,+0.000000]
+paired world-cluster beam_eig_cost minus beam_random: predictive_accuracy +0.141447 CI [-0.062500,+0.345395]
+paired world-cluster beam_eig_cost minus beam_random: cost -1.617992 CI [-5.285989,+2.062368]
+paired world-cluster beam_eig_cost minus beam_random: search_evaluations +3258.000000 CI [+743.052632,+5830.105263]
+paired world-cluster beam_eig_cost minus exhaustive_eig_cost: correct +0.000000 CI [+0.000000,+0.000000]
+paired world-cluster beam_eig_cost minus exhaustive_eig_cost: predictive_accuracy -0.046053 CI [-0.138158,+0.023026]
+paired world-cluster beam_eig_cost minus exhaustive_eig_cost: cost -0.513611 CI [-0.948747,-0.151899]
+paired world-cluster beam_eig_cost minus exhaustive_eig_cost: search_evaluations -22781.368421 CI [-23652.465789,-21764.526316]
