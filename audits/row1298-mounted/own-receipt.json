@@ -1,0 +1,65 @@
+[
+  {
+    "id": "route_absent",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "d4968306462210d8c3b01c176878404d9f5557467fae3398dfff050671384a30",
+    "restore_verified": true,
+    "log_sha256": "046a2cb581bdea33206d10b90e5e65374bd427e54e7ca6a42e9aabe54bad263e",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "wrong_dispatch",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "d4968306462210d8c3b01c176878404d9f5557467fae3398dfff050671384a30",
+    "restore_verified": true,
+    "log_sha256": "966e355950fc7db87d88d2c3e12d59fbe0bb0ed64c6764dcac377bd68b2db456",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "stub_result",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "d4968306462210d8c3b01c176878404d9f5557467fae3398dfff050671384a30",
+    "restore_verified": true,
+    "log_sha256": "d2ca0d506cc1319420afb04495d3c501b52d054d532129ab34ee6b2ca344e5b6",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "swallowed_refusal",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "d4968306462210d8c3b01c176878404d9f5557467fae3398dfff050671384a30",
+    "restore_verified": true,
+    "log_sha256": "abd62cd4f0aeca0a3b3c9be3bab76813c45ac3e9bac8874f093d15aa5d81ecc3",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "unmounted",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "345d55ff69a88ab5d112053d82db5745798a2ffe65fa1ed3b91dd6b0420e0637",
+    "restore_verified": true,
+    "log_sha256": "3b2063449677cfa48a701c0132c563a3b2e0c6a3e06ff5f469f71dbe8fb1d8f5",
+    "main_mutant_recut": true
+  },
+  {
+    "id": "wrong_boundary",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "7a0c95cbd7c16231461f23bac5a67548a2b458c4857aad154482f092c7bca066",
+    "restore_verified": true,
+    "log_sha256": "fbc4674dd270f232791a59d434986944341f6fd0e2935ca840974369552d5772",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "date_arithmetic",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "7a0c95cbd7c16231461f23bac5a67548a2b458c4857aad154482f092c7bca066",
+    "restore_verified": true,
+    "log_sha256": "b6999ceb1d3480be274ac23c2f7820d9e3564f3f53616e03d982dfd90af0a6c1",
+    "main_mutant_recut": false
+  }
+]
