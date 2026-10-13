@@ -1,0 +1,2 @@
+from app.modules.m20_general_cognitive_worker.conflicts_of_interest1292_routes import router as row1292_router
+app.include_router(row1292_router)

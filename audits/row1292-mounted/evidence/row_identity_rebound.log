@@ -1,0 +1,190 @@
+FF.FFFFF..F.F                                                            [100%]
+=================================== FAILURES ===================================
+______________ test_row1292_mounted_partition_dates_and_boundary _______________
+
+client = <starlette.testclient.TestClient object at 0x7f607f3e57c0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607f48a8e0>
+
+    def test_row1292_mounted_partition_dates_and_boundary(client, oidc_auth_headers):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request())
+>       assert r.status_code==200,r.text
+E       AssertionError: {"detail":"CONFLI1292: UNKNOWN:row"}
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/modules/test_row1292_mounted.py:24: AssertionError
+____________________ test_row1292_mounted_vocab_and_missing ____________________
+
+client = <starlette.testclient.TestClient object at 0x7f607cc3edb0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607f48b4c0>
+
+    def test_row1292_mounted_vocab_and_missing(client, oidc_auth_headers):
+        headers=oidc_auth_headers()
+        r=client.post(PATH,headers=headers,json=request(entries=[{'element':v,'status':'supplied','source_ref':'secret'} for v in VOCAB]))
+>       assert r.status_code==200,r.text
+E       AssertionError: {"detail":"CONFLI1292: UNKNOWN:row"}
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/modules/test_row1292_mounted.py:40: AssertionError
+__________ test_row1292_mounted_strict_refusals[changes1-UNKNOWN:row] __________
+
+client = <starlette.testclient.TestClient object at 0x7f607f4b49b0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607c97ac00>
+changes = {'row': 1302}, reason = 'UNKNOWN:row'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"row":1302,"elements":[{"element":"clients","status":"disputed","also_declared_missing":true,"latest_entry_date":"2026-10-11","days_since_latest":1},{"element":"former_clients","status":"unaddressed","also_declared_missing":false,"latest_entry_date":null,"days_since_latest":null},{"element":"adverse_parties","status":"unaddressed","also_declared_missing":false,"latest_entry_date":null,"days_since_latest":null},{"element":"matters","status":"unaddressed","also_declared_missing":false,"latest_entry_date":null,"days_since_latest":null},{"element":"consent_questions","status":"unaddressed","also_declared_missing":false,"latest_entry_date":null,"days_since_latest":null}],"coverage":{"elements_total":5,"referenced":0,"disputed":1,"declared_missing":0,"unaddressed":4},"counsel_review_required":true,"legal_conclusion":false,"references_verified":false,"boundary":"Legal work product for review, not legal advice. Licensed counsel must verify jurisdiction, currency, citations, facts, duties, deadlines and strategy before use.","scope":{"implemented":["declared element supplied-reference bookkeeping"],"not_implemented":["as common scope line; never clears or declares a conflict or its absence.","legal conclusions","reference verification","external effects"],"data_source":"caller supplied entries only","as_of":"2026-10-12","jurisdiction":"jurisdiction not supplied or validated"}}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1292_mounted.py:56: AssertionError
+_________ test_row1292_mounted_strict_refusals[changes2-EMPTY:entries] _________
+
+client = <starlette.testclient.TestClient object at 0x7f607c92f8c0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607f489580>
+changes = {'entries': []}, reason = 'EMPTY:entries'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+        assert r.status_code==422,r.text
+>       assert r.json()=={'detail':PREFIX+' '+reason}
+E       AssertionError: assert {'detail': 'C... UNKNOWN:row'} == {'detail': 'C...MPTY:entries'}
+E
+E         Differing items:
+E         {'detail': 'CONFLI1292: UNKNOWN:row'} != {'detail': 'CONFLI1292: EMPTY:entries'}
+E         Use -v to get more diff
+
+tests/modules/test_row1292_mounted.py:57: AssertionError
+________ test_row1292_mounted_strict_refusals[changes3-BAD_TYPE:as_of] _________
+
+client = <starlette.testclient.TestClient object at 0x7f607cbc5f40>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607c97b2e0>
+changes = {'as_of': '20260230'}, reason = 'BAD_TYPE:as_of'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+        assert r.status_code==422,r.text
+>       assert r.json()=={'detail':PREFIX+' '+reason}
+E       AssertionError: assert {'detail': 'C... UNKNOWN:row'} == {'detail': 'C...D_TYPE:as_of'}
+E
+E         Differing items:
+E         {'detail': 'CONFLI1292: UNKNOWN:row'} != {'detail': 'CONFLI1292: BAD_TYPE:as_of'}
+E         Use -v to get more diff
+
+tests/modules/test_row1292_mounted.py:57: AssertionError
+______ test_row1292_mounted_strict_refusals[changes4-BAD_TYPE:entry_date] ______
+
+client = <starlette.testclient.TestClient object at 0x7f607c92dac0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607c97a7a0>
+changes = {'entries': [{'element': 'clients', 'status': 'supplied', 'source_ref': 'PRIVATE_REFERENCE', 'entry_date': '2026-10-13'}]}
+reason = 'BAD_TYPE:entry_date'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+        assert r.status_code==422,r.text
+>       assert r.json()=={'detail':PREFIX+' '+reason}
+E       AssertionError: assert {'detail': 'C... UNKNOWN:row'} == {'detail': 'C...E:entry_date'}
+E
+E         Differing items:
+E         {'detail': 'CONFLI1292: UNKNOWN:row'} != {'detail': 'CONFLI1292: BAD_TYPE:entry_date'}
+E         Use -v to get more diff
+
+tests/modules/test_row1292_mounted.py:57: AssertionError
+________ test_row1292_mounted_strict_refusals[changes5-UNKNOWN:element] ________
+
+client = <starlette.testclient.TestClient object at 0x7f607f47a030>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607c979a80>
+changes = {'entries': [{'element': 'OTHER_1292_ONLY', 'status': 'missing'}]}
+reason = 'UNKNOWN:element'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+        assert r.status_code==422,r.text
+>       assert r.json()=={'detail':PREFIX+' '+reason}
+E       AssertionError: assert {'detail': 'C... UNKNOWN:row'} == {'detail': 'C...NOWN:element'}
+E
+E         Differing items:
+E         {'detail': 'CONFLI1292: UNKNOWN:row'} != {'detail': 'CONFLI1292: UNKNOWN:element'}
+E         Use -v to get more diff
+
+tests/modules/test_row1292_mounted.py:57: AssertionError
+_________________ test_row1292_mounted_body_cap_exact_boundary _________________
+
+client = <starlette.testclient.TestClient object at 0x7f607f4b4170>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607c979e40>
+
+    def test_row1292_mounted_body_cap_exact_boundary(client,oidc_auth_headers):
+        headers={**oidc_auth_headers(),'Content-Type':'application/json'}
+        raw=json.dumps(request()).encode();raw+=b' '*(8192-len(raw))
+        r=client.post(PATH,headers=headers,content=raw)
+>       assert r.status_code==200,r.text
+E       AssertionError: {"detail":"CONFLI1292: UNKNOWN:row"}
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/modules/test_row1292_mounted.py:84: AssertionError
+_________________ test_row1292_mounted_repeat_tenant_isolation _________________
+
+client = <starlette.testclient.TestClient object at 0x7f607f3e5af0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f607c9b8400>
+
+    def test_row1292_mounted_repeat_tenant_isolation(client,oidc_auth_headers):
+        data=request()
+        a=client.post(PATH,headers=oidc_auth_headers('tenant-a'),json=data)
+        b=client.post(PATH,headers=oidc_auth_headers('tenant-b'),json=data)
+>       assert a.status_code==b.status_code==200,(a.text,b.text)
+E       AssertionError: ('{"detail":"CONFLI1292: UNKNOWN:row"}', '{"detail":"CONFLI1292: UNKNOWN:row"}')
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/modules/test_row1292_mounted.py:99: AssertionError
+=============================== warnings summary ===============================
+../atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_partition_dates_and_boundary
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_vocab_and_missing
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes1-UNKNOWN:row]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes2-EMPTY:entries]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes3-BAD_TYPE:as_of]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes5-UNKNOWN:element]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_body_cap_exact_boundary
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_repeat_tenant_isolation
+9 failed, 4 passed, 1 warning in 6.97s

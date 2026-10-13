@@ -1,0 +1,44 @@
+[
+  {
+    "id": "mount_removed",
+    "path": "backend/app/main.py",
+    "old": "app.include_router(row1292_router)",
+    "new": "# app.include_router(row1292_router)"
+  },
+  {
+    "id": "duplicate_keys_accepted",
+    "path": "backend/app/modules/m20_general_cognitive_worker/conflicts_of_interest1292_routes.py",
+    "old": "raise ValueError('duplicate key')",
+    "new": "pass"
+  },
+  {
+    "id": "body_limit_bypassed",
+    "path": "backend/app/modules/m20_general_cognitive_worker/conflicts_of_interest1292_routes.py",
+    "old": "if len(body) + len(chunk) > MAX_BODY_BYTES:",
+    "new": "if False:"
+  },
+  {
+    "id": "refusal_status_accepted",
+    "path": "backend/app/modules/m20_general_cognitive_worker/conflicts_of_interest1292_routes.py",
+    "old": "raise HTTPException(422, str(exc)) from None",
+    "new": "raise HTTPException(200, str(exc)) from None"
+  },
+  {
+    "id": "media_guard_removed",
+    "path": "backend/app/modules/m20_general_cognitive_worker/conflicts_of_interest1292_routes.py",
+    "old": "if media_type != 'application/json':",
+    "new": "if False:"
+  },
+  {
+    "id": "row_identity_rebound",
+    "path": "backend/app/modules/m20_general_cognitive_worker/conflicts_of_interest1292.py",
+    "old": "row=1292,",
+    "new": "row=1302,"
+  },
+  {
+    "id": "vocabulary_dropped",
+    "path": "backend/app/modules/m20_general_cognitive_worker/conflicts_of_interest1292.py",
+    "old": "'consent_questions'",
+    "new": "'UNKNOWN_VOCAB'"
+  }
+]

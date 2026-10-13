@@ -1,0 +1,231 @@
+FFFFFFFFFFF.F                                                            [100%]
+=================================== FAILURES ===================================
+______________ test_row1292_mounted_partition_dates_and_boundary _______________
+
+client = <starlette.testclient.TestClient object at 0x7f56c414a5a0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c41fb4c0>
+
+    def test_row1292_mounted_partition_dates_and_boundary(client, oidc_auth_headers):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request())
+>       assert r.status_code==200,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:24: AssertionError
+____________________ test_row1292_mounted_vocab_and_missing ____________________
+
+client = <starlette.testclient.TestClient object at 0x7f56c1566480>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c1488040>
+
+    def test_row1292_mounted_vocab_and_missing(client, oidc_auth_headers):
+        headers=oidc_auth_headers()
+        r=client.post(PATH,headers=headers,json=request(entries=[{'element':v,'status':'supplied','source_ref':'secret'} for v in VOCAB]))
+>       assert r.status_code==200,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:40: AssertionError
+_________ test_row1292_mounted_strict_refusals[changes0-BAD_TYPE:row] __________
+
+client = <starlette.testclient.TestClient object at 0x7f56c1ce87d0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c14880e0>
+changes = {'row': True}, reason = 'BAD_TYPE:row'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:56: AssertionError
+__________ test_row1292_mounted_strict_refusals[changes1-UNKNOWN:row] __________
+
+client = <starlette.testclient.TestClient object at 0x7f56c41d77a0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c1488b80>
+changes = {'row': 1302}, reason = 'UNKNOWN:row'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:56: AssertionError
+_________ test_row1292_mounted_strict_refusals[changes2-EMPTY:entries] _________
+
+client = <starlette.testclient.TestClient object at 0x7f56c41d6f60>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c14891c0>
+changes = {'entries': []}, reason = 'EMPTY:entries'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:56: AssertionError
+________ test_row1292_mounted_strict_refusals[changes3-BAD_TYPE:as_of] _________
+
+client = <starlette.testclient.TestClient object at 0x7f56c42042f0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c1488540>
+changes = {'as_of': '20260230'}, reason = 'BAD_TYPE:as_of'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:56: AssertionError
+______ test_row1292_mounted_strict_refusals[changes4-BAD_TYPE:entry_date] ______
+
+client = <starlette.testclient.TestClient object at 0x7f56c4206330>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c148a520>
+changes = {'entries': [{'element': 'clients', 'status': 'supplied', 'source_ref': 'PRIVATE_REFERENCE', 'entry_date': '2026-10-13'}]}
+reason = 'BAD_TYPE:entry_date'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:56: AssertionError
+________ test_row1292_mounted_strict_refusals[changes5-UNKNOWN:element] ________
+
+client = <starlette.testclient.TestClient object at 0x7f56c4205b50>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c41fb420>
+changes = {'entries': [{'element': 'OTHER_1292_ONLY', 'status': 'missing'}]}
+reason = 'UNKNOWN:element'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1292+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1292_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1292_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:56: AssertionError
+__________________ test_row1292_mounted_forbidden_precedence ___________________
+
+client = <starlette.testclient.TestClient object at 0x7f56c41d7c50>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c1489d00>
+
+    def test_row1292_mounted_forbidden_precedence(client,oidc_auth_headers):
+        headers=oidc_auth_headers()
+        for changes,reason in [({'send':False,'pay':False},'SEND:send'),({'password':None},'NOCREDS:password'),({'file':False},'EFFECT:file')]:
+            r=client.post(PATH,headers=headers,json=request(**changes))
+>           assert r.status_code==422,r.text
+E           AssertionError: {"detail":"Not Found"}
+E           assert 404 == 422
+E            +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:64: AssertionError
+____________________ test_row1292_mounted_decoder_and_media ____________________
+
+client = <starlette.testclient.TestClient object at 0x7f56c41d7770>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c1488c20>
+
+    def test_row1292_mounted_decoder_and_media(client,oidc_auth_headers):
+        headers=oidc_auth_headers()
+        for raw in [b'\xff',b'{broken',b'null',b'[]',(json.dumps(request())[:-1]+',"row":'+str(1292)+'}').encode(),b'{"row":NaN}']:
+            r=client.post(PATH,headers={**headers,'Content-Type':'application/json'},content=raw)
+>           assert r.status_code==422,r.text
+E           AssertionError: {"detail":"Not Found"}
+E           assert 404 == 422
+E            +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:74: AssertionError
+_________________ test_row1292_mounted_body_cap_exact_boundary _________________
+
+client = <starlette.testclient.TestClient object at 0x7f56c414b1a0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c148a480>
+
+    def test_row1292_mounted_body_cap_exact_boundary(client,oidc_auth_headers):
+        headers={**oidc_auth_headers(),'Content-Type':'application/json'}
+        raw=json.dumps(request()).encode();raw+=b' '*(8192-len(raw))
+        r=client.post(PATH,headers=headers,content=raw)
+>       assert r.status_code==200,r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:84: AssertionError
+_________________ test_row1292_mounted_repeat_tenant_isolation _________________
+
+client = <starlette.testclient.TestClient object at 0x7f56c4205eb0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f56c148b560>
+
+    def test_row1292_mounted_repeat_tenant_isolation(client,oidc_auth_headers):
+        data=request()
+        a=client.post(PATH,headers=oidc_auth_headers('tenant-a'),json=data)
+        b=client.post(PATH,headers=oidc_auth_headers('tenant-b'),json=data)
+>       assert a.status_code==b.status_code==200,(a.text,b.text)
+E       AssertionError: ('{"detail":"Not Found"}', '{"detail":"Not Found"}')
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row1292_mounted.py:99: AssertionError
+=============================== warnings summary ===============================
+../../../atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_partition_dates_and_boundary
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_vocab_and_missing
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes0-BAD_TYPE:row]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes1-UNKNOWN:row]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes2-EMPTY:entries]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes3-BAD_TYPE:as_of]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_strict_refusals[changes5-UNKNOWN:element]
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_forbidden_precedence
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_decoder_and_media
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_body_cap_exact_boundary
+FAILED tests/modules/test_row1292_mounted.py::test_row1292_mounted_repeat_tenant_isolation
+12 failed, 1 passed, 1 warning in 8.41s
