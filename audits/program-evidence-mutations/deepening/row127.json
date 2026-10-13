@@ -1,0 +1,44 @@
+{
+  "row": 127,
+  "tests": [
+    "tests/test_executed_comparison.py",
+    "tests/test_row127_validation_deepening.py"
+  ],
+  "mutants": [
+    {
+      "id": "D127-M1",
+      "name": "subject-count-edge",
+      "file": "backend/app/modules/instinct_doc/executed_comparison.py",
+      "old": "2 <= len(subjects) <= 10",
+      "new": "2 <= len(subjects) <= 11"
+    },
+    {
+      "id": "D127-M2",
+      "name": "id-length-edge",
+      "file": "backend/app/modules/instinct_doc/executed_comparison.py",
+      "old": "len(ident) > 128",
+      "new": "len(ident) > 129"
+    },
+    {
+      "id": "D127-M3",
+      "name": "paths-count-edge",
+      "file": "backend/app/modules/instinct_doc/executed_comparison.py",
+      "old": "1 <= len(paths) <= 100",
+      "new": "1 <= len(paths) <= 101"
+    },
+    {
+      "id": "D127-M4",
+      "name": "negative-duration-refusal",
+      "file": "backend/app/modules/instinct_doc/executed_comparison.py",
+      "old": "duration < 0",
+      "new": "duration < -1"
+    },
+    {
+      "id": "D127-M5",
+      "name": "workload-nonpromotion",
+      "file": "backend/app/modules/instinct_doc/executed_comparison.py",
+      "old": "'semantic_workload_equivalence_verified': False",
+      "new": "'semantic_workload_equivalence_verified': True"
+    }
+  ]
+}

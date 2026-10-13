@@ -1,0 +1,10 @@
+.................F.                                                      [100%]
+=================================== FAILURES ===================================
+_________ test_comparison_upper_edges_refused_before_execution[paths] __________
+tests/test_row127_validation_deepening.py:18: in test_comparison_upper_edges_refused_before_execution
+    with pytest.raises(EvidenceError):m.compare_selected_tests(repo,subjects,repeats=1)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EvidenceError
+=========================== short test summary info ============================
+FAILED tests/test_row127_validation_deepening.py::test_comparison_upper_edges_refused_before_execution[paths]
+1 failed, 18 passed in 3.04s

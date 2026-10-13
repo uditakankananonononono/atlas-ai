@@ -1,0 +1,9 @@
+..................F                                                      [100%]
+=================================== FAILURES ===================================
+____________ test_negative_duration_refused_and_workload_disclaimed ____________
+tests/test_row127_validation_deepening.py:28: in test_negative_duration_refused_and_workload_disclaimed
+    assert row['runs'][0]['duration_seconds'] is None
+E   assert -0.5 is None
+=========================== short test summary info ============================
+FAILED tests/test_row127_validation_deepening.py::test_negative_duration_refused_and_workload_disclaimed
+1 failed, 18 passed in 3.02s
