@@ -1,0 +1,231 @@
+{
+  "authored_synthetic": true,
+  "policy_family_holdout": true,
+  "runs": [
+    {
+      "admission": {
+        "admitted": true,
+        "auc": {
+          "irrelevant_component": 0.5,
+          "relabel": 1.0,
+          "scale": 1.0,
+          "subdivide": 1.0
+        },
+        "corrected_permutation_p": 0.002,
+        "proposed": "subdivide",
+        "rules": {
+          "familywise_max_statistic_p": 0.05,
+          "min_auc": 0.75,
+          "permutations": 4999
+        }
+      },
+      "heldout_families": [
+        "bfs",
+        "dijkstra"
+      ],
+      "invariant_wrong_control": {
+        "external_error": 1.0,
+        "metric_failure": 0.0
+      },
+      "seed": 11,
+      "transfer": [
+        {
+          "external_error": 0.32,
+          "metric_failure": 0.0,
+          "policy": "bfs_forward"
+        },
+        {
+          "external_error": 0.29,
+          "metric_failure": 0.0125,
+          "policy": "bfs_reverse"
+        },
+        {
+          "external_error": 0.0,
+          "metric_failure": 0.0,
+          "policy": "exact_dijkstra"
+        }
+      ],
+      "transfer_auc": 0.75
+    },
+    {
+      "admission": {
+        "admitted": true,
+        "auc": {
+          "irrelevant_component": 0.5,
+          "relabel": 1.0,
+          "scale": 1.0,
+          "subdivide": 1.0
+        },
+        "corrected_permutation_p": 0.0044,
+        "proposed": "subdivide",
+        "rules": {
+          "familywise_max_statistic_p": 0.05,
+          "min_auc": 0.75,
+          "permutations": 4999
+        }
+      },
+      "heldout_families": [
+        "bfs",
+        "dijkstra"
+      ],
+      "invariant_wrong_control": {
+        "external_error": 1.0,
+        "metric_failure": 0.0
+      },
+      "seed": 23,
+      "transfer": [
+        {
+          "external_error": 0.26,
+          "metric_failure": 0.0125,
+          "policy": "bfs_forward"
+        },
+        {
+          "external_error": 0.265,
+          "metric_failure": 0.025,
+          "policy": "bfs_reverse"
+        },
+        {
+          "external_error": 0.0,
+          "metric_failure": 0.0,
+          "policy": "exact_dijkstra"
+        }
+      ],
+      "transfer_auc": 1.0
+    },
+    {
+      "admission": {
+        "admitted": true,
+        "auc": {
+          "irrelevant_component": 0.5,
+          "relabel": 1.0,
+          "scale": 1.0,
+          "subdivide": 1.0
+        },
+        "corrected_permutation_p": 0.0024,
+        "proposed": "subdivide",
+        "rules": {
+          "familywise_max_statistic_p": 0.05,
+          "min_auc": 0.75,
+          "permutations": 4999
+        }
+      },
+      "heldout_families": [
+        "bfs",
+        "dijkstra"
+      ],
+      "invariant_wrong_control": {
+        "external_error": 1.0,
+        "metric_failure": 0.0
+      },
+      "seed": 47,
+      "transfer": [
+        {
+          "external_error": 0.27,
+          "metric_failure": 0.0125,
+          "policy": "bfs_forward"
+        },
+        {
+          "external_error": 0.27,
+          "metric_failure": 0.025,
+          "policy": "bfs_reverse"
+        },
+        {
+          "external_error": 0.0,
+          "metric_failure": 0.0,
+          "policy": "exact_dijkstra"
+        }
+      ],
+      "transfer_auc": 1.0
+    },
+    {
+      "admission": {
+        "admitted": true,
+        "auc": {
+          "irrelevant_component": 0.5,
+          "relabel": 1.0,
+          "scale": 1.0,
+          "subdivide": 1.0
+        },
+        "corrected_permutation_p": 0.0052,
+        "proposed": "subdivide",
+        "rules": {
+          "familywise_max_statistic_p": 0.05,
+          "min_auc": 0.75,
+          "permutations": 4999
+        }
+      },
+      "heldout_families": [
+        "bfs",
+        "dijkstra"
+      ],
+      "invariant_wrong_control": {
+        "external_error": 1.0,
+        "metric_failure": 0.0
+      },
+      "seed": 83,
+      "transfer": [
+        {
+          "external_error": 0.25,
+          "metric_failure": 0.0,
+          "policy": "bfs_forward"
+        },
+        {
+          "external_error": 0.295,
+          "metric_failure": 0.0,
+          "policy": "bfs_reverse"
+        },
+        {
+          "external_error": 0.0,
+          "metric_failure": 0.0,
+          "policy": "exact_dijkstra"
+        }
+      ],
+      "transfer_auc": 0.5
+    },
+    {
+      "admission": {
+        "admitted": true,
+        "auc": {
+          "irrelevant_component": 0.5,
+          "relabel": 1.0,
+          "scale": 1.0,
+          "subdivide": 1.0
+        },
+        "corrected_permutation_p": 0.0022,
+        "proposed": "subdivide",
+        "rules": {
+          "familywise_max_statistic_p": 0.05,
+          "min_auc": 0.75,
+          "permutations": 4999
+        }
+      },
+      "heldout_families": [
+        "bfs",
+        "dijkstra"
+      ],
+      "invariant_wrong_control": {
+        "external_error": 1.0,
+        "metric_failure": 0.0
+      },
+      "seed": 131,
+      "transfer": [
+        {
+          "external_error": 0.29,
+          "metric_failure": 0.0,
+          "policy": "bfs_forward"
+        },
+        {
+          "external_error": 0.32,
+          "metric_failure": 0.025,
+          "policy": "bfs_reverse"
+        },
+        {
+          "external_error": 0.0,
+          "metric_failure": 0.0,
+          "policy": "exact_dijkstra"
+        }
+      ],
+      "transfer_auc": 0.75
+    }
+  ]
+}
