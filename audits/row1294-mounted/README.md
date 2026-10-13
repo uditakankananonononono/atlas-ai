@@ -11,3 +11,5 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python audits/row1294-mounted/replay.py OUTPUT_
 ```
 
 Private paths and trailing whitespace normalized in repository logs only; raw originals and normalization pairs delivered separately. READY-FOR-AUDIT is not independent auditor PASS or landing. Shared app/main mount is separate patch, serialized by integrator. No push/ledger edit. Any exploratory or interrupted logs are historical, not released evidence.
+
+Integrator own replay on sequential current-tip composition: unmounted12 HTTP404 assertion failures plus1 auth PASS; mounted13P. Seven exact-site mutants CAUGHT with pytest exit1 assertion failures and exact byte restoration. Added empty-payload probe422 authenticated/401 unauthenticated. Root /m20/legal route outside existing /api/v1/api/modules/20 inventory, unchanged268/99 pins. Production OIDC fixtures, PARTIAL scope, no full-suite claim. Builder interpreter path normalized in raw receipt with original hashes retained.

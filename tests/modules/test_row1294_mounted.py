@@ -98,3 +98,8 @@ def test_row1294_mounted_repeat_tenant_isolation(client,oidc_auth_headers):
     b=client.post(PATH,headers=oidc_auth_headers('tenant-b'),json=data)
     assert a.status_code==b.status_code==200,(a.text,b.text)
     assert a.json()==b.json()
+
+
+def test_row1294_mounted_empty_probe(client, oidc_auth_headers):
+    assert client.post(PATH, headers=oidc_auth_headers(), json={}).status_code == 422
+    assert client.post(PATH, json={}).status_code == 401
