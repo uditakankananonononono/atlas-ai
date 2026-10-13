@@ -40,18 +40,31 @@ def _operation(row, x):
  """One transparent, deterministic cognitive/learning operation per ledger row."""
  if row==860:
   dated=sorted(_items(x,'events'),key=lambda e:e['year']);return {'chronology':[e['event'] for e in dated],'continuities':x.get('continuities',[]),'changes':x.get('changes',[])}
+ if row==861 and 'formulas' in x:
+  from .formal_reasoning import argument_validity
+  try:return {'formal_argument_analysis':argument_validity(x),'natural_language_argument_verified':False}
+  except ValueError as exc:raise CognitiveLearningError(str(exc))from exc
  if row==861:
   q=_score(x,'evidence_quality');a=_score(x,'assumption_risk');return {'argument_score':round(q*(1-a),4),'verdict':None,'score_kind':'hand_written_quality_risk_product_not_argument_validation'}
  if row==862:return {'novelty_score':round(1-len(set(x.get('ideas',[])) & set(x.get('known_ideas',[])))/max(1,len(set(x.get('ideas',[])))),4),'ideas':list(dict.fromkeys(x.get('ideas',[])))}
  if row==863:return {'provocation':f"What if {x['dominant_pattern']} were reversed?",'indirect_candidate':x['candidate']}
  if row==864:
-  ideas=list(dict.fromkeys(_items(x,'ideas')));cats={i.get('category') for i in ideas if isinstance(i,dict)};return {'fluency':len(ideas),'flexibility':len(cats),'ideas':ideas}
+  supplied=_items(x,'ideas');ideas=[]
+  for idea in supplied:
+   if not isinstance(idea,(str,dict)):raise CognitiveLearningError('idea must be text or object')
+   if idea not in ideas:ideas.append(idea)
+  cats={i.get('category')for i in ideas if isinstance(i,dict)and isinstance(i.get('category'),str)}
+  return {'fluency':len(ideas),'flexibility':len(cats),'ideas':ideas}
  if row==865:
   opts=_items(x,'options');w=x.get('weights',{});rank=sorted(({'option':o['name'],'score':round(sum(_number(o['scores'][k],k,0,1)*_number(v,k,0,1) for k,v in w.items()),4)} for o in opts),key=lambda z:z['score'],reverse=True);return {'ranking':rank,'selected':rank[0]['option']}
  if row==866:return {'association_path':[x['seed'],*x.get('bridges',[]),x['target']],'remote_distance':len(x.get('bridges',[]))+1}
- if row==867:return {'old_frame':x['current_frame'],'new_frame':x['alternative_frame'],'implication_delta':list(set(x.get('new_implications',[]))-set(x.get('old_implications',[])))}
+ if row==867:return {'old_frame':x['current_frame'],'new_frame':x['alternative_frame'],'implication_delta':sorted(set(x.get('new_implications',[]))-set(x.get('old_implications',[])))}
  if row==868:return {'perspectives':[{'stakeholder':p['stakeholder'],'priority':p['priority']} for p in _items(x,'perspectives')],'unresolved':x.get('unknowns',[])}
  if row==869:return {'anomaly_coverage':round(len(set(x.get('explained_anomalies',[])) & set(x.get('anomalies',[])))/max(1,len(x.get('anomalies',[]))),4),'transition_cost':_score(x,'transition_cost')}
+ if row==870 and x.get('concept_induction') is True:
+  from .concept_induction870 import induce
+  try:return induce(x)
+  except ValueError as exc:raise CognitiveLearningError(str(exc))from exc
  if row==870:
   examples=_items(x,'examples');attrs=set(examples[0]['attributes']);[attrs.intersection_update(e['attributes']) for e in examples[1:]];return {'defining_attributes':sorted(attrs),'category_rule':' AND '.join(sorted(attrs))}
  if row==871:return {'nodes':sorted(set(x.get('concepts',[]))),'edges':x.get('typed_links',[]),'cross_link_count':sum(e.get('cross_link',False) for e in x.get('typed_links',[]))}
