@@ -50,6 +50,11 @@ def harness():
     spec = importlib.util.spec_from_file_location('vertical_bench', HARNESS)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    original = {key: module.celery_app.conf[key] for key in (
+        "broker_url", "result_backend", "task_always_eager", "task_eager_propagates", "task_store_eager_result")}
+    original_echo_store = module.echo.store_eager_result
+    original_backend_cache = module.celery_app._backend_cache
+    original_local_backend = getattr(module.celery_app._local, "backend", None)
     module.celery_app.conf.update(
         broker_url='memory://',
         result_backend='cache+memory://',
@@ -58,7 +63,14 @@ def harness():
         task_store_eager_result=True,
     )
     module.echo.store_eager_result = True
-    return module
+    try:
+        yield module
+    finally:
+        module.celery_app.conf.update(original)
+        module.echo.store_eager_result = original_echo_store
+        # Celery caches a backend instance after its first result read.
+        module.celery_app._backend_cache = original_backend_cache
+        module.celery_app._local.backend = original_local_backend
 
 
 def test_named_gap_verbatim_in_module_docstring_and_docs(harness):
