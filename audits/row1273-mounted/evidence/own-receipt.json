@@ -1,0 +1,163 @@
+{
+  "baseline": {
+    "exit_code": 0,
+    "log_sha256": "2d837c696c755ce2de0e0f1d49f17e36220f3706f7e92c6a9d95b7f96e3cfba8",
+    "failed_ids": []
+  },
+  "mutants": [
+    {
+      "exit_code": 1,
+      "log_sha256": "2ed263d63b0bd86333a321c8ce3481e66db356643d2ed8380e9a4e568aaacfc8",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_malformed_date_refused",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_cap_refused",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_unknown_key_not_echoed",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_strict_json_types",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_no_external_effect_request"
+      ],
+      "id": "mutant-accepts_invalid",
+      "before_sha256": "856e4f46fd436052324a8c652f27d2872ebb09ca527c4885d80e2e8f12560cc4",
+      "mutated_sha256": "34847f2253b37082a303e16507a3e5692036292ea5479eabfbf5707e84e2e0c0",
+      "status": "CAUGHT",
+      "after_sha256": "856e4f46fd436052324a8c652f27d2872ebb09ca527c4885d80e2e8f12560cc4",
+      "restore_verified": true
+    },
+    {
+      "exit_code": 1,
+      "log_sha256": "bc34cad830b2343ba68fa2217b39b7de9197aa6536e0837e9759a05c52ea7a26",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_discriminating_bookkeeping"
+      ],
+      "id": "mutant-authority_date_ignored",
+      "before_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "mutated_sha256": "d25564fb314bdbaef945fb22f5d88dfd1f5db3d1cba1876c51b5b15aa542b34b",
+      "status": "CAUGHT",
+      "after_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "restore_verified": true
+    },
+    {
+      "exit_code": 1,
+      "log_sha256": "4c9a1ae05a1191a8d6129fcdad596e1cbbe593efbbd29f7876fd16dabf691abd",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_mounted_golden"
+      ],
+      "id": "mutant-external_effect",
+      "before_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "mutated_sha256": "0a2d93f8c6361993dd12f55098e67b338c0cb8e613d763c4c5dedfbec9be682b",
+      "status": "CAUGHT",
+      "after_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "restore_verified": true
+    },
+    {
+      "exit_code": 1,
+      "log_sha256": "ce720a834465d316a1489624487deec97d361244c7e17e84d7ca573e09fefe7c",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_mounted_golden",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_production_auth_required"
+      ],
+      "id": "mutant-legal_conclusion",
+      "before_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "mutated_sha256": "aabda8fc353ceebf0482a21357f6e21dddcde30faf608d9bc7cc846713c173a3",
+      "status": "CAUGHT",
+      "after_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "restore_verified": true
+    },
+    {
+      "exit_code": 1,
+      "log_sha256": "b253e9461bb065a3060d6a8b9ab9b5323d2c69c938d23dff01299c18289a5412",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_discriminating_bookkeeping"
+      ],
+      "id": "mutant-missing_source_ignored",
+      "before_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "mutated_sha256": "d7256c6585354c3ba52df443c1732b695dada8faabbdb92c46e478242e5840f3",
+      "status": "CAUGHT",
+      "after_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "restore_verified": true
+    },
+    {
+      "exit_code": 1,
+      "log_sha256": "624815111fc2f0aff777f7d79d56efe551d8da38215917f4486a7f7d3ce37a4a",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_mounted_golden",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_discriminating_bookkeeping",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_malformed_date_refused",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_cap_refused",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_unknown_key_not_echoed",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_strict_json_types",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_no_external_effect_request",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_mount_method_and_identity",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_production_auth_required",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_deterministic_isolated_output"
+      ],
+      "id": "mutant-mount_removed",
+      "before_sha256": "b5eadc0b854bb741f9432398b2612c444e81225c087a95c9cfb8b471e8ebfde8",
+      "mutated_sha256": "7ae245df5a89f1f02574dc5ac5885fafebc8fe559a1a37ed21c775a03936f3c3",
+      "status": "CAUGHT",
+      "after_sha256": "b5eadc0b854bb741f9432398b2612c444e81225c087a95c9cfb8b471e8ebfde8",
+      "restore_verified": true
+    },
+    {
+      "exit_code": 1,
+      "log_sha256": "8b80cab61e5103462a3fbf98fb67bb8be901b89ead46889f84f6e05123db9d15",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_discriminating_bookkeeping"
+      ],
+      "id": "mutant-unknown_classification_ignored",
+      "before_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "mutated_sha256": "1f0bdf180fbe99004bea18a24fcffe71b99a6e6c7f7b90d20d2cff03517a32f4",
+      "status": "CAUGHT",
+      "after_sha256": "42538ac1ed9e9b758919d5ef0f77d1106f96072c4e80bf7e1fb6c028f6a1f550",
+      "restore_verified": true
+    },
+    {
+      "exit_code": 1,
+      "log_sha256": "5c6594b28046f50bf2793b774ad26058323a845f799bce3046037e8833e81924",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_mounted_golden",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_discriminating_bookkeeping",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_malformed_date_refused",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_cap_refused",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_unknown_key_not_echoed",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_strict_json_types",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_no_external_effect_request",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_mount_method_and_identity",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_production_auth_required",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_deterministic_isolated_output"
+      ],
+      "id": "mutant-wrong_method",
+      "before_sha256": "856e4f46fd436052324a8c652f27d2872ebb09ca527c4885d80e2e8f12560cc4",
+      "mutated_sha256": "382462dd740b30b72eb1f3faf0f88e6670ec6651add24086fd37243fb3882788",
+      "status": "CAUGHT",
+      "after_sha256": "856e4f46fd436052324a8c652f27d2872ebb09ca527c4885d80e2e8f12560cc4",
+      "restore_verified": true
+    },
+    {
+      "exit_code": 1,
+      "log_sha256": "36a4078bbe6815824146826f5adb8ceb54b83d0cd6be1b0cca259e3b9e0898d5",
+      "failed_ids": [
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_mounted_golden",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_discriminating_bookkeeping",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_malformed_date_refused",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_cap_refused",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_unknown_key_not_echoed",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_strict_json_types",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_no_external_effect_request",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_mount_method_and_identity",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_production_auth_required",
+        "tests/modules/test_m20_mounted_1273.py::test_row_1273_deterministic_isolated_output"
+      ],
+      "id": "mutant-wrong_route",
+      "before_sha256": "856e4f46fd436052324a8c652f27d2872ebb09ca527c4885d80e2e8f12560cc4",
+      "mutated_sha256": "0e4675442f7aff841a2238507217f724f404affa604185ed311d58877e8976dd",
+      "status": "CAUGHT",
+      "after_sha256": "856e4f46fd436052324a8c652f27d2872ebb09ca527c4885d80e2e8f12560cc4",
+      "restore_verified": true
+    }
+  ],
+  "restored": {
+    "exit_code": 0,
+    "log_sha256": "504d0fb3b15816f4819a5877a16fec5083dd3704eb927d9b8c75c2560bead1d4",
+    "failed_ids": []
+  }
+}
