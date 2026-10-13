@@ -78,11 +78,33 @@ def test_sparse_oversize_file_refused_before_read(tmp_path,monkeypatch):
  binding={'entry_id':'a','artifact_path':'data','row_ids':[],'project_ids':[],'format':'csv'}
  # Exercise this API's own cap even if safe_file's independent stat gate changes.
  monkeypatch.setattr(repo_evidence,'safe_file',lambda *a:sparse)
- original_open=Path.open
+ original_open=Path.open;opened=[]
  def guard_open(path,*a,**kw):
-  if path==sparse:raise AssertionError('oversized artifact must not be opened')
+  if path==sparse:
+   opened.append(True)
+   raise AssertionError('oversized artifact must not be opened')
   return original_open(path,*a,**kw)
  monkeypatch.setattr(Path,'open',guard_open)
  row=bind_artifacts(reg,tmp_path,[binding])['entries'][0]
  assert row['provenance']=='UNVERIFIED' and row['counted_records'] is None
  assert row['artifact_sha256'] is None
+ assert opened==[]
+
+
+def test_local_read_is_bounded_even_when_file_grows_after_stat(tmp_path,monkeypatch):
+ import io
+ from app.modules.instinct_doc import repo_evidence
+ requests=[]
+ class Handle(io.BytesIO):
+  def read(self,n=-1):requests.append(n);return super().read(n)
+ class RacingArtifact:
+  def stat(self):
+   class Stat:st_size=5
+   return Stat()
+  def open(self,mode):return Handle(b'x'*8_000_002)
+  def read_bytes(self):requests.append(-1);return b'x'*8_000_002
+ monkeypatch.setattr(repo_evidence,'safe_file',lambda *a:RacingArtifact())
+ reg=add_entry(create_register(),dict(id='a',project_id='p',dataset='d',records=1,source='s',source_ref='r'))
+ row=bind_artifacts(reg,tmp_path,[{'entry_id':'a','artifact_path':'data','row_ids':[],'project_ids':[],'format':'csv'}])['entries'][0]
+ assert requests==[8_000_001]
+ assert row['provenance']=='UNVERIFIED' and row['counted_records'] is None
