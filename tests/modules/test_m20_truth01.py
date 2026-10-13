@@ -48,11 +48,19 @@ def test_catalog_analysis_and_ledger_scope_agree_without_certification(method):
  out=response.json()['output']
  for k,v in scope.items():assert out[k]==v
  row=next(x for x in json.loads((ROOT/'audits/additional-2000-features.json').read_text())['rows'] if x['id']==ROWS[method])
- assert row['status']=='PARTIAL' and row['reference_scope']['reference_operator']==EXPECTED[method]
- assert row['reference_scope']['original_capability_status']=='unverified' and row['reference_scope']['named_capability_executed'] is False
- assert EXPECTED[method] in row['boundary'] and 'remains unverified' in row['boundary']
+ assert row['status']=='PARTIAL'
+ reference = row['reference_scope']
+ if 'legacy_reference_scope' in reference:
+  assert reference['scope_status']=='dedicated_engine_only' and reference['dedicated_operator']
+  assert reference['original_capability_status']=='unverified' and reference['named_capability_executed'] is False
+  reference = reference['legacy_reference_scope']
+ else:
+  assert EXPECTED[method] in row['boundary'] and 'remains unverified' in row['boundary']
+ assert reference['reference_operator']==EXPECTED[method]
+ assert reference['original_capability_status']=='unverified' and reference['named_capability_executed'] is False
  line=next(x for x in (ROOT/'docs/IMPLEMENTATION_AUDIT.md').read_text().splitlines() if x.startswith(f"| {ROWS[method]} |"))
- assert 'verified-practitioner-depth' not in line and 'PARTIAL-reference-substitute' in line and EXPECTED[method] in line
+ assert 'verified-practitioner-depth' not in line
+ assert 'PARTIAL-reference-substitute' in line and EXPECTED[method] in line
 @pytest.mark.parametrize('method',sorted(EXPECTED))
 def test_missing_inputs_and_nonfinite_inputs_refused(method):
  c=client()
