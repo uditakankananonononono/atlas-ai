@@ -105,26 +105,17 @@ _KEYS = {"feature", "source_lines", "doc_line", "measure", "payload_sha256",
 
 
 def verify(payload, result):
-    """Re-evaluate from the same payload and compare every field;
-    deterministic, internal consistency only."""
-    checks = ["structure", "exact_keys", "fingerprint", "sets", "verdict"]
+    """Recompute from the same payload and compare EVERY field in _KEYS;
+    failed names the exact fields that differ. Deterministic, internal
+    consistency only."""
+    checks = ["structure", "exact_keys", "field_equality"]
     if type(result) is not dict:
         return {"verified": False, "failed": ["structure"], "checks": checks}
     if set(result) != _KEYS:
         return {"verified": False, "failed": ["exact_keys"], "checks": checks}
     expected = evaluate(payload)
-    failed = []
-    if result.get("payload_sha256") != expected["payload_sha256"]:
-        failed.append("fingerprint")
-    if (result.get("extra_capabilities") != expected["extra_capabilities"]
-            or result.get("shared_capabilities") != expected["shared_capabilities"]):
-        failed.append("sets")
-    for key in ("meemee_count", "claire_count", "verdict", "doc_claims"):
-        if result.get(key) != expected[key]:
-            failed.append("verdict")
-            break
-    return {"verified": not failed, "failed": sorted(set(failed)),
-            "checks": checks}
+    failed = [key for key in sorted(_KEYS) if result[key] != expected[key]]
+    return {"verified": not failed, "failed": failed, "checks": checks}
 
 
 def run(payload):
