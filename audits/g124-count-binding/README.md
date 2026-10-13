@@ -5,7 +5,7 @@ Bind_artifacts real call sites on base c95aba26: only
 No production call site discovered. Dataset registers remain declarations unless
 bound through this integration. No all-program adoption claim.
 
-Peer reader and its tests imported unchanged from parent attachments:
+Bounded standalone reader and its original tests imported unchanged:
 - dataset_count_reader_p254.py SHA256 f04e6efdf3f5efd502e9f7321940b5259794e6f9901e3b0c8a45aa8c837e875a
 - test_dataset_count_reader_p254.py SHA256 1265a751e6b7c716d2d9bf23a1fe7ef4deec7a13e72fcb0d41638d05e7d1d6c8
 
@@ -38,9 +38,9 @@ Reproduce on Python 3.12:
 PYTHONPATH=backend python -m pytest --noconftest -q tests/test_dataset_count_binding_g124.py tests/test_dataset_artifact_binding.py tests/test_row124_validation_deepening.py tests/modules/test_dataset_count_reader_p254.py tests/modules/test_instinct_dataset_register_p254.py
 ```
 Red 10 failures against existing bind_artifacts (new schema/count invariants).
-Green local tests are builder evidence, independent audit pending. Full Atlas
-suite/deployment/all-caller coverage not established. Reader is peer-authored,
-not audited by this builder. This delta closes unchecked declared-count upgrade
+Mechanism independently VERIFIED at its stated scope; test coverage SCOPED.
+Full Atlas suite/deployment/all-caller coverage is not established by focused
+replays. This delta closes unchecked declared-count upgrade
 paths on this API, not the requirement of 120 actual datasets per project.
 
 1b cap repair: bind_artifacts checks local stat against the unchanged reader's
