@@ -1,0 +1,168 @@
+{
+  "base_commit": "5886edfc9d74e9e402952e8d473477dfd96c0870",
+  "base_tree": "3138cccfcb7e61ba9627e1f7e2e98ab4a6be7edf",
+  "test_file": "tests/modules/test_m20_rows688810_mounted_redgreen.py",
+  "test_sha256": "8eb9a9daf245fa083d8cf20b1508b667d166914335a46deeaebd97c5d35975ba",
+  "historical_runs": [
+    {
+      "row": "810",
+      "phase": "parent",
+      "checkout": "7ce3bb3a14edfc5c4ed8023c7b0748d4e8660687",
+      "tree": "1e234f4248a28820b3e0bb028db3f4d2143bb6f0",
+      "status": "?? tests/modules/test_m20_rows688810_mounted_redgreen.py",
+      "test_sha256": "8eb9a9daf245fa083d8cf20b1508b667d166914335a46deeaebd97c5d35975ba",
+      "argv": [
+        "PYTHON3_12",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_m20_rows688810_mounted_redgreen.py::test_row810_mounted_sm2_observed_state",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 1,
+      "log_sha256": "8638354ea21e6d0f8b451806d9bb8db3970d4c5d5f184ece78abd0319bddc69b"
+    },
+    {
+      "row": "810",
+      "phase": "landing",
+      "checkout": "46cdb238350583d51889111c23ed406ae4ca016f",
+      "tree": "7654791a5fc0fb81cab3fdfd32f90aca2f5cb60f",
+      "status": "?? tests/modules/test_m20_rows688810_mounted_redgreen.py",
+      "test_sha256": "8eb9a9daf245fa083d8cf20b1508b667d166914335a46deeaebd97c5d35975ba",
+      "argv": [
+        "PYTHON3_12",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_m20_rows688810_mounted_redgreen.py::test_row810_mounted_sm2_observed_state",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "log_sha256": "8d9ab5901d704de6ebfaa81e06c786f55325d20bb1d2ed10780516f3c74a1eba"
+    },
+    {
+      "row": "688",
+      "phase": "parent",
+      "checkout": "43a4a56c5c40f5909b5dc7f73ef96a51f234c3cc",
+      "tree": "db267a65fac5bbf3e78b7e150df1259a907e84fa",
+      "status": "?? tests/modules/test_m20_rows688810_mounted_redgreen.py",
+      "test_sha256": "8eb9a9daf245fa083d8cf20b1508b667d166914335a46deeaebd97c5d35975ba",
+      "argv": [
+        "PYTHON3_12",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_m20_rows688810_mounted_redgreen.py::test_row688_mounted_agreement_bookkeeping",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 1,
+      "log_sha256": "56a6b51baf470a925d5b294e7c94c0c8b0df8183fed5b1d97bb4c894736fcfb4"
+    },
+    {
+      "row": "688",
+      "phase": "landing",
+      "checkout": "9b3dc4432120af4667426b108b050d2cc3fd4bcd",
+      "tree": "ecdefe8719cc84d5832ab0f16a9ab1f3769b09bc",
+      "status": "?? tests/modules/test_m20_rows688810_mounted_redgreen.py",
+      "test_sha256": "8eb9a9daf245fa083d8cf20b1508b667d166914335a46deeaebd97c5d35975ba",
+      "argv": [
+        "PYTHON3_12",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_m20_rows688810_mounted_redgreen.py::test_row688_mounted_agreement_bookkeeping",
+        "-q",
+        "-rf"
+      ],
+      "returncode": 0,
+      "log_sha256": "3978008dae307da0d8ec28c3f1a152712196d95484a052804895309abdb685be"
+    }
+  ],
+  "route_removal_runs": [
+    {
+      "row": "688",
+      "checkout": "5886edfc9d74e9e402952e8d473477dfd96c0870",
+      "changed_path": "backend/app/modules/m20_general_cognitive_worker/routes.py",
+      "removed_line": "router.include_router(atdd688_routes_router)",
+      "source_sha256_before": "b6f9e0b7d8ebf88470abf223ed9a3eb1e90c7e1478fb23c5896dce7cfdd2c20a",
+      "restored_sha256": "b6f9e0b7d8ebf88470abf223ed9a3eb1e90c7e1478fb23c5896dce7cfdd2c20a",
+      "restore_verified": true,
+      "returncode": 1,
+      "argv": [
+        "PYTHON3_12",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_m20_rows688810_mounted_redgreen.py::test_row688_mounted_agreement_bookkeeping",
+        "-q",
+        "-rf"
+      ],
+      "log_sha256": "f54402b3c471e4519b93d63e875035b4d42a4283ce0ed3a7b71780e17f7162a7"
+    },
+    {
+      "row": "810",
+      "checkout": "5886edfc9d74e9e402952e8d473477dfd96c0870",
+      "changed_path": "backend/app/modules/m20_general_cognitive_worker/routes.py",
+      "removed_line": "router.include_router(learning_reasoning_router_810_859)",
+      "source_sha256_before": "b6f9e0b7d8ebf88470abf223ed9a3eb1e90c7e1478fb23c5896dce7cfdd2c20a",
+      "restored_sha256": "b6f9e0b7d8ebf88470abf223ed9a3eb1e90c7e1478fb23c5896dce7cfdd2c20a",
+      "restore_verified": true,
+      "returncode": 1,
+      "argv": [
+        "PYTHON3_12",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "-p",
+        "no:cacheprovider",
+        "tests/modules/test_m20_rows688810_mounted_redgreen.py::test_row810_mounted_sm2_observed_state",
+        "-q",
+        "-rf"
+      ],
+      "log_sha256": "279f47097955c1e9e94cdcf3180f6be27939bebaf59283e4445029e0a1fb8e77"
+    }
+  ],
+  "environment": {
+    "PYTHONPATH": "backend",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "ATLAS_DEV_NO_AUTH": "1",
+    "ATLAS_ENV": "development",
+    "ATLAS_M10_TIMESTAMP_SCHEME": "off"
+  },
+  "floor": {
+    "passed": 166,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0,
+    "warning": "Starlette TestClient deprecation",
+    "real_conftest_repeated": true,
+    "log_sha256": "73afa0a1787abe68dbfe66e8f2776c87e7c1a8eaef898453d22e04714614f225",
+    "real_conftest_log_sha256": "5b992a8abb70fa2a5c967b9ab1ecd363563a38a1dea8f7c6c5c0ea8e8009581f",
+    "selectors": [
+      "tests/modules/test_m20_rows688810_mounted_redgreen.py",
+      "tests/modules/test_m20_acceptance_test_driven_development688.py",
+      "tests/modules/test_m20_spaced_review.py",
+      "tests/modules/test_m20_learning_reasoning_810_859.py"
+    ]
+  },
+  "limits": [
+    "fresh overlaid tests, not historical tests",
+    "development auth bypass only",
+    "no engine runtime changes",
+    "no held science research build",
+    "literal groups PARTIAL"
+  ]
+}
