@@ -53,5 +53,10 @@
     "log": "baseline.log",
     "raw_sha256": "df23579b2cfe7499ea54b42b2519f5536bd9844a19588be2d295cc6ef963bded",
     "delivered_sha256": "64aea2f740fae448b52af4b7fac613429c40591ec6bf7f70cb7dfd78add74f81"
+  },
+  {
+    "log": "raw-receipt.json",
+    "raw_sha256": "d3132c3557094d5efd080e973e1f73f7e5c5e7a1f92a56eb94dae29b7c4925eb",
+    "delivered_sha256": "4ccdf1d1d0ea672be53b3cb6c0ab1dbd5e257f375694324ebddc90d89321c3f9"
   }
 ]

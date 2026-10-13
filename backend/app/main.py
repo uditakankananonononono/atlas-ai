@@ -74,3 +74,5 @@ from app.modules.m20_general_cognitive_worker.pre_suasion105_routes import route
 app.include_router(pre_suasion105_router)
 from app.modules.m20_general_cognitive_worker.legal_ethics1290_routes import router as row1290_router
 app.include_router(row1290_router)
+from app.modules.m20_general_cognitive_worker.professional_responsibility1291_routes import router as row1291_router
+app.include_router(row1291_router)
