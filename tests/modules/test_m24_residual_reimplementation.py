@@ -18,7 +18,7 @@ async def test_unknown_checkout_is_tenant_bound_refusal():
         await Service(None, Repo(), None).execute_checkout('missing', 'tenant-a')
 
 @pytest.mark.asyncio
-async async def test_unbound_invoice_refusal_does_not_emit_legacy_idempotency_keys():
+async def test_unbound_invoice_refusal_does_not_emit_legacy_idempotency_keys():
     calls=[]
     def handler(request):
         calls.append(request)
