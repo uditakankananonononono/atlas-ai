@@ -142,7 +142,7 @@ def bind_artifacts(register, root, bindings, *, source_reader=None):
     """
     from pathlib import Path
     import io
-    from .dataset_count_reader_p254 import check_declared
+    from .dataset_count_reader_p254 import check_declared, MAX_BYTES
     from .repo_evidence import EvidenceError, digest, safe_file
     if not isinstance(register, DatasetRegister):
         raise _err('bad_type:register')
@@ -192,7 +192,13 @@ def bind_artifacts(register, root, bindings, *, source_reader=None):
             try:
                 if root_error:
                     raise EvidenceError('root unavailable')
-                artifact = safe_file(root, binding['artifact_path']).read_bytes()
+                artifact_path = safe_file(root, binding['artifact_path'])
+                if artifact_path.stat().st_size > MAX_BYTES:
+                    raise EvidenceError('artifact over byte cap')
+                with artifact_path.open('rb') as handle:
+                    artifact = handle.read(MAX_BYTES + 1)
+                if len(artifact) > MAX_BYTES:
+                    raise EvidenceError('artifact over byte cap')
                 result['artifact_sha256'] = digest(artifact)
                 result['artifact_bytes'] = len(artifact)
                 counted = check_declared(io.BytesIO(artifact), binding.get('format'), declared_count)

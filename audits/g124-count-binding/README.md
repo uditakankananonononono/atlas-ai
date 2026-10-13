@@ -42,3 +42,9 @@ Green local tests are builder evidence, independent audit pending. Full Atlas
 suite/deployment/all-caller coverage not established. Reader is peer-authored,
 not audited by this builder. This delta closes unchecked declared-count upgrade
 paths on this API, not the requirement of 120 actual datasets per project.
+
+1b cap repair: bind_artifacts checks local stat against the unchanged reader's
+MAX_BYTES before opening and reads at most MAX_BYTES+1. A growing/raced file is
+also refused on returned length; no unlimited read_bytes allocation. Sparse-file
+regression replaces safe_file with a test-only passthrough to ensure this API's
+own pre-read cap refuses opening, not only repo_evidence's existing size check.

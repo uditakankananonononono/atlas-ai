@@ -67,3 +67,22 @@ def test_declared_only_supported_count_and_matching_source_aggregation(tmp_path)
 def test_json_object_is_not_array_count(tmp_path):
  row=run(tmp_path,b'{"one":1}','json',1)
  assert row['provenance']=='UNVERIFIED' and row['counted_records'] is None
+
+
+def test_sparse_oversize_file_refused_before_read(tmp_path,monkeypatch):
+ from pathlib import Path
+ from app.modules.instinct_doc import repo_evidence
+ sparse=tmp_path/'data'
+ with sparse.open('wb') as handle:handle.truncate(8_000_001)
+ reg=add_entry(create_register(),dict(id='a',project_id='p',dataset='d',records=1,source='s',source_ref='r'))
+ binding={'entry_id':'a','artifact_path':'data','row_ids':[],'project_ids':[],'format':'csv'}
+ # Exercise this API's own cap even if safe_file's independent stat gate changes.
+ monkeypatch.setattr(repo_evidence,'safe_file',lambda *a:sparse)
+ original_open=Path.open
+ def guard_open(path,*a,**kw):
+  if path==sparse:raise AssertionError('oversized artifact must not be opened')
+  return original_open(path,*a,**kw)
+ monkeypatch.setattr(Path,'open',guard_open)
+ row=bind_artifacts(reg,tmp_path,[binding])['entries'][0]
+ assert row['provenance']=='UNVERIFIED' and row['counted_records'] is None
+ assert row['artifact_sha256'] is None
