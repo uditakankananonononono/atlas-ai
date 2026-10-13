@@ -126,6 +126,10 @@ def analyze_legal_feature(feature_id: int, data: dict[str, Any], *, tenant_id: s
     conflicts += [{"authority_id":a["id"],"reason":"jurisdiction mismatch"} for a in authorities if not a["jurisdiction_match"]]
     stale=[a["id"] for a in authorities if a["stale"] or date.fromisoformat(a["last_checked_at"]) < as_of]
     missing=[x["proposition"] for x in analysis if x["status"]=="needs_authority"]
+    discovery=None
+    if feature_id==1279 and "discovery" in data:
+        from .discovery1279 import organize as _discovery_organize
+        discovery=_discovery_organize(data["discovery"])
     spec=SPECS[feature_id]
     artifact={
         "mechanism":spec["mechanism"],"inputs":data.get("row_inputs",{}),"sourced_facts":sourced_facts,
@@ -136,4 +140,4 @@ def analyze_legal_feature(feature_id: int, data: dict[str, Any], *, tenant_id: s
     return {"status":"supplied_legal_review_template_only","named_capability_executed":False,"evidence_verified":False,"feature_id":feature_id,"method":spec["method"],"jurisdiction":jurisdiction,"as_of":as_of_text,
             "provenance":{"authority_count":len(authorities),"authorities":authorities},spec["output_key"]:artifact,
             "isolation":{"tenant_id":tenant,"actor_id":actor,"cross_tenant_data":False},
-            "legal_conclusion":None,"filing_or_external_effect":False,"requires_licensed_counsel":True,"disclaimer":DISCLAIMER}
+            "legal_conclusion":None,"filing_or_external_effect":False,"requires_licensed_counsel":True,"disclaimer":DISCLAIMER,**({"discovery_bookkeeping":discovery} if discovery is not None else {})}
