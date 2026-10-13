@@ -1,0 +1,19 @@
+fam 0 30 discrete outputs identical: True max |dF| = 6.66e-16
+fam 0 150 discrete outputs identical: True max |dF| = 1.67e-15
+fam 7 30 discrete outputs identical: True max |dF| = 2.61e-15
+fam 7 150 discrete outputs identical: True max |dF| = 1.89e-15
+fam 19 30 discrete outputs identical: True max |dF| = 2.22e-16
+fam 19 150 discrete outputs identical: True max |dF| = 4.44e-16
+A 0 30 discrete outputs identical: True max |dF| = 4.44e-16
+A 0 150 discrete outputs identical: True max |dF| = 5.55e-16
+A 7 30 discrete outputs identical: True max |dF| = 4.44e-16
+A 7 150 discrete outputs identical: True max |dF| = 6.66e-16
+A 19 30 discrete outputs identical: True max |dF| = 5.55e-16
+A 19 150 discrete outputs identical: True max |dF| = 4.44e-16
+B 0 30 discrete outputs identical: True max |dF| = 4.44e-16
+B 0 150 discrete outputs identical: True max |dF| = 6.66e-16
+B 7 30 discrete outputs identical: True max |dF| = 2.22e-16
+B 7 150 discrete outputs identical: True max |dF| = 4.44e-16
+B 19 30 discrete outputs identical: True max |dF| = 4.44e-16
+B 19 150 discrete outputs identical: True max |dF| = 1.33e-15
+ALL_REPRODUCED (discrete exact, float features within 1e-12)
