@@ -97,3 +97,6 @@ app.include_router(legal_1273_router, prefix="/api/v1")
 
 from app.modules.m20_general_cognitive_worker.row849_routes import router as row849_router
 app.include_router(row849_router, prefix="/api/v1")
+
+from app.modules.m20_general_cognitive_worker.row1299_routes import router as row1299_router
+app.include_router(row1299_router, prefix="/api/v1")
