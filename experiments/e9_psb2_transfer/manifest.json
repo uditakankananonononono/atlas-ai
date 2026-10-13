@@ -1,0 +1,14 @@
+{
+  "data/basement/edge.jsonl": "ed5a8fea384d6d7e99351f61bea6b368d764cd05c5cf92c8df293d162252f9fe",
+  "data/basement/random-sample.jsonl": "0d065d2dd850003a460074710fc36116dcd66fc4e1b88f8fce0de0bff8e46be4",
+  "data/cut-vector/edge.jsonl": "d87cb6daf91a79d4fa4b766e4ac96d423fc0a49c6daf3c095d0fa84414a7a331",
+  "data/cut-vector/random-sample.jsonl": "360df73b04bcc1dc62ee53b22320ba23113e31530f011c2c1e91ffbe830b9613",
+  "data/find-pair/edge.jsonl": "cfb8edbc535c066e9c9c0fe95a25347132a781a1559c92ab13130c5e3734be40",
+  "data/find-pair/random-sample.jsonl": "2589d5a3b6b12642a1790c9a91f0035e6ea78fae3ebc406bd01f205bdc4e4c9e",
+  "data/fuel-cost/edge.jsonl": "251f6d94600ee7f4d3be2f0ef0ab9ededc67a73c32262d6f4354f06cdf4de692",
+  "data/fuel-cost/random-sample.jsonl": "da4beed693218faae201042cc6db2665f3a3e4bcbc7800e679ee109d89812450",
+  "data/leaders/edge.jsonl": "dbb5e0827066f373c9175d87dd8fb3b2e934ca374bffb33fa4024a6f1a2b9eb0",
+  "data/leaders/random-sample.jsonl": "271b77a97555094789bb6a365e0be7d44c35ed476eeb96fc3eab67e6bb4928bb",
+  "data/luhn/edge.jsonl": "62dcb38290388a937609afb4c50ac9e8595a99b269a82433a72130d1f9ce3aeb",
+  "data/luhn/random-sample.jsonl": "655aabe3f3921772826d21bc04203e4804c51a4edff9d2093da06bc2ceaee112"
+}

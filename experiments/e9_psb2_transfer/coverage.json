@@ -1,0 +1,102 @@
+[
+ {
+  "target": "basement",
+  "budget": 600000,
+  "program": [
+   "cumsum",
+   "first_negative_index"
+  ],
+  "programs_evaluated": 215,
+  "verified": true,
+  "authored_witness": [
+   "cumsum",
+   "first_negative_index"
+  ],
+  "witness_verified": true
+ },
+ {
+  "target": "cut-vector",
+  "budget": 600000,
+  "program": [
+   "splits",
+   "balance",
+   "argmin",
+   "select_split"
+  ],
+  "programs_evaluated": 501673,
+  "verified": true,
+  "authored_witness": [
+   "splits",
+   "balance",
+   "argmin",
+   "select_split"
+  ],
+  "witness_verified": true
+ },
+ {
+  "target": "find-pair",
+  "budget": 600000,
+  "program": [
+   "pairs",
+   "matching_sum",
+   "max"
+  ],
+  "programs_evaluated": 21152,
+  "verified": true,
+  "authored_witness": [
+   "pairs",
+   "matching_sum",
+   "first_pair"
+  ],
+  "witness_verified": true
+ },
+ {
+  "target": "fuel-cost",
+  "budget": 600000,
+  "program": [
+   "floor3",
+   "minus2",
+   "sum"
+  ],
+  "programs_evaluated": 12219,
+  "verified": true,
+  "authored_witness": [
+   "floor3",
+   "minus2",
+   "sum"
+  ],
+  "witness_verified": true
+ },
+ {
+  "target": "leaders",
+  "budget": 600000,
+  "program": [
+   "suffix_max",
+   "retain_equal_original"
+  ],
+  "programs_evaluated": 581,
+  "verified": true,
+  "authored_witness": [
+   "suffix_max",
+   "retain_equal_original"
+  ],
+  "witness_verified": true
+ },
+ {
+  "target": "luhn",
+  "budget": 600000,
+  "program": [
+   "alternating_double",
+   "digit_sum",
+   "sum"
+  ],
+  "programs_evaluated": 13843,
+  "verified": true,
+  "authored_witness": [
+   "alternating_double",
+   "digit_sum",
+   "sum"
+  ],
+  "witness_verified": true
+ }
+]

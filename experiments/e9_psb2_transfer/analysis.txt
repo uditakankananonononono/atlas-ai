@@ -1,0 +1,56 @@
+exact B=1000: 4 distinct problems x 5 split seeds; {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+paired source-transfer minus base = 0.000 on every seed and target
+  basement: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  fuel-cost: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  leaders: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  luhn: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+exact B=3000: 4 distinct problems x 5 split seeds; {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+paired source-transfer minus base = 0.000 on every seed and target
+  basement: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  fuel-cost: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  leaders: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  luhn: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+exact B=10000: 4 distinct problems x 5 split seeds; {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+paired source-transfer minus base = 0.000 on every seed and target
+  basement: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  fuel-cost: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  leaders: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  luhn: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+exact B=30000: 4 distinct problems x 5 split seeds; {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+paired source-transfer minus base = 0.000 on every seed and target
+  basement: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  fuel-cost: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  leaders: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  luhn: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+extended B=1000: 6 distinct problems x 5 split seeds; {'base': 10, 'transfer': 10, 'random': 10, 'psb_lopo': 10, 'within': 20}
+paired source-transfer minus base = 0.000 on every seed and target
+  basement: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  cut-vector: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  find-pair: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  fuel-cost: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 5}
+  leaders: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  luhn: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 5}
+extended B=3000: 6 distinct problems x 5 split seeds; {'base': 10, 'transfer': 10, 'random': 10, 'psb_lopo': 10, 'within': 20}
+paired source-transfer minus base = 0.000 on every seed and target
+  basement: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  cut-vector: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  find-pair: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  fuel-cost: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 5}
+  leaders: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  luhn: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 5}
+extended B=10000: 6 distinct problems x 5 split seeds; {'base': 10, 'transfer': 10, 'random': 10, 'psb_lopo': 10, 'within': 20}
+paired source-transfer minus base = 0.000 on every seed and target
+  basement: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  cut-vector: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  find-pair: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  fuel-cost: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 5}
+  leaders: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  luhn: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 5}
+extended B=30000: 6 distinct problems x 5 split seeds; {'base': 25, 'transfer': 25, 'random': 25, 'psb_lopo': 25, 'within': 25}
+paired source-transfer minus base = 0.000 on every seed and target
+  basement: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  cut-vector: {'base': 0, 'transfer': 0, 'random': 0, 'psb_lopo': 0, 'within': 0}
+  find-pair: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  fuel-cost: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  leaders: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
+  luhn: {'base': 5, 'transfer': 5, 'random': 5, 'psb_lopo': 5, 'within': 5}
