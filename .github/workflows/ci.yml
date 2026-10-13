@@ -56,10 +56,11 @@ jobs:
       - name: Provision and verify sandbox and Compose tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y bubblewrap
+          sudo apt-get install -y bubblewrap nodejs
           test -x /usr/bin/python3
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           bwrap --unshare-all --die-with-parent --ro-bind / / /usr/bin/python3 -I -B -c 'print("sandbox probe ok")'
+          /usr/bin/node --version
           docker compose version
           mkdir -p "$RUNNER_TEMP/atlas-ci-bin"
           printf '%s\n' '#!/bin/sh' 'exec docker compose "$@"' > "$RUNNER_TEMP/atlas-ci-bin/compose"
