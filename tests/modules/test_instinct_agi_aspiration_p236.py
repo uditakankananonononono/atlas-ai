@@ -83,7 +83,34 @@ class AspirationTest(unittest.TestCase):
         mutated[0]["approach"] = "tampered"
         v = self.m.verify(mutated, r["result"])
         self.assertFalse(v["verified"])
-        self.assertIn("fingerprint", v["failed"])
+        self.assertIn("attempts_sha256", v["failed"])
+
+    def test_verify_compares_every_field(self):
+        # Tampering with any single _KEYS field must fail verification and
+        # name that field - no field is trusted from the caller.
+        attempts = [attempt()]
+        r = self.m.run(copy.deepcopy(attempts))
+        self.assertTrue(r["verification"]["verified"])
+        tampers = {
+            "feature": "other_feature",
+            "source_lines": ["P999|L999"],
+            "doc_line": "- tampered doc line",
+            "measure": "tampered measure",
+            "limits": [],
+            "attempts_sha256": "0" * 64,
+            "attempt_rows": [],
+            "state_counts": {},
+            "issues": 999,
+            "verdict": "ATTEMPTS_INCOMPLETE",
+            "doc_claims": [],
+        }
+        self.assertEqual(set(tampers), set(self.m._KEYS))
+        for field, bad_value in tampers.items():
+            tampered = copy.deepcopy(r["result"])
+            tampered[field] = bad_value
+            v = self.m.verify(copy.deepcopy(attempts), tampered)
+            self.assertFalse(v["verified"], field)
+            self.assertIn(field, v["failed"], field)
 
     def test_deterministic(self):
         attempts = [attempt(), attempt("a2", "proposed", None, None)]
