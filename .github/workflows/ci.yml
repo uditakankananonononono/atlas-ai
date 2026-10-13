@@ -53,6 +53,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]'
+      - name: Provision and verify sandbox and Compose tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          test -x /usr/bin/python3
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          bwrap --unshare-all --die-with-parent --ro-bind / / /usr/bin/python3 -I -B -c 'print("sandbox probe ok")'
+          docker compose version
+          mkdir -p "$RUNNER_TEMP/atlas-ci-bin"
+          printf '%s\n' '#!/bin/sh' 'exec docker compose "$@"' > "$RUNNER_TEMP/atlas-ci-bin/compose"
+          chmod +x "$RUNNER_TEMP/atlas-ci-bin/compose"
+          echo "ATLAS_COMPOSE_BINARY=$RUNNER_TEMP/atlas-ci-bin/compose" >> "$GITHUB_ENV"
       - name: Initialize and verify pgvector
         env:
           PGPASSWORD: atlas
