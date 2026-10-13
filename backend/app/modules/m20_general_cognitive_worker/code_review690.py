@@ -70,6 +70,10 @@ def parse_unified_diff(text: str) -> list[dict[str, Any]]:
             cur["added"].append((hunk[0] + hunk[3], raw[1:])); hunk[3] += 1
         elif raw.startswith("-"):
             cur["removed"] += 1; hunk[4] += 1
+        elif raw.startswith(" "):
+            # A context line consumes one old and one new source line. It is
+            # not an added line, but moves the next addition's source position.
+            hunk[3] += 1; hunk[4] += 1
     close()
     if not files or not any(True for _ in files):
         raise CodeReviewError("no file sections found in diff")
