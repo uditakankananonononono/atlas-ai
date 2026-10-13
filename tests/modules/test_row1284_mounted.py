@@ -103,3 +103,22 @@ def test_row1284_mounted_repeat_tenant_isolation(client,oidc_auth_headers):
 def test_row1284_mounted_empty_probe(client, oidc_auth_headers):
     assert client.post(PATH, headers=oidc_auth_headers(), json={}).status_code == 422
     assert client.post(PATH, json={}).status_code == 401
+
+
+def test_row1284_mounted_nonfinite_entry_date_rejected_at_decoder(client, oidc_auth_headers):
+    # Auditor-7 probe: NaN must be refused by the route decoder, not by the engine.
+    raw = b'{"row":1284,"as_of":"2026-10-12","entries":[{"element":"cause_grounds","status":"missing","entry_date":NaN}]}'
+    r = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+    assert r.status_code == 422 and r.json() == {'detail': PREFIX + ' invalid JSON'}, r.text
+
+
+def test_row1284_mounted_authenticated_call_reaches_dedicated_engine(client, oidc_auth_headers, monkeypatch):
+    from app.modules.m20_general_cognitive_worker import jury_selection1284
+    seen = []
+    def spy(x):
+        seen.append(x)
+        return {'auditor_call': True}
+    monkeypatch.setattr(jury_selection1284, 'run', spy)
+    p = {'row': 1284, 'as_of': '2026-10-12', 'entries': [{'element': 'cause_grounds', 'status': 'missing'}]}
+    r = client.post(PATH, headers=oidc_auth_headers(), json=p)
+    assert r.status_code == 200 and r.json() == {'auditor_call': True} and seen == [p]
