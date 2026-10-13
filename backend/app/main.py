@@ -68,3 +68,7 @@ def ready() -> dict[str, object]:
     if not healthy:
         raise HTTPException(status_code=503, detail=body)
     return body
+
+# Row105: stateless bounded bookkeeping only, with route-level authentication.
+from app.modules.m20_general_cognitive_worker.pre_suasion105_routes import router as pre_suasion105_router
+app.include_router(pre_suasion105_router)

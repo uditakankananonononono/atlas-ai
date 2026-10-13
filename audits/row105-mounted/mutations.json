@@ -1,0 +1,10 @@
+[
+  {"id":"mount_removed", "path":"backend/app/main.py", "old":"app.include_router(pre_suasion105_router)", "new":"# app.include_router(pre_suasion105_router)"},
+  {"id":"duplicate_keys_accepted", "path":"backend/app/modules/m20_general_cognitive_worker/pre_suasion105_routes.py", "old":"raise ValueError('duplicate key')", "new":"pass"},
+  {"id":"body_limit_bypassed", "path":"backend/app/modules/m20_general_cognitive_worker/pre_suasion105_routes.py", "old":"if len(body) + len(chunk) > MAX_BODY_BYTES:", "new":"if False:"},
+  {"id":"invalid_input_accepted_status", "path":"backend/app/modules/m20_general_cognitive_worker/pre_suasion105_routes.py", "old":"raise HTTPException(422, str(exc)) from None", "new":"raise HTTPException(200, str(exc)) from None"},
+  {"id":"undisclosed_allowed", "path":"backend/app/modules/m20_general_cognitive_worker/pre_suasion105.py", "old":"\"allowed\": disclosed", "new":"\"allowed\": True"},
+  {"id":"boolean_weight_coerced", "path":"backend/app/modules/m20_general_cognitive_worker/pre_suasion105.py", "old":"if type(w) is not int or not 0 <= w <= MAX_WEIGHT:", "new":"if not isinstance(w, int) or not 0 <= w <= MAX_WEIGHT:"},
+  {"id":"ties_dropped", "path":"backend/app/modules/m20_general_cognitive_worker/pre_suasion105.py", "old":"[i for i, s in enumerate(shares) if s == top]", "new":"[shares.index(top)]"},
+  {"id":"media_guard_removed", "path":"backend/app/modules/m20_general_cognitive_worker/pre_suasion105_routes.py", "old":"if media_type != 'application/json':", "new":"if False:"}
+]

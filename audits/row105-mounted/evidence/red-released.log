@@ -1,0 +1,373 @@
+FFFFFFFFFFFFFFF.FFFFF                                                    [100%]
+=================================== FAILURES ===================================
+_________________ test_row105_mounted_exact_shares_and_limits __________________
+
+client = <starlette.testclient.TestClient object at 0x7f955268eb10>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f9551fed440>
+
+    def test_row105_mounted_exact_shares_and_limits(client, oidc_auth_headers):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body())
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:22: AssertionError
+______________ test_row105_mounted_undisclosed_refuses_deployment ______________
+
+client = <starlette.testclient.TestClient object at 0x7f9551f4b4d0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fc040>
+
+    def test_row105_mounted_undisclosed_refuses_deployment(client, oidc_auth_headers):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(disclosed=False))
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:36: AssertionError
+___________ test_row105_mounted_strict_refusals[changes0-disclosed] ____________
+
+client = <starlette.testclient.TestClient object at 0x7f9551f4b590>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fc680>
+changes = {'disclosed': 1}, field = 'disclosed'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______ test_row105_mounted_strict_refusals[changes1-attention_weights] ________
+
+client = <starlette.testclient.TestClient object at 0x7f9551fcb9b0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fd120>
+changes = {'attention_weights': [True, 1]}, field = 'attention_weights'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______ test_row105_mounted_strict_refusals[changes2-attention_weights] ________
+
+client = <starlette.testclient.TestClient object at 0x7f95520002f0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f9551fec180>
+changes = {'attention_weights': [1]}, field = 'attention_weights'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______ test_row105_mounted_strict_refusals[changes3-attention_weights] ________
+
+client = <starlette.testclient.TestClient object at 0x7f95520016a0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fcfe0>
+changes = {'attention_weights': [1, 1, 1, 1, 1, 1, ...]}
+field = 'attention_weights'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______ test_row105_mounted_strict_refusals[changes4-attention_weights] ________
+
+client = <starlette.testclient.TestClient object at 0x7f9552001040>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fc680>
+changes = {'attention_weights': [0, 0]}, field = 'attention_weights'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+____________ test_row105_mounted_strict_refusals[changes5-context] _____________
+
+client = <starlette.testclient.TestClient object at 0x7f9551f4b140>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fd760>
+changes = {'context': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}
+field = 'context'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+____________ test_row105_mounted_strict_refusals[changes6-context] _____________
+
+client = <starlette.testclient.TestClient object at 0x7f9551fcbe60>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fd800>
+changes = {'context': 'ZZSECRET9\x00'}, field = 'context'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_________ test_row105_mounted_strict_refusals[changes7-too many keys] __________
+
+client = <starlette.testclient.TestClient object at 0x7f954b3a9c40>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3feca0>
+changes = {'unknown': 'ZZSECRET9'}, field = 'too many keys'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______________________ test_row105_mounted_bad_json[[]] _______________________
+
+client = <starlette.testclient.TestClient object at 0x7f954b3a9ee0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f9551fec360>
+raw = '[]'
+
+    @pytest.mark.parametrize('raw', ['[]', 'null', '{broken',
+        '{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}'])
+    def test_row105_mounted_bad_json(client, oidc_auth_headers, raw):
+        response = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:59: AssertionError
+______________________ test_row105_mounted_bad_json[null] ______________________
+
+client = <starlette.testclient.TestClient object at 0x7f954b2129c0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fe840>
+raw = 'null'
+
+    @pytest.mark.parametrize('raw', ['[]', 'null', '{broken',
+        '{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}'])
+    def test_row105_mounted_bad_json(client, oidc_auth_headers, raw):
+        response = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:59: AssertionError
+____________________ test_row105_mounted_bad_json[{broken] _____________________
+
+client = <starlette.testclient.TestClient object at 0x7f9551fcae40>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fccc0>
+raw = '{broken'
+
+    @pytest.mark.parametrize('raw', ['[]', 'null', '{broken',
+        '{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}'])
+    def test_row105_mounted_bad_json(client, oidc_auth_headers, raw):
+        response = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:59: AssertionError
+_ test_row105_mounted_bad_json[{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}] _
+
+client = <starlette.testclient.TestClient object at 0x7f9552002570>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b22c400>
+raw = '{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}'
+
+    @pytest.mark.parametrize('raw', ['[]', 'null', '{broken',
+        '{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}'])
+    def test_row105_mounted_bad_json(client, oidc_auth_headers, raw):
+        response = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:59: AssertionError
+______________ test_row105_mounted_envelope_and_media_boundaries _______________
+
+client = <starlette.testclient.TestClient object at 0x7f954b3a8830>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b22ca40>
+
+    def test_row105_mounted_envelope_and_media_boundaries(client, oidc_auth_headers):
+        headers = oidc_auth_headers()
+        r = client.post(PATH, headers={**headers, 'Content-Type': 'text/plain'}, content='ZZSECRET9')
+>       assert r.status_code == 415, r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 415
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:66: AssertionError
+________________ test_row105_mounted_boundary_and_tenant_repeat ________________
+
+client = <starlette.testclient.TestClient object at 0x7f954b3a9160>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b22d4e0>
+
+    def test_row105_mounted_boundary_and_tenant_repeat(client, oidc_auth_headers):
+        data = body(context='x'*200, attention_weights=[10**9]*20)
+        a = client.post(PATH, headers=oidc_auth_headers('tenant-a'), json=data)
+        b = client.post(PATH, headers=oidc_auth_headers('tenant-b'), json=data)
+>       assert a.status_code == b.status_code == 200, (a.text, b.text)
+E       AssertionError: ('{"detail":"Not Found"}', '{"detail":"Not Found"}')
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:85: AssertionError
+______________ test_row105_mounted_json_byte_limit_exact_boundary ______________
+
+client = <starlette.testclient.TestClient object at 0x7f954b242e70>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fce00>
+
+    def test_row105_mounted_json_byte_limit_exact_boundary(client, oidc_auth_headers):
+        import json
+        headers = {**oidc_auth_headers(), 'Content-Type': 'application/json'}
+        raw = json.dumps(body()).encode()
+        at_limit = raw + b' '*(8192-len(raw))
+        r = client.post(PATH, headers=headers, content=at_limit)
+>       assert r.status_code == 200, r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:98: AssertionError
+___________ test_row105_mounted_decoder_failures_safe[invalid-utf8] ____________
+
+client = <starlette.testclient.TestClient object at 0x7f9551fcb0e0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fd760>
+raw = b'\xff'
+
+    @pytest.mark.parametrize('raw', [b'\xff', b'{"context":"agenda","disclosed":true,"attention_weights":[NaN,1]}', b'['*3500], ids=['invalid-utf8', 'nonfinite', 'deep-incomplete-json'])
+    def test_row105_mounted_decoder_failures_safe(client, oidc_auth_headers, raw):
+        r = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert r.status_code == 422, r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:106: AssertionError
+_____________ test_row105_mounted_decoder_failures_safe[nonfinite] _____________
+
+client = <starlette.testclient.TestClient object at 0x7f9552000b00>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b3fcfe0>
+raw = b'{"context":"agenda","disclosed":true,"attention_weights":[NaN,1]}'
+
+    @pytest.mark.parametrize('raw', [b'\xff', b'{"context":"agenda","disclosed":true,"attention_weights":[NaN,1]}', b'['*3500], ids=['invalid-utf8', 'nonfinite', 'deep-incomplete-json'])
+    def test_row105_mounted_decoder_failures_safe(client, oidc_auth_headers, raw):
+        r = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert r.status_code == 422, r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:106: AssertionError
+_______ test_row105_mounted_decoder_failures_safe[deep-incomplete-json] ________
+
+client = <starlette.testclient.TestClient object at 0x7f9552001670>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f954b22cc20>
+raw = b'[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[...[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[['
+
+    @pytest.mark.parametrize('raw', [b'\xff', b'{"context":"agenda","disclosed":true,"attention_weights":[NaN,1]}', b'['*3500], ids=['invalid-utf8', 'nonfinite', 'deep-incomplete-json'])
+    def test_row105_mounted_decoder_failures_safe(client, oidc_auth_headers, raw):
+        r = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert r.status_code == 422, r.text
+E       AssertionError: {"detail":"Not Found"}
+E       assert 404 == 422
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/modules/test_row105_mounted.py:106: AssertionError
+=============================== warnings summary ===============================
+../../atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_exact_shares_and_limits
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_undisclosed_refuses_deployment
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes0-disclosed]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes1-attention_weights]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes2-attention_weights]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes3-attention_weights]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes4-attention_weights]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes5-context]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes6-context]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes7-too many keys]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[[]]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[null]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[{broken]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_envelope_and_media_boundaries
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_boundary_and_tenant_repeat
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_json_byte_limit_exact_boundary
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[invalid-utf8]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[nonfinite]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[deep-incomplete-json]
+20 failed, 1 passed, 1 warning in 7.98s

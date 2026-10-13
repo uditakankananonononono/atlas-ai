@@ -1,0 +1,20 @@
+tests/modules/test_row105_mounted.py::test_row105_mounted_exact_shares_and_limits
+tests/modules/test_row105_mounted.py::test_row105_mounted_undisclosed_refuses_deployment
+tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes0-disclosed]
+tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes1-attention_weights]
+tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes2-attention_weights]
+tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes3-attention_weights]
+tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes4-attention_weights]
+tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes5-context]
+tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes6-context]
+tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes7-too many keys]
+tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[[]]
+tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[null]
+tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[{broken]
+tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}]
+tests/modules/test_row105_mounted.py::test_row105_mounted_envelope_and_media_boundaries
+tests/modules/test_row105_mounted.py::test_row105_mounted_boundary_and_tenant_repeat
+tests/modules/test_row105_mounted.py::test_row105_mounted_json_byte_limit_exact_boundary
+tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[invalid-utf8]
+tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[nonfinite]
+tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[deep-incomplete-json]

@@ -1,0 +1,214 @@
+..FFFFFFFFFF.........                                                    [100%]
+=================================== FAILURES ===================================
+___________ test_row105_mounted_strict_refusals[changes0-disclosed] ____________
+
+client = <starlette.testclient.TestClient object at 0x7f48367df770>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f48366bc680>
+changes = {'disclosed': 1}, field = 'disclosed'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: disclosed must be true or false"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______ test_row105_mounted_strict_refusals[changes1-attention_weights] ________
+
+client = <starlette.testclient.TestClient object at 0x7f4836600b60>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fbe1940>
+changes = {'attention_weights': [True, 1]}, field = 'attention_weights'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: attention_weights items must be integers from 0 to 1000000000"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______ test_row105_mounted_strict_refusals[changes2-attention_weights] ________
+
+client = <starlette.testclient.TestClient object at 0x7f4836699a60>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fbe1c60>
+changes = {'attention_weights': [1]}, field = 'attention_weights'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: attention_weights must be a list of 2 to 20 items"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______ test_row105_mounted_strict_refusals[changes3-attention_weights] ________
+
+client = <starlette.testclient.TestClient object at 0x7f4836a0e420>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fa8f4c0>
+changes = {'attention_weights': [1, 1, 1, 1, 1, 1, ...]}
+field = 'attention_weights'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: attention_weights must be a list of 2 to 20 items"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______ test_row105_mounted_strict_refusals[changes4-attention_weights] ________
+
+client = <starlette.testclient.TestClient object at 0x7f48367df7d0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fa8f740>
+changes = {'attention_weights': [0, 0]}, field = 'attention_weights'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: attention_weights must have a positive total"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+____________ test_row105_mounted_strict_refusals[changes5-context] _____________
+
+client = <starlette.testclient.TestClient object at 0x7f482fa52d20>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fa580e0>
+changes = {'context': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}
+field = 'context'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: context is longer than 200 characters"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+____________ test_row105_mounted_strict_refusals[changes6-context] _____________
+
+client = <starlette.testclient.TestClient object at 0x7f482fa52a80>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fa8f380>
+changes = {'context': 'ZZSECRET9\x00'}, field = 'context'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: context contains a control, format or separator character"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_________ test_row105_mounted_strict_refusals[changes7-too many keys] __________
+
+client = <starlette.testclient.TestClient object at 0x7f482fa378c0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fa58c20>
+changes = {'unknown': 'ZZSECRET9'}, field = 'too many keys'
+
+    @pytest.mark.parametrize('changes,field', [
+        ({'disclosed': 1}, 'disclosed'), ({'attention_weights': [True, 1]}, 'attention_weights'),
+        ({'attention_weights': [1]}, 'attention_weights'), ({'attention_weights': [1]*21}, 'attention_weights'),
+        ({'attention_weights': [0, 0]}, 'attention_weights'), ({'context': 'x'*201}, 'context'),
+        ({'context': 'ZZSECRET9\x00'}, 'context'), ({'unknown': 'ZZSECRET9'}, 'too many keys'),
+    ])
+    def test_row105_mounted_strict_refusals(client, oidc_auth_headers, changes, field):
+        response = client.post(PATH, headers=oidc_auth_headers(), json=body(**changes))
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: too many keys"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:49: AssertionError
+_______________________ test_row105_mounted_bad_json[[]] _______________________
+
+client = <starlette.testclient.TestClient object at 0x7f4836600ad0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fa58e00>
+raw = '[]'
+
+    @pytest.mark.parametrize('raw', ['[]', 'null', '{broken',
+        '{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}'])
+    def test_row105_mounted_bad_json(client, oidc_auth_headers, raw):
+        response = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: input must be a mapping"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:59: AssertionError
+______________________ test_row105_mounted_bad_json[null] ______________________
+
+client = <starlette.testclient.TestClient object at 0x7f482fa50e90>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f482fa598a0>
+raw = 'null'
+
+    @pytest.mark.parametrize('raw', ['[]', 'null', '{broken',
+        '{"context":"agenda","disclosed":true,"disclosed":false,"attention_weights":[1,1]}'])
+    def test_row105_mounted_bad_json(client, oidc_auth_headers, raw):
+        response = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'application/json'}, content=raw)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"PRESUA105: input must be a mapping"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:59: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes0-disclosed]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes1-attention_weights]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes2-attention_weights]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes3-attention_weights]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes4-attention_weights]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes5-context]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes6-context]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes7-too many keys]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[[]]
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[null]
+10 failed, 11 passed, 1 warning in 7.77s

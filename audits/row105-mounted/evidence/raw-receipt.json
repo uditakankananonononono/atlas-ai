@@ -1,0 +1,237 @@
+{
+  "selector": "tests/modules/test_row105_mounted.py",
+  "mutations": [
+    {
+      "id": "mount_removed",
+      "path": "backend/app/main.py",
+      "before_sha256": "dd5a414a025c5fd2540239d8edfc189f18bd58559940839aea6430df2c281e87",
+      "mutated_sha256": "7606f30b22076dcff61db601aaa36b5c9e3db90055169023618d2342b9b4cf51",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row105_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "f2c6af3d3b6407a69750cff841d789ec9ba4d1b0d31a05327afddd2e97b0f652",
+      "failed_ids": [
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_exact_shares_and_limits",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_undisclosed_refuses_deployment",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes0-disclosed]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes1-attention_weights]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes2-attention_weights]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes3-attention_weights]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes4-attention_weights]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes5-context]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes6-context]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes7-too many keys]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[[]]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[null]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[{broken]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[{\"context\":\"agenda\",\"disclosed\":true,\"disclosed\":false,\"attention_weights\":[1,1]}]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_envelope_and_media_boundaries",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_boundary_and_tenant_repeat",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_json_byte_limit_exact_boundary",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[invalid-utf8]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[nonfinite]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_decoder_failures_safe[deep-incomplete-json]"
+      ],
+      "summary": "20 failed, 1 passed, 1 warning in 7.74s",
+      "status": "CAUGHT",
+      "after_sha256": "dd5a414a025c5fd2540239d8edfc189f18bd58559940839aea6430df2c281e87",
+      "restore_verified": true
+    },
+    {
+      "id": "duplicate_keys_accepted",
+      "path": "backend/app/modules/m20_general_cognitive_worker/pre_suasion105_routes.py",
+      "before_sha256": "d2d0a0e5d064caf6da7b4cbfa21f1d863625194c2c47e36e5e41e8d46eb276a0",
+      "mutated_sha256": "569a7365725df91d24aabde3d02cef72d2cfa645aa7748ced2952cb69ed86cae",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row105_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "de1cab8881a9f816bafc8fd410ce59b02a93f2c9dd82c2b232b3d3cf38d46620",
+      "failed_ids": [
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[{\"context\":\"agenda\",\"disclosed\":true,\"disclosed\":false,\"attention_weights\":[1,1]}]"
+      ],
+      "summary": "1 failed, 20 passed, 1 warning in 7.87s",
+      "status": "CAUGHT",
+      "after_sha256": "d2d0a0e5d064caf6da7b4cbfa21f1d863625194c2c47e36e5e41e8d46eb276a0",
+      "restore_verified": true
+    },
+    {
+      "id": "body_limit_bypassed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/pre_suasion105_routes.py",
+      "before_sha256": "d2d0a0e5d064caf6da7b4cbfa21f1d863625194c2c47e36e5e41e8d46eb276a0",
+      "mutated_sha256": "1e16f662ce49e050974e238867872fe991282883540f66fedb9a8349a5a0f365",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row105_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "e0a147134531f69a39a32896a0780c2200c3437e71b43492b9425d3ed6fdb09a",
+      "failed_ids": [
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_envelope_and_media_boundaries",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_json_byte_limit_exact_boundary"
+      ],
+      "summary": "2 failed, 19 passed, 1 warning in 7.64s",
+      "status": "CAUGHT",
+      "after_sha256": "d2d0a0e5d064caf6da7b4cbfa21f1d863625194c2c47e36e5e41e8d46eb276a0",
+      "restore_verified": true
+    },
+    {
+      "id": "invalid_input_accepted_status",
+      "path": "backend/app/modules/m20_general_cognitive_worker/pre_suasion105_routes.py",
+      "before_sha256": "d2d0a0e5d064caf6da7b4cbfa21f1d863625194c2c47e36e5e41e8d46eb276a0",
+      "mutated_sha256": "29da50456961886b2fe08dbbab77c18d8a30bfc4ba58b67594cc8e88ecd90d0f",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row105_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "eaa3071cc36cf5c274263a4a7cfb264e94cec688ec0e5acab7fe501ea06a1f9b",
+      "failed_ids": [
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes0-disclosed]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes1-attention_weights]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes2-attention_weights]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes3-attention_weights]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes4-attention_weights]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes5-context]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes6-context]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes7-too many keys]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[[]]",
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_bad_json[null]"
+      ],
+      "summary": "10 failed, 11 passed, 1 warning in 7.77s",
+      "status": "CAUGHT",
+      "after_sha256": "d2d0a0e5d064caf6da7b4cbfa21f1d863625194c2c47e36e5e41e8d46eb276a0",
+      "restore_verified": true
+    },
+    {
+      "id": "undisclosed_allowed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/pre_suasion105.py",
+      "before_sha256": "bfa859a7b243bf4ae7d53c662f870250392a7c8ffeb35c0be64b92c3640bc0b2",
+      "mutated_sha256": "7863561d78c4ff35173446f839b195c48fc9aef3145b925a04fa26f317c2887d",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row105_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "72fd3fb761c9ef7c7201660db4a80a1cdc1daf9c08543d55eacff9f10e1a5cb4",
+      "failed_ids": [
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_undisclosed_refuses_deployment"
+      ],
+      "summary": "1 failed, 20 passed, 1 warning in 7.92s",
+      "status": "CAUGHT",
+      "after_sha256": "bfa859a7b243bf4ae7d53c662f870250392a7c8ffeb35c0be64b92c3640bc0b2",
+      "restore_verified": true
+    },
+    {
+      "id": "boolean_weight_coerced",
+      "path": "backend/app/modules/m20_general_cognitive_worker/pre_suasion105.py",
+      "before_sha256": "bfa859a7b243bf4ae7d53c662f870250392a7c8ffeb35c0be64b92c3640bc0b2",
+      "mutated_sha256": "c406c16352cad8c3e94a1f9adb0201b13ca1ae5a529073f9ac8967e85871391f",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row105_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "991930c6853ca1f6fe61771a0984778e22bce530afb642ff71cc259e6ab37484",
+      "failed_ids": [
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_strict_refusals[changes1-attention_weights]"
+      ],
+      "summary": "1 failed, 20 passed, 1 warning in 7.99s",
+      "status": "CAUGHT",
+      "after_sha256": "bfa859a7b243bf4ae7d53c662f870250392a7c8ffeb35c0be64b92c3640bc0b2",
+      "restore_verified": true
+    },
+    {
+      "id": "ties_dropped",
+      "path": "backend/app/modules/m20_general_cognitive_worker/pre_suasion105.py",
+      "before_sha256": "bfa859a7b243bf4ae7d53c662f870250392a7c8ffeb35c0be64b92c3640bc0b2",
+      "mutated_sha256": "9d2d3c68c4660dad75d5a464d2eb0b9c3b23c375472e2a01f3e26aedd9c82c8e",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row105_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "68240cc5f4e312033693d98462c998bfd9fa9c9b3c6593cbd626d6fac2a8b3e5",
+      "failed_ids": [
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_boundary_and_tenant_repeat"
+      ],
+      "summary": "1 failed, 20 passed, 1 warning in 8.04s",
+      "status": "CAUGHT",
+      "after_sha256": "bfa859a7b243bf4ae7d53c662f870250392a7c8ffeb35c0be64b92c3640bc0b2",
+      "restore_verified": true
+    },
+    {
+      "id": "media_guard_removed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/pre_suasion105_routes.py",
+      "before_sha256": "d2d0a0e5d064caf6da7b4cbfa21f1d863625194c2c47e36e5e41e8d46eb276a0",
+      "mutated_sha256": "dedf0c8302bd2e618910414c187ba4bdad2ad0c9d0a302fee35b138de20296f6",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row105_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "34902b06de17547aca0b96bff57efc63e23f5a811459be4d50c7912cb5088cf6",
+      "failed_ids": [
+        "tests/modules/test_row105_mounted.py::test_row105_mounted_envelope_and_media_boundaries"
+      ],
+      "summary": "1 failed, 20 passed, 1 warning in 7.33s",
+      "status": "CAUGHT",
+      "after_sha256": "d2d0a0e5d064caf6da7b4cbfa21f1d863625194c2c47e36e5e41e8d46eb276a0",
+      "restore_verified": true
+    }
+  ],
+  "config_sha256": "6ffc9026308f1df813d7cbd75caf5e44dcdc0eb9aee736efbc9624f050b7626c",
+  "baseline": {
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "tests/modules/test_row105_mounted.py",
+      "-q"
+    ],
+    "exit_code": 0,
+    "log_sha256": "506b93de2ef1c64004c025479ad98a6e326f6e1a6fa52fb33bd4c9520cd264fb",
+    "failed_ids": [],
+    "summary": "21 passed, 1 warning in 7.09s"
+  },
+  "restored": {
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "tests/modules/test_row105_mounted.py",
+      "-q"
+    ],
+    "exit_code": 0,
+    "log_sha256": "2fba65733055811dbe3bc26c62ac2fa65392444b97a34ad92dbf15d923ba4330",
+    "failed_ids": [],
+    "summary": "21 passed, 1 warning in 7.37s"
+  }
+}

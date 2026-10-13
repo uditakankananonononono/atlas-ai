@@ -1,0 +1,30 @@
+................F....                                                    [100%]
+=================================== FAILURES ===================================
+________________ test_row105_mounted_boundary_and_tenant_repeat ________________
+
+client = <starlette.testclient.TestClient object at 0x7f3e831b5880>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f3e80ff2c00>
+
+    def test_row105_mounted_boundary_and_tenant_repeat(client, oidc_auth_headers):
+        data = body(context='x'*200, attention_weights=[10**9]*20)
+        a = client.post(PATH, headers=oidc_auth_headers('tenant-a'), json=data)
+        b = client.post(PATH, headers=oidc_auth_headers('tenant-b'), json=data)
+        assert a.status_code == b.status_code == 200, (a.text, b.text)
+        assert a.json() == b.json()
+        assert a.json()['shares'] == ['1/20']*20
+>       assert a.json()['max_share_index'] == list(range(20))
+E       assert [0] == [0, 1, 2, 3, 4, 5, ...]
+E
+E         Right contains 19 more items, first extra item: 1
+E         Use -v to get more diff
+
+tests/modules/test_row105_mounted.py:88: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_boundary_and_tenant_repeat
+1 failed, 20 passed, 1 warning in 8.04s

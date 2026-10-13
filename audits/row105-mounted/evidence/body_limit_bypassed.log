@@ -1,0 +1,47 @@
+..............F..F...                                                    [100%]
+=================================== FAILURES ===================================
+______________ test_row105_mounted_envelope_and_media_boundaries _______________
+
+client = <starlette.testclient.TestClient object at 0x7f99e1ce4f50>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f99e1856700>
+
+    def test_row105_mounted_envelope_and_media_boundaries(client, oidc_auth_headers):
+        headers = oidc_auth_headers()
+        r = client.post(PATH, headers={**headers, 'Content-Type': 'text/plain'}, content='ZZSECRET9')
+        assert r.status_code == 415, r.text
+        r = client.post(PATH, headers={**headers, 'Content-Type': 'application/json'}, content=' '*8193)
+>       assert r.status_code == 413, r.text
+E       AssertionError: {"detail":"PRESUA105: invalid JSON"}
+E       assert 422 == 413
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/modules/test_row105_mounted.py:68: AssertionError
+______________ test_row105_mounted_json_byte_limit_exact_boundary ______________
+
+client = <starlette.testclient.TestClient object at 0x7f99e441ea80>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f99e3a44180>
+
+    def test_row105_mounted_json_byte_limit_exact_boundary(client, oidc_auth_headers):
+        import json
+        headers = {**oidc_auth_headers(), 'Content-Type': 'application/json'}
+        raw = json.dumps(body()).encode()
+        at_limit = raw + b' '*(8192-len(raw))
+        r = client.post(PATH, headers=headers, content=at_limit)
+        assert r.status_code == 200, r.text
+        r = client.post(PATH, headers=headers, content=at_limit+b' ')
+>       assert r.status_code == 413, r.text
+E       AssertionError: {"row":105,"context":"agenda","disclosed":true,"shares":["3/4","1/4"],"max_share":"3/4","max_share_index":[0],"balance":0.811278,"concentration_check":false,"covert_influence_blocked":false,"allowed":true,"limits":["Supplied weights only; nothing here measures where anyone's attention goes.","Context-setting must be disclosed to the people it concerns; an undisclosed plan is never allowed.","Not persuasion, not a measurement and not advice; the balance figure describes the supplied numbers only."]}
+E       assert 200 == 413
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row105_mounted.py:100: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_envelope_and_media_boundaries
+FAILED tests/modules/test_row105_mounted.py::test_row105_mounted_json_byte_limit_exact_boundary
+2 failed, 19 passed, 1 warning in 7.64s
