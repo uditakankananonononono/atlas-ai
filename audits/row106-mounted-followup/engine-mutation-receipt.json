@@ -1,0 +1,20 @@
+[
+  {
+    "id": "allowed",
+    "rc": 1,
+    "sha256": "881ffcf5f9e71edaab2a78154ba1d0171edf9e9956398e8a40d5fd63b3dd9605",
+    "restore_verified": true
+  },
+  {
+    "id": "blocked",
+    "rc": 1,
+    "sha256": "881ffcf5f9e71edaab2a78154ba1d0171edf9e9956398e8a40d5fd63b3dd9605",
+    "restore_verified": true
+  },
+  {
+    "id": "causal",
+    "rc": 1,
+    "sha256": "881ffcf5f9e71edaab2a78154ba1d0171edf9e9956398e8a40d5fd63b3dd9605",
+    "restore_verified": true
+  }
+]

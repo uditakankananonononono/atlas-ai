@@ -1172,8 +1172,8 @@ def test_additive_current_exact_operation_inventory(env):
     assert len(BATCH2_INVENTORY) == BATCH2_TOTAL_ROUTES == 246
     assert len(PRE_FINAL_REACHABLE) == 77
     assert len(FINAL_REACHABLE_ADDITIONS) == 21
-    assert len(REACHABLE) == 98
-    assert FINAL_TOTAL_ROUTES == 267
+    assert len(REACHABLE) == 99
+    assert FINAL_TOTAL_ROUTES == 268
     assert FINAL_NOT_BOUND == BATCH2_NOT_BOUND == CURRENT_NOT_BOUND == NOT_BOUND
     assert sum(FINAL_NOT_BOUND.values()) == 169
     assert FINAL_TOTAL_ROUTES == len(REACHABLE) + sum(FINAL_NOT_BOUND.values())
@@ -1190,3 +1190,12 @@ def test_final_combined_mounts_auth_and_reachability(env):
         assert call(client, method, path).status_code == 401
         response = call(client, method, path, headers)
         assert response.status_code == status == 422, (path, response.text)
+
+
+# Row106 mounted descriptive review adds one authenticated operation.
+PRE_ROW106_FINAL_INVENTORY = FINAL_INVENTORY
+PRE_ROW106_FINAL_TOTAL_ROUTES = FINAL_TOTAL_ROUTES
+ROW106_OPERATION = ('post', '/api/v1/api/modules/20/priming-effects/106/review')
+REACHABLE = {**REACHABLE, ROW106_OPERATION: 422}
+FINAL_INVENTORY = tuple(sorted((*FINAL_INVENTORY, ROW106_OPERATION)))
+FINAL_TOTAL_ROUTES = TOTAL_ROUTES = len(FINAL_INVENTORY)
