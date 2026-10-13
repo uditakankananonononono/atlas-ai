@@ -7,7 +7,7 @@
       "before_sha256": "055288e4af872ea102cd839a9d6e9a528c5d526946436e67cd80c2e79c3921a3",
       "mutated_sha256": "e94b6f51c1b6c09efc50d7aef01a9538007ef809d7268f8462fe339ec4e5c28e",
       "command": [
-        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "python",
         "-m",
         "pytest",
         "tests/modules/test_row1290_mounted.py",
@@ -40,7 +40,7 @@
       "before_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
       "mutated_sha256": "59b17316d41c7fe993624c79d2cb2438d8d54ef22b141041bec2a02fc5ea7e21",
       "command": [
-        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "python",
         "-m",
         "pytest",
         "tests/modules/test_row1290_mounted.py",
@@ -62,7 +62,7 @@
       "before_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
       "mutated_sha256": "2e3b261807a4e7e5b4f4e193e81d377b296817dc55667e66af63ece8de613a47",
       "command": [
-        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "python",
         "-m",
         "pytest",
         "tests/modules/test_row1290_mounted.py",
@@ -84,7 +84,7 @@
       "before_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
       "mutated_sha256": "40c6085c8145351bab6208cbb9e5e0d7ed565f5eace3c7f9e707a98ab0c7e2d3",
       "command": [
-        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "python",
         "-m",
         "pytest",
         "tests/modules/test_row1290_mounted.py",
@@ -113,7 +113,7 @@
       "before_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
       "mutated_sha256": "028cd51c2df8b34bee7d9b70ca56f3ad162ab9a30907f747931fd86bf3b4254e",
       "command": [
-        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "python",
         "-m",
         "pytest",
         "tests/modules/test_row1290_mounted.py",
@@ -135,7 +135,7 @@
       "before_sha256": "cbd0c6dc8e6966909c8e7a5a6fe1aa5ea1f1b6a2bfe9241646dd017f04434c06",
       "mutated_sha256": "95b32ed94787173351d1c7f3cffb5c82c9eae0c4bf0817ab7dd50c1750d748ca",
       "command": [
-        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "python",
         "-m",
         "pytest",
         "tests/modules/test_row1290_mounted.py",
@@ -165,7 +165,7 @@
       "before_sha256": "cbd0c6dc8e6966909c8e7a5a6fe1aa5ea1f1b6a2bfe9241646dd017f04434c06",
       "mutated_sha256": "b326594f83b964dd28be17780e7491253bfefb11fbac28270a5844f2a8863da8",
       "command": [
-        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "python",
         "-m",
         "pytest",
         "tests/modules/test_row1290_mounted.py",
@@ -186,7 +186,7 @@
   "config_sha256": "72a2616f9f447d35b80726cf1bc53f41355017c200af141239e09509fcd911bd",
   "baseline": {
     "command": [
-      "/home/sandbox/atlas-ai/.venv/bin/python",
+      "python",
       "-m",
       "pytest",
       "tests/modules/test_row1290_mounted.py",
@@ -199,7 +199,7 @@
   },
   "restored": {
     "command": [
-      "/home/sandbox/atlas-ai/.venv/bin/python",
+      "python",
       "-m",
       "pytest",
       "tests/modules/test_row1290_mounted.py",

@@ -72,3 +72,5 @@ def ready() -> dict[str, object]:
 # Row105: stateless bounded bookkeeping only, with route-level authentication.
 from app.modules.m20_general_cognitive_worker.pre_suasion105_routes import router as pre_suasion105_router
 app.include_router(pre_suasion105_router)
+from app.modules.m20_general_cognitive_worker.legal_ethics1290_routes import router as row1290_router
+app.include_router(row1290_router)
