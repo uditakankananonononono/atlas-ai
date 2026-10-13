@@ -1642,6 +1642,22 @@ def legal_1260_1309_support(request: Legal1260To1309Request,principal:TenantCont
     except ValueError as exc: raise HTTPException(status_code=422,detail=str(exc)) from exc
     return {'module_id':20,'tenant_id':principal.tenant_id,'actor_id':principal.actor_id,'result':result,'requires_licensed_counsel':True}
 
+# Row 1293 attorney-client privilege: supplied-reference bookkeeping, dedicated route.
+# Separate from the shared 1260-1309 template; engine keys stay strict (no stripping).
+from .attorney_client_privilege1293 import run as _privilege1293_run
+from .legal_a3_engine import LegalA3Refusal as _LegalA3Refusal
+class Legal1293SupportRequest(BaseModel):
+    actor_id: str = Field(min_length=1)
+    tenant_id: str = Field(min_length=1)
+    data: dict[str, Any] = Field(default_factory=dict)
+@router.post('/legal/1293/support')
+def legal_1293_support(request: Legal1293SupportRequest,principal:TenantContext=Depends(require_tenant)) -> dict[str, Any]:
+    if request.tenant_id!=principal.tenant_id or request.actor_id!=principal.actor_id or request.data.get('tenant_id',principal.tenant_id)!=principal.tenant_id or request.data.get('actor_id',principal.actor_id)!=principal.actor_id:
+        raise HTTPException(403,'legal scope mismatches authenticated principal')
+    try: result=_privilege1293_run(request.data)
+    except _LegalA3Refusal as exc: raise HTTPException(status_code=422,detail=str(exc)) from exc
+    return {'module_id':20,'tenant_id':principal.tenant_id,'actor_id':principal.actor_id,'result':result,'requires_licensed_counsel':True}
+
 class ExecutionTruthIn(BaseModel):
  items:list[dict[str,Any]]=Field(default_factory=list,max_length=10000)
 @router.post('/execution-truth-ledger')

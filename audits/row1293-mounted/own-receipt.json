@@ -1,0 +1,114 @@
+[
+  {
+    "id": "M1 drop outer tenant check",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "580a3b011ed93a05f401a1fadf99bdd8ac1f4490549db991de7cf360a00852d3"
+  },
+  {
+    "id": "M2 drop outer actor check",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "c6eb3ad2d5448f1fcdb475d3aa5ca6509499572aff98a94838a751a905728b1a"
+  },
+  {
+    "id": "M3 drop nested tenant check",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "bdec9468453c722b1e433457bd2cd4486377ba1a28208323eed01ddfbd3f86c8"
+  },
+  {
+    "id": "M4 drop nested actor check",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "afc664e66e09a12b8f6ecfb32ca23bb889d47c7c9bdbb5716d149d58851ba1fc"
+  },
+  {
+    "id": "M5 drop auth dependency (principal fixed, no require_tenant)",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "ba098394be548fdf0405b64e86f4358f9e809096a98c3ac843e87cab92bcdaf3"
+  },
+  {
+    "id": "M6 silently strip nested identity keys",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "013c393cf6e048fc10ee58aa76bb8e5d8c9373380ac98b1004aee5f3608cfa47"
+  },
+  {
+    "id": "M7 map engine refusal to 400",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "dcaff09556eaa95d96c47ca882802b7eb3688a1e481bc35d3f0ddeb30b4aeef8"
+  },
+  {
+    "id": "M8 invent status field",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "02aa8cd2cba840f00963ab6aa9cc5d9170e0e1477514cbb5cb0a1788eaa664dc"
+  },
+  {
+    "id": "M9 flatten result (drop wrapper nesting)",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "069041eb1df1068e507ddd58f42f61eaf559fc45afe47338d003e3a0fedf4d74"
+  },
+  {
+    "id": "M10 requires_licensed_counsel False",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "ce32d92a9a6c66484b442bc5da55c4c6471feeaaf60b2a55ddaad4b68028ccec"
+  },
+  {
+    "id": "M11 wrong module_id",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "e08dbf0e4760225e1d6752e5ea3314f427db1b1033ff4a2006bae0af3fe572ba"
+  },
+  {
+    "id": "M12 wrong route path",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "720680ce3723732c6ea4a4eb56de27fb80503ae9b3cfe10d781c3aafc0788e69"
+  },
+  {
+    "id": "M13 route to shared template engine",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "b23d2379d49161034ffccc2e6403daa1b82112bcb0d71daf1dbc0368f1c1a0ba"
+  },
+  {
+    "id": "M14 swallow refusal as 200 empty result",
+    "status": "CAUGHT",
+    "rc": 1,
+    "restore_verified": true,
+    "before_sha256": "4528d08401d453380a539beb5ffa7e18aba0eeb12e63516c61b03442155844e8",
+    "log_sha256": "8b1d06d1cc1c42c1963eb0b41a140cf5b21a0480b2904dd4d60d41c414c82d6c"
+  }
+]
