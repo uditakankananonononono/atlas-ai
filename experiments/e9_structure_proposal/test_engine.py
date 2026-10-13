@@ -2,8 +2,8 @@ import ast
 from pathlib import Path
 import numpy as np
 import pytest
-import engine
-from engine import atoms, synthesize, tabulate, choose, learn, combine
+from experiments.e9_structure_proposal import engine
+from experiments.e9_structure_proposal.engine import atoms, synthesize, tabulate, choose, learn, combine
 
 
 def test_generated_exhaustive_contains_composition():
@@ -61,7 +61,7 @@ def test_only_query_callback_reads_truth_and_fixed_budget():
 
 
 def test_behavioral_split_no_overlap():
-    from worlds import generate
+    from experiments.e9_structure_proposal.worlds import generate
     worlds = generate(73, 100)
     development = {w["table"] for w in worlds if w["split"] == "development"}
     holdout = {w["table"] for w in worlds if w["split"] == "heldout"}
@@ -69,15 +69,15 @@ def test_behavioral_split_no_overlap():
 
 
 def test_outside_grammar_can_be_rejected():
-    from worlds import generate
+    from experiments.e9_structure_proposal.worlds import generate
     w = generate(91, 1, outside=True)[0]
     programs, _, _ = synthesize([(s, (w["table"] >> s) & 1) for s in range(32)], exhaustive=True)
     assert programs == []
 
 
 def test_tiny_replay_is_deterministic():
-    from run import benchmark, summarize
-    from worlds import generate
+    from experiments.e9_structure_proposal.run import benchmark, summarize
+    from experiments.e9_structure_proposal.worlds import generate
     worlds = generate(73, 2)
     a = benchmark(worlds, seeds=1, budget=3)
     b = benchmark(worlds, seeds=1, budget=3)
@@ -87,7 +87,7 @@ def test_tiny_replay_is_deterministic():
 
 def test_saved_row_metrics_and_summaries():
     import json
-    from run import summarize, run_schedule
+    from experiments.e9_structure_proposal.run import summarize, run_schedule
     for folder in (Path(engine.__file__).parent / "results").iterdir():
         rows = [json.loads(line) for line in (folder / "rows.jsonl").read_text().splitlines()]
         assert summarize(rows) == (folder / "analysis.txt").read_text()
@@ -139,8 +139,8 @@ def test_truth_permutation_cannot_change_randomization_or_fixed_transcript(monke
     Actual observation values can differ, as they should. Hold those values and
     future callback replies fixed to test that no truth label changes queries.
     """
-    import run
-    from worlds import generate
+    from experiments.e9_structure_proposal import run
+    from experiments.e9_structure_proposal.worlds import generate
     real_learn = run.learn
     captured = []
     def fixed_transcript_learn(observations, costs, seed, **kwargs):
@@ -166,7 +166,7 @@ def test_truth_permutation_cannot_change_randomization_or_fixed_transcript(monke
 
 def test_schedule_has_no_world_or_truth_interface():
     import inspect
-    from run import run_schedule
+    from experiments.e9_structure_proposal.run import run_schedule
     assert list(inspect.signature(run_schedule).parameters) == ["count", "seeds"]
     schedule = run_schedule(2, 3)
     assert schedule[0][1][0]["learner_seed"] != schedule[1][1][0]["learner_seed"]

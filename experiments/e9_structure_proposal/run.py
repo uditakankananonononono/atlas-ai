@@ -9,8 +9,12 @@ import hashlib
 import json
 from pathlib import Path
 import numpy as np
-from engine import learn, SETTINGS
-from worlds import generate
+if __package__:
+    from .engine import learn, SETTINGS
+    from .worlds import generate
+else:
+    from engine import learn, SETTINGS
+    from worlds import generate
 
 POLICIES = (("beam_random", False, "random"), ("beam_eig_cost", False, "eig_cost"),
             ("exhaustive_random", True, "random"), ("exhaustive_eig_cost", True, "eig_cost"))

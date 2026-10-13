@@ -1,7 +1,10 @@
 """Author-only hidden worlds. This file must never be imported by the proposer."""
 import hashlib
 import numpy as np
-from engine import MASK, SETTINGS
+if __package__:
+    from .engine import MASK, SETTINGS
+else:
+    from engine import MASK, SETTINGS
 
 
 def generate(seed, count, outside=False):
