@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import data
-import run_experiment as rx
+import ec_run_experiment as rx
 from cartographer import Cartographer, item_features, ITEM_COLS, MAP_COLS
 
 R, M = 12, 5

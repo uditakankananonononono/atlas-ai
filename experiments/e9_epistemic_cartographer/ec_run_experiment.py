@@ -1,4 +1,4 @@
-"""E9 driver.  python run_experiment.py {collect|fail|alloc|all} [--work DIR]
+"""E9 driver.  python ec_run_experiment.py {collect|fail|alloc|all} [--work DIR]
 
 Stages are deterministic given the seeds in data.py / collect.py / below.
 """

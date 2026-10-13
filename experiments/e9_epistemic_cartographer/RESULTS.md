@@ -39,7 +39,7 @@ AUROC, task-macro, A = new combinations of familiar categories, B = tasks with n
 | Generalises to other corpora, neural models, or non-text data | UNVERIFIED (one corpus, one split seed, one model zoo) |
 
 ## Allocation test
-Code is in `run_experiment.py alloc` (8 strategies, 60 unfamiliar tasks, pool of 1200 train docs, 30 random labels then +30 per round to 150, accuracy on the held-out eval docs, paired bootstrap over tasks). A full run finished once earlier under Python 3.10 before the SVC seeding fix; it showed every failure-targeted strategy, map-guided included, ending below random selection (map-guided about -0.04 accuracy at 150 labels vs random, CI excluding 0), and the map-guided batch strategy with regional quotas above item-GBM by about +0.010 and above the shuffled-map control by about +0.006 (area under the learning curve). That run is not shipped as evidence: it predates the fix and was not replayed. A regenerated 3.12 run was started at 13:12 IST (about 45 min); `results_allocation.json` appears only if it finishes. Until then the allocation claim is UNVERIFIED.
+Code is in `ec_run_experiment.py alloc` (8 strategies, 60 unfamiliar tasks, pool of 1200 train docs, 30 random labels then +30 per round to 150, accuracy on the held-out eval docs, paired bootstrap over tasks). A full run finished once earlier under Python 3.10 before the SVC seeding fix; it showed every failure-targeted strategy, map-guided included, ending below random selection (map-guided about -0.04 accuracy at 150 labels vs random, CI excluding 0), and the map-guided batch strategy with regional quotas above item-GBM by about +0.010 and above the shuffled-map control by about +0.006 (area under the learning curve). That run is not shipped as evidence: it predates the fix and was not replayed. A regenerated 3.12 run was started at 13:12 IST (about 45 min); `results_allocation.json` appears only if it finishes. Until then the allocation claim is UNVERIFIED.
 
 ## Prior art and novelty
 No novelty claim. Error-slice discovery, selective prediction, uncertainty meta-models and active learning all exist. The only candidate novel parts here, co-failure smoothing and per-region model routing, showed no measurable effect.
@@ -48,9 +48,9 @@ No novelty claim. Error-slice discovery, selective prediction, uncertainty meta-
 ```
 pip install scikit-learn pytest scipy joblib pandas numpy
 python -m pytest -q experiments/e9_epistemic_cartographer/test_cartographer.py      # 13 passed, Python 3.12.14
-python experiments/e9_epistemic_cartographer/run_experiment.py collect              # ~2 min on 2 cpus
-python experiments/e9_epistemic_cartographer/run_experiment.py fail                 # ~2 min
+python experiments/e9_epistemic_cartographer/ec_run_experiment.py collect              # ~2 min on 2 cpus
+python experiments/e9_epistemic_cartographer/ec_run_experiment.py fail                 # ~2 min
 python experiments/e9_epistemic_cartographer/check_repro.py ~/e9_work               # reproducibility check
-python experiments/e9_epistemic_cartographer/run_experiment.py alloc                # ~45 min
+python experiments/e9_epistemic_cartographer/ec_run_experiment.py alloc                # ~45 min
 ```
-Needs ~1.5 GB free RAM; run stages one at a time (the fail stage was OOM-killed once when run beside another job in 2 GB). Files: `data.py`, `zoo.py`, `collect.py`, `cartographer.py`, `run_experiment.py`, `check_repro.py`, `test_cartographer.py`, `tasks.json`, `results_failure_prediction.json`, `repro_check.txt`.
+Needs ~1.5 GB free RAM; run stages one at a time (the fail stage was OOM-killed once when run beside another job in 2 GB). Files: `data.py`, `zoo.py`, `collect.py`, `cartographer.py`, `ec_run_experiment.py`, `check_repro.py`, `test_cartographer.py`, `tasks.json`, `results_failure_prediction.json`, `repro_check.txt`.
