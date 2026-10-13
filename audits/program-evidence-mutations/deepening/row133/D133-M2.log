@@ -1,0 +1,9 @@
+......................F                                                  [100%]
+=================================== FAILURES ===================================
+__________________ test_disclosure_boundaries_remain_present ___________________
+tests/test_row133_boundary_deepening.py:11: in test_disclosure_boundaries_remain_present
+    assert 'no aggregate time/disk budget' in out['execution_scope']
+E   AssertionError: assert 'no aggregate time/disk budget' in ''
+=========================== short test summary info ============================
+FAILED tests/test_row133_boundary_deepening.py::test_disclosure_boundaries_remain_present
+1 failed, 22 passed in 4.83s

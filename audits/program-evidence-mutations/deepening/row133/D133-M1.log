@@ -1,0 +1,9 @@
+......................F                                                  [100%]
+=================================== FAILURES ===================================
+__________________ test_disclosure_boundaries_remain_present ___________________
+tests/test_row133_boundary_deepening.py:10: in test_disclosure_boundaries_remain_present
+    assert 'no authenticated semantic evidence channel' in out['candy_gate']['reason']
+E   AssertionError: assert 'no authenticated semantic evidence channel' in ''
+=========================== short test summary info ============================
+FAILED tests/test_row133_boundary_deepening.py::test_disclosure_boundaries_remain_present
+1 failed, 22 passed in 5.22s

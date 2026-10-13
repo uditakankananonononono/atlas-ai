@@ -1,0 +1,45 @@
+{
+  "row": 133,
+  "tests": [
+    "tests/test_executed_acceptance.py",
+    "tests/test_row133_mutation_sensitivity.py",
+    "tests/test_row133_boundary_deepening.py"
+  ],
+  "mutants": [
+    {
+      "id": "D133-M1",
+      "name": "gate-reason-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'reason': 'Release is intentionally disabled: this API has no authenticated semantic evidence channel; passing declared check mappings cannot enable it'",
+      "new": "'reason': ''"
+    },
+    {
+      "id": "D133-M2",
+      "name": "execution-scope-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'execution_scope': 'Trusted checkout; at most 1000 per-run bounded calls, no aggregate time/disk budget.'",
+      "new": "'execution_scope': ''"
+    },
+    {
+      "id": "D133-M3",
+      "name": "snapshot-boundary-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'snapshot_boundary': 'Before/after observations are non-atomic; transient restored changes are not proven absent'",
+      "new": "'snapshot_boundary': ''"
+    },
+    {
+      "id": "D133-M4",
+      "name": "hash-scope-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'source_artifact_hash_scope': 'Actual local inventory bytes; declared export hash is separate'",
+      "new": "'source_artifact_hash_scope': ''"
+    },
+    {
+      "id": "D133-M5",
+      "name": "boundary-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'boundary': 'Executed selected tests bound to current source hashes only; declared test/line correspondence is not semantic proof.'",
+      "new": "'boundary': ''"
+    }
+  ]
+}

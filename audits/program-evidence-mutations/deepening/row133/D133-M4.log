@@ -1,0 +1,9 @@
+......................F                                                  [100%]
+=================================== FAILURES ===================================
+__________________ test_disclosure_boundaries_remain_present ___________________
+tests/test_row133_boundary_deepening.py:13: in test_disclosure_boundaries_remain_present
+    assert 'declared export hash is separate' in out['source_artifact_hash_scope']
+E   AssertionError: assert 'declared export hash is separate' in ''
+=========================== short test summary info ============================
+FAILED tests/test_row133_boundary_deepening.py::test_disclosure_boundaries_remain_present
+1 failed, 22 passed in 4.88s
