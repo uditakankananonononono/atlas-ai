@@ -104,3 +104,43 @@ def test_nonsquare_same_padding_stride_with_explicit_zero_padded_reference(trans
     assert result['shape']==shape
     assert result['padding_top_left']==[top,left]
     assert result['features_fraction']==expected
+
+
+@pytest.mark.parametrize('transpose,stride,shape',[
+    (False,1,[3,5]),(False,2,[2,3]),(False,3,[1,2]),
+    (True,1,[5,3]),(True,2,[3,2]),(True,3,[2,1]),
+])
+def test_nonsquare_valid_stride_shape_and_explicit_unpadded_windows(transpose,stride,shape):
+    image=[[10*r+c+1 for c in range(8)] for r in range(5)]
+    kernel=[[1,2,-1,3],[0,-2,4,1],[3,1,0,-1]]
+    if transpose:
+        image=[list(row) for row in zip(*image)]
+        kernel=[list(row) for row in zip(*kernel)]
+    expected=[]
+    for row_start in range(0,len(image)-len(kernel)+1,stride):
+        line=[]
+        for col_start in range(0,len(image[0])-len(kernel[0])+1,stride):
+            window=[row[col_start:col_start+len(kernel[0])] for row in image[row_start:row_start+len(kernel)]]
+            line.append(str(sum(a*b for wr,kr in zip(window,kernel) for a,b in zip(wr,kr))))
+        expected.append(line)
+    assert [len(expected),len(expected[0])]==shape
+    r=extract(image,kernel,stride,padding='valid')
+    assert r['shape']==shape and r['features_fraction']==expected
+    assert r['padding_top_left']==[0,0]
+
+
+@pytest.mark.parametrize('image,kernel',[
+    ([[1,2],[3,4],[5,6]],[[1,2,3],[4,5,6]]),
+    ([[1,2,3],[4,5,6]],[[1,2],[3,4],[5,6]]),
+])
+def test_valid_kernel_fits_only_one_axis_refused(image,kernel):
+    with pytest.raises(ValueError,match='^valid kernel must fit image$'):extract(image,kernel,padding='valid')
+
+
+@pytest.mark.parametrize('image,kernel,stride,expected',[
+    ([[1,2,3],[4,5,6]],[[2]],1,[['2','4','6'],['8','10','12']]),
+    ([[1,2,3,4],[5,6,7,8]],[[1,0],[0,1]],2,[['7','11']]),
+])
+def test_same_zero_total_padding_pins_zero_not_negative(image,kernel,stride,expected):
+    r=extract(image,kernel,stride,padding='same')
+    assert r['padding_top_left']==[0,0] and r['features_fraction']==expected
