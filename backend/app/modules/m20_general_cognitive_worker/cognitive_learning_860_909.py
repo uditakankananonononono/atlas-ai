@@ -56,9 +56,17 @@ def _operation(row, x):
   examples=_items(x,'examples');attrs=set(examples[0]['attributes']);[attrs.intersection_update(e['attributes']) for e in examples[1:]];return {'defining_attributes':sorted(attrs),'category_rule':' AND '.join(sorted(attrs))}
  if row==871:return {'nodes':sorted(set(x.get('concepts',[]))),'edges':x.get('typed_links',[]),'cross_link_count':sum(e.get('cross_link',False) for e in x.get('typed_links',[]))}
  if row==872:return {'root':x['central_topic'],'branches':x.get('branches',[]),'radial_depth':max([b.get('depth',1) for b in x.get('branches',[])],default=0)}
+ if row==873 and 'knowledge_items' in x:
+  from .knowledge_graph873_876 import facet_retrieval
+  try:return facet_retrieval(x)
+  except ValueError as exc:raise CognitiveLearningError(str(exc))from exc
  if row==873:return {'groups':x.get('groups',{}),'retrieval_index':{item:g for g,items in x.get('groups',{}).items() for item in items}}
  if row==874:return {'parent_by_term':{e['term']:e.get('parent') for e in x.get('terms',[])},'roots':[e['term'] for e in x.get('terms',[]) if not e.get('parent')]}
  if row==875:return {'classes':x.get('classes',[]),'relations':x.get('relations',[]),'constraint_violations':[c for c in x.get('constraints',[]) if not c.get('satisfied')]}
+ if row==876 and 'graph_queries' in x:
+  from .knowledge_graph873_876 import graph_paths
+  try:return graph_paths(x)
+  except ValueError as exc:raise CognitiveLearningError(str(exc))from exc
  if row==876:return {'adjacency':{n:[e['to'] for e in x.get('typed_edges',[]) if e['from']==n] for n in x.get('nodes',[])},'edge_types':sorted({e['type'] for e in x.get('typed_edges',[])})}
  if row==877:return {'assimilated':x.get('compatible_information',[]),'accommodated':x.get('schema_changes',[]),'schema_version':int(x.get('prior_version',0))+1}
  if row==878:return {'entities':x.get('entities',[]),'predictions':x.get('predictions',[]),'assumptions_to_test':x.get('assumptions',[])}
