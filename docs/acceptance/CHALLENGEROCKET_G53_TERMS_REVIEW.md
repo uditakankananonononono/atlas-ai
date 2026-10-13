@@ -7,6 +7,13 @@ Source: live owner Google Doc retrieved October 13, 2026, ID
 Group numbering corroborated from prior group 47-54 evidence, not reconstructed
 from a new count. Science and row 120 were left untouched.
 
+## Approval status
+
+Terms review is an unapproved draft; no owner acceptance. The owner has not
+reviewed or accepted ChallengeRocket terms. The runtime below is a tested
+mechanism for collecting a future review, not a record of owner approval.
+No terms were accepted and no entry was submitted on the owner's behalf.
+
 ## Runtime delivered
 
 ChallengeRocket application sessions can now capture complete static DOM text
