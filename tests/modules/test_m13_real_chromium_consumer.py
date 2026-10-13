@@ -62,9 +62,11 @@ async def test_real_m13_chromium_dom_artifacts_tenant_isolation(tmp_path, monkey
         await context_a.add_cookies([{'name':'fixture', 'value':'tenant-a', 'url':'https://a16-fixture.test'}])
         assert any(c['value'] == 'tenant-a' for c in await context_a.cookies())
         assert await context_b.cookies() == []
-        # dec4c06d deliberately cut off unbound manager writes. Controlled fixture writes
-        # below test readback, not a claim that this local transport authorizes fill.
-        with pytest.raises(ValueError, match='cannot verify control type'):
+        # The service refuses with ValueError "cannot verify control type" because
+        # the read-only facade intentionally omits evaluate. This is not an
+        # EFFECT_UNBOUND_REFUSED service result; the direct locator refusal is pinned below.
+        # Controlled fixture writes test readback, not authorized local fill.
+        with pytest.raises(ValueError, match='^cannot verify control type at fill time; refusing #email$'):
             await service.fill('tenant-a', 'same-session', [FieldDescriptor('#email', label='Email', name='email', input_type='email')], {'email':'fixture@example.test'})
         assert await page_a.locator('#email').input_value() == ''
         with pytest.raises(PermissionError, match='EFFECT_UNBOUND_REFUSED'):

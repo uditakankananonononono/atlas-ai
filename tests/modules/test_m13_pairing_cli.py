@@ -6,19 +6,19 @@ import pytest
 from app.modules.m13_browser_agent.pc_daemon import __main__ as cli
 from app.modules.m13_browser_agent.pc_daemon.daemon import pair_with_server
 
-@pytest.mark.parametrize('case,flag,env_token,status,direct', [
- ('flag-token','tok-abc',None,200,False),
- ('env-token',None,'tok-env',200,False),
- ('flag-over-env','tok-flag','tok-env',200,False),
- ('no-token-401',None,None,401,False),
- ('direct-401',None,None,401,True),
- ('direct-403',None,None,403,True),
- ('existing-config-403',None,'tok-env',403,False),
- ('flag-403','tok-flag',None,403,False),
- ('blank-with-env','','tok-env',200,False),
- ('blank-no-env','',None,200,False),
+@pytest.mark.parametrize('case,flag,env_token,direct', [
+ ('refusal-flag-present','tok-abc',None,False),
+ ('refusal-env-present',None,'tok-env',False),
+ ('refusal-both-present','tok-flag','tok-env',False),
+ ('refusal-no-token',None,None,False),
+ ('refusal-direct-no-token',None,None,True),
+ ('refusal-direct-no-token-repeat',None,None,True),
+ ('refusal-existing-config',None,'tok-env',False),
+ ('refusal-flag-present-repeat','tok-flag',None,False),
+ ('refusal-blank-with-env','','tok-env',False),
+ ('refusal-blank-without-env','',None,False),
 ])
-def test_unbound_pairing_refusal_zero_http_and_no_key_writes(monkeypatch,tmp_path,case,flag,env_token,status,direct):
+def test_unbound_pairing_refusal_zero_http_and_no_key_writes(monkeypatch,tmp_path,case,flag,env_token,direct):
     calls=[]
     def post(*args,**kwargs):
         calls.append((args,kwargs))

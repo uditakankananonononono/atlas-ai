@@ -50,7 +50,9 @@ def test_catalog_analysis_and_ledger_scope_agree_without_certification(method):
  row=next(x for x in json.loads((ROOT/'audits/additional-2000-features.json').read_text())['rows'] if x['id']==ROWS[method])
  assert row['status']=='PARTIAL'
  reference = row['reference_scope']
- if 'legacy_reference_scope' in reference:
+ nested_ids = {1984,1985,1986,1987,1988,1989}
+ assert ('legacy_reference_scope' in reference) == (row['id'] in nested_ids)
+ if row['id'] in nested_ids:
   assert reference['scope_status']=='dedicated_engine_only' and reference['dedicated_operator']
   assert reference['original_capability_status']=='unverified' and reference['named_capability_executed'] is False
   reference = reference['legacy_reference_scope']
