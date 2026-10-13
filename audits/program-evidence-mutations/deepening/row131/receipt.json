@@ -1,0 +1,169 @@
+{
+  "tree": "3138cccfcb7e61ba9627e1f7e2e98ab4a6be7edf",
+  "status": "?? audits/program-evidence-mutations/deepening/row131.json\n?? audits/program-evidence-mutations/deepening/row131/\n?? audits/program-evidence-mutations/deepening/row132.json\n?? audits/program-evidence-mutations/deepening/row132/\n?? audits/program-evidence-mutations/deepening/row133.json\n?? audits/program-evidence-mutations/deepening/row133/\n?? tests/test_row131_output_deepening.py\n?? tests/test_row132_retention_deepening.py\n?? tests/test_row133_boundary_deepening.py\n",
+  "file_sha256": {
+    "tests/test_executed_acceptance.py": "dfaa1b9cb287ceace41744d269cd129bf65a0227eb15cf961f14574c9d6649c6",
+    "tests/test_row131_mutation_sensitivity.py": "d0b7a83b08cc8a7f6ff947bd49ddfbe8bc1f8a01373e7a9076edfe1ead4f7a78",
+    "tests/test_row131_output_deepening.py": "a1d26e27f9d09d8f7112aec5e07a9a3730603f96a7dde76298f436aa05899167",
+    "backend/app/modules/instinct_doc/executed_acceptance.py": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+    "audits/program-evidence-mutations/deepening/row131.json": "8144fc689766e8580bbeb7b33b0b90914ad27ad5de2ffa4f10b44200955028db",
+    "audits/program-evidence-mutations/deepening/replay.py": "37772fd0017ea5e7c7b103d1d5a1d04b5a9a1d932180227b252e9523d134dc3e"
+  },
+  "base": "5886edfc9d74e9e402952e8d473477dfd96c0870",
+  "config_sha256": "8144fc689766e8580bbeb7b33b0b90914ad27ad5de2ffa4f10b44200955028db",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_executed_acceptance.py",
+    "tests/test_row131_mutation_sensitivity.py",
+    "tests/test_row131_output_deepening.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "portable_path_normalization": "interpreter normalized to python; delivered logs strip whitespace and replace listed private paths only",
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "baseline.log",
+    "original_sha256": "d36ae81635e788b330903e02183d57627885acf9ec06fe1af82e3891c9cde0ad",
+    "delivered_sha256": "d36ae81635e788b330903e02183d57627885acf9ec06fe1af82e3891c9cde0ad",
+    "normalizations": []
+  },
+  "mutants": [
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state"
+      ],
+      "log": "D131-M1.log",
+      "original_sha256": "c20f2f3e1144613af842ba67fd982807c610b58401c4115acc788e9ab50cd7a9",
+      "delivered_sha256": "633540f6a7da52ca20f9fc6cdf25be85c5b44d9eadc41a065a2f37690fb76321",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D131-M1",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "9928d874fd811ffa7287b46b375d616339a22b7d14b0c22cdd42a6a5aad7c929",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state"
+      ],
+      "log": "D131-M2.log",
+      "original_sha256": "7456ac08a8246f1af0fd82ec703d92cc86b99c59fdffc7366df2552dd9a08909",
+      "delivered_sha256": "21487351725989bba1160df1ef261765133bb45f8292b30a504ba6e83e31d9b9",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D131-M2",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "7484e05cdb72d62b05225c1ef4fa949bf60250d33f980d71578cbc654e305f6c",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state"
+      ],
+      "log": "D131-M3.log",
+      "original_sha256": "3b0627e2a3515ac59936c66faff0b4d3fc33b08404c57ba6ae66ad8a3ba07ce5",
+      "delivered_sha256": "3529470358fb79ed03fba4664ca8db9366e846a34c961baf5d3ef773c86d7200",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D131-M3",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "40a2d0e3eecc9d0d93d0975ec6295e0a736fb5aa9a0ecf54fb10c20c2eb217b7",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state"
+      ],
+      "log": "D131-M4.log",
+      "original_sha256": "dc0c49f157eec876f21b442516f16e93d69f733ec8a42a4b216b436e1e9687f4",
+      "delivered_sha256": "6c9ffe29480c5932528fc457b021ecc7e88775d6e4c081a76647423f97b6b20c",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        },
+        {
+          "line": 9,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D131-M4",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "931617ce0d86bfbc351454d0ed9c1080cf87e824e1e66bed1d3c80d07fc3b553",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state"
+      ],
+      "log": "D131-M5.log",
+      "original_sha256": "728e90880a72d116692446ed0aa005160a1ef6a35c603ac3d7ac0e674e8bfa12",
+      "delivered_sha256": "728e90880a72d116692446ed0aa005160a1ef6a35c603ac3d7ac0e674e8bfa12",
+      "normalizations": [],
+      "id": "D131-M5",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "f98c92ccb01458ac04daac5108a6874817aca1c601d6e60293c0263f33a5c320",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    }
+  ],
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "restored-baseline.log",
+    "original_sha256": "bbb8702849345d800ddb4111bce78c8b08751d7ba4d23a805860d36daab5b231",
+    "delivered_sha256": "bbb8702849345d800ddb4111bce78c8b08751d7ba4d23a805860d36daab5b231",
+    "normalizations": []
+  },
+  "counts": {
+    "CAUGHT": 5,
+    "SURVIVED": 0,
+    "INVALID": 0
+  }
+}

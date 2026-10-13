@@ -1,0 +1,12 @@
+......................F                                                  [100%]
+=================================== FAILURES ===================================
+___________ test_report_retains_exact_local_identity_and_dirty_state ___________
+tests/test_row131_output_deepening.py:13: in test_report_retains_exact_local_identity_and_dirty_state
+    assert [r['line_sha256'] for r in out['lines']]==[r['sha256'] for r in source['rows']]
+E   AssertionError: assert ['00000000000...000000000000'] == ['a7937b64b8c...e0c55644c7c4']
+E
+E     At index 0 diff: '0000000000000000000000000000000000000000000000000000000000000000' != 'a7937b64b8caa58f03721bb6bacf5c78cb235febe0e70b1b84cd99541461a08e'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state
+1 failed, 22 passed in 4.95s

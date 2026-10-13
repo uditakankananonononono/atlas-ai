@@ -1,0 +1,9 @@
+......................F                                                  [100%]
+=================================== FAILURES ===================================
+___________ test_report_retains_exact_local_identity_and_dirty_state ___________
+tests/test_row131_output_deepening.py:15: in test_report_retains_exact_local_identity_and_dirty_state
+    assert out['dirty'] is True
+E   assert False is True
+=========================== short test summary info ============================
+FAILED tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state
+1 failed, 22 passed in 5.11s

@@ -1,0 +1,45 @@
+{
+  "row": 131,
+  "tests": [
+    "tests/test_executed_acceptance.py",
+    "tests/test_row131_mutation_sensitivity.py",
+    "tests/test_row131_output_deepening.py"
+  ],
+  "mutants": [
+    {
+      "id": "D131-M1",
+      "name": "source-identity-output",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'source_sha256': source['sha256']",
+      "new": "'source_sha256': '0' * 64"
+    },
+    {
+      "id": "D131-M2",
+      "name": "line-hash-output",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'line_sha256': sha,",
+      "new": "'line_sha256': '0' * 64,"
+    },
+    {
+      "id": "D131-M3",
+      "name": "head-output",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],",
+      "new": "'head': 'wrong', 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],"
+    },
+    {
+      "id": "D131-M4",
+      "name": "tree-output",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],",
+      "new": "'head': snap['head'], 'tree_digest': 'wrong', 'dirty': snap['dirty'],"
+    },
+    {
+      "id": "D131-M5",
+      "name": "dirty-output",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': snap['dirty'],",
+      "new": "'head': snap['head'], 'tree_digest': snap['tree_digest'], 'dirty': False,"
+    }
+  ]
+}

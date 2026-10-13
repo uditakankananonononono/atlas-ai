@@ -1,0 +1,12 @@
+......................F                                                  [100%]
+=================================== FAILURES ===================================
+___________ test_report_retains_exact_local_identity_and_dirty_state ___________
+tests/test_row131_output_deepening.py:14: in test_report_retains_exact_local_identity_and_dirty_state
+    assert out['head']==snap['head'] and out['tree_digest']==snap['tree_digest']
+E   AssertionError: assert ('wrong' == 'df0afbee5f5a...9d93fc8c442dc'
+E
+E     - df0afbee5f5a1934436af321b119d93fc8c442dc
+E     + wrong)
+=========================== short test summary info ============================
+FAILED tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state
+1 failed, 22 passed in 4.86s

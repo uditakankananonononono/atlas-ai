@@ -1,0 +1,12 @@
+......................F                                                  [100%]
+=================================== FAILURES ===================================
+___________ test_report_retains_exact_local_identity_and_dirty_state ___________
+tests/test_row131_output_deepening.py:12: in test_report_retains_exact_local_identity_and_dirty_state
+    assert out['source_sha256']==source['sha256']
+E   AssertionError: assert '000000000000...0000000000000' == 'dbea9325179e...a064623d7ee23'
+E
+E     - dbea9325179efe46ea2add94f7b6b745ca983fabb208dc6d34aa064623d7ee23
+E     + 0000000000000000000000000000000000000000000000000000000000000000
+=========================== short test summary info ============================
+FAILED tests/test_row131_output_deepening.py::test_report_retains_exact_local_identity_and_dirty_state
+1 failed, 22 passed in 5.08s
