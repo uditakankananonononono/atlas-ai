@@ -1,0 +1,181 @@
+E9 cognitive multiverse, conditions x seeds (paired eval draws per seed)
+config: {"adopt_per_gen": 2, "beam_width": 16, "cache_cap": 40, "cache_replay": 20, "credit_mode": "usage", "fresh_lineage_prob": 0.15, "generations": 10, "h1_pipes": 10, "keep": 6, "lam": 1.0, "lib_cap": 8, "pop_size": 8, "pub_per_gen": 2, "select_every": 3, "spammer": false, "strong_budget": 1000, "tasks_per_gen": 8, "weak_budget": 300}
+
+condition     h2pop  h2ind  h1pop  h1ind    lin   even    pool transfer
+iso-best      0.810  0.476  0.720  0.400   3.40  0.923     0.0      0.0
+share-rand    0.770  0.483  0.730  0.476   4.60  0.957    20.3    123.7
+share-best    0.750  0.537  0.800  0.608   4.00  0.883    20.0    137.5
+share-multi   0.730  0.483  0.740  0.525   3.90  0.903    19.9    120.3
+share-multi-v2  0.730  0.523  0.690  0.546   3.20  0.871    18.7    129.2
+e7-lib        0.610  0.610  0.570  0.570    nan    nan     1.0      nan
+e7-lib-8      0.770  0.596  0.850  0.594    nan    nan     nan      nan
+
+paired comparisons by seed (h2_ind / h2_pop / h1_ind), bootstrap 95% CI, sign-test p
+  share-multi-v2 - share-best h2_ind  mean -0.015 CI [-0.065, +0.039] sign p 0.344
+  share-multi-v2 - share-best h2_pop  mean -0.020 CI [-0.130, +0.070] sign p 1.000
+  share-multi-v2 - share-best h1_ind  mean -0.061 CI [-0.121, -0.013] sign p 0.180
+  share-multi-v2 - share-multi h2_ind  mean +0.040 CI [-0.011, +0.089] sign p 0.754
+  share-multi-v2 - share-multi h2_pop  mean +0.000 CI [-0.070, +0.070] sign p 1.000
+  share-multi-v2 - share-multi h1_ind  mean +0.021 CI [-0.053, +0.102] sign p 0.754
+  share-multi-v2 - iso-best   h2_ind  mean +0.046 CI [-0.038, +0.125] sign p 0.508
+  share-multi-v2 - iso-best   h2_pop  mean -0.080 CI [-0.220, +0.060] sign p 0.754
+  share-multi-v2 - iso-best   h1_ind  mean +0.146 CI [+0.055, +0.231] sign p 0.180
+  share-multi-v2 - share-rand h2_ind  mean +0.040 CI [+0.009, +0.074] sign p 0.344
+  share-multi-v2 - share-rand h2_pop  mean -0.040 CI [-0.130, +0.030] sign p 1.000
+  share-multi-v2 - share-rand h1_ind  mean +0.070 CI [-0.011, +0.146] sign p 0.109
+  share-multi-v2 - e7-lib-8   h2_ind  mean -0.074 CI [-0.154, +0.005] sign p 0.109
+  share-multi-v2 - e7-lib-8   h2_pop  mean -0.040 CI [-0.140, +0.070] sign p 1.000
+  share-multi-v2 - e7-lib-8   h1_ind  mean -0.047 CI [-0.160, +0.061] sign p 1.000
+  share-best  - e7-lib-8   h2_ind  mean -0.059 CI [-0.149, +0.021] sign p 0.289
+  share-best  - e7-lib-8   h2_pop  mean -0.020 CI [-0.100, +0.060] sign p 1.000
+  share-best  - e7-lib-8   h1_ind  mean +0.014 CI [-0.079, +0.105] sign p 0.754
+  share-multi - share-best h2_ind  mean -0.055 CI [-0.102, -0.014] sign p 0.508
+  share-multi - share-best h2_pop  mean -0.020 CI [-0.180, +0.090] sign p 1.000
+  share-multi - share-best h1_ind  mean -0.082 CI [-0.140, -0.029] sign p 0.109
+  share-best  - iso-best   h2_ind  mean +0.061 CI [-0.039, +0.158] sign p 0.289
+  share-best  - iso-best   h2_pop  mean -0.060 CI [-0.130, +0.010] sign p 0.508
+  share-best  - iso-best   h1_ind  mean +0.207 CI [+0.156, +0.266] sign p 0.002
+  share-multi - e7-lib     h2_ind  mean -0.128 CI [-0.221, -0.030] sign p 0.344
+  share-multi - e7-lib     h2_pop  mean +0.120 CI [-0.010, +0.240] sign p 0.180
+  share-multi - e7-lib     h1_ind  mean -0.045 CI [-0.136, +0.048] sign p 0.180
+  share-rand  - iso-best   h2_ind  mean +0.006 CI [-0.076, +0.085] sign p 0.754
+  share-rand  - iso-best   h2_pop  mean -0.040 CI [-0.140, +0.060] sign p 0.754
+  share-rand  - iso-best   h1_ind  mean +0.076 CI [-0.000, +0.155] sign p 0.180
+
+diversity: final n_lineages / evenness per seed
+  iso-best     lineages [3, 3, 3, 3, 5, 4, 4, 2, 2, 5] evenness [0.89, 0.89, 0.89, 0.89, 0.97, 0.95, 0.88, 1.0, 0.95, 0.93]
+  share-rand   lineages [3, 5, 5, 5, 4, 5, 3, 5, 5, 6] evenness [0.89, 0.93, 0.97, 0.93, 1.0, 0.97, 0.99, 0.97, 0.97, 0.97]
+  share-best   lineages [5, 3, 3, 6, 3, 4, 3, 5, 4, 4] evenness [0.97, 0.89, 0.82, 0.97, 0.95, 0.88, 0.89, 0.93, 0.77, 0.77]
+  share-multi  lineages [5, 4, 6, 5, 3, 3, 3, 4, 2, 4] evenness [0.86, 0.91, 0.97, 0.97, 0.67, 0.89, 0.95, 0.95, 1.0, 0.88]
+  share-multi-v2 lineages [4, 4, 4, 4, 3, 2, 2, 3, 3, 3] evenness [0.77, 1.0, 0.77, 0.88, 0.89, 1.0, 0.81, 0.82, 0.82, 0.95]
+
+per held-out domain, h2_ind means:
+  math     iso-best 0.512 (n=2) | share-rand 0.375 (n=2) | share-best 0.406 (n=2) | share-multi 0.350 (n=2) | share-multi-v2 0.481 (n=2) | e7-lib 0.600 (n=2) | e7-lib-8 0.637 (n=2)
+  bio      iso-best 0.575 (n=3) | share-rand 0.579 (n=3) | share-best 0.617 (n=3) | share-multi 0.533 (n=3) | share-multi-v2 0.562 (n=3) | e7-lib 0.600 (n=3) | e7-lib-8 0.650 (n=3)
+  code     iso-best 0.483 (n=3) | share-rand 0.592 (n=3) | share-best 0.708 (n=3) | share-multi 0.638 (n=3) | share-multi-v2 0.617 (n=3) | e7-lib 0.700 (n=3) | e7-lib-8 0.688 (n=3)
+  physics  iso-best 0.281 (n=2) | share-rand 0.281 (n=2) | share-best 0.294 (n=2) | share-multi 0.306 (n=2) | share-multi-v2 0.362 (n=2) | e7-lib 0.500 (n=2) | e7-lib-8 0.338 (n=2)
+
+ablation audit (both multi arms): remove one lineage's macros, re-eval h2
+  share-multi: 52 credited lineages, mean true_marginal +0.004, fraction with true_marginal>0 0.15
+  share-multi: 56 ablation rows total, 6 with negative true marginal
+  share-multi-v2: 47 credited lineages, mean true_marginal +0.034, fraction with true_marginal>0 0.38
+  share-multi-v2: 56 ablation rows total, 7 with negative true marginal
+  share-multi seed 1 lineage 0 attributed_credit 9 true_marginal_h2pop +0.000
+  share-multi seed 1 lineage 1 attributed_credit 20 true_marginal_h2pop +0.000
+  share-multi seed 1 lineage 2 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi seed 1 lineage 3 attributed_credit 14 true_marginal_h2pop +0.000
+  share-multi seed 1 lineage 5 attributed_credit 3 true_marginal_h2pop +0.000
+  share-multi seed 1 lineage 6 attributed_credit 83 true_marginal_h2pop +0.000
+  share-multi-v2 seed 1 lineage 0 attributed_credit 2 true_marginal_h2pop +0.100
+  share-multi-v2 seed 1 lineage 1 attributed_credit 15 true_marginal_h2pop -0.100
+  share-multi-v2 seed 1 lineage 2 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi-v2 seed 1 lineage 3 attributed_credit 6 true_marginal_h2pop +0.000
+  share-multi-v2 seed 1 lineage 6 attributed_credit 62 true_marginal_h2pop -0.100
+  share-multi seed 2 lineage 0 attributed_credit 15 true_marginal_h2pop +0.000
+  share-multi seed 2 lineage 1 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi seed 2 lineage 2 attributed_credit 26 true_marginal_h2pop +0.000
+  share-multi seed 2 lineage 3 attributed_credit 5 true_marginal_h2pop -0.100
+  share-multi seed 2 lineage 4 attributed_credit 17 true_marginal_h2pop +0.000
+  share-multi seed 2 lineage 5 attributed_credit 27 true_marginal_h2pop +0.000
+  share-multi seed 2 lineage 6 attributed_credit 11 true_marginal_h2pop -0.100
+  share-multi-v2 seed 2 lineage 0 attributed_credit 4 true_marginal_h2pop +0.000
+  share-multi-v2 seed 2 lineage 1 attributed_credit 1 true_marginal_h2pop +0.000
+  share-multi-v2 seed 2 lineage 2 attributed_credit 19 true_marginal_h2pop +0.100
+  share-multi-v2 seed 2 lineage 4 attributed_credit 13 true_marginal_h2pop +0.000
+  share-multi-v2 seed 2 lineage 5 attributed_credit 4 true_marginal_h2pop +0.000
+  share-multi-v2 seed 2 lineage 6 attributed_credit 17 true_marginal_h2pop +0.000
+  share-multi seed 3 lineage 0 attributed_credit 17 true_marginal_h2pop +0.000
+  share-multi seed 3 lineage 1 attributed_credit 18 true_marginal_h2pop +0.000
+  share-multi seed 3 lineage 2 attributed_credit 5 true_marginal_h2pop +0.000
+  share-multi seed 3 lineage 3 attributed_credit 16 true_marginal_h2pop +0.100
+  share-multi seed 3 lineage 4 attributed_credit 15 true_marginal_h2pop +0.000
+  share-multi seed 3 lineage 5 attributed_credit 13 true_marginal_h2pop +0.100
+  share-multi seed 3 lineage 6 attributed_credit 12 true_marginal_h2pop +0.000
+  share-multi-v2 seed 3 lineage 0 attributed_credit 0 true_marginal_h2pop +0.100
+  share-multi-v2 seed 3 lineage 1 attributed_credit 7 true_marginal_h2pop +0.100
+  share-multi-v2 seed 3 lineage 2 attributed_credit 19 true_marginal_h2pop +0.000
+  share-multi-v2 seed 3 lineage 3 attributed_credit 6 true_marginal_h2pop +0.300
+  share-multi-v2 seed 3 lineage 4 attributed_credit 6 true_marginal_h2pop +0.100
+  share-multi-v2 seed 3 lineage 5 attributed_credit 0 true_marginal_h2pop +0.200
+  share-multi-v2 seed 3 lineage 6 attributed_credit 19 true_marginal_h2pop +0.100
+  share-multi seed 4 lineage 0 attributed_credit 31 true_marginal_h2pop +0.000
+  share-multi seed 4 lineage 1 attributed_credit 16 true_marginal_h2pop +0.100
+  share-multi seed 4 lineage 2 attributed_credit 14 true_marginal_h2pop -0.100
+  share-multi seed 4 lineage 3 attributed_credit 34 true_marginal_h2pop +0.000
+  share-multi seed 4 lineage 7 attributed_credit 1 true_marginal_h2pop +0.100
+  share-multi-v2 seed 4 lineage 0 attributed_credit 16 true_marginal_h2pop +0.100
+  share-multi-v2 seed 4 lineage 1 attributed_credit 2 true_marginal_h2pop +0.200
+  share-multi-v2 seed 4 lineage 2 attributed_credit 17 true_marginal_h2pop +0.100
+  share-multi-v2 seed 4 lineage 3 attributed_credit 0 true_marginal_h2pop +0.100
+  share-multi-v2 seed 4 lineage 6 attributed_credit 8 true_marginal_h2pop +0.300
+  share-multi-v2 seed 4 lineage 7 attributed_credit 0 true_marginal_h2pop +0.200
+  share-multi seed 5 lineage 0 attributed_credit 9 true_marginal_h2pop -0.100
+  share-multi seed 5 lineage 1 attributed_credit 15 true_marginal_h2pop +0.000
+  share-multi seed 5 lineage 2 attributed_credit 3 true_marginal_h2pop +0.000
+  share-multi seed 5 lineage 3 attributed_credit 63 true_marginal_h2pop +0.000
+  share-multi seed 5 lineage 4 attributed_credit 6 true_marginal_h2pop +0.000
+  share-multi seed 5 lineage 6 attributed_credit 29 true_marginal_h2pop +0.000
+  share-multi-v2 seed 5 lineage 0 attributed_credit 23 true_marginal_h2pop +0.100
+  share-multi-v2 seed 5 lineage 1 attributed_credit 2 true_marginal_h2pop +0.000
+  share-multi-v2 seed 5 lineage 2 attributed_credit 15 true_marginal_h2pop +0.000
+  share-multi-v2 seed 5 lineage 3 attributed_credit 55 true_marginal_h2pop +0.000
+  share-multi-v2 seed 5 lineage 4 attributed_credit 5 true_marginal_h2pop +0.000
+  share-multi-v2 seed 5 lineage 6 attributed_credit 3 true_marginal_h2pop +0.000
+  share-multi seed 6 lineage 0 attributed_credit 34 true_marginal_h2pop +0.000
+  share-multi seed 6 lineage 1 attributed_credit 51 true_marginal_h2pop -0.100
+  share-multi seed 6 lineage 2 attributed_credit 1 true_marginal_h2pop +0.000
+  share-multi seed 6 lineage 5 attributed_credit 33 true_marginal_h2pop -0.100
+  share-multi-v2 seed 6 lineage 0 attributed_credit 26 true_marginal_h2pop -0.100
+  share-multi-v2 seed 6 lineage 1 attributed_credit 41 true_marginal_h2pop -0.100
+  share-multi-v2 seed 6 lineage 2 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi-v2 seed 6 lineage 5 attributed_credit 35 true_marginal_h2pop +0.000
+  share-multi seed 7 lineage 0 attributed_credit 22 true_marginal_h2pop +0.000
+  share-multi seed 7 lineage 1 attributed_credit 49 true_marginal_h2pop +0.100
+  share-multi seed 7 lineage 2 attributed_credit 7 true_marginal_h2pop +0.000
+  share-multi seed 7 lineage 3 attributed_credit 25 true_marginal_h2pop +0.000
+  share-multi seed 7 lineage 4 attributed_credit 8 true_marginal_h2pop +0.000
+  share-multi seed 7 lineage 6 attributed_credit 38 true_marginal_h2pop +0.100
+  share-multi-v2 seed 7 lineage 0 attributed_credit 20 true_marginal_h2pop -0.100
+  share-multi-v2 seed 7 lineage 1 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi-v2 seed 7 lineage 2 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi-v2 seed 7 lineage 3 attributed_credit 2 true_marginal_h2pop -0.100
+  share-multi-v2 seed 7 lineage 4 attributed_credit 1 true_marginal_h2pop -0.100
+  share-multi-v2 seed 7 lineage 6 attributed_credit 14 true_marginal_h2pop +0.100
+  share-multi seed 8 lineage 0 attributed_credit 22 true_marginal_h2pop +0.000
+  share-multi seed 8 lineage 1 attributed_credit 22 true_marginal_h2pop +0.000
+  share-multi seed 8 lineage 2 attributed_credit 32 true_marginal_h2pop +0.000
+  share-multi seed 8 lineage 6 attributed_credit 28 true_marginal_h2pop +0.000
+  share-multi-v2 seed 8 lineage 0 attributed_credit 3 true_marginal_h2pop +0.100
+  share-multi-v2 seed 8 lineage 1 attributed_credit 2 true_marginal_h2pop +0.000
+  share-multi-v2 seed 8 lineage 2 attributed_credit 7 true_marginal_h2pop +0.000
+  share-multi-v2 seed 8 lineage 4 attributed_credit 10 true_marginal_h2pop +0.000
+  share-multi-v2 seed 8 lineage 6 attributed_credit 17 true_marginal_h2pop +0.000
+  share-multi seed 9 lineage 0 attributed_credit 37 true_marginal_h2pop +0.100
+  share-multi seed 9 lineage 1 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi seed 9 lineage 2 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi seed 9 lineage 3 attributed_credit 46 true_marginal_h2pop +0.000
+  share-multi seed 9 lineage 5 attributed_credit 31 true_marginal_h2pop +0.000
+  share-multi seed 9 lineage 6 attributed_credit 19 true_marginal_h2pop +0.000
+  share-multi-v2 seed 9 lineage 0 attributed_credit 21 true_marginal_h2pop +0.100
+  share-multi-v2 seed 9 lineage 1 attributed_credit 1 true_marginal_h2pop +0.000
+  share-multi-v2 seed 9 lineage 2 attributed_credit 0 true_marginal_h2pop +0.000
+  share-multi-v2 seed 9 lineage 3 attributed_credit 23 true_marginal_h2pop +0.000
+  share-multi-v2 seed 9 lineage 5 attributed_credit 1 true_marginal_h2pop +0.100
+  share-multi-v2 seed 9 lineage 6 attributed_credit 15 true_marginal_h2pop +0.000
+  share-multi seed 10 lineage 0 attributed_credit 37 true_marginal_h2pop +0.000
+  share-multi seed 10 lineage 1 attributed_credit 33 true_marginal_h2pop +0.000
+  share-multi seed 10 lineage 3 attributed_credit 43 true_marginal_h2pop +0.000
+  share-multi seed 10 lineage 4 attributed_credit 21 true_marginal_h2pop +0.100
+  share-multi seed 10 lineage 6 attributed_credit 23 true_marginal_h2pop +0.000
+  share-multi-v2 seed 10 lineage 0 attributed_credit 12 true_marginal_h2pop +0.000
+  share-multi-v2 seed 10 lineage 1 attributed_credit 42 true_marginal_h2pop +0.100
+  share-multi-v2 seed 10 lineage 3 attributed_credit 7 true_marginal_h2pop +0.100
+  share-multi-v2 seed 10 lineage 4 attributed_credit 26 true_marginal_h2pop +0.100
+  share-multi-v2 seed 10 lineage 6 attributed_credit 9 true_marginal_h2pop +0.000
+
+counterfactual credit cost: mean re-solves per run: {'share-multi-v2': 129.4}
+transfer uses vs counterfactual-necessary transfers (main suite totals): {'iso-best': (0, 0), 'share-rand': (1237, 0), 'share-best': (1375, 0), 'share-multi': (1203, 0), 'share-multi-v2': (1292, 681)}
+
+spammer suite (1 junk-publishing mind): counterfactual credit vs publication credit
+  share-multi-v2   selections survived 5/18, final pool 22.3, h2_ind 0.504, h2_pop 0.817
+  share-multi-pub  selections survived 5/18, final pool 22.7, h2_ind 0.462, h2_pop 0.750
