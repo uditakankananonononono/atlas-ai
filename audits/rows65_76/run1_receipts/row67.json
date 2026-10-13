@@ -1,0 +1,174 @@
+{
+ "checkout": {
+  "head": "ef06cc163f9cf153ae1def20bceb20e10f945718",
+  "head_tree": "a05db6e495766d9f8b5311720777ecd36c2cfd1a",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 5984,
+  "sha256_of_sorted_map": "d943ac748dc0ba1c52dd9f901475df75032d4b42ce677c01e2acbb42d4494929",
+  "note": "full per-file map omitted from the published copy to keep the package small; mutation outcomes unchanged"
+ },
+ "row": 67,
+ "spec_sha256": "565832c4d2827c89ff4419d481fcfe737b472394229dfc12b07ccb32d6aef107",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_c35_prefill_s45.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 1.0491376419995504
+ },
+ "baseline_log_sha256": "7f77d548807f25eaa0076e067213b1e79b995b1fa40a1c17d347564c2c07ac84",
+ "mutations": [
+  {
+   "id": "submit_token_unblocked",
+   "path": "backend/app/modules/c35/prefill.py",
+   "source_sha256_before": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c35_prefill_s45.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c35_prefill_s45.py::Refusals::test_submit_password_login_keys_refused",
+    "tests/modules/test_c35_prefill_s45.py::RepairS45::test_blocked_tokens_scanned_everywhere"
+   ],
+   "seconds": 1.073583127999882,
+   "log_sha256": "1c5be5692a0f1cc869b4d0a18a681448216603649c5f289a503b78eae95cbc59",
+   "restored_sha256": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "restore_verified": true
+  },
+  {
+   "id": "password_token_unblocked",
+   "path": "backend/app/modules/c35/prefill.py",
+   "source_sha256_before": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c35_prefill_s45.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c35_prefill_s45.py::Refusals::test_submit_password_login_keys_refused",
+    "tests/modules/test_c35_prefill_s45.py::RepairS45::test_blocked_tokens_scanned_everywhere"
+   ],
+   "seconds": 1.0238985600008164,
+   "log_sha256": "ec00c8ac062c8b6ccba6f7cf63fcb68739dd13f77c4e9ae9425bbbe2ba3d247d",
+   "restored_sha256": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "restore_verified": true
+  },
+  {
+   "id": "essay_fields_prefilled",
+   "path": "backend/app/modules/c35/prefill.py",
+   "source_sha256_before": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c35_prefill_s45.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c35_prefill_s45.py::Behavior::test_essay_stays_draft_required",
+    "tests/modules/test_c35_prefill_s45.py::Behavior::test_tracker_statuses"
+   ],
+   "seconds": 1.0405146489993058,
+   "log_sha256": "bc6a45cf19176a7f3bb6bcac10392bdfcdaba02c304bc484a202261dcff16df8",
+   "restored_sha256": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "restore_verified": true
+  },
+  {
+   "id": "opportunity_cap",
+   "path": "backend/app/modules/c35/prefill.py",
+   "source_sha256_before": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c35_prefill_s45.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c35_prefill_s45.py::RepairS45::test_opportunities_cap_and_shape"
+   ],
+   "seconds": 1.115758050000295,
+   "log_sha256": "e65ba68eea22f90d26859dac8ea2eb549e503c0e657f2cf615e34c8a5488f34d",
+   "restored_sha256": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "restore_verified": true
+  },
+  {
+   "id": "field_cap",
+   "path": "backend/app/modules/c35/prefill.py",
+   "source_sha256_before": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c35_prefill_s45.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c35_prefill_s45.py::RepairS45::test_fields_cap_and_shape"
+   ],
+   "seconds": 1.0105270669992024,
+   "log_sha256": "8640ebb5d14692b429d8dac2a6494b8b7d73101f148696c146fc37975cbc48a4",
+   "restored_sha256": "139822e4764e837732a0320ce4d12ce858fdc30e4b3e96a82c3b7e223f9ff477",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

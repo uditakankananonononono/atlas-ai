@@ -1,0 +1,172 @@
+{
+ "checkout": {
+  "head": "ef06cc163f9cf153ae1def20bceb20e10f945718",
+  "head_tree": "a05db6e495766d9f8b5311720777ecd36c2cfd1a",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 5984,
+  "sha256_of_sorted_map": "d943ac748dc0ba1c52dd9f901475df75032d4b42ce677c01e2acbb42d4494929",
+  "note": "full per-file map omitted from the published copy to keep the package small; mutation outcomes unchanged"
+ },
+ "row": 75,
+ "spec_sha256": "7ed9c4c10f0030098475c98f889897e5b9f20965d5068be1e475c61ce5c0bd0a",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_c31_integrate_s16.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 1.0267337009991024
+ },
+ "baseline_log_sha256": "f83d9d610e658c2588951f9d5fcf5eb6869412bb3ff4984e533ea0cdb5fce58f",
+ "mutations": [
+  {
+   "id": "paid_tool_allowed",
+   "path": "backend/app/modules/c31/integrate.py",
+   "source_sha256_before": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_integrate_s16.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_integrate_s16.py::Integrate::test_paid_refused_before_selection"
+   ],
+   "seconds": 1.0657797919993754,
+   "log_sha256": "ed2b418d16a9300e030d0266378c57088edb705d33ea0eba764b670f3b38069b",
+   "restored_sha256": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "restore_verified": true
+  },
+  {
+   "id": "ambiguous_tie",
+   "path": "backend/app/modules/c31/integrate.py",
+   "source_sha256_before": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_integrate_s16.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_integrate_s16.py::Integrate::test_ambiguous_refused"
+   ],
+   "seconds": 1.0280338730008225,
+   "log_sha256": "fd3df4d79a6548bae7bd8cad9164609620ad1f1a27c4bb32789b49132f188f11",
+   "restored_sha256": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "restore_verified": true
+  },
+  {
+   "id": "toxic_score",
+   "path": "backend/app/modules/c31/integrate.py",
+   "source_sha256_before": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_integrate_s16.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_integrate_s16.py::Integrate::test_exact_numeric_score"
+   ],
+   "seconds": 0.9893902500007243,
+   "log_sha256": "31af6f1d28ddb02ec3f74c9963f7cd859b1829965f0aa06b306902eed390f636",
+   "restored_sha256": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "restore_verified": true
+  },
+  {
+   "id": "privacy_tier",
+   "path": "backend/app/modules/c31/integrate.py",
+   "source_sha256_before": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_integrate_s16.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_integrate_s16.py::Integrate::test_validation"
+   ],
+   "seconds": 1.0702705280000373,
+   "log_sha256": "11e7f36113bb82cfe8c8f44310ce666628be78e4747dc68a4c38b3e98aa2bc07",
+   "restored_sha256": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "restore_verified": true
+  },
+  {
+   "id": "adapter_stub_runs",
+   "path": "backend/app/modules/c31/integrate.py",
+   "source_sha256_before": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_integrate_s16.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_integrate_s16.py::Integrate::test_adapter_stub_injection_safe",
+    "tests/modules/test_c31_integrate_s16.py::Integrate::test_selection_and_artifacts"
+   ],
+   "seconds": 1.0459967290007626,
+   "log_sha256": "861bdca3346ce477cc764a504e956d3b199fc99f7995dec1355ff0451ebcefa7",
+   "restored_sha256": "9b0ce6ed04587e740bcc95b63afe5a8f05c13649a7a1afdc4a0824c36a812e55",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

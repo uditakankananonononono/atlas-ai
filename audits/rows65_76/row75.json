@@ -1,0 +1,45 @@
+{
+  "row": 75,
+  "selectors": [
+    "tests/modules/test_c31_integrate_s16.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "offline fixtures only",
+    "no live platform, account or network",
+    "literal row stays PARTIAL",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "paid_tool_allowed",
+      "path": "backend/app/modules/c31/integrate.py",
+      "old": "if bool(tool.get(\"paid\", False)):",
+      "new": "if False:"
+    },
+    {
+      "id": "ambiguous_tie",
+      "path": "backend/app/modules/c31/integrate.py",
+      "old": "if len(ties) > 1:",
+      "new": "if False:"
+    },
+    {
+      "id": "toxic_score",
+      "path": "backend/app/modules/c31/integrate.py",
+      "old": "\"toxic\": 0}",
+      "new": "\"toxic\": 3}"
+    },
+    {
+      "id": "privacy_tier",
+      "path": "backend/app/modules/c31/integrate.py",
+      "old": "if tier not in TIER_SCORE:",
+      "new": "if False:"
+    },
+    {
+      "id": "adapter_stub_runs",
+      "path": "backend/app/modules/c31/integrate.py",
+      "old": "\"    raise NotImplementedError(%r)\"",
+      "new": "\"    pass  # %r\""
+    }
+  ]
+}

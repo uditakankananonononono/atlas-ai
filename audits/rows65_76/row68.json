@@ -1,0 +1,46 @@
+{
+  "row": 68,
+  "selectors": [
+    "tests/modules/test_c32_ingest_s20.py",
+    "tests/modules/test_c32_ingest_stream_s20.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "offline fixtures only",
+    "no live platform, account or network",
+    "literal row stays PARTIAL",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "url_records_allowed",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "if \"url\" in rec or rec.get(\"fetch\"):\n            policy.check(\"scrape\", PREFIX)  # standing guard: never fetch\n",
+      "new": "if False:\n            policy.check(\"scrape\", PREFIX)  # standing guard: never fetch\n"
+    },
+    {
+      "id": "empty_id_allowed",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "if rec.get(\"id\") is None:\n            raise ValueError(\"TREND_REFUSED_EMPTY:id\")\n        rid = policy",
+      "new": "if False:\n            raise ValueError(\"TREND_REFUSED_EMPTY:id\")\n        rid = policy"
+    },
+    {
+      "id": "duplicates_allowed",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "if rid in seen_ids:\n            duplicates += 1",
+      "new": "if False:\n            duplicates += 1"
+    },
+    {
+      "id": "checkpoint_range",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "if skip > len(records):",
+      "new": "if False:"
+    },
+    {
+      "id": "stream_url_records_allowed",
+      "path": "backend/app/modules/c32/ingest.py",
+      "old": "if \"url\" in rec or rec.get(\"fetch\"):\n                policy.check(\"scrape\", PREFIX)  # standing guard: never fetch, never counted",
+      "new": "if False:\n                policy.check(\"scrape\", PREFIX)  # standing guard: never fetch, never counted"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "row": 76,
+  "selectors": [
+    "tests/test_m14_m15.py",
+    "tests/modules/test_m14_milestones.py",
+    "tests/modules/test_rows65_76_sensitivity.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "offline fixtures only",
+    "no live platform, account or network",
+    "literal row stays PARTIAL",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "plan_before_continue",
+      "path": "backend/app/modules/m14_project_builder/service.py",
+      "old": "if project.status!=\"planned\" or not project.plan:raise",
+      "new": "if False:raise"
+    },
+    {
+      "id": "workspace_escape",
+      "path": "backend/app/modules/m14_project_builder/service.py",
+      "old": "if root not in path.parents:raise",
+      "new": "if False:raise"
+    },
+    {
+      "id": "milestone_lookup",
+      "path": "backend/app/modules/m14_project_builder/service.py",
+      "old": "if milestone_id not in by_id:raise",
+      "new": "if False:raise"
+    },
+    {
+      "id": "artifact_validation",
+      "path": "backend/app/modules/m14_project_builder/service.py",
+      "old": "if not report.passed:\n            raise ValueError(\"artifact failed validation",
+      "new": "if False:\n            raise ValueError(\"artifact failed validation"
+    },
+    {
+      "id": "quality_needs_plan",
+      "path": "backend/app/modules/m14_project_builder/service.py",
+      "old": "if not project.plan:raise ValueError(\"project must be planned before quality",
+      "new": "if False:raise ValueError(\"project must be planned before quality"
+    }
+  ]
+}

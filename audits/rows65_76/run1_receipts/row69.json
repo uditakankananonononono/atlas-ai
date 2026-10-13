@@ -1,0 +1,173 @@
+{
+ "checkout": {
+  "head": "ef06cc163f9cf153ae1def20bceb20e10f945718",
+  "head_tree": "a05db6e495766d9f8b5311720777ecd36c2cfd1a",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 5984,
+  "sha256_of_sorted_map": "d943ac748dc0ba1c52dd9f901475df75032d4b42ce677c01e2acbb42d4494929",
+  "note": "full per-file map omitted from the published copy to keep the package small; mutation outcomes unchanged"
+ },
+ "row": 69,
+ "spec_sha256": "70cfef67f04e0e567bd07e452625286661c3f9fc3d333f6ae10bc6ec42be057b",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_c32_ideate_s26.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 1.0264438480007811
+ },
+ "baseline_log_sha256": "7d033b6114e3b7e226dd134ddf87559ce2573e4749f27f5567211d071d888ecc",
+ "mutations": [
+  {
+   "id": "training_not_spend_gated",
+   "path": "backend/app/modules/c32/ideate.py",
+   "source_sha256_before": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ideate_s26.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ideate_s26.py::Ideate::test_training_refused_via_guard"
+   ],
+   "seconds": 1.0276261210001394,
+   "log_sha256": "40df7affa744086a1e2936a3f69b17d6011d852bc4c685c47a2052508352f3fc",
+   "restored_sha256": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "restore_verified": true
+  },
+  {
+   "id": "too_few_concepts",
+   "path": "backend/app/modules/c32/ideate.py",
+   "source_sha256_before": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ideate_s26.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ideate_s26.py::Ideate::test_bounds"
+   ],
+   "seconds": 0.9914058720005414,
+   "log_sha256": "a7c710602f7a348e17292f5236bd0fb3306f92696e9d2d3d26e78bf07d5aef69",
+   "restored_sha256": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "restore_verified": true
+  },
+  {
+   "id": "novelty_inverted",
+   "path": "backend/app/modules/c32/ideate.py",
+   "source_sha256_before": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ideate_s26.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ideate_s26.py::Ideate::test_combinations_and_counts",
+    "tests/modules/test_c32_ideate_s26.py::Ideate::test_novelty_drops_against_prior_art"
+   ],
+   "seconds": 1.0192108999999618,
+   "log_sha256": "5bf8653a3c868985b4da5706f3c3312f846bb838635c33363c51609eaeb4805d",
+   "restored_sha256": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "restore_verified": true
+  },
+  {
+   "id": "op_dropped",
+   "path": "backend/app/modules/c32/ideate.py",
+   "source_sha256_before": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ideate_s26.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ideate_s26.py::Ideate::test_combinations_and_counts",
+    "tests/modules/test_c32_ideate_s26.py::Ideate::test_novelty_drops_against_prior_art"
+   ],
+   "seconds": 1.0446514380000735,
+   "log_sha256": "54da5019b0aa37294867acedcbc30bc00eee10ea631e254295f4e8f28cfed24a",
+   "restored_sha256": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "restore_verified": true
+  },
+  {
+   "id": "concept_cap",
+   "path": "backend/app/modules/c32/ideate.py",
+   "source_sha256_before": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ideate_s26.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ideate_s26.py::Ideate::test_bounds"
+   ],
+   "seconds": 1.041538142999343,
+   "log_sha256": "eb0d80908cae3fa34c3969c3ec018eafa1fc483d3ea17468913abb2c95c9afd8",
+   "restored_sha256": "dd453854ef6b3f608ffe274147288a93f7eed6cf9784892b79afde65fc764db4",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

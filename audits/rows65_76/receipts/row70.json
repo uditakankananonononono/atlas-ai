@@ -1,0 +1,177 @@
+{
+ "checkout": {
+  "head": "ba764a7c2ab339133e4450c099764adc152dc2c6",
+  "head_tree": "8835578265f11f5a8bab90094b20032359bfe73a",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 6022,
+  "sha256_of_sorted_map": "5fbbcbd74fa082bb818f3f6be453d84e57396498aa71a82c76310c01d2dedbd3",
+  "note": "full per-file map omitted from the published copy; mutation outcomes unchanged"
+ },
+ "row": 70,
+ "spec_sha256": "12019840d4178b80e36dc5b11d6e309ee0a59c883a88d456bd7ff6c019e2377d",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_m22_secure_installer.py",
+   "tests/modules/test_rows65_76_sensitivity.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 4.2367260129994975
+ },
+ "baseline_log_sha256": "839c4f4594b374863cc40c4b375e68245383fd9eb3140e7e66b89d6f7bca4c6a",
+ "mutations": [
+  {
+   "id": "scan_not_required",
+   "path": "backend/app/modules/m22_tools_hub/installer.py",
+   "source_sha256_before": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m22_secure_installer.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_install_refuses_failed_scan_even_with_pass_review_and_approval"
+   ],
+   "seconds": 4.215719692998391,
+   "log_sha256": "f6ef798b787d34185f02c0102d97d78033b7b432ea5f76727e1f68b9770aacb3",
+   "restored_sha256": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "restore_verified": true
+  },
+  {
+   "id": "review_not_required",
+   "path": "backend/app/modules/m22_tools_hub/installer.py",
+   "source_sha256_before": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m22_secure_installer.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_install_refuses_non_pass_review"
+   ],
+   "seconds": 4.370945343998756,
+   "log_sha256": "7076bdbd320941fba5680447470cca4c96ee6214610474e93bc0f77c44f02c1e",
+   "restored_sha256": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "restore_verified": true
+  },
+  {
+   "id": "review_binding",
+   "path": "backend/app/modules/m22_tools_hub/installer.py",
+   "source_sha256_before": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m22_secure_installer.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m22_secure_installer.py::test_install_rejects_review_for_different_manifest"
+   ],
+   "seconds": 4.296622346000731,
+   "log_sha256": "57065286656a8baf0911908795a3565f516c24e79e0ed3231e3c10d008022ee3",
+   "restored_sha256": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "restore_verified": true
+  },
+  {
+   "id": "rollback_needs_backup",
+   "path": "backend/app/modules/m22_tools_hub/installer.py",
+   "source_sha256_before": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m22_secure_installer.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_rollback_without_prior_version_and_with_missing_backup_refuses"
+   ],
+   "seconds": 4.228336676000254,
+   "log_sha256": "fb915dd4df3e8f9e7f957c0dab8941679da30e9558811121769e794067e5402b",
+   "restored_sha256": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "restore_verified": true
+  },
+  {
+   "id": "rollback_backup_missing",
+   "path": "backend/app/modules/m22_tools_hub/installer.py",
+   "source_sha256_before": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m22_secure_installer.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_rollback_without_prior_version_and_with_missing_backup_refuses"
+   ],
+   "seconds": 4.282338660999812,
+   "log_sha256": "639b275cceeb258a172c39bc09398e5f3f762ecb889169d96b9752f2d598c1fa",
+   "restored_sha256": "4a77f832cf313ab79eaeade11335d4ed2939197d659743abd97a8c9a18262031",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

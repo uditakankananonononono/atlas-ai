@@ -1,0 +1,167 @@
+{
+ "checkout": {
+  "head": "ef06cc163f9cf153ae1def20bceb20e10f945718",
+  "head_tree": "a05db6e495766d9f8b5311720777ecd36c2cfd1a",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 5984,
+  "sha256_of_sorted_map": "d943ac748dc0ba1c52dd9f901475df75032d4b42ce677c01e2acbb42d4494929",
+  "note": "full per-file map omitted from the published copy to keep the package small; mutation outcomes unchanged"
+ },
+ "row": 76,
+ "spec_sha256": "4aa426e0bd83f115fa4e5eaa9a0a6efa29f97983bd4b887b868a8b9f9c2e6f2b",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/test_m14_m15.py",
+   "tests/modules/test_m14_milestones.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 2.910492647000865
+ },
+ "baseline_log_sha256": "5fdf16dfda57288b7bc32164f35597dd61488350a3edaeb7bea82a30021539e8",
+ "mutations": [
+  {
+   "id": "plan_before_continue",
+   "path": "backend/app/modules/m14_project_builder/service.py",
+   "source_sha256_before": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_m14_m15.py",
+    "tests/modules/test_m14_milestones.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 0,
+   "status": "SURVIVED",
+   "failed_tests": [],
+   "seconds": 2.9184025610011304,
+   "log_sha256": "badfcf8eabfb58a0ba2f1870788dc5ae378b4c78a0480241295237cfe368ea22",
+   "restored_sha256": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "restore_verified": true
+  },
+  {
+   "id": "workspace_escape",
+   "path": "backend/app/modules/m14_project_builder/service.py",
+   "source_sha256_before": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_m14_m15.py",
+    "tests/modules/test_m14_milestones.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 0,
+   "status": "SURVIVED",
+   "failed_tests": [],
+   "seconds": 2.6816302120005275,
+   "log_sha256": "c2e42f2f40f86e8f0e9a6c69748c307a7f1ff902aedc96e824b3667b3bb28b5c",
+   "restored_sha256": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "restore_verified": true
+  },
+  {
+   "id": "milestone_lookup",
+   "path": "backend/app/modules/m14_project_builder/service.py",
+   "source_sha256_before": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_m14_m15.py",
+    "tests/modules/test_m14_milestones.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 0,
+   "status": "SURVIVED",
+   "failed_tests": [],
+   "seconds": 2.8096810019997065,
+   "log_sha256": "58555e78c07824035d1e53a2d8d20061791ff89a64c5e356b7201e3cf0eedbd3",
+   "restored_sha256": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "restore_verified": true
+  },
+  {
+   "id": "artifact_validation",
+   "path": "backend/app/modules/m14_project_builder/service.py",
+   "source_sha256_before": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_m14_m15.py",
+    "tests/modules/test_m14_milestones.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 0,
+   "status": "SURVIVED",
+   "failed_tests": [],
+   "seconds": 2.749682056999518,
+   "log_sha256": "9f4cfdcbd1c0d68f7633fe012c208585c760baebbbfa6a508adf6e57446e7599",
+   "restored_sha256": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "restore_verified": true
+  },
+  {
+   "id": "quality_needs_plan",
+   "path": "backend/app/modules/m14_project_builder/service.py",
+   "source_sha256_before": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_m14_m15.py",
+    "tests/modules/test_m14_milestones.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 0,
+   "status": "SURVIVED",
+   "failed_tests": [],
+   "seconds": 2.8768446700014465,
+   "log_sha256": "22c6aa8e392ed0dc08b02f352e76bd32928f9336e982ebc0732c5fd5bcbd43ae",
+   "restored_sha256": "fd3f20521d96b380227daa188c0bd49daa24bca89a769c623a14ae579ba150ca",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": false
+}

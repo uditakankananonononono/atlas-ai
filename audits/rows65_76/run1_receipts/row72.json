@@ -1,0 +1,165 @@
+{
+ "checkout": {
+  "head": "ef06cc163f9cf153ae1def20bceb20e10f945718",
+  "head_tree": "a05db6e495766d9f8b5311720777ecd36c2cfd1a",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 5984,
+  "sha256_of_sorted_map": "d943ac748dc0ba1c52dd9f901475df75032d4b42ce677c01e2acbb42d4494929",
+  "note": "full per-file map omitted from the published copy to keep the package small; mutation outcomes unchanged"
+ },
+ "row": 72,
+ "spec_sha256": "19cfc32d7dbb735b063c0c6785bb48d20bd518be6ed665ab0fa083a10346edca",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_m02_integrated_application.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 2.6963787660006346
+ },
+ "baseline_log_sha256": "3889c0a93fd5b47eef557f0678999629007fcb572f977adb47263420b31824b9",
+ "mutations": [
+  {
+   "id": "empty_evidence_allowed",
+   "path": "backend/app/modules/m02_competition_manager/integrated_application.py",
+   "source_sha256_before": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m02_integrated_application.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m02_integrated_application.py::test_integrated_flow_refuses_to_generate_from_nothing"
+   ],
+   "seconds": 2.7485666800002946,
+   "log_sha256": "077e6560bd1b7fb0be5c488410cdcbcf8f9a17e750538678ba08ca8fc0fdf1af",
+   "restored_sha256": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "restore_verified": true
+  },
+  {
+   "id": "facts_check_dropped",
+   "path": "backend/app/modules/m02_competition_manager/integrated_application.py",
+   "source_sha256_before": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m02_integrated_application.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 0,
+   "status": "SURVIVED",
+   "failed_tests": [],
+   "seconds": 2.694656871999541,
+   "log_sha256": "f23971f9c5bbe16322a34a6792d0ddd8889ebc4c238517fd69049cf8a8ad9182",
+   "restored_sha256": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "restore_verified": true
+  },
+  {
+   "id": "final_submit_separate_approval",
+   "path": "backend/app/modules/m02_competition_manager/integrated_application.py",
+   "source_sha256_before": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m02_integrated_application.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m02_integrated_application.py::test_one_flow_carries_owner_provenance_through_voice_review_and_browser_handoff"
+   ],
+   "seconds": 2.72446811699956,
+   "log_sha256": "cabb009f4a27a200cffd2e2f1097d6dcf3a1612c0328c480365d335214e922fc",
+   "restored_sha256": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "restore_verified": true
+  },
+  {
+   "id": "unhumanized_draft_used",
+   "path": "backend/app/modules/m02_competition_manager/integrated_application.py",
+   "source_sha256_before": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m02_integrated_application.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 0,
+   "status": "SURVIVED",
+   "failed_tests": [],
+   "seconds": 2.687478882000505,
+   "log_sha256": "3889c0a93fd5b47eef557f0678999629007fcb572f977adb47263420b31824b9",
+   "restored_sha256": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "restore_verified": true
+  },
+  {
+   "id": "blank_tenant",
+   "path": "backend/app/modules/m02_competition_manager/integrated_application.py",
+   "source_sha256_before": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m02_integrated_application.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 0,
+   "status": "SURVIVED",
+   "failed_tests": [],
+   "seconds": 2.625775866999902,
+   "log_sha256": "84efffbb32cd48520f89f8c3ef7f7f79af1a3e99aabf03995e981624e7fb8ee7",
+   "restored_sha256": "f72ea8dc76c371127f63f60ce73605fcec07cc4cec7b0e94638f684bfacb915c",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": false
+}

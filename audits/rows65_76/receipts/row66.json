@@ -1,0 +1,172 @@
+{
+ "checkout": {
+  "head": "a98c3a22fa03c9d6103a3c19c01bcbe72549e98f",
+  "head_tree": "16e87dbbb7009f316d94e50e6784fedafca340fe",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 6022,
+  "sha256_of_sorted_map": "0931cf28c3e1a35740092a71b3ca82a3a7d9c8107e379de1a21f1a533d9403c2",
+  "note": "full per-file map omitted from the published copy; mutation outcomes unchanged"
+ },
+ "row": 66,
+ "spec_sha256": "210a7dba2cd08b72c8baf69c1c43b5669a2299c83c56653ec54ac7b580d17404",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_c36_ev_s71.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 2.660869195999112
+ },
+ "baseline_log_sha256": "370a86857297390da39ba05c487af84179deba07859a451d4b5af1c716c44353",
+ "mutations": [
+  {
+   "id": "guarantee_language_allowed",
+   "path": "backend/app/modules/c36/ev.py",
+   "source_sha256_before": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c36_ev_s71.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c36_ev_s71.py::Refusals::test_guarantee_language_refused",
+    "tests/modules/test_c36_ev_s71.py::Refusals::test_guarantee_phrases_all_fields_case_insensitive"
+   ],
+   "seconds": 2.6569236409995938,
+   "log_sha256": "83e2f207f08051042b8c543455533c8f75ccc17e3f7811583c13b6f9903f7296",
+   "restored_sha256": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "restore_verified": true
+  },
+  {
+   "id": "payoff_order",
+   "path": "backend/app/modules/c36/ev.py",
+   "source_sha256_before": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c36_ev_s71.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c36_ev_s71.py::Refusals::test_payoff_order"
+   ],
+   "seconds": 2.690151438999237,
+   "log_sha256": "4c858b705673a4902fcfa2165172d314872ed15061c2d95de05052eb23884a4b",
+   "restored_sha256": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "restore_verified": true
+  },
+  {
+   "id": "probability_order",
+   "path": "backend/app/modules/c36/ev.py",
+   "source_sha256_before": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c36_ev_s71.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c36_ev_s71.py::Refusals::test_probability_order"
+   ],
+   "seconds": 2.6018684880000365,
+   "log_sha256": "5b1057ebb0682b593acec473b6a063e3caa1fa2fe04b38aeff30ae67f8ce6cce",
+   "restored_sha256": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "restore_verified": true
+  },
+  {
+   "id": "kind_enum",
+   "path": "backend/app/modules/c36/ev.py",
+   "source_sha256_before": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c36_ev_s71.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c36_ev_s71.py::Refusals::test_bad_types"
+   ],
+   "seconds": 2.524028988998907,
+   "log_sha256": "61aa04b7d9666f3db6595389fc886d735b805ca3dd776f58536780ce906f48c8",
+   "restored_sha256": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "restore_verified": true
+  },
+  {
+   "id": "banner_changed",
+   "path": "backend/app/modules/c36/ev.py",
+   "source_sha256_before": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c36_ev_s71.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c36_ev_s71.py::HandComputed::test_banner_scope_and_language"
+   ],
+   "seconds": 2.543816606999826,
+   "log_sha256": "6f59702ddb0c926678c6d08aee80b9a6b7200e0cfeb251b7efd323c4a1c70cc3",
+   "restored_sha256": "e1809fdd9949143f6bf119e6a230275e1063662531b4a404016cdbaef6a49ac9",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

@@ -1,0 +1,51 @@
+{
+  "row": 65,
+  "selectors": [
+    "tests/modules/test_m19_trend_pipeline_u03.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "offline fixtures only",
+    "no live platform, account or network",
+    "literal row stays PARTIAL",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "future_posts_counted",
+      "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+      "old": "if when > t_as_of:\n            future_ids.append(pid)",
+      "new": "if False:\n            future_ids.append(pid)"
+    },
+    {
+      "id": "baseline_bucket",
+      "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+      "old": "bucket = rec if when > recent_start else base",
+      "new": "bucket = rec"
+    },
+    {
+      "id": "min_authors_ignored",
+      "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+      "old": "if r < min_recent_posts or authors < min_authors:",
+      "new": "if r < min_recent_posts:"
+    },
+    {
+      "id": "growth_baseline_smoothing",
+      "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+      "old": "((b + 1) / baseline_days)",
+      "new": "((b + 2) / baseline_days)"
+    },
+    {
+      "id": "duplicate_post_id",
+      "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+      "old": "if pid in seen:\n            _fail(f\"duplicate post_id",
+      "new": "if False:\n            _fail(f\"duplicate post_id"
+    },
+    {
+      "id": "growth_sort_inverted",
+      "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+      "old": "trends.sort(key=lambda t: (-t[\"growth_ratio\"]",
+      "new": "trends.sort(key=lambda t: (t[\"growth_ratio\"]"
+    }
+  ]
+}

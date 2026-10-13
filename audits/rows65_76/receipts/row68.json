@@ -1,0 +1,182 @@
+{
+ "checkout": {
+  "head": "a98c3a22fa03c9d6103a3c19c01bcbe72549e98f",
+  "head_tree": "16e87dbbb7009f316d94e50e6784fedafca340fe",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 6022,
+  "sha256_of_sorted_map": "0931cf28c3e1a35740092a71b3ca82a3a7d9c8107e379de1a21f1a533d9403c2",
+  "note": "full per-file map omitted from the published copy; mutation outcomes unchanged"
+ },
+ "row": 68,
+ "spec_sha256": "506c7e18eb1a603970adc598b5de73b35b3e26256799665dc6acde181875af76",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_c32_ingest_s20.py",
+   "tests/modules/test_c32_ingest_stream_s20.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 1.3076744959998905
+ },
+ "baseline_log_sha256": "d905728b53e79dd7a1c4a038b1cfe798b8ee7f71a364a2ecbe98fbe819ab1f72",
+ "mutations": [
+  {
+   "id": "url_records_allowed",
+   "path": "backend/app/modules/c32/ingest.py",
+   "source_sha256_before": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ingest_s20.py",
+    "tests/modules/test_c32_ingest_stream_s20.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ingest_s20.py::Ingest::test_scrape_refused_via_guard"
+   ],
+   "seconds": 1.2837326429998939,
+   "log_sha256": "5d91ba1f86fdf8e58e9b46fd62bc983a6f55b5e74a6f5d9af634b99c8f35ee1d",
+   "restored_sha256": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "restore_verified": true
+  },
+  {
+   "id": "empty_id_allowed",
+   "path": "backend/app/modules/c32/ingest.py",
+   "source_sha256_before": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ingest_s20.py",
+    "tests/modules/test_c32_ingest_stream_s20.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ingest_s20.py::Ingest::test_bad_records_refused"
+   ],
+   "seconds": 1.352263488999597,
+   "log_sha256": "e8b5df0499bbb5d55f37ed2b85b7c7acd69b256ed931efe7d1de448868505003",
+   "restored_sha256": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "restore_verified": true
+  },
+  {
+   "id": "duplicates_allowed",
+   "path": "backend/app/modules/c32/ingest.py",
+   "source_sha256_before": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ingest_s20.py",
+    "tests/modules/test_c32_ingest_stream_s20.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ingest_s20.py::Ingest::test_dedupe_across_calls_with_seen",
+    "tests/modules/test_c32_ingest_s20.py::Ingest::test_dedupe_by_id",
+    "tests/modules/test_c32_ingest_s20.py::Ingest::test_next_checkpoint_counts_all_consumed",
+    "tests/modules/test_c32_ingest_stream_s20.py::Streaming::test_accepts_generator_and_matches_list_ingest_counts",
+    "tests/modules/test_c32_ingest_stream_s20.py::LedgerAndHonesty::test_canonical_ingest_untouched_by_the_new_function"
+   ],
+   "seconds": 1.325124611999854,
+   "log_sha256": "4b055b8c6f4a2b22b271ab889db8e43e9a7a06d9e69347d80c940a70c16a887e",
+   "restored_sha256": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "restore_verified": true
+  },
+  {
+   "id": "checkpoint_range",
+   "path": "backend/app/modules/c32/ingest.py",
+   "source_sha256_before": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ingest_s20.py",
+    "tests/modules/test_c32_ingest_stream_s20.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ingest_s20.py::Ingest::test_checkpoint_past_batch_refused"
+   ],
+   "seconds": 1.2775478389994532,
+   "log_sha256": "2ade34030ba3d9acfe43440132fc1ffed75d4fbb1e8851a0b0e2f9710998560b",
+   "restored_sha256": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "restore_verified": true
+  },
+  {
+   "id": "stream_url_records_allowed",
+   "path": "backend/app/modules/c32/ingest.py",
+   "source_sha256_before": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c32_ingest_s20.py",
+    "tests/modules/test_c32_ingest_stream_s20.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c32_ingest_stream_s20.py::MalformedPolicy::test_scrape_always_refuses_even_in_count_mode",
+    "tests/modules/test_c32_ingest_stream_s20.py::StoreWiring::test_scrape_refuses_and_commits_nothing"
+   ],
+   "seconds": 1.3283683780009596,
+   "log_sha256": "714aefd59b5e64c5b67aa41be62078142cb3e323c2f7c44ae6a88aaf5355db09",
+   "restored_sha256": "8b7c784e4788b09e27e634acc05e681795c9586ecc832fc51debbf94683bc523",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

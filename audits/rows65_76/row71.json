@@ -1,0 +1,46 @@
+{
+  "row": 71,
+  "selectors": [
+    "tests/modules/test_m06_social_reading.py",
+    "tests/modules/test_rows65_76_sensitivity.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "offline fixtures only",
+    "no live platform, account or network",
+    "literal row stays PARTIAL",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "paired_session_not_required",
+      "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+      "old": "if not is_pc_session(session_id):",
+      "new": "if False:"
+    },
+    {
+      "id": "limit_bounds",
+      "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+      "old": "if type(limit) is not int or not 1 <= limit <= 500:",
+      "new": "if False:"
+    },
+    {
+      "id": "rate_limit_block",
+      "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+      "old": "if response and response.status == 429:",
+      "new": "if False:"
+    },
+    {
+      "id": "destination_host",
+      "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+      "old": "if parsed.hostname not in (\"pinterest.com\", \"www.pinterest.com\"):",
+      "new": "if False:"
+    },
+    {
+      "id": "login_path_block",
+      "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+      "old": "if any(x in parsed.path.lower() for x in (\"login\", \"signup\")):",
+      "new": "if False:"
+    }
+  ]
+}

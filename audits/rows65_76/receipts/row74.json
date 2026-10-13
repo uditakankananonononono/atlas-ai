@@ -1,0 +1,171 @@
+{
+ "checkout": {
+  "head": "a98c3a22fa03c9d6103a3c19c01bcbe72549e98f",
+  "head_tree": "16e87dbbb7009f316d94e50e6784fedafca340fe",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 6022,
+  "sha256_of_sorted_map": "0931cf28c3e1a35740092a71b3ca82a3a7d9c8107e379de1a21f1a533d9403c2",
+  "note": "full per-file map omitted from the published copy; mutation outcomes unchanged"
+ },
+ "row": 74,
+ "spec_sha256": "cb37d84a767eebfcb7f7496cbf85d3def48b024fb687fab21a69e637ca78d353",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/b1_chat_bind/test_chat_bind.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 0.9695887479992962
+ },
+ "baseline_log_sha256": "83243eb4851e93e5eb837ac00e99bccc510a18117391263efa1eee030b79bc50",
+ "mutations": [
+  {
+   "id": "effect_action_allowed",
+   "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+   "source_sha256_before": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/b1_chat_bind/test_chat_bind.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/b1_chat_bind/test_chat_bind.py::Tests::test_policy_rejects_side_effects"
+   ],
+   "seconds": 0.9847139610010345,
+   "log_sha256": "731032a53b2eb85b8e713782dd21d855def92360f89dd1e89cffbdde7efcddb2",
+   "restored_sha256": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "restore_verified": true
+  },
+  {
+   "id": "source_author",
+   "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+   "source_sha256_before": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/b1_chat_bind/test_chat_bind.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/b1_chat_bind/test_chat_bind.py::Tests::test_only_owner_channels"
+   ],
+   "seconds": 1.0168164110000362,
+   "log_sha256": "736b1ab0571404a5bc3652486c1e61a32fa110829bb5a25affe8304e733560d5",
+   "restored_sha256": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "restore_verified": true
+  },
+  {
+   "id": "future_rows",
+   "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+   "source_sha256_before": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/b1_chat_bind/test_chat_bind.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/b1_chat_bind/test_chat_bind.py::Tests::test_time_and_future"
+   ],
+   "seconds": 0.993849450000198,
+   "log_sha256": "681423d66e1012b36d403c17a83c2561b89d9c6f1c89aeac753668d6a181a4af",
+   "restored_sha256": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "restore_verified": true
+  },
+  {
+   "id": "duplicate_message",
+   "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+   "source_sha256_before": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/b1_chat_bind/test_chat_bind.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/b1_chat_bind/test_chat_bind.py::Tests::test_duplicate_and_count"
+   ],
+   "seconds": 0.9780282280007668,
+   "log_sha256": "91e62e6ed3b25d602e945cc1cf6f4754fa194a6ddb19eaa03f54f416a637f6eb",
+   "restored_sha256": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "restore_verified": true
+  },
+  {
+   "id": "db_count",
+   "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+   "source_sha256_before": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/b1_chat_bind/test_chat_bind.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/b1_chat_bind/test_chat_bind.py::Tests::test_duplicate_and_count"
+   ],
+   "seconds": 0.9886719369987986,
+   "log_sha256": "18fb4b33fbf2710d145928898127bc1ef7d0d6d4f298eae94e8f62a600c39f5b",
+   "restored_sha256": "166c05d1135b55b998846c6edbfd0840b7993fcac6155cf443f76e1d2ca809e8",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

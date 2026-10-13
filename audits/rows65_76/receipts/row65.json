@@ -1,0 +1,222 @@
+{
+ "checkout": {
+  "head": "a98c3a22fa03c9d6103a3c19c01bcbe72549e98f",
+  "head_tree": "16e87dbbb7009f316d94e50e6784fedafca340fe",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 6022,
+  "sha256_of_sorted_map": "0931cf28c3e1a35740092a71b3ca82a3a7d9c8107e379de1a21f1a533d9403c2",
+  "note": "full per-file map omitted from the published copy; mutation outcomes unchanged"
+ },
+ "row": 65,
+ "spec_sha256": "2d4be5139ec8aca111a2d062bc89188ff99db77da2d25fbab9b8e6af6d9fbda9",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_m19_trend_pipeline_u03.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 1.162807378999787
+ },
+ "baseline_log_sha256": "8a1b42835e1ea3675baa542528c312c9bdb8e46f2fdcc1f25e5e6cb7caa65837",
+ "mutations": [
+  {
+   "id": "future_posts_counted",
+   "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+   "source_sha256_before": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m19_trend_pipeline_u03.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_future_posts_are_excluded_and_listed_never_used",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_offsets_compared_in_utc"
+   ],
+   "seconds": 1.1364930929994443,
+   "log_sha256": "f28e221bc9f440dc64a5be87526f90277d4c9b2c9152c246e82a42727c0b27b4",
+   "restored_sha256": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "restore_verified": true
+  },
+  {
+   "id": "baseline_bucket",
+   "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+   "source_sha256_before": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m19_trend_pipeline_u03.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_growth_ratio_formula_and_counts",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_ranking_is_by_growth_then_recent_then_term",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_window_boundaries_recent_is_open_closed",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_top_n_limits_the_ranked_output",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_custom_window_lengths_change_the_formula_inputs",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_ideas_from_trends_are_templated_candidates_citing_the_numbers",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_predictions_are_persistence_thresholds_with_caller_confidence",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_threshold_uses_floor_and_horizon_scaling",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_scoring_hit_and_miss_outcomes",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_scoring_threshold_is_inclusive",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_only_posts_inside_the_horizon_count",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_observed_counts_posts_not_occurrences",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_late_tie_on_growth_orders_by_recent_posts_before_term"
+   ],
+   "seconds": 1.2862517710000247,
+   "log_sha256": "f428bed2e9a3386e15cc292dd975b9e2ff4cd29110618a5b9b42c48d2d493bbc",
+   "restored_sha256": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "restore_verified": true
+  },
+  {
+   "id": "min_authors_ignored",
+   "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+   "source_sha256_before": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m19_trend_pipeline_u03.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_min_authors_threshold_is_inclusive_and_blocks_single_account_spam"
+   ],
+   "seconds": 1.2296150769998349,
+   "log_sha256": "e4cd39492368a63a4069e35303400ff71ab1d4259a85b956fd11e2fae4a52ff6",
+   "restored_sha256": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "restore_verified": true
+  },
+  {
+   "id": "growth_baseline_smoothing",
+   "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+   "source_sha256_before": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m19_trend_pipeline_u03.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_growth_ratio_formula_and_counts",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_custom_window_lengths_change_the_formula_inputs",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_ideas_from_trends_are_templated_candidates_citing_the_numbers",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_late_tie_on_growth_orders_by_recent_posts_before_term",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_late_growth_ratio_is_rounded_to_six_places"
+   ],
+   "seconds": 1.2224210580006911,
+   "log_sha256": "971e7c99970d297f244d7dc92866810d940bb3d3a7dc45f328db43f3ec5cc4c3",
+   "restored_sha256": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "restore_verified": true
+  },
+  {
+   "id": "duplicate_post_id",
+   "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+   "source_sha256_before": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m19_trend_pipeline_u03.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_duplicate_post_id_refused"
+   ],
+   "seconds": 1.1652040909993957,
+   "log_sha256": "a9b5e1d9ba958fa5b007dfbe5ec89ff6c93a65a4604a9e157f6976cfd756eb15",
+   "restored_sha256": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "restore_verified": true
+  },
+  {
+   "id": "growth_sort_inverted",
+   "path": "backend/app/modules/m19_idea_incubator/trend_pipeline_u03.py",
+   "source_sha256_before": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m19_trend_pipeline_u03.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_ranking_is_by_growth_then_recent_then_term",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_ties_break_on_recent_posts_then_alphabetical",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_top_n_limits_the_ranked_output",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_ideas_from_trends_are_templated_candidates_citing_the_numbers",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_predictions_are_persistence_thresholds_with_caller_confidence",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_threshold_uses_floor_and_horizon_scaling",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_scoring_hit_and_miss_outcomes",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_scoring_threshold_is_inclusive",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_only_posts_inside_the_horizon_count",
+    "tests/modules/test_m19_trend_pipeline_u03.py::test_observed_counts_posts_not_occurrences"
+   ],
+   "seconds": 1.2617299320008897,
+   "log_sha256": "54857f3da9e41b036274122a294a56fa702da9a19760df9354085f86b6dc3247",
+   "restored_sha256": "45f2f665bf3ebf1d52204f4a91ab3ba4a2d20f49f8c07ecff6f827bd45a1787d",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

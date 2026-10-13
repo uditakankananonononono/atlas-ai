@@ -1,0 +1,171 @@
+{
+ "checkout": {
+  "head": "a98c3a22fa03c9d6103a3c19c01bcbe72549e98f",
+  "head_tree": "16e87dbbb7009f316d94e50e6784fedafca340fe",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 6022,
+  "sha256_of_sorted_map": "0931cf28c3e1a35740092a71b3ca82a3a7d9c8107e379de1a21f1a533d9403c2",
+  "note": "full per-file map omitted from the published copy; mutation outcomes unchanged"
+ },
+ "row": 73,
+ "spec_sha256": "eaee8df54272f1201eae3a82a126f553a17f9e20b9cb111a365ae8141d540cce",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_c31_deploy_s17.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 0.9786569669995515
+ },
+ "baseline_log_sha256": "caf56757b18b52a7c892a24609a6f4ec6e8900c554da434531b573fc2a87250b",
+ "mutations": [
+  {
+   "id": "spend_refusal",
+   "path": "backend/app/modules/c31/deploy.py",
+   "source_sha256_before": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_deploy_s17.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_deploy_s17.py::Deploy::test_spend_refused"
+   ],
+   "seconds": 0.9919121669991,
+   "log_sha256": "7e0c8d89df59eb4eaa79fb3164cb4eb6e374584b2f1fb7b565f4fdae40ea7e18",
+   "restored_sha256": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "restore_verified": true
+  },
+  {
+   "id": "fleet_size",
+   "path": "backend/app/modules/c31/deploy.py",
+   "source_sha256_before": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_deploy_s17.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_deploy_s17.py::Deploy::test_overcap_refused"
+   ],
+   "seconds": 1.042943574999299,
+   "log_sha256": "1f689db669bfd265d625212946496dfac7943ee23b80b828a9320d84d135b6ea",
+   "restored_sha256": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "restore_verified": true
+  },
+  {
+   "id": "overcap_check",
+   "path": "backend/app/modules/c31/deploy.py",
+   "source_sha256_before": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_deploy_s17.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_deploy_s17.py::Deploy::test_overcap_refused"
+   ],
+   "seconds": 0.9914838590011641,
+   "log_sha256": "71bbd9bdbd5f667dd521baebe485ba96b2888a52834cc44d9334c0c13130fab9",
+   "restored_sha256": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "restore_verified": true
+  },
+  {
+   "id": "duplicate_job",
+   "path": "backend/app/modules/c31/deploy.py",
+   "source_sha256_before": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_deploy_s17.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_deploy_s17.py::Deploy::test_validation"
+   ],
+   "seconds": 0.9778958890001377,
+   "log_sha256": "71f1c3eb38d9fc51c16e6cfce40097ddd7eeaffd0c82d682c411840b72bd46a7",
+   "restored_sha256": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "restore_verified": true
+  },
+  {
+   "id": "concurrency_clamp",
+   "path": "backend/app/modules/c31/deploy.py",
+   "source_sha256_before": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_c31_deploy_s17.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_c31_deploy_s17.py::Deploy::test_concurrency_capped_by_jobs"
+   ],
+   "seconds": 0.9709789040007308,
+   "log_sha256": "2611f9b4dac80db102d19a77879397bbc15f92cc9d18ace52a7946d66ee7fe4e",
+   "restored_sha256": "aaf861a1aa2e090476d03bfd2b5666b49d8e49228bab2105d2039f1e7958652f",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

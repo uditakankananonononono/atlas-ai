@@ -1,0 +1,180 @@
+{
+ "checkout": {
+  "head": "ba764a7c2ab339133e4450c099764adc152dc2c6",
+  "head_tree": "8835578265f11f5a8bab90094b20032359bfe73a",
+  "status": ""
+ },
+ "tracked_code_test_hashes": {
+  "entries": 6022,
+  "sha256_of_sorted_map": "5fbbcbd74fa082bb818f3f6be453d84e57396498aa71a82c76310c01d2dedbd3",
+  "note": "full per-file map omitted from the published copy; mutation outcomes unchanged"
+ },
+ "row": 71,
+ "spec_sha256": "8e9705c80471fce7ee2961c4cc31dd6f20621757bccf288740e8b452d40c6a96",
+ "baseline": {
+  "argv": [
+   "/usr/bin/python3",
+   "-m",
+   "pytest",
+   "--noconftest",
+   "-p",
+   "no:cacheprovider",
+   "tests/modules/test_m06_social_reading.py",
+   "tests/modules/test_rows65_76_sensitivity.py",
+   "-q",
+   "-rf"
+  ],
+  "returncode": 0,
+  "status": "PASS",
+  "failed_tests": [],
+  "seconds": 5.703210924000814
+ },
+ "baseline_log_sha256": "ce1d8a98aab4690e408652bb963928fe20a03f80fc8ead6b3d19bdf7161822fc",
+ "mutations": [
+  {
+   "id": "paired_session_not_required",
+   "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+   "source_sha256_before": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m06_social_reading.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_pinterest_read_needs_paired_pc_session"
+   ],
+   "seconds": 5.558860613999059,
+   "log_sha256": "75f4b545f092ea95dd09eb0450d188eb5f4345dfa1582c076a0a9337a06797b7",
+   "restored_sha256": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "restore_verified": true
+  },
+  {
+   "id": "limit_bounds",
+   "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+   "source_sha256_before": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m06_social_reading.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_pinterest_limit_must_be_int_1_to_500[0]",
+    "tests/modules/test_rows65_76_sensitivity.py::test_pinterest_limit_must_be_int_1_to_500[501]",
+    "tests/modules/test_rows65_76_sensitivity.py::test_pinterest_limit_must_be_int_1_to_500[True]",
+    "tests/modules/test_rows65_76_sensitivity.py::test_pinterest_limit_must_be_int_1_to_500[5]"
+   ],
+   "seconds": 5.638471313000991,
+   "log_sha256": "cc5762e92b2badcb1e7b4c94ec68a1bea217277e8ec2eb7bc6b5e0c98cbb2970",
+   "restored_sha256": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "restore_verified": true
+  },
+  {
+   "id": "rate_limit_block",
+   "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+   "source_sha256_before": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m06_social_reading.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_pinterest_429_is_rate_limit_block_and_4xx_is_policy_block"
+   ],
+   "seconds": 5.592162961000213,
+   "log_sha256": "edf049cb77a27f41c32cc417eb0407e4d086437901f338c918170dc883d4ed36",
+   "restored_sha256": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "restore_verified": true
+  },
+  {
+   "id": "destination_host",
+   "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+   "source_sha256_before": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m06_social_reading.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_pinterest_redirect_to_other_host_or_login_is_blocked"
+   ],
+   "seconds": 5.586231305000183,
+   "log_sha256": "5ea8b712f1d4eb7e642826c6f48a110e3106e3d766287e0232a0b74ab0816090",
+   "restored_sha256": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "restore_verified": true
+  },
+  {
+   "id": "login_path_block",
+   "path": "backend/app/modules/m06_social_media_manager/social_reading/reader.py",
+   "source_sha256_before": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "argv": [
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/modules/test_m06_social_reading.py",
+    "tests/modules/test_rows65_76_sensitivity.py",
+    "-q",
+    "-rf"
+   ],
+   "returncode": 1,
+   "status": "CAUGHT",
+   "failed_tests": [
+    "tests/modules/test_rows65_76_sensitivity.py::test_pinterest_redirect_to_other_host_or_login_is_blocked"
+   ],
+   "seconds": 5.81426633600131,
+   "log_sha256": "32d1269850a61d40ada167adc8a6b3c58dbd1ed4a99fb5b532c1b650e9b18533",
+   "restored_sha256": "87f225d121a450c47c6aed1cbdb61d2254fbd863eb91aeeddb0bd45f2cdf0ea8",
+   "restore_verified": true
+  }
+ ],
+ "environment": {
+  "PYTHONPATH": "backend",
+  "ATLAS_DEV_NO_AUTH": "1",
+  "ATLAS_ENV": "development"
+ },
+ "limits": [
+  "offline fixtures only",
+  "no live platform, account or network",
+  "literal row stays PARTIAL",
+  "full repository untested"
+ ],
+ "all_caught": true
+}

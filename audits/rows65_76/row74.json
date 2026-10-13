@@ -1,0 +1,45 @@
+{
+  "row": 74,
+  "selectors": [
+    "tests/b1_chat_bind/test_chat_bind.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "offline fixtures only",
+    "no live platform, account or network",
+    "literal row stays PARTIAL",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "effect_action_allowed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if action != 'read':",
+      "new": "if False:"
+    },
+    {
+      "id": "source_author",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if row['author'] != 'user' or row['service'] not in OWNER_CHANNELS:",
+      "new": "if False:"
+    },
+    {
+      "id": "future_rows",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if _time(row['ts']) > cutoff:",
+      "new": "if False:"
+    },
+    {
+      "id": "duplicate_message",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if row['message_id'] in seen:",
+      "new": "if False:"
+    },
+    {
+      "id": "db_count",
+      "path": "backend/app/modules/m20_general_cognitive_worker/c30_b1/chat_bind.py",
+      "old": "if type(observed_total) is not int or observed_total != len(clean):",
+      "new": "if False:"
+    }
+  ]
+}

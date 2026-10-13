@@ -1,0 +1,45 @@
+{
+  "row": 69,
+  "selectors": [
+    "tests/modules/test_c32_ideate_s26.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "offline fixtures only",
+    "no live platform, account or network",
+    "literal row stays PARTIAL",
+    "full repository untested"
+  ],
+  "mutations": [
+    {
+      "id": "training_not_spend_gated",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "if train:\n        policy.check(\"spend\", PREFIX)",
+      "new": "if False:\n        policy.check(\"spend\", PREFIX)"
+    },
+    {
+      "id": "too_few_concepts",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "if len(concepts) < 2:",
+      "new": "if len(concepts) < 1:"
+    },
+    {
+      "id": "novelty_inverted",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "novelty = 1.0 - _jaccard(_words(idea), prior_words)",
+      "new": "novelty = _jaccard(_words(idea), prior_words)"
+    },
+    {
+      "id": "op_dropped",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "OPS = (\"substitute\", \"combine\", \"adapt\", \"modify\", \"eliminate\", \"reverse\")",
+      "new": "OPS = (\"substitute\", \"combine\", \"adapt\", \"modify\", \"eliminate\")"
+    },
+    {
+      "id": "concept_cap",
+      "path": "backend/app/modules/c32/ideate.py",
+      "old": "if len(concepts) > MAX_CONCEPTS:",
+      "new": "if False:"
+    }
+  ]
+}
