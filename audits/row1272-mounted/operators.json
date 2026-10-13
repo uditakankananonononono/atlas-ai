@@ -1,0 +1,99 @@
+{
+  "base": "134e0dcd8fb5133e816a718831055c9f1e3e0a67",
+  "selectors": [
+    "tests/modules/test_row1272_mounted.py"
+  ],
+  "timeout_seconds": 60,
+  "mutations": [
+    {
+      "id": "mount_removed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/routes.py",
+      "old": "router.include_router(treaties1272_router)",
+      "new": "# mount removed"
+    },
+    {
+      "id": "owner_scope_bypass",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272_routes.py",
+      "old": "    owner_payload(body.model_dump(exclude_none=True), tenant)",
+      "new": "    pass # owner check removed"
+    },
+    {
+      "id": "wrong_identity",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272_routes.py",
+      "old": "\"actor_id\": tenant.actor_id",
+      "new": "\"actor_id\": \"other\""
+    },
+    {
+      "id": "wrong_refusal_status",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272_routes.py",
+      "old": "raise HTTPException(422, str(exc))",
+      "new": "raise HTTPException(400, str(exc))"
+    },
+    {
+      "id": "unknown_classification",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "if vals[f] == \"unknown\"",
+      "new": "if False"
+    },
+    {
+      "id": "missing_source",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "if r not in ids and r not in missing:",
+      "new": "if False:"
+    },
+    {
+      "id": "jurisdiction_flag",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "\"jurisdiction_mismatch\": ajur != jurisdiction",
+      "new": "\"jurisdiction_mismatch\": False"
+    },
+    {
+      "id": "date_flag",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "\"effective_after_as_of\": eff > as_of",
+      "new": "\"effective_after_as_of\": False"
+    },
+    {
+      "id": "authority_review_gate",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "\"blocked\" if blocked or authority_problem else \"counsel_review_required\"",
+      "new": "\"blocked\" if blocked else \"counsel_review_required\""
+    },
+    {
+      "id": "declared_status",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "\"treaty_status_decided\": False",
+      "new": "\"treaty_status_decided\": True"
+    },
+    {
+      "id": "verified_authorities",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "\"authorities_independently_verified\": False",
+      "new": "\"authorities_independently_verified\": True"
+    },
+    {
+      "id": "vocabulary_gate",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "if v not in VOCAB[f]:",
+      "new": "if False:"
+    },
+    {
+      "id": "conclusion_gate",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "    for k in _CONCLUSION_KEYS:\n        if d.get(k):",
+      "new": "    for k in _CONCLUSION_KEYS:\n        if False:"
+    },
+    {
+      "id": "effect_gate",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "    for k in _EFFECT_KEYS:\n        if d.get(k):",
+      "new": "    for k in _EFFECT_KEYS:\n        if False:"
+    },
+    {
+      "id": "duplicate_authority",
+      "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+      "old": "if aid in ids:",
+      "new": "if False:"
+    }
+  ]
+}

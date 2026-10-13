@@ -1843,3 +1843,6 @@ router.include_router(humidity_exposure1549_router)
 # Dedicated arbitration item contract; shared row_inputs template remains separate.
 from .arbitration_routes1275 import router as arbitration_router1275
 router.include_router(arbitration_router1275)
+
+from .treaties1272_routes import router as treaties1272_router
+router.include_router(treaties1272_router)

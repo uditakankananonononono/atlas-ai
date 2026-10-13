@@ -1,0 +1,376 @@
+[
+  {
+    "id": "mount_removed",
+    "path": "backend/app/modules/m20_general_cognitive_worker/routes.py",
+    "source_sha256_before": "865a6c5892b7d53ae7549acae05d913f58111b3a9e5539c32e654fe7e6f16bd0",
+    "mutated_sha256": "e84ef848a646431a846688ef6e2854bf878e7c751b6a7534cf163684eea788ff",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_real_mounted_dispatch_records_treaties",
+      "tests/modules/test_row1272_mounted.py::test_clear_declarations_still_require_counsel",
+      "tests/modules/test_row1272_mounted.py::test_authority_flags_block_even_complete_item[authority_change0-jurisdiction_mismatch]",
+      "tests/modules/test_row1272_mounted.py::test_authority_flags_block_even_complete_item[authority_change1-effective_after_as_of]",
+      "tests/modules/test_row1272_mounted.py::test_refusal_maps_to_422_without_echo[decide-CONCLUSION_REFUSED]",
+      "tests/modules/test_row1272_mounted.py::test_refusal_maps_to_422_without_echo[send-EXTERNAL_EFFECT_REFUSED]",
+      "tests/modules/test_row1272_mounted.py::test_refusal_maps_to_422_without_echo[extra-UNKNOWN_KEY]",
+      "tests/modules/test_row1272_mounted.py::test_unknown_vocabulary_refused",
+      "tests/modules/test_row1272_mounted.py::test_missing_and_duplicate_authority_checks",
+      "tests/modules/test_row1272_mounted.py::test_actual_mount_auth_and_scope"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "ae916602545c5ad32abcfad93ce41bb16c90c8c94817e03a4986befd2f3ffecf",
+    "restored_sha256": "865a6c5892b7d53ae7549acae05d913f58111b3a9e5539c32e654fe7e6f16bd0",
+    "restore_verified": true
+  },
+  {
+    "id": "owner_scope_bypass",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272_routes.py",
+    "source_sha256_before": "54103d1b3fd3416bb8ce66eb981c03ccd992ac6ed5c2e4adbc53f0125d36a109",
+    "mutated_sha256": "9d605be848b7ce687a3e00c791bf5e529c176d85ee64256b016de7c51baa2853",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_actual_mount_auth_and_scope"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "891da1bc85f4b015dd8fd0bd919e20c7b1236a8e0e242515af42dc58db237f08",
+    "restored_sha256": "54103d1b3fd3416bb8ce66eb981c03ccd992ac6ed5c2e4adbc53f0125d36a109",
+    "restore_verified": true
+  },
+  {
+    "id": "wrong_identity",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272_routes.py",
+    "source_sha256_before": "54103d1b3fd3416bb8ce66eb981c03ccd992ac6ed5c2e4adbc53f0125d36a109",
+    "mutated_sha256": "eeded64b97c0a5d25441b752c947a96de9c9329905fa8c4c6e0184196fdd83aa",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_real_mounted_dispatch_records_treaties"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "4486cb5303c15cb72d646651b51eebd3ceb14ebf7b159c34808af17fb1cbc3aa",
+    "restored_sha256": "54103d1b3fd3416bb8ce66eb981c03ccd992ac6ed5c2e4adbc53f0125d36a109",
+    "restore_verified": true
+  },
+  {
+    "id": "wrong_refusal_status",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272_routes.py",
+    "source_sha256_before": "54103d1b3fd3416bb8ce66eb981c03ccd992ac6ed5c2e4adbc53f0125d36a109",
+    "mutated_sha256": "c4e1aa4f514ae44015daa6716e2f2d5da130476e8a7ef1a0e3ba0fce6c166e9d",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_refusal_maps_to_422_without_echo[decide-CONCLUSION_REFUSED]",
+      "tests/modules/test_row1272_mounted.py::test_refusal_maps_to_422_without_echo[send-EXTERNAL_EFFECT_REFUSED]",
+      "tests/modules/test_row1272_mounted.py::test_refusal_maps_to_422_without_echo[extra-UNKNOWN_KEY]",
+      "tests/modules/test_row1272_mounted.py::test_unknown_vocabulary_refused",
+      "tests/modules/test_row1272_mounted.py::test_missing_and_duplicate_authority_checks"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "b1943b32b8fc8acd30c8a9a78bc819c37929df509b11c60091486eaf640b6b93",
+    "restored_sha256": "54103d1b3fd3416bb8ce66eb981c03ccd992ac6ed5c2e4adbc53f0125d36a109",
+    "restore_verified": true
+  },
+  {
+    "id": "unknown_classification",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "ce101197355c95744d86d25d0edb82058ae7f5a5f3dc60cecb58cddafecc2c8b",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_real_mounted_dispatch_records_treaties"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "19a04ee416249dd4b4fa2d6876db3ba456262d5ab81067dd762eb62ea65faac4",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "missing_source",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "2726c9428d950d104a3d98495e554f424aa640eecbba43d1ce4b1cad58b7472a",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_real_mounted_dispatch_records_treaties"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "a8555420d2f783f797878738a58af263a7963f1805f39be5f2a9a8b678704657",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "jurisdiction_flag",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "726b9ff0da1f91a5944aad2caaa5ac2634f4882e6f6947bc93f81aaf2ecd3d01",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_authority_flags_block_even_complete_item[authority_change0-jurisdiction_mismatch]"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "eddb7fdf091a40a6fe5fcd4c2d8f21ec9eba262805a179338f57c342e2f84d4a",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "date_flag",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "9d1c6849ce6794ec01111b8795a9a44ef216e991c8433263d808f40ee5a74fc3",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_authority_flags_block_even_complete_item[authority_change1-effective_after_as_of]"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "4cf3483386f30a4858fcf312eb4653f3bc37a04d92a0a1d15d2d45e7f7bc3066",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "authority_review_gate",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "32378e4859971f4679f85556bc85380e4e6519e91f3577581a7dd01411c24a0f",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_authority_flags_block_even_complete_item[authority_change0-jurisdiction_mismatch]",
+      "tests/modules/test_row1272_mounted.py::test_authority_flags_block_even_complete_item[authority_change1-effective_after_as_of]"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "1e22de362ceea3fc0fa321dfd3195e8b5201bf3f86d996a295063c4a3fbdf9f1",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "declared_status",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "afe42a9ddf68aa97ae876e84bc3e485ec203b39256a7221e4cf763e80dccea41",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_real_mounted_dispatch_records_treaties"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "1ed94c62d5bf363b43daca21997a01b1efa0b1a9b8f977d222a22f5ec8271060",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "verified_authorities",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "7db1b8cdaf8bfa89a9c35f18075643e215d6e1f70b11b8ffb309805e23cf53f6",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_real_mounted_dispatch_records_treaties"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "aa85a9eeaac4134af5f9caf38459731ff650b2ed4be7a5becc6b106a9f02f3d4",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "vocabulary_gate",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "b32257aac7435771f032da8f642555839568ddff84e8707c06a6d306e4ad73ea",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_unknown_vocabulary_refused"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "2e2f11c29d510a566c16f0bd92ea9f558578744440b1c13d82559684c7ada2a2",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "conclusion_gate",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "1496245f245f7f5c58f00b1358223e46b8731ea4b2e3ee1dd5fbfc60de0e2bb5",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_refusal_maps_to_422_without_echo[decide-CONCLUSION_REFUSED]"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "64f3f404313644ac0676630ad605576756e9720a1e46cfaa983288d2814e21ac",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "effect_gate",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "9d939ff693b4d539c018e595feff4c7c5804b2af2ccf565fde9570cb801d39ea",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_refusal_maps_to_422_without_echo[send-EXTERNAL_EFFECT_REFUSED]"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "e89168e4ba7ecd2249ca426ce6675ae1b7ac136334406043aa4680abf4ff34e6",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  },
+  {
+    "id": "duplicate_authority",
+    "path": "backend/app/modules/m20_general_cognitive_worker/treaties1272.py",
+    "source_sha256_before": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "mutated_sha256": "16a9e14c66541ee4e163b2e53f6c61265196e1f75be465d653adabc3979e4573",
+    "returncode": 1,
+    "status": "CAUGHT",
+    "failed_tests": [
+      "tests/modules/test_row1272_mounted.py::test_missing_and_duplicate_authority_checks"
+    ],
+    "argv": [
+      "PYTHON3_12",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/modules/test_row1272_mounted.py",
+      "-q",
+      "-rf"
+    ],
+    "log_sha256": "a24427e699eaea519a19eee2f914b07aa61d0f1450ecec9b88ecf5b172269ddc",
+    "restored_sha256": "dce706715bb974312e5c9d4db9149833a938f05dbf73e3e6df785854b2823ed6",
+    "restore_verified": true
+  }
+]
