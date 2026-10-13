@@ -1,6 +1,6 @@
 import sys, json, time, signal, multiprocessing as mp
-from repo_tasks import Project
-from agents import run_agent
+from lh_tasks import Project
+from lh_agents import run_agent
 AS = [int(x) for x in (sys.argv[3] if len(sys.argv) > 3 else "0,1").split(",")]
 KINDS = ["S_uniform", "S_fl", "M", "M_noslow", "M_nomed"]
 def job(a):
@@ -15,6 +15,7 @@ if __name__ == "__main__":
     if split == "test2": seeds = [(2000 + i, 1 + i % 3) for i in range(48)]
     jobs = [(s, k, kd, a) for (s, k) in seeds for kd in kinds for a in AS]
     t = time.time()
-    with mp.Pool(2) as p, open(f"rows_{split}.jsonl", "a") as fo:
+    out = sys.argv[4] if len(sys.argv) > 4 else f"rows_{split}.jsonl"  # opened with "w": replaces, never appends
+    with mp.Pool(2) as p, open(out, "w") as fo:
         for r in p.imap_unordered(job, jobs, chunksize=1): fo.write(json.dumps(r) + "\n"); fo.flush()
     print("secs", time.time() - t)

@@ -1,5 +1,5 @@
-from repo_tasks import Project, NMOD
-from agents import run_agent
+from lh_tasks import Project, NMOD
+from lh_agents import run_agent
 
 def test_reference_passes_everything():
     P = Project(5, 3); ns = P.ref

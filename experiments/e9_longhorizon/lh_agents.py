@@ -8,7 +8,7 @@ All agents are anytime (budget-agnostic), so success at budget B = first visible
               stuck rule (no improvement for STUCK evals -> revert to best state, flatten FL weights, recompute).
   M_noslow / M_nomed : ablations."""
 import math, random, sys
-from repo_tasks import Project
+from lh_tasks import Project
 import signal
 STUCK, EPS0, EPS_GROW = 120, 0.05, 2.0
 

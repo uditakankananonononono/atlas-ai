@@ -1,5 +1,5 @@
-"""E9 task generator: authored multi-file Python repair tasks. 6 modules x 3 functions (2 primitives + 1 cross-module
-composite). Later modules call functions defined in earlier modules. Bugs are k single AST mutations injected in k
+"""E9 task generator: authored multi-file Python repair tasks. 6 modules, 18 or 19 functions (2 primitives per module plus a
+composite that may call earlier modules or its own primitives; an extra helper is added if a module has no list-to-int function). Bugs are k single AST mutations injected in k
 different functions. Visible tests drive the agent; hidden tests (never shown to any agent) score the final program.
 Data statement: the projects, tests and bugs are authored synthetic data (templates + seeded random constants)."""
 import ast, copy, random, signal, sys

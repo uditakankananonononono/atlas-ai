@@ -1,6 +1,8 @@
 import json, sys, numpy as np
 split = sys.argv[1]; SUF = sys.argv[2] if len(sys.argv) > 2 else ""
-rows = [json.loads(l) for l in open(f"rows_{split}.jsonl")]
+rows = [json.loads(l) for l in open(sys.argv[3] if len(sys.argv) > 3 else f"rows_{split}.jsonl")]
+_keys = [(r["seed"], r["kind"], r["aseed"]) for r in rows]
+if len(_keys) != len(set(_keys)): sys.exit("duplicate (seed, kind, aseed) rows: refusing to analyze")
 kinds = sorted({r["kind"] for r in rows}); tasks = sorted({r["seed"] for r in rows})
 rng = np.random.default_rng(0)
 def succ(r, B): return float(r["solved_vis"] and r["evals"] <= B and r["hid_fail"] == 0)
