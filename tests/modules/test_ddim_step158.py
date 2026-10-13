@@ -73,3 +73,14 @@ def test_grid_shapes_empty_and_mismatches():
         with pytest.raises(ValueError,match='^rectangular image required$'):step(*arrays,.5,1)
     for image,noise in (([[0],[1]],[[0]]),([[0,1]],[[0]])):
         with pytest.raises(ValueError,match='^identical image/noise shape required$'):step(image,noise,.5,1)
+
+
+@pytest.mark.parametrize('current,previous,expected_clean,expected_previous',[
+    (.4,.7,math.sqrt(2.5),math.sqrt(1.75)),
+    (.25,.81,2,1.8),
+])
+def test_distinct_cumulative_alphas_echoed_in_correct_fields_and_zero_noise_reference(current,previous,expected_clean,expected_previous):
+    r=step([[1]],[[0]],current,previous)
+    assert r['alpha_current']==current and r['alpha_previous']==previous
+    assert r['predicted_clean_image'][0][0]==pytest.approx(expected_clean,abs=1e-14)
+    assert r['previous_image'][0][0]==pytest.approx(expected_previous,abs=1e-14)
