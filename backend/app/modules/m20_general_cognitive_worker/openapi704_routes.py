@@ -20,3 +20,26 @@ def run(body:Request704,tenant:TenantContext=Depends(require_tenant)):
         result=generate_openapi(body.data)
         return {**result,'tenant_id':tenant.tenant_id,'actor_id':tenant.actor_id}
     except (ValueError,TypeError)as exc:raise HTTPException(422,str(exc))from exc
+
+from fastapi import Request
+from fastapi.responses import Response
+from .mounted_openapi704 import mounted_documentation
+
+@router.get('/mounted')
+def mounted(request: Request, tenant: TenantContext = Depends(require_tenant)):
+    try:
+        result = mounted_documentation(request.app)
+        return {**result, 'tenant_id': tenant.tenant_id, 'actor_id': tenant.actor_id}
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+
+@router.get('/mounted/download')
+def mounted_download(request: Request, tenant: TenantContext = Depends(require_tenant)):
+    try:
+        result = mounted_documentation(request.app)
+        return Response(result['canonical_json'], media_type='application/json',
+                        headers={'Content-Disposition': 'attachment; filename="mounted-openapi.json"',
+                                 'ETag': '"' + result['sha256'] + '"',
+                                 'Cache-Control': 'private, no-store'})
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
