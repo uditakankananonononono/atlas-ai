@@ -13,7 +13,11 @@ two enforcement additions:
    recent_actions from its prior "dispatched" records for the same platform
    and merges them under the caller's declarations, so an action stream that
    already passed the gate cannot redeclare its own history to slip under a
-   declared limit. Caller-supplied recent_actions still apply on top.
+   declared limit. Caller-supplied recent_actions still apply on top. Each
+   decision record ledgers the action's declared count and history() replays
+   it, so count>1 actions consume their real budget across dispatches.
+   Records written before count accounting (no count field) fail closed with
+   a coded refusal at validation/load; the unknown count is never defaulted.
 3. Person-facing EFFECT_KINDS (send, post, submit, invite, account,
    payment) independently require validated owner effect authority: a
    configured authority_check hook plus an authority_ref the hook accepts,
@@ -55,11 +59,13 @@ LIMITS = (
     "Ledger-derived rate history covers actions that went through this gate only; actions performed outside the gate are invisible to it.",
     "The ledger is tamper-evident, not tamper-proof; safe storage of the serialized ledger is the caller's job.",
     "The canonical action is frozen before hooks; hooks and the effect get isolated deep copies and the caller's action is re-checked against the ledgered digest after all hooks (mutation fails coded).",
+    "Decision records ledger the action's declared count and history() replays it; rows written before count accounting (no count field) fail closed with a coded refusal at validation/load and must be migrated or archived explicitly - the unknown count is never defaulted to 1.",
 )
 
 _DECISION_KEYS = {"kind", "action_id", "platform", "action_kind", "at", "action_at", "verdict",
                   "preflight_verdict", "failed_checks", "review_checked", "review_accepted",
-                  "authority_ref", "authority_checked", "authority_accepted", "action_digest"}
+                  "authority_ref", "authority_checked", "authority_accepted", "action_digest",
+                  "count"}
 
 
 def _validate_content(ledger):
@@ -68,6 +74,10 @@ def _validate_content(ledger):
         if record.get("kind") != "decision":
             _fail(f"ledger entry {entry['seq']} has an unknown record kind")
         if set(record) != _DECISION_KEYS:
+            if set(record) == _DECISION_KEYS - {"count"}:
+                _fail(f"ledger entry {entry['seq']} predates count accounting: legacy row "
+                      "with unknown declared count fails closed; migrate or archive the "
+                      "old ledger explicitly - the missing count is never defaulted")
             _fail(f"ledger entry {entry['seq']} has an unexpected record shape")
         ident(record["action_id"], "action_id", fail=_fail)
         text(record["platform"], "platform", fail=_fail, max_len=64)
@@ -84,6 +94,8 @@ def _validate_content(ledger):
         if record["authority_ref"] is not None:
             text(record["authority_ref"], "authority_ref", fail=_fail, max_len=256)
         sha256_hex(record["action_digest"], "action_digest", fail=_fail)
+        if type(record["count"]) is not int or record["count"] < 1:
+            _fail(f"ledger entry {entry['seq']} has an invalid declared count")
         # Semantic dispatch invariants (chain validity is not enough):
         kind = record["action_kind"]
         verdict = record["verdict"]
@@ -129,10 +141,10 @@ def loads(text_):
 def history(ledger, platform):
     """Reconstruct P70 recent_actions for one platform from dispatched records.
 
-    Each dispatched decision contributes its action's (kind, action_at, count=1)
-    using the action's own declared timestamp, so history and future actions
-    share one time domain. Refused actions contribute nothing - they never
-    happened.
+    Each dispatched decision contributes its action's (kind, action_at, count)
+    with the action's own declared count and timestamp, so history and future
+    actions share one accounting domain. Refused actions contribute nothing -
+    they never happened.
     """
     check_ledger(ledger)
     text(platform, "platform", fail=_fail, max_len=64)
@@ -141,7 +153,7 @@ def history(ledger, platform):
         record = entry["record"]
         if record["platform"] == platform and record["verdict"] in ("dispatched", "dispatched:after_review"):
             out.append({"platform": record["platform"], "kind": record["action_kind"],
-                        "at": record["action_at"], "count": 1})
+                        "at": record["action_at"], "count": record["count"]})
     return out
 
 
@@ -205,6 +217,14 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
     preflight = p70.preflight({k: v for k, v in canonical.items() if k != "id"}, merged)
     failed = [c["check"] for c in preflight["checks"] if not c["passed"]]
 
+    # The declared count is part of the action's rate cost and must survive
+    # into the ledger. P70 defaults a missing action count to 1 (its own
+    # contract) and preflight above already validated the value, so the
+    # effective count ledgered here is exactly what P70 accounted with.
+    count = canonical.get("count", 1)
+    if type(count) is not int or count < 1:
+        _fail("bad_type:count")
+
     review_checked = False
     review_accepted = False
     authority_checked = False
@@ -243,7 +263,8 @@ def dispatch(action, declarations, *, effect, now, ledger=None, review_check=Non
         verdict = "dispatched"
 
     record = {"kind": "decision", "action_id": action["id"], "platform": action["platform"],
-              "action_kind": action["kind"], "at": at, "action_at": action["at"], "verdict": verdict,
+              "action_kind": action["kind"], "count": count, "at": at, "action_at": action["at"],
+              "verdict": verdict,
               "preflight_verdict": preflight["verdict"], "failed_checks": failed,
               "review_checked": review_checked, "review_accepted": review_accepted,
               "authority_ref": authority_ref if authority_checked else None,
