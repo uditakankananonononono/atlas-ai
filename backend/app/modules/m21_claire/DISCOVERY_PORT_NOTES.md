@@ -5,3 +5,5 @@
 - Approval permits are issued once per approval row (atomic status flip). The returned permit is plain JSON; no adapter in this package consumes or verifies it. Do not claim execution is single-use: an external adapter must re-check the approval record immediately before acting.
 - Stores are single-node SQLite, not Postgres.
 - The closed-loop research engine rejects splits that share inputs (hash of input only, labels and ids ignored). This is exact-match only; near-duplicate leakage is not detected.
+- Public feed fetching now routes each DNS/HTTPS hop through `GuardrailEnforcer.dispatch_outbound`. Missing destination read/automation/rate declarations fail closed before DNS. Redirect destinations need their own admission; HTTPS/public-IP/TLS pinning and size/timeout bounds still apply.
+- Public reads are policy-admitted, not owner-authorized. Caller declarations are not live ToS verification. Reuse a caller-owned enforcer for rate history across cycles and supply its persist sink for durable history. The unconfigured Celery wrapper has no declarations, so it cannot fetch feeds; routers and beat remain unmounted/unconfigured.

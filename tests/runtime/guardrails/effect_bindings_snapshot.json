@@ -199,6 +199,10 @@
   "evidence": "webhook address validation (DNS lookup only); no write-method call found by static scan (not certified)",
   "status": "EXEMPT-BY-DESIGN"
  },
+ "modules/m21_claire/source_connectors.py": {
+  "evidence": "imports app.runtime.guardrails and calls a gate/refusal (static wiring only)",
+  "status": "GATED"
+ },
  "modules/m22_tools_hub/collectors.py": {
   "evidence": "public tool-registry reads; no write-method call found by static scan (not certified)",
   "status": "EXEMPT-BY-DESIGN"

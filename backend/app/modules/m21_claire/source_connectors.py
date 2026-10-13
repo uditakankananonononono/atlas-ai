@@ -1,7 +1,7 @@
 """Bounded, provenance-preserving public RSS/Atom ingestion for Claire.
 
-Designed for specific public feeds, not crawling the entire web. Network access is
-opt-in at the caller. HTTPS, public IP DNS answers, byte/timeout limits and redirect
+Designed for specific public feeds, not crawling the entire web. Network access requires caller-supplied platform declarations admitted by the
+existing outbound gate before DNS or HTTPS; missing declarations fail closed. HTTPS, public IP DNS answers, byte/timeout limits and redirect
 revalidation are enforced. Platform-specific social data should use official APIs.
 """
 from __future__ import annotations
@@ -12,12 +12,15 @@ from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Iterable
+from uuid import uuid4
+
+from app.runtime.guardrails.enforcer import GuardrailEnforcer
 
 MAX_BYTES=2_000_000
 MAX_REDIRECTS=3
 
 
-def _resolve_public_https(url: str) -> tuple[str,str,int,list[str]]:
+def _https_parts(url: str) -> tuple[str, str, int]:
     p=urllib.parse.urlsplit(url)
     if p.scheme != "https" or not p.hostname or p.username or p.password:
         raise ValueError("only credential-free HTTPS URLs are supported")
@@ -28,14 +31,24 @@ def _resolve_public_https(url: str) -> tuple[str,str,int,list[str]]:
     if port != 443:
         raise ValueError("only HTTPS on port 443 is supported")
     try:
-        literal=ipaddress.ip_address(host)
-        ips=[str(literal)]
+        literal = ipaddress.ip_address(host)
+    except ValueError:
+        literal = None
+    if literal is not None and not literal.is_global:
+        raise ValueError("host resolves to a non-public address")
+    normalized=urllib.parse.urlunsplit((p.scheme,p.netloc,p.path or "/",p.query,""))
+    return normalized,host,port
+
+
+def _resolve_public_https(url: str) -> tuple[str,str,int,list[str]]:
+    normalized,host,port = _https_parts(url)
+    try:
+        ips = [str(ipaddress.ip_address(host))]
     except ValueError:
         try: ips=sorted({item[4][0] for item in socket.getaddrinfo(host,port,type=socket.SOCK_STREAM)})
         except OSError as e: raise ValueError("hostname could not be resolved") from e
     if not ips or any(not ipaddress.ip_address(ip).is_global for ip in ips):
         raise ValueError("host resolves to a non-public address")
-    normalized=urllib.parse.urlunsplit((p.scheme,p.netloc,p.path or "/",p.query,""))
     return normalized,host,port,ips
 
 
@@ -129,39 +142,60 @@ def parse_feed(xml_data: bytes, feed_url: str, *, item_limit: int=200) -> list[S
 
 
 def fetch_public_feed(url: str, *, timeout: float=8.0, max_bytes: int=MAX_BYTES,
-                      user_agent: str="ClaireResearchBot/1.0 (bounded public feed reader)") -> tuple[bytes,str]:
-    """Fetch a configured public feed with DNS pinning, TLS validation and redirect checks."""
+                      user_agent: str="ClaireResearchBot/1.0 (bounded public feed reader)",
+                      enforcer: GuardrailEnforcer | None=None,
+                      declarations: dict[str, Any] | None=None) -> tuple[bytes,str]:
+    """Gate every hop before DNS/HTTPS; public reads have policy admission, not owner authority.
+
+    Declarations must name each destination hostname and its read/automation/rate
+    policy. None is deliberately deny-by-default. Reuse a caller-owned enforcer
+    for rate history across fetches and configure its persist sink for durability.
+    """
     if not 0.5 <= timeout <= 30: raise ValueError("timeout must be in [0.5,30]")
     if not 1 <= max_bytes <= MAX_BYTES: raise ValueError("max_bytes must be in [1,2MB]")
+    gate = enforcer if enforcer is not None else GuardrailEnforcer()
+    policy = declarations if declarations is not None else {"tos": {}}
     current=url
     for _ in range(MAX_REDIRECTS+1):
-        current,host,port,ips=_resolve_public_https(current)
-        p=urllib.parse.urlsplit(current)
-        target=p.path or "/"
-        if p.query: target += "?"+p.query
-        connection=None
-        try:
-            # Use the very IP address we validated, avoiding a second DNS lookup / rebinding.
-            connection=_PinnedHTTPSConnection(host,port,ips[0],timeout)
-            connection.request("GET",target,headers={"User-Agent":user_agent,
-                "Accept":"application/atom+xml,application/rss+xml,application/xml,text/xml;q=0.8,*/*;q=0.1",
-                "Accept-Encoding":"identity","Host":p.netloc,"Connection":"close"})
-            response=connection.getresponse()
-            if response.status in (301,302,303,307,308):
-                location=response.getheader("Location")
-                response.read(1024)
-                if not location: raise ValueError("redirect missing Location")
-                current=urllib.parse.urljoin(current,location)
-                continue
-            if response.status < 200 or response.status >= 300:
-                raise ValueError(f"feed request failed with HTTP {response.status}")
-            data=response.read(max_bytes+1)
-            if len(data)>max_bytes: raise ValueError("feed exceeds byte limit")
-            return data,current
-        except (OSError,ssl.SSLError,http.client.HTTPException) as exc:
-            raise ValueError("feed request failed") from exc
-        finally:
-            if connection is not None: connection.close()
+        # Pure validation only. DNS is an outbound effect and belongs inside admission.
+        current,host,_port=_https_parts(current)
+        now=datetime.now(timezone.utc)
+        action={"id": "claire-feed-"+uuid4().hex, "platform":host, "kind":"read",
+                "at":now.timestamp(), "count":1, "automated":True,
+                "purpose":"public_feed_research", "subjects":[], "data_categories":[],
+                "url":current, "timeout":timeout, "max_bytes":max_bytes, "user_agent":user_agent}
+
+        def read_hop(admitted):
+            normalized,hostname,port,ips=_resolve_public_https(admitted["url"])
+            p=urllib.parse.urlsplit(normalized)
+            target=p.path or "/"
+            if p.query: target += "?"+p.query
+            connection=None
+            try:
+                connection=_PinnedHTTPSConnection(hostname,port,ips[0],admitted["timeout"])
+                connection.request("GET",target,headers={"User-Agent":admitted["user_agent"],
+                    "Accept":"application/atom+xml,application/rss+xml,application/xml,text/xml;q=0.8,*/*;q=0.1",
+                    "Accept-Encoding":"identity","Host":p.netloc,"Connection":"close"})
+                response=connection.getresponse()
+                if response.status in (301,302,303,307,308):
+                    location=response.getheader("Location")
+                    response.read(1024)
+                    if not location: raise ValueError("redirect missing Location")
+                    return None,urllib.parse.urljoin(normalized,location)
+                if response.status < 200 or response.status >= 300:
+                    raise ValueError(f"feed request failed with HTTP {response.status}")
+                data=response.read(admitted["max_bytes"]+1)
+                if len(data)>admitted["max_bytes"]: raise ValueError("feed exceeds byte limit")
+                return data,normalized
+            except (OSError,ssl.SSLError,http.client.HTTPException) as exc:
+                raise ValueError("feed request failed") from exc
+            finally:
+                if connection is not None: connection.close()
+
+        data,next_url=gate.dispatch_outbound(action,policy,effect=read_hop,now=now.isoformat())
+        if data is not None:
+            return data,next_url
+        current=next_url
     raise ValueError("too many redirects")
 
 

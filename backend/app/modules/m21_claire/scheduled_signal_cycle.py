@@ -6,9 +6,10 @@ from typing import Sequence, Any
 import urllib.parse
 from .source_connectors import fetch_public_feed, parse_feed, analyze_signals
 from .research_workspace import ResearchWorkspaceStore
+from app.runtime.guardrails.enforcer import GuardrailEnforcer
 
 
-def run_feed_cycle(*, tenant_id:str, feed_urls:Sequence[str], workspace_path:str="./data/claire_research.sqlite3", max_feeds:int=3) -> dict[str,Any]:
+def run_feed_cycle(*, tenant_id:str, feed_urls:Sequence[str], workspace_path:str="./data/claire_research.sqlite3", max_feeds:int=3, enforcer=None, declarations:dict[str,Any] | None=None) -> dict[str,Any]:
     """Fetch at most three configured public HTTPS feeds, store provenance, report errors.
 
     Configure feeds from a reviewed settings list, not a model-generated URL. A single
@@ -22,9 +23,10 @@ def run_feed_cycle(*, tenant_id:str, feed_urls:Sequence[str], workspace_path:str
         p=urllib.parse.urlsplit(value)
         return urllib.parse.urlunsplit((p.scheme,p.netloc,p.path,"",""))
     store=ResearchWorkspaceStore(workspace_path); fetched=[]; failures=[]
+    gate=enforcer if enforcer is not None else GuardrailEnforcer()
     for url in urls:
         try:
-            data,final_url=fetch_public_feed(url)
+            data,final_url=fetch_public_feed(url, enforcer=gate, declarations=declarations)
             parsed=parse_feed(data,final_url)
             signals=[asdict(s) for s in parsed]
             stored=store.add_signals(tenant_id,signals) if signals else {"new":0,"duplicates":0}
@@ -36,4 +38,4 @@ def run_feed_cycle(*, tenant_id:str, feed_urls:Sequence[str], workspace_path:str
     return {"feeds_attempted":len(urls),"feeds_succeeded":len(fetched),"feeds_failed":len(failures),
             "fetched":fetched,"failures":failures,"analysis":analyze_signals(all_signals),
             "schedule":"single cycle only; configure an external scheduler for recurring runs",
-            "outbound_actions":"none"}
+            "outbound_actions":"public feed reads only; each DNS/HTTPS hop requires outbound-gate admission"}
