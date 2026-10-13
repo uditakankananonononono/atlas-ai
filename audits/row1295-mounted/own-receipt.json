@@ -1,0 +1,56 @@
+[
+  {
+    "id": "route_absent",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "881f0ffb71dfee5d4631847fcafdeb2418a57731cff2c0414fc2551525c6e042",
+    "restore_verified": true,
+    "log_sha256": "44894f36c487f19c9a72652e9bca6a6be3c9f18ed5eb56fdbfc69f4b98b7e8e8",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "wrong_dispatch",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "881f0ffb71dfee5d4631847fcafdeb2418a57731cff2c0414fc2551525c6e042",
+    "restore_verified": true,
+    "log_sha256": "b399f67db6b4b6602003dbf265f8e4b52c72d6dcba93956c33b26f7ed6af8366",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "stub_result",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "881f0ffb71dfee5d4631847fcafdeb2418a57731cff2c0414fc2551525c6e042",
+    "restore_verified": true,
+    "log_sha256": "10090f2b3deaa20aaac6a639094486d1d0a04ddd93900cef5ad084d72644025a",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "swallowed_refusal",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "881f0ffb71dfee5d4631847fcafdeb2418a57731cff2c0414fc2551525c6e042",
+    "restore_verified": true,
+    "log_sha256": "bd9c71b099c611b814f32832b8f2f32cc5f148252f765ed0cdb95c6ac39b4d0d",
+    "main_mutant_recut": false
+  },
+  {
+    "id": "unmounted",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "70edfd675cd8fa99a7479e0c5f036124918997fe10ce636078293969394d5582",
+    "restore_verified": true,
+    "log_sha256": "985839fd522d49acd6f98f5a57fd85d0b85335dacca72a454849ec746a3fc7d7",
+    "main_mutant_recut": true
+  },
+  {
+    "id": "wrong_vocabulary",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "2a92b1ddaa25bb8d1c239cd111bee325006c292805af1d7ad24d43a50e2f42aa",
+    "restore_verified": true,
+    "log_sha256": "1a5403b7410dd218b55fb9b93502f500a6e800d2bd9fcdb18bbdc35321328424",
+    "main_mutant_recut": false
+  }
+]
