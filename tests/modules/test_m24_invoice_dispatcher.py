@@ -342,18 +342,16 @@ def test_invoice_service_routing_never_legacy_provider(env,monkeypatch):
     assert len(mock.calls)==3
 
 
-def test_old_omitted_pending_item_mock_contract_is_excluded_not_attached():
+def test_unbound_legacy_pending_invoice_refused_before_provider():
     from app.modules.m24_billing.stripe_client import StripeClient
-    items=[]
+    calls=[]
     def handler(request):
-        form={k:v[0] for k,v in parse_qs(request.content.decode()).items()}
-        if request.url.path.endswith('invoiceitems'):
-            assert 'invoice' not in form;items.append(form);return httpx.Response(200,json={'id':'ii_pending'})
-        assert 'pending_invoice_items_behavior' not in form
-        # Docs-based mock of omitted default exclude, NOT verified account default.
-        return httpx.Response(200,json={'id':'in_empty','total':0,'lines':{'has_more':False,'data':[]}})
-    result=asyncio.run(StripeClient('sk_test_fixture',httpx.MockTransport(handler)).create_invoice('cus_fixture','Reviewed draft',1234,'usd','approval-fixture'))
-    assert len(items)==1 and result['total']==0 and result['lines']['data']==[]
+        calls.append(request)
+        raise AssertionError('unbound invoice reached provider')
+    with pytest.raises(PermissionError,match='EFFECT_UNBOUND_REFUSED'):
+        asyncio.run(StripeClient('sk_test_fixture',httpx.MockTransport(handler)).create_invoice(
+            'cus_fixture','Reviewed draft',1234,'usd','approval-fixture'))
+    assert calls==[]
 
 
 def test_invoice_http_status_foreign_tenant_404_and_private_forms_hidden(env,monkeypatch):

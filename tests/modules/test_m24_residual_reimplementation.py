@@ -18,19 +18,16 @@ async def test_unknown_checkout_is_tenant_bound_refusal():
         await Service(None, Repo(), None).execute_checkout('missing', 'tenant-a')
 
 @pytest.mark.asyncio
-async def test_invoice_request_keys_are_separate_stable_and_approval_bound():
-    requests=[]
-    def respond(request):
-        requests.append((request.url.path, request.headers['Idempotency-Key']))
-        return httpx.Response(200, json={'id':'in_test'})
-    client=StripeClient('sk_test_fixture', httpx.MockTransport(respond))
-    await client.create_invoice('cus_test','example',100,'usd','approval-a')
-    await client.create_invoice('cus_test','example',100,'usd','approval-a')
-    await client.create_invoice('cus_test','example',100,'usd','approval-b')
-    assert requests[0][1] != requests[1][1]
-    assert requests[:2] == requests[2:4]
-    assert requests[0][1] != requests[4][1]
-    assert requests[1][1] != requests[5][1]
+async async def test_unbound_invoice_refusal_does_not_emit_legacy_idempotency_keys():
+    calls=[]
+    def handler(request):
+        calls.append(request)
+        raise AssertionError('unbound invoice reached provider')
+    with pytest.raises(PermissionError,match='EFFECT_UNBOUND_REFUSED'):
+        await StripeClient('sk_test_fixture',httpx.MockTransport(handler)).create_invoice(
+            'cus_fixture','fixture',100,'usd','approval-fixture')
+    assert calls==[]
+
 
 @pytest.fixture
 def db(tmp_path, monkeypatch):
