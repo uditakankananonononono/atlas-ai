@@ -1,0 +1,68 @@
+{
+  "row": 141,
+  "selectors": [
+    "tests/runtime/guardrails/test_tool_execution_receipts.py"
+  ],
+  "timeout_seconds": 45,
+  "mutations": [
+    {
+      "id": "count_failed",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "WHERE project=? AND status='succeeded'",
+      "new": "WHERE project=?"
+    },
+    {
+      "id": "count_aliases",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "COUNT(DISTINCT identity)",
+      "new": "COUNT(*)"
+    },
+    {
+      "id": "skip_pre_pin",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "if not _same_pins(spec[\"pins\"]):",
+      "new": "if False:"
+    },
+    {
+      "id": "skip_post_pin",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "if status == \"succeeded\" and not _same_pins(spec[\"pins\"]):",
+      "new": "if False:"
+    },
+    {
+      "id": "accept_nonzero",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "if returncode != 0:",
+      "new": "if False:"
+    },
+    {
+      "id": "accept_timeout",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "if remaining <= 0:\n                                status = \"timeout\"",
+      "new": "if remaining <= 0:\n                                status = \"succeeded\""
+    },
+    {
+      "id": "skip_count_gate",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "if not result[\"met\"]:",
+      "new": "if False:"
+    },
+    {
+      "id": "skip_process_group_kill",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "os.killpg(proc.pid, signal.SIGKILL)",
+      "new": "proc.kill()"
+    },
+    {
+      "id": "ignore_output_bound",
+      "path": "backend/app/runtime/guardrails/tool_execution_receipts.py",
+      "old": "if len(chunk) > space:",
+      "new": "if False:"
+    }
+  ],
+  "limits": [
+    "Real trusted-local authored fixture programs; not external service verification.",
+    "Not hostile-process containment or protection from a database writer.",
+    "No repository-wide adoption or regression claim."
+  ]
+}
