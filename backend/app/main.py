@@ -78,6 +78,8 @@ from app.modules.m20_general_cognitive_worker.professional_responsibility1291_ro
 app.include_router(row1291_router)
 from app.modules.m20_general_cognitive_worker.conflicts_of_interest1292_routes import router as row1292_router
 app.include_router(row1292_router)
+from app.modules.m20_general_cognitive_worker.jury_selection1284_routes import router as row1284_router
+app.include_router(row1284_router)
 from app.modules.m20_general_cognitive_worker.legal_malpractice1294_routes import router as row1294_router
 app.include_router(row1294_router)
 
