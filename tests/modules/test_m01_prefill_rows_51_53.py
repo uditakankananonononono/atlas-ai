@@ -284,6 +284,16 @@ def test_listing_to_staged_form_without_submit(browser, pid):  # noqa: F811
     plan = plan_prefill(PROFILE, inspected['fields'])
     assert plan['unmatched_required'] == [] and '#d' in plan['withheld']
     assert_binding_exact(plan, inspected['fields'])
+    if pid == 'challengerocket':
+        # Synthetic fixture review, not an assertion of real owner acceptance.
+        with pytest.raises(PermissionError, match='unreviewed'):
+            run(browser.stage('t', 'a', child['session_id'], plan['fields'], '#send'))
+        assert not cpage.values and not cpage.clicks
+        packet = run(browser.competition_terms('t', 'a', child['session_id']))
+        reviewed = run(browser.review_competition_terms(
+            't', 'a', child['session_id'], packet['digest'], True, True, True, True))
+        assert reviewed['submitted'] is False and reviewed['final_submit_approval_required']
+        assert not cpage.values and not cpage.clicks
     staged = run(browser.stage('t', 'a', child['session_id'], plan['fields'], '#send'))
     assert staged['submitted'] is False and not cpage.clicks
     assert all(v['matches'] for v in staged['preview'].values())
