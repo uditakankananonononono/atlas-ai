@@ -20,7 +20,7 @@ def request(**changes):
         {'element': VOCAB[0], 'status': 'disputed', 'source_ref': 'OTHER_REFERENCE', 'entry_date': '2026-10-11'}]}, **changes)
 
 def test_row1294_mounted_partition_dates_and_boundary(client, oidc_auth_headers):
-    r=client.post(PATH,headers=oidc_auth_headers(),json=request())
+    r=client.post(PATH,headers=oidc_auth_headers('row1294'),json=request())
     assert r.status_code==200,r.text
     out=r.json()
     assert out['row']==1294
@@ -35,7 +35,7 @@ def test_row1294_mounted_partition_dates_and_boundary(client, oidc_auth_headers)
     assert 'PRIVATE_REFERENCE' not in r.text and 'OTHER_REFERENCE' not in r.text
 
 def test_row1294_mounted_vocab_and_missing(client, oidc_auth_headers):
-    headers=oidc_auth_headers()
+    headers=oidc_auth_headers('row1294')
     r=client.post(PATH,headers=headers,json=request(entries=[{'element':v,'status':'supplied','source_ref':'secret'} for v in VOCAB]))
     assert r.status_code==200,r.text
     assert r.json()['coverage']['referenced']==len(VOCAB)
@@ -52,13 +52,13 @@ def test_row1294_mounted_vocab_and_missing(client, oidc_auth_headers):
     ({'entries':[{'element':'OTHER_1294_ONLY','status':'missing'}]},'UNKNOWN:element'),
 ])
 def test_row1294_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
-    r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+    r=client.post(PATH,headers=oidc_auth_headers('row1294'),json=request(**changes))
     assert r.status_code==422,r.text
     assert r.json()=={'detail':PREFIX+' '+reason}
     assert 'PRIVATE_REFERENCE' not in r.text and 'OTHER_1294_ONLY' not in r.text
 
 def test_row1294_mounted_forbidden_precedence(client,oidc_auth_headers):
-    headers=oidc_auth_headers()
+    headers=oidc_auth_headers('row1294')
     for changes,reason in [({'send':False,'pay':False},'SEND:send'),({'password':None},'NOCREDS:password'),({'file':False},'EFFECT:file')]:
         r=client.post(PATH,headers=headers,json=request(**changes))
         assert r.status_code==422,r.text
@@ -68,7 +68,7 @@ def test_row1294_mounted_forbidden_precedence(client,oidc_auth_headers):
     assert r.json()=={'detail':PREFIX+' OVERSIZE:entries'}
 
 def test_row1294_mounted_decoder_and_media(client,oidc_auth_headers):
-    headers=oidc_auth_headers()
+    headers=oidc_auth_headers('row1294')
     for raw in [b'\xff',b'{broken',b'null',b'[]',(json.dumps(request())[:-1]+',"row":'+str(1294)+'}').encode(),b'{"row":NaN}']:
         r=client.post(PATH,headers={**headers,'Content-Type':'application/json'},content=raw)
         assert r.status_code==422,r.text
@@ -78,7 +78,7 @@ def test_row1294_mounted_decoder_and_media(client,oidc_auth_headers):
     assert 'PRIVATE_REFERENCE' not in r.text
 
 def test_row1294_mounted_body_cap_exact_boundary(client,oidc_auth_headers):
-    headers={**oidc_auth_headers(),'Content-Type':'application/json'}
+    headers={**oidc_auth_headers('row1294'),'Content-Type':'application/json'}
     raw=json.dumps(request()).encode();raw+=b' '*(8192-len(raw))
     r=client.post(PATH,headers=headers,content=raw)
     assert r.status_code==200,r.text
@@ -94,17 +94,17 @@ def test_row1294_mounted_auth_before_engine(client,monkeypatch):
 
 def test_row1294_mounted_repeat_tenant_isolation(client,oidc_auth_headers):
     data=request()
-    a=client.post(PATH,headers=oidc_auth_headers('tenant-a'),json=data)
-    b=client.post(PATH,headers=oidc_auth_headers('tenant-b'),json=data)
+    a=client.post(PATH,headers=oidc_auth_headers('row1294-a'),json=data)
+    b=client.post(PATH,headers=oidc_auth_headers('row1294-b'),json=data)
     assert a.status_code==b.status_code==200,(a.text,b.text)
     assert a.json()==b.json()
 
 
 def test_row1294_mounted_empty_probe(client, oidc_auth_headers):
-    assert client.post(PATH, headers=oidc_auth_headers(), json={}).status_code == 422
+    assert client.post(PATH, headers=oidc_auth_headers('row1294'), json={}).status_code == 422
     assert client.post(PATH, json={}).status_code == 401
 
 
 def test_row1294_mounted_uppercase_content_type(client, oidc_auth_headers):
-    response = client.post(PATH, headers={**oidc_auth_headers(), 'Content-Type': 'APPLICATION/JSON'}, content=json.dumps(request()))
+    response = client.post(PATH, headers={**oidc_auth_headers('row1294'), 'Content-Type': 'APPLICATION/JSON'}, content=json.dumps(request()))
     assert response.status_code == 200, response.text
