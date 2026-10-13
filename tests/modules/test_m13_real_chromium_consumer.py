@@ -48,19 +48,29 @@ async def test_real_m13_chromium_dom_artifacts_tenant_isolation(tmp_path, monkey
     try:
         page_a = await sessions.page('tenant-a', 'same-session')
         page_b = await sessions.page('tenant-b', 'same-session')
-        for page in (page_a, page_b):
+        context_a = sessions._sessions[('tenant-a', 'same-session')].context
+        context_b = sessions._sessions[('tenant-b', 'same-session')].context
+        assert not hasattr(page_a, 'context') and not hasattr(page_b, 'context')
+        for context in (context_a, context_b):
             async def intercepted(route):
                 await sessions._guard_route(FixtureRoute(route, seen))
-            await page.context.route('**/*', intercepted)
+            await context.route('**/*', intercepted)
         result = await service.navigate('tenant-a', 'same-session', 'https://a16-fixture.test/form')
         assert result == {'status':'ok', 'url':'https://a16-fixture.test/form', 'http_status':200}
         await service.navigate('tenant-b', 'same-session', 'https://a16-fixture.test/form')
-        assert page_a.context is not page_b.context
-        await page_a.context.add_cookies([{'name':'fixture', 'value':'tenant-a', 'url':'https://a16-fixture.test'}])
-        assert any(c['value'] == 'tenant-a' for c in await page_a.context.cookies())
-        assert await page_b.context.cookies() == []
-        mapping = await service.fill('tenant-a', 'same-session', [FieldDescriptor('#email', label='Email', name='email', input_type='email')], {'email':'fixture@example.test'})
-        assert mapping == {'#email':'fixture@example.test'}
+        assert context_a is not context_b
+        await context_a.add_cookies([{'name':'fixture', 'value':'tenant-a', 'url':'https://a16-fixture.test'}])
+        assert any(c['value'] == 'tenant-a' for c in await context_a.cookies())
+        assert await context_b.cookies() == []
+        # dec4c06d deliberately cut off unbound manager writes. Controlled fixture writes
+        # below test readback, not a claim that this local transport authorizes fill.
+        with pytest.raises(ValueError, match='cannot verify control type'):
+            await service.fill('tenant-a', 'same-session', [FieldDescriptor('#email', label='Email', name='email', input_type='email')], {'email':'fixture@example.test'})
+        assert await page_a.locator('#email').input_value() == ''
+        with pytest.raises(PermissionError, match='EFFECT_UNBOUND_REFUSED'):
+            await page_a.locator('#email').fill('fixture@example.test')
+        await context_a.pages[0].locator('#email').fill('fixture@example.test')
+        mapping = {'#email':'fixture@example.test'}
         assert await service.read_values('tenant-a', 'same-session', ['#email']) == mapping
         assert await page_b.locator('#email').input_value() == ''
         assert 'A16 browser consumer fixture' in await service.extract('tenant-a', 'same-session')
@@ -69,7 +79,7 @@ async def test_real_m13_chromium_dom_artifacts_tenant_isolation(tmp_path, monkey
         evidence = Path('/tmp/atlas-a16-visual.png')
         shutil.copyfile(shot, evidence)
         events = await store.audit_events('tenant-a', 'same-session')
-        assert [e.action.value for e in events] == ['screenshot','extract','readback','fill','navigate']
+        assert [e.action.value for e in events] == ['screenshot','extract','readback','navigate']
         assert len(await store.audit_events('tenant-b', 'same-session')) == 1
         with pytest.raises(ValueError, match='persistence mode'):
             await sessions.page('tenant-a', 'same-session', persistent=True)
@@ -78,7 +88,7 @@ async def test_real_m13_chromium_dom_artifacts_tenant_isolation(tmp_path, monkey
         with pytest.raises(security.NavigationBlocked):
             await service.navigate('tenant-a', 'same-session', 'http://127.0.0.1/private')
         # Real Chromium subresource request passes through unchanged guard and aborts.
-        await page_a.evaluate("fetch('http://127.0.0.1/private').catch(() => null)")
+        await context_a.pages[0].evaluate("fetch('http://127.0.0.1/private').catch(() => null)")
         assert any(kind == 'blocked' and '127.0.0.1' in url for kind, url in seen)
         assert sum(kind == 'fulfilled' for kind, _ in seen) == 2
         assert await sessions.close_session('tenant-a', 'same-session') is True

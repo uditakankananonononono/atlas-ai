@@ -390,7 +390,8 @@ def test_default_explicit_hosts_return_scoped_page_never_raw(tmp_path, monkeypat
     async def start(): pass
     monkeypatch.setattr(sessions, 'start', start)
     result = run(sessions.page('t', 's'))
-    assert isinstance(result, ScopedPage) and result.raw is page
+    assert isinstance(result._page, ScopedPage) and result._page.raw is page
+    assert not hasattr(result, "raw") and not hasattr(result, "context")
     assert sessions._origin_scopes[('t', 's')] == frozenset({'bold.org'})
 
 
