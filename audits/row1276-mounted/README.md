@@ -13,3 +13,9 @@ M13 effect-guard removal survives at mounted level; it is not credited as a kill
 or proof of exhaustive effect-key validation. Independent audit found the same
 limit. Shared routes.py mounts this inside the m20 spec router; pins are deferred
 to one actual composed inventory refresh, not copied isolated99->100 counts.
+
+Composed inventory follow-up: after all five in-router additions, isolated m20
+spec inventory is273 operations/104 reachable; unchanged not-bound counts. All12
+stateless regression tests pass. Combined six mounted selectors plus those12 pins:
+82 passed. Row1284 mounts only at app.main and is outside this spec inventory.
+Earlier awaited-pin notes above describe the pre-refresh stage, not current state.

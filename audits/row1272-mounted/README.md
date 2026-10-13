@@ -80,3 +80,9 @@ All15 released exact-site operators CAUGHT in five independent three-operator
 batches, all original bytes restored. Raw logs retained in handoff only. Shared
 spec-router pins await one combined regeneration with the other four new in-router
 operations; no green claim for the pin inventory is made before that replay.
+
+Composed inventory follow-up: after all five in-router additions, isolated m20
+spec inventory is273 operations/104 reachable; unchanged not-bound counts. All12
+stateless regression tests pass. Combined six mounted selectors plus those12 pins:
+82 passed. Row1284 mounts only at app.main and is outside this spec inventory.
+Earlier awaited-pin notes above describe the pre-refresh stage, not current state.

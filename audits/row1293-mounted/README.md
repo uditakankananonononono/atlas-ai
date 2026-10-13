@@ -10,3 +10,9 @@ all original source byte hashes restored. Real signed OIDC fixture tokens use
 production verifier, not external issuer/live permission proof. Shared m20 router
 mount is inside the isolated spec inventory; one combined pin refresh follows all
 five in-router additions. No whole-suite or unrefreshed inventory green claim.
+
+Composed inventory follow-up: after all five in-router additions, isolated m20
+spec inventory is273 operations/104 reachable; unchanged not-bound counts. All12
+stateless regression tests pass. Combined six mounted selectors plus those12 pins:
+82 passed. Row1284 mounts only at app.main and is outside this spec inventory.
+Earlier awaited-pin notes above describe the pre-refresh stage, not current state.

@@ -66,3 +66,9 @@ on FastAPI/cvxpy. The32768 cap bounds retained streamed bytes, not transport or 
 memory. Original builder logs were not supplied; normalization hashes document
 provenance but do not independently recover those originals. Pin refresh is deferred
 to the single composed inventory after all six related routes are applied.
+
+Composed inventory follow-up: after all five in-router additions, isolated m20
+spec inventory is273 operations/104 reachable; unchanged not-bound counts. All12
+stateless regression tests pass. Combined six mounted selectors plus those12 pins:
+82 passed. Row1284 mounts only at app.main and is outside this spec inventory.
+Earlier awaited-pin notes above describe the pre-refresh stage, not current state.
