@@ -133,6 +133,18 @@ def replay_release(output):
             'boundary':'Actual local Git bundle restored and object bytes replayed; no hosted link, ownership or completion verification'}
 
 
+def _refuse_repository_filters(root):
+    # git status can invoke clean/process drivers when refreshing index entries.
+    # Read effective configuration (including local include files) BEFORE status.
+    # config --list does not execute those driver commands. Conservative refusal
+    # covers every filter namespace key, whether its attributes are active or not.
+    raw = _git(root, 'config', '--includes', '--null', '--list')
+    for entry in raw.split(b'\0'):
+        key = entry.partition(b'\n')[0].lower()
+        if key.startswith(b'filter.'):
+            _fail('repository_filter')
+
+
 def build_release(root, output):
     """Atomically produce a replayed bundle from a clean trusted local checkout."""
     root=Path(root).resolve(strict=True)
@@ -141,6 +153,7 @@ def build_release(root, output):
         _fail('output_exists')
     if _git(root,'rev-parse','--show-toplevel').decode().strip() != str(root):
         _fail('top_level')
+    _refuse_repository_filters(root)
     if _git(root,'status','--porcelain','--untracked-files=all'):
         _fail('dirty')
     head=_head(root)
@@ -157,6 +170,7 @@ def build_release(root, output):
             'boundary':'Local committed bytes plus ancestor history; remote and ownership unverified'}
         (staging/'manifest.json').write_text(json.dumps(manifest,sort_keys=True,ensure_ascii=True)+'\n')
         replay_release(staging)
+        _refuse_repository_filters(root)
         if _head(root) != head or _git(root,'status','--porcelain','--untracked-files=all'):
             _fail('source_changed')
         # Re-read local worktree bytes, not just object-store content.

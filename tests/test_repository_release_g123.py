@@ -147,3 +147,28 @@ def test_new_untracked_source_during_replay_refuses(tmp_path,monkeypatch):
     with pytest.raises(ValueError,match='source_changed'):
         build_release(root,out)
     assert not out.exists()
+
+
+@pytest.mark.parametrize('driver',['clean','process'])
+def test_repository_defined_filters_refused_without_execution(tmp_path,driver):
+    root=repo(tmp_path);marker=tmp_path/'filter-ran'
+    # Commit attributes before defining the driver, so fixture setup never runs it.
+    (root/'.gitattributes').write_text('file.txt filter=probe\n')
+    git(root,'add','.gitattributes');git(root,'commit','-qm','attributes')
+    git(root,'config',f'filter.probe.{driver}',f'touch {marker}; cat')
+    (root/'file.txt').touch()
+    with pytest.raises(ValueError,match='repository_filter'):
+        build_release(root,tmp_path/'release')
+    assert not marker.exists()
+    assert not (tmp_path/'release').exists()
+
+
+def test_filter_included_from_local_config_refused(tmp_path):
+    root=repo(tmp_path);marker=tmp_path/'filter-ran'
+    (root/'.gitattributes').write_text('file.txt filter=probe\n')
+    git(root,'add','.gitattributes');git(root,'commit','-qm','attrs')
+    config=tmp_path/'extra.conf';config.write_text(f'[filter "probe"]\n clean = touch {marker}; cat\n')
+    git(root,'config','include.path',str(config))
+    with pytest.raises(ValueError,match='repository_filter'):
+        build_release(root,tmp_path/'release')
+    assert not marker.exists()

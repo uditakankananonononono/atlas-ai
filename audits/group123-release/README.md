@@ -9,8 +9,10 @@ build_release(root, output) inspects a clean trusted-local checkout, creates
 repository.bundle plus a content-hash manifest, independently clones into a fresh
 bare Git repo, reads restored object bytes and modes, then rechecks source state
 and worktree bytes before placing the release directory. replay_release(output)
-repeats bundle hash, HEAD and file/mode replay later. No worktree checkout or
-repository code execution; hooks and fsmonitor are disabled and ambient GIT_*
+repeats bundle hash, HEAD and file/mode replay later. No worktree checkout. Effective local Git config, including include files, is
+inspected before each source status read; any filter.* key causes refusal. This
+prevents the tested repository-defined clean/process drivers from executing.
+Hooks and fsmonitor are disabled and ambient GIT_*
 redirects excluded. Symlinks, submodules and dirty/untracked state are refused.
 Failed builds remove their staging directory. Original files are not modified.
 
@@ -52,3 +54,20 @@ collection error, not behavioral RED. No independent gate or ChatGPT review yet.
   fulfills a concrete local artifact generation step, not literal group closure.
 - No full repository regression, independent audit, visual/UI output or world-
   leading comparison was performed. Tests inspect byte/object behavior only.
+
+
+## Review correction to initial 5750af6c patch
+
+Original claim: "No worktree checkout or repository code execution; hooks and
+fsmonitor are disabled and ambient GIT_* redirects excluded."
+Independent reviewer reproduced repository-defined clean filter execution during
+git status, so the no-code-execution claim was OVERSTATED. Disabling hooks and
+fsmonitor does not disable clean/process filters. The repaired implementation
+reads effective config with includes before both status calls and refuses all
+filter.* keys. Actual clean-driver, process-driver and included-config tests
+assert refusal and marker absence. This is a trusted-static-config boundary,
+not protection against a concurrent hostile config writer.
+
+Repair builder selectors: 47 passed (20 release, 27 existing evidence tests).
+No independent repair replay claimed. Original mutation evidence retained;
+new refusal mutant and the earlier six sites are replayed separately.

@@ -44,6 +44,12 @@
       "path": "backend/app/modules/instinct_doc/repository_release_g123.py",
       "old": "if _git(root,'rev-parse','--show-toplevel').decode().strip() != str(root):",
       "new": "if False:"
+    },
+    {
+      "id": "filter_refusal",
+      "path": "backend/app/modules/instinct_doc/repository_release_g123.py",
+      "old": "if key.startswith(b'filter.'):",
+      "new": "if False:"
     }
   ]
 }
