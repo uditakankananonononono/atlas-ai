@@ -1,0 +1,66 @@
+[
+  {
+    "id": "no_retractions",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "30db3265686a471f9a45d83ac19c16943be0319a023c677f0cd48a0dedfcfa19",
+    "restore_verified": true,
+    "log_sha256": "3649ac06f036c74c19004482fb18af87d80c8e3a6284f37507e82dedcbdb0973"
+  },
+  {
+    "id": "no_new_conclusions",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "30db3265686a471f9a45d83ac19c16943be0319a023c677f0cd48a0dedfcfa19",
+    "restore_verified": true,
+    "log_sha256": "5c398e1f5bd87922c1a415b36b5a02b59d7b33a990c2e5a342872c08c0e58554"
+  },
+  {
+    "id": "force_comparable",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "30db3265686a471f9a45d83ac19c16943be0319a023c677f0cd48a0dedfcfa19",
+    "restore_verified": true,
+    "log_sha256": "028ecabfcb75cc70be42ef7b42ff9541243810cad4334c847fc51ca8aa8384ed"
+  },
+  {
+    "id": "false_world_truth",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "30db3265686a471f9a45d83ac19c16943be0319a023c677f0cd48a0dedfcfa19",
+    "restore_verified": true,
+    "log_sha256": "903251eb3fda91779240a03a408852352c7b45dc01702847bfac39d05a6569ea"
+  },
+  {
+    "id": "remove_add_gate",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "30db3265686a471f9a45d83ac19c16943be0319a023c677f0cd48a0dedfcfa19",
+    "restore_verified": true,
+    "log_sha256": "da010a20777188e931a15bc9254adb1da83b3934515c26c258c4d1b6095fb69c"
+  },
+  {
+    "id": "raise_atom_cap",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "30db3265686a471f9a45d83ac19c16943be0319a023c677f0cd48a0dedfcfa19",
+    "restore_verified": true,
+    "log_sha256": "3a096a441eaae51cdd8ab93e62e9e820109922cedf57978158b1aedaa5c5ea83"
+  },
+  {
+    "id": "wrong_refusal_status",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "90f8b5156a56630565e4b9b1bcb78b7bbda5a9ed4b1298229516da43100b4094",
+    "restore_verified": true,
+    "log_sha256": "8c1b53d61d9bedc9234187db1b4bfb978264efe1df622bff892c70678095d81c"
+  },
+  {
+    "id": "remove_mount",
+    "rc": 1,
+    "status": "CAUGHT",
+    "original_sha256": "3d34653aa9c9efea5a7af05a2a23ece0f314d066def26e6d8e8e98e680e9018f",
+    "restore_verified": true,
+    "log_sha256": "17d491ff19614370da40cb7834bad22829539707064d8bcab048cae6600bc603"
+  }
+]

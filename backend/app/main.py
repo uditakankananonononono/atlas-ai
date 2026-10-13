@@ -94,3 +94,6 @@ app.include_router(legal_1271_router, prefix="/api/v1")
 
 from app.modules.m20_general_cognitive_worker.human_rights1273_routes import router as legal_1273_router
 app.include_router(legal_1273_router, prefix="/api/v1")
+
+from app.modules.m20_general_cognitive_worker.row849_routes import router as row849_router
+app.include_router(row849_router, prefix="/api/v1")
