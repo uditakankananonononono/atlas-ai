@@ -539,3 +539,20 @@ def test_code_change_branch_reasons(monkeypatch):
     assert check_code_change(ev) == (False, "stdout summary disagrees with junit")
     _fake(monkeypatch, junit=GOOD_XML, stdout="1 passed in 0.1s")
     assert check_code_change(ev) == (True, "tests re-run in sandbox and pass")
+
+
+@needs_sandbox
+def test_host_threads_do_not_exhaust_the_sandbox_process_allowance():
+    import threading
+    stop = threading.Event()
+    threads = [threading.Thread(target=stop.wait) for _ in range(100)]
+    try:
+        for thread in threads:
+            thread.start()
+        assert pc._count_uid_procs() >= len(os.listdir("/proc/self/task"))
+        result = run_sandboxed([sys.executable, "-I", "-B", "-c", "print(42)"], {})
+        assert result.returncode == 0 and result.stdout.strip() == "42", result
+    finally:
+        stop.set()
+        for thread in threads:
+            thread.join()

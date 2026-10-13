@@ -113,7 +113,8 @@ def _count_uid_procs() -> int:
             if p.isdigit():
                 try:
                     if os.stat(f"/proc/{p}").st_uid == uid:
-                        n += 1
+                        # Linux RLIMIT_NPROC counts tasks (threads), not only process leaders.
+                        n += len(os.listdir(f"/proc/{p}/task"))
                 except OSError:
                     pass
     except OSError:
