@@ -1,5 +1,6 @@
 """Owner review, separate continuation and execute permits, durable DAG progress."""
 import asyncio
+from pathlib import Path
 import pytest
 from sqlalchemy import select
 from app.auth.context import TenantContext
@@ -114,7 +115,7 @@ from app.modules.m14_project_builder.reviewed_continuation import ReviewedContin
 engine=create_engine(sys.argv[1]);sessions=sessionmaker(engine,expire_on_commit=False)
 svc=SandboxWaveService(sessions,sys.argv[2]);result=asyncio.run(svc.execute('t','owner',sys.argv[3]));print(json.dumps(result));engine.dispose()
 """
-    run=subprocess.run([sys.executable,'-c',code,str(sessions.kw['bind'].url),str(root),new['id']],capture_output=True,text=True,timeout=30,env={**os.environ,'PYTHONPATH':os.environ['PYTHONPATH']})
+    run=subprocess.run([sys.executable,'-c',code,str(sessions.kw['bind'].url),str(root),new['id']],capture_output=True,text=True,timeout=30,env={**os.environ,'PYTHONPATH':os.pathsep.join(filter(None, [str(Path(__file__).resolve().parents[2] / 'backend'), os.environ.get('PYTHONPATH', '')]))})
     assert run.returncode==0,run.stderr
     result=json.loads(run.stdout);assert result['result']['tasks'][0]['task_id']=='b'
     assert waves.get('t','owner',new['id'])['state']=='awaiting_review'

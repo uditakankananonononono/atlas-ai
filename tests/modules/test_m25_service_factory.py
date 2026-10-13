@@ -129,7 +129,7 @@ def test_actual_http_root_outside_tmp(root,monkeypatch,oidc_auth_headers):
     import tempfile,shutil
     from app.modules.m25_knowledge_copilot_training import routes as r
     monkeypatch.setenv('ATLAS_DEV_NO_AUTH','0');monkeypatch.setenv('ATLAS_ENV','production')
-    path=Path(tempfile.mkdtemp(prefix='m25-root-',dir='/home/sandbox'))
+    path=Path(tempfile.mkdtemp(prefix='m25-root-',dir=Path.home()))
     try:
         path.chmod(0o700);provision(path,'tenant','actor',known_new=True)
         monkeypatch.setattr(r,'_factory',None);monkeypatch.setenv('ATLAS_M25_DURABLE_ROOT',str(path))
