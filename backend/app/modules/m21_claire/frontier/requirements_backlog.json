@@ -1,0 +1,847 @@
+[
+  {
+    "requirement_id": 1,
+    "title": "Persistent research assistant with hypotheses, evidence, experiments and audit",
+    "previous_status": "✅",
+    "current_boundary": "Core SQLite research store, evidence/experiment/skill records and audit; not yet wired into Atlas's production DB.",
+    "state": "needs_verification",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 2,
+    "title": "Continuously scan public web/social content",
+    "previous_status": "🟨",
+    "current_boundary": "Configured RSS/Atom allowlist watcher and Celery Beat; selected OAuth APIs can ingest account-owned/exposed data. No universal or unlimited crawler.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 3,
+    "title": "Read Pinterest and any website/platform",
+    "previous_status": "🟨",
+    "current_boundary": "OAuth Pinterest owned-Pin reader, generic bounded public URL fetcher; each domain and API must be configured/authorized.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 4,
+    "title": "Generate ideas from observed posts/trends/marketing",
+    "previous_status": "🟨",
+    "current_boundary": "Source-diverse trend detection, research, competitor plans, venture hypotheses and content drafts; output is not proof of demand.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 5,
+    "title": "Reach out to people / organizations",
+    "previous_status": "🟨",
+    "current_boundary": "Gmail individual send and LinkedIn/Pinterest single actions after payload-bound human approval; no unsolicited mass-DM engine.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 6,
+    "title": "Search opportunities and rank fit",
+    "previous_status": "🟨",
+    "current_boundary": "Tavily web search, opportunity store/ranker and review packets; no complete global directory or assured eligibility.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 7,
+    "title": "Build application review packet from documents/profile",
+    "previous_status": "✅",
+    "current_boundary": "Opportunity packet and document upload/extraction with source provenance; Common App-specific official schema/export not implemented.",
+    "state": "needs_verification",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 8,
+    "title": "Submit/register automatically for all opportunities",
+    "previous_status": "❌",
+    "current_boundary": "Form helper stops at review; submissions remain user-controlled.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 9,
+    "title": "Learn preferences by quizzing during onboarding",
+    "previous_status": "✅",
+    "current_boundary": "Explicit preference interview with editable/erasable stored answers.",
+    "state": "needs_verification",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 10,
+    "title": "Copy entire human thinking/intelligence",
+    "previous_status": "❌",
+    "current_boundary": "Not scientifically established or implemented; preference/style profile is a limited substitute.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 11,
+    "title": "Implement 1,000 AGI concepts",
+    "previous_status": "🟨",
+    "current_boundary": "1,000+ generated research/product **hypotheses** exist; they are not 1,000 implemented capabilities.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 12,
+    "title": "Large autonomous agent troop",
+    "previous_status": "🟨",
+    "current_boundary": "Configurable multi-role research critique/strategy/evaluation and four-timescale proposal coordinator; not a self-directed fleet with unrestricted tools.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 13,
+    "title": "Analyze successful people, ventures, news, books, podcast/music/video at internet scale",
+    "previous_status": "🟨",
+    "current_boundary": "Search-backed source dossiers, bounded media/document ingestion, authorized account sources; no internet-scale exhaustive database.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 14,
+    "title": "Continuously train foundation model on every online post",
+    "previous_status": "🟨",
+    "current_boundary": "Optional consent/licence-gated LoRA fine-tuning script and corpus manifest; no foundation model training or endless online retraining.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 15,
+    "title": "Deeply analyze product ingredients, founders, positioning, channel and weaknesses",
+    "previous_status": "🟨",
+    "current_boundary": "Search query plans and evidence snippets for competitor analysis; needs verified sources and human synthesis for domain-specific conclusions.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 16,
+    "title": "Invent products/prototype from trends",
+    "previous_status": "🟨",
+    "current_boundary": "Falsifiable venture hypotheses, validation plans and static-site prototypes; does not manufacture physical products or prove demand.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 17,
+    "title": "Build algorithms/tools for any company/industry",
+    "previous_status": "🟨",
+    "current_boundary": "Bounded code-patch proposal agent and isolated Docker test runner; no general-purpose production deployment agent.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 18,
+    "title": "Reproduce human emotion/psychology “to the bone”",
+    "previous_status": "🟨",
+    "current_boundary": "Explicit user choices and writing-style features only; no validated universal emotion simulator.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 19,
+    "title": "Create many accounts/bots and mass-repost altered content",
+    "previous_status": "⛔",
+    "current_boundary": "No deceptive multi-account posting, spam, or fake-engagement automation.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 20,
+    "title": "Discover/install/integrate online tools automatically",
+    "previous_status": "🟨",
+    "current_boundary": "PyPI metadata inspection and integration/coding proposals; no auto-install or auto-execution of arbitrary dependencies.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 21,
+    "title": "Read personal social feeds/likes/comments/follows/starred mail",
+    "previous_status": "🟨",
+    "current_boundary": "User-authorized Pinterest owned Pins, LinkedIn authored posts if scope approved, Instagram professional account's own media/comments where granted, and starred Gmail metadata/snippets. Likes/follow graph and all private content are not supported.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 22,
+    "title": "Improve products based on follows/liked creators",
+    "previous_status": "🟨",
+    "current_boundary": "Source/preference-driven ideation; no arbitrary follow graph, and superiority must be measured against a real baseline.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 23,
+    "title": "Build websites, software, games, anime, virtual people and publish",
+    "previous_status": "🟨",
+    "current_boundary": "Static website prototype, content drafts, code patch proposals; Roblox/game/anime/3D-person publishing pipelines absent.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 24,
+    "title": "Personalized polymath career and college plan",
+    "previous_status": "🟨",
+    "current_boundary": "Bounded goals planner, admissions research prompts and opportunities queue; no verified worldwide admissions rules database.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 25,
+    "title": "Achieve AGI/superintelligence or fully mimic humans",
+    "previous_status": "❌",
+    "current_boundary": "Not implemented; passing software tests is not evidence of AGI.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 26,
+    "title": "Send research to journals/universities/organizations with approval",
+    "previous_status": "🟨",
+    "current_boundary": "Research dossiers plus approved individual Gmail send; no journal-specific manuscript submission API or automatic editorial compliance verifier.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 27,
+    "title": "Essay/olympiad/competition preparation and task management",
+    "previous_status": "🟨",
+    "current_boundary": "Source-linked application packets, opportunity tracking, content drafts and form fill-for-review; no automatic entry/participation or guaranteed essays.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 28,
+    "title": "Win every scholarship/award/competition",
+    "previous_status": "❌",
+    "current_boundary": "External outcomes cannot be guaranteed.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 29,
+    "title": "Produce complete Common App preview from a prior portfolio ZIP",
+    "previous_status": "🟨",
+    "current_boundary": "Document ingestion and structured review packets are available; no previous ZIP is magically read, and no final Common App integration/export is included.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 30,
+    "title": "Ingest huge amounts of data",
+    "previous_status": "🟨",
+    "current_boundary": "Bounded file/feed/search ingestion with provenance; SQLite, no distributed ingestion/object store/production load-test.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 31,
+    "title": "Find every high-school competition",
+    "previous_status": "🟨",
+    "current_boundary": "Search-assisted discovery and tracker; not an exhaustive, verified directory.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 32,
+    "title": "Build personal brand/content and grow audience",
+    "previous_status": "🟨",
+    "current_boundary": "Content drafts/niche hypotheses and approved one-off posting to supported APIs; no live analytics or growth/revenue guarantees.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 33,
+    "title": "Make money/invest/trade/predict markets",
+    "previous_status": "🟨",
+    "current_boundary": "Local paper-only simulator; no broker APIs, live trading or financial-advice guarantee.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 34,
+    "title": "Know all knowledge in the universe and invent any field",
+    "previous_status": "❌",
+    "current_boundary": "Literally exhaustive knowledge is not attainable and no universal intelligence is implemented.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 35,
+    "title": "Emulate conditions like autism/depression/savant syndrome as creativity modes",
+    "previous_status": "⛔",
+    "current_boundary": "No diagnosis- or disease-emulation feature; task preferences are the supported approach.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 36,
+    "title": "Send compute-funding pitches to NASA/CERN/nonprofits with permission",
+    "previous_status": "🟨",
+    "current_boundary": "Research/content drafting and approved individual email path; no vetted funder database or verified funding outcome.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 37,
+    "title": "Independently audit with ChatGPT/DeepSeek/Claude/Perplexity",
+    "previous_status": "🟨",
+    "current_boundary": "Optional OpenAI-compatible/Anthropic providers and multi-role critique; independent model calls require credentials, and these are not external auditor attestations.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 38,
+    "title": "Make user the richest or guarantee fastest success",
+    "previous_status": "❌",
+    "current_boundary": "Not a verifiable or controllable outcome.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 39,
+    "title": "Compare up to 100 countries, all relevant colleges, full-ride aid and tests",
+    "previous_status": "🟨",
+    "current_boundary": "Search-assisted admissions research/queue; no authoritative, maintained 100-country aid/admissions database or eligibility guarantee.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 40,
+    "title": "Produce 5,000+ page masterplan",
+    "previous_status": "❌",
+    "current_boundary": "Not produced; length is not a validity measure.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 41,
+    "title": "Scan Instagram, LinkedIn, starred email and every network for competitions, then fill/submit",
+    "previous_status": "🟨",
+    "current_boundary": "Authorized narrow connector ingestion plus opportunity search and form-fill preview; no all-network sweep and no auto-submit.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 42,
+    "title": "Invent reusable abstractions and test held-out transfer",
+    "previous_status": "🟨",
+    "current_boundary": "Bounded symbolic representation search plus separated training/validation/confirmation splits in core research lab.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 43,
+    "title": "Counterfactual world-model compiler",
+    "previous_status": "🟨",
+    "current_boundary": "Candidate counterfactuals/interventions on supplied synthetic/suitable data; no universal causal-model compiler.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 44,
+    "title": "Fast/deliberative/learning/strategic timescale cognition",
+    "previous_status": "🟨",
+    "current_boundary": "Four-timescale coordinator persists bounded proposals; independent continuous schedulers and actual tools execution remain integration work.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 45,
+    "title": "Verified skill genome with composition and evolution",
+    "previous_status": "🟨",
+    "current_boundary": "Declarative allowlisted skills/tests in core bundle; not a general automatically evolving/composing skill language.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 46,
+    "title": "Information-value learning engine",
+    "previous_status": "🟨",
+    "current_boundary": "Heuristic value ranking; not a calibrated learned policy for uncertainty, costs and expected transfer.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 47,
+    "title": "Proof-carrying cognition for every consequential action/claim",
+    "previous_status": "🟨",
+    "current_boundary": "Provenance, audit hashes, test outputs and exact action permits; no formal proof for every claim.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 48,
+    "title": "Cross-domain transfer discovery and validation",
+    "previous_status": "🟨",
+    "current_boundary": "Bounded transfer evaluator and held-out tests; no automatic universal transfer across arbitrary disciplines.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 49,
+    "title": "Invent new representational dimensions/latent-space phase transitions",
+    "previous_status": "🟨",
+    "current_boundary": "Symbolic feature grammar search, not arbitrary learned latent dimensions.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 50,
+    "title": "Millions of diverse candidate minds selected for collective contribution",
+    "previous_status": "🟨",
+    "current_boundary": "Bounded cognitive configurations/multi-role models; not millions of trained models or architecture-evolution system.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 51,
+    "title": "Invent entirely new experimental operators",
+    "previous_status": "🟨",
+    "current_boundary": "Finite declarative intervention proposals; no unrestricted learned experimental ontology.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 52,
+    "title": "Explicit competence/ignorance map",
+    "previous_status": "🟨",
+    "current_boundary": "Records domain outcomes and weak-evidence areas; does not guarantee identifying unformulable questions.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 53,
+    "title": "Machine-native emergent mathematical formalisms",
+    "previous_status": "🟨",
+    "current_boundary": "Finite arithmetic DSL/formula search; no general new mathematics discovery guarantee.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 54,
+    "title": "Evolve evaluation criteria, validate them independently",
+    "previous_status": "🟨",
+    "current_boundary": "Evaluator proposes missing metrics; independent held-out/third-party validation remains a research task.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 55,
+    "title": "Unified representation + experimental + learning discovery loop",
+    "previous_status": "🟨",
+    "current_boundary": "A bounded research coordinator combines some searches; no autonomous self-training or AGI.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 56,
+    "title": "Analyze leaders/products/businesses and make improved alternatives",
+    "previous_status": "🟨",
+    "current_boundary": "Search-backed competitor plans and source-linked hypothesis pipeline; not a universal business-building system.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 57,
+    "title": "Secret/classified government/elite project access",
+    "previous_status": "⛔",
+    "current_boundary": "No unauthorized/classified access; only properly accessible public sources may be researched.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 58,
+    "title": "Generate viral apps/content on thousands/millions of niches",
+    "previous_status": "🟨",
+    "current_boundary": "Combinatorial niche idea hypotheses and content drafts; no viral certainty or million-niche distribution engine.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 59,
+    "title": "Autonomously build digital companies with worker bots across all niches",
+    "previous_status": "🟨",
+    "current_boundary": "Planning, code proposals, prototypes and research roles; no autonomous legal/business/finance/deployment worker organization.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 60,
+    "title": "Read every literature item/dataset and discover universal algorithms",
+    "previous_status": "🟨",
+    "current_boundary": "Search-based research and bounded formula discovery; no exhaustive literature/data universe.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 61,
+    "title": "Merge strange/fictional concepts into testable prototypes",
+    "previous_status": "🟨",
+    "current_boundary": "Venture hypotheses and prototype briefs/static sites; general multimodal product realization is absent.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 62,
+    "title": "Build and publish Roblox games, anime, agencies, virtual worlds, synthetic influencers",
+    "previous_status": "🟨",
+    "current_boundary": "Static web prototypes/content plans only; those format-specific creator and publisher systems remain absent.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 63,
+    "title": "Affiliate marketing and monetization",
+    "previous_status": "❌",
+    "current_boundary": "No affiliate account, commerce tracking, payment or revenue system.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 64,
+    "title": "Build physical devices/products across all industries",
+    "previous_status": "❌",
+    "current_boundary": "No universal CAD/CAE, manufacturing, safety certification or supply-chain capability.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  },
+  {
+    "requirement_id": 65,
+    "title": "Try every possibility relentlessly until guaranteed goal achieved",
+    "previous_status": "❌",
+    "current_boundary": "Work is deliberately bounded, tested, rate-limited and approval-gated; there is no guarantee of a goal.",
+    "state": "open",
+    "acceptance_evidence": [],
+    "verification_gates": [
+      "automated_test",
+      "integration_test",
+      "observed_result"
+    ]
+  }
+]
