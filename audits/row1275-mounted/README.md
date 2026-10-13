@@ -1,7 +1,7 @@
 # Row1275 dedicated mounted arbitration bookkeeping
 
-READY-FOR-AUDIT, not independently accepted, deployed or literal completion.
-Base134e0dcd. Python3.12.14. Existing scipy available; cvxpy1.9.3 installed in
+Scoped mounted bookkeeping independently reviewed; literal Arbitration remains PARTIAL.
+Historical builder base:134e0dcd. Python3.12.14. Existing scipy available; cvxpy1.9.3 installed in
 local venv successfully, no pyproject/dependency lock changes. App imports and
 mounted tests executed through actual app.main, not a non-mounted probe.
 
@@ -12,8 +12,7 @@ Shared route remains unchanged and template-only. Production OIDC signature test
 use local key fixtures, no public identity/provider calls. Output identity comes
 from authenticated principal; tenant/actor input keys refused by engine shape.
 
-Mounted RED before route creation:14FAILED1PASSED, route absent404 on authenticated
-requests; unauthenticated request already401. First GREEN combined201passed.
+Initial 15-case mounted RED:14 failures plus1 auth PASS. Final19-case selector independently rerun without mount on current composition:18 HTTP404 assertion failures plus1 auth PASS; mounted19P. First GREEN combined201passed.
 After decoder-specific pins and cap/date tests: combined205passed, one existing
 Starlette/httpx deprecation warning. Final mounted selector19passed. Eight named
 route/mount operators caught with rc1+FAILED IDs; restore SHAs recorded. No
@@ -58,3 +57,12 @@ Initial partial log provenance (raw originals private, delivered portable normal
 - initial-partial/A1275-M3.log: original `97fe0247ef08bbe4b35063d493388d536ec80363a4b8e5fd3cfbd4b58a3c7a81`; delivered `1d1b74dcaa4356daba6e56b3a47098b60ac5d9e5781718ee7404bd6867132f08`.
 - initial-partial/A1275-M4.log: original `049536c0145058936b75f0ef957958bb0edc9d80b7f60e57622e0c784016cc4d`; delivered `230292b0bc1f85a1f213247265ae178d4ce4fc7cf047510851ae7e17e9c90429`.
 - initial-partial/baseline.log: original `c711dd3706f50a517b42dbd1cda6b8d3a7e5e5aa28de51ae44631e39bf0c3c01`; delivered `0c6d5244470d123f2437955a67cb0d44107caa1822b33b901f0a1938e16bdfff`.
+
+Integrator replay on the0f477cb4-based sequential1284 composition: all eight
+released route/mount operators CAUGHT, original bytes restored. Existing cvxpy
+>=1.6,<2 dependency is declared in pyproject.toml; CI installs .[dev]. The contract's
+hermetic stdlib line describes only the standalone stage; mounted addendum depends
+on FastAPI/cvxpy. The32768 cap bounds retained streamed bytes, not transport or total
+memory. Original builder logs were not supplied; normalization hashes document
+provenance but do not independently recover those originals. Pin refresh is deferred
+to the single composed inventory after all six related routes are applied.

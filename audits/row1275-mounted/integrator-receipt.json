@@ -1,0 +1,232 @@
+{
+  "base": "3aff112fff503f0febe98c5d273a8d6dd491fc58",
+  "tree": "0bb5240c188fa998563f1445408408f6b219a5a6",
+  "file_sha256": {
+    "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+    "backend/app/modules/m20_general_cognitive_worker/routes.py": "0bcff9eb471f1c75f3d9cba97eb3f2ab70de1b83b616e28d0f62cb31826a7e5c",
+    "tests/modules/test_m20_arbitration1275_mounted.py": "ad49cd5d7450e3a34c40a52fe3c3b84fafec9af858c8d73e6f8a6576d71c72ff",
+    "backend/app/modules/m20_general_cognitive_worker/arbitration1275.py": "81896d4ad37802c3f0092ade0d739480fe3d8aa58c5b7341ff1fdd01f922cc7f"
+  },
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "tests/modules/test_m20_arbitration1275_mounted.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "normalization": "Interpreter normalized to python, private workspace prefixes to logical label, trailing whitespace trimmed. Raw originals private; listed changed lines and raw/delivered hashes.",
+  "baseline": {
+    "rc": 0,
+    "failed_ids": [],
+    "caught": false,
+    "log": "baseline.log",
+    "original_sha256": "da6e7ea4cbdb758bfc6b98fe916b4e20e7596b118bde31c5c2a80f8193530001",
+    "delivered_sha256": "da6e7ea4cbdb758bfc6b98fe916b4e20e7596b118bde31c5c2a80f8193530001",
+    "normalized_lines": []
+  },
+  "mutants": [
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_actual_dedicated_engine_output_and_tenant_identity",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_same_dedicated_items_payload_unknown_vocab_refused",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[decide-CONCLUSION_REFUSED]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[send-EXTERNAL_EFFECT_REFUSED]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[tenant_id-UNKNOWN_KEY]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[actor_id-UNKNOWN_KEY]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[null]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[[]]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{broken]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[\\xff]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{\"jurisdiction\":NaN}]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{\"items\":[],\"items\":[]}]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_media_and_body_byte_cap",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_unknown_missing_source_and_authority_flags",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[items-TOO_MANY:items]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[sources-TOO_MANY:source_ids]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[date-BAD_DATE:as_of]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_duplicate_and_nonfinite_are_decoder_refusals_on_valid_payload"
+      ],
+      "caught": true,
+      "log": "A1275-M1.log",
+      "original_sha256": "5b79820a86a92552ec7ecf76174fb512a2992ba5d981a170f124a1013c327755",
+      "delivered_sha256": "5b79820a86a92552ec7ecf76174fb512a2992ba5d981a170f124a1013c327755",
+      "normalized_lines": [],
+      "id": "A1275-M1",
+      "target": "backend/app/modules/m20_general_cognitive_worker/routes.py",
+      "old": "router.include_router(arbitration_router1275)",
+      "new": "",
+      "before_sha256": "0bcff9eb471f1c75f3d9cba97eb3f2ab70de1b83b616e28d0f62cb31826a7e5c",
+      "mutant_sha256": "fb6287e98f85f80664fbeca186f3bf7555ea80cac4167c316d78b1fb17c64c28",
+      "restored_sha256": "0bcff9eb471f1c75f3d9cba97eb3f2ab70de1b83b616e28d0f62cb31826a7e5c"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_media_and_body_byte_cap"
+      ],
+      "caught": true,
+      "log": "A1275-M2.log",
+      "original_sha256": "cdd61008ae78ebb2f4f24c8f3ba53e297011202bb99fd10d03a0bf397d0715af",
+      "delivered_sha256": "cdd61008ae78ebb2f4f24c8f3ba53e297011202bb99fd10d03a0bf397d0715af",
+      "normalized_lines": [],
+      "id": "A1275-M2",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "if media!='application/json':",
+      "new": "if False:",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "8c77806a679d0c066f663f951bfb80049e78bdd6c813295b5d8478dc51dc7897",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_media_and_body_byte_cap"
+      ],
+      "caught": true,
+      "log": "A1275-M3.log",
+      "original_sha256": "c125e99e94496ba6aef6c3366d9af499158733e2826a92405a68164f6dfbb141",
+      "delivered_sha256": "c125e99e94496ba6aef6c3366d9af499158733e2826a92405a68164f6dfbb141",
+      "normalized_lines": [],
+      "id": "A1275-M3",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "if len(body)+len(chunk)>MAX_BODY_BYTES:",
+      "new": "if False:",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "2fc6d59770da5153492fc5635b948891b36c11b850a94a03f97c76884b7b5f35",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_duplicate_and_nonfinite_are_decoder_refusals_on_valid_payload"
+      ],
+      "caught": true,
+      "log": "A1275-M4.log",
+      "original_sha256": "7b262d6826f63d5e48696dabaebd3e0b8fa7039614e8ed0afe1f97f9708b1e51",
+      "delivered_sha256": "7b262d6826f63d5e48696dabaebd3e0b8fa7039614e8ed0afe1f97f9708b1e51",
+      "normalized_lines": [],
+      "id": "A1275-M4",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "if key in result:",
+      "new": "if False:",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "c72fbf9fdaa9c21bf79741eaa610c679add2a064f8ce8b6068ea6b956e9978bf",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_duplicate_and_nonfinite_are_decoder_refusals_on_valid_payload"
+      ],
+      "caught": true,
+      "log": "A1275-M5.log",
+      "original_sha256": "d38111b6e41fa3273fbc2ca9dba9db00a93dbb37adf66005c78e3a635701c1c2",
+      "delivered_sha256": "ec05886d11ed79b79c8f8369cee37934f03fc8f24e8bc9fa1131d2f918bfd37c",
+      "normalized_lines": [
+        {
+          "line": 7,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M5",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "def _reject_constant(value):raise ValueError('non-finite JSON number')",
+      "new": "def _reject_constant(value):return 0",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "d6503b953cd4b5547c567d6fb3b6ab30aa1ddf10b3c2ee45fb6782dcaf575cda",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_same_dedicated_items_payload_unknown_vocab_refused",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[decide-CONCLUSION_REFUSED]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[send-EXTERNAL_EFFECT_REFUSED]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[tenant_id-UNKNOWN_KEY]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[actor_id-UNKNOWN_KEY]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[null]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[[]]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[items-TOO_MANY:items]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[sources-TOO_MANY:source_ids]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[date-BAD_DATE:as_of]"
+      ],
+      "caught": true,
+      "log": "A1275-M6.log",
+      "original_sha256": "61557210a6ae6de7c50eea237dfd42770f77f87f37c6f9734847605f294c0584",
+      "delivered_sha256": "61557210a6ae6de7c50eea237dfd42770f77f87f37c6f9734847605f294c0584",
+      "normalized_lines": [],
+      "id": "A1275-M6",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "HTTPException(422,str(exc))",
+      "new": "HTTPException(400,str(exc))",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "41bf0785b03d1287cc08154e09888ea6eaacb32fc8f0751178316d24e24b44ef",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_actual_dedicated_engine_output_and_tenant_identity"
+      ],
+      "caught": true,
+      "log": "A1275-M7.log",
+      "original_sha256": "d68f120e98fdc0dc8c7fb2175a957147a6c9a250fb7aaaa0a1bd8cad61f804b5",
+      "delivered_sha256": "1caaa1c531ec110195b05bcade244749d6927d4f69fb8288fc8fdc9e270d1a71",
+      "normalized_lines": [
+        {
+          "line": 7,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M7",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "'tenant_id':principal.tenant_id",
+      "new": "'tenant_id':'wrong'",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "7814445549122ca70e20b023906872f0f40c94af91f0f2525c0e11d26fefc9a2",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_actual_dedicated_engine_output_and_tenant_identity"
+      ],
+      "caught": true,
+      "log": "A1275-M8.log",
+      "original_sha256": "695315b82e14febab52c4a36eebfe137d62979aa57869378aa8407e61280067a",
+      "delivered_sha256": "7e4592a95884b073070ebbe251b4e561f61d8e1dbd1edab85a55864b01704ef8",
+      "normalized_lines": [
+        {
+          "line": 7,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M8",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "'actor_id':principal.actor_id",
+      "new": "'actor_id':'wrong'",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "62ca930d98c98114e1669f9c6d9da1decb691fbb950fe1f27f7d9eedbc860bef",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    }
+  ],
+  "restored_baseline": {
+    "rc": 0,
+    "failed_ids": [],
+    "caught": false,
+    "log": "restored-baseline.log",
+    "original_sha256": "2b639838737f1acaeebd65167b9f477823e4dc537d7c7fb9ac6e1f58ca141d43",
+    "delivered_sha256": "2b639838737f1acaeebd65167b9f477823e4dc537d7c7fb9ac6e1f58ca141d43",
+    "normalized_lines": []
+  }
+}
