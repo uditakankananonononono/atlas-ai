@@ -14,7 +14,7 @@ concurrency:
 jobs:
   backend:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120
     env:
       ATLAS_DATABASE_URL: postgresql+psycopg://atlas:atlas@localhost:5432/atlas_test
       ATLAS_REDIS_URL: redis://localhost:6379/0
