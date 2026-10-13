@@ -254,7 +254,7 @@ def test_open_questions_passthrough_and_observed_outputs_skip_empty():
     assert r['result']['next_nodes'] == [] and 'next_nodes' not in r['evaluation']['observed_outputs']
 
 
-def test_all_fifty_features_run_with_boundary_text():
+def test_feature_registry_keys_are_exactly_1460_through_1509():
     assert set(FEATURES) == set(range(1460, 1510))
 
 

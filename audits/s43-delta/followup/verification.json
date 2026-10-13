@@ -1,0 +1,104 @@
+{
+  "base_commit": "2f89b9fed0d1bc325de39b3ce882d53528967d00",
+  "retained_r2_junit_sha256": "aa3979677ddd2a37e6265c5c180bf2e795a38ad969eebcb3551415806a7a5f33",
+  "retained_r2_case_counts": {
+    "test_c35_waiver_drafts_s43": 132,
+    "test_c35_waiver_drafts_s43_delta": 26,
+    "test_s43_delta_replay_driver": 1
+  },
+  "retained_r2_total": 159,
+  "replay_selector_total": 158,
+  "additional_release_case": "test_s43_delta_replay_driver::test_missing_audit_parent_created_and_output_not_overwritten",
+  "normalization_pairs_checked": [
+    {
+      "file": "original-sites-fresh/year_zero.log",
+      "original_sha256": "d975e0e06d2321532134f7800fd52010dc482a68cb5d378a14be63331cf5fd8b",
+      "delivered_sha256": "262f4c4486e9723a6502b1c634a9fb8056512bf84eb49536a4dabcc27e227089",
+      "changed_lines": 2,
+      "normalization_verified": true
+    },
+    {
+      "file": "original-sites-fresh/strict_recipient.log",
+      "original_sha256": "86c96c6601dcb00bfec20385276d256ea0b59504b2b82e714b05c81a8cadb92c",
+      "delivered_sha256": "82c535f84ace2b138ac9512d256abf3ecde496c3651266d9028c4b501a3561fa",
+      "changed_lines": 16,
+      "normalization_verified": true
+    },
+    {
+      "file": "original-sites-fresh/recipient_invalid_flag.log",
+      "original_sha256": "50a69ad4dd13451e0d72561c42e18c6de0875b65f47f4e54db3c25cc530fd8b4",
+      "delivered_sha256": "faba53e43563f58b6a39f2070ff8a6adc631719779dcbdcd654203bfe2bee9a7",
+      "changed_lines": 16,
+      "normalization_verified": true
+    },
+    {
+      "file": "original-sites-fresh/year_minimum_offbyone.log",
+      "original_sha256": "55ac79fbc97b28c567b0a4a165a69dcd5fe77c86565f538d65a6fff6cfa2d9c6",
+      "delivered_sha256": "844d5d71ac0edf29bb868d39f65fd4a34cf4e87ffd6693cc8a2fff8abaab2c19",
+      "changed_lines": 3,
+      "normalization_verified": true
+    },
+    {
+      "file": "original-sites-fresh/baseline.log",
+      "original_sha256": "9dae4229a760713660bc7fc66a2201256233cf880e71d7662279bc29d38343b2",
+      "delivered_sha256": "9dae4229a760713660bc7fc66a2201256233cf880e71d7662279bc29d38343b2",
+      "changed_lines": 0,
+      "normalization_verified": true
+    },
+    {
+      "file": "current-sites-fresh/controls_disabled.log",
+      "original_sha256": "55db42ce01648b332f5ae0d2edebb69ad0da6003fcdf2ec252cd4a4fde1e5beb",
+      "delivered_sha256": "95d8fbbc0c2f4074b601194b3b3aaf8ca6ea7915b72b94652aae479c85848538",
+      "changed_lines": 14,
+      "normalization_verified": true
+    },
+    {
+      "file": "current-sites-fresh/year_zero.log",
+      "original_sha256": "0146271c81dc7148a66d4ea400fae425c096f95025384be52171f6b8a5d68323",
+      "delivered_sha256": "816b9b47b4d556367dc4ce6eed4a993320a05819bf85115246fdd751c2b2eaf9",
+      "changed_lines": 2,
+      "normalization_verified": true
+    },
+    {
+      "file": "current-sites-fresh/ascii_control_regression.log",
+      "original_sha256": "d73f51004ad8f084f23f6668bd3fa9c42a976a4b690d6c65fe8bb310181f7555",
+      "delivered_sha256": "df7acc84779f5cdc468ac551059320df7052f6fdbc9df829e6e885b438560c9c",
+      "changed_lines": 6,
+      "normalization_verified": true
+    },
+    {
+      "file": "current-sites-fresh/strict_recipient.log",
+      "original_sha256": "686bb603ac269b3f2952bf168f8674cf0381ebdfe7b1e4ca8eb04e389e35d52f",
+      "delivered_sha256": "3f94a92cf5ed57cfa64385b8962ed4ffab074f3aff918da16b81977339bce30d",
+      "changed_lines": 16,
+      "normalization_verified": true
+    },
+    {
+      "file": "current-sites-fresh/recipient_invalid_flag.log",
+      "original_sha256": "c04d2bc6b61a3f7e80a838ef2232c2029ff2423eb75daa78d53d5836b17025b5",
+      "delivered_sha256": "a5064bac0089f67e926186fe11eb7e8d6d9a7bbe03232def3207ec7f82c6ab3d",
+      "changed_lines": 16,
+      "normalization_verified": true
+    },
+    {
+      "file": "current-sites-fresh/year_minimum_offbyone.log",
+      "original_sha256": "b279e286656be4551ecc80e2b1615cad5f8ca23f365cac22a37406ab2fed3cf7",
+      "delivered_sha256": "5795a19300db0f863dc3934071d7cdb7168a646bc6b3fdab5f3090310430fab1",
+      "changed_lines": 3,
+      "normalization_verified": true
+    },
+    {
+      "file": "current-sites-fresh/baseline.log",
+      "original_sha256": "f8e3796578ee04b16087464b7b062f6f71fb358a54c9e967fa69aa39001f1fa3",
+      "delivered_sha256": "f8e3796578ee04b16087464b7b062f6f71fb358a54c9e967fa69aa39001f1fa3",
+      "changed_lines": 0,
+      "normalization_verified": true
+    }
+  ],
+  "changed_lines_total": 94,
+  "limits": [
+    "private originals rechecked locally, not delivered for independent peer replay",
+    "fresh original-site logs are not missing historical logs",
+    "retained release XML is local evidence, not authenticated final-tree certification"
+  ]
+}

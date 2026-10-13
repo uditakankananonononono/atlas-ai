@@ -1,6 +1,11 @@
 # Social receipt platform binding
 
-Base: 27511b4a. The successful callback returns the platform of the actual constructed
+Implementation/replay source base: 27511b4a. Integration base: 8d659f5d
+(the direct parent of landed commit d704e725). The former is an ancestor of
+the latter, not the final apply base; these are distinct provenance labels.
+No historical receipt is reclassified or rerun by this wording correction.
+
+The successful callback returns the platform of the actual constructed
 PublishRequest alongside its outcome; PublishRecord uses that captured request platform,
 not entry.platform or adapter-result.platform. Canonical factory/request selection is
 preserved. The custom-gate Twitter-to-LinkedIn probe now checks both returned and stored
