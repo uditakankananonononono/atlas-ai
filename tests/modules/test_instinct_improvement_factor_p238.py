@@ -79,8 +79,41 @@ class ImprovementFactorTest(unittest.TestCase):
         mutated[0]["after"] = "999999999"
         v = self.m.verify(mutated, r["result"])
         self.assertFalse(v["verified"])
-        self.assertIn("fingerprint", v["failed"])
+        self.assertIn("metrics_sha256", v["failed"])
 
+
+    def test_verify_compares_every_field(self):
+        data = [metric()]
+        r = self.m.run(copy.deepcopy(data))
+        result = r["result"]
+        self.assertTrue(r["verification"]["verified"])
+        for field in self.m._KEYS:
+            tampered = copy.deepcopy(result)
+            v = tampered[field]
+            if type(v) is bool:
+                tampered[field] = not v
+            elif type(v) is int:
+                tampered[field] = v + 1
+            elif type(v) is str:
+                tampered[field] = v + " TAMPERED"
+            elif type(v) is list:
+                tampered[field] = [] if v else ["TAMPERED"]
+            elif type(v) is dict:
+                tampered[field] = dict(v, tampered=1)
+            vv = self.m.verify(copy.deepcopy(data), tampered)
+            self.assertFalse(vv["verified"], field)
+            self.assertIn(field, vv["failed"], field)
+
+    def test_verify_catches_nested_asserted_tamper(self):
+        data = [metric()]
+        r = self.m.run(copy.deepcopy(data))
+        nested = copy.deepcopy(r["result"])
+        claims = nested["doc_claims"]
+        self.assertTrue(claims and "asserted" in claims[0])
+        claims[0]["asserted"] = not claims[0]["asserted"]
+        vv = self.m.verify(copy.deepcopy(data), nested)
+        self.assertFalse(vv["verified"])
+        self.assertIn("doc_claims", vv["failed"])
 
 if __name__ == "__main__":
     unittest.main()
