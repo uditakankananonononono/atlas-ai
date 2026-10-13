@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/"backend/app/modules/m20_general_cognitive_worker/c30_b1"))
 import unittest
-from chat_bind import ChatBinder, Refused, make_snapshot, split_spans
+from app.modules.m20_general_cognitive_worker.c30_b1.chat_bind import ChatBinder, Refused, make_snapshot, split_spans
 
 
 def msg(i='m1', body='Build Atlas. Test it!', **kw):
@@ -123,7 +123,7 @@ if __name__=='__main__':unittest.main()
 class DatabaseTests(unittest.TestCase):
     def test_recomputed_from_db(self):
         import sqlite3
-        from db_chat_bind import ingest, reconcile
+        from app.modules.m20_general_cognitive_worker.c30_b1.db_chat_bind import ingest, reconcile
         db=sqlite3.connect(':memory:')
         db.execute('CREATE TABLE phone_messages (message_id TEXT, body TEXT, ts TEXT, author TEXT, service TEXT, conversation_id TEXT)')
         for row in (msg(),dict(msg('agent'),author='agent'),dict(msg('internal'),service='agent_chat')):
@@ -163,7 +163,7 @@ class AdditionalTests(unittest.TestCase):
         with self.assertRaises(Refused):b.bind(b.spans[0]['span_id'],'STOPPED_BY_USER',dict(pin=b.spans[1]['span_id'],topic='Atlas'))
     def test_db_offsets(self):
         import sqlite3
-        from db_chat_bind import ingest
+        from app.modules.m20_general_cognitive_worker.c30_b1.db_chat_bind import ingest
         db=sqlite3.connect(':memory:')
         db.execute('CREATE TABLE phone_messages (message_id TEXT, body TEXT, ts TEXT, author TEXT, service TEXT, conversation_id TEXT)')
         db.execute('INSERT INTO phone_messages VALUES (?,?,?,?,?,?)',('m1','Build','2026-10-01T15:30:00+05:30','user','WhatsApp','owner'))
@@ -171,7 +171,7 @@ class AdditionalTests(unittest.TestCase):
 
 class RouteTests(unittest.TestCase):
     def test_tenants_and_paths(self):
-        from route_adapter import Routes
+        from app.modules.m20_general_cognitive_worker.c30_b1.route_adapter import Routes
         r=Routes({})
         with self.assertRaises(Refused):r.dispatch('POST','/api/v1/c30/chat-bind/run','',snap([msg()]))
         with self.assertRaises(Refused):r.dispatch('GET','/api/v1/c30/chat-bind/report','b')
@@ -255,7 +255,7 @@ class AuditRepairTests(unittest.TestCase):
 
     def test_invalid_db_timestamps_are_not_dropped(self):
         import sqlite3
-        from db_chat_bind import ingest
+        from app.modules.m20_general_cognitive_worker.c30_b1.db_chat_bind import ingest
         for timestamp in (None,'garbage','2026-12-01T10:00:00+00:00'):
             db=sqlite3.connect(':memory:')
             db.execute('CREATE TABLE phone_messages (message_id TEXT, body TEXT, ts TEXT, author TEXT, service TEXT, conversation_id TEXT)')

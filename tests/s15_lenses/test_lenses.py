@@ -2,7 +2,7 @@ import unittest
 import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/"backend/app/modules/m20_general_cognitive_worker/c31_s15"))
-from lenses import run, Refused, DEFINITIONS
+from app.modules.m20_general_cognitive_worker.c31_s15.lenses import run, Refused, DEFINITIONS
 
 class Tests(unittest.TestCase):
     def test_lenses_distinct_deterministic(self):
@@ -87,7 +87,7 @@ class MutationRepair(unittest.TestCase):
 
 class RoutesTests(unittest.TestCase):
     def test_route_tenant_and_guard(self):
-        from route_adapter import Routes
+        from app.modules.m20_general_cognitive_worker.c31_s15.route_adapter import Routes
         r=Routes({},lambda action:None)
         with self.assertRaises(Refused):r.dispatch('POST','/api/v1/c31/lenses/run','',dict(idea='garden',lenses=['systemizing']),as_of='2026-10-11')
         a=r.dispatch('POST','/api/v1/c31/lenses/run','a',dict(idea='garden',lenses=['systemizing']),as_of='2026-10-11')
