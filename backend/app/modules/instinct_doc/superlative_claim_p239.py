@@ -109,25 +109,17 @@ _KEYS = {"feature", "source_lines", "doc_line", "measure",
 
 
 def verify(comparisons, result):
-    """Re-audit from the same comparisons and compare every field;
-    deterministic, internal consistency only."""
-    checks = ["structure", "exact_keys", "fingerprint", "coverage", "verdict"]
+    """Recompute from the same comparisons and compare EVERY field in _KEYS;
+    failed names the exact fields that differ. Deterministic, internal
+    consistency only."""
+    checks = ["structure", "exact_keys", "field_equality"]
     if type(result) is not dict:
         return {"verified": False, "failed": ["structure"], "checks": checks}
     if set(result) != _KEYS:
         return {"verified": False, "failed": ["exact_keys"], "checks": checks}
     expected = audit(comparisons)
-    failed = []
-    if result.get("comparisons_sha256") != expected["comparisons_sha256"]:
-        failed.append("fingerprint")
-    if (result.get("comparison_rows") != expected["comparison_rows"]
-            or result.get("subjects_covered") != expected["subjects_covered"]
-            or result.get("comparisons") != expected["comparisons"]):
-        failed.append("coverage")
-    if result.get("verdict") != expected["verdict"]:
-        failed.append("verdict")
-    return {"verified": not failed, "failed": sorted(set(failed)),
-            "checks": checks}
+    failed = [key for key in sorted(_KEYS) if result[key] != expected[key]]
+    return {"verified": not failed, "failed": failed, "checks": checks}
 
 
 def run(comparisons):
