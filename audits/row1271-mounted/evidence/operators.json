@@ -1,0 +1,56 @@
+[
+  {
+    "id": "mutant-accepts_invalid",
+    "path": "backend/app/modules/m20_general_cognitive_worker/international_law1271_routes.py",
+    "old": "        raise HTTPException(status_code=422, detail=str(exc)) from None",
+    "new": "        return {'error': str(exc)}"
+  },
+  {
+    "id": "mutant-authority_date_ignored",
+    "path": "backend/app/modules/m20_general_cognitive_worker/international_law1271.py",
+    "old": "                      \"effective_after_as_of\": eff > as_of, \"independently_verified\": False})",
+    "new": "                      \"effective_after_as_of\": False, \"independently_verified\": False})"
+  },
+  {
+    "id": "mutant-external_effect",
+    "path": "backend/app/modules/m20_general_cognitive_worker/international_law1271.py",
+    "old": "        \"obligation_determined\": False, \"legal_conclusion\": None, \"filing_or_external_effect\": False,",
+    "new": "        \"obligation_determined\": False, \"legal_conclusion\": None, \"filing_or_external_effect\": True,"
+  },
+  {
+    "id": "mutant-legal_conclusion",
+    "path": "backend/app/modules/m20_general_cognitive_worker/international_law1271.py",
+    "old": "        \"obligation_determined\": False, \"legal_conclusion\": None, \"filing_or_external_effect\": False,",
+    "new": "        \"obligation_determined\": False, \"legal_conclusion\": \"determined\", \"filing_or_external_effect\": False,"
+  },
+  {
+    "id": "mutant-missing_source_ignored",
+    "path": "backend/app/modules/m20_general_cognitive_worker/international_law1271.py",
+    "old": "            if r not in ids and r not in missing:",
+    "new": "            if False:"
+  },
+  {
+    "id": "mutant-mount_removed",
+    "path": "backend/app/main.py",
+    "old": "\nfrom app.modules.m20_general_cognitive_worker.international_law1271_routes import router as legal_1271_router\napp.include_router(legal_1271_router, prefix=\"/api/v1\")",
+    "new": ""
+  },
+  {
+    "id": "mutant-unknown_classification_ignored",
+    "path": "backend/app/modules/m20_general_cognitive_worker/international_law1271.py",
+    "old": "        unclassified = [f for f in _CLASSIFY_FIELDS if vals[f] == \"unknown\"]",
+    "new": "        unclassified = [f for f in _CLASSIFY_FIELDS if False]"
+  },
+  {
+    "id": "mutant-wrong_method",
+    "path": "backend/app/modules/m20_general_cognitive_worker/international_law1271_routes.py",
+    "old": "@router.post('/international-law-1271/support', dependencies=[Depends(require_tenant)])",
+    "new": "@router.get('/international-law-1271/support', dependencies=[Depends(require_tenant)])"
+  },
+  {
+    "id": "mutant-wrong_route",
+    "path": "backend/app/modules/m20_general_cognitive_worker/international_law1271_routes.py",
+    "old": "@router.post('/international-law-1271/support', dependencies=[Depends(require_tenant)])",
+    "new": "@router.post('/international-law-1271/wrong', dependencies=[Depends(require_tenant)])"
+  }
+]
