@@ -80,3 +80,6 @@ from app.modules.m20_general_cognitive_worker.conflicts_of_interest1292_routes i
 app.include_router(row1292_router)
 from app.modules.m20_general_cognitive_worker.legal_malpractice1294_routes import router as row1294_router
 app.include_router(row1294_router)
+
+from app.modules.m20_general_cognitive_worker.due_process1265_routes import router as legal_1265_router
+app.include_router(legal_1265_router, prefix="/api/v1")

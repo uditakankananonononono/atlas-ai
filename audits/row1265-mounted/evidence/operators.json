@@ -1,0 +1,56 @@
+[
+  {
+    "id": "mutant-accepts_invalid",
+    "path": "backend/app/modules/m20_general_cognitive_worker/due_process1265_routes.py",
+    "old": "        raise HTTPException(status_code=422, detail=str(exc)) from None",
+    "new": "        return {'error': str(exc)}"
+  },
+  {
+    "id": "mutant-date_order_reversed",
+    "path": "backend/app/modules/m20_general_cognitive_worker/due_process1265.py",
+    "old": "    return \"before\" if a < b else \"after\" if a > b else \"same_day\"",
+    "new": "    return \"after\" if a < b else \"before\" if a > b else \"same_day\""
+  },
+  {
+    "id": "mutant-external_effect",
+    "path": "backend/app/modules/m20_general_cognitive_worker/due_process1265.py",
+    "old": "        \"filing_or_external_effect\": False, \"authority_independently_verified\": False,",
+    "new": "        \"filing_or_external_effect\": True, \"authority_independently_verified\": False,"
+  },
+  {
+    "id": "mutant-future_date_ignored",
+    "path": "backend/app/modules/m20_general_cognitive_worker/due_process1265.py",
+    "old": "        if d > as_of:",
+    "new": "        if False:"
+  },
+  {
+    "id": "mutant-legal_conclusion",
+    "path": "backend/app/modules/m20_general_cognitive_worker/due_process1265.py",
+    "old": "        \"adequacy_judged\": False, \"legal_conclusion\": None, \"requires_licensed_counsel\": True,",
+    "new": "        \"adequacy_judged\": False, \"legal_conclusion\": \"determined\", \"requires_licensed_counsel\": True,"
+  },
+  {
+    "id": "mutant-missing_source_ignored",
+    "path": "backend/app/modules/m20_general_cognitive_worker/due_process1265.py",
+    "old": "    bad = [x for x in ids if x not in known]",
+    "new": "    bad = []"
+  },
+  {
+    "id": "mutant-mount_removed",
+    "path": "backend/app/main.py",
+    "old": "\nfrom app.modules.m20_general_cognitive_worker.due_process1265_routes import router as legal_1265_router\napp.include_router(legal_1265_router, prefix=\"/api/v1\")",
+    "new": ""
+  },
+  {
+    "id": "mutant-wrong_method",
+    "path": "backend/app/modules/m20_general_cognitive_worker/due_process1265_routes.py",
+    "old": "@router.post('/due-process-1265/support', dependencies=[Depends(require_tenant)])",
+    "new": "@router.get('/due-process-1265/support', dependencies=[Depends(require_tenant)])"
+  },
+  {
+    "id": "mutant-wrong_route",
+    "path": "backend/app/modules/m20_general_cognitive_worker/due_process1265_routes.py",
+    "old": "@router.post('/due-process-1265/support', dependencies=[Depends(require_tenant)])",
+    "new": "@router.post('/due-process-1265/wrong', dependencies=[Depends(require_tenant)])"
+  }
+]
