@@ -1172,8 +1172,8 @@ def test_additive_current_exact_operation_inventory(env):
     assert len(BATCH2_INVENTORY) == BATCH2_TOTAL_ROUTES == 246
     assert len(PRE_FINAL_REACHABLE) == 77
     assert len(FINAL_REACHABLE_ADDITIONS) == 21
-    assert len(REACHABLE) == 99
-    assert FINAL_TOTAL_ROUTES == 268
+    assert len(REACHABLE) == 104
+    assert FINAL_TOTAL_ROUTES == 273
     assert FINAL_NOT_BOUND == BATCH2_NOT_BOUND == CURRENT_NOT_BOUND == NOT_BOUND
     assert sum(FINAL_NOT_BOUND.values()) == 169
     assert FINAL_TOTAL_ROUTES == len(REACHABLE) + sum(FINAL_NOT_BOUND.values())
@@ -1198,4 +1198,18 @@ PRE_ROW106_FINAL_TOTAL_ROUTES = FINAL_TOTAL_ROUTES
 ROW106_OPERATION = ('post', '/api/v1/api/modules/20/priming-effects/106/review')
 REACHABLE = {**REACHABLE, ROW106_OPERATION: 422}
 FINAL_INVENTORY = tuple(sorted((*FINAL_INVENTORY, ROW106_OPERATION)))
+FINAL_TOTAL_ROUTES = TOTAL_ROUTES = len(FINAL_INVENTORY)
+
+# Actual composed spec-router operation additions after0f477cb4: five routes.
+PRE_SIXROW_FINAL_INVENTORY = FINAL_INVENTORY
+PRE_SIXROW_FINAL_TOTAL_ROUTES = FINAL_TOTAL_ROUTES
+SIXROW_OPERATIONS = {
+    ('post', '/api/v1/api/modules/20/arbitration/1275/organize'): 422,
+    ('post', '/api/v1/api/modules/20/legal/1272/run'): 422,
+    ('post', '/api/v1/api/modules/20/mediation-1276/organize'): 422,
+    ('post', '/api/v1/api/modules/20/legal-1289/oral-argument'): 422,
+    ('post', '/api/v1/api/modules/20/legal/1293/support'): 422,
+}
+REACHABLE = {**REACHABLE, **SIXROW_OPERATIONS}
+FINAL_INVENTORY = tuple(sorted((*FINAL_INVENTORY, *SIXROW_OPERATIONS)))
 FINAL_TOTAL_ROUTES = TOTAL_ROUTES = len(FINAL_INVENTORY)
