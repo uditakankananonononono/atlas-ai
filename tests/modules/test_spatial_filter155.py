@@ -71,3 +71,36 @@ def test_options_shapes_and_kernel_fit_refusals():
         with pytest.raises(ValueError,match='^rectangular matrix required$'):extract(*arrays)
     with pytest.raises(ValueError,match='^valid kernel must fit image$'):extract([[1]],[[1,2]])
     with pytest.raises(ValueError,match='^valid kernel must fit image$'):extract([[1]],[[1],[2]])
+
+
+@pytest.mark.parametrize('transpose,stride,shape,pads',[
+    (False,2,[3,4],[1,1,1,1]),(False,3,[2,3],[0,1,1,1]),
+    (False,4,[2,2],[1,1,0,0]),(True,2,[4,3],[1,1,1,1]),
+    (True,3,[3,2],[1,1,0,1]),(True,4,[2,2],[0,0,1,1]),
+])
+def test_nonsquare_same_padding_stride_with_explicit_zero_padded_reference(transpose,stride,shape,pads):
+    image=[[10*r+c+1 for c in range(8)] for r in range(5)]
+    kernel=[[1,2,-1,3],[0,-2,4,1],[3,1,0,-1]]
+    if transpose:
+        image=[list(row) for row in zip(*image)]
+        kernel=[list(row) for row in zip(*kernel)]
+    top,bottom,left,right=pads
+    # Pads above are hand-derived: output ceil(image/stride); total padding
+    # (output-1)*stride+kernel-image, top/left=floor(total/2).
+    # The explicit grid places any odd excess on bottom/right.
+    width=len(image[0])+left+right
+    padded=[[0]*width for _ in range(top)]
+    padded += [[0]*left+row+[0]*right for row in image]
+    padded += [[0]*width for _ in range(bottom)]
+    expected=[]
+    for row_start in range(0,len(padded)-len(kernel)+1,stride):
+        line=[]
+        for col_start in range(0,width-len(kernel[0])+1,stride):
+            window=[row[col_start:col_start+len(kernel[0])] for row in padded[row_start:row_start+len(kernel)]]
+            line.append(str(sum(a*b for wr,kr in zip(window,kernel) for a,b in zip(wr,kr))))
+        expected.append(line)
+    assert [len(expected),len(expected[0])]==shape
+    result=extract(image,kernel,stride,padding='same')
+    assert result['shape']==shape
+    assert result['padding_top_left']==[top,left]
+    assert result['features_fraction']==expected
