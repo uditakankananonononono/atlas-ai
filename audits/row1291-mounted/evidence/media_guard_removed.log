@@ -1,0 +1,29 @@
+.........F...                                                            [100%]
+=================================== FAILURES ===================================
+____________________ test_row1291_mounted_decoder_and_media ____________________
+
+client = <starlette.testclient.TestClient object at 0x7ff847947bc0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7ff844e15ee0>
+
+    def test_row1291_mounted_decoder_and_media(client,oidc_auth_headers):
+        headers=oidc_auth_headers()
+        for raw in [b'\xff',b'{broken',b'null',b'[]',(json.dumps(request())[:-1]+',"row":'+str(1291)+'}').encode(),b'{"row":NaN}']:
+            r=client.post(PATH,headers={**headers,'Content-Type':'application/json'},content=raw)
+            assert r.status_code==422,r.text
+            assert r.json()['detail'].startswith(PREFIX+' ')
+        r=client.post(PATH,headers={**headers,'Content-Type':'text/plain'},content='PRIVATE_REFERENCE')
+>       assert r.status_code==415,r.text
+E       AssertionError: {"detail":"PROFES1291: invalid JSON"}
+E       assert 422 == 415
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/modules/test_row1291_mounted.py:77: AssertionError
+=============================== warnings summary ===============================
+../atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row1291_mounted.py::test_row1291_mounted_decoder_and_media
+1 failed, 12 passed, 1 warning in 7.11s

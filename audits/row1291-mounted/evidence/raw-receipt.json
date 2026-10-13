@@ -1,0 +1,213 @@
+{
+  "selector": "tests/modules/test_row1291_mounted.py",
+  "mutations": [
+    {
+      "id": "mount_removed",
+      "path": "backend/app/main.py",
+      "before_sha256": "e57b70c20bdf249f3c0c875b2266519f4ad97717df42e3d71815688d0ab76efb",
+      "mutated_sha256": "cc717d690f26f6ee38a9e34aa7d4b0089804c604dc4a1acdd89dd0c82d3d04ce",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1291_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "f09e6a9ecc303a2cfa1ed347e04e27afa429946788dd81e91d72e4ed93f3318b",
+      "failed_ids": [
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_partition_dates_and_boundary",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_vocab_and_missing",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes0-BAD_TYPE:row]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes1-UNKNOWN:row]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes2-EMPTY:entries]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes3-BAD_TYPE:as_of]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes5-UNKNOWN:element]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_forbidden_precedence",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_decoder_and_media",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_body_cap_exact_boundary",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_repeat_tenant_isolation"
+      ],
+      "summary": "12 failed, 1 passed, 1 warning in 7.37s",
+      "status": "CAUGHT",
+      "after_sha256": "e57b70c20bdf249f3c0c875b2266519f4ad97717df42e3d71815688d0ab76efb",
+      "restore_verified": true
+    },
+    {
+      "id": "duplicate_keys_accepted",
+      "path": "backend/app/modules/m20_general_cognitive_worker/professional_responsibility1291_routes.py",
+      "before_sha256": "740d5a0a866952e49b15a1ba65682313ab0e2403b217f70fdce71e559e7fb5d4",
+      "mutated_sha256": "ff30235f1333a943d4e8dde0a20b4cbb559c495195b234b1749c3c23afbabbeb",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1291_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "6f6b94009801ba53a3bbfd794ad7b3b08db33f2144b9feceaee02155e3d485fb",
+      "failed_ids": [
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_decoder_and_media"
+      ],
+      "summary": "1 failed, 12 passed, 1 warning in 6.57s",
+      "status": "CAUGHT",
+      "after_sha256": "740d5a0a866952e49b15a1ba65682313ab0e2403b217f70fdce71e559e7fb5d4",
+      "restore_verified": true
+    },
+    {
+      "id": "body_limit_bypassed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/professional_responsibility1291_routes.py",
+      "before_sha256": "740d5a0a866952e49b15a1ba65682313ab0e2403b217f70fdce71e559e7fb5d4",
+      "mutated_sha256": "410d2ad90ec33fe6f2f1a607ff44895bb05069d5afe3fd861e68b9f895d55426",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1291_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "4b707fd908c9efce7a1e964baec93dbd187a537dbb032236e4194c788e9d233e",
+      "failed_ids": [
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_body_cap_exact_boundary"
+      ],
+      "summary": "1 failed, 12 passed, 1 warning in 7.07s",
+      "status": "CAUGHT",
+      "after_sha256": "740d5a0a866952e49b15a1ba65682313ab0e2403b217f70fdce71e559e7fb5d4",
+      "restore_verified": true
+    },
+    {
+      "id": "refusal_status_accepted",
+      "path": "backend/app/modules/m20_general_cognitive_worker/professional_responsibility1291_routes.py",
+      "before_sha256": "740d5a0a866952e49b15a1ba65682313ab0e2403b217f70fdce71e559e7fb5d4",
+      "mutated_sha256": "702e1bb14cc01e1581bd612667d6ae86e217e5a83d55ebbc59238aea1ebe5323",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1291_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "9615b25515a7ff4ecf43bf26835bf84e51531a3894793365e2eed5dcb7f4ce54",
+      "failed_ids": [
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes0-BAD_TYPE:row]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes1-UNKNOWN:row]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes2-EMPTY:entries]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes3-BAD_TYPE:as_of]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes5-UNKNOWN:element]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_forbidden_precedence",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_decoder_and_media"
+      ],
+      "summary": "8 failed, 5 passed, 1 warning in 6.80s",
+      "status": "CAUGHT",
+      "after_sha256": "740d5a0a866952e49b15a1ba65682313ab0e2403b217f70fdce71e559e7fb5d4",
+      "restore_verified": true
+    },
+    {
+      "id": "media_guard_removed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/professional_responsibility1291_routes.py",
+      "before_sha256": "740d5a0a866952e49b15a1ba65682313ab0e2403b217f70fdce71e559e7fb5d4",
+      "mutated_sha256": "2fef805f151ca7fe556d47701a243ec6bef07d47bfbe5eeafddcef42a7f382a1",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1291_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "8eacc988745ef818b89629a2e2eb763c1d349bbf9b8014c6b80100e68dadc89e",
+      "failed_ids": [
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_decoder_and_media"
+      ],
+      "summary": "1 failed, 12 passed, 1 warning in 7.11s",
+      "status": "CAUGHT",
+      "after_sha256": "740d5a0a866952e49b15a1ba65682313ab0e2403b217f70fdce71e559e7fb5d4",
+      "restore_verified": true
+    },
+    {
+      "id": "row_identity_rebound",
+      "path": "backend/app/modules/m20_general_cognitive_worker/professional_responsibility1291.py",
+      "before_sha256": "a2fe2eb8bc43531ab923983c86c242a6641f781e8f04f6a0dd677efd0a029103",
+      "mutated_sha256": "1f955a86449ffdbcd5994d807911ed33670a07fe726db753036d0c8742ab6a12",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1291_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "bad0158c71d75c975ee634e89e9474568ccc7cfd8e51f01e56b13b6b1797eaa6",
+      "failed_ids": [
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_partition_dates_and_boundary",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_vocab_and_missing",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes1-UNKNOWN:row]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes2-EMPTY:entries]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes3-BAD_TYPE:as_of]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes5-UNKNOWN:element]",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_body_cap_exact_boundary",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_repeat_tenant_isolation"
+      ],
+      "summary": "9 failed, 4 passed, 1 warning in 7.37s",
+      "status": "CAUGHT",
+      "after_sha256": "a2fe2eb8bc43531ab923983c86c242a6641f781e8f04f6a0dd677efd0a029103",
+      "restore_verified": true
+    },
+    {
+      "id": "vocabulary_dropped",
+      "path": "backend/app/modules/m20_general_cognitive_worker/professional_responsibility1291.py",
+      "before_sha256": "a2fe2eb8bc43531ab923983c86c242a6641f781e8f04f6a0dd677efd0a029103",
+      "mutated_sha256": "55c311efe24b42c3e22346004aa0c40ce8b45cf01a6840561df784f52488968a",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1291_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "2d12e1af01579f257d08166c76f353b4c24bf4d305ce253eea0ed10650965951",
+      "failed_ids": [
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_partition_dates_and_boundary",
+        "tests/modules/test_row1291_mounted.py::test_row1291_mounted_vocab_and_missing"
+      ],
+      "summary": "2 failed, 11 passed, 1 warning in 7.33s",
+      "status": "CAUGHT",
+      "after_sha256": "a2fe2eb8bc43531ab923983c86c242a6641f781e8f04f6a0dd677efd0a029103",
+      "restore_verified": true
+    }
+  ],
+  "config_sha256": "a825c0bd815fca38c61185de201af6eeb14bb8c038e2fcfcd67c25eb3693ca42",
+  "baseline": {
+    "command": [
+      "/home/sandbox/atlas-ai/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/modules/test_row1291_mounted.py",
+      "-q"
+    ],
+    "exit_code": 0,
+    "log_sha256": "df23579b2cfe7499ea54b42b2519f5536bd9844a19588be2d295cc6ef963bded",
+    "failed_ids": [],
+    "summary": "13 passed, 1 warning in 7.34s"
+  },
+  "restored": {
+    "command": [
+      "/home/sandbox/atlas-ai/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/modules/test_row1291_mounted.py",
+      "-q"
+    ],
+    "exit_code": 0,
+    "log_sha256": "eba396b3179ffc48e97b80e184f3f15ea40fe0dfcbf7c1f4b9397ef109e9836a",
+    "failed_ids": [],
+    "summary": "13 passed, 1 warning in 7.18s"
+  }
+}

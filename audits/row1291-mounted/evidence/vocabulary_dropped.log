@@ -1,0 +1,43 @@
+FF...........                                                            [100%]
+=================================== FAILURES ===================================
+______________ test_row1291_mounted_partition_dates_and_boundary _______________
+
+client = <starlette.testclient.TestClient object at 0x7fbccfec44d0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7fbccf5528e0>
+
+    def test_row1291_mounted_partition_dates_and_boundary(client, oidc_auth_headers):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request())
+        assert r.status_code==200,r.text
+        out=r.json()
+        assert out['row']==1291
+>       assert [x['element'] for x in out['elements']]==VOCAB
+E       AssertionError: assert ['competence'...NKNOWN_VOCAB'] == ['competence'...ommunication']
+E
+E         At index 4 diff: 'UNKNOWN_VOCAB' != 'communication'
+E         Use -v to get more diff
+
+tests/modules/test_row1291_mounted.py:27: AssertionError
+____________________ test_row1291_mounted_vocab_and_missing ____________________
+
+client = <starlette.testclient.TestClient object at 0x7fbccfec4380>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7fbccf5534c0>
+
+    def test_row1291_mounted_vocab_and_missing(client, oidc_auth_headers):
+        headers=oidc_auth_headers()
+        r=client.post(PATH,headers=headers,json=request(entries=[{'element':v,'status':'supplied','source_ref':'secret'} for v in VOCAB]))
+>       assert r.status_code==200,r.text
+E       AssertionError: {"detail":"PROFES1291: UNKNOWN:element"}
+E       assert 422 == 200
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/modules/test_row1291_mounted.py:40: AssertionError
+=============================== warnings summary ===============================
+../atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row1291_mounted.py::test_row1291_mounted_partition_dates_and_boundary
+FAILED tests/modules/test_row1291_mounted.py::test_row1291_mounted_vocab_and_missing
+2 failed, 11 passed, 1 warning in 7.33s

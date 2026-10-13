@@ -1,0 +1,12 @@
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_partition_dates_and_boundary
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_vocab_and_missing
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes0-BAD_TYPE:row]
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes1-UNKNOWN:row]
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes2-EMPTY:entries]
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes3-BAD_TYPE:as_of]
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_strict_refusals[changes5-UNKNOWN:element]
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_forbidden_precedence
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_decoder_and_media
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_body_cap_exact_boundary
+tests/modules/test_row1291_mounted.py::test_row1291_mounted_repeat_tenant_isolation

@@ -1,0 +1,26 @@
+.........F...                                                            [100%]
+=================================== FAILURES ===================================
+____________________ test_row1291_mounted_decoder_and_media ____________________
+
+client = <starlette.testclient.TestClient object at 0x7fac75434890>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7fac6e9e8f40>
+
+    def test_row1291_mounted_decoder_and_media(client,oidc_auth_headers):
+        headers=oidc_auth_headers()
+        for raw in [b'\xff',b'{broken',b'null',b'[]',(json.dumps(request())[:-1]+',"row":'+str(1291)+'}').encode(),b'{"row":NaN}']:
+            r=client.post(PATH,headers={**headers,'Content-Type':'application/json'},content=raw)
+>           assert r.status_code==422,r.text
+E           AssertionError: {"row":1291,"elements":[{"element":"competence","status":"disputed","also_declared_missing":true,"latest_entry_date":"2026-10-11","days_since_latest":1},{"element":"diligence","status":"unaddressed","also_declared_missing":false,"latest_entry_date":null,"days_since_latest":null},{"element":"candor","status":"unaddressed","also_declared_missing":false,"latest_entry_date":null,"days_since_latest":null},{"element":"supervision","status":"unaddressed","also_declared_missing":false,"latest_entry_date":null,"days_since_latest":null},{"element":"communication","status":"unaddressed","also_declared_missing":false,"latest_entry_date":null,"days_since_latest":null}],"coverage":{"elements_total":5,"referenced":0,"disputed":1,"declared_missing":0,"unaddressed":4},"counsel_review_required":true,"legal_conclusion":false,"references_verified":false,"boundary":"Legal work product for review, not legal advice. Licensed counsel must verify jurisdiction, currency, citations, facts, duties, deadlines and strategy before use.","scope":{"implemented":["declared element supplied-reference bookkeeping"],"not_implemented":["as common scope line; never assesses a lawyer's compliance.","legal conclusions","reference verification","external effects"],"data_source":"caller supplied entries only","as_of":"2026-10-12","jurisdiction":"jurisdiction not supplied or validated"}}
+E           assert 200 == 422
+E            +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1291_mounted.py:74: AssertionError
+=============================== warnings summary ===============================
+../atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row1291_mounted.py::test_row1291_mounted_decoder_and_media
+1 failed, 12 passed, 1 warning in 6.57s

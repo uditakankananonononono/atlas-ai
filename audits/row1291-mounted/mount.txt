@@ -1,0 +1,2 @@
+from app.modules.m20_general_cognitive_worker.professional_responsibility1291_routes import router as row1291_router
+app.include_router(row1291_router)
