@@ -1571,6 +1571,9 @@ router.include_router(optimization_story_router_235_280)
 from .negotiation_behavior_routes_0085_0109 import router as negotiation_behavior_router_0085_0109
 router.include_router(negotiation_behavior_router_0085_0109)
 
+from .mediation_routes1276 import router as mediation_router_1276
+router.include_router(mediation_router_1276)
+
 from .software_practice_routes_685_709 import router as software_practice_router_685_709
 router.include_router(software_practice_router_685_709)
 from .legacy_modernizer_routes694 import router as legacy_modernizer_router_694
