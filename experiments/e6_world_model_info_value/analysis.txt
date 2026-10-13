@@ -1,0 +1,7 @@
+classes 70 rows 630
+random n 210 correct 0.962 converged 1.0 mean steps 20.87 mean cost 62.03
+eig n 210 correct 0.943 converged 1.0 mean steps 11.34 mean cost 34.45
+eig_cost n 210 correct 0.952 converged 1.0 mean steps 12.93 mean cost 20.91
+cost eig minus random: -27.58 CI [-31.31,-23.85]
+cost eig_cost minus random: -41.12 CI [-45.00,-37.48]
+cost eig_cost minus eig: -13.54 CI [-14.82,-12.28]

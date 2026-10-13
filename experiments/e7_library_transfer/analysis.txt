@@ -1,0 +1,16 @@
+B=1000: n=40 base 0.525 transfer 0.600 random_lib 0.500
+   transfer - base: +0.075 CI [-0.025,+0.200]
+   transfer - random_lib: +0.100 CI [+0.025,+0.200]
+   per held-out domain (base, transfer, macros): {'math': (0.6, 0.6, 0), 'bio': (0.7, 0.6, 1), 'code': (0.6, 0.7, 1), 'physics': (0.2, 0.5, 2)}
+   within-domain control (5 tasks per domain): own_base 0.550 own_lib 0.550 cross-domain lib on same tasks 0.600
+B=3000: n=40 base 0.900 transfer 0.900 random_lib 0.900
+   transfer - base: +0.000 CI [+0.000,+0.000]
+   transfer - random_lib: +0.000 CI [+0.000,+0.000]
+   per held-out domain (base, transfer, macros): {'math': (1.0, 1.0, 0), 'bio': (1.0, 1.0, 1), 'code': (1.0, 1.0, 0), 'physics': (0.6, 0.6, 0)}
+   within-domain control (5 tasks per domain): own_base 0.900 own_lib 0.900 cross-domain lib on same tasks 0.900
+B=10000: n=40 base 0.975 transfer 0.975 random_lib 0.925
+   transfer - base: +0.000 CI [+0.000,+0.000]
+   transfer - random_lib: +0.050 CI [+0.000,+0.125]
+   per held-out domain (base, transfer, macros): {'math': (1.0, 1.0, 0), 'bio': (1.0, 1.0, 0), 'code': (1.0, 1.0, 0), 'physics': (0.9, 0.9, 0)}
+   within-domain control (5 tasks per domain): own_base 1.000 own_lib 1.000 cross-domain lib on same tasks 1.000
+macros at B=1000: {'1000/math': [], '1000/bio': ['m_cumsum_max'], '1000/code': ['m_sort_reverse'], '1000/physics': ['m_cumsum_max', 'm_sort_reverse']}

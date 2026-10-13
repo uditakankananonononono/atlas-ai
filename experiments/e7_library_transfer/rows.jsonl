@@ -1,0 +1,120 @@
+{"budget": 1000, "held": "math", "task": "peak of shifted running totals", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 1000, "held": "math", "task": "sorted running totals reversed", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 1000, "held": "math", "task": "sum of sorted doubled differences", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 1000, "held": "math", "task": "largest drop of running totals", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 1000, "held": "math", "task": "reverse then peak running total", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 1000, "held": "math", "task": "running totals of differences doubled", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 1000, "held": "math", "task": "lowest negated running total", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 1000, "held": "math", "task": "positives running count peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 1000, "held": "math", "task": "sorted differences reversed", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": false, "own_base": false}
+{"budget": 1000, "held": "math", "task": "second difference peak", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": false, "own_base": false}
+{"budget": 1000, "held": "bio", "task": "GC running count peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "bio", "task": "reverse complement running sum", "base": true, "transfer": false, "random_lib": false, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "bio", "task": "GC running count reversed", "base": false, "transfer": false, "random_lib": false, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "bio", "task": "complement GC total", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "bio", "task": "reverse complement sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "bio", "task": "GC running count sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 1000, "held": "bio", "task": "complement running total peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 1000, "held": "bio", "task": "GC flags reversed running", "base": false, "transfer": false, "random_lib": false, "n_macros": 1, "own": false, "own_base": false}
+{"budget": 1000, "held": "bio", "task": "base step sorted reversed", "base": false, "transfer": false, "random_lib": false, "n_macros": 1, "own": false, "own_base": false}
+{"budget": 1000, "held": "bio", "task": "largest complement step", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 1000, "held": "code", "task": "max nesting depth shifted", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "code", "task": "depth profile sorted reversed", "base": false, "transfer": true, "random_lib": false, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "code", "task": "deepest negative depth", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "code", "task": "depth changes sorted", "base": false, "transfer": false, "random_lib": false, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "code", "task": "reverse scan peak depth", "base": false, "transfer": false, "random_lib": false, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 1000, "held": "code", "task": "open count running peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 1000, "held": "code", "task": "depth profile reversed negated", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 1000, "held": "code", "task": "flags running reversed", "base": false, "transfer": false, "random_lib": false, "n_macros": 1, "own": false, "own_base": false}
+{"budget": 1000, "held": "code", "task": "depth step min", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 1000, "held": "code", "task": "doubled depth peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 1000, "held": "physics", "task": "peak position of integrated velocity shifted", "base": true, "transfer": true, "random_lib": true, "n_macros": 2, "own": null, "own_base": null}
+{"budget": 1000, "held": "physics", "task": "sorted accelerations reversed", "base": false, "transfer": false, "random_lib": false, "n_macros": 2, "own": null, "own_base": null}
+{"budget": 1000, "held": "physics", "task": "peak displacement of velocity", "base": false, "transfer": true, "random_lib": false, "n_macros": 2, "own": null, "own_base": null}
+{"budget": 1000, "held": "physics", "task": "reverse time acceleration peak", "base": false, "transfer": false, "random_lib": false, "n_macros": 2, "own": null, "own_base": null}
+{"budget": 1000, "held": "physics", "task": "accumulated doubled velocity peak", "base": false, "transfer": true, "random_lib": false, "n_macros": 2, "own": null, "own_base": null}
+{"budget": 1000, "held": "physics", "task": "net negative acceleration", "base": false, "transfer": false, "random_lib": false, "n_macros": 2, "own": false, "own_base": false}
+{"budget": 1000, "held": "physics", "task": "sorted velocities reversed", "base": false, "transfer": true, "random_lib": false, "n_macros": 2, "own": false, "own_base": false}
+{"budget": 1000, "held": "physics", "task": "lowest running total of negated steps", "base": false, "transfer": false, "random_lib": false, "n_macros": 2, "own": false, "own_base": false}
+{"budget": 1000, "held": "physics", "task": "running energy proxy sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 2, "own": true, "own_base": true}
+{"budget": 1000, "held": "physics", "task": "positive step running peak", "base": false, "transfer": false, "random_lib": false, "n_macros": 2, "own": false, "own_base": false}
+{"budget": 3000, "held": "math", "task": "peak of shifted running totals", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "math", "task": "sorted running totals reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "math", "task": "sum of sorted doubled differences", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "math", "task": "largest drop of running totals", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "math", "task": "reverse then peak running total", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "math", "task": "running totals of differences doubled", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "math", "task": "lowest negated running total", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "math", "task": "positives running count peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "math", "task": "sorted differences reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "math", "task": "second difference peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "bio", "task": "GC running count peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 3000, "held": "bio", "task": "reverse complement running sum", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 3000, "held": "bio", "task": "GC running count reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 3000, "held": "bio", "task": "complement GC total", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 3000, "held": "bio", "task": "reverse complement sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": null, "own_base": null}
+{"budget": 3000, "held": "bio", "task": "GC running count sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 3000, "held": "bio", "task": "complement running total peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 3000, "held": "bio", "task": "GC flags reversed running", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 3000, "held": "bio", "task": "base step sorted reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 3000, "held": "bio", "task": "largest complement step", "base": true, "transfer": true, "random_lib": true, "n_macros": 1, "own": true, "own_base": true}
+{"budget": 3000, "held": "code", "task": "max nesting depth shifted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "code", "task": "depth profile sorted reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "code", "task": "deepest negative depth", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "code", "task": "depth changes sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "code", "task": "reverse scan peak depth", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "code", "task": "open count running peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "code", "task": "depth profile reversed negated", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "code", "task": "flags running reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "code", "task": "depth step min", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "code", "task": "doubled depth peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "physics", "task": "peak position of integrated velocity shifted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "physics", "task": "sorted accelerations reversed", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "physics", "task": "peak displacement of velocity", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "physics", "task": "reverse time acceleration peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "physics", "task": "accumulated doubled velocity peak", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 3000, "held": "physics", "task": "net negative acceleration", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": false, "own_base": false}
+{"budget": 3000, "held": "physics", "task": "sorted velocities reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "physics", "task": "lowest running total of negated steps", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": false, "own_base": false}
+{"budget": 3000, "held": "physics", "task": "running energy proxy sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 3000, "held": "physics", "task": "positive step running peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "math", "task": "peak of shifted running totals", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "math", "task": "sorted running totals reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "math", "task": "sum of sorted doubled differences", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "math", "task": "largest drop of running totals", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "math", "task": "reverse then peak running total", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "math", "task": "running totals of differences doubled", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "math", "task": "lowest negated running total", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "math", "task": "positives running count peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "math", "task": "sorted differences reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "math", "task": "second difference peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "bio", "task": "GC running count peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "bio", "task": "reverse complement running sum", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "bio", "task": "GC running count reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "bio", "task": "complement GC total", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "bio", "task": "reverse complement sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "bio", "task": "GC running count sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "bio", "task": "complement running total peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "bio", "task": "GC flags reversed running", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "bio", "task": "base step sorted reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "bio", "task": "largest complement step", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "code", "task": "max nesting depth shifted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "code", "task": "depth profile sorted reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "code", "task": "deepest negative depth", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "code", "task": "depth changes sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "code", "task": "reverse scan peak depth", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "code", "task": "open count running peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "code", "task": "depth profile reversed negated", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "code", "task": "flags running reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "code", "task": "depth step min", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "code", "task": "doubled depth peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "physics", "task": "peak position of integrated velocity shifted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "physics", "task": "sorted accelerations reversed", "base": false, "transfer": false, "random_lib": false, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "physics", "task": "peak displacement of velocity", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "physics", "task": "reverse time acceleration peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "physics", "task": "accumulated doubled velocity peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": null, "own_base": null}
+{"budget": 10000, "held": "physics", "task": "net negative acceleration", "base": true, "transfer": true, "random_lib": false, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "physics", "task": "sorted velocities reversed", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "physics", "task": "lowest running total of negated steps", "base": true, "transfer": true, "random_lib": false, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "physics", "task": "running energy proxy sorted", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}
+{"budget": 10000, "held": "physics", "task": "positive step running peak", "base": true, "transfer": true, "random_lib": true, "n_macros": 0, "own": true, "own_base": true}

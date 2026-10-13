@@ -1,0 +1,12 @@
+B 1000
+single    solved 21.0/40 (sd 0.0)  mean programs evaluated 25215
+single_x  solved 36.0/40 (sd 0.0)  mean programs evaluated 41662
+multi     solved 22.8/40 (sd 0.6)  mean programs evaluated 77914
+multi - single solved: +1.80 (seeds with multi>=: 10/10)
+multi - single_x solved: -13.20 (seeds with multi>=: 0/10)
+B 300
+single    solved 12.0/40 (sd 0.0)  mean programs evaluated 9059
+single_x  solved 20.0/40 (sd 0.0)  mean programs evaluated 23298
+multi     solved 13.0/40 (sd 1.0)  mean programs evaluated 15473
+multi - single solved: +1.00 (seeds with multi>=: 10/10)
+multi - single_x solved: -7.00 (seeds with multi>=: 0/10)

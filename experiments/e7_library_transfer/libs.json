@@ -1,0 +1,38 @@
+{
+ "1000/math": {},
+ "1000/bio": {
+  "m_cumsum_max": [
+   "cumsum",
+   "max"
+  ]
+ },
+ "1000/code": {
+  "m_sort_reverse": [
+   "sort",
+   "reverse"
+  ]
+ },
+ "1000/physics": {
+  "m_cumsum_max": [
+   "cumsum",
+   "max"
+  ],
+  "m_sort_reverse": [
+   "sort",
+   "reverse"
+  ]
+ },
+ "3000/math": {},
+ "3000/bio": {
+  "m_cumsum_max": [
+   "cumsum",
+   "max"
+  ]
+ },
+ "3000/code": {},
+ "3000/physics": {},
+ "10000/math": {},
+ "10000/bio": {},
+ "10000/code": {},
+ "10000/physics": {}
+}
