@@ -1,7 +1,7 @@
 """Mounted student account browser operations. Final submits remain M02-owned."""
 from threading import Lock
 from fastapi import Depends, HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictBool
 from app.auth.context import TenantContext, require_tenant
 from app.modules.m13_browser_agent.application_flow import BlockedError, WorkflowStateError
 from app.modules.m02_competition_manager.application_schemas import ApplicationStageIn
@@ -35,6 +35,15 @@ class PrefillPlanIn(BaseModel):
     model_config = ConfigDict(extra='forbid')
     profile: dict[str, str] = Field(max_length=20)
     submit_selector: str = Field(min_length=1, max_length=300)
+
+
+class CompetitionReviewIn(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    digest: str = Field(pattern=r'^[0-9a-f]{64}$')
+    rules_reviewed: StrictBool
+    eligibility_confirmed: StrictBool
+    deadline_confirmed: StrictBool
+    no_cost_confirmed: StrictBool
 
 
 class OpenIn(BaseModel):
@@ -93,5 +102,19 @@ def install_routes(router):
     async def prefill_plan(session_id: str, body: PrefillPlanIn, tenant: TenantContext = Depends(require_tenant), browser=Depends(get_student_browser)):
         try:
             return await browser.plan_prefill(tenant.tenant_id, tenant.actor_id, session_id, body.profile, body.submit_selector)
+        except Exception as exc:
+            raise failure(exc) from exc
+
+    @router.post(base + '/browser-sessions/{session_id}/competition-terms')
+    async def competition_terms(session_id: str, tenant: TenantContext = Depends(require_tenant), browser=Depends(get_student_browser)):
+        try:
+            return await browser.competition_terms(tenant.tenant_id, tenant.actor_id, session_id)
+        except Exception as exc:
+            raise failure(exc) from exc
+
+    @router.post(base + '/browser-sessions/{session_id}/competition-terms/review')
+    async def review_competition_terms(session_id: str, body: CompetitionReviewIn, tenant: TenantContext = Depends(require_tenant), browser=Depends(get_student_browser)):
+        try:
+            return await browser.review_competition_terms(tenant.tenant_id, tenant.actor_id, session_id, **body.model_dump())
         except Exception as exc:
             raise failure(exc) from exc

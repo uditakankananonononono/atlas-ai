@@ -290,6 +290,7 @@ class ApplicationSession:
     screenshot_digest: str = ""
     approval_id: str = ""
     confirmation: dict[str, Any] = field(default_factory=dict)
+    competition_review: dict[str, Any] = field(default_factory=dict)
     instructions: list[str] = field(default_factory=list)
     error: str = ""
     created_at: float = field(default_factory=time.time)
@@ -507,6 +508,9 @@ class ApplicationFlow:
         if captcha:
             self._blocked(record, "site presents a CAPTCHA; Atlas stops here", captcha)
             raise BlockedError(record.error)
+        from .competition_review import require_review
+        page = await self._page(record)
+        require_review(record, page.url, html, self._clock().timestamp())
         descriptors = extract_field_descriptors(html)
         known = {d.selector for d in descriptors}
         if set(record.form_selectors) - known:
@@ -577,6 +581,10 @@ class ApplicationFlow:
         """Re-read the live page and return the current binding facts."""
         page = await self._page(record)
         current_url = validate_public_url(page.url, self.browser.allowed_hosts)
+        from .competition_review import require_review, review_required
+        if review_required(record):
+            html = await self.browser.extract(record.tenant_id, record.session_id)
+            require_review(record, current_url, html, self._clock().timestamp())
         readback = await self.browser.read_values(record.tenant_id, record.session_id, sorted(record.staged_values))
         screenshot = await self.browser.screenshot(
             record.tenant_id, record.session_id, mask_selectors=sorted(record.staged_values)
@@ -677,6 +685,10 @@ class ApplicationFlow:
         page = await self._page(record)
         try:
             current_url = validate_public_url(page.url, self.browser.allowed_hosts)
+            from .competition_review import require_review, review_required
+            if review_required(record):
+                html = await self.browser.extract(tenant_id, session_id)
+                require_review(record, current_url, html, self._clock().timestamp())
             readback = await self.browser.read_values(tenant_id, session_id, sorted(payload.get("form_values", {})))
             screenshot = await self.browser.screenshot(tenant_id, session_id, mask_selectors=sorted(readback))
         except Exception as error:
