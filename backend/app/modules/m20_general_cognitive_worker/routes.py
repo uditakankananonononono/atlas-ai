@@ -1746,6 +1746,8 @@ from .tdd687_routes import router as tdd687_routes_router
 router.include_router(tdd687_routes_router)
 from .atdd688_routes import router as atdd688_routes_router
 router.include_router(atdd688_routes_router)
+from .priming106_routes import router as priming106_routes_router
+router.include_router(priming106_routes_router)
 from .rename689_routes import router as rename689_routes_router
 router.include_router(rename689_routes_router)
 from .code_review690_routes import router as code_review690_routes_router
