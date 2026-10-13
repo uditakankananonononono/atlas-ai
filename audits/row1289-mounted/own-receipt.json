@@ -1,0 +1,90 @@
+[
+  {
+    "id": "mutant-01-path-typo",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "138f2d8e85090bf8697367fcb25737842b4ce9f18882626c8f73f59fa5cef318"
+  },
+  {
+    "id": "mutant-02-generic-engine",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "f28ceb587e66ef2be1aa880314525889317e0fc5b5bead7b01f042fbf1dc6cae"
+  },
+  {
+    "id": "mutant-03-wrong-engine",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "e2578664594eb5b6b76f85ac203650035f65e1b59133f56311549c2f74b52691"
+  },
+  {
+    "id": "mutant-04-no-scope-guard",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "29f58314ea286766a685ced880e2c164a0bd7687a9523bc4ecbdbbf2d7437b3e"
+  },
+  {
+    "id": "mutant-05-no-body-tenant-check",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "21ed78d7a4c879e04b655e18d9f7c1425471a1362a5b1606c61bf01dc4a2f3eb"
+  },
+  {
+    "id": "mutant-06-no-body-actor-check",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "2ca6e92cb7ba04b04f98f8b2f2f58d1c5821639832db35a07de501bb6c19694f"
+  },
+  {
+    "id": "mutant-07-no-data-tenant-check",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "9bdf81aa59226abcdec85eb26f36098d50b93d3540342f26d31bb42276b5c584"
+  },
+  {
+    "id": "mutant-08-no-data-actor-check",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "181035ec9820658feda532470c4c94b380a04c527bd5d6cc0be3c699e4a6d105"
+  },
+  {
+    "id": "mutant-09-error-status-400",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "efdbb7bdadf4dd3c1fc961d06faed2f30fc6eb637c0da6a3e6778039e9bd18f0"
+  },
+  {
+    "id": "mutant-10-swallow-error",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "d4db5898424d9dbe8def03b34974a3975262fb96bf0d3cd67d870abe6852d031"
+  },
+  {
+    "id": "mutant-11-drop-counsel-flag",
+    "status": "CAUGHT",
+    "rc": 1,
+    "before_sha256": "49a04b600d67e8330ad247c06c09464869096cf014a5d2e2e807f160a5224bbe",
+    "restore_verified": true,
+    "log_sha256": "cf39f6994a93d4b95f097ad07c94739bf86e55fdc5b371c774c94ee128857208"
+  }
+]

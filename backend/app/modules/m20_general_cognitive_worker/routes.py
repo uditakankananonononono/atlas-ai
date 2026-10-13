@@ -1849,3 +1849,7 @@ router.include_router(arbitration_router1275)
 
 from .treaties1272_routes import router as treaties1272_router
 router.include_router(treaties1272_router)
+
+# Row1289 dedicated engine, not generic support.
+from .oral_argument1289_routes import router as oral_argument1289_router
+router.include_router(oral_argument1289_router)
