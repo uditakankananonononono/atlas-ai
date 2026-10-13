@@ -1,0 +1,213 @@
+{
+  "selector": "tests/modules/test_row1290_mounted.py",
+  "mutations": [
+    {
+      "id": "mount_removed",
+      "path": "backend/app/main.py",
+      "before_sha256": "055288e4af872ea102cd839a9d6e9a528c5d526946436e67cd80c2e79c3921a3",
+      "mutated_sha256": "e94b6f51c1b6c09efc50d7aef01a9538007ef809d7268f8462fe339ec4e5c28e",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1290_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "a6e102fddd03bdba1590ac55df78704d332dcc11aee17caf4979c3a9afa074bd",
+      "failed_ids": [
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_partition_dates_and_boundary",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_vocab_and_missing",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes0-BAD_TYPE:row]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes1-UNKNOWN:row]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes2-EMPTY:entries]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes3-BAD_TYPE:as_of]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes5-UNKNOWN:element]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_forbidden_precedence",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_decoder_and_media",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_body_cap_exact_boundary",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_repeat_tenant_isolation"
+      ],
+      "summary": "12 failed, 1 passed, 1 warning in 7.58s",
+      "status": "CAUGHT",
+      "after_sha256": "055288e4af872ea102cd839a9d6e9a528c5d526946436e67cd80c2e79c3921a3",
+      "restore_verified": true
+    },
+    {
+      "id": "duplicate_keys_accepted",
+      "path": "backend/app/modules/m20_general_cognitive_worker/legal_ethics1290_routes.py",
+      "before_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
+      "mutated_sha256": "59b17316d41c7fe993624c79d2cb2438d8d54ef22b141041bec2a02fc5ea7e21",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1290_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "53c55f1c2cb8075fc0fabfd5ccb733e2c3f9399f7ec317fe47487e01fcca2584",
+      "failed_ids": [
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_decoder_and_media"
+      ],
+      "summary": "1 failed, 12 passed, 1 warning in 6.84s",
+      "status": "CAUGHT",
+      "after_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
+      "restore_verified": true
+    },
+    {
+      "id": "body_limit_bypassed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/legal_ethics1290_routes.py",
+      "before_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
+      "mutated_sha256": "2e3b261807a4e7e5b4f4e193e81d377b296817dc55667e66af63ece8de613a47",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1290_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "2e3904e91082c3cfd7450f10a9f00b6d7d2d7b84075fef0cc94825b3a2de0d4a",
+      "failed_ids": [
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_body_cap_exact_boundary"
+      ],
+      "summary": "1 failed, 12 passed, 1 warning in 7.08s",
+      "status": "CAUGHT",
+      "after_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
+      "restore_verified": true
+    },
+    {
+      "id": "refusal_status_accepted",
+      "path": "backend/app/modules/m20_general_cognitive_worker/legal_ethics1290_routes.py",
+      "before_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
+      "mutated_sha256": "40c6085c8145351bab6208cbb9e5e0d7ed565f5eace3c7f9e707a98ab0c7e2d3",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1290_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "d11fdbe131c13417402f60295842c1458fded7725f3560d7b690ddcf29505534",
+      "failed_ids": [
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes0-BAD_TYPE:row]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes1-UNKNOWN:row]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes2-EMPTY:entries]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes3-BAD_TYPE:as_of]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes5-UNKNOWN:element]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_forbidden_precedence",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_decoder_and_media"
+      ],
+      "summary": "8 failed, 5 passed, 1 warning in 6.87s",
+      "status": "CAUGHT",
+      "after_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
+      "restore_verified": true
+    },
+    {
+      "id": "media_guard_removed",
+      "path": "backend/app/modules/m20_general_cognitive_worker/legal_ethics1290_routes.py",
+      "before_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
+      "mutated_sha256": "028cd51c2df8b34bee7d9b70ca56f3ad162ab9a30907f747931fd86bf3b4254e",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1290_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "77e31a3072930a34fb981b4a86cf5c70a235916fb59e74e953d0002223a2a5f0",
+      "failed_ids": [
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_decoder_and_media"
+      ],
+      "summary": "1 failed, 12 passed, 1 warning in 7.32s",
+      "status": "CAUGHT",
+      "after_sha256": "c50804954b3f5a49186ac5c445dd920f8d52ed11061d9e7ebaa7280dc0862b38",
+      "restore_verified": true
+    },
+    {
+      "id": "row_identity_rebound",
+      "path": "backend/app/modules/m20_general_cognitive_worker/legal_ethics1290.py",
+      "before_sha256": "cbd0c6dc8e6966909c8e7a5a6fe1aa5ea1f1b6a2bfe9241646dd017f04434c06",
+      "mutated_sha256": "95b32ed94787173351d1c7f3cffb5c82c9eae0c4bf0817ab7dd50c1750d748ca",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1290_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "55dd893a5439ae332962438f93fde47d0136b9f1ec1b389b74ceba41fe41fb77",
+      "failed_ids": [
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_partition_dates_and_boundary",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_vocab_and_missing",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes1-UNKNOWN:row]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes2-EMPTY:entries]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes3-BAD_TYPE:as_of]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes5-UNKNOWN:element]",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_body_cap_exact_boundary",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_repeat_tenant_isolation"
+      ],
+      "summary": "9 failed, 4 passed, 1 warning in 7.14s",
+      "status": "CAUGHT",
+      "after_sha256": "cbd0c6dc8e6966909c8e7a5a6fe1aa5ea1f1b6a2bfe9241646dd017f04434c06",
+      "restore_verified": true
+    },
+    {
+      "id": "vocabulary_dropped",
+      "path": "backend/app/modules/m20_general_cognitive_worker/legal_ethics1290.py",
+      "before_sha256": "cbd0c6dc8e6966909c8e7a5a6fe1aa5ea1f1b6a2bfe9241646dd017f04434c06",
+      "mutated_sha256": "b326594f83b964dd28be17780e7491253bfefb11fbac28270a5844f2a8863da8",
+      "command": [
+        "/home/sandbox/atlas-ai/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/modules/test_row1290_mounted.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "log_sha256": "5dc94dc8a818ca1524cbe20b33af616bf73fc96c0e29003b8656f6fdbbad2a82",
+      "failed_ids": [
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_partition_dates_and_boundary",
+        "tests/modules/test_row1290_mounted.py::test_row1290_mounted_vocab_and_missing"
+      ],
+      "summary": "2 failed, 11 passed, 1 warning in 7.31s",
+      "status": "CAUGHT",
+      "after_sha256": "cbd0c6dc8e6966909c8e7a5a6fe1aa5ea1f1b6a2bfe9241646dd017f04434c06",
+      "restore_verified": true
+    }
+  ],
+  "config_sha256": "72a2616f9f447d35b80726cf1bc53f41355017c200af141239e09509fcd911bd",
+  "baseline": {
+    "command": [
+      "/home/sandbox/atlas-ai/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/modules/test_row1290_mounted.py",
+      "-q"
+    ],
+    "exit_code": 0,
+    "log_sha256": "876a3e4c0f4ebcbf6e735f8164a02d8a267594254fbccdda22267f9a9549bb42",
+    "failed_ids": [],
+    "summary": "13 passed, 1 warning in 7.44s"
+  },
+  "restored": {
+    "command": [
+      "/home/sandbox/atlas-ai/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/modules/test_row1290_mounted.py",
+      "-q"
+    ],
+    "exit_code": 0,
+    "log_sha256": "026deba1edccb004065dcd15abc3dad56fac3b14f1c81a2002ffc208ed022131",
+    "failed_ids": [],
+    "summary": "13 passed, 1 warning in 6.94s"
+  }
+}

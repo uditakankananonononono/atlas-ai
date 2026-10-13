@@ -1,0 +1,170 @@
+..FFFFFFFF...                                                            [100%]
+=================================== FAILURES ===================================
+_________ test_row1290_mounted_strict_refusals[changes0-BAD_TYPE:row] __________
+
+client = <starlette.testclient.TestClient object at 0x7f2a6470c7a0>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f2a6479a980>
+changes = {'row': True}, reason = 'BAD_TYPE:row'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1290+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1290_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1290_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"LEGALE1290: BAD_TYPE:row"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1290_mounted.py:56: AssertionError
+__________ test_row1290_mounted_strict_refusals[changes1-UNKNOWN:row] __________
+
+client = <starlette.testclient.TestClient object at 0x7f2a6476c950>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f2a61c49300>
+changes = {'row': 1300}, reason = 'UNKNOWN:row'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1290+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1290_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1290_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"LEGALE1290: UNKNOWN:row"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1290_mounted.py:56: AssertionError
+_________ test_row1290_mounted_strict_refusals[changes2-EMPTY:entries] _________
+
+client = <starlette.testclient.TestClient object at 0x7f2a620e2360>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f2a61c48a40>
+changes = {'entries': []}, reason = 'EMPTY:entries'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1290+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1290_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1290_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"LEGALE1290: EMPTY:entries"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1290_mounted.py:56: AssertionError
+________ test_row1290_mounted_strict_refusals[changes3-BAD_TYPE:as_of] _________
+
+client = <starlette.testclient.TestClient object at 0x7f2a61c27b30>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f2a61c971a0>
+changes = {'as_of': '20260230'}, reason = 'BAD_TYPE:as_of'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1290+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1290_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1290_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"LEGALE1290: BAD_TYPE:as_of"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1290_mounted.py:56: AssertionError
+______ test_row1290_mounted_strict_refusals[changes4-BAD_TYPE:entry_date] ______
+
+client = <starlette.testclient.TestClient object at 0x7f2a6470cf80>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f2a61c977e0>
+changes = {'entries': [{'element': 'actor', 'status': 'supplied', 'source_ref': 'PRIVATE_REFERENCE', 'entry_date': '2026-10-13'}]}
+reason = 'BAD_TYPE:entry_date'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1290+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1290_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1290_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"LEGALE1290: BAD_TYPE:entry_date"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1290_mounted.py:56: AssertionError
+________ test_row1290_mounted_strict_refusals[changes5-UNKNOWN:element] ________
+
+client = <starlette.testclient.TestClient object at 0x7f2a63da1b50>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f2a61c963e0>
+changes = {'entries': [{'element': 'OTHER_1290_ONLY', 'status': 'missing'}]}
+reason = 'UNKNOWN:element'
+
+    @pytest.mark.parametrize('changes,reason',[
+        ({'row':True},'BAD_TYPE:row'),({'row':1290+10},'UNKNOWN:row'),
+        ({'entries':[]},'EMPTY:entries'),({'as_of':'20260230'},'BAD_TYPE:as_of'),
+        ({'entries':[{'element':VOCAB[0],'status':'supplied','source_ref':'PRIVATE_REFERENCE','entry_date':'2026-10-13'}]},'BAD_TYPE:entry_date'),
+        ({'entries':[{'element':'OTHER_1290_ONLY','status':'missing'}]},'UNKNOWN:element'),
+    ])
+    def test_row1290_mounted_strict_refusals(client,oidc_auth_headers,changes,reason):
+        r=client.post(PATH,headers=oidc_auth_headers(),json=request(**changes))
+>       assert r.status_code==422,r.text
+E       AssertionError: {"detail":"LEGALE1290: UNKNOWN:element"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1290_mounted.py:56: AssertionError
+__________________ test_row1290_mounted_forbidden_precedence ___________________
+
+client = <starlette.testclient.TestClient object at 0x7f2a63da2300>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f2a61c49120>
+
+    def test_row1290_mounted_forbidden_precedence(client,oidc_auth_headers):
+        headers=oidc_auth_headers()
+        for changes,reason in [({'send':False,'pay':False},'SEND:send'),({'password':None},'NOCREDS:password'),({'file':False},'EFFECT:file')]:
+            r=client.post(PATH,headers=headers,json=request(**changes))
+>           assert r.status_code==422,r.text
+E           AssertionError: {"detail":"LEGALE1290: SEND:send"}
+E           assert 200 == 422
+E            +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1290_mounted.py:64: AssertionError
+____________________ test_row1290_mounted_decoder_and_media ____________________
+
+client = <starlette.testclient.TestClient object at 0x7f2a6470c950>
+oidc_auth_headers = <function oidc_auth_headers.<locals>.headers at 0x7f2a61c97ec0>
+
+    def test_row1290_mounted_decoder_and_media(client,oidc_auth_headers):
+        headers=oidc_auth_headers()
+        for raw in [b'\xff',b'{broken',b'null',b'[]',(json.dumps(request())[:-1]+',"row":'+str(1290)+'}').encode(),b'{"row":NaN}']:
+            r=client.post(PATH,headers={**headers,'Content-Type':'application/json'},content=raw)
+>           assert r.status_code==422,r.text
+E           AssertionError: {"detail":"LEGALE1290: BAD_TYPE:request"}
+E           assert 200 == 422
+E            +  where 200 = <Response [200 OK]>.status_code
+
+tests/modules/test_row1290_mounted.py:74: AssertionError
+=============================== warnings summary ===============================
+../atlas-ai/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <python-env>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes0-BAD_TYPE:row]
+FAILED tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes1-UNKNOWN:row]
+FAILED tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes2-EMPTY:entries]
+FAILED tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes3-BAD_TYPE:as_of]
+FAILED tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes4-BAD_TYPE:entry_date]
+FAILED tests/modules/test_row1290_mounted.py::test_row1290_mounted_strict_refusals[changes5-UNKNOWN:element]
+FAILED tests/modules/test_row1290_mounted.py::test_row1290_mounted_forbidden_precedence
+FAILED tests/modules/test_row1290_mounted.py::test_row1290_mounted_decoder_and_media
+8 failed, 5 passed, 1 warning in 6.87s
