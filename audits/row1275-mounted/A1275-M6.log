@@ -1,0 +1,73 @@
+.FFFFF.FF......FFF.                                                      [100%]
+=================================== FAILURES ===================================
+___________ test_same_dedicated_items_payload_unknown_vocab_refused ____________
+tests/modules/test_m20_arbitration1275_mounted.py:27: in test_same_dedicated_items_payload_unknown_vocab_refused
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"ARB1275:UNKNOWN_VALUE:consent"}
+E   assert 400 == 422
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+____ test_forbidden_or_owner_fields_not_accepted[decide-CONCLUSION_REFUSED] ____
+tests/modules/test_m20_arbitration1275_mounted.py:34: in test_forbidden_or_owner_fields_not_accepted
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+code}
+E   assert (400 == 422)
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+__ test_forbidden_or_owner_fields_not_accepted[send-EXTERNAL_EFFECT_REFUSED] ___
+tests/modules/test_m20_arbitration1275_mounted.py:34: in test_forbidden_or_owner_fields_not_accepted
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+code}
+E   assert (400 == 422)
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+______ test_forbidden_or_owner_fields_not_accepted[tenant_id-UNKNOWN_KEY] ______
+tests/modules/test_m20_arbitration1275_mounted.py:34: in test_forbidden_or_owner_fields_not_accepted
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+code}
+E   assert (400 == 422)
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+______ test_forbidden_or_owner_fields_not_accepted[actor_id-UNKNOWN_KEY] _______
+tests/modules/test_m20_arbitration1275_mounted.py:34: in test_forbidden_or_owner_fields_not_accepted
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+code}
+E   assert (400 == 422)
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+________________ test_decoder_or_engine_refuses_bad_input[null] ________________
+tests/modules/test_m20_arbitration1275_mounted.py:44: in test_decoder_or_engine_refuses_bad_input
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"ARB1275:BAD_TYPE:payload"}
+E   assert 400 == 422
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+_________________ test_decoder_or_engine_refuses_bad_input[[]] _________________
+tests/modules/test_m20_arbitration1275_mounted.py:44: in test_decoder_or_engine_refuses_bad_input
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"ARB1275:BAD_TYPE:payload"}
+E   assert 400 == 422
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+________ test_engine_caps_and_dates_pass_through[items-TOO_MANY:items] _________
+tests/modules/test_m20_arbitration1275_mounted.py:72: in test_engine_caps_and_dates_pass_through
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+detail}
+E   assert (400 == 422)
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+_____ test_engine_caps_and_dates_pass_through[sources-TOO_MANY:source_ids] _____
+tests/modules/test_m20_arbitration1275_mounted.py:72: in test_engine_caps_and_dates_pass_through
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+detail}
+E   assert (400 == 422)
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+_________ test_engine_caps_and_dates_pass_through[date-BAD_DATE:as_of] _________
+tests/modules/test_m20_arbitration1275_mounted.py:72: in test_engine_caps_and_dates_pass_through
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+detail}
+E   assert (400 == 422)
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+=============================== warnings summary ===============================
+<private-workspace>/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <private-workspace>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_same_dedicated_items_payload_unknown_vocab_refused
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[decide-CONCLUSION_REFUSED]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[send-EXTERNAL_EFFECT_REFUSED]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[tenant_id-UNKNOWN_KEY]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[actor_id-UNKNOWN_KEY]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[null]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[[]]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[items-TOO_MANY:items]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[sources-TOO_MANY:source_ids]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[date-BAD_DATE:as_of]
+10 failed, 9 passed, 1 warning in 7.63s

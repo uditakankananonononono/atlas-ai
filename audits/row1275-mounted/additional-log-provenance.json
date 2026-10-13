@@ -1,0 +1,29 @@
+[
+  {
+    "file": "mounted-red.log",
+    "original_sha256": "de8e3a86d2be2f0965a15017f59b4492a852427942e0a7ba8f1896a721bec11b",
+    "delivered_sha256": "d3d3fe5c83e05e15b74e5f0299965da03f2c223bf9b9de17baa394f173af0176",
+    "normalized_lines": [
+      85,
+      86
+    ]
+  },
+  {
+    "file": "initial-green-combined.log",
+    "original_sha256": "81a5f7466d76973937db6406a4d989b16165d962bf07a4ac5bbd70ff6f6f624d",
+    "delivered_sha256": "12c1316ec09a2a7e15a71e7342df66fcfa196a62ac0bb177a710b20fe7ae62f4",
+    "normalized_lines": [
+      5,
+      6
+    ]
+  },
+  {
+    "file": "final-green-combined.log",
+    "original_sha256": "ce5f114ca7e73fd6db76fe50e9233c0718159806b0a950d7f2da41b315eca45d",
+    "delivered_sha256": "0bedc0908b31f74a2d4bd28acad895597f0caffc9870f6d0aefc139794559c99",
+    "normalized_lines": [
+      5,
+      6
+    ]
+  }
+]

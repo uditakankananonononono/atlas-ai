@@ -1,0 +1,18 @@
+.............F....                                                       [100%]
+=================================== FAILURES ===================================
+_________________________ test_media_and_body_byte_cap _________________________
+tests/modules/test_m20_arbitration1275_mounted.py:49: in test_media_and_body_byte_cap
+    assert client.post(PATH,headers={**headers,'Content-Type':'text/plain'},content='private').status_code==415
+E   AssertionError: assert 422 == 415
+E    +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+E    +    where <Response [422 Unprocessable Entity]> = post('/api/v1/api/modules/20/arbitration/1275/organize', headers={'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...SebrX2mzcACdAhsIdOPfJRmWc03eyeYqOVKUIs1x-ZvUWbyyKsN8_PzQXQmaqwsYVcujJkJ-wzz0yDQvlzyFUOg', 'Content-Type': 'text/plain'}, content='private')
+E    +      where post = <starlette.testclient.TestClient object at 0x7fae66b7fb90>.post
+=============================== warnings summary ===============================
+<private-workspace>/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <private-workspace>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_media_and_body_byte_cap
+1 failed, 17 passed, 1 warning in 7.74s

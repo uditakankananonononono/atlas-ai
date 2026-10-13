@@ -1,0 +1,359 @@
+{
+  "base": "134e0dcd8fb5133e816a718831055c9f1e3e0a67",
+  "tree": "24c024614f9b4c181d42df8e5f49d1e13487adc7",
+  "file_sha256": {
+    "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+    "backend/app/modules/m20_general_cognitive_worker/routes.py": "0bcff9eb471f1c75f3d9cba97eb3f2ab70de1b83b616e28d0f62cb31826a7e5c",
+    "tests/modules/test_m20_arbitration1275_mounted.py": "ad49cd5d7450e3a34c40a52fe3c3b84fafec9af858c8d73e6f8a6576d71c72ff",
+    "backend/app/modules/m20_general_cognitive_worker/arbitration1275.py": "81896d4ad37802c3f0092ade0d739480fe3d8aa58c5b7341ff1fdd01f922cc7f"
+  },
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "tests/modules/test_m20_arbitration1275_mounted.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "normalization": "Interpreter normalized to python, private workspace prefixes to logical label, trailing whitespace trimmed. Raw originals private; listed changed lines and raw/delivered hashes.",
+  "baseline": {
+    "rc": 0,
+    "failed_ids": [],
+    "caught": false,
+    "log": "baseline.log",
+    "original_sha256": "a8e657e0ac306717bcc21fd0a0a819a798b5b8b7fdeca75f3fa03998511926ad",
+    "delivered_sha256": "230e91a8c140e7246112e25cbae409acf70dd6c42be793f96084594542efc91e",
+    "normalized_lines": [
+      {
+        "line": 3,
+        "operations": [
+          "whitespace/path-portable-normalization"
+        ]
+      },
+      {
+        "line": 4,
+        "operations": [
+          "whitespace/path-portable-normalization"
+        ]
+      }
+    ]
+  },
+  "mutants": [
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_actual_dedicated_engine_output_and_tenant_identity",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_same_dedicated_items_payload_unknown_vocab_refused",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[decide-CONCLUSION_REFUSED]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[send-EXTERNAL_EFFECT_REFUSED]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[tenant_id-UNKNOWN_KEY]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[actor_id-UNKNOWN_KEY]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[null]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[[]]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{broken]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[\\xff]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{\"jurisdiction\":NaN}]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{\"items\":[],\"items\":[]}]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_media_and_body_byte_cap",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_unknown_missing_source_and_authority_flags",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[items-TOO_MANY:items]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[sources-TOO_MANY:source_ids]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[date-BAD_DATE:as_of]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_duplicate_and_nonfinite_are_decoder_refusals_on_valid_payload"
+      ],
+      "caught": true,
+      "log": "A1275-M1.log",
+      "original_sha256": "f31b914d2a7fc8787264bf531a45da38ef3a365d0c099716195361115ac3ea5c",
+      "delivered_sha256": "d1d33a09c1c83fbaa397dd66fb821ecd4752596b71575b1277ca8b04a387c27a",
+      "normalized_lines": [
+        {
+          "line": 106,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 107,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M1",
+      "target": "backend/app/modules/m20_general_cognitive_worker/routes.py",
+      "old": "router.include_router(arbitration_router1275)",
+      "new": "",
+      "before_sha256": "0bcff9eb471f1c75f3d9cba97eb3f2ab70de1b83b616e28d0f62cb31826a7e5c",
+      "mutant_sha256": "fb6287e98f85f80664fbeca186f3bf7555ea80cac4167c316d78b1fb17c64c28",
+      "restored_sha256": "0bcff9eb471f1c75f3d9cba97eb3f2ab70de1b83b616e28d0f62cb31826a7e5c"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_media_and_body_byte_cap"
+      ],
+      "caught": true,
+      "log": "A1275-M2.log",
+      "original_sha256": "27b9a0b8bde953380327dcb7a7d7b5e783b0e03aa7ad3da874f542dba806197f",
+      "delivered_sha256": "a9fcae8b0f855e50c56e489b61608a095e26ba0568d024758d4ec4e99ef325a8",
+      "normalized_lines": [
+        {
+          "line": 11,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 12,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M2",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "if media!='application/json':",
+      "new": "if False:",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "8c77806a679d0c066f663f951bfb80049e78bdd6c813295b5d8478dc51dc7897",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_media_and_body_byte_cap"
+      ],
+      "caught": true,
+      "log": "A1275-M3.log",
+      "original_sha256": "6a0ec90483fe9723c5484bfcd0d161531b2ac4f399dc39f81d94f85afff255d1",
+      "delivered_sha256": "73690777af4a3177c63e56966284002ac526625a77b0828ba3553256e7764bf3",
+      "normalized_lines": [
+        {
+          "line": 11,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 12,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M3",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "if len(body)+len(chunk)>MAX_BODY_BYTES:",
+      "new": "if False:",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "2fc6d59770da5153492fc5635b948891b36c11b850a94a03f97c76884b7b5f35",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_duplicate_and_nonfinite_are_decoder_refusals_on_valid_payload"
+      ],
+      "caught": true,
+      "log": "A1275-M4.log",
+      "original_sha256": "fb65a1ea25c3a7d35b62a482b7d496eeaa4affecbfb0003915dc3924fceac642",
+      "delivered_sha256": "e973e402d00e6c35d85c215902682872ca7d9dc86cadfcb114f35cc224e59d77",
+      "normalized_lines": [
+        {
+          "line": 10,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 11,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M4",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "if key in result:",
+      "new": "if False:",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "c72fbf9fdaa9c21bf79741eaa610c679add2a064f8ce8b6068ea6b956e9978bf",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_duplicate_and_nonfinite_are_decoder_refusals_on_valid_payload"
+      ],
+      "caught": true,
+      "log": "A1275-M5.log",
+      "original_sha256": "f8991d0014807a892ca4e1184f0c55377e45adef9ad31572358c569585618107",
+      "delivered_sha256": "1d438b2a275e7353b842910fcf9563b2327909be828d385a53d389293f31c20c",
+      "normalized_lines": [
+        {
+          "line": 7,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 12,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 13,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M5",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "def _reject_constant(value):raise ValueError('non-finite JSON number')",
+      "new": "def _reject_constant(value):return 0",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "d6503b953cd4b5547c567d6fb3b6ab30aa1ddf10b3c2ee45fb6782dcaf575cda",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_same_dedicated_items_payload_unknown_vocab_refused",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[decide-CONCLUSION_REFUSED]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[send-EXTERNAL_EFFECT_REFUSED]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[tenant_id-UNKNOWN_KEY]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[actor_id-UNKNOWN_KEY]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[null]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[[]]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[items-TOO_MANY:items]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[sources-TOO_MANY:source_ids]",
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[date-BAD_DATE:as_of]"
+      ],
+      "caught": true,
+      "log": "A1275-M6.log",
+      "original_sha256": "2ed8c3e4d7f266905b3ed085a63091c02f8734b2a3082f19b086ef465f254720",
+      "delivered_sha256": "80d8ecceb2084fa60ed925b72c4f46054c6d785e76331f857b447d80cb4d6a59",
+      "normalized_lines": [
+        {
+          "line": 57,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 58,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M6",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "HTTPException(422,str(exc))",
+      "new": "HTTPException(400,str(exc))",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "41bf0785b03d1287cc08154e09888ea6eaacb32fc8f0751178316d24e24b44ef",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_actual_dedicated_engine_output_and_tenant_identity"
+      ],
+      "caught": true,
+      "log": "A1275-M7.log",
+      "original_sha256": "466631939800a2b4a754f76e9dd1efbad099a31310783bfdc6da8638666c2198",
+      "delivered_sha256": "d0282036bf6426c583aa7771d4ede5e65858a23945c6f82f8e8095b0b609fdee",
+      "normalized_lines": [
+        {
+          "line": 7,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 13,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 14,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M7",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "'tenant_id':principal.tenant_id",
+      "new": "'tenant_id':'wrong'",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "7814445549122ca70e20b023906872f0f40c94af91f0f2525c0e11d26fefc9a2",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    },
+    {
+      "rc": 1,
+      "failed_ids": [
+        "tests/modules/test_m20_arbitration1275_mounted.py::test_actual_dedicated_engine_output_and_tenant_identity"
+      ],
+      "caught": true,
+      "log": "A1275-M8.log",
+      "original_sha256": "cfbd92b820a03068cc96c8979033c4108f4de28bf4f5acae33f86c78dcc27bd8",
+      "delivered_sha256": "af043a7d9099b9f8126406584babe0cf81cd6016cc29bc445bbb7dda0ccf3b69",
+      "normalized_lines": [
+        {
+          "line": 7,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 13,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        },
+        {
+          "line": 14,
+          "operations": [
+            "whitespace/path-portable-normalization"
+          ]
+        }
+      ],
+      "id": "A1275-M8",
+      "target": "backend/app/modules/m20_general_cognitive_worker/arbitration_routes1275.py",
+      "old": "'actor_id':principal.actor_id",
+      "new": "'actor_id':'wrong'",
+      "before_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627",
+      "mutant_sha256": "62ca930d98c98114e1669f9c6d9da1decb691fbb950fe1f27f7d9eedbc860bef",
+      "restored_sha256": "2e055dcf17dbf33169f6670fa4e9dff033b5b5dd4f6ef0a6525d3f2b3ffa4627"
+    }
+  ],
+  "restored_baseline": {
+    "rc": 0,
+    "failed_ids": [],
+    "caught": false,
+    "log": "restored-baseline.log",
+    "original_sha256": "ea271e66481c1539dcc1d245fc933eb8dc9eadf407a4783269444e86b26448d6",
+    "delivered_sha256": "cc5294563fb0c6494b028fe846b2e7fce3f4dcf13a39744d1ce0aa660a1ebd33",
+    "normalized_lines": [
+      {
+        "line": 3,
+        "operations": [
+          "whitespace/path-portable-normalization"
+        ]
+      },
+      {
+        "line": 4,
+        "operations": [
+          "whitespace/path-portable-normalization"
+        ]
+      }
+    ]
+  }
+}

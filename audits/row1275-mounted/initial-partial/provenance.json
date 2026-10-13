@@ -1,0 +1,32 @@
+{
+  "partial_run": true,
+  "M4": "SURVIVED, uncredited",
+  "raw_directory_retained_privately": true,
+  "log_pairs": [
+    {
+      "file": "initial-partial/A1275-M1.log",
+      "original_sha256": "c5e6198892d0b1049b532ea2a45485fe3568a8db065e0daf6b90e5b170909699",
+      "delivered_sha256": "38fa1eca552fbb16dd7d238c012aa634828f62d82826d18cfa85291e479d3d03"
+    },
+    {
+      "file": "initial-partial/A1275-M2.log",
+      "original_sha256": "eaf3044d19c7e4c60f8835ccf5cf08314ceae6eb1379d6a3ba2449d63bf919df",
+      "delivered_sha256": "45f7a9d91d3a2a94785d169ae8d40881a53bb49440c01c3d48e60ea3c59cfe4c"
+    },
+    {
+      "file": "initial-partial/A1275-M3.log",
+      "original_sha256": "97fe0247ef08bbe4b35063d493388d536ec80363a4b8e5fd3cfbd4b58a3c7a81",
+      "delivered_sha256": "1d1b74dcaa4356daba6e56b3a47098b60ac5d9e5781718ee7404bd6867132f08"
+    },
+    {
+      "file": "initial-partial/A1275-M4.log",
+      "original_sha256": "049536c0145058936b75f0ef957958bb0edc9d80b7f60e57622e0c784016cc4d",
+      "delivered_sha256": "230292b0bc1f85a1f213247265ae178d4ce4fc7cf047510851ae7e17e9c90429"
+    },
+    {
+      "file": "initial-partial/baseline.log",
+      "original_sha256": "c711dd3706f50a517b42dbd1cda6b8d3a7e5e5aa28de51ae44631e39bf0c3c01",
+      "delivered_sha256": "0c6d5244470d123f2437955a67cb0d44107caa1822b33b901f0a1938e16bdfff"
+    }
+  ]
+}

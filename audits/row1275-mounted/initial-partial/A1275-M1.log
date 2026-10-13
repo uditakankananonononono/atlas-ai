@@ -1,0 +1,123 @@
+FFFFFF.FFFFFFFFFFF                                                       [100%]
+=================================== FAILURES ===================================
+___________ test_actual_dedicated_engine_output_and_tenant_identity ____________
+tests/modules/test_m20_arbitration1275_mounted.py:18: in test_actual_dedicated_engine_output_and_tenant_identity
+    assert r.status_code==200,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = <Response [404 Not Found]>.status_code
+___________ test_same_dedicated_items_payload_unknown_vocab_refused ____________
+tests/modules/test_m20_arbitration1275_mounted.py:27: in test_same_dedicated_items_payload_unknown_vocab_refused
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 422
+E    +  where 404 = <Response [404 Not Found]>.status_code
+____ test_forbidden_or_owner_fields_not_accepted[decide-CONCLUSION_REFUSED] ____
+tests/modules/test_m20_arbitration1275_mounted.py:34: in test_forbidden_or_owner_fields_not_accepted
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+code}
+E   assert (404 == 422)
+E    +  where 404 = <Response [404 Not Found]>.status_code
+__ test_forbidden_or_owner_fields_not_accepted[send-EXTERNAL_EFFECT_REFUSED] ___
+tests/modules/test_m20_arbitration1275_mounted.py:34: in test_forbidden_or_owner_fields_not_accepted
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+code}
+E   assert (404 == 422)
+E    +  where 404 = <Response [404 Not Found]>.status_code
+______ test_forbidden_or_owner_fields_not_accepted[tenant_id-UNKNOWN_KEY] ______
+tests/modules/test_m20_arbitration1275_mounted.py:34: in test_forbidden_or_owner_fields_not_accepted
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+code}
+E   assert (404 == 422)
+E    +  where 404 = <Response [404 Not Found]>.status_code
+______ test_forbidden_or_owner_fields_not_accepted[actor_id-UNKNOWN_KEY] _______
+tests/modules/test_m20_arbitration1275_mounted.py:34: in test_forbidden_or_owner_fields_not_accepted
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+code}
+E   assert (404 == 422)
+E    +  where 404 = <Response [404 Not Found]>.status_code
+________________ test_decoder_or_engine_refuses_bad_input[null] ________________
+tests/modules/test_m20_arbitration1275_mounted.py:44: in test_decoder_or_engine_refuses_bad_input
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 422
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_________________ test_decoder_or_engine_refuses_bad_input[[]] _________________
+tests/modules/test_m20_arbitration1275_mounted.py:44: in test_decoder_or_engine_refuses_bad_input
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 422
+E    +  where 404 = <Response [404 Not Found]>.status_code
+______________ test_decoder_or_engine_refuses_bad_input[{broken] _______________
+tests/modules/test_m20_arbitration1275_mounted.py:44: in test_decoder_or_engine_refuses_bad_input
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 422
+E    +  where 404 = <Response [404 Not Found]>.status_code
+________________ test_decoder_or_engine_refuses_bad_input[\xff] ________________
+tests/modules/test_m20_arbitration1275_mounted.py:44: in test_decoder_or_engine_refuses_bad_input
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 422
+E    +  where 404 = <Response [404 Not Found]>.status_code
+________ test_decoder_or_engine_refuses_bad_input[{"jurisdiction":NaN}] ________
+tests/modules/test_m20_arbitration1275_mounted.py:44: in test_decoder_or_engine_refuses_bad_input
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 422
+E    +  where 404 = <Response [404 Not Found]>.status_code
+______ test_decoder_or_engine_refuses_bad_input[{"items":[],"items":[]}] _______
+tests/modules/test_m20_arbitration1275_mounted.py:44: in test_decoder_or_engine_refuses_bad_input
+    assert r.status_code==422,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 422
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_________________________ test_media_and_body_byte_cap _________________________
+tests/modules/test_m20_arbitration1275_mounted.py:49: in test_media_and_body_byte_cap
+    assert client.post(PATH,headers={**headers,'Content-Type':'text/plain'},content='private').status_code==415
+E   AssertionError: assert 404 == 415
+E    +  where 404 = <Response [404 Not Found]>.status_code
+E    +    where <Response [404 Not Found]> = post('/api/v1/api/modules/20/arbitration/1275/organize', headers={'Authorization': 'Bearer eyJhbGciOiAiUlMyNTYiLCAia2lkIjogInRlc3Qta2V5In0.eyJpc3MiOiAiaHR0cHM6Ly9pc3N1ZXIudGVzdCIsICJh...vVXLsV1moxD81uVZcejhjM68CJ0Nd1A0N7HjkweBeI0WTuJsWB_wHBOnYkMoC5NQfwW2zapdxhV1werE7wTzTYg', 'Content-Type': 'text/plain'}, content='private')
+E    +      where post = <starlette.testclient.TestClient object at 0x7f2718fbac30>.post
+_______________ test_unknown_missing_source_and_authority_flags ________________
+tests/modules/test_m20_arbitration1275_mounted.py:58: in test_unknown_missing_source_and_authority_flags
+    assert r.status_code==200,r.text
+E   AssertionError: {"detail":"Not Found"}
+E   assert 404 == 200
+E    +  where 404 = <Response [404 Not Found]>.status_code
+________ test_engine_caps_and_dates_pass_through[items-TOO_MANY:items] _________
+tests/modules/test_m20_arbitration1275_mounted.py:72: in test_engine_caps_and_dates_pass_through
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+detail}
+E   assert (404 == 422)
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_____ test_engine_caps_and_dates_pass_through[sources-TOO_MANY:source_ids] _____
+tests/modules/test_m20_arbitration1275_mounted.py:72: in test_engine_caps_and_dates_pass_through
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+detail}
+E   assert (404 == 422)
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_________ test_engine_caps_and_dates_pass_through[date-BAD_DATE:as_of] _________
+tests/modules/test_m20_arbitration1275_mounted.py:72: in test_engine_caps_and_dates_pass_through
+    assert r.status_code==422 and r.json()=={'detail':'ARB1275:'+detail}
+E   assert (404 == 422)
+E    +  where 404 = <Response [404 Not Found]>.status_code
+=============================== warnings summary ===============================
+<private-workspace>/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <private-workspace>/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_actual_dedicated_engine_output_and_tenant_identity
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_same_dedicated_items_payload_unknown_vocab_refused
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[decide-CONCLUSION_REFUSED]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[send-EXTERNAL_EFFECT_REFUSED]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[tenant_id-UNKNOWN_KEY]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_forbidden_or_owner_fields_not_accepted[actor_id-UNKNOWN_KEY]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[null]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[[]]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{broken]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[\xff]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{"jurisdiction":NaN}]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_decoder_or_engine_refuses_bad_input[{"items":[],"items":[]}]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_media_and_body_byte_cap
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_unknown_missing_source_and_authority_flags
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[items-TOO_MANY:items]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[sources-TOO_MANY:source_ids]
+FAILED tests/modules/test_m20_arbitration1275_mounted.py::test_engine_caps_and_dates_pass_through[date-BAD_DATE:as_of]
+17 failed, 1 passed, 1 warning in 8.40s

@@ -1839,3 +1839,7 @@ from .thermal_cycling1548_routes import router as thermal_cycling1548_router
 router.include_router(thermal_cycling1548_router)
 from .humidity_exposure1549_routes import router as humidity_exposure1549_router
 router.include_router(humidity_exposure1549_router)
+
+# Dedicated arbitration item contract; shared row_inputs template remains separate.
+from .arbitration_routes1275 import router as arbitration_router1275
+router.include_router(arbitration_router1275)
