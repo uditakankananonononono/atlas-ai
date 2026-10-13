@@ -1,4 +1,8 @@
-"""Build next-token or single-position masked-token labels from input sequences."""
+"""Build next-token or single-position masked-token labels from input sequences.
+
+Mask collision validation runs in both modes: next_token also refuses any input
+token equal to the mask token, even though its output does not insert a mask.
+"""
 
 
 def build(sequences,mode,mask_token='[MASK]'):

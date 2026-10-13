@@ -83,3 +83,16 @@ def test_modes_shapes_empty_and_mask_collision_precise_refusals():
         with pytest.raises(ValueError,match='^2..100 tokens per sequence before scan$'):build([bad],'next_token')
     for mode in ('next_token','masked_token'):
         with pytest.raises(ValueError,match='^mask token must not occur in inputs$'):build([['a','[MASK]']],mode)
+
+
+@pytest.mark.parametrize('mode',['next_token','masked_token'])
+@pytest.mark.parametrize('mask',['m','茶'])
+def test_one_character_mask_tokens_accepted_in_both_modes(mode,mask):
+    r=build([['a','b']],mode,mask)
+    assert r['example_count']==(1 if mode=='next_token' else 2)
+    if mode=='masked_token':
+        assert r['examples'][0]['input_tokens']==[mask,'b']
+        assert r['examples'][1]['input_tokens']==['a',mask]
+    else:assert r['examples'][0]['input_tokens']==['a']
+    with pytest.raises(ValueError,match='^mask token must not occur in inputs$'):
+        build([['a',mask]],mode,mask)
