@@ -144,3 +144,16 @@ def test_valid_kernel_fits_only_one_axis_refused(image,kernel):
 def test_same_zero_total_padding_pins_zero_not_negative(image,kernel,stride,expected):
     r=extract(image,kernel,stride,padding='same')
     assert r['padding_top_left']==[0,0] and r['features_fraction']==expected
+
+
+@pytest.mark.parametrize('image,kernel,expected',[
+    ([[10*r+c+1 for c in range(6)] for r in range(6)],[[2]],[['2','10'],['82','90']]),
+    ([[10*r+c+1 for c in range(7)] for r in range(7)],[[1,2],[3,4]],[['86','126'],['486','526']]),
+])
+def test_same_stride_larger_than_kernel_negative_needed_padding_clamped_to_zero(image,kernel,expected):
+    # 6: ceil(6/4)=2; needed=(2-1)*4+1-6=-1.
+    # 7: ceil(7/4)=2; needed=(2-1)*4+2-7=-1.
+    # Correct zero top/left samples unpadded windows at offsets0 and4.
+    r=extract(image,kernel,4,padding='same')
+    assert r['shape']==[2,2] and r['padding_top_left']==[0,0]
+    assert r['features_fraction']==expected
