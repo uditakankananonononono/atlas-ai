@@ -1,0 +1,6 @@
+ablation, budget 1500, 20 seeds (all test tasks)
+  gated              0.298 [0.258,0.336] size=5.2
+  gated_no_rewrite   0.222 [0.184,0.258] size=3.4
+  gated_no_combine   0.298 [0.258,0.336] size=5.2
+  gated - gated_no_rewrite: +0.076 [+0.039,+0.113] 17/1/2
+  gated - gated_no_combine: +0.000 [+0.000,+0.000] 0/20/0

@@ -1,0 +1,76 @@
+n_seeds=20 budget=1500
+
+[test solved-rate, all] mean [95% bootstrap CI over seeds]
+  nolib                    0.059 [0.049, 0.070]
+  admit_all                0.271 [0.241, 0.302]
+  gated                    0.209 [0.172, 0.247]
+  random_lib_same_size     0.031 [0.016, 0.047]
+  gated_margin1_posthoc    0.286 [0.256, 0.315]
+  gated_induced_only       0.141 [0.119, 0.165]
+
+[test solved-rate, seen_themes] mean [95% bootstrap CI over seeds]
+  nolib                    0.074 [0.061, 0.087]
+  admit_all                0.396 [0.353, 0.440]
+  gated                    0.298 [0.249, 0.350]
+  random_lib_same_size     0.032 [0.015, 0.052]
+  gated_margin1_posthoc    0.416 [0.373, 0.458]
+  gated_induced_only       0.199 [0.166, 0.234]
+
+[test solved-rate, novel_themes] mean [95% bootstrap CI over seeds]
+  nolib                    0.030 [0.014, 0.050]
+  admit_all                0.013 [0.000, 0.031]
+  gated                    0.020 [0.006, 0.036]
+  random_lib_same_size     0.027 [0.007, 0.054]
+  gated_margin1_posthoc    0.021 [0.005, 0.041]
+  gated_induced_only       0.021 [0.005, 0.041]
+
+[test solved-rate, poor_examples] mean [95% bootstrap CI over seeds]
+  nolib                    0.057 [0.037, 0.080]
+  admit_all                0.159 [0.124, 0.196]
+  gated                    0.155 [0.114, 0.197]
+  random_lib_same_size     0.018 [0.007, 0.031]
+  gated_margin1_posthoc    0.244 [0.199, 0.294]
+  gated_induced_only       0.109 [0.085, 0.135]
+
+[test solved-rate, rich_examples] mean [95% bootstrap CI over seeds]
+  nolib                    0.062 [0.044, 0.083]
+  admit_all                0.370 [0.328, 0.412]
+  gated                    0.253 [0.194, 0.316]
+  random_lib_same_size     0.041 [0.019, 0.067]
+  gated_margin1_posthoc    0.325 [0.279, 0.370]
+  gated_induced_only       0.164 [0.131, 0.198]
+
+[paired difference vs nolib / admit_all, all test tasks]
+  gated - nolib: +0.150 [+0.113, +0.190]  wins/ties/losses=19/1/0
+  admit_all - nolib: +0.212 [+0.181, +0.244]  wins/ties/losses=20/0/0
+  gated - admit_all: -0.062 [-0.089, -0.030]  wins/ties/losses=3/0/17
+  gated_margin1_posthoc - admit_all: +0.015 [-0.016, +0.047]  wins/ties/losses=11/1/8
+  gated - random_lib_same_size: +0.178 [+0.138, +0.219]  wins/ties/losses=19/1/0
+  gated - gated_induced_only: +0.068 [+0.041, +0.100]  wins/ties/losses=16/4/0
+  gated_margin1_posthoc - gated: +0.077 [+0.049, +0.105]  wins/ties/losses=18/0/2
+
+[learning curve, all test tasks, mean solved-rate at acquisition tasks seen]
+  nolib                    0:0.059  60:0.059  120:0.059
+  admit_all                0:0.059  60:0.252  120:0.271
+  gated                    0:0.059  60:0.177  120:0.209
+  gated_margin1_posthoc    0:0.059  60:0.236  120:0.286
+  gated_induced_only       0:0.059  60:0.102  120:0.141
+
+[library composition at end, mean per seed]
+  nolib                    size=0.0 theme_aligned=0.0 (0%) origins={'induced': 0, 'rewritten': 0, 'combined': 0}
+  admit_all                size=59.8 theme_aligned=7.7 (13%) origins={'induced': 35.55, 'rewritten': 24.1, 'combined': 0.15}
+  gated                    size=3.9 theme_aligned=2.2 (58%) origins={'induced': 1.9, 'rewritten': 2, 'combined': 0}
+  gated_margin1_posthoc    size=7.8 theme_aligned=3.9 (49%) origins={'induced': 3.85, 'rewritten': 3.7, 'combined': 0.3}
+  gated_induced_only       size=2.3 theme_aligned=1.6 (67%) origins={'induced': 2.3, 'rewritten': 0, 'combined': 0}
+
+[candidate decisions pooled over seeds, gated]
+  ('combined', 'reject_no_unseen_gain'): 167
+  ('induced', 'admit'): 38
+  ('induced', 'duplicate'): 199
+  ('induced', 'reject_no_unseen_gain'): 815
+  ('rewritten', 'admit'): 40
+  ('rewritten', 'duplicate'): 3
+  ('rewritten', 'reject_no_unseen_gain'): 579
+
+[admit_all admitted skills: all passed own tests by construction] theme_aligned=154 not_theme_aligned=1042
+[gated admitted skills] theme_aligned=45 not_theme_aligned=33

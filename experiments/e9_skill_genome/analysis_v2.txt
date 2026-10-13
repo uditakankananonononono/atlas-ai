@@ -1,0 +1,103 @@
+
+=== budget 500  seeds=20  test tasks/seed=80 (20 per category), validation 40 ===
+test solved-rate mean [95% CI over seeds]:
+  cond                                      all                  seen_full                seen_extraA seen_extraB_heldout_sampling                novel_theme
+  nolib                  0.021 [0.014,0.029]                      0.003                      0.040                      0.015                      0.028
+  admit_all              0.169 [0.139,0.199]                      0.297                      0.210                      0.163                      0.005
+  gated                  0.294 [0.270,0.319]                      0.497                      0.338                      0.323                      0.020
+  gated_audit            0.296 [0.274,0.320]                      0.507                      0.338                      0.318                      0.023
+  joint_audit            0.299 [0.274,0.324]                      0.507                      0.340                      0.330                      0.018
+  random_lib_same_size   0.016 [0.009,0.023]                      0.003                      0.025                      0.013                      0.022
+paired differences, all test tasks (mean [CI], seed wins/ties/losses):
+  admit_all - nolib: +0.147 [+0.117,+0.180] 20/0/0
+  gated - nolib: +0.273 [+0.248,+0.299] 20/0/0
+  joint_audit - nolib: +0.277 [+0.251,+0.304] 20/0/0
+  gated - admit_all: +0.126 [+0.097,+0.156] 20/0/0
+  joint_audit - admit_all: +0.130 [+0.091,+0.165] 19/0/1
+  joint_audit - gated: +0.004 [-0.022,+0.031] 11/3/6
+  gated_audit - gated: +0.002 [-0.006,+0.012] 3/15/2
+  joint_audit - random_lib_same_size: +0.283 [+0.253,+0.312] 20/0/0
+novel_theme paired differences vs nolib (does a library hurt tasks outside its themes?):
+  admit_all - nolib: -0.023 [-0.033,-0.013] 0/11/9
+  gated - nolib: -0.008 [-0.015,+0.000] 0/17/3
+  gated_audit - nolib: -0.005 [-0.013,+0.000] 0/18/2
+  joint_audit - nolib: -0.010 [-0.020,-0.003] 0/16/4
+library at end (mean): nolib size=0.0 aligned=0.0 retired=0.00; admit_all size=40.4 aligned=6.7 retired=0.00; gated size=5.5 aligned=3.4 retired=0.00; gated_audit size=5.2 aligned=3.3 retired=0.30; joint_audit size=5.9 aligned=3.4 retired=0.80
+joint rounds: {'admit_set': 60, 'reject_set': 60}
+gated candidate decisions: {'admit': 109, 'reject_no_unseen_gain': 1381, 'duplicate': 291}
+curve (all, after 0/60/120): nolib: 0.021/0.021/0.021; admit_all: 0.021/0.169/0.169; gated: 0.021/0.235/0.294; gated_audit: 0.021/0.233/0.296; joint_audit: 0.021/0.231/0.299
+
+=== budget 1500  seeds=20  test tasks/seed=80 (20 per category), validation 40 ===
+test solved-rate mean [95% CI over seeds]:
+  cond                                      all                  seen_full                seen_extraA seen_extraB_heldout_sampling                novel_theme
+  nolib                  0.069 [0.059,0.079]                      0.170                      0.062                      0.015                      0.030
+  admit_all              0.304 [0.275,0.334]                      0.472                      0.388                      0.350                      0.005
+  gated                  0.298 [0.258,0.336]                      0.497                      0.340                      0.320                      0.035
+  gated_audit            0.297 [0.256,0.336]                      0.502                      0.343                      0.310                      0.035
+  joint_audit            0.329 [0.286,0.368]                      0.547                      0.357                      0.367                      0.043
+  random_lib_same_size   0.029 [0.022,0.037]                      0.005                      0.053                      0.020                      0.040
+paired differences, all test tasks (mean [CI], seed wins/ties/losses):
+  admit_all - nolib: +0.234 [+0.201,+0.268] 20/0/0
+  gated - nolib: +0.229 [+0.188,+0.266] 19/1/0
+  joint_audit - nolib: +0.259 [+0.216,+0.299] 20/0/0
+  gated - admit_all: -0.006 [-0.043,+0.030] 10/1/9
+  joint_audit - admit_all: +0.025 [-0.013,+0.062] 13/0/7
+  joint_audit - gated: +0.031 [-0.009,+0.071] 12/1/7
+  gated_audit - gated: -0.001 [-0.009,+0.006] 3/15/2
+  joint_audit - random_lib_same_size: +0.299 [+0.258,+0.339] 20/0/0
+novel_theme paired differences vs nolib (does a library hurt tasks outside its themes?):
+  admit_all - nolib: -0.025 [-0.038,-0.013] 0/11/9
+  gated - nolib: +0.005 [+0.000,+0.013] 2/18/0
+  gated_audit - nolib: +0.005 [+0.000,+0.013] 2/18/0
+  joint_audit - nolib: +0.013 [+0.005,+0.023] 5/15/0
+library at end (mean): nolib size=0.0 aligned=0.0 retired=0.00; admit_all size=60.5 aligned=7.8 retired=0.00; gated size=5.2 aligned=3.2 retired=0.00; gated_audit size=4.8 aligned=2.9 retired=0.40; joint_audit size=6.4 aligned=3.7 retired=0.75
+joint rounds: {'admit_set': 55, 'reject_set': 65}
+gated candidate decisions: {'admit': 104, 'reject_no_unseen_gain': 1511, 'duplicate': 261}
+curve (all, after 0/60/120): nolib: 0.069/0.069/0.069; admit_all: 0.069/0.276/0.304; gated: 0.069/0.247/0.298; gated_audit: 0.069/0.245/0.297; joint_audit: 0.069/0.266/0.329
+
+=== budget 5000  seeds=8  test tasks/seed=80 (20 per category), validation 40 ===
+test solved-rate mean [95% CI over seeds]:
+  cond                                      all                  seen_full                seen_extraA seen_extraB_heldout_sampling                novel_theme
+  nolib                  0.183 [0.163,0.200]                      0.319                      0.125                      0.094                      0.194
+  admit_all              0.398 [0.367,0.438]                      0.525                      0.450                      0.575                      0.044
+  gated                  0.350 [0.305,0.392]                      0.544                      0.375                      0.394                      0.087
+  gated_audit            0.353 [0.316,0.391]                      0.556                      0.369                      0.381                      0.106
+  joint_audit            0.353 [0.334,0.370]                      0.550                      0.338                      0.431                      0.094
+  random_lib_same_size   0.044 [0.016,0.077]                      0.050                      0.056                      0.019                      0.050
+paired differences, all test tasks (mean [CI], seed wins/ties/losses):
+  admit_all - nolib: +0.216 [+0.181,+0.256] 8/0/0
+  gated - nolib: +0.167 [+0.125,+0.202] 8/0/0
+  joint_audit - nolib: +0.170 [+0.144,+0.195] 8/0/0
+  gated - admit_all: -0.048 [-0.094,-0.005] 3/0/5
+  joint_audit - admit_all: -0.045 [-0.083,-0.013] 1/0/7
+  joint_audit - gated: +0.003 [-0.036,+0.039] 5/1/2
+  gated_audit - gated: +0.003 [-0.011,+0.017] 2/5/1
+  joint_audit - random_lib_same_size: +0.309 [+0.286,+0.331] 8/0/0
+novel_theme paired differences vs nolib (does a library hurt tasks outside its themes?):
+  admit_all - nolib: -0.150 [-0.200,-0.094] 0/1/7
+  gated - nolib: -0.106 [-0.144,-0.062] 0/1/7
+  gated_audit - nolib: -0.088 [-0.125,-0.044] 0/2/6
+  joint_audit - nolib: -0.100 [-0.144,-0.050] 1/0/7
+library at end (mean): nolib size=0.0 aligned=0.0 retired=0.00; admit_all size=66.8 aligned=8.2 retired=0.00; gated size=4.5 aligned=2.2 retired=0.00; gated_audit size=3.8 aligned=1.9 retired=0.75; joint_audit size=5.4 aligned=2.4 retired=1.50
+joint rounds: {'admit_set': 19, 'reject_set': 29}
+gated candidate decisions: {'reject_no_unseen_gain': 726, 'admit': 36, 'duplicate': 128}
+curve (all, after 0/60/120): nolib: 0.183/0.183/0.183; admit_all: 0.183/0.305/0.398; gated: 0.183/0.303/0.350; gated_audit: 0.183/0.308/0.353; joint_audit: 0.183/0.338/0.353
+
+=== budget 20000  seeds=3  test tasks/seed=80 (20 per category), validation 40 ===
+test solved-rate mean [95% CI over seeds]:
+  cond                                      all                  seen_full                seen_extraA seen_extraB_heldout_sampling                novel_theme
+  nolib                  0.421 [0.375,0.475]                      0.567                      0.317                      0.333                      0.467
+  admit_all              0.413 [0.375,0.463]                      0.500                      0.467                      0.600                      0.083
+  joint_audit            0.525 [0.438,0.600]                      0.700                      0.433                      0.517                      0.450
+  random_lib_same_size   0.392 [0.362,0.438]                      0.500                      0.300                      0.317                      0.450
+paired differences, all test tasks (mean [CI], seed wins/ties/losses):
+  admit_all - nolib: -0.008 [-0.037,+0.025] 1/0/2
+  joint_audit - nolib: +0.104 [+0.062,+0.125] 3/0/0
+  joint_audit - admit_all: +0.112 [+0.037,+0.162] 3/0/0
+  joint_audit - random_lib_same_size: +0.133 [+0.062,+0.175] 3/0/0
+novel_theme paired differences vs nolib (does a library hurt tasks outside its themes?):
+  admit_all - nolib: -0.383 [-0.450,-0.300] 0/0/3
+  joint_audit - nolib: -0.017 [-0.050,+0.000] 0/2/1
+library at end (mean): nolib size=0.0 aligned=0.0 retired=0.00; admit_all size=77.3 aligned=7.7 retired=0.00; joint_audit size=4.0 aligned=1.3 retired=0.33
+joint rounds: {'admit_set': 3, 'reject_set': 15}
+curve (all, after 0/60/120): nolib: 0.421/0.421/0.421; admit_all: 0.421/0.371/0.413; joint_audit: 0.421/0.525/0.525
