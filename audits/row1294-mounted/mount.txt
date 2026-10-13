@@ -1,0 +1,2 @@
+from app.modules.m20_general_cognitive_worker.legal_malpractice1294_routes import router as row1294_router
+app.include_router(row1294_router)
