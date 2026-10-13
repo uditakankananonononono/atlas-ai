@@ -135,12 +135,14 @@ def bind_artifacts(register, root, bindings, *, source_reader=None):
 
     source_reader is an operator-owned callable, separate from row declarations.
     It receives the declared source/source_ref and returns fetched source bytes.
-    VERIFIED means exact local/source byte equality in this run, not licensing,
+    VERIFIED requires nonempty local/source byte equality AND parsed count match, not licensing,
     authorship, scientific adequacy or whole-project fulfillment. A supplied
     receipt/status/hash cannot select VERIFIED. Readers must enforce their own
     authorization, network destinations, timeouts and size limits.
     """
     from pathlib import Path
+    import io
+    from .dataset_count_reader_p254 import check_declared
     from .repo_evidence import EvidenceError, digest, safe_file
     if not isinstance(register, DatasetRegister):
         raise _err('bad_type:register')
@@ -156,7 +158,7 @@ def bind_artifacts(register, root, bindings, *, source_reader=None):
     by_id = {}
     known = {row[0] for row in register.entries}
     for binding in bindings:
-        if type(binding) is not dict or set(binding) != {'entry_id', 'artifact_path', 'row_ids', 'project_ids'}:
+        if type(binding) is not dict or not {'entry_id', 'artifact_path', 'row_ids', 'project_ids'} <= set(binding) or set(binding) - {'entry_id', 'artifact_path', 'row_ids', 'project_ids', 'format'}:
             raise _err('bad_fields:binding')
         ident = binding['entry_id']
         if not isinstance(ident, str) or ident not in known or ident in by_id:
@@ -177,7 +179,9 @@ def bind_artifacts(register, root, bindings, *, source_reader=None):
                   'artifact_sha256': None, 'source_sha256': None, 'source_checked': False,
                   'source_metadata_present': bool(source.strip() and source_ref.strip()),
                   'source_authenticity_verified': False, 'source_metadata_redacted': True,
-                  'empty_content_match': False,
+                  'empty_content_match': False, 'source_bytes_match': False,
+                  'record_count_status': 'UNVERIFIED', 'counted_records': None,
+                  'record_count_reason': 'No supported parsed artifact count',
                   'row_ids': [], 'project_ids': [project],
                   'reference_scope': 'operator-declared references; not exhaustive discovery',
                   'reason': 'No local artifact binding'}
@@ -191,21 +195,26 @@ def bind_artifacts(register, root, bindings, *, source_reader=None):
                 artifact = safe_file(root, binding['artifact_path']).read_bytes()
                 result['artifact_sha256'] = digest(artifact)
                 result['artifact_bytes'] = len(artifact)
-                result['provenance'] = 'DECLARED-ONLY'
-                result['reason'] = 'Local artifact exists; declared source not independently read'
+                counted = check_declared(io.BytesIO(artifact), binding.get('format'), declared_count)
+                result['record_count_status'] = counted['status']
+                result['counted_records'] = counted['counted_records']
+                result['record_count_reason'] = counted['reason']
+                result['provenance'] = 'DECLARED-ONLY' if counted['status'] == 'COUNT_MATCH' else 'UNVERIFIED'
+                result['reason'] = 'Parsed count matches; source not independently read' if counted['status'] == 'COUNT_MATCH' else 'Artifact record count unverified or mismatched'
                 if source_reader is not None:
                     fetched = source_reader(source, source_ref)
                     if type(fetched) is not bytes or len(fetched) > 8_000_000:
                         raise EvidenceError('source reader must return bounded bytes')
                     result['source_sha256'] = digest(fetched)
                     result['source_checked'] = True
-                    if fetched == artifact and artifact:
+                    result['source_bytes_match'] = fetched == artifact and bool(artifact)
+                    if result['source_bytes_match'] and result['record_count_status'] == 'COUNT_MATCH':
                         result['provenance'] = 'VERIFIED'
-                        result['reason'] = 'Executed source read matches local artifact bytes'
+                        result['reason'] = 'Executed source bytes match and parsed record count matches declaration'
                     else:
                         result['provenance'] = 'UNVERIFIED'
                         result['empty_content_match'] = fetched == artifact and not artifact
-                        result['reason'] = 'Empty source/artifact match excluded' if result['empty_content_match'] else 'Executed source bytes differ from local artifact'
+                        result['reason'] = 'Empty source/artifact match excluded' if result['empty_content_match'] else 'Equal bytes do not establish declared record count' if result['source_bytes_match'] else 'Executed source bytes differ from local artifact'
             except Exception as exc:
                 result['provenance'] = 'UNVERIFIED'
                 result['reason'] = 'Artifact/source read failed: ' + type(exc).__name__
@@ -222,4 +231,4 @@ def bind_artifacts(register, root, bindings, *, source_reader=None):
             'counts': {status: sum(row['provenance'] == status for row in rows) for status in ('VERIFIED', 'DECLARED-ONLY', 'UNVERIFIED')},
             'artifact_references': {sha: {'entry_ids': sorted(bucket['entry_ids']), 'project_ids': sorted(bucket['project_ids']), 'row_ids': sorted(bucket['row_ids'])} for sha, bucket in sorted(cross.items())},
             'unbound_entry_ids': sorted(known - set(by_id)),
-            'boundary': 'Executed local/source content binding only. Counts remain declarations; reference mappings are not semantic acceptance; private source metadata must stay private.'}
+            'boundary': 'Executed local/source content binding only. Parsed count match is format-scoped only, not authenticity or dataset quality; reference mappings are not semantic acceptance; private source metadata must stay private.'}

@@ -16,7 +16,8 @@ def setup(tmp_path):
 def test_every_declared_row_has_status(tmp_path):
     register, binding = setup(tmp_path)
     result = bind_artifacts(register, tmp_path, [binding])
-    assert result['counts'] == {'VERIFIED': 0, 'DECLARED-ONLY': 1, 'UNVERIFIED': 1}
+    assert result['counts'] == {'VERIFIED': 0, 'DECLARED-ONLY': 0, 'UNVERIFIED': 2}
+    assert result['entries'][0]['counted_records'] is None
     assert result['unbound_entry_ids'] == ['b']
     assert result['entries'][0]['declared_records'] == 999
     assert not result['entries'][0]['source_checked']
@@ -30,7 +31,8 @@ def test_executed_reader_required_for_verified(tmp_path):
         return b'id\n1\n'
     result = bind_artifacts(register, tmp_path, [binding], source_reader=reader)
     assert calls == [('fixture-source', 'fixture-ref')]
-    assert result['entries'][0]['provenance'] == 'VERIFIED'
+    assert result['entries'][0]['provenance'] == 'UNVERIFIED'
+    assert result['entries'][0]['counted_records'] is None
     assert result['entries'][0]['source_sha256'] == result['entries'][0]['artifact_sha256']
 
 
@@ -84,7 +86,8 @@ def test_local_separate_source_read_executes(tmp_path):
     register, binding = setup(tmp_path)
     (tmp_path / 'separate-source.csv').write_bytes(b'id\n1\n')
     result = bind_artifacts(register, tmp_path, [binding], source_reader=lambda *args: (tmp_path / 'separate-source.csv').read_bytes())
-    assert result['entries'][0]['provenance'] == 'VERIFIED'
+    assert result['entries'][0]['provenance'] == 'UNVERIFIED'
+    assert result['entries'][0]['counted_records'] is None
     assert not result['source_authenticity_verified']
 
 
