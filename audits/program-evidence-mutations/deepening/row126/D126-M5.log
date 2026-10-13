@@ -1,0 +1,9 @@
+.....................F                                                   [100%]
+=================================== FAILURES ===================================
+_______________ test_isolated_final_status_digest_drift_demotes ________________
+tests/test_row126_validation_deepening.py:24: in test_isolated_final_status_digest_drift_demotes
+    assert out['final_snapshot_stable'] is False
+E   assert True is False
+=========================== short test summary info ============================
+FAILED tests/test_row126_validation_deepening.py::test_isolated_final_status_digest_drift_demotes
+1 failed, 21 passed in 2.18s

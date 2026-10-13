@@ -1,0 +1,10 @@
+..................F...                                                   [100%]
+=================================== FAILURES ===================================
+___________________ test_project_upper_edges_refused[bytes] ____________________
+tests/test_row126_validation_deepening.py:14: in test_project_upper_edges_refused
+    with pytest.raises(ValueError):m.inspect_projects(root,items,**kw)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ============================
+FAILED tests/test_row126_validation_deepening.py::test_project_upper_edges_refused[bytes]
+1 failed, 21 passed in 2.28s

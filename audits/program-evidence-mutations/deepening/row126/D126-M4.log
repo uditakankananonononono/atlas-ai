@@ -1,0 +1,10 @@
+.....F................                                                   [100%]
+=================================== FAILURES ===================================
+______________ test_helper_error_confined_and_pairing_disclaimed _______________
+tests/test_project_code_execution_summary.py:66: in test_helper_error_confined_and_pairing_disclaimed
+    assert all(not row['selection_pairing_verified'] for row in out['projects'])
+E   assert False
+E    +  where False = all(<generator object test_helper_error_confined_and_pairing_disclaimed.<locals>.<genexpr> at 0x7f066f0bae90>)
+=========================== short test summary info ============================
+FAILED tests/test_project_code_execution_summary.py::test_helper_error_confined_and_pairing_disclaimed
+1 failed, 21 passed in 2.16s

@@ -1,0 +1,43 @@
+{
+  "row": 126,
+  "tests": [
+    "tests/test_project_code_execution_summary.py"
+  ],
+  "mutants": [
+    {
+      "id": "D126-M1",
+      "name": "initial-byte-upper-edge",
+      "file": "backend/app/modules/instinct_doc/code_test_summary_p256.py",
+      "old": "1 <= max_initial_bytes <= 64_000_000",
+      "new": "1 <= max_initial_bytes <= 64_000_001"
+    },
+    {
+      "id": "D126-M2",
+      "name": "execute-type-refusal",
+      "file": "backend/app/modules/instinct_doc/code_test_summary_p256.py",
+      "old": "if type(execute) is not bool:",
+      "new": "if False:"
+    },
+    {
+      "id": "D126-M3",
+      "name": "project-count-edge",
+      "file": "backend/app/modules/instinct_doc/code_test_summary_p256.py",
+      "old": "if type(projects) is not list or len(projects) > MAX_PROJECTS:\n        raise _err('projects must be a bounded list')",
+      "new": "if type(projects) is not list or len(projects) > MAX_PROJECTS + 1:\n        raise _err('projects must be a bounded list')"
+    },
+    {
+      "id": "D126-M4",
+      "name": "pairing-nonpromotion",
+      "file": "backend/app/modules/instinct_doc/code_test_summary_p256.py",
+      "old": "'selection_pairing_verified': False",
+      "new": "'selection_pairing_verified': True"
+    },
+    {
+      "id": "D126-M5",
+      "name": "final-status-drift",
+      "file": "backend/app/modules/instinct_doc/code_test_summary_p256.py",
+      "old": "and final['status_digest'] == snap['status_digest']",
+      "new": ""
+    }
+  ]
+}
