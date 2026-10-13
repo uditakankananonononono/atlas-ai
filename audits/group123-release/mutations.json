@@ -1,0 +1,49 @@
+{
+  "row": 123,
+  "selectors": [
+    "tests/test_repository_release_g123.py"
+  ],
+  "timeout_seconds": 45,
+  "limits": [
+    "Trusted local authored Git fixture repositories, no remote access",
+    "Not signed artifact authenticity, hosting or product completion"
+  ],
+  "mutations": [
+    {
+      "id": "bundle_hash",
+      "path": "backend/app/modules/instinct_doc/repository_release_g123.py",
+      "old": "if _digest_file(bundle,MAX_BUNDLE) != s['bundle_sha256']:",
+      "new": "if False:"
+    },
+    {
+      "id": "restore_compare",
+      "path": "backend/app/modules/instinct_doc/repository_release_g123.py",
+      "old": "if head != s['head'] or files != s['files'] or modes != s['modes']:",
+      "new": "if False:"
+    },
+    {
+      "id": "dirty",
+      "path": "backend/app/modules/instinct_doc/repository_release_g123.py",
+      "old": "if _git(root,'status','--porcelain','--untracked-files=all'):",
+      "new": "if False:"
+    },
+    {
+      "id": "source_change",
+      "path": "backend/app/modules/instinct_doc/repository_release_g123.py",
+      "old": "if _head(root) != head or _git(root,'status','--porcelain','--untracked-files=all'):",
+      "new": "if False:"
+    },
+    {
+      "id": "mode_gate",
+      "path": "backend/app/modules/instinct_doc/repository_release_g123.py",
+      "old": "if mode not in ('100644', '100755') or kind != 'blob':",
+      "new": "if False:"
+    },
+    {
+      "id": "top_level",
+      "path": "backend/app/modules/instinct_doc/repository_release_g123.py",
+      "old": "if _git(root,'rev-parse','--show-toplevel').decode().strip() != str(root):",
+      "new": "if False:"
+    }
+  ]
+}
