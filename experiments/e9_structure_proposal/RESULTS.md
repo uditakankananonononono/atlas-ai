@@ -128,7 +128,7 @@ Python 3.12.14; numpy 2.5.4; pytest 9.1.1. Commands from repository root:
 ```sh
 python3.12 -m venv .venv-e9
 .venv-e9/bin/python -m pip install -r experiments/e9_structure_proposal/requirements.txt
-.venv-e9/bin/python -m pytest -q experiments/e9_structure_proposal/test_engine.py
+.venv-e9/bin/python -m pytest -q experiments/e9_structure_proposal/test_structure_engine.py
 .venv-e9/bin/python experiments/e9_structure_proposal/run.py --output /tmp/e9-clean
 .venv-e9/bin/python experiments/e9_structure_proposal/run.py --output /tmp/e9-noisy --worlds 40 --seeds 2 --noise .1
 .venv-e9/bin/python experiments/e9_structure_proposal/run.py --output /tmp/e9-outside --worlds 20 --seeds 2 --outside
