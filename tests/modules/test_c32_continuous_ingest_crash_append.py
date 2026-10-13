@@ -300,3 +300,19 @@ def test_same_size_completed_rewrite_new_mtime_reingested(tmp_path):
     assert result['run']['records'] == 2
     assert result['run']['deduped'] == 0
     assert result['cumulative']['records_ingested'] == 4
+
+
+def test_completed_200_line_tail_rewrite_detected(tmp_path):
+    import os
+    content = ''.join(json.dumps({'id': i, 'text': 'a'*60})+'\n' for i in range(200))
+    inbox,path,state=setup(tmp_path,content)
+    ci.run(str(inbox),state)
+    stat=path.stat()
+    lines=content.splitlines(keepends=True)
+    lines[-1]=lines[-1].replace('a'*60,'z'*60)
+    path.write_text(''.join(lines))
+    os.utime(path,ns=(stat.st_atime_ns,stat.st_mtime_ns+1000000000))
+    result=ci.run(str(inbox),state)
+    assert result['run']['records']==1
+    assert result['run']['deduped']==199
+    assert result['cumulative']['records_ingested']==201

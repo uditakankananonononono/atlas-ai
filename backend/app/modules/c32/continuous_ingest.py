@@ -21,6 +21,7 @@ MAX_LINE = 100000  # bytes, including newline
 MAX_PENDING_REPORT = 1000
 MAX_LEGACY_BYTES = 8 * 1024 * 1024
 STATE_VERSION = 2
+MAX_FINGERPRINT = 8 * 1024 * 1024
 
 
 def _err(code, detail=None):
@@ -29,6 +30,24 @@ def _err(code, detail=None):
 
 def _record_hash(line):
     return hashlib.sha256(line.encode('utf-8')).hexdigest()
+
+
+def _fingerprint(stream, length):
+    """Streaming hash, at most 8 MiB, with bounded 64 KiB transient chunks."""
+    position = stream.tell()
+    stream.seek(0)
+    remaining = min(length, MAX_FINGERPRINT)
+    digest = hashlib.sha256()
+    try:
+        while remaining:
+            chunk = stream.read(min(remaining, 65536))
+            if not chunk:
+                break
+            digest.update(chunk)
+            remaining -= len(chunk)
+        return digest.hexdigest()
+    finally:
+        stream.seek(position)
 
 
 def _save_state(state_path, state):
@@ -174,7 +193,7 @@ def run(inbox_dir, state_path, batch_size=1000, max_pending=64,
     Partial final lines wait for a newline. Changed completed files are reopened;
     replacement/truncation restarts at zero, preserving content dedupe. Same-inode
     same-size same-mtime edits and in-place rewrites of an active prefix are not
-    detected outside the first 4096 bytes. Inputs must be append-only until completed, then immutable except
+    detected outside the first 8 MiB. Inputs must be append-only until completed, then immutable except
     append/replacement/truncation. Symlink inputs are refused. Local Linux only.
     """
     if type(inbox_dir) is not str or not os.path.isdir(inbox_dir) or os.path.islink(inbox_dir):
@@ -210,13 +229,13 @@ def run(inbox_dir, state_path, batch_size=1000, max_pending=64,
                 if prior[5] == stat.st_mtime_ns:
                     continue
                 # mtime-only touch is free of duplicate recount; small-file
-                # fingerprints cover all bytes, larger files only 4096 bytes.
+                # fingerprints cover all bytes, larger files only 8 MiB.
                 probe_fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
                 with os.fdopen(probe_fd, 'rb') as probe:
                     actual = os.fstat(probe.fileno())
                     if (actual.st_dev, actual.st_ino) != (stat.st_dev, stat.st_ino):
                         _err('PATH', 'changed_input')
-                    fingerprint = hashlib.sha256(probe.read(min(prior[2], 4096))).hexdigest()
+                    fingerprint = _fingerprint(probe, prior[2])
                 if prior[6] is not None and fingerprint == prior[6]:
                     with conn:
                         conn.execute('UPDATE files SET mtime_ns=? WHERE name=?', (stat.st_mtime_ns, name))
@@ -241,13 +260,13 @@ def run(inbox_dir, state_path, batch_size=1000, max_pending=64,
                 if (actual.st_dev, actual.st_ino) != (stat.st_dev, stat.st_ino):
                     _err('PATH', 'changed_input')
                 if prior and offset and prior[6] is not None:
-                    fingerprint = hashlib.sha256(stream.read(min(offset, 4096))).hexdigest()
+                    fingerprint = _fingerprint(stream, offset)
                     if fingerprint != prior[6]:
                         offset = 0
                 def prefix_hash():
                     position = stream.tell()
                     stream.seek(0)
-                    fingerprint = hashlib.sha256(stream.read(min(offset, 4096))).hexdigest()
+                    fingerprint = _fingerprint(stream, offset)
                     stream.seek(position)
                     return fingerprint
                 stream.seek(offset)
@@ -302,5 +321,5 @@ def run(inbox_dir, state_path, batch_size=1000, max_pending=64,
                        'Each line is bounded to 100000 bytes including newline; partial lines await completion.',
                        'Oversize-line files are quarantined until stat metadata changes; later files continue. Good prefixes commit without consuming the poison line.',
                        'Throughput excludes time lost before a crash; committed record/byte counts survive.',
-                       'Only the first 4096 bytes of an active prefix are fingerprinted; other in-place edits and same-size same-mtime rewrites are not detected; changed mtime checks only the first 4096 bytes (entire file if small).',
+                       'Only the first 8 MiB of an active prefix are fingerprinted; other in-place edits and same-size same-mtime rewrites are not detected; changed mtime checks only the first 8 MiB (entire file when at most 8 MiB).',
                        'Legacy state migration is capped at 8 MiB; larger archives require a separate migration.']}
