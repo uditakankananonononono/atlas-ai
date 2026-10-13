@@ -45,7 +45,7 @@ for name, old, new in M:
     out=pathlib.Path(tempfile.gettempdir()) / ('j1_pin_mut_%d.py' % M.index((name, old, new))); out.write_text(src.replace(old,new,1))
     env=dict(os.environ, J1_SOURCE=str(out), PYTHONPATH=str(ROOT / 'backend'))
     r=subprocess.run([sys.executable,'-m','pytest','-q','-x',str(ROOT / 'tests/j1_forecast/test_j1_forecast_pins.py')],capture_output=True,text=True,env=env,cwd=str(ROOT),timeout=100)
-    k = r.returncode!=0
+    k = r.returncode == 1
     print(('KILLED  ' if k else 'SURVIVED'), name)
     if not k: surv.append(name)
 print('survivors:',surv)
