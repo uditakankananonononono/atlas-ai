@@ -1,0 +1,12 @@
+......................F.                                                 [100%]
+=================================== FAILURES ===================================
+___________________ test_blocker_and_check_identity_retained ___________________
+tests/test_row132_retention_deepening.py:10: in test_blocker_and_check_identity_retained
+    assert [b['line_id'] for b in out['blockers']]==[r['line_id'] for r in out['lines']]
+E   AssertionError: assert ['wrong', 'wrong'] == ['export:L1', 'export:L2']
+E
+E     At index 0 diff: 'wrong' != 'export:L1'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_row132_retention_deepening.py::test_blocker_and_check_identity_retained
+1 failed, 23 passed in 5.09s

@@ -1,0 +1,12 @@
+......................F.                                                 [100%]
+=================================== FAILURES ===================================
+___________________ test_blocker_and_check_identity_retained ___________________
+tests/test_row132_retention_deepening.py:11: in test_blocker_and_check_identity_retained
+    assert [b['reason'] for b in out['blockers']]==[r['reason'] for r in out['lines']]
+E   AssertionError: assert ['', ''] == ['Scoped exec...lected check']
+E
+E     At index 0 diff: '' != 'Scoped execution observed; semantic acceptance remains a separate blocker'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_row132_retention_deepening.py::test_blocker_and_check_identity_retained
+1 failed, 23 passed in 5.08s

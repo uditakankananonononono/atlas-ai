@@ -1,0 +1,14 @@
+.......F...............F                                                 [100%]
+=================================== FAILURES ===================================
+_______________ test_postrun_inventory_error_preserves_receipts ________________
+tests/test_executed_acceptance.py:99: in test_postrun_inventory_error_preserves_receipts
+    assert out['scoped_passing_lines']==0
+E   assert 1 == 0
+___________ test_postread_error_explicitly_demotes_source_stability ____________
+tests/test_row132_retention_deepening.py:23: in test_postread_error_explicitly_demotes_source_stability
+    assert out['source_stable_after_runs'] is False
+E   assert True is False
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts
+FAILED tests/test_row132_retention_deepening.py::test_postread_error_explicitly_demotes_source_stability
+2 failed, 22 passed in 4.90s

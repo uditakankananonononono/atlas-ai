@@ -1,0 +1,44 @@
+{
+  "row": 132,
+  "tests": [
+    "tests/test_executed_acceptance.py",
+    "tests/test_row132_mutation_sensitivity.py"
+  ],
+  "mutants": [
+    {
+      "id": "D132-M1",
+      "name": "source-path-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'source_path': source_path",
+      "new": "'source_path': ''"
+    },
+    {
+      "id": "D132-M2",
+      "name": "blocker-line-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'line_id': row['line_id'], 'status': 'UNVERIFIED'",
+      "new": "'line_id': 'wrong', 'status': 'UNVERIFIED'"
+    },
+    {
+      "id": "D132-M3",
+      "name": "blocker-reason-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "'reason': row['reason']} for row in rows]",
+      "new": "'reason': ''} for row in rows]"
+    },
+    {
+      "id": "D132-M4",
+      "name": "receipt-id-retention",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "append({'id': ident, 'run': run})",
+      "new": "append({'id': 'wrong', 'run': run})"
+    },
+    {
+      "id": "D132-M5",
+      "name": "post-error-failure-flag",
+      "file": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "old": "source_stable = False\n        rehash_error",
+      "new": "source_stable = True\n        rehash_error"
+    }
+  ]
+}

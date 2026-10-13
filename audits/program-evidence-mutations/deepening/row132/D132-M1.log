@@ -1,0 +1,11 @@
+.........F..............                                                 [100%]
+=================================== FAILURES ===================================
+__________________ test_inventory_bytes_hash_and_disclosures ___________________
+tests/test_executed_acceptance.py:118: in test_inventory_bytes_hash_and_disclosures
+    assert out['source_path']=='source.txt' and out['head'] and out['tree_digest']
+E   AssertionError: assert ('' == 'source.txt'
+E
+E     - source.txt)
+=========================== short test summary info ============================
+FAILED tests/test_executed_acceptance.py::test_inventory_bytes_hash_and_disclosures
+1 failed, 23 passed in 5.06s

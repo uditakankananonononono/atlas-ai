@@ -1,0 +1,12 @@
+......................F.                                                 [100%]
+=================================== FAILURES ===================================
+___________________ test_blocker_and_check_identity_retained ___________________
+tests/test_row132_retention_deepening.py:12: in test_blocker_and_check_identity_retained
+    assert out['lines'][0]['checks'][0]['id']==check['id']
+E   AssertionError: assert 'wrong' == 'check'
+E
+E     - check
+E     + wrong
+=========================== short test summary info ============================
+FAILED tests/test_row132_retention_deepening.py::test_blocker_and_check_identity_retained
+1 failed, 23 passed in 5.06s

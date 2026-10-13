@@ -1,0 +1,138 @@
+{
+  "tree": "3138cccfcb7e61ba9627e1f7e2e98ab4a6be7edf",
+  "status": "?? audits/program-evidence-mutations/deepening/row131.json\n?? audits/program-evidence-mutations/deepening/row131/\n?? audits/program-evidence-mutations/deepening/row132.json\n?? audits/program-evidence-mutations/deepening/row133.json\n",
+  "file_sha256": {
+    "tests/test_executed_acceptance.py": "dfaa1b9cb287ceace41744d269cd129bf65a0227eb15cf961f14574c9d6649c6",
+    "tests/test_row132_mutation_sensitivity.py": "fb0a42ea5fd1f64edcb9c75eab391c5dc127a92a0cd3fd24aee2e1fd0d32bfc0",
+    "backend/app/modules/instinct_doc/executed_acceptance.py": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+    "audits/program-evidence-mutations/deepening/row132.json": "5df050416f09901889840cdd721139602dbc33b97b66ebd45323c9db56ba73d8",
+    "audits/program-evidence-mutations/deepening/replay.py": "37772fd0017ea5e7c7b103d1d5a1d04b5a9a1d932180227b252e9523d134dc3e"
+  },
+  "base": "5886edfc9d74e9e402952e8d473477dfd96c0870",
+  "config_sha256": "5df050416f09901889840cdd721139602dbc33b97b66ebd45323c9db56ba73d8",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_executed_acceptance.py",
+    "tests/test_row132_mutation_sensitivity.py",
+    "-q",
+    "-rf",
+    "--tb=short"
+  ],
+  "portable_path_normalization": "interpreter normalized to python; delivered logs strip whitespace and replace listed private paths only",
+  "baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "baseline.log",
+    "original_sha256": "3d2fccac1a5aa88e232419e795355e356296516e4ed4d10c2752eed6185d71af",
+    "delivered_sha256": "3d2fccac1a5aa88e232419e795355e356296516e4ed4d10c2752eed6185d71af",
+    "normalizations": []
+  },
+  "mutants": [
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_executed_acceptance.py::test_inventory_bytes_hash_and_disclosures"
+      ],
+      "log": "D132-M1.log",
+      "original_sha256": "8d6e070f008e6a8e51abf5564ecd9a10e601c03672c9a86c1b8f2bd588dd3308",
+      "delivered_sha256": "2c83b5e3ffd090b964fccd4a8c994b774047bb1baf1856b7d0c71f3dd1e6a4d1",
+      "normalizations": [
+        {
+          "line": 7,
+          "trailing_whitespace_removed": true,
+          "path_pairs": []
+        }
+      ],
+      "id": "D132-M1",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "224168b9e296368cec471ae40379a7988c5351e585f76ebf190263e3d5481367",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    },
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D132-M2.log",
+      "original_sha256": "b823b38819576dc062c4f3dbea2ba65bb268d4d1f5d665279c71806f8fa3682e",
+      "delivered_sha256": "b823b38819576dc062c4f3dbea2ba65bb268d4d1f5d665279c71806f8fa3682e",
+      "normalizations": [],
+      "id": "D132-M2",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "9abad1f5cada80e8208556b54a1d7dd115bf3fa0db0a9be3077b01cbb8059ee6",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    },
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D132-M3.log",
+      "original_sha256": "32dfd999e034f81f686d3ebdb71864b634f529302b4d160984c86ed23dd1e238",
+      "delivered_sha256": "32dfd999e034f81f686d3ebdb71864b634f529302b4d160984c86ed23dd1e238",
+      "normalizations": [],
+      "id": "D132-M3",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "96d59b085cf6001b3ffa4b1cf51764c66f9f34f041c146a7092d28c03bf10df2",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    },
+    {
+      "returncode": 0,
+      "verdict": "SURVIVED",
+      "failed_ids": [],
+      "log": "D132-M4.log",
+      "original_sha256": "f327dacdc14d263f97690c4ad682cd2ababf5dd710c7605f30fe79417d567be4",
+      "delivered_sha256": "f327dacdc14d263f97690c4ad682cd2ababf5dd710c7605f30fe79417d567be4",
+      "normalizations": [],
+      "id": "D132-M4",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "9d6f8d4566c9d2c44440fd918411b2d43ea6969b5f6b835f391965f043e868a1",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    },
+    {
+      "returncode": 1,
+      "verdict": "CAUGHT",
+      "failed_ids": [
+        "tests/test_executed_acceptance.py::test_postrun_inventory_error_preserves_receipts"
+      ],
+      "log": "D132-M5.log",
+      "original_sha256": "915e587048fcdf6ddaf7111a9786aca136b541210504dcc06806fd97e21bc060",
+      "delivered_sha256": "915e587048fcdf6ddaf7111a9786aca136b541210504dcc06806fd97e21bc060",
+      "normalizations": [],
+      "id": "D132-M5",
+      "target": "backend/app/modules/instinct_doc/executed_acceptance.py",
+      "mutant_sha256": "e0e4009bb4f8a8f5fab61bc2ae3995c4acf385d21d7f481ea436619beedb5d0b",
+      "before_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restored_sha256": "dbcdb0e2b1130425e6b3672ff8d88065e69e8a620064de6eacec6ab474c710bb",
+      "restore_verified": true
+    }
+  ],
+  "restored_baseline": {
+    "returncode": 0,
+    "verdict": "SURVIVED",
+    "failed_ids": [],
+    "log": "restored-baseline.log",
+    "original_sha256": "dee83417c76b1f2eebd2e12d14ffccd8dcd801c1fb1fa2e507877eda8795fba1",
+    "delivered_sha256": "dee83417c76b1f2eebd2e12d14ffccd8dcd801c1fb1fa2e507877eda8795fba1",
+    "normalizations": []
+  },
+  "counts": {
+    "CAUGHT": 2,
+    "SURVIVED": 3,
+    "INVALID": 0
+  }
+}
