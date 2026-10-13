@@ -64,3 +64,5 @@ FULL-SUITE UNVERIFIED. No HTTP/catalog/initializer or shared cluster edits.
 Caller assertions/reference authenticity/authority/currency/facts not checked.
 No legal conclusion/advice, filing/service/contact, verified citations, privileged
 status, compliance opinion, eligibility or engagement. Prep-only counsel review.
+
+2026-10-13 mounted addendum: any earlier No HTTP/catalog/initializer edits statement describes the standalone pre-mount stage. The authenticated /m20/legal/1284/review adapter is now mounted in shared app.main. Literal Jury Selection remains PARTIAL; supplied-reference bookkeeping only.
