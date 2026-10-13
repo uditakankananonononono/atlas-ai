@@ -1,0 +1,24 @@
+split test: 48 tasks x 2 agent seeds; bugs k in [1, 2, 3]
+hidden-verified success rate by budget (program evaluations)
+agent          100     333    1000   visible-pass-but-hidden-fail   mean tests/eval-cost
+M            0.562   0.615   0.615   0.052   0.4s/run
+M_noslow     0.604   0.646   0.646   0.052   0.4s/run
+S_fl         0.573   0.646   0.646   0.052   0.4s/run
+S_uniform    0.250   0.667   0.708   0.031   0.7s/run
+paired bootstrap over tasks (95%)
+  M@100 - S_fl@100: -0.010 CI [-0.073,+0.052]
+  M@333 - S_fl@333: -0.031 CI [-0.083,+0.010]
+  M@100 - S_fl@300: -0.083 CI [-0.156,-0.021]
+  M@333 - S_fl@999: -0.031 CI [-0.073,+0.010]
+  M@100 - S_uniform@100: +0.312 CI [+0.188,+0.438]
+  M@333 - S_uniform@333: -0.052 CI [-0.156,+0.052]
+  M@100 - S_uniform@300: -0.083 CI [-0.198,+0.031]
+  M@333 - S_uniform@999: -0.094 CI [-0.198,+0.010]
+  M@100 - M_noslow@100: -0.042 CI [-0.125,+0.031]
+  M@333 - M_noslow@333: -0.031 CI [-0.083,+0.021]
+hidden-verified solves (budget 1000) and visible passes by bug count k, per agent: hidden/visible out of runs
+  M              k=1: 29/29 of 32  k=2: 18/22 of 32  k=3: 12/13 of 32
+  M_noslow       k=1: 30/30 of 32  k=2: 19/23 of 32  k=3: 13/14 of 32
+  S_fl           k=1: 30/30 of 32  k=2: 19/23 of 32  k=3: 13/14 of 32
+  S_uniform      k=1: 32/32 of 32  k=2: 19/21 of 32  k=3: 17/18 of 32
+unsolved runs that stopped before the budget: 115 of 115

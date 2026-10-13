@@ -1,0 +1,24 @@
+split test2: 48 tasks x 2 agent seeds; bugs k in [1, 2, 3]
+hidden-verified success rate by budget (program evaluations)
+agent          100     333    1000   visible-pass-but-hidden-fail   mean tests/eval-cost
+M_esc        0.531   0.562   0.594   0.031   1.5s/run
+M_noslow_esc   0.510   0.531   0.531   0.052   1.5s/run
+S_fl_esc     0.479   0.542   0.552   0.052   1.4s/run
+S_uniform_esc   0.198   0.510   0.521   0.062   1.5s/run
+paired bootstrap over tasks (95%)
+  M_esc@100 - S_fl_esc@100: +0.052 CI [-0.031,+0.146]
+  M_esc@333 - S_fl_esc@333: +0.021 CI [-0.073,+0.104]
+  M_esc@100 - S_fl_esc@300: -0.010 CI [-0.094,+0.073]
+  M_esc@333 - S_fl_esc@999: +0.010 CI [-0.073,+0.094]
+  M_esc@100 - S_uniform_esc@100: +0.333 CI [+0.219,+0.448]
+  M_esc@333 - S_uniform_esc@333: +0.052 CI [-0.062,+0.156]
+  M_esc@100 - S_uniform_esc@300: +0.031 CI [-0.073,+0.135]
+  M_esc@333 - S_uniform_esc@999: +0.042 CI [-0.062,+0.146]
+  M_esc@100 - M_noslow_esc@100: +0.021 CI [-0.052,+0.094]
+  M_esc@333 - M_noslow_esc@333: +0.031 CI [-0.042,+0.104]
+hidden-verified solves (budget 1000) and visible passes by bug count k, per agent: hidden/visible out of runs
+  M_esc          k=1: 29/30 of 32  k=2: 14/15 of 32  k=3: 14/15 of 32
+  M_noslow_esc   k=1: 26/28 of 32  k=2: 12/14 of 32  k=3: 13/14 of 32
+  S_fl_esc       k=1: 26/28 of 32  k=2: 19/21 of 32  k=3: 8/9 of 32
+  S_uniform_esc  k=1: 26/28 of 32  k=2: 15/17 of 32  k=3: 9/11 of 32
+unsolved runs that stopped before the budget: 0 of 154
