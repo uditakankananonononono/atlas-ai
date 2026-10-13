@@ -1,0 +1,291 @@
+{
+ "python": "Python 3.12.14",
+ "targets": {
+  "proof_gate": {
+   "file": "backend/app/self_improve/proof_gate.py",
+   "total": 13,
+   "killed": 10,
+   "survived": 3,
+   "nomatch": 0,
+   "timeout": 0,
+   "seconds": 5,
+   "rows": [
+    {
+     "index": 0,
+     "outcome": "survived",
+     "old": "checker in proof_carrying.py. Confidence is recorded separately and never changes the outc",
+     "new": "checker in proof_carrying.py. Confidence is recorded separately or never changes the outco"
+    },
+    {
+     "index": 1,
+     "outcome": "survived",
+     "old": "\"\"\"conclusions: non-empty list of Conclusion, each bound to this plan (plan_digest) and VE",
+     "new": "\"\"\"conclusions: non-empty list of Conclusion, each bound to this plan (plan_digest) or VER"
+    },
+    {
+     "index": 2,
+     "outcome": "survived",
+     "old": "return super().authorize(plan, evidence)      # base class refuses the bad plan and logs i",
+     "new": "return super().authorize(plan, evidence)      # base class refuses the bad plan or logs it"
+    },
+    {
+     "index": 3,
+     "outcome": "killed",
+     "old": "return super().authorize(plan, evidence)      # base class refuses the bad plan and logs i",
+     "new": "return None"
+    },
+    {
+     "index": 4,
+     "outcome": "killed",
+     "old": "if not isinstance(conclusions, (list, tuple)) or len(conclusions) == 0:",
+     "new": "if not isinstance(conclusions, (list, tuple)) or len(conclusions) != 0:"
+    },
+    {
+     "index": 5,
+     "outcome": "killed",
+     "old": "if not isinstance(conclusions, (list, tuple)) or len(conclusions) == 0:",
+     "new": "if not isinstance(conclusions, (list, tuple)) and len(conclusions) == 0:"
+    },
+    {
+     "index": 6,
+     "outcome": "killed",
+     "old": "if not isinstance(conclusions, (list, tuple)) or len(conclusions) == 0:",
+     "new": "if not isinstance(conclusions, (list, tuple)) or len(conclusions) == 1:"
+    },
+    {
+     "index": 7,
+     "outcome": "killed",
+     "old": "elif c.plan_digest != digest:",
+     "new": "elif c.plan_digest == digest:"
+    },
+    {
+     "index": 8,
+     "outcome": "killed",
+     "old": "if v[\"status\"] != VERIFIED and failed is None:",
+     "new": "if v[\"status\"] == VERIFIED and failed is None:"
+    },
+    {
+     "index": 9,
+     "outcome": "killed",
+     "old": "if v[\"status\"] != VERIFIED and failed is None:",
+     "new": "if v[\"status\"] != VERIFIED or failed is None:"
+    },
+    {
+     "index": 10,
+     "outcome": "killed",
+     "old": "for c in advisory or ():",
+     "new": "for c in advisory and ():"
+    },
+    {
+     "index": 11,
+     "outcome": "killed",
+     "old": "\"confidence\": r.confidence, \"advisory\": True})",
+     "new": "\"confidence\": r.confidence, \"advisory\": False})"
+    },
+    {
+     "index": 12,
+     "outcome": "killed",
+     "old": "return super().authorize(plan, evidence)",
+     "new": "return None"
+    }
+   ]
+  },
+  "claim_proofs": {
+   "file": "backend/app/modules/m21_claire/claim_proofs.py",
+   "total": 31,
+   "killed": 25,
+   "survived": 6,
+   "nomatch": 0,
+   "timeout": 0,
+   "seconds": 54,
+   "rows": [
+    {
+     "index": 0,
+     "outcome": "survived",
+     "old": "helpers return plus proofs keyed by claim id, and downgrades any strong label that has no ",
+     "new": "helpers return plus proofs keyed by claim id, or downgrades any strong label that has no V"
+    },
+    {
+     "index": 1,
+     "outcome": "survived",
+     "old": "Confidence is carried alongside and never changes a label.",
+     "new": "Confidence is carried alongside or never changes a label."
+    },
+    {
+     "index": 2,
+     "outcome": "killed",
+     "old": "v = verify(Conclusion(str(c.get(\"claim\", \"\")), c.get(\"kind\"), c.get(\"evidence\") or {},",
+     "new": "v = verify(Conclusion(str(c.get(\"claim\", \"\")), c.get(\"kind\"), c.get(\"evidence\") and {},"
+    },
+    {
+     "index": 3,
+     "outcome": "killed",
+     "old": "return out",
+     "new": "return None"
+    },
+    {
+     "index": 4,
+     "outcome": "killed",
+     "old": "cid = c.get(\"id\") or c.get(\"claim_id\")",
+     "new": "cid = c.get(\"id\") and c.get(\"claim_id\")"
+    },
+    {
+     "index": 5,
+     "outcome": "killed",
+     "old": "c[\"proof\"] = pr or {\"status\": status, \"reason\": \"no proof supplied\", \"confidence\": None}",
+     "new": "c[\"proof\"] = pr and {\"status\": status, \"reason\": \"no proof supplied\", \"confidence\": None}"
+    },
+    {
+     "index": 6,
+     "outcome": "killed",
+     "old": "if isinstance(old, str) and old.lower() in STRONG and status != VERIFIED:",
+     "new": "if isinstance(old, str) and old.lower() in STRONG and status == VERIFIED:"
+    },
+    {
+     "index": 7,
+     "outcome": "killed",
+     "old": "if isinstance(old, str) and old.lower() in STRONG and status != VERIFIED:",
+     "new": "if isinstance(old, str) or old.lower() in STRONG and status != VERIFIED:"
+    },
+    {
+     "index": 8,
+     "outcome": "killed",
+     "old": "if c.get(\"action_driving\") and status != VERIFIED:",
+     "new": "if c.get(\"action_driving\") and status == VERIFIED:"
+    },
+    {
+     "index": 9,
+     "outcome": "killed",
+     "old": "if c.get(\"action_driving\") and status != VERIFIED:",
+     "new": "if c.get(\"action_driving\") or status != VERIFIED:"
+    },
+    {
+     "index": 10,
+     "outcome": "killed",
+     "old": "c[\"blocked\"] = True",
+     "new": "c[\"blocked\"] = False"
+    },
+    {
+     "index": 11,
+     "outcome": "killed",
+     "old": "for c in res.get(\"claims\", []) or []:",
+     "new": "for c in res.get(\"claims\", []) and []:"
+    },
+    {
+     "index": 12,
+     "outcome": "killed",
+     "old": "for p in res.get(\"products\", []) or []:",
+     "new": "for p in res.get(\"products\", []) and []:"
+    },
+    {
+     "index": 13,
+     "outcome": "killed",
+     "old": "return res",
+     "new": "return None"
+    },
+    {
+     "index": 14,
+     "outcome": "killed",
+     "old": "if not pr or pr[\"status\"] != VERIFIED:",
+     "new": "if not pr or pr[\"status\"] == VERIFIED:"
+    },
+    {
+     "index": 15,
+     "outcome": "killed",
+     "old": "if not pr or pr[\"status\"] != VERIFIED:",
+     "new": "if not pr and pr[\"status\"] != VERIFIED:"
+    },
+    {
+     "index": 16,
+     "outcome": "survived",
+     "old": "\"\"\"ActionPolicy that refuses a consequential action (approval-required or HIGH risk) unles",
+     "new": "\"\"\"ActionPolicy that refuses a consequential action (approval-required and HIGH risk) unle"
+    },
+    {
+     "index": 17,
+     "outcome": "survived",
+     "old": "request.parameters['claims'] marked action_driving is VERIFIED by the sandboxed checker, a",
+     "new": "request.parameters['claims'] marked action_driving is VERIFIED by the sandboxed checker, o"
+    },
+    {
+     "index": 18,
+     "outcome": "survived",
+     "old": "claim is declared. The base policy runs first, so hard blocks and the approval requirement",
+     "new": "claim is declared. The base policy runs first, so hard blocks or the approval requirement "
+    },
+    {
+     "index": 19,
+     "outcome": "survived",
+     "old": "ActionPolicy, and a caller can omit the 'claims' key (which is refused for consequential a",
+     "new": "ActionPolicy, or a caller can omit the 'claims' key (which is refused for consequential ac"
+    },
+    {
+     "index": 20,
+     "outcome": "killed",
+     "old": "if not base.allowed or not base.requires_approval:",
+     "new": "if not base.allowed and not base.requires_approval:"
+    },
+    {
+     "index": 21,
+     "outcome": "killed",
+     "old": "return base",
+     "new": "return None"
+    },
+    {
+     "index": 22,
+     "outcome": "killed",
+     "old": "if not isinstance(claims, (list, tuple)) or not all(isinstance(c, dict) for c in claims):",
+     "new": "if not isinstance(claims, (list, tuple)) and not all(isinstance(c, dict) for c in claims):"
+    },
+    {
+     "index": 23,
+     "outcome": "killed",
+     "old": "return PolicyDecision(False, False, \"consequential action carries no claims list\")",
+     "new": "return PolicyDecision(True, False, \"consequential action carries no claims list\")"
+    },
+    {
+     "index": 24,
+     "outcome": "killed",
+     "old": "return PolicyDecision(False, False, \"consequential action carries no claims list\")",
+     "new": "return None"
+    },
+    {
+     "index": 25,
+     "outcome": "killed",
+     "old": "driving = [c for c in claims if c.get(\"action_driving\") is True]",
+     "new": "driving = [c for c in claims if c.get(\"action_driving\") is False]"
+    },
+    {
+     "index": 26,
+     "outcome": "killed",
+     "old": "return PolicyDecision(False, False, \"consequential action declares no action-driving claim",
+     "new": "return PolicyDecision(True, False, \"consequential action declares no action-driving claim\""
+    },
+    {
+     "index": 27,
+     "outcome": "killed",
+     "old": "return PolicyDecision(False, False, \"consequential action declares no action-driving claim",
+     "new": "return None"
+    },
+    {
+     "index": 28,
+     "outcome": "killed",
+     "old": "if pr[\"status\"] != VERIFIED:",
+     "new": "if pr[\"status\"] == VERIFIED:"
+    },
+    {
+     "index": 29,
+     "outcome": "killed",
+     "old": "return PolicyDecision(False, False, f\"unproven action-driving claim {c.get('id')!r}: \"",
+     "new": "return PolicyDecision(True, False, f\"unproven action-driving claim {c.get('id')!r}: \""
+    },
+    {
+     "index": 30,
+     "outcome": "killed",
+     "old": "return base",
+     "new": "return None"
+    }
+   ]
+  }
+ }
+}

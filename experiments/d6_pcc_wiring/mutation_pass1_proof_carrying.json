@@ -1,0 +1,934 @@
+{
+ "python": "Python 3.12.14",
+ "targets": {
+  "proof_carrying": {
+   "file": "backend/app/self_improve/proof_carrying.py",
+   "total": 153,
+   "killed": 95,
+   "survived": 58,
+   "nomatch": 0,
+   "timeout": 0,
+   "seconds": 803,
+   "rows": [
+    {
+     "index": 0,
+     "outcome": "survived",
+     "old": "timeout and a process-group kill. If bubblewrap is unavailable these kinds fail closed (UN",
+     "new": "timeout or a process-group kill. If bubblewrap is unavailable these kinds fail closed (UNV"
+    },
+    {
+     "index": 1,
+     "outcome": "survived",
+     "old": "MAX_BITS = 4096",
+     "new": "MAX_BITS = 4097"
+    },
+    {
+     "index": 2,
+     "outcome": "killed",
+     "old": "MAX_FACTORS = 64",
+     "new": "MAX_FACTORS = 65"
+    },
+    {
+     "index": 3,
+     "outcome": "killed",
+     "old": "return hashlib.sha256(b).hexdigest()",
+     "new": "return None"
+    },
+    {
+     "index": 4,
+     "outcome": "killed",
+     "old": "return getattr(self, k)",
+     "new": "return None"
+    },
+    {
+     "index": 5,
+     "outcome": "killed",
+     "old": "cpu_s: int = 10",
+     "new": "cpu_s: int = 11"
+    },
+    {
+     "index": 6,
+     "outcome": "survived",
+     "old": "mem_mb: int = 1024",
+     "new": "mem_mb: int = 1025"
+    },
+    {
+     "index": 7,
+     "outcome": "killed",
+     "old": "fsize_mb: int = 8",
+     "new": "fsize_mb: int = 9"
+    },
+    {
+     "index": 8,
+     "outcome": "survived",
+     "old": "nofile: int = 128",
+     "new": "nofile: int = 129"
+    },
+    {
+     "index": 9,
+     "outcome": "survived",
+     "old": "nproc_extra: int = 48",
+     "new": "nproc_extra: int = 49"
+    },
+    {
+     "index": 10,
+     "outcome": "survived",
+     "old": "return shutil.which(\"bwrap\")",
+     "new": "return None"
+    },
+    {
+     "index": 11,
+     "outcome": "survived",
+     "old": "\"\"\"True only if bwrap exists AND can actually start an isolated python here (user namespac",
+     "new": "\"\"\"False only if bwrap exists AND can actually start an isolated python here (user namespa"
+    },
+    {
+     "index": 12,
+     "outcome": "killed",
+     "old": "if refresh or \"ok\" not in _PROBE:",
+     "new": "if refresh and \"ok\" not in _PROBE:"
+    },
+    {
+     "index": 13,
+     "outcome": "killed",
+     "old": "if refresh or \"ok\" not in _PROBE:",
+     "new": "if refresh or \"ok\" in _PROBE:"
+    },
+    {
+     "index": 14,
+     "outcome": "killed",
+     "old": "ok = False",
+     "new": "ok = True"
+    },
+    {
+     "index": 15,
+     "outcome": "survived",
+     "old": "r = run_sandboxed([sys.executable, \"-I\", \"-B\", \"-c\", \"print(40+2)\"], {}, Limits(wall_s=15.",
+     "new": "r = run_sandboxed([sys.executable, \"-I\", \"-B\", \"-c\", \"print(41+2)\"], {}, Limits(wall_s=15."
+    },
+    {
+     "index": 16,
+     "outcome": "survived",
+     "old": "ok = r.returncode == 0 and r.stdout.strip() == \"42\"",
+     "new": "ok = r.returncode != 0 and r.stdout.strip() == \"42\""
+    },
+    {
+     "index": 17,
+     "outcome": "survived",
+     "old": "ok = r.returncode == 0 and r.stdout.strip() == \"42\"",
+     "new": "ok = r.returncode == 0 or r.stdout.strip() == \"42\""
+    },
+    {
+     "index": 18,
+     "outcome": "survived",
+     "old": "ok = r.returncode == 0 and r.stdout.strip() == \"42\"",
+     "new": "ok = r.returncode == 1 and r.stdout.strip() == \"42\""
+    },
+    {
+     "index": 19,
+     "outcome": "survived",
+     "old": "ok = False",
+     "new": "ok = True"
+    },
+    {
+     "index": 20,
+     "outcome": "killed",
+     "old": "return _PROBE[\"ok\"]",
+     "new": "return None"
+    },
+    {
+     "index": 21,
+     "outcome": "survived",
+     "old": "n = 0",
+     "new": "n = 1"
+    },
+    {
+     "index": 22,
+     "outcome": "killed",
+     "old": "if os.stat(f\"/proc/{p}\").st_uid == uid:",
+     "new": "if os.stat(f\"/proc/{p}\").st_uid != uid:"
+    },
+    {
+     "index": 23,
+     "outcome": "killed",
+     "old": "n += 1",
+     "new": "n -= 1"
+    },
+    {
+     "index": 24,
+     "outcome": "killed",
+     "old": "n += 1",
+     "new": "n += 2"
+    },
+    {
+     "index": 25,
+     "outcome": "survived",
+     "old": "return n",
+     "new": "return None"
+    },
+    {
+     "index": 26,
+     "outcome": "killed",
+     "old": "for _ in range(8):",
+     "new": "for _ in range(9):"
+    },
+    {
+     "index": 27,
+     "outcome": "killed",
+     "old": "for c in sorted(cands):",
+     "new": "for c in list(cands):"
+    },
+    {
+     "index": 28,
+     "outcome": "killed",
+     "old": "if c and os.path.isdir(c) and c not in (\"/\", \"/usr\", \"/home\") and not c.startswith(\"/usr/\"",
+     "new": "if c or os.path.isdir(c) and c not in (\"/\", \"/usr\", \"/home\") and not c.startswith(\"/usr/\")"
+    },
+    {
+     "index": 29,
+     "outcome": "survived",
+     "old": "if c and os.path.isdir(c) and c not in (\"/\", \"/usr\", \"/home\") and not c.startswith(\"/usr/\"",
+     "new": "if c and os.path.isdir(c) and c in (\"/\", \"/usr\", \"/home\") and not c.startswith(\"/usr/\"):"
+    },
+    {
+     "index": 30,
+     "outcome": "survived",
+     "old": "return out",
+     "new": "return None"
+    },
+    {
+     "index": 31,
+     "outcome": "survived",
+     "old": "if os.path.isdir(\"/usr/\" + tgt.split(\"/\", 1)[1]):",
+     "new": "if os.path.isdir(\"/usr/\" - tgt.split(\"/\", 1)[1]):"
+    },
+    {
+     "index": 32,
+     "outcome": "survived",
+     "old": "if os.path.isdir(\"/usr/\" + tgt.split(\"/\", 1)[1]):",
+     "new": "if os.path.isdir(\"/usr/\" + tgt.split(\"/\", 2)[1]):"
+    },
+    {
+     "index": 33,
+     "outcome": "survived",
+     "old": "a += [\"--symlink\", tgt, link]",
+     "new": "a -= [\"--symlink\", tgt, link]"
+    },
+    {
+     "index": 34,
+     "outcome": "survived",
+     "old": "a += [\"--ro-bind\", m, m]",
+     "new": "a -= [\"--ro-bind\", m, m]"
+    },
+    {
+     "index": 35,
+     "outcome": "survived",
+     "old": "a += [\"--proc\", \"/proc\", \"--dev\", \"/dev\", \"--tmpfs\", \"/tmp\",",
+     "new": "a -= [\"--proc\", \"/proc\", \"--dev\", \"/dev\", \"--tmpfs\", \"/tmp\","
+    },
+    {
+     "index": 36,
+     "outcome": "survived",
+     "old": "\"--setenv\", \"PATH\", \"/usr/bin:/bin\", \"--setenv\", \"HOME\", \"/work\", \"--setenv\", \"LANG\", \"C.U",
+     "new": "\"--setenv\", \"PATH\", \"/usr/bin:/bin\", \"--setenv\", \"HOME\", \"/work\", \"--setenv\", \"LANG\", \"C.U"
+    },
+    {
+     "index": 37,
+     "outcome": "survived",
+     "old": "\"--setenv\", \"PYTHONDONTWRITEBYTECODE\", \"1\", \"--setenv\", \"PYTEST_DISABLE_PLUGIN_AUTOLOAD\", ",
+     "new": "\"--setenv\", \"PYTHONDONTWRITEBYTECODE\", \"2\", \"--setenv\", \"PYTEST_DISABLE_PLUGIN_AUTOLOAD\", "
+    },
+    {
+     "index": 38,
+     "outcome": "survived",
+     "old": "return a + argv",
+     "new": "return a - argv"
+    },
+    {
+     "index": 39,
+     "outcome": "survived",
+     "old": "return a + argv",
+     "new": "return None"
+    },
+    {
+     "index": 40,
+     "outcome": "killed",
+     "old": "if \"/\" in name or name.startswith(\".\"):",
+     "new": "if \"/\" in name and name.startswith(\".\"):"
+    },
+    {
+     "index": 41,
+     "outcome": "killed",
+     "old": "Path(work, name).write_text(text, encoding=\"utf-8\")",
+     "new": "Path(work, name).write_text(text, encoding=\"utf-9\")"
+    },
+    {
+     "index": 42,
+     "outcome": "survived",
+     "old": "cap = _count_uid_procs() + limits.nproc_extra",
+     "new": "cap = _count_uid_procs() - limits.nproc_extra"
+    },
+    {
+     "index": 43,
+     "outcome": "survived",
+     "old": "resource.setrlimit(resource.RLIMIT_AS, (limits.mem_mb << 20, limits.mem_mb << 20))",
+     "new": "resource.setrlimit(resource.RLIMIT_AS, (limits.mem_mb << 21, limits.mem_mb << 20))"
+    },
+    {
+     "index": 44,
+     "outcome": "survived",
+     "old": "resource.setrlimit(resource.RLIMIT_FSIZE, (limits.fsize_mb << 20, limits.fsize_mb << 20))",
+     "new": "resource.setrlimit(resource.RLIMIT_FSIZE, (limits.fsize_mb << 21, limits.fsize_mb << 20))"
+    },
+    {
+     "index": 45,
+     "outcome": "survived",
+     "old": "resource.setrlimit(resource.RLIMIT_CORE, (0, 0))",
+     "new": "resource.setrlimit(resource.RLIMIT_CORE, (1, 0))"
+    },
+    {
+     "index": 46,
+     "outcome": "killed",
+     "old": "timed_out = False",
+     "new": "timed_out = True"
+    },
+    {
+     "index": 47,
+     "outcome": "killed",
+     "old": "start_new_session=True, env={\"PATH\": \"/usr/bin:/bin\"})",
+     "new": "start_new_session=False, env={\"PATH\": \"/usr/bin:/bin\"})"
+    },
+    {
+     "index": 48,
+     "outcome": "killed",
+     "old": "timed_out = True",
+     "new": "timed_out = False"
+    },
+    {
+     "index": 49,
+     "outcome": "survived",
+     "old": "return b[:limits.max_out].decode(\"utf-8\", \"replace\"), len(b) > limits.max_out",
+     "new": "return b[:limits.max_out].decode(\"utf-8\", \"replace\"), len(b) >= limits.max_out"
+    },
+    {
+     "index": 50,
+     "outcome": "survived",
+     "old": "return b[:limits.max_out].decode(\"utf-8\", \"replace\"), len(b) > limits.max_out",
+     "new": "return None"
+    },
+    {
+     "index": 51,
+     "outcome": "survived",
+     "old": "return b[:limits.max_out].decode(\"utf-8\", \"replace\"), len(b) > limits.max_out",
+     "new": "return b[:limits.max_out].decode(\"utf-9\", \"replace\"), len(b) > limits.max_out"
+    },
+    {
+     "index": 52,
+     "outcome": "killed",
+     "old": "extra[\"junit\"] = jx.read_text(encoding=\"utf-8\", errors=\"replace\")[:MAX_TEXT]",
+     "new": "extra[\"junit\"] = jx.read_text(encoding=\"utf-9\", errors=\"replace\")[:MAX_TEXT]"
+    },
+    {
+     "index": 53,
+     "outcome": "killed",
+     "old": "return RunResult(p.returncode, out, err, timed_out, t1 or t2, extra.get(\"junit\"))",
+     "new": "return RunResult(p.returncode, out, err, timed_out, t1 and t2, extra.get(\"junit\"))"
+    },
+    {
+     "index": 54,
+     "outcome": "survived",
+     "old": "return RunResult(p.returncode, out, err, timed_out, t1 or t2, extra.get(\"junit\"))",
+     "new": "return None"
+    },
+    {
+     "index": 55,
+     "outcome": "killed",
+     "old": "return isinstance(x, int) and not isinstance(x, bool)",
+     "new": "return isinstance(x, int) or not isinstance(x, bool)"
+    },
+    {
+     "index": 56,
+     "outcome": "killed",
+     "old": "return isinstance(x, int) and not isinstance(x, bool)",
+     "new": "return None"
+    },
+    {
+     "index": 57,
+     "outcome": "killed",
+     "old": "if not _is_int(n) or not isinstance(fs, list) or not fs or len(fs) > MAX_FACTORS:",
+     "new": "if not _is_int(n) or not isinstance(fs, list) or not fs or len(fs) >= MAX_FACTORS:"
+    },
+    {
+     "index": 58,
+     "outcome": "killed",
+     "old": "if not _is_int(n) or not isinstance(fs, list) or not fs or len(fs) > MAX_FACTORS:",
+     "new": "if not _is_int(n) and not isinstance(fs, list) or not fs or len(fs) > MAX_FACTORS:"
+    },
+    {
+     "index": 59,
+     "outcome": "killed",
+     "old": "return False, \"malformed factors\"",
+     "new": "return True, \"malformed factors\""
+    },
+    {
+     "index": 60,
+     "outcome": "killed",
+     "old": "return False, \"malformed factors\"",
+     "new": "return None"
+    },
+    {
+     "index": 61,
+     "outcome": "killed",
+     "old": "if n.bit_length() > MAX_BITS or not all(_is_int(f) and 1 < f < n for f in fs):",
+     "new": "if n.bit_length() > MAX_BITS or not all(_is_int(f) and 1 <= f < n for f in fs):"
+    },
+    {
+     "index": 62,
+     "outcome": "killed",
+     "old": "if n.bit_length() > MAX_BITS or not all(_is_int(f) and 1 < f < n for f in fs):",
+     "new": "if n.bit_length() >= MAX_BITS or not all(_is_int(f) and 1 < f < n for f in fs):"
+    },
+    {
+     "index": 63,
+     "outcome": "killed",
+     "old": "if n.bit_length() > MAX_BITS or not all(_is_int(f) and 1 < f < n for f in fs):",
+     "new": "if n.bit_length() > MAX_BITS or not all(_is_int(f) or 1 < f < n for f in fs):"
+    },
+    {
+     "index": 64,
+     "outcome": "killed",
+     "old": "if n.bit_length() > MAX_BITS or not all(_is_int(f) and 1 < f < n for f in fs):",
+     "new": "if n.bit_length() > MAX_BITS and not all(_is_int(f) and 1 < f < n for f in fs):"
+    },
+    {
+     "index": 65,
+     "outcome": "killed",
+     "old": "if n.bit_length() > MAX_BITS or not all(_is_int(f) and 1 < f < n for f in fs):",
+     "new": "if n.bit_length() > MAX_BITS or not all(_is_int(f) and 2 < f < n for f in fs):"
+    },
+    {
+     "index": 66,
+     "outcome": "killed",
+     "old": "return False, \"malformed or trivial factors\"",
+     "new": "return False, \"malformed and trivial factors\""
+    },
+    {
+     "index": 67,
+     "outcome": "killed",
+     "old": "return False, \"malformed or trivial factors\"",
+     "new": "return True, \"malformed or trivial factors\""
+    },
+    {
+     "index": 68,
+     "outcome": "killed",
+     "old": "return False, \"malformed or trivial factors\"",
+     "new": "return None"
+    },
+    {
+     "index": 69,
+     "outcome": "killed",
+     "old": "p = 1",
+     "new": "p = 2"
+    },
+    {
+     "index": 70,
+     "outcome": "killed",
+     "old": "return (p == n), (\"product of factors equals n\" if p == n else f\"product is {p}, not {n}\")",
+     "new": "return (p != n), (\"product of factors equals n\" if p == n else f\"product is {p}, not {n}\")"
+    },
+    {
+     "index": 71,
+     "outcome": "killed",
+     "old": "return (p == n), (\"product of factors equals n\" if p == n else f\"product is {p}, not {n}\")",
+     "new": "return None"
+    },
+    {
+     "index": 72,
+     "outcome": "killed",
+     "old": "if not (isinstance(text, str) and isinstance(h, str) and isinstance(q, str)) or not text o",
+     "new": "if not (isinstance(text, str) or isinstance(h, str) and isinstance(q, str)) or not text or"
+    },
+    {
+     "index": 73,
+     "outcome": "killed",
+     "old": "if not (isinstance(text, str) and isinstance(h, str) and isinstance(q, str)) or not text o",
+     "new": "if not (isinstance(text, str) and isinstance(h, str) and isinstance(q, str)) and not text "
+    },
+    {
+     "index": 74,
+     "outcome": "survived",
+     "old": "return False, \"missing source text, hash or quote\"",
+     "new": "return False, \"missing source text, hash and quote\""
+    },
+    {
+     "index": 75,
+     "outcome": "killed",
+     "old": "return False, \"missing source text, hash or quote\"",
+     "new": "return True, \"missing source text, hash or quote\""
+    },
+    {
+     "index": 76,
+     "outcome": "survived",
+     "old": "return False, \"missing source text, hash or quote\"",
+     "new": "return None"
+    },
+    {
+     "index": 77,
+     "outcome": "survived",
+     "old": "if len(text) > MAX_TEXT or len(q) > MAX_TEXT:",
+     "new": "if len(text) >= MAX_TEXT or len(q) > MAX_TEXT:"
+    },
+    {
+     "index": 78,
+     "outcome": "killed",
+     "old": "if len(text) > MAX_TEXT or len(q) > MAX_TEXT:",
+     "new": "if len(text) > MAX_TEXT and len(q) > MAX_TEXT:"
+    },
+    {
+     "index": 79,
+     "outcome": "killed",
+     "old": "return False, \"source hash mismatch\"",
+     "new": "return True, \"source hash mismatch\""
+    },
+    {
+     "index": 80,
+     "outcome": "killed",
+     "old": "return False, \"source hash mismatch\"",
+     "new": "return None"
+    },
+    {
+     "index": 81,
+     "outcome": "killed",
+     "old": "return (q in text), (\"quote found in hashed source\" if q in text else \"quote not in source",
+     "new": "return (q in text), (\"quote found in hashed source\" if q in text else \"quote in source\")"
+    },
+    {
+     "index": 82,
+     "outcome": "killed",
+     "old": "return (q in text), (\"quote found in hashed source\" if q in text else \"quote not in source",
+     "new": "return None"
+    },
+    {
+     "index": 83,
+     "outcome": "killed",
+     "old": "\"\"\"Re-run the script twice in the sandbox; both outputs must be identical and hash to the ",
+     "new": "\"\"\"Re-run the script twice in the sandbox; both outputs must be identical or hash to the s"
+    },
+    {
+     "index": 84,
+     "outcome": "survived",
+     "old": "if not (isinstance(script, str) and isinstance(want, str)) or not script or not want:",
+     "new": "if not (isinstance(script, str) or isinstance(want, str)) or not script or not want:"
+    },
+    {
+     "index": 85,
+     "outcome": "survived",
+     "old": "if not (isinstance(script, str) and isinstance(want, str)) or not script or not want:",
+     "new": "if not (isinstance(script, str) and isinstance(want, str)) and not script or not want:"
+    },
+    {
+     "index": 86,
+     "outcome": "survived",
+     "old": "return False, \"missing script or output hash\"",
+     "new": "return False, \"missing script and output hash\""
+    },
+    {
+     "index": 87,
+     "outcome": "killed",
+     "old": "return False, \"missing script or output hash\"",
+     "new": "return True, \"missing script or output hash\""
+    },
+    {
+     "index": 88,
+     "outcome": "survived",
+     "old": "return False, \"missing script or output hash\"",
+     "new": "return None"
+    },
+    {
+     "index": 89,
+     "outcome": "killed",
+     "old": "if len(script) > MAX_TEXT:",
+     "new": "if len(script) >= MAX_TEXT:"
+    },
+    {
+     "index": 90,
+     "outcome": "survived",
+     "old": "for _ in range(2):",
+     "new": "for _ in range(3):"
+    },
+    {
+     "index": 91,
+     "outcome": "killed",
+     "old": "return False, \"script timed out\"",
+     "new": "return True, \"script timed out\""
+    },
+    {
+     "index": 92,
+     "outcome": "killed",
+     "old": "return False, \"script timed out\"",
+     "new": "return None"
+    },
+    {
+     "index": 93,
+     "outcome": "killed",
+     "old": "if r.returncode != 0:",
+     "new": "if r.returncode == 0:"
+    },
+    {
+     "index": 94,
+     "outcome": "killed",
+     "old": "if r.returncode != 0:",
+     "new": "if r.returncode != 1:"
+    },
+    {
+     "index": 95,
+     "outcome": "killed",
+     "old": "return False, f\"script exit {r.returncode}\"",
+     "new": "return True, f\"script exit {r.returncode}\""
+    },
+    {
+     "index": 96,
+     "outcome": "survived",
+     "old": "return False, f\"script exit {r.returncode}\"",
+     "new": "return None"
+    },
+    {
+     "index": 97,
+     "outcome": "killed",
+     "old": "return False, \"script output exceeded cap\"",
+     "new": "return True, \"script output exceeded cap\""
+    },
+    {
+     "index": 98,
+     "outcome": "killed",
+     "old": "return False, \"script output exceeded cap\"",
+     "new": "return None"
+    },
+    {
+     "index": 99,
+     "outcome": "killed",
+     "old": "if outs[0] != outs[1]:",
+     "new": "if outs[0] == outs[1]:"
+    },
+    {
+     "index": 100,
+     "outcome": "killed",
+     "old": "return False, \"script output is not deterministic\"",
+     "new": "return True, \"script output is not deterministic\""
+    },
+    {
+     "index": 101,
+     "outcome": "killed",
+     "old": "return False, \"script output is not deterministic\"",
+     "new": "return None"
+    },
+    {
+     "index": 102,
+     "outcome": "survived",
+     "old": "return (hmac.compare_digest(got, want)), (\"re-run output hash matches\" if got == want else",
+     "new": "return (hmac.compare_digest(got, want)), (\"re-run output hash matches\" if got != want else"
+    },
+    {
+     "index": 103,
+     "outcome": "killed",
+     "old": "return (hmac.compare_digest(got, want)), (\"re-run output hash matches\" if got == want else",
+     "new": "return None"
+    },
+    {
+     "index": 104,
+     "outcome": "killed",
+     "old": "return {k: int(n) for n, k in _SUMMARY.findall(lines[-1])} if lines else {}",
+     "new": "return None"
+    },
+    {
+     "index": 105,
+     "outcome": "killed",
+     "old": "return {k: int(n) for n, k in _SUMMARY.findall(lines[-1])} if lines else {}",
+     "new": "return {k: int(n) for n, k in _SUMMARY.findall(lines[-2])} if lines else {}"
+    },
+    {
+     "index": 106,
+     "outcome": "killed",
+     "old": "suites = [root] if root.tag == \"testsuite\" else list(root.iter(\"testsuite\"))",
+     "new": "suites = [root] if root.tag != \"testsuite\" else list(root.iter(\"testsuite\"))"
+    },
+    {
+     "index": 107,
+     "outcome": "killed",
+     "old": "if len(suites) != 1:",
+     "new": "if len(suites) == 1:"
+    },
+    {
+     "index": 108,
+     "outcome": "killed",
+     "old": "if len(suites) != 1:",
+     "new": "if len(suites) != 2:"
+    },
+    {
+     "index": 109,
+     "outcome": "killed",
+     "old": "return {\"tests\": int(s.get(\"tests\", -1)), \"failures\": int(s.get(\"failures\", -1)), \"errors\"",
+     "new": "return {\"tests\": int(s.get(\"tests\", -2)), \"failures\": int(s.get(\"failures\", -1)), \"errors\""
+    },
+    {
+     "index": 110,
+     "outcome": "survived",
+     "old": "\"skipped\": int(s.get(\"skipped\", -1)), \"cases\": len(cases), \"bad\": len(bad)}",
+     "new": "\"skipped\": int(s.get(\"skipped\", -2)), \"cases\": len(cases), \"bad\": len(bad)}"
+    },
+    {
+     "index": 111,
+     "outcome": "killed",
+     "old": "\"\"\"Tests re-run in the sandbox on the given source. Accepts only if pytest exits 0, the ju",
+     "new": "\"\"\"Tests re-run in the sandbox on the given source. Accepts only if pytest exits 1, the ju"
+    },
+    {
+     "index": 112,
+     "outcome": "survived",
+     "old": "the work dir by pytest) says exactly N tests with no failure/error/skip, and stdout's summ",
+     "new": "the work dir by pytest) says exactly N tests with no failure/error/skip, or stdout's summa"
+    },
+    {
+     "index": 113,
+     "outcome": "survived",
+     "old": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i",
+     "new": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i"
+    },
+    {
+     "index": 114,
+     "outcome": "survived",
+     "old": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i",
+     "new": "if not (isinstance(src, str) or isinstance(tests, str)) or not src or not tests or not _is"
+    },
+    {
+     "index": 115,
+     "outcome": "survived",
+     "old": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i",
+     "new": "if not (isinstance(src, str) and isinstance(tests, str)) and not src or not tests or not _"
+    },
+    {
+     "index": 116,
+     "outcome": "killed",
+     "old": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i",
+     "new": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i"
+    },
+    {
+     "index": 117,
+     "outcome": "survived",
+     "old": "return False, \"missing source, tests or expected count\"",
+     "new": "return False, \"missing source, tests and expected count\""
+    },
+    {
+     "index": 118,
+     "outcome": "killed",
+     "old": "return False, \"missing source, tests or expected count\"",
+     "new": "return True, \"missing source, tests or expected count\""
+    },
+    {
+     "index": 119,
+     "outcome": "survived",
+     "old": "return False, \"missing source, tests or expected count\"",
+     "new": "return None"
+    },
+    {
+     "index": 120,
+     "outcome": "killed",
+     "old": "if len(src) > MAX_TEXT or len(tests) > MAX_TEXT:",
+     "new": "if len(src) >= MAX_TEXT or len(tests) > MAX_TEXT:"
+    },
+    {
+     "index": 121,
+     "outcome": "survived",
+     "old": "if len(src) > MAX_TEXT or len(tests) > MAX_TEXT:",
+     "new": "if len(src) > MAX_TEXT and len(tests) > MAX_TEXT:"
+    },
+    {
+     "index": 122,
+     "outcome": "killed",
+     "old": "Limits(**{**limits.__dict__, \"wall_s\": max(limits.wall_s, 40.0)}))",
+     "new": "Limits(**{**limits.__dict__, \"wall_s\": min(limits.wall_s, 40.0)}))"
+    },
+    {
+     "index": 123,
+     "outcome": "survived",
+     "old": "return False, \"tests timed out\"",
+     "new": "return True, \"tests timed out\""
+    },
+    {
+     "index": 124,
+     "outcome": "killed",
+     "old": "return False, \"tests timed out\"",
+     "new": "return None"
+    },
+    {
+     "index": 125,
+     "outcome": "killed",
+     "old": "if r.returncode != 0:",
+     "new": "if r.returncode == 0:"
+    },
+    {
+     "index": 126,
+     "outcome": "killed",
+     "old": "if r.returncode != 0:",
+     "new": "if r.returncode != 1:"
+    },
+    {
+     "index": 127,
+     "outcome": "killed",
+     "old": "return False, f\"tests did not reproduce (exit {r.returncode})\"",
+     "new": "return True, f\"tests did not reproduce (exit {r.returncode})\""
+    },
+    {
+     "index": 128,
+     "outcome": "killed",
+     "old": "return False, f\"tests did not reproduce (exit {r.returncode})\"",
+     "new": "return None"
+    },
+    {
+     "index": 129,
+     "outcome": "killed",
+     "old": "return False, \"no junit report\"",
+     "new": "return True, \"no junit report\""
+    },
+    {
+     "index": 130,
+     "outcome": "killed",
+     "old": "return False, \"no junit report\"",
+     "new": "return None"
+    },
+    {
+     "index": 131,
+     "outcome": "killed",
+     "old": "return False, \"unparseable junit report\"",
+     "new": "return True, \"unparseable junit report\""
+    },
+    {
+     "index": 132,
+     "outcome": "survived",
+     "old": "return False, \"unparseable junit report\"",
+     "new": "return None"
+    },
+    {
+     "index": 133,
+     "outcome": "killed",
+     "old": "if jc is None or jc != {\"tests\": want, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"cases\": ",
+     "new": "if jc is None or jc == {\"tests\": want, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"cases\": "
+    },
+    {
+     "index": 134,
+     "outcome": "survived",
+     "old": "if jc is None or jc != {\"tests\": want, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"cases\": ",
+     "new": "if jc is None and jc != {\"tests\": want, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"cases\":"
+    },
+    {
+     "index": 135,
+     "outcome": "killed",
+     "old": "if jc is None or jc != {\"tests\": want, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"cases\": ",
+     "new": "if jc is None or jc != {\"tests\": want, \"failures\": 1, \"errors\": 0, \"skipped\": 0, \"cases\": "
+    },
+    {
+     "index": 136,
+     "outcome": "killed",
+     "old": "return False, f\"junit counts do not match expected {want}: {jc}\"",
+     "new": "return True, f\"junit counts do not match expected {want}: {jc}\""
+    },
+    {
+     "index": 137,
+     "outcome": "survived",
+     "old": "return False, f\"junit counts do not match expected {want}: {jc}\"",
+     "new": "return None"
+    },
+    {
+     "index": 138,
+     "outcome": "killed",
+     "old": "if _stdout_summary(r.stdout) != {\"passed\": want}:",
+     "new": "if _stdout_summary(r.stdout) == {\"passed\": want}:"
+    },
+    {
+     "index": 139,
+     "outcome": "survived",
+     "old": "return False, \"stdout summary disagrees with junit\"",
+     "new": "return True, \"stdout summary disagrees with junit\""
+    },
+    {
+     "index": 140,
+     "outcome": "survived",
+     "old": "return False, \"stdout summary disagrees with junit\"",
+     "new": "return None"
+    },
+    {
+     "index": 141,
+     "outcome": "survived",
+     "old": "return True, \"tests re-run in sandbox and pass\"",
+     "new": "return True, \"tests re-run in sandbox or pass\""
+    },
+    {
+     "index": 142,
+     "outcome": "killed",
+     "old": "return True, \"tests re-run in sandbox and pass\"",
+     "new": "return False, \"tests re-run in sandbox and pass\""
+    },
+    {
+     "index": 143,
+     "outcome": "killed",
+     "old": "return True, \"tests re-run in sandbox and pass\"",
+     "new": "return None"
+    },
+    {
+     "index": 144,
+     "outcome": "killed",
+     "old": "if not isinstance(c, Conclusion) or not isinstance(c.kind, str) or not isinstance(c.eviden",
+     "new": "if not isinstance(c, Conclusion) and not isinstance(c.kind, str) or not isinstance(c.evide"
+    },
+    {
+     "index": 145,
+     "outcome": "killed",
+     "old": "return Verdict(UNVERIFIED, \"malformed conclusion\", None)",
+     "new": "return None"
+    },
+    {
+     "index": 146,
+     "outcome": "killed",
+     "old": "conf = c.confidence if isinstance(c.confidence, (int, float)) and not isinstance(c.confide",
+     "new": "conf = c.confidence if isinstance(c.confidence, (int, float)) or not isinstance(c.confiden"
+    },
+    {
+     "index": 147,
+     "outcome": "killed",
+     "old": "and math.isfinite(c.confidence) else None",
+     "new": "or math.isfinite(c.confidence) else None"
+    },
+    {
+     "index": 148,
+     "outcome": "killed",
+     "old": "return Verdict(IMPOSSIBLE, f\"no checker for kind {c.kind!r}\", conf)",
+     "new": "return None"
+    },
+    {
+     "index": 149,
+     "outcome": "killed",
+     "old": "if c.kind in _SANDBOXED and not sandbox_ok():",
+     "new": "if c.kind in _SANDBOXED or not sandbox_ok():"
+    },
+    {
+     "index": 150,
+     "outcome": "killed",
+     "old": "return Verdict(UNVERIFIED, f\"checker error: {type(e).__name__}\", conf)",
+     "new": "return None"
+    },
+    {
+     "index": 151,
+     "outcome": "killed",
+     "old": "return Verdict(VERIFIED if ok is True else UNVERIFIED, why, conf, \"bwrap\" if c.kind in _SA",
+     "new": "return Verdict(VERIFIED if ok is False else UNVERIFIED, why, conf, \"bwrap\" if c.kind in _S"
+    },
+    {
+     "index": 152,
+     "outcome": "killed",
+     "old": "return Verdict(VERIFIED if ok is True else UNVERIFIED, why, conf, \"bwrap\" if c.kind in _SA",
+     "new": "return None"
+    }
+   ]
+  }
+ }
+}

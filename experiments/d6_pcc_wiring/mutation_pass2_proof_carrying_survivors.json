@@ -1,0 +1,364 @@
+{
+ "python": "Python 3.12.14",
+ "targets": {
+  "proof_carrying": {
+   "file": "backend/app/self_improve/proof_carrying.py",
+   "total": 58,
+   "killed": 56,
+   "survived": 2,
+   "nomatch": 0,
+   "timeout": 0,
+   "seconds": 353,
+   "rows": [
+    {
+     "index": 0,
+     "outcome": "survived",
+     "old": "timeout and a process-group kill. If bubblewrap is unavailable these kinds fail closed (UN",
+     "new": "timeout or a process-group kill. If bubblewrap is unavailable these kinds fail closed (UNV"
+    },
+    {
+     "index": 1,
+     "outcome": "killed",
+     "old": "MAX_BITS = 4096",
+     "new": "MAX_BITS = 4097"
+    },
+    {
+     "index": 6,
+     "outcome": "killed",
+     "old": "mem_mb: int = 1024",
+     "new": "mem_mb: int = 1025"
+    },
+    {
+     "index": 8,
+     "outcome": "killed",
+     "old": "nofile: int = 128",
+     "new": "nofile: int = 129"
+    },
+    {
+     "index": 9,
+     "outcome": "killed",
+     "old": "nproc_extra: int = 48",
+     "new": "nproc_extra: int = 49"
+    },
+    {
+     "index": 10,
+     "outcome": "killed",
+     "old": "return shutil.which(\"bwrap\")",
+     "new": "return None"
+    },
+    {
+     "index": 11,
+     "outcome": "killed",
+     "old": "\"\"\"True only if bwrap exists AND can actually start an isolated python here (user namespac",
+     "new": "\"\"\"False only if bwrap exists AND can actually start an isolated python here (user namespa"
+    },
+    {
+     "index": 15,
+     "outcome": "killed",
+     "old": "r = run_sandboxed([sys.executable, \"-I\", \"-B\", \"-c\", \"print(40+2)\"], {}, Limits(wall_s=15.",
+     "new": "r = run_sandboxed([sys.executable, \"-I\", \"-B\", \"-c\", \"print(41+2)\"], {}, Limits(wall_s=15."
+    },
+    {
+     "index": 16,
+     "outcome": "killed",
+     "old": "ok = r.returncode == 0 and r.stdout.strip() == \"42\"",
+     "new": "ok = r.returncode != 0 and r.stdout.strip() == \"42\""
+    },
+    {
+     "index": 17,
+     "outcome": "killed",
+     "old": "ok = r.returncode == 0 and r.stdout.strip() == \"42\"",
+     "new": "ok = r.returncode == 0 or r.stdout.strip() == \"42\""
+    },
+    {
+     "index": 18,
+     "outcome": "killed",
+     "old": "ok = r.returncode == 0 and r.stdout.strip() == \"42\"",
+     "new": "ok = r.returncode == 1 and r.stdout.strip() == \"42\""
+    },
+    {
+     "index": 19,
+     "outcome": "killed",
+     "old": "ok = False",
+     "new": "ok = True"
+    },
+    {
+     "index": 21,
+     "outcome": "survived",
+     "old": "n = 0",
+     "new": "n = 1"
+    },
+    {
+     "index": 25,
+     "outcome": "killed",
+     "old": "return n",
+     "new": "return None"
+    },
+    {
+     "index": 29,
+     "outcome": "killed",
+     "old": "if c and os.path.isdir(c) and c not in (\"/\", \"/usr\", \"/home\") and not c.startswith(\"/usr/\"",
+     "new": "if c and os.path.isdir(c) and c in (\"/\", \"/usr\", \"/home\") and not c.startswith(\"/usr/\"):"
+    },
+    {
+     "index": 30,
+     "outcome": "killed",
+     "old": "return out",
+     "new": "return None"
+    },
+    {
+     "index": 31,
+     "outcome": "killed",
+     "old": "if os.path.isdir(\"/usr/\" + tgt.split(\"/\", 1)[1]):",
+     "new": "if os.path.isdir(\"/usr/\" - tgt.split(\"/\", 1)[1]):"
+    },
+    {
+     "index": 32,
+     "outcome": "killed",
+     "old": "if os.path.isdir(\"/usr/\" + tgt.split(\"/\", 1)[1]):",
+     "new": "if os.path.isdir(\"/usr/\" + tgt.split(\"/\", 2)[1]):"
+    },
+    {
+     "index": 33,
+     "outcome": "killed",
+     "old": "a += [\"--symlink\", tgt, link]",
+     "new": "a -= [\"--symlink\", tgt, link]"
+    },
+    {
+     "index": 34,
+     "outcome": "killed",
+     "old": "a += [\"--ro-bind\", m, m]",
+     "new": "a -= [\"--ro-bind\", m, m]"
+    },
+    {
+     "index": 35,
+     "outcome": "killed",
+     "old": "a += [\"--proc\", \"/proc\", \"--dev\", \"/dev\", \"--tmpfs\", \"/tmp\",",
+     "new": "a -= [\"--proc\", \"/proc\", \"--dev\", \"/dev\", \"--tmpfs\", \"/tmp\","
+    },
+    {
+     "index": 36,
+     "outcome": "killed",
+     "old": "\"--setenv\", \"PATH\", \"/usr/bin:/bin\", \"--setenv\", \"HOME\", \"/work\", \"--setenv\", \"LANG\", \"C.U",
+     "new": "\"--setenv\", \"PATH\", \"/usr/bin:/bin\", \"--setenv\", \"HOME\", \"/work\", \"--setenv\", \"LANG\", \"C.U"
+    },
+    {
+     "index": 37,
+     "outcome": "killed",
+     "old": "\"--setenv\", \"PYTHONDONTWRITEBYTECODE\", \"1\", \"--setenv\", \"PYTEST_DISABLE_PLUGIN_AUTOLOAD\", ",
+     "new": "\"--setenv\", \"PYTHONDONTWRITEBYTECODE\", \"2\", \"--setenv\", \"PYTEST_DISABLE_PLUGIN_AUTOLOAD\", "
+    },
+    {
+     "index": 38,
+     "outcome": "killed",
+     "old": "return a + argv",
+     "new": "return a - argv"
+    },
+    {
+     "index": 39,
+     "outcome": "killed",
+     "old": "return a + argv",
+     "new": "return None"
+    },
+    {
+     "index": 42,
+     "outcome": "killed",
+     "old": "cap = _count_uid_procs() + limits.nproc_extra",
+     "new": "cap = _count_uid_procs() - limits.nproc_extra"
+    },
+    {
+     "index": 43,
+     "outcome": "killed",
+     "old": "resource.setrlimit(resource.RLIMIT_AS, (limits.mem_mb << 20, limits.mem_mb << 20))",
+     "new": "resource.setrlimit(resource.RLIMIT_AS, (limits.mem_mb << 21, limits.mem_mb << 20))"
+    },
+    {
+     "index": 44,
+     "outcome": "killed",
+     "old": "resource.setrlimit(resource.RLIMIT_FSIZE, (limits.fsize_mb << 20, limits.fsize_mb << 20))",
+     "new": "resource.setrlimit(resource.RLIMIT_FSIZE, (limits.fsize_mb << 21, limits.fsize_mb << 20))"
+    },
+    {
+     "index": 45,
+     "outcome": "killed",
+     "old": "resource.setrlimit(resource.RLIMIT_CORE, (0, 0))",
+     "new": "resource.setrlimit(resource.RLIMIT_CORE, (1, 0))"
+    },
+    {
+     "index": 49,
+     "outcome": "killed",
+     "old": "return b[:limits.max_out].decode(\"utf-8\", \"replace\"), len(b) > limits.max_out",
+     "new": "return b[:limits.max_out].decode(\"utf-8\", \"replace\"), len(b) >= limits.max_out"
+    },
+    {
+     "index": 50,
+     "outcome": "killed",
+     "old": "return b[:limits.max_out].decode(\"utf-8\", \"replace\"), len(b) > limits.max_out",
+     "new": "return None"
+    },
+    {
+     "index": 51,
+     "outcome": "killed",
+     "old": "return b[:limits.max_out].decode(\"utf-8\", \"replace\"), len(b) > limits.max_out",
+     "new": "return b[:limits.max_out].decode(\"utf-9\", \"replace\"), len(b) > limits.max_out"
+    },
+    {
+     "index": 54,
+     "outcome": "killed",
+     "old": "return RunResult(p.returncode, out, err, timed_out, t1 or t2, extra.get(\"junit\"))",
+     "new": "return None"
+    },
+    {
+     "index": 74,
+     "outcome": "killed",
+     "old": "return False, \"missing source text, hash or quote\"",
+     "new": "return False, \"missing source text, hash and quote\""
+    },
+    {
+     "index": 76,
+     "outcome": "killed",
+     "old": "return False, \"missing source text, hash or quote\"",
+     "new": "return None"
+    },
+    {
+     "index": 77,
+     "outcome": "killed",
+     "old": "if len(text) > MAX_TEXT or len(q) > MAX_TEXT:",
+     "new": "if len(text) >= MAX_TEXT or len(q) > MAX_TEXT:"
+    },
+    {
+     "index": 84,
+     "outcome": "killed",
+     "old": "if not (isinstance(script, str) and isinstance(want, str)) or not script or not want:",
+     "new": "if not (isinstance(script, str) or isinstance(want, str)) or not script or not want:"
+    },
+    {
+     "index": 85,
+     "outcome": "killed",
+     "old": "if not (isinstance(script, str) and isinstance(want, str)) or not script or not want:",
+     "new": "if not (isinstance(script, str) and isinstance(want, str)) and not script or not want:"
+    },
+    {
+     "index": 86,
+     "outcome": "killed",
+     "old": "return False, \"missing script or output hash\"",
+     "new": "return False, \"missing script and output hash\""
+    },
+    {
+     "index": 88,
+     "outcome": "killed",
+     "old": "return False, \"missing script or output hash\"",
+     "new": "return None"
+    },
+    {
+     "index": 90,
+     "outcome": "killed",
+     "old": "for _ in range(2):",
+     "new": "for _ in range(3):"
+    },
+    {
+     "index": 96,
+     "outcome": "killed",
+     "old": "return False, f\"script exit {r.returncode}\"",
+     "new": "return None"
+    },
+    {
+     "index": 102,
+     "outcome": "killed",
+     "old": "return (hmac.compare_digest(got, want)), (\"re-run output hash matches\" if got == want else",
+     "new": "return (hmac.compare_digest(got, want)), (\"re-run output hash matches\" if got != want else"
+    },
+    {
+     "index": 110,
+     "outcome": "killed",
+     "old": "\"skipped\": int(s.get(\"skipped\", -1)), \"cases\": len(cases), \"bad\": len(bad)}",
+     "new": "\"skipped\": int(s.get(\"skipped\", -2)), \"cases\": len(cases), \"bad\": len(bad)}"
+    },
+    {
+     "index": 112,
+     "outcome": "killed",
+     "old": "the work dir by pytest) says exactly N tests with no failure/error/skip, and stdout's summ",
+     "new": "the work dir by pytest) says exactly N tests with no failure/error/skip, or stdout's summa"
+    },
+    {
+     "index": 113,
+     "outcome": "killed",
+     "old": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i",
+     "new": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i"
+    },
+    {
+     "index": 114,
+     "outcome": "killed",
+     "old": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i",
+     "new": "if not (isinstance(src, str) or isinstance(tests, str)) or not src or not tests or not _is"
+    },
+    {
+     "index": 115,
+     "outcome": "killed",
+     "old": "if not (isinstance(src, str) and isinstance(tests, str)) or not src or not tests or not _i",
+     "new": "if not (isinstance(src, str) and isinstance(tests, str)) and not src or not tests or not _"
+    },
+    {
+     "index": 117,
+     "outcome": "killed",
+     "old": "return False, \"missing source, tests or expected count\"",
+     "new": "return False, \"missing source, tests and expected count\""
+    },
+    {
+     "index": 119,
+     "outcome": "killed",
+     "old": "return False, \"missing source, tests or expected count\"",
+     "new": "return None"
+    },
+    {
+     "index": 121,
+     "outcome": "killed",
+     "old": "if len(src) > MAX_TEXT or len(tests) > MAX_TEXT:",
+     "new": "if len(src) > MAX_TEXT and len(tests) > MAX_TEXT:"
+    },
+    {
+     "index": 123,
+     "outcome": "killed",
+     "old": "return False, \"tests timed out\"",
+     "new": "return True, \"tests timed out\""
+    },
+    {
+     "index": 132,
+     "outcome": "killed",
+     "old": "return False, \"unparseable junit report\"",
+     "new": "return None"
+    },
+    {
+     "index": 134,
+     "outcome": "killed",
+     "old": "if jc is None or jc != {\"tests\": want, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"cases\": ",
+     "new": "if jc is None and jc != {\"tests\": want, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"cases\":"
+    },
+    {
+     "index": 137,
+     "outcome": "killed",
+     "old": "return False, f\"junit counts do not match expected {want}: {jc}\"",
+     "new": "return None"
+    },
+    {
+     "index": 139,
+     "outcome": "killed",
+     "old": "return False, \"stdout summary disagrees with junit\"",
+     "new": "return True, \"stdout summary disagrees with junit\""
+    },
+    {
+     "index": 140,
+     "outcome": "killed",
+     "old": "return False, \"stdout summary disagrees with junit\"",
+     "new": "return None"
+    },
+    {
+     "index": 141,
+     "outcome": "killed",
+     "old": "return True, \"tests re-run in sandbox and pass\"",
+     "new": "return True, \"tests re-run in sandbox or pass\""
+    }
+   ]
+  }
+ }
+}
