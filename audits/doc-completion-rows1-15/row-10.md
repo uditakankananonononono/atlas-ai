@@ -10,10 +10,10 @@ Doc source line refs in the table: 74,1,155. The owner doc was not re-read for t
 
 ## (a) Existing files and tests
 
-- present: `backend/app/modules/c30/worldclass.py` (324 lines)
-- test files that import the named modules or name them as `<module>.py` (import/filename match only; results not run for this sheet): 2
-  - `tests/modules/test_c30_worldclass_v6.py`
-  - `tests/modules/test_resource_order_worldclass.py`
+- present: `backend/app/validation/judges.py` (211 lines): judge packet construction, provider adapters, verdict parsing and receipts. This is where the judge wiring lives.
+- test file that names the module (filename/import match only; results not run for this sheet): 1
+  - `tests/modules/test_validation_judges_g115.py`
+- Pointer correction: this sheet first cited `backend/app/modules/c30/worldclass.py`, copied from the Oct 12 table. That file is a supplied-numbers benchmark board with no judge logic (0 occurrences of "judge"); it belongs to rows 8 and 15, not here.
 
 ## Snapshot update: groups 1-16 program evidence on main
 
