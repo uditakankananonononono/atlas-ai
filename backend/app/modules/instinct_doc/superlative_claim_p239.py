@@ -30,6 +30,7 @@ DOC_CLAIMS = [{"claim": "both are the best in the world",
                "note": "a superlative over an open world; comparison coverage is recomputed, rank never asserted"}]
 METHOD_LIMITS = (
     "The superlative is recorded with asserted=False, verifiable=False; the verdict can never become 'best'. ",
+    "Surrounding whitespace is stripped from text fields; subjects 's' and ' s ' share one coverage key. ",
     "Comparisons are caller-declared; missing evidence is flagged, truth is not judged. ",
     "Coverage (subjects and counts) is recomputed from the records on every call. ",
 )
@@ -118,7 +119,7 @@ def verify(comparisons, result):
     if set(result) != _KEYS:
         return {"verified": False, "failed": ["exact_keys"], "checks": checks}
     expected = audit(comparisons)
-    failed = [key for key in sorted(_KEYS) if result[key] != expected[key]]
+    failed = [key for key in sorted(_KEYS) if type(result[key]) is not type(expected[key]) or result[key] != expected[key]]
     return {"verified": not failed, "failed": failed, "checks": checks}
 
 

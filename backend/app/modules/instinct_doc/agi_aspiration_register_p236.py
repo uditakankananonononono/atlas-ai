@@ -136,7 +136,7 @@ def verify(attempts, result):
     if set(result) != _KEYS:
         return {"verified": False, "failed": ["exact_keys"], "checks": checks}
     expected = register(attempts)
-    failed = [key for key in sorted(_KEYS) if result[key] != expected[key]]
+    failed = [key for key in sorted(_KEYS) if type(result[key]) is not type(expected[key]) or result[key] != expected[key]]
     return {"verified": not failed, "failed": failed, "checks": checks}
 
 
