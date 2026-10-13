@@ -85,3 +85,18 @@ def test_shapes_and_empty_refusals():
         with pytest.raises(ValueError,match='^1..8 initial binary probabilities before scan$'):approximate([0,0],bad)
     for bad in ([],[0],[0,0,0],(0,0),None):
         with pytest.raises(ValueError,match='^exact binary log weight table size$'):approximate(bad,[.5])
+
+
+def test_negative_coordinate_update_unclamped_sigmoid_and_last_elbo_exact():
+    # Lexicographic weights00=0,01=-1,10=-2,11=-4.
+    # Starting q1=1/2 gives coordinate0 delta=-5/2.
+    # Sequential coordinate1 delta=-1-q0, still moderately negative.
+    weights=[0,-1,-2,-4]
+    r=approximate(weights,[.4,.5],max_sweeps=1,tolerance=1e-12)
+    first=math.exp(-2.5)/(1+math.exp(-2.5))
+    second=math.exp(-1-first)/(1+math.exp(-1-first))
+    assert r['binary_probabilities']==pytest.approx([first,second],abs=1e-14)
+    assert all(1e-3<p<.5 for p in r['binary_probabilities'])
+    assert r['elbo']==r['elbo_history'][-1]
+    assert abs(r['elbo_history'][-1]-r['elbo_history'][-2])>0.1
+    assert r['reverse_kl']==pytest.approx(reference_kl(weights,[first,second]),abs=1e-12)
