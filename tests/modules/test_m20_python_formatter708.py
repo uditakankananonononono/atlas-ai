@@ -1,4 +1,4 @@
-"""Builder reproduction tests. Independent auditor must run fresh checks."""
+"""Python formatter behavior, safety checks and authenticated routes."""
 import ast
 import hashlib
 import sys
@@ -53,7 +53,7 @@ def test_bad_style_refused(length):
 
 def test_ast_change_refused(monkeypatch):
     monkeypatch.setattr(black, 'format_str', lambda source, mode: 'x = 2\n')
-    with pytest.raises(ValueError, match='changed the Python AST'):
+    with pytest.raises(ValueError, match='changed the Black-normalized Python AST'):
         format_python('x=1\n')
 
 
@@ -102,3 +102,22 @@ def test_route_optional_dependency_unavailable(oidc_auth_headers, monkeypatch):
     monkeypatch.setitem(sys.modules, 'black', None)
     assert client().post('/code-formatting/708/format-python',headers=oidc_auth_headers(),
                          json={'source':'x=1'}).status_code == 503
+
+
+@pytest.mark.parametrize('source', [
+    'def f():\n """ hi  """\n pass\n',
+    '"""   module docs   """\nx=1\n',
+    'class C:\n """\n  multiline\n    docs\n """\n pass\n',
+])
+def test_docstring_normalization_uses_black_safe_mode(source):
+    out = format_python(source)
+    black.assert_equivalent(source, out['formatted_source'])
+    assert out['second_pass_equal'] and 'docstring' in out['ast_comparison']
+    assert any('__doc__' in limit for limit in out['limits'])
+
+
+def test_black_is_available_in_dev_dependency_group():
+    import tomllib
+    from pathlib import Path
+    data = tomllib.loads((Path(__file__).resolve().parents[2] / 'pyproject.toml').read_text())
+    assert 'black==26.10.1' in data['project']['optional-dependencies']['dev']

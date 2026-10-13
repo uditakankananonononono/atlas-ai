@@ -1,6 +1,6 @@
 """Real Python source formatting for extra-doc row708, never source execution.
 
-AST equality is a structural check, not proof of runtime equivalence (line
+Black-normalized AST equality is a structural check, not proof of runtime equivalence (line
 numbers, source introspection and comment-based tools can observe changes).
 """
 from __future__ import annotations
@@ -38,7 +38,7 @@ def format_python(source: str, line_length: int = 88) -> dict:
         raise ValueError("source exceeds byte limit or contains NUL")
     if type(line_length) is not int or not 40 <= line_length <= 200:
         raise ValueError("line_length must be an integer from 40 to 200")
-    before_tree = _tree(source)
+    _tree(source)
     try:
         import black
     except ImportError as exc:
@@ -48,8 +48,13 @@ def format_python(source: str, line_length: int = 88) -> dict:
         formatted = black.format_str(source, mode=mode)
         if len(formatted.encode("utf-8")) > MAX_BYTES * 4:
             raise ValueError("formatter output exceeds byte limit")
-        if _tree(formatted) != before_tree:
-            raise ValueError("formatter changed the Python AST; result refused")
+        _tree(formatted)
+        # Same normalization used by Black safe mode, without assert_equivalent's
+        # error-log file creation. Never write caller source to scratch storage.
+        before_normalized = list(black.stringify_ast(black.parse_ast(source)))
+        after_normalized = list(black.stringify_ast(black.parse_ast(formatted)))
+        if before_normalized != after_normalized:
+            raise ValueError("formatter changed the Black-normalized Python AST; result refused")
         second = black.format_str(formatted, mode=mode)
         if second != formatted:
             raise ValueError("formatter is not idempotent; result refused")
@@ -69,13 +74,15 @@ def format_python(source: str, line_length: int = 88) -> dict:
         "line_length": line_length,
         "formatter_executed": True,
         "ast_equal": True,
+        "ast_comparison": "Black safe-mode normalized AST (docstring whitespace may change)",
         "second_pass_equal": True,
         "source_executed": False,
         "repository_mutated": False,
         "runtime_semantics_verified": False,
         "status": "python_source_formatted",
         "limits": ["Python only. Supplied text only; no file access or source execution.",
-                   "AST equality and second-pass equality are checked, not runtime equivalence.",
+                   "Black-normalized AST and second-pass equality are checked, not runtime equivalence.",
+                   "Docstring whitespace may normalize, including observable __doc__ values.",
                    "Line numbers, source introspection and comment-based tools may observe changes.",
                    "No repository write, merge, deployment or release is performed."],
     }

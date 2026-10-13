@@ -1172,8 +1172,8 @@ def test_additive_current_exact_operation_inventory(env):
     assert len(BATCH2_INVENTORY) == BATCH2_TOTAL_ROUTES == 246
     assert len(PRE_FINAL_REACHABLE) == 77
     assert len(FINAL_REACHABLE_ADDITIONS) == 21
-    assert len(REACHABLE) == 104
-    assert FINAL_TOTAL_ROUTES == 273
+    assert len(REACHABLE) == 105
+    assert FINAL_TOTAL_ROUTES == 274
     assert FINAL_NOT_BOUND == BATCH2_NOT_BOUND == CURRENT_NOT_BOUND == NOT_BOUND
     assert sum(FINAL_NOT_BOUND.values()) == 169
     assert FINAL_TOTAL_ROUTES == len(REACHABLE) + sum(FINAL_NOT_BOUND.values())
@@ -1212,4 +1212,11 @@ SIXROW_OPERATIONS = {
 }
 REACHABLE = {**REACHABLE, **SIXROW_OPERATIONS}
 FINAL_INVENTORY = tuple(sorted((*FINAL_INVENTORY, *SIXROW_OPERATIONS)))
+FINAL_TOTAL_ROUTES = TOTAL_ROUTES = len(FINAL_INVENTORY)
+
+
+# Real Python formatter is distinct from caller-declared inspection.
+PYTHON_FORMAT708_OPERATION = ('post', '/api/v1/api/modules/20/code-formatting/708/format-python')
+REACHABLE = {**REACHABLE, PYTHON_FORMAT708_OPERATION: 422}
+FINAL_INVENTORY = tuple(sorted((*FINAL_INVENTORY, PYTHON_FORMAT708_OPERATION)))
 FINAL_TOTAL_ROUTES = TOTAL_ROUTES = len(FINAL_INVENTORY)
