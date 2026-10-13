@@ -203,12 +203,39 @@ def test_690_approval_paths(call):
                        'requested_decision': 'approve'}, 422) == 'approval requires a reviewer'
 
 
-def test_690_stated_engine_limit_context_lines_are_refused(call):
-    # The parser counts only added and removed lines against the hunk header, so a hunk that holds a context line is
-    # refused. Documented limit: only zero-context unified diffs are accepted. Pinned, not fixed here.
+def test_690_valid_context_diff_is_parsed_without_context_findings(call):
     with_context = '--- a/x\n+++ b/x\n@@ -1,1 +1,3 @@\n context\n+a\n+b\n'
-    assert call(P690, {'diff': with_context, 'review_checklist': [], 'author': 'ann'}, 422) == \
-        'hunk line counts do not match its header'
+    j = call(P690, {'diff': with_context, 'review_checklist': [], 'author': 'ann'})
+    assert j['files'] == ['x'] and j['added_lines'] == 2
+    assert j['findings'] == [] and j['unresolved_blockers'] == []
+    assert j['decision'] == 'no_issues_found' and j['approval'] is None
+    assert j['self_approval_forbidden'] and j['human_review_required']
+    # Context consumes source positions but is not reviewed as added code.
+    debug_context = '--- a/x\n+++ b/x\n@@ -1,1 +1,2 @@\n print("context")\n+print("added")\n'
+    j = call(P690, {'diff': debug_context, 'review_checklist': [], 'author': 'ann'})
+    assert j['added_lines'] == 1
+    assert [(f['rule'], f['path'], f['line']) for f in j['findings']] == [('debug-leftover', 'x', 2)]
+
+
+@pytest.mark.parametrize('diff', [
+    '--- a/x\n+++ b/x\n@@ -1,2 +1,3 @@\n context\n+a\n+b\n',  # wrong old count
+    '--- a/x\n+++ b/x\n@@ -1,1 +1,3 @@\n context\n+a\n',  # truncated new count
+    '--- a/x\n+++ b/x\n@@ -1,1 +1,2 @@\n context\n+a\n+b\n',  # excess addition
+    '--- a/x\n+++ b/x\n@@ -1,x +1,2 @@\n context\n+a\n',  # malformed header
+])
+def test_690_malformed_context_counts_refused(call, diff):
+    detail = call(P690, {'diff': diff, 'review_checklist': [], 'author': 'ann'}, 422)
+    assert detail in ('hunk line counts do not match its header', 'malformed hunk header')
+
+
+def test_690_oversize_context_diff_refused_before_parse(monkeypatch, oidc_auth_headers):
+    monkeypatch.setenv('ATLAS_ENV', 'production')
+    client = TestClient(app, raise_server_exceptions=False)
+    diff = '--- a/x\n+++ b/x\n@@ -1,1 +1,2 @@\n context\n+' + 'a' * 1_000_001 + '\n'
+    r = client.post(P690, headers=oidc_auth_headers('acc690oversize', 'owner'),
+                    json={'diff': diff, 'review_checklist': [], 'author': 'ann'})
+    assert r.status_code == 422
+    assert any(e['loc'] == ['body', 'diff'] and e['type'] == 'string_too_long' for e in r.json()['detail'])
 
 
 # ------------------------------------------------------------------ 691
