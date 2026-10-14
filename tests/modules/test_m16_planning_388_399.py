@@ -87,11 +87,14 @@ def test_row_392_velocity_tracking_averages_closed_sprints():
     assert [p.completed_points for p in report.sprints]==[8.0,8.0] and report.average_completed==8.0
     assert report.inputs["sprint_ids"]==[sp1.id,sp2.id]
     assert s.velocity_report().sprints[0].committed_points==8.0
-def test_row_393_burndown_tracks_actual_vs_ideal_with_scope_note():
-    s=svc();sp=sprint(s,"S1",NOW-timedelta(days=4),NOW+timedelta(days=6))
+def test_row_393_burndown_tracks_actual_vs_ideal_with_scope_note(monkeypatch):
+    from app.modules.m16_executive_dashboard import service
+    now=datetime(2026,1,15,12,0,tzinfo=timezone.utc)
+    monkeypatch.setattr(service,"_utcnow",lambda:now)
+    s=svc();sp=sprint(s,"S1",now-timedelta(days=4),now+timedelta(days=6))
     a=item(s,"a",estimate=4,sprint_id=sp.id);b=item(s,"b",estimate=4,sprint_id=sp.id)
     s.patch_work_item(a.id,WorkItemPatch(status="done"))
-    report=s.burndown(sp.id,NOW)
+    report=s.burndown(sp.id,now)
     assert report.series[0].total_committed==8 and report.series[0].ideal_remaining==8
     assert report.series[-1].actual_remaining<=8 and any("Ideal line is linear" in x for x in report.assumptions)
     done_days=[p for p in report.series if p.actual_remaining<8]
