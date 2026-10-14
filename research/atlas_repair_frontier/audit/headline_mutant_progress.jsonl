@@ -1,0 +1,253 @@
+{"id": 2, "desc": "L23 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 5, "desc": "L40 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 4, "desc": "L39 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 7, "desc": "L50 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 6, "desc": "L45 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 1, "desc": "L22 negate test", "killed": true, "reason": "nonzero"}
+{"id": 8, "desc": "L50 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 9, "desc": "L53 return None", "killed": true, "reason": "nonzero"}
+{"id": 13, "desc": "L75 negate test", "killed": true, "reason": "nonzero"}
+{"id": 10, "desc": "L62 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 11, "desc": "L70 return None", "killed": true, "reason": "nonzero"}
+{"id": 14, "desc": "L76 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 15, "desc": "L76 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 16, "desc": "L76 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 18, "desc": "L88 return None", "killed": true, "reason": "nonzero"}
+{"id": 20, "desc": "L99 negate test", "killed": true, "reason": "nonzero"}
+{"id": 21, "desc": "L100 negate test", "killed": true, "reason": "nonzero"}
+{"id": 22, "desc": "L101 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 23, "desc": "L101 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 24, "desc": "L102 negate test", "killed": true, "reason": "nonzero"}
+{"id": 25, "desc": "L103 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 26, "desc": "L108 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 27, "desc": "L110 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 28, "desc": "L111 return None", "killed": true, "reason": "nonzero"}
+{"id": 17, "desc": "L79 negate test", "killed": true, "reason": "nonzero"}
+{"id": 32, "desc": "L25 negate test", "killed": true, "reason": "nonzero"}
+{"id": 33, "desc": "L26 negate test", "killed": true, "reason": "nonzero"}
+{"id": 34, "desc": "L27 negate test", "killed": true, "reason": "nonzero"}
+{"id": 35, "desc": "L28 negate test", "killed": true, "reason": "nonzero"}
+{"id": 36, "desc": "L29 del Expr", "killed": true, "reason": "nonzero"}
+{"id": 0, "desc": "L1 str 'Exact predecessor-closed knaps'", "killed": false, "reason": "survived"}
+{"id": 38, "desc": "L42 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 39, "desc": "L43 negate test", "killed": true, "reason": "nonzero"}
+{"id": 3, "desc": "L39 del Expr", "killed": false, "reason": "survived"}
+{"id": 12, "desc": "L74 del Expr", "killed": false, "reason": "survived"}
+{"id": 41, "desc": "L48 negate test", "killed": true, "reason": "nonzero"}
+{"id": 40, "desc": "L47 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 42, "desc": "L50 unary drop USub", "killed": true, "reason": "nonzero"}
+{"id": 44, "desc": "L52 negate test", "killed": true, "reason": "nonzero"}
+{"id": 19, "desc": "L98 del Expr", "killed": false, "reason": "survived"}
+{"id": 46, "desc": "L64 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 47, "desc": "L64 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 48, "desc": "L69 negate test", "killed": true, "reason": "nonzero"}
+{"id": 29, "desc": "L18 bool True", "killed": false, "reason": "survived"}
+{"id": 30, "desc": "L22 boolop", "killed": false, "reason": "survived"}
+{"id": 31, "desc": "L22 del Raise", "killed": false, "reason": "survived"}
+{"id": 53, "desc": "L78 return None", "killed": true, "reason": "nonzero"}
+{"id": 37, "desc": "L33 str 'Enumerate dependency ideals on'", "killed": false, "reason": "survived"}
+{"id": 54, "desc": "L79 bool True", "killed": true, "reason": "nonzero"}
+{"id": 55, "desc": "L80 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 56, "desc": "L86 negate test", "killed": true, "reason": "nonzero"}
+{"id": 43, "desc": "L51 call sorted->list", "killed": true, "reason": "nonzero"}
+{"id": 45, "desc": "L57 str 'All Pareto points optimal for '", "killed": false, "reason": "survived"}
+{"id": 49, "desc": "L75 boolop", "killed": false, "reason": "survived"}
+{"id": 51, "desc": "L76 int 0->1", "killed": true, "reason": "nonzero"}
+{"id": 50, "desc": "L75 del Raise", "killed": false, "reason": "survived"}
+{"id": 52, "desc": "L76 int 0->-1", "killed": true, "reason": "nonzero"}
+{"id": 60, "desc": "L92 str 'Pure executable artifact testb'", "killed": false, "reason": "survived"}
+{"id": 61, "desc": "L99 boolop", "killed": false, "reason": "survived"}
+{"id": 65, "desc": "L102 binop Sub", "killed": true, "reason": "nonzero"}
+{"id": 62, "desc": "L99 del Raise", "killed": false, "reason": "survived"}
+{"id": 67, "desc": "L105 negate test", "killed": true, "reason": "nonzero"}
+{"id": 63, "desc": "L100 boolop", "killed": false, "reason": "survived"}
+{"id": 69, "desc": "L22 unary drop Not", "killed": true, "reason": "nonzero"}
+{"id": 71, "desc": "L22 cmp Gt->Lt", "killed": true, "reason": "nonzero"}
+{"id": 64, "desc": "L100 del Raise", "killed": false, "reason": "survived"}
+{"id": 59, "desc": "L87 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 66, "desc": "L102 del Raise", "killed": false, "reason": "survived"}
+{"id": 68, "desc": "L12 bool True", "killed": false, "reason": "survived"}
+{"id": 70, "desc": "L22 cmp Gt->GtE", "killed": false, "reason": "survived"}
+{"id": 72, "desc": "L25 boolop", "killed": false, "reason": "survived"}
+{"id": 73, "desc": "L25 del Raise", "killed": false, "reason": "survived"}
+{"id": 78, "desc": "L28 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 80, "desc": "L42 call sum->len", "killed": true, "reason": "nonzero"}
+{"id": 74, "desc": "L26 boolop", "killed": false, "reason": "survived"}
+{"id": 82, "desc": "L48 boolop", "killed": true, "reason": "nonzero"}
+{"id": 83, "desc": "L49 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 75, "desc": "L26 del Raise", "killed": false, "reason": "survived"}
+{"id": 85, "desc": "L50 int 1->0", "killed": true, "reason": "nonzero"}
+{"id": 76, "desc": "L27 boolop", "killed": false, "reason": "survived"}
+{"id": 77, "desc": "L27 del Raise", "killed": false, "reason": "survived"}
+{"id": 87, "desc": "L52 cmp Gt->Lt", "killed": true, "reason": "nonzero"}
+{"id": 88, "desc": "L52 del Expr", "killed": true, "reason": "nonzero"}
+{"id": 81, "desc": "L44 del AugAssign", "killed": true, "reason": "nonzero"}
+{"id": 79, "desc": "L28 del Raise", "killed": false, "reason": "survived"}
+{"id": 90, "desc": "L66 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 91, "desc": "L66 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 92, "desc": "L67 negate test", "killed": true, "reason": "nonzero"}
+{"id": 84, "desc": "L50 int 1->2", "killed": false, "reason": "survived"}
+{"id": 93, "desc": "L69 boolop", "killed": true, "reason": "nonzero"}
+{"id": 94, "desc": "L69 del Expr", "killed": true, "reason": "nonzero"}
+{"id": 95, "desc": "L75 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 97, "desc": "L75 cmp Lt->Gt", "killed": true, "reason": "nonzero"}
+{"id": 98, "desc": "L82 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 99, "desc": "L83 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 100, "desc": "L83 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 101, "desc": "L84 negate test", "killed": true, "reason": "nonzero"}
+{"id": 102, "desc": "L86 unary drop Not", "killed": true, "reason": "nonzero"}
+{"id": 103, "desc": "L86 del Break", "killed": true, "reason": "nonzero"}
+{"id": 105, "desc": "L87 call sum->len", "killed": true, "reason": "nonzero"}
+{"id": 107, "desc": "L88 str 'value'", "killed": true, "reason": "nonzero"}
+{"id": 86, "desc": "L52 cmp Gt->GtE", "killed": false, "reason": "survived"}
+{"id": 109, "desc": "L88 call sum->len", "killed": true, "reason": "nonzero"}
+{"id": 110, "desc": "L99 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 104, "desc": "L87 call max->min", "killed": true, "reason": "nonzero"}
+{"id": 96, "desc": "L75 cmp Lt->LtE", "killed": false, "reason": "survived"}
+{"id": 89, "desc": "L52 del Assign", "killed": false, "reason": "survived"}
+{"id": 112, "desc": "L99 cmp Lt->Gt", "killed": true, "reason": "nonzero"}
+{"id": 113, "desc": "L100 cmp NotIn->In", "killed": true, "reason": "nonzero"}
+{"id": 116, "desc": "L106 negate test", "killed": true, "reason": "nonzero"}
+{"id": 114, "desc": "L100 cmp NotEq->Eq", "killed": true, "reason": "nonzero"}
+{"id": 115, "desc": "L105 cmp In->NotIn", "killed": true, "reason": "nonzero"}
+{"id": 117, "desc": "L107 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 106, "desc": "L88 str 'cost'", "killed": false, "reason": "survived"}
+{"id": 108, "desc": "L88 str 'keys'", "killed": false, "reason": "survived"}
+{"id": 111, "desc": "L99 cmp Lt->LtE", "killed": false, "reason": "survived"}
+{"id": 123, "desc": "L111 str 'outputs'", "killed": true, "reason": "nonzero"}
+{"id": 118, "desc": "L108 str 'nodes'", "killed": false, "reason": "survived"}
+{"id": 120, "desc": "L109 str 'evidence_version'", "killed": false, "reason": "survived"}
+{"id": 119, "desc": "L109 str 'selected'", "killed": false, "reason": "survived"}
+{"id": 125, "desc": "L22 call len->sum", "killed": true, "reason": "nonzero"}
+{"id": 128, "desc": "L22 int 20->0", "killed": true, "reason": "nonzero"}
+{"id": 121, "desc": "L109 str 'outputs'", "killed": false, "reason": "survived"}
+{"id": 130, "desc": "L25 unary drop Not", "killed": true, "reason": "nonzero"}
+{"id": 122, "desc": "L109 call sorted->list", "killed": false, "reason": "survived"}
+{"id": 131, "desc": "L25 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 132, "desc": "L25 unary drop Not", "killed": true, "reason": "nonzero"}
+{"id": 133, "desc": "L25 cmp In->NotIn", "killed": true, "reason": "nonzero"}
+{"id": 134, "desc": "L26 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 135, "desc": "L26 cmp Lt->LtE", "killed": true, "reason": "nonzero"}
+{"id": 136, "desc": "L26 cmp Lt->Gt", "killed": true, "reason": "nonzero"}
+{"id": 137, "desc": "L26 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 138, "desc": "L26 cmp Lt->LtE", "killed": true, "reason": "nonzero"}
+{"id": 139, "desc": "L26 cmp Lt->Gt", "killed": true, "reason": "nonzero"}
+{"id": 140, "desc": "L27 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 141, "desc": "L27 call any->all", "killed": true, "reason": "nonzero"}
+{"id": 142, "desc": "L27 cmp NotEq->Eq", "killed": true, "reason": "nonzero"}
+{"id": 143, "desc": "L40 int 0->1", "killed": true, "reason": "nonzero"}
+{"id": 144, "desc": "L40 int 0->-1", "killed": true, "reason": "nonzero"}
+{"id": 126, "desc": "L22 int 20->21", "killed": false, "reason": "survived"}
+{"id": 124, "desc": "L111 str 'receipt_sha256'", "killed": false, "reason": "survived"}
+{"id": 148, "desc": "L40 int 0->-1", "killed": true, "reason": "nonzero"}
+{"id": 149, "desc": "L48 cmp NotIn->In", "killed": true, "reason": "nonzero"}
+{"id": 127, "desc": "L22 int 20->19", "killed": false, "reason": "survived"}
+{"id": 129, "desc": "L22 str '1..20 candidate bound (empty a'", "killed": false, "reason": "survived"}
+{"id": 145, "desc": "L40 int 0->1", "killed": true, "reason": "nonzero"}
+{"id": 146, "desc": "L40 int 0->-1", "killed": true, "reason": "nonzero"}
+{"id": 147, "desc": "L40 int 0->1", "killed": true, "reason": "nonzero"}
+{"id": 155, "desc": "L66 binop Sub", "killed": true, "reason": "nonzero"}
+{"id": 150, "desc": "L48 cmp Gt->GtE", "killed": false, "reason": "survived"}
+{"id": 151, "desc": "L48 cmp Gt->Lt", "killed": true, "reason": "nonzero"}
+{"id": 157, "desc": "L67 cmp Gt->GtE", "killed": true, "reason": "nonzero"}
+{"id": 152, "desc": "L48 boolop", "killed": true, "reason": "nonzero"}
+{"id": 160, "desc": "L68 negate test", "killed": true, "reason": "nonzero"}
+{"id": 161, "desc": "L69 cmp Is->IsNot", "killed": true, "reason": "nonzero"}
+{"id": 153, "desc": "L64 int 0->1", "killed": true, "reason": "nonzero"}
+{"id": 154, "desc": "L64 int 0->-1", "killed": false, "reason": "survived"}
+{"id": 57, "desc": "L87 del Assign", "killed": true, "reason": "timeout60"}
+{"id": 58, "desc": "L87 del AugAssign", "killed": true, "reason": "timeout60"}
+{"id": 156, "desc": "L66 binop Sub", "killed": true, "reason": "nonzero"}
+{"id": 167, "desc": "L82 binop Sub", "killed": true, "reason": "nonzero"}
+{"id": 168, "desc": "L83 call sum->len", "killed": true, "reason": "nonzero"}
+{"id": 169, "desc": "L83 call sum->len", "killed": true, "reason": "nonzero"}
+{"id": 158, "desc": "L67 cmp Gt->Lt", "killed": true, "reason": "nonzero"}
+{"id": 170, "desc": "L84 boolop", "killed": true, "reason": "nonzero"}
+{"id": 159, "desc": "L67 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 162, "desc": "L69 cmp LtE->Lt", "killed": true, "reason": "nonzero"}
+{"id": 164, "desc": "L75 int 0->1", "killed": false, "reason": "survived"}
+{"id": 175, "desc": "L100 call len->sum", "killed": true, "reason": "nonzero"}
+{"id": 171, "desc": "L85 del Expr", "killed": true, "reason": "nonzero"}
+{"id": 176, "desc": "L100 call len->sum", "killed": true, "reason": "nonzero"}
+{"id": 163, "desc": "L69 cmp LtE->GtE", "killed": true, "reason": "nonzero"}
+{"id": 165, "desc": "L75 int 0->-1", "killed": false, "reason": "survived"}
+{"id": 166, "desc": "L75 str 'nonnegative integer cap'", "killed": false, "reason": "survived"}
+{"id": 181, "desc": "L107 binop Add", "killed": true, "reason": "nonzero"}
+{"id": 172, "desc": "L99 int 1->2", "killed": false, "reason": "survived"}
+{"id": 183, "desc": "L26 int 1->2", "killed": true, "reason": "nonzero"}
+{"id": 173, "desc": "L99 int 1->0", "killed": false, "reason": "survived"}
+{"id": 185, "desc": "L26 int 0->1", "killed": true, "reason": "nonzero"}
+{"id": 174, "desc": "L99 str 'positive integer evidence vers'", "killed": false, "reason": "survived"}
+{"id": 179, "desc": "L106 boolop", "killed": false, "reason": "survived"}
+{"id": 178, "desc": "L102 str 'unknown candidate'", "killed": false, "reason": "survived"}
+{"id": 177, "desc": "L100 str 'unique selection sequence requ'", "killed": false, "reason": "survived"}
+{"id": 188, "desc": "L27 call len->sum", "killed": true, "reason": "nonzero"}
+{"id": 189, "desc": "L27 call len->sum", "killed": true, "reason": "nonzero"}
+{"id": 180, "desc": "L106 del Raise", "killed": false, "reason": "survived"}
+{"id": 182, "desc": "L25 str 'unique nonempty keys required'", "killed": false, "reason": "survived"}
+{"id": 184, "desc": "L26 int 1->0", "killed": false, "reason": "survived"}
+{"id": 195, "desc": "L49 str 'cost'", "killed": true, "reason": "nonzero"}
+{"id": 186, "desc": "L26 int 0->-1", "killed": false, "reason": "survived"}
+{"id": 187, "desc": "L26 str 'positive integer cost, nonnega'", "killed": false, "reason": "survived"}
+{"id": 196, "desc": "L49 str 'value'", "killed": true, "reason": "nonzero"}
+{"id": 197, "desc": "L49 str 'keys'", "killed": true, "reason": "nonzero"}
+{"id": 198, "desc": "L52 str 'value'", "killed": true, "reason": "nonzero"}
+{"id": 199, "desc": "L52 str 'value'", "killed": true, "reason": "nonzero"}
+{"id": 201, "desc": "L67 int 0->-1", "killed": true, "reason": "nonzero"}
+{"id": 202, "desc": "L67 negate test", "killed": true, "reason": "nonzero"}
+{"id": 203, "desc": "L68 cmp Lt->LtE", "killed": true, "reason": "nonzero"}
+{"id": 191, "desc": "L28 str 'boolean executable required'", "killed": false, "reason": "survived"}
+{"id": 192, "desc": "L48 cmp Eq->NotEq", "killed": true, "reason": "nonzero"}
+{"id": 190, "desc": "L27 str 'parents must precede node, no '", "killed": false, "reason": "survived"}
+{"id": 193, "desc": "L48 cmp Lt->LtE", "killed": false, "reason": "survived"}
+{"id": 209, "desc": "L106 unary drop Not", "killed": true, "reason": "nonzero"}
+{"id": 194, "desc": "L48 cmp Lt->Gt", "killed": false, "reason": "survived"}
+{"id": 210, "desc": "L106 unary drop Not", "killed": true, "reason": "nonzero"}
+{"id": 211, "desc": "L107 call sum->len", "killed": true, "reason": "nonzero"}
+{"id": 207, "desc": "L84 cmp LtE->GtE", "killed": true, "reason": "nonzero"}
+{"id": 200, "desc": "L67 int 0->1", "killed": true, "reason": "nonzero"}
+{"id": 205, "desc": "L68 del Assign", "killed": true, "reason": "nonzero"}
+{"id": 204, "desc": "L68 cmp Lt->Gt", "killed": true, "reason": "nonzero"}
+{"id": 206, "desc": "L84 cmp LtE->Lt", "killed": true, "reason": "nonzero"}
+{"id": 218, "desc": "L42 int 1->2", "killed": true, "reason": "nonzero"}
+{"id": 219, "desc": "L42 int 1->0", "killed": true, "reason": "nonzero"}
+{"id": 208, "desc": "L84 call all->any", "killed": true, "reason": "nonzero"}
+{"id": 212, "desc": "L108 str 'key'", "killed": false, "reason": "survived"}
+{"id": 222, "desc": "L44 cmp Eq->NotEq", "killed": true, "reason": "nonzero"}
+{"id": 213, "desc": "L108 str 'cost'", "killed": false, "reason": "survived"}
+{"id": 223, "desc": "L48 str 'value'", "killed": true, "reason": "nonzero"}
+{"id": 224, "desc": "L66 str 'cost'", "killed": true, "reason": "nonzero"}
+{"id": 226, "desc": "L66 str 'value'", "killed": true, "reason": "nonzero"}
+{"id": 225, "desc": "L66 str 'cost'", "killed": true, "reason": "nonzero"}
+{"id": 228, "desc": "L67 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 227, "desc": "L66 str 'value'", "killed": true, "reason": "nonzero"}
+{"id": 230, "desc": "L68 int 0->1", "killed": true, "reason": "nonzero"}
+{"id": 214, "desc": "L108 str 'value'", "killed": false, "reason": "survived"}
+{"id": 215, "desc": "L108 str 'parents'", "killed": false, "reason": "survived"}
+{"id": 217, "desc": "L27 boolop", "killed": false, "reason": "survived"}
+{"id": 216, "desc": "L108 str 'executable'", "killed": false, "reason": "survived"}
+{"id": 235, "desc": "L106 cmp LtE->Lt", "killed": true, "reason": "nonzero"}
+{"id": 236, "desc": "L106 cmp LtE->GtE", "killed": true, "reason": "nonzero"}
+{"id": 220, "desc": "L44 binop Add", "killed": true, "reason": "nonzero"}
+{"id": 221, "desc": "L44 binop Add", "killed": true, "reason": "nonzero"}
+{"id": 239, "desc": "L27 cmp IsNot->Is", "killed": true, "reason": "nonzero"}
+{"id": 240, "desc": "L27 cmp NotIn->In", "killed": true, "reason": "nonzero"}
+{"id": 241, "desc": "L47 int 1->2", "killed": true, "reason": "nonzero"}
+{"id": 237, "desc": "L106 str 'not executable predecessor clo'", "killed": false, "reason": "survived"}
+{"id": 242, "desc": "L47 int 1->0", "killed": false, "reason": "survived"}
+{"id": 243, "desc": "L48 str 'value'", "killed": true, "reason": "nonzero"}
+{"id": 234, "desc": "L88 cmp In->NotIn", "killed": false, "reason": "survived"}
+{"id": 229, "desc": "L67 call min->max", "killed": true, "reason": "nonzero"}
+{"id": 244, "desc": "L48 str 'keys'", "killed": true, "reason": "nonzero"}
+{"id": 232, "desc": "L68 call max->min", "killed": true, "reason": "nonzero"}
+{"id": 248, "desc": "L44 int 1->2", "killed": true, "reason": "nonzero"}
+{"id": 238, "desc": "L110 bool True", "killed": false, "reason": "survived"}
+{"id": 231, "desc": "L68 int 0->-1", "killed": true, "reason": "nonzero"}
+{"id": 233, "desc": "L84 binop Add", "killed": true, "reason": "nonzero"}
+{"id": 247, "desc": "L110 str ':'", "killed": false, "reason": "survived"}
+{"id": 246, "desc": "L110 str ','", "killed": false, "reason": "survived"}
+{"id": 249, "desc": "L44 int 1->0", "killed": true, "reason": "nonzero"}
+{"id": 245, "desc": "L85 unary drop USub", "killed": false, "reason": "survived"}
+{"id": 250, "desc": "L87 int 4->5", "killed": false, "reason": "survived"}
+{"id": 251, "desc": "L87 int 4->3", "killed": true, "reason": "nonzero"}
+{"id": 252, "desc": "L87 int 4->0", "killed": true, "reason": "nonzero"}
