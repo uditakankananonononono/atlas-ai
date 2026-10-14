@@ -112,3 +112,27 @@ app.include_router(legal_1297_router, prefix="/api/v1")
 
 from app.modules.m20_general_cognitive_worker.legal_1298_routes import router as legal_1298_router
 app.include_router(legal_1298_router, prefix="/api/v1")
+
+
+from app.modules.c32.psyche_routes import router as s29_psyche_router
+app.include_router(s29_psyche_router,prefix='/api/v1')
+
+
+from app.modules.c33.niches_routes import router as s210_niches_router
+app.include_router(s210_niches_router,prefix='/api/v1')
+
+
+from app.modules.c33.persona_routes import router as s212_persona_router
+app.include_router(s212_persona_router,prefix='/api/v1')
+
+
+from app.modules.c33.content_routes import router as s211_content_router
+app.include_router(s211_content_router,prefix='/api/v1')
+
+
+from app.modules.c34.industry_routes import router as s34_industry_router
+app.include_router(s34_industry_router,prefix='/api/v1')
+
+
+from app.modules.c34.tool_routes import router as s33_tool_router
+app.include_router(s33_tool_router,prefix='/api/v1')
