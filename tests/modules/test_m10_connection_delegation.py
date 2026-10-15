@@ -48,3 +48,22 @@ def test_delegated_call_runs_under_the_transaction_lock():
         assert not done.wait(0.05)
     thread.join(2)
     assert not thread.is_alive() and done.is_set()
+
+
+def test_half_built_wrapper_attribute_miss_is_not_recursive():
+    import pytest
+    from app.modules.m10_email_assistant.lane_store import _SerializedConnection
+    half_built = object.__new__(_SerializedConnection)
+    with pytest.raises(AttributeError):
+        getattr(half_built, "missing")
+
+
+def test_copy_of_wrapper_fails_normally_not_recursively():
+    import copy
+    import pytest
+    with pytest.raises(TypeError, match="cannot pickle"):
+        copy.deepcopy(EmailStore()._db)
+    # Shallow copying probes __setstate__ on a half-built target. It must
+    # complete without recursion; this does not promise a clone of SQLite.
+    cloned = copy.copy(EmailStore()._db)
+    assert cloned._raw is not None

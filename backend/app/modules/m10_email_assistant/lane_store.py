@@ -23,8 +23,10 @@ class _SerializedConnection:
     def __getattr__(self, name):
         # Preserve sqlite connection helpers (including trace callbacks) without
         # letting delegated calls bypass the shared transaction lock.
-        with self.lock:
-            value = getattr(self._raw, name)
+        raw = object.__getattribute__(self, "_raw")
+        lock = object.__getattribute__(self, "lock")
+        with lock:
+            value = getattr(raw, name)
         if not callable(value):
             return value
         @functools.wraps(value)
