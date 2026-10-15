@@ -10,7 +10,7 @@ def test_expiry_loaded_result_preserves_competing_commit(tmp_path):
  engine=create_engine(f'sqlite:///{tmp_path / "expiry.db"}')
  Base.metadata.create_all(engine);plain=sessionmaker(bind=engine,expire_on_commit=False)
  winner=SqlDashboardRepository('t','winner',session_factory=plain)
- winner.save_approval(Approval(id='a',module_id=16,action_type='x',title='x',summary='x',risk='low',evidence={},proposed_payload={},created_at=NOW,expires_at=NOW-timedelta(seconds=1)))
+ winner.save_approval(Approval(id='a',module_id=16,action_type='x',title='x',summary='x',risk='low',evidence={},proposed_payload={},created_at=NOW,expires_at=NOW+timedelta(seconds=1)))
  fired=[]
  class BarrierSession(Session):
   def scalars(self,statement,*args,**kwargs):
@@ -26,7 +26,7 @@ def test_expiry_loaded_result_preserves_competing_commit(tmp_path):
     fired.append(True);assert winner.decide('a',ApprovalState.APPROVED,'committed winner',NOW)
    return super().scalars(statement,*args,**kwargs)
  sweeper=SqlDashboardRepository('t','sweeper',session_factory=sessionmaker(bind=engine,class_=BarrierSession,expire_on_commit=False))
- expired=sweeper.expire_approvals_before(NOW)
+ expired=sweeper.expire_approvals_before(NOW+timedelta(seconds=2))
  with plain() as db:
   r=db.scalar(select(ApprovalRow).where(ApprovalRow.id=='a'))
   assert r.state=='approved',f'actual stored state {r.state}; review note {r.review_note}'

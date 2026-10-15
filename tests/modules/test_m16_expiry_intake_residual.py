@@ -13,7 +13,7 @@ def rig(tmp_path):
  return engine,factory,SqlDashboardRepository('t','u',session_factory=factory)
 def test_expiry_cannot_overwrite_concurrent_approval(tmp_path):
  engine,factory,repo=rig(tmp_path)
- repo.save_approval(Approval(id='a',module_id=16,action_type='x',title='x',summary='x',risk='low',evidence={},proposed_payload={},created_at=NOW,expires_at=NOW-timedelta(seconds=1)))
+ repo.save_approval(Approval(id='a',module_id=16,action_type='x',title='x',summary='x',risk='low',evidence={},proposed_payload={},created_at=NOW,expires_at=NOW+timedelta(seconds=1)))
  fired=[]
  @event.listens_for(engine,'after_cursor_execute')
  def race(conn,cursor,stmt,params,ctx,many):
@@ -24,7 +24,7 @@ def test_expiry_cannot_overwrite_concurrent_approval(tmp_path):
  def race_update(conn,cursor,stmt,params,ctx,many):
   if not fired and stmt.lstrip().upper().startswith('UPDATE') and 'm16_approvals' in stmt:
    fired.append(True);assert repo.decide('a',ApprovalState.APPROVED,'winner',NOW)
- expired=repo.expire_approvals_before(NOW)
+ expired=repo.expire_approvals_before(NOW+timedelta(seconds=2))
  with factory() as db:row=db.scalar(select(ApprovalRow).where(ApprovalRow.id=='a'));assert row.state=='approved' and row.review_note=='winner'
  assert expired==[]
 def test_same_event_id_race_cannot_insert_twice(tmp_path):
@@ -56,3 +56,14 @@ def test_migration_upgrades_existing_table_and_refuses_duplicates(tmp_path):
   module.upgrade();module.upgrade()
   from sqlalchemy.exc import IntegrityError
   with pytest.raises(IntegrityError):conn.execute(text("INSERT INTO m16_events VALUES ('t','e',2)"))
+
+
+def test_already_expired_approval_cannot_be_decided(tmp_path):
+ import pytest
+ _,factory,repo=rig(tmp_path)
+ repo.save_approval(Approval(id='expired',module_id=16,action_type='x',title='x',summary='x',risk='low',evidence={},proposed_payload={},created_at=NOW-timedelta(seconds=2),expires_at=NOW-timedelta(seconds=1)))
+ with pytest.raises(RuntimeError,match='approval expired'):
+  repo.decide('expired',ApprovalState.APPROVED,'must not land',NOW)
+ with factory() as db:
+  row=db.scalar(select(ApprovalRow).where(ApprovalRow.id=='expired'))
+  assert row.state=='pending' and row.review_note is None and row.reviewed_at is None
