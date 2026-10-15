@@ -33,6 +33,36 @@ def text(value, name, *, fail, max_len=256, allow_blank=False):
     return value
 
 
+def body_text(value, name, *, fail, max_len):
+    """Free-form user-facing body text. Admits LF, TAB and CRLF pairs;
+    refuses a lone CR and every other control, format or line/paragraph
+    separator character. The raw length cap is applied BEFORE any
+    normalization, and the value is returned unchanged - never coerced -
+    so digests stay bound to the caller's raw bytes."""
+    if type(value) is not str:
+        fail(f"bad_type:{name}")
+    if not value.strip():
+        fail(f"empty_field:{name}")
+    if len(value) > max_len:
+        fail(f"text_too_long:{name}")
+    i = 0
+    n = len(value)
+    while i < n:
+        ch = value[i]
+        if ch == "\r":
+            if i + 1 < n and value[i + 1] == "\n":
+                i += 2
+                continue
+            fail(f"bad_chars:{name}")
+        if ch in ("\n", "\t"):
+            i += 1
+            continue
+        if unicodedata.category(ch) in ("Cc", "Cf", "Zl", "Zp"):
+            fail(f"bad_chars:{name}")
+        i += 1
+    return value
+
+
 def ident(value, name, *, fail):
     if type(value) is not str or not ID_RE.fullmatch(value):
         fail(f"bad_id:{name}")

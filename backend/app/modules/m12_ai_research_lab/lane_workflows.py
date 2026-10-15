@@ -118,8 +118,11 @@ class StepContext:
     output_tokens: int = 0
 
     def record_usage(self, input_tokens: int, output_tokens: int) -> None:
-        if input_tokens < 0 or output_tokens < 0:
-            raise ValueError("token counts must be non-negative")
+        for count in (input_tokens, output_tokens):
+            if type(count) is not int:
+                raise ValueError("token counts must be integers")
+            if count < 0:
+                raise ValueError("token counts must be non-negative")
         self.input_tokens += input_tokens
         self.output_tokens += output_tokens
 

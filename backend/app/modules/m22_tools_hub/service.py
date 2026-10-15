@@ -40,7 +40,8 @@ class InstallationProposal:
     candidate_id:str;adapter_type:str;config:dict[str,Any];requested_scopes:list[str];rollback_plan:dict[str,Any];approval_id:str;id:str=field(default_factory=lambda:str(uuid.uuid4()))
 class Service:
     BLOCKED_DOMAINS={"oceanofpdf.com"};BLOCKED_PATTERNS=("self-bot","rotating proxy","credential stuffing","bypass paywall","stealth scraping")
-    def __init__(self,approval_store:ApprovalStore,collectors:list[Collector]=[],state_path:str|None=None,source_cooldown_seconds:float|None=None,require_https:bool|None=None):
+    def __init__(self,approval_store:ApprovalStore,collectors:list[Collector]=[],state_path:str|None=None,source_cooldown_seconds:float|None=None,require_https:bool|None=None,query_journal=None):
+        self.query_journal=query_journal
         self.approvals=approval_store;self.collectors=collectors;self.candidates={};self.proposals={};self.installed={};self.last_errors:dict[str,str]={}
         self.state_path=state_path
         self.source_cooldown_seconds=float(source_cooldown_seconds if source_cooldown_seconds is not None else os.environ.get("ATLAS_M22_SOURCE_COOLDOWN_SECONDS",300))
@@ -49,6 +50,12 @@ class Service:
         self._cooldown_until:dict[str,float]={};self.source_stats:dict[str,dict[str,Any]]={}
         self.query_history:list[dict[str,Any]]=[];self._query_snapshots:dict[str,dict[str,str]]={};self.last_diffs:dict[str,dict[str,Any]]={}
         self._load_blocks()
+    @property
+    def query_history(self):
+        return self.query_journal.history() if self.query_journal is not None else self._query_history
+    @query_history.setter
+    def query_history(self,value):
+        self._query_history=value
     @staticmethod
     def _validate_weights(weights:dict[str,float])->None:
         allowed={"fit","security","maintenance","novelty","evidence"}
@@ -76,6 +83,7 @@ class Service:
         return found
     async def discover(self,query:str,kinds:list[str]|None=None,weights:dict[str,float]|None=None)->list[Candidate]:
         if weights is not None:self._validate_weights(weights)
+        if self.query_journal is not None:self.query_journal.preflight(query)
         selected=[c for c in self.collectors if not kinds or getattr(c,"kind","tool") in kinds]
         now=time.time();active=[];self.last_errors={}
         for c in selected:
@@ -88,12 +96,17 @@ class Service:
             if isinstance(result,Exception):self.last_errors[collector.name]=str(result);continue
             found.extend(result)
         dedup={self._key(x):x for x in found};ranked=sorted(dedup.values(),key=lambda x:x.score,reverse=True)
-        self.candidates.update({x.id:x for x in ranked})
         snapshot={self._key(x):x.name for x in ranked}
-        previous=self._query_snapshots.get(query)
-        self.last_diffs[query]={"first_run":previous is None,"added":[name for k,name in snapshot.items() if previous is not None and k not in previous],"removed":[name for k,name in (previous or {}).items() if k not in snapshot]}
-        self._query_snapshots[query]=snapshot
-        self.query_history=[*self.query_history[-199:],{"query":query,"kinds":kinds,"at":now_dt().isoformat(),"count":len(ranked)}]
+        at=now_dt().isoformat()
+        if self.query_journal is not None:
+            # Commit completed snapshot and history before exposing success.
+            self.last_diffs[query]=self.query_journal.record(query,snapshot,at=at,kinds=kinds)
+        else:
+            previous=self._query_snapshots.get(query)
+            self.last_diffs[query]={"first_run":previous is None,"added":[name for k,name in snapshot.items() if previous is not None and k not in previous],"removed":[name for k,name in (previous or {}).items() if k not in snapshot]}
+            self._query_snapshots[query]=snapshot
+            self.query_history=[*self.query_history[-199:],{"query":query,"kinds":kinds,"at":at,"count":len(ranked)}]
+        self.candidates.update({x.id:x for x in ranked})
         return ranked
     async def discover_many(self,queries:list[str],kinds:list[str]|None=None,weights:dict[str,float]|None=None)->dict[str,Any]:
         """Batch discovery: one call, one deduped+ranked merge across queries."""
@@ -106,7 +119,7 @@ class Service:
         return {"per_query":per_query,"merged":sorted(merged.values(),key=lambda x:x.score,reverse=True)}
     def discovery_report(self,query:str)->dict[str,Any]:
         ranked=sorted((c for c in self.candidates.values()),key=lambda x:x.score,reverse=True)
-        return {"query":query,"candidates":[asdict(x)|{"score":x.score} for x in ranked],"diff":self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources()}
+        return {"query":query,"candidates":[asdict(x)|{"score":x.score} for x in ranked],"diff":self.query_journal.diff(query) if self.query_journal is not None else self.last_diffs.get(query),"errors":dict(self.last_errors),"sources":self.sources()}
     def export_candidates(self,fmt:str="json")->str:
         """Export the current candidate store as json, csv or markdown."""
         items=sorted(self.candidates.values(),key=lambda x:x.score,reverse=True)

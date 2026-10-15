@@ -52,11 +52,17 @@ def list_sources(service: Service = Depends(get_service)) -> list[SourceOut]:
 def run_scan(request: ScanRequestIn, service: Service = Depends(get_service)) -> ScanResultOut:
     """Run a discovery scan: fetch, parse, normalize, score, and store."""
 
-    return service.run_scan(
-        source_ids=request.source_ids,
-        profile=request.profile,
-        notify_threshold=request.notify_threshold,
-    )
+    try:
+        return service.run_scan(
+            source_ids=request.source_ids,
+            student_platform_ids=request.student_platform_ids,
+            student_query=request.student_query,
+            student_limit=request.student_limit,
+            profile=request.profile,
+            notify_threshold=request.notify_threshold,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.get("/opportunity-discovery/opportunities", response_model=list[OpportunityOut])

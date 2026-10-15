@@ -25,10 +25,12 @@ class EmailAssistant:
         if not 1 <= limit <= 500: raise ValueError("limit must be between 1 and 500")
         page=self.provider.sync(mailbox,self.store.cursor(mailbox.tenant_id,mailbox.mailbox_id),limit)
         messages=[EmailMessage(self._message_id(mailbox,m.provider_id),mailbox.tenant_id,mailbox.mailbox_id,m.provider_id,m.thread_id,m.sender,m.recipients,m.subject,m.body_text,m.received_at,m.headers,m.in_reply_to) for m in page.messages]
-        imported,updated=self.store.save_sync_page(mailbox.tenant_id,mailbox.mailbox_id,messages,page.next_cursor)
-        for message in messages:
-            self.store.save_triage(mailbox.tenant_id,self.triage.classify(message))
-            self.store.complete_followups_for_thread(mailbox.tenant_id,mailbox.mailbox_id,message.thread_id,message.received_at)
+        decisions=[self.triage.classify(m) for m in messages]  # may raise before anything is written
+        with self.store.transaction():
+            imported,updated=self.store.save_sync_page(mailbox.tenant_id,mailbox.mailbox_id,messages,page.next_cursor)
+            for message,decision in zip(messages,decisions):
+                self.store.save_triage(mailbox.tenant_id,decision)
+                self.store.complete_followups_for_thread(mailbox.tenant_id,mailbox.mailbox_id,message.thread_id,message.received_at)
         return SyncResult(imported,updated,page.next_cursor,tuple(m.id for m in messages))
 
     def create_reply_draft(self, mailbox: MailboxRef, source_message_id: str, body_text: str) -> Draft:
@@ -57,15 +59,18 @@ class EmailAssistant:
         if not d: raise KeyError("draft not found")
         if d.status not in (DraftStatus.DRAFT,DraftStatus.REJECTED): raise RuntimeError("draft cannot be submitted")
         a=Approval(str(uuid4()),tenant_id,draft_id,requested_by,"pending",self.clock(),draft_revision=d.revision)
-        self.store.save_approval(a); self.store.update_draft(tenant_id,draft_id,status=DraftStatus.PENDING_APPROVAL)
+        with self.store.transaction():
+            self.store.save_approval(a); self.store.update_draft(tenant_id,draft_id,status=DraftStatus.PENDING_APPROVAL)
         return a
 
     def decide(self, tenant_id: str, approval_id: str, actor: str, approve: bool, reason: str | None=None) -> Approval:
-        status="approved" if approve else "rejected"; a=self.store.decide_approval(tenant_id,approval_id,status,actor,reason)
-        d=self.store.get_draft(tenant_id,a.draft_id)
-        if not d: raise RuntimeError("approval draft disappeared")
-        if d.revision != a.draft_revision: raise RuntimeError("draft changed after approval request")
-        self.store.update_draft(tenant_id,d.id,status=DraftStatus.APPROVED if approve else DraftStatus.REJECTED)
+        status="approved" if approve else "rejected"
+        with self.store.transaction():
+            a=self.store.decide_approval(tenant_id,approval_id,status,actor,reason)
+            d=self.store.get_draft(tenant_id,a.draft_id)
+            if not d: raise RuntimeError("approval draft disappeared")
+            if d.revision != a.draft_revision: raise RuntimeError("draft changed after approval request")
+            self.store.update_draft(tenant_id,d.id,status=DraftStatus.APPROVED if approve else DraftStatus.REJECTED)
         return a
 
     def send_approved(self, mailbox: MailboxRef, draft_id: str) -> Draft:

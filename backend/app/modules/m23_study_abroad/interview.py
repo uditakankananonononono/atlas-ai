@@ -68,7 +68,18 @@ class IdentityInterviewRepository:
         return view
 
     def answer(self, session_id: str, response: str, modality: str = "chat",
-               evidence_tags: list[str] | None = None) -> dict:
+               evidence_tags: list[str] | None = None,
+               expected_question_index: int | None = None) -> dict:
+        # Optional client-supplied guard against late or duplicate answers:
+        # when given, the answer is accepted only while the interview is on
+        # exactly that question index; otherwise it is rejected with no write.
+        # Omitted keeps the earlier behaviour (answer files under the current
+        # question).
+        if expected_question_index is not None and (
+                type(expected_question_index) is not int
+                or not 0 <= expected_question_index < len(QUESTIONS)):
+            raise ValueError("expected_question_index must be an integer from 0 to %d"
+                             % (len(QUESTIONS) - 1))
         response = response.strip()
         if len(response) < 10:
             raise ValueError("student response must contain at least 10 characters")
@@ -117,6 +128,12 @@ class IdentityInterviewRepository:
                     if row.status != "active":
                         raise ValueError("interview is already complete")
                     if expected_index is None:
+                        if (expected_question_index is not None
+                                and row.question_index != expected_question_index):
+                            raise ValueError(
+                                "expected question %d but the interview is on question %d; "
+                                "read the interview and answer the current question"
+                                % (expected_question_index, row.question_index))
                         expected_index = row.question_index
                     elif row.question_index != expected_index:
                         raise ValueError(

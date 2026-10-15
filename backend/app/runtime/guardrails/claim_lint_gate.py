@@ -5,7 +5,13 @@ refuses any text carrying a listed false-sentience or false-AGI claim and the
 caller never receives it as "emitted". Lexical exact-phrase screen, same
 matching discipline as the landed P69 screen: case-insensitive substring
 matching with per-character lowercase index mapping, so reported offsets
-always index the caller's original text.
+always index the caller's original text. Bodies are free-form user-facing
+text: LF, TAB and CRLF pairs are admitted (a lone CR and other control or
+format characters are refused by the body validator), the raw length cap is
+applied before any normalization, and the ledgered digest is bound to the
+caller's raw bytes. Screening runs over the raw form and over a
+whitespace-collapsed form whose offsets map back to the original text, so a
+listed phrase split across spaces, tabs or newlines is still refused.
 
 The prohibited-phrase list is closed and contract-governed (see
 docs/GUARDRAILS_CLAIM_LINT_CONTRACT.md); extending it is a contract change.
@@ -20,7 +26,7 @@ from __future__ import annotations
 import hashlib
 
 from . import ledger as _ledger
-from ._fields import instant, iso, make_fail, text
+from ._fields import body_text, instant, iso, make_fail, text
 from .errors import GuardrailRefusal
 
 PREFIX = "LINT"
@@ -51,6 +57,7 @@ LIMITS = (
     "Lexical exact-phrase screen over a closed list; a clear verdict means only that no listed phrase matched.",
     "The lint cannot detect implied claims, paraphrases or images; human review remains the backstop.",
     "Only digests of emitted text are stored; the lint keeps no content copy.",
+    "Whitespace policy: LF, TAB and CRLF pairs are admitted in bodies; a lone CR is refused; screening also covers whitespace-collapsed forms, with offsets always indexing the caller's original text.",
     "The ledger is tamper-evident, not tamper-proof; safe storage of the serialized ledger is the caller's job.",
 )
 
@@ -68,15 +75,67 @@ def _lowered_with_index(body):
     return "".join(parts), index
 
 
+def _normalized_with_index(body):
+    """CRLF -> LF; index maps each normalized character back to its raw
+    offset (a normalized LF from CRLF maps to the CR's raw offset)."""
+    parts = []
+    index = []
+    i = 0
+    n = len(body)
+    while i < n:
+        ch = body[i]
+        if ch == "\r" and i + 1 < n and body[i + 1] == "\n":
+            parts.append("\n")
+            index.append(i)
+            i += 2
+        else:
+            parts.append(ch)
+            index.append(i)
+            i += 1
+    return "".join(parts), index
+
+
+def _collapsed_with_index(body):
+    """Every run of spaces, TABs, LF or CR collapses to one space; index
+    maps each collapsed character back to the raw offset of the run's first
+    character."""
+    parts = []
+    index = []
+    i = 0
+    n = len(body)
+    while i < n:
+        ch = body[i]
+        if ch in " \t\n\r":
+            j = i
+            while j < n and body[j] in " \t\n\r":
+                j += 1
+            parts.append(" ")
+            index.append(i)
+            i = j
+        else:
+            parts.append(ch)
+            index.append(i)
+            i += 1
+    return "".join(parts), index
+
+
 def lint(body):
     """Screen one text. Returns the first match as (category, phrase, offset)
-    or None. The offset indexes the caller's original text."""
-    lowered, index = _lowered_with_index(body)
+    or None. The offset indexes the caller's original text. Screening covers
+    the CRLF-normalized raw form first and then a whitespace-collapsed form,
+    so listed phrases split across whitespace still match."""
+    normalized, norm_index = _normalized_with_index(body)
+    lowered, low_index = _lowered_with_index(normalized)
+    collapsed, col_index = _collapsed_with_index(body)
+    collapsed_lowered, collapsed_low_index = _lowered_with_index(collapsed)
     for category, phrases in PROHIBITED_CLAIMS:
         for phrase in phrases:
             found = lowered.find(phrase)
             if found != -1:
-                return category, phrase, index[found]
+                return category, phrase, norm_index[low_index[found]]
+            found = collapsed_lowered.find(phrase)
+            if found != -1:
+                return category, phrase, col_index[collapsed_low_index[found]]
     return None
 
 
@@ -127,7 +186,7 @@ def emit(emission_id, body, *, channel, now, ledger=None):
     the refusal is ledgered first, so blocked attempts are visible evidence.
     """
     eid = text(emission_id, "emission_id", fail=_fail, max_len=64)
-    body = text(body, "text", fail=_fail, max_len=MAX_TEXT)
+    body = body_text(body, "text", fail=_fail, max_len=MAX_TEXT)
     channel = text(channel, "channel", fail=_fail, max_len=MAX_CHANNEL)
     if ledger is None:
         ledger = []

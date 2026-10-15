@@ -55,6 +55,44 @@ MODULE_NAME = "Opportunity Discovery Engine"
 DIGEST_ACTION_TYPE = "send_opportunity_digest_email"
 
 
+def _validate_listing_url(url: str) -> None:
+    """Reject syntactically local destinations without fetching or resolving DNS.
+
+    A public-looking DNS name can later resolve privately. This is a stored
+    lead-link filter, not an SSRF fetch policy or a DNS ownership guarantee.
+    """
+    import ipaddress
+    import socket
+    from urllib.parse import urlsplit
+    if any(ord(c) <= 32 or ord(c) == 127 for c in url) or "\\" in url:
+        raise ValueError("invalid listing URL")
+    target = urlsplit(url)
+    host = (target.hostname or "").rstrip(".").lower()
+    if (target.scheme != "https" or not host or target.username is not None
+            or target.password is not None):
+        raise ValueError("listing URL must be public HTTPS without credentials")
+    _ = target.port  # Reject malformed/out-of-range port without network I/O.
+    try:
+        address = ipaddress.ip_address(host)
+    except ValueError:
+        # inet_aton accepts legacy decimal, octal, hex and shortened IPv4.
+        try:
+            socket.inet_aton(host)
+        except OSError:
+            pass
+        else:
+            raise ValueError("ambiguous numeric listing host")
+        host = host.encode("idna").decode("ascii")
+        if ("." not in host or len(host) > 253
+                or any(not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", part) for part in host.split("."))
+                or host.split(".")[-1].isdigit()
+                or host == "localhost" or host.endswith((".localhost", ".local", ".internal", ".home", ".lan", ".test", ".invalid"))):
+            raise ValueError("listing host must not be local or reserved")
+    else:
+        if not address.is_global or "%" in host:
+            raise ValueError("listing address must be globally routable")
+
+
 class Normalizer(Protocol):
     def entities(self, text: str) -> list[str]: ...
     def deadline(self, text: str) -> datetime | None: ...
@@ -520,6 +558,7 @@ class Service:
         embedding_matcher: EmbeddingMatcher | None = None,
         tenant_id: str = "local",
         nlp_stack: "NlpStack | None" = None,
+        student_discoverer: Callable[..., dict[str, Any]] | None = None,
     ) -> None:
         if not tenant_id.strip():
             raise ValueError("tenant_id is required")
@@ -534,6 +573,7 @@ class Service:
         self._nlp_stack = nlp_stack
         self._normalizer = normalizer if normalizer is not None else (nlp_stack.normalizer if nlp_stack else None)
         self._embedding_matcher = embedding_matcher if embedding_matcher is not None else (nlp_stack.matcher if nlp_stack else None)
+        self._student_discoverer = student_discoverer
         self._tables_ready = False
 
     def nlp_status(self) -> dict[str, Any]:
@@ -596,6 +636,9 @@ class Service:
         source_ids: list[str] | None = None,
         profile: ProfileIn | None = None,
         notify_threshold: float = 0.8,
+        student_platform_ids: list[str] | None = None,
+        student_query: str = "",
+        student_limit: int = 25,
     ) -> ScanResultOut:
         """Fetch, parse, normalize, score, and store opportunities.
 
@@ -604,6 +647,16 @@ class Service:
         above ``notify_threshold`` are pushed to the notifier hook.
         """
 
+        # Validate the entire explicit selection before any source fetch.
+        from .student_platforms import BY_ID, discover
+        platform_ids = student_platform_ids if student_platform_ids is not None else []
+        if (type(platform_ids) is not list or len(platform_ids) > 27
+                or any(type(pid) is not str or pid not in BY_ID for pid in platform_ids)
+                or len(set(platform_ids)) != len(platform_ids)):
+            raise ValueError("student_platform_ids must be unique registered platform IDs (at most 27)")
+        if (type(student_query) is not str or len(student_query) > 200
+                or type(student_limit) is not int or not 1 <= student_limit <= 100):
+            raise ValueError("invalid student discovery query or limit")
         self._ensure_tables()
         profile = profile or ProfileIn()
         selected = [s for s in self._sources if s.enabled and (source_ids is None or s.id in source_ids)]
@@ -626,8 +679,57 @@ class Service:
                 if is_new and opportunity.match_score >= notify_threshold and self._notifier is not None:
                     self._notifier(opportunity)
                     notified += 1
+        # Reuse the ordinary tenant-scoped normalization/storage path. Public
+        # listings are leads, not eligibility decisions or application grants.
+        for platform_id in platform_ids:
+            platform = BY_ID[platform_id]
+            source_id = "student-platform:" + platform_id
+            try:
+                if platform.mode == "launch_only":
+                    raise ValueError("launch-only platform has no public discovery adapter")
+                result = (self._student_discoverer or discover)(
+                    platform_id, student_query, limit=student_limit,
+                )
+                if result.get("platform") != platform_id or result.get("mode") != platform.mode:
+                    raise ValueError("discovery provenance does not match selected platform")
+                raw_items = result.get("items")
+                if type(raw_items) is not list or len(raw_items) > student_limit:
+                    raise ValueError("invalid discovery item batch")
+                source = Source(
+                    id=source_id, name=platform.name, kind=SourceKind.STUDENT_PLATFORM,
+                    url=platform.url, default_type=OpportunityType(platform.kind) if platform.kind in OpportunityType._value2member_map_ else OpportunityType.OTHER,
+                )
+                # Validate whole batch before storing any of this source's rows.
+                validated_items = []
+                for item in raw_items:
+                    if (type(item) is not dict or item.get("platform") != platform_id
+                            or item.get("source_url") != platform.url
+                            or type(item.get("title")) is not str or not item["title"].strip()
+                            or type(item.get("url")) is not str
+                            or type(item.get("description", "")) is not str):
+                        raise ValueError("invalid listing provenance")
+                    # Every raw field read by _ingest is checked before the
+                    # first commit or notification from this source batch.
+                    extra_tags = item.get("extra_tags", [])
+                    if type(extra_tags) is not list or any(type(tag) is not str for tag in extra_tags):
+                        raise ValueError("listing extra_tags must be a list of strings")
+                    _validate_listing_url(item["url"])
+                    validated_items.append({"title": item["title"], "url": item["url"],
+                        "description": item.get("description", ""), "extra_tags": list(extra_tags)})
+                fetched += 1
+                for raw in validated_items:
+                    opportunity, is_new = self._ingest(source, raw, profile)
+                    if opportunity is None:
+                        continue
+                    new += int(is_new)
+                    updated += int(not is_new)
+                    if is_new and opportunity.match_score >= notify_threshold and self._notifier is not None:
+                        self._notifier(opportunity)
+                        notified += 1
+            except Exception as error:
+                errors.append(SourceScanError(source_id=source_id, error=str(error)))
         return ScanResultOut(
-            scanned_sources=len(selected),
+            scanned_sources=len(selected) + len(platform_ids),
             fetched=fetched,
             new=new,
             updated=updated,
@@ -825,8 +927,14 @@ class Service:
         deadline = row.deadline
         if deadline is not None and deadline.tzinfo is None:
             deadline = deadline.replace(tzinfo=timezone.utc)
+        source_url = None
+        if row.source_id.startswith("student-platform:"):
+            from .student_platforms import BY_ID
+            platform = BY_ID.get(row.source_id.split(":", 1)[1])
+            source_url = platform.url if platform is not None else None
         return OpportunityOut(
             id=row.id,
+            source_url=source_url,
             source_id=row.source_id,
             title=row.title,
             url=row.url,

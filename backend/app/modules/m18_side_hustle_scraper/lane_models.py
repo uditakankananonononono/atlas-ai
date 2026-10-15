@@ -72,6 +72,15 @@ def _scrub_text(text: str) -> str:
     return text if isinstance(text, str) and text in _SAFE_REASONS else _REDACTED
 
 
+def _scrub_status(status: object) -> int | None:
+    """Keep only a bounded builtin HTTP status; discard arbitrary diagnostics.
+
+    An annotation does not enforce runtime types. In particular, do not format
+    or persist a provider-supplied object or unbounded integer as a status.
+    """
+    return status if type(status) is int and 100 <= status <= 599 else None
+
+
 def _scrub_source(source: str) -> str:
     return source if isinstance(source, str) and source in _SAFE_SOURCES else _REDACTED
 
@@ -226,6 +235,7 @@ class CollectionError:
     occurred_at: datetime = field(default_factory=utcnow)
 
     def __post_init__(self) -> None:
+        object.__setattr__(self, "status", _scrub_status(self.status))
         object.__setattr__(self, "source", _scrub_source(self.source))
         object.__setattr__(self, "url", _redact_url(self.url))
         object.__setattr__(self, "reason", _scrub_text(self.reason))

@@ -4,21 +4,26 @@ from pydantic import BaseModel
 from app.core.approvals import approvals
 from .schemas import BatchDiscoveryIn,BlockValueIn,DiscoveryIn,FeedDiscoverIn,FeedPollIn,InstallIn,OpmlBuildIn,OpmlParseIn
 from .service import Service
+from app.auth.context import TenantContext,require_tenant
+from .query_journal import QueryJournal,QueryJournalError
 from .collectors import default_collectors
-router=APIRouter(prefix="/tools-hub",tags=["tools-hub"]);_service=None
-def get_service():
- global _service
- if _service is None:_service=Service(approvals,default_collectors())
- return _service
+router=APIRouter(prefix="/tools-hub",tags=["tools-hub"])
+_services:dict[str,Service]={}
+def get_service(tenant:TenantContext=Depends(require_tenant)):
+ if tenant.tenant_id not in _services:
+  _services[tenant.tenant_id]=Service(approvals,default_collectors(),query_journal=QueryJournal(tenant.tenant_id))
+ return _services[tenant.tenant_id]
 @router.post("/discoveries")
 async def discover(req:DiscoveryIn,s:Service=Depends(get_service)):
  try:return await s.discover(req.query,kinds=req.kinds,weights=req.weights)
+ except QueryJournalError as e:raise HTTPException(503,str(e))
  except ValueError as e:raise HTTPException(422,str(e))
 
 @router.post("/discoveries/batch")
 async def discover_batch(req:BatchDiscoveryIn,s:Service=Depends(get_service)):
  try:
   result=await s.discover_many(req.queries,kinds=req.kinds,weights=req.weights)
+ except QueryJournalError as e:raise HTTPException(503,str(e))
  except ValueError as e:raise HTTPException(422,str(e))
  from dataclasses import asdict
  return {"per_query":{q:[asdict(x)|{"score":x.score} for x in items] for q,items in result["per_query"].items()},"merged":[asdict(x)|{"score":x.score} for x in result["merged"]]}

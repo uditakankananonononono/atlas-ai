@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import datetime,timezone
-from sqlalchemy import JSON,Boolean,DateTime,Float,Integer,String,Text,UniqueConstraint,func,select,update
+from sqlalchemy import JSON,Boolean,DateTime,Float,Integer,String,Text,UniqueConstraint,func,or_,select,update
 from sqlalchemy.exc import IntegrityError
 import sqlite3
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
@@ -57,6 +57,9 @@ def _aware(value):
     # sqlite drops the tzinfo that DateTime(timezone=True) columns carried at
     # write time (UTC); reattach it on read so tz-aware comparisons work.
     return value.replace(tzinfo=timezone.utc) if value is not None and value.tzinfo is None else value
+def _utc(value):
+    # offset-aware -> UTC for the naive sqlite write; naive and None pass through
+    return value.astimezone(timezone.utc) if value is not None and value.tzinfo is not None else value
 def _event(r):return Event(id=r.id,sequence=r.sequence,topic=r.topic,aggregate_type=r.aggregate_type,aggregate_id=r.aggregate_id,payload=r.payload,occurred_at=_aware(r.occurred_at))
 def _approval(r):return Approval(id=r.id,module_id=r.module_id,action_type=r.action_type,title=r.title,summary=r.summary,risk=r.risk,evidence=r.evidence,proposed_payload=r.proposed_payload,state=ApprovalState(r.state),created_at=_aware(r.created_at),expires_at=_aware(r.expires_at),reviewed_at=_aware(r.reviewed_at))
 def _command(r):return CommandPreview(id=r.id,utterance=r.utterance,intent=r.intent,parameters=r.parameters,plan=r.plan,read_only=r.read_only,confidence=r.confidence,expires_at=_aware(r.expires_at),created_at=_aware(r.created_at))
@@ -106,7 +109,14 @@ class SqlDashboardRepository:
     def pending_approvals(self):
         with self.sessions() as db:return [_approval(r) for r in db.scalars(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.state==ApprovalState.PENDING.value).order_by(ApprovalRow.created_at))]
     def save_approval(self,a:Approval):
-        with self.sessions.begin() as db:db.add(ApprovalRow(tenant_id=self.tenant_id,reviewed_by=None,review_note=None,**a.model_dump(mode="python")))
+        # Same storage-boundary instant policy as append_event: sqlite keeps the
+        # wall clock and drops the offset, so an offset-aware datetime is
+        # normalized to UTC before the write or the stored instant shifts. A
+        # naive value is stored unchanged (legacy rows are already naive UTC);
+        # the caller's Approval is not mutated.
+        data=a.model_dump(mode="python")
+        for k in ("created_at","expires_at","reviewed_at"):data[k]=_utc(data[k])
+        with self.sessions.begin() as db:db.add(ApprovalRow(tenant_id=self.tenant_id,reviewed_by=None,review_note=None,**data))
         return a
     def decide(self,aid,state,note,at):
         # Single conditional UPDATE: the pending check and the decision write
@@ -115,9 +125,18 @@ class SqlDashboardRepository:
         # lands, and the loser gets None instead of overwriting the winning
         # decision. Claim and read run in one transaction, so the returned
         # approval is the row this call decided.
+        # The expiry predicate is part of the same UPDATE (an approval whose
+        # expires_at is before the decision time cannot be decided, even if the
+        # service pre-check ran just before it lapsed). The "approval expired"
+        # RuntimeError is the contract Service.decide and the route already use
+        # (HTTP 410); a row that is not pending still returns None (HTTP 409).
+        at=_utc(at)
         with self.sessions.begin() as db:
-            claimed=db.execute(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value).values(state=state.value,reviewed_at=at,reviewed_by=self.actor_id,review_note=note)).rowcount
-            if not claimed:return None
+            claimed=db.execute(update(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid,ApprovalRow.state==ApprovalState.PENDING.value,or_(ApprovalRow.expires_at.is_(None),ApprovalRow.expires_at>=at)).values(state=state.value,reviewed_at=at,reviewed_by=self.actor_id,review_note=note)).rowcount
+            if not claimed:
+                r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid))
+                if r is not None and r.state==ApprovalState.PENDING.value:raise RuntimeError("approval expired")
+                return None
             r=db.scalar(select(ApprovalRow).where(ApprovalRow.tenant_id==self.tenant_id,ApprovalRow.id==aid))
             return _approval(r)
     def save_command(self,c):

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import functools
 import json
 import sqlite3
+import threading
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -10,24 +12,66 @@ from typing import Iterator
 from .lane_models import (Approval, Draft, DraftStatus, EmailMessage, FollowUp,
                      FollowUpStatus, TriageDecision, TriageLabel, iso)
 
+class _SerializedConnection:
+    """One shared sqlite connection, serialized across threads.
+
+    A transaction() block holds the lock for its whole duration, so another
+    thread's writes (transactional or standalone) wait instead of joining it.
+    """
+    def __init__(self, raw: sqlite3.Connection) -> None:
+        self._raw, self.lock = raw, threading.RLock()
+    def execute(self, *a, **k):
+        with self.lock: return self._raw.execute(*a, **k)
+    def executescript(self, *a, **k):
+        with self.lock: return self._raw.executescript(*a, **k)
+    def commit(self):
+        with self.lock: return self._raw.commit()
+    def rollback(self):
+        with self.lock: return self._raw.rollback()
+    @property
+    def in_transaction(self) -> bool: return self._raw.in_transaction
+    @property
+    def row_factory(self): return self._raw.row_factory
+    @row_factory.setter
+    def row_factory(self, v): self._raw.row_factory = v
 
 class EmailStore:
     def __init__(self, path: str | Path = ":memory:") -> None:
-        self._db = sqlite3.connect(str(path), check_same_thread=False)
+        self._db = _SerializedConnection(sqlite3.connect(str(path), check_same_thread=False))
         self._db.row_factory = sqlite3.Row
+        self._tx_depth = 0
         self._db.execute("PRAGMA foreign_keys=ON")
         self._db.execute("PRAGMA journal_mode=WAL")
         self._migrate()
 
     @contextmanager
     def transaction(self) -> Iterator[sqlite3.Connection]:
-        try:
-            self._db.execute("BEGIN IMMEDIATE")
-            yield self._db
+        # Re-entrant for the owning thread only; other threads block on the lock
+        # for the whole transaction, so they can neither join nor be rolled back by it.
+        with self._db.lock:
+            if self._tx_depth:
+                self._tx_depth += 1
+                try:
+                    yield self._db
+                finally:
+                    self._tx_depth -= 1
+                return
+            try:
+                self._db.execute("BEGIN IMMEDIATE")
+                self._tx_depth = 1
+                yield self._db
+                self._tx_depth = 0
+                self._db.commit()
+            except BaseException:
+                self._tx_depth = 0
+                self._db.rollback()
+                raise
+
+    def _commit(self) -> None:
+        # Single-statement writes commit themselves unless a caller's
+        # transaction() block owns the commit.
+        if not self._tx_depth:
             self._db.commit()
-        except Exception:
-            self._db.rollback()
-            raise
 
     def _migrate(self) -> None:
         self._db.executescript("""
@@ -78,10 +122,10 @@ class EmailStore:
     def save_triage(self, tenant_id: str, d: TriageDecision) -> None:
         if self.get_message(tenant_id, d.message_id) is None:
             raise PermissionError("triage requires a message owned by the caller tenant")
-        self._db.execute("INSERT INTO triage VALUES(?,?,?,?,?,?,?) ON CONFLICT(message_id) DO UPDATE SET label=excluded.label,score=excluded.score,reasons=excluded.reasons,needs_reply=excluded.needs_reply,due_at=excluded.due_at",(d.message_id,tenant_id,d.label.value,d.score,json.dumps(d.reasons),d.needs_reply,iso(d.due_at) if d.due_at else None)); self._db.commit()
+        self._db.execute("INSERT INTO triage VALUES(?,?,?,?,?,?,?) ON CONFLICT(message_id) DO UPDATE SET label=excluded.label,score=excluded.score,reasons=excluded.reasons,needs_reply=excluded.needs_reply,due_at=excluded.due_at",(d.message_id,tenant_id,d.label.value,d.score,json.dumps(d.reasons),d.needs_reply,iso(d.due_at) if d.due_at else None)); self._commit()
 
     def save_draft(self, d: Draft) -> None:
-        self._db.execute("INSERT INTO drafts VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",(d.id,d.tenant_id,d.mailbox_id,d.thread_id,json.dumps(d.to),json.dumps(d.cc),d.subject,d.body_text,d.status.value,d.revision,iso(d.created_at),iso(d.updated_at),d.source_message_id,d.provider_message_id)); self._db.commit()
+        self._db.execute("INSERT INTO drafts VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",(d.id,d.tenant_id,d.mailbox_id,d.thread_id,json.dumps(d.to),json.dumps(d.cc),d.subject,d.body_text,d.status.value,d.revision,iso(d.created_at),iso(d.updated_at),d.source_message_id,d.provider_message_id)); self._commit()
 
     def get_draft(self, tenant_id: str, draft_id: str) -> Draft | None:
         r=self._db.execute("SELECT * FROM drafts WHERE tenant_id=? AND id=?",(tenant_id,draft_id)).fetchone(); return self._draft(r) if r else None
@@ -95,11 +139,11 @@ class EmailStore:
         if not d: raise KeyError("draft not found")
         if expected_revision is not None and d.revision != expected_revision: raise RuntimeError("draft revision conflict")
         revision=d.revision + (body_text is not None and body_text != d.body_text)
-        self._db.execute("UPDATE drafts SET body_text=?,status=?,revision=?,updated_at=?,provider_message_id=COALESCE(?,provider_message_id) WHERE tenant_id=? AND id=?",(body_text if body_text is not None else d.body_text,(status or d.status).value,revision,iso(datetime.now().astimezone()),provider_message_id,tenant_id,draft_id)); self._db.commit()
+        self._db.execute("UPDATE drafts SET body_text=?,status=?,revision=?,updated_at=?,provider_message_id=COALESCE(?,provider_message_id) WHERE tenant_id=? AND id=?",(body_text if body_text is not None else d.body_text,(status or d.status).value,revision,iso(datetime.now().astimezone()),provider_message_id,tenant_id,draft_id)); self._commit()
         return self.get_draft(tenant_id,draft_id)  # type: ignore[return-value]
 
     def save_approval(self, a: Approval) -> None:
-        self._db.execute("INSERT INTO approvals VALUES(?,?,?,?,?,?,?,?,?,?)",(a.id,a.tenant_id,a.draft_id,a.requested_by,a.status,iso(a.created_at),iso(a.decided_at) if a.decided_at else None,a.decided_by,a.reason,a.draft_revision)); self._db.commit()
+        self._db.execute("INSERT INTO approvals VALUES(?,?,?,?,?,?,?,?,?,?)",(a.id,a.tenant_id,a.draft_id,a.requested_by,a.status,iso(a.created_at),iso(a.decided_at) if a.decided_at else None,a.decided_by,a.reason,a.draft_revision)); self._commit()
 
     def pending_approval(self, tenant_id: str, draft_id: str) -> Approval | None:
         r=self._db.execute("SELECT * FROM approvals WHERE tenant_id=? AND draft_id=? AND status='pending'",(tenant_id,draft_id)).fetchone(); return self._approval(r) if r else None
@@ -111,10 +155,10 @@ class EmailStore:
     def decide_approval(self, tenant_id: str, approval_id: str, status: str, actor: str, reason: str | None) -> Approval:
         now=iso(datetime.now().astimezone()); cur=self._db.execute("UPDATE approvals SET status=?,decided_at=?,decided_by=?,reason=? WHERE tenant_id=? AND id=? AND status='pending'",(status,now,actor,reason,tenant_id,approval_id))
         if cur.rowcount != 1: raise RuntimeError("approval is missing or already decided")
-        self._db.commit(); r=self._db.execute("SELECT * FROM approvals WHERE tenant_id=? AND id=?",(tenant_id,approval_id)).fetchone(); return self._approval(r)
+        self._commit(); r=self._db.execute("SELECT * FROM approvals WHERE tenant_id=? AND id=?",(tenant_id,approval_id)).fetchone(); return self._approval(r)
 
     def save_followup(self, f: FollowUp) -> None:
-        self._db.execute("INSERT INTO followups VALUES(?,?,?,?,?,?,?,?,?,?)",(f.id,f.tenant_id,f.mailbox_id,f.thread_id,iso(f.due_at),f.status.value,f.reason,iso(f.created_at),f.source_message_id,iso(f.completed_at) if f.completed_at else None)); self._db.commit()
+        self._db.execute("INSERT INTO followups VALUES(?,?,?,?,?,?,?,?,?,?)",(f.id,f.tenant_id,f.mailbox_id,f.thread_id,iso(f.due_at),f.status.value,f.reason,iso(f.created_at),f.source_message_id,iso(f.completed_at) if f.completed_at else None)); self._commit()
 
     def due_followups(self, tenant_id: str, at: datetime) -> list[FollowUp]:
         rows=self._db.execute("SELECT * FROM followups WHERE tenant_id=? AND status IN ('open','due') AND due_at<=? ORDER BY due_at",(tenant_id,iso(at))).fetchall(); return [self._followup(r) for r in rows]
@@ -124,10 +168,25 @@ class EmailStore:
         return FollowUp(r['id'],r['tenant_id'],r['mailbox_id'],r['thread_id'],datetime.fromisoformat(r['due_at']),FollowUpStatus(r['status']),r['reason'],datetime.fromisoformat(r['created_at']),r['source_message_id'],datetime.fromisoformat(r['completed_at']) if r['completed_at'] else None)
 
     def complete_followups_for_thread(self, tenant_id: str, mailbox_id: str, thread_id: str, at: datetime) -> int:
-        cur=self._db.execute("UPDATE followups SET status='completed',completed_at=? WHERE tenant_id=? AND mailbox_id=? AND thread_id=? AND status IN ('open','due')",(iso(at),tenant_id,mailbox_id,thread_id)); self._db.commit(); return cur.rowcount
+        cur=self._db.execute("UPDATE followups SET status='completed',completed_at=? WHERE tenant_id=? AND mailbox_id=? AND thread_id=? AND status IN ('open','due')",(iso(at),tenant_id,mailbox_id,thread_id)); self._commit(); return cur.rowcount
 
     def record_send(self, tenant_id: str, draft_id: str, key: str, provider_id: str, sent_at: datetime) -> None:
-        self._db.execute("INSERT INTO send_receipts VALUES(?,?,?,?,?)",(draft_id,tenant_id,key,provider_id,iso(sent_at))); self._db.commit()
+        self._db.execute("INSERT INTO send_receipts VALUES(?,?,?,?,?)",(draft_id,tenant_id,key,provider_id,iso(sent_at))); self._commit()
 
     def send_receipt(self, tenant_id: str, draft_id: str) -> sqlite3.Row | None:
         return self._db.execute("SELECT * FROM send_receipts WHERE tenant_id=? AND draft_id=?",(tenant_id,draft_id)).fetchone()
+
+
+def _whole_call_locked(fn):
+    @functools.wraps(fn)
+    def wrapper(self, *a, **k):
+        # execute + _commit (and reads) of one public store call form one unit:
+        # no other thread can open a transaction or write between them.
+        with self._db.lock:
+            return fn(self, *a, **k)
+    return wrapper
+
+
+for _n, _f in list(vars(EmailStore).items()):
+    if callable(_f) and not _n.startswith("_") and _n != "transaction":
+        setattr(EmailStore, _n, _whole_call_locked(_f))

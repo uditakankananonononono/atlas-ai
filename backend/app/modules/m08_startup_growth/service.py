@@ -21,11 +21,8 @@ class Service:
         self.repo.save(id=ident,project_id=project_id,kind=kind,archive=body,manifest=manifest,sha256=digest,created_at=now)
         return BuildOut(id=ident,project_id=project_id,kind=kind,manifest=manifest,sha256=digest,created_at=now)
     def landing_page(self,data:LandingPageIn):
-        features="\n".join(f"<li className='rounded-xl border p-5'>{x}</li>" for x in data.features)
-        page=f'''export default function Page() {{ return <main className="mx-auto max-w-5xl p-8"><section className="py-24"><h1 className="text-6xl font-bold">{data.product_name}</h1><p className="mt-6 text-xl">{data.hero}</p></section><ul className="grid gap-6 md:grid-cols-3">{features}</ul><form action="/api/waitlist" method="post" className="mt-16 flex gap-2"><input required type="email" name="email" aria-label="Email" className="border p-3"/><button className="bg-black p-3 text-white">Join waitlist</button></form></main> }}'''
-        route=f'''import {{createClient}} from "@supabase/supabase-js"; export async function POST(r:Request){{const f=await r.formData();const email=String(f.get("email")||"").trim().toLowerCase();if(!/^\\S+@\\S+\\.\\S+$/.test(email))return Response.json({{error:"invalid email"}},{{status:400}});const s=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.SUPABASE_SERVICE_ROLE_KEY!);const {{error}}=await s.from("{data.waitlist_table}").upsert({{email}},{{onConflict:"email",ignoreDuplicates:true}});return error?Response.json({{error:"waitlist unavailable"}},{{status:503}}):Response.json({{ok:true}})}}'''
-        files={"app/page.tsx":page,"app/api/waitlist/route.ts":route,"app/globals.css":"@tailwind base;\n@tailwind components;\n@tailwind utilities;\n",".env.example":"NEXT_PUBLIC_SUPABASE_URL=\nSUPABASE_SERVICE_ROLE_KEY=\n","README.md":"Generated review-first Next.js/Tailwind site. Configure Supabase, review, then request an approval-gated push/deploy.\n"}
-        return self._store(data.project_id,"landing_page",files)
+        from .landing_runtime import landing_files
+        return self._store(data.project_id,"landing_page",landing_files(data))
     def pitch_deck(self,data:PitchDeckIn):
         try:
             from pptx import Presentation
@@ -84,7 +81,7 @@ class Service:
             operations[method.lower()]={"summary":f"Discovered in {path}","responses":{"200":{"description":"Success"}}}
         openapi={"openapi":"3.1.0","info":{"title":data.title,"version":"0.1.0"},"paths":paths}
         files={"openapi.json":json.dumps(openapi,indent=2),"redoc.html":'<redoc spec-url="openapi.json"></redoc><script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>',"USER_MANUAL.md":"# "+data.title+"\n\n"+"\n".join(f"- {x}" for x in data.feature_list)+"\n","TECHNICAL_BLOG.md":"# How "+data.title+" works\n\nThis article is grounded in the supplied code snapshot.\n\n"+"\n".join(f"- `{p}`" for p in sorted(data.code_files)),"evidence.json":json.dumps({"code_files":{p:sha256(c.encode()).hexdigest() for p,c in data.code_files.items()},"discovered_endpoints":endpoints,"completeness":"partial_static_inventory","limitations":warnings},indent=2)}
-        allowed={"openapi":{"openapi.json"},"redoc":{"redoc.html"},"user_manual":{"USER_MANUAL.md"},"technical_blog":{"TECHNICAL_BLOG.md"}};keep={"evidence.json"}|set().union(*(allowed[o] for o in data.outputs));return self._store(data.project_id,"documentation",{k:v for k,v in files.items() if k in keep})
+        allowed={"openapi":{"openapi.json"},"redoc":{"redoc.html","openapi.json"},"user_manual":{"USER_MANUAL.md"},"technical_blog":{"TECHNICAL_BLOG.md"}};keep={"evidence.json"}|set().union(*(allowed[o] for o in data.outputs));return self._store(data.project_id,"documentation",{k:v for k,v in files.items() if k in keep})
     def propose(self,build_id,action):
         row=self.repo.get(build_id)
         if not row:raise NotFoundError(build_id)

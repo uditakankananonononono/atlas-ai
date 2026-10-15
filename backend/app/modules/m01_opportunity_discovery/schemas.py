@@ -32,15 +32,16 @@ class OpportunityType(str, Enum):
 class SourceKind(str, Enum):
     """Fetch/parse strategy for a source.
 
-    Only compliant transport is represented here: RSS/Atom feeds and official,
-    documented JSON APIs. Sources that would require ToS-violating scraping,
-    self-bots, or stealth are deliberately not representable (see
-    INTEGRATION.md for the replacement plan).
+    Existing RSS/official API strategies plus the fixed-registry public
+    student-listing adapter. STUDENT_PLATFORM is not an arbitrary URL fetch
+    strategy; launch-only account workflows cannot be scanned. No self-bots,
+    stealth or application submission is represented here.
     """
 
     RSS = "rss"
     GITHUB_SEARCH = "github_search"
     DEVPOST = "devpost"
+    STUDENT_PLATFORM = "student_platform"
 
 
 class SourceOut(BaseModel):
@@ -68,6 +69,12 @@ class ScanRequestIn(BaseModel):
     source_ids: list[str] | None = Field(
         default=None, description="Restrict the scan to these source IDs; null scans every enabled source."
     )
+    student_platform_ids: list[str] = Field(
+        default_factory=list, max_length=27,
+        description="Explicit opt-in public student platform IDs; launch-only platforms cannot scan.",
+    )
+    student_query: str = Field(default="", max_length=200)
+    student_limit: int = Field(default=25, ge=1, le=100)
     profile: ProfileIn = Field(default_factory=ProfileIn)
     notify_threshold: float = Field(
         default=0.8,
@@ -100,6 +107,7 @@ class OpportunityOut(BaseModel):
 
     id: str
     source_id: str
+    source_url: str | None = Field(default=None, description="Configured public listing URL for a student-platform scan; not eligibility evidence.")
     title: str
     url: str
     description: str

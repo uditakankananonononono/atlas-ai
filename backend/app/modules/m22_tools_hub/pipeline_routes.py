@@ -125,9 +125,9 @@ def portfolio(include_history: bool = False, p: InstallPipeline = Depends(get_pi
     return p.portfolio(include_history)
 
 
-def get_discovery_service():
+def get_discovery_service(tenant: TenantContext = Depends(require_tenant)):
     from .routes import get_service
-    return get_service()
+    return get_service(tenant)
 
 
 class DiscoveryQueryIn(BaseModel):

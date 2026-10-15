@@ -13,6 +13,7 @@ def fit(x:FitIn):return service.fit(x.profile,x.universities)
 from fastapi import Depends,HTTPException
 from app.auth.context import TenantContext,require_tenant
 from .interview import IdentityInterviewRepository
+from ._http_boundary import map_answer_error
 
 def interview_repository(tenant:TenantContext=Depends(require_tenant)):
  return IdentityInterviewRepository(tenant.tenant_id)
@@ -28,9 +29,11 @@ def get_identity_interview(session_id:str,repo:IdentityInterviewRepository=Depen
 
 @router.post('/identity-interviews/{session_id}/turns')
 def answer_identity_interview(session_id:str,x:IdentityInterviewTurnIn,repo:IdentityInterviewRepository=Depends(interview_repository)):
- try:return repo.answer(session_id,x.student_response,x.modality,x.evidence_tags)
- except LookupError:raise HTTPException(404,'identity interview not found')
- except ValueError as e:raise HTTPException(409,str(e))
+ try:return repo.answer(session_id,x.student_response,x.modality,x.evidence_tags,expected_question_index=x.expected_question_index)
+ except Exception as e:
+  mapped=map_answer_error(e)
+  if mapped is None:raise
+  raise HTTPException(mapped[0],mapped[1]) from e
 
 from .advising import AdvisingService
 def advising_service(tenant:TenantContext=Depends(require_tenant)):return AdvisingService(tenant.tenant_id)

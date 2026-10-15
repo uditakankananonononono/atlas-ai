@@ -47,6 +47,8 @@ class SqlGraphRepository:
         with self.sessions() as db:r=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.id==node_id));return _node(r) if r else None
     def list_nodes(self,limit=500):
         with self.sessions() as db:return [_node(r) for r in db.scalars(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id).limit(limit))]
+    def get_by_source(self,source_module,external_id):
+        with self.sessions() as db:r=db.scalar(select(NodeRow).where(NodeRow.tenant_id==self.tenant_id,NodeRow.source_module==source_module,NodeRow.external_id==external_id));return _node(r) if r else None
     def save_edge(self,e:Edge):
         try:
             with self.sessions.begin() as db:db.add(EdgeRow(tenant_id=self.tenant_id,id=e.id,source_id=e.source_id,target_id=e.target_id,relationship=e.relationship.value,rationale=e.rationale,evidence=e.evidence,confidence=e.confidence,created_at=e.created_at));db.add(AuditRow(tenant_id=self.tenant_id,actor_id=self.actor_id,action="edge.created",entity_id=e.id,detail={"relationship":e.relationship.value},created_at=e.created_at))

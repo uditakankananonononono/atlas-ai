@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from math import exp
+from math import exp, isfinite
 from .models import ModelCapability, RouteRequest
 
 class NoEligibleModel(RuntimeError): pass
@@ -28,7 +28,30 @@ class ModelRouter:
         score=.62*m.quality+.23*latency_fit+.15*cost_fit
         reasons += [f"quality={m.quality:.2f}", f"estimated_cost={estimated:.3f}c", f"latency_fit={latency_fit:.2f}"]
         return score,reasons
+    @staticmethod
+    def _num(value, name, *, integer=False, upper=None):
+        if type(value) is bool or not isinstance(value, (int, float)) or (integer and type(value) is not int):
+            raise ValueError(f"{name} must be a{'n integer' if integer else ' finite number'}")
+        try:
+            finite = isfinite(value)
+        except OverflowError:
+            raise ValueError(f"{name} is too large to represent") from None
+        if not finite or value < 0 or (upper is not None and value > upper):
+            raise ValueError(f"{name} must be finite, nonnegative" + (f" and at most {upper}" if upper is not None else ""))
+    def _validate(self, req: RouteRequest) -> None:
+        seen=set()
+        for m in self.catalog:
+            if m.model_id in seen: raise ValueError(f"duplicate model_id: {m.model_id}")
+            seen.add(m.model_id)
+            self._num(m.quality,"model quality",upper=1)
+            self._num(m.cents_per_1k_tokens,"model cost")
+            self._num(m.p95_latency_ms,"model latency",integer=True)
+            self._num(m.max_output_tokens,"model output limit",integer=True)
+        self._num(req.budget_cents,"budget")
+        self._num(req.output_tokens,"output tokens",integer=True)
+        self._num(req.latency_tolerance_ms,"latency tolerance",integer=True)
     def route(self, req: RouteRequest) -> RouteDecision:
+        self._validate(req)
         ranked=[]; reasons={}; scores={}
         for m in self.catalog:
             score,why=self.score(m,req); reasons[m.model_id]=why; scores[m.model_id]=score
