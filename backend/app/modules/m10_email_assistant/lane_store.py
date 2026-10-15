@@ -20,6 +20,18 @@ class _SerializedConnection:
     """
     def __init__(self, raw: sqlite3.Connection) -> None:
         self._raw, self.lock = raw, threading.RLock()
+    def __getattr__(self, name):
+        # Preserve sqlite connection helpers (including trace callbacks) without
+        # letting delegated calls bypass the shared transaction lock.
+        with self.lock:
+            value = getattr(self._raw, name)
+        if not callable(value):
+            return value
+        @functools.wraps(value)
+        def serialized(*args, **kwargs):
+            with self.lock:
+                return value(*args, **kwargs)
+        return serialized
     def execute(self, *a, **k):
         with self.lock: return self._raw.execute(*a, **k)
     def executescript(self, *a, **k):
