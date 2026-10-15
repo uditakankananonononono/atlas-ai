@@ -136,3 +136,6 @@ app.include_router(s34_industry_router,prefix='/api/v1')
 
 from app.modules.c34.tool_routes import router as s33_tool_router
 app.include_router(s33_tool_router,prefix='/api/v1')
+
+from app.modules.c31.tool_scan_routes import router as s11_tool_scan_router
+app.include_router(s11_tool_scan_router,prefix='/api/v1')

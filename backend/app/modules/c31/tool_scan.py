@@ -69,3 +69,55 @@ def scan(tools, atlas_modules=None, purchase=False):
 
 def report(tools, atlas_modules=None):
     return scan(tools, atlas_modules)
+
+
+def scan_sources(request):
+    """Extract explicitly labelled fields from saved source text.
+
+    A page's license/price claims are evidence, not verified permissions. This
+    parser does not infer capabilities or license from unlabelled advertising.
+    CSV/YC vendor-specific schemas are not assumed or silently guessed.
+    """
+    import re
+    from urllib.parse import urlsplit
+    if type(request) is not dict or set(request)!={'sources','atlas_modules'}:
+        raise ValueError('FLEET_REFUSED_FIELDS')
+    if type(request['sources']) is not list or not 1<=len(request['sources'])<=MAX_TOOLS:
+        raise ValueError('FLEET_REFUSED_NOSOURCE')
+    records=[];sources=[];seen=set()
+    for row in request['sources']:
+        if type(row) is not dict or set(row)!={'id','name','url','text'}:raise ValueError('FLEET_REFUSED_SOURCE')
+        ident=policy.clean_text(row['id'],PREFIX,'source_id',128)
+        if ident in seen:raise ValueError('FLEET_REFUSED_DUPLICATE_SOURCE')
+        seen.add(ident)
+        name=policy.clean_text(row['name'],PREFIX,'name',128)
+        url=policy.clean_text(row['url'],PREFIX,'url',2048)
+        parsed=urlsplit(url)
+        if parsed.scheme!='https' or not parsed.hostname or parsed.username or parsed.password:raise ValueError('FLEET_REFUSED_SOURCE_URL')
+        body=policy.clean_text(row['text'],PREFIX,'source_text',200000,allow_ws=True)
+        fields={'license':set(),'price_tier':set()};caps=set();evidence=[]
+        for match in re.finditer(r'^(License|Pricing|Price tier|Capabilities|Capability):[ \t]*([^\r\n]+)',body,flags=re.IGNORECASE|re.MULTILINE|re.ASCII):
+            label=match.group(1).lower();value=match.group(2).strip()
+            if label=='license':field='license'
+            elif label in ('pricing','price tier'):field='price_tier'
+            elif label in ('capabilities','capability'):field='capabilities'
+            else:continue
+            if field=='capabilities':
+                values=[policy.clean_text(v.strip(),PREFIX,'capability',128) for v in value.split(',')]
+                caps.update(values)
+            else:
+                normalized=value.casefold()
+                allowed=LICENSES if field=='license' else PRICE_TIERS+('unknown',)
+                if normalized not in allowed:normalized='unknown'
+                fields[field].add(normalized)
+            evidence.append({'field':field,'quote':match.group(),'start':match.start(),'end':match.end()})
+        if any(len(values)>1 for values in fields.values()):raise ValueError('FLEET_REFUSED_AMBIGUOUS_SOURCE_FIELDS')
+        records.append({'name':name,'license':next(iter(fields['license']),'unknown'),
+                        'price_tier':next(iter(fields['price_tier']),'unknown'),'capabilities':sorted(caps)})
+        sources.append({'source_id':ident,'name':name,'url':url,'evidence':evidence,
+                        'missing_fields':[k for k,v in fields.items() if not v]+([] if caps else ['capabilities'])})
+    out=scan(records,request['atlas_modules'])
+    out.update(source_records=sources,sources_verified=False,
+               extraction_method='explicit labelled source lines only; unlabelled text ignored')
+    out['scope']['not_implemented']+=['license or price verification','arbitrary page semantic extraction','vendor-specific raw CSV import']
+    return out
