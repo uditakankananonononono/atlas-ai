@@ -23,21 +23,39 @@ class RunEventRow(Base):
 def _run(r):return RunOut.model_validate({**r.payload,"id":r.id,"state":r.state,"stage":r.stage,"spent":r.spent,"reserved":r.reserved,"budget_cap":r.budget_cap})
 def _payload(x):return x.model_dump(mode="json",exclude={"id","state","stage","spent","reserved","budget_cap"})
 
+def _is_run_id_collision(error:IntegrityError)->bool:
+    # only a genuine duplicate run id maps to "run id unavailable"; NOT NULL/FK/other violations re-raise unmasked
+    message=str(error.orig).lower()
+    # sqlite: "unique constraint failed: m19_runs.id"; PG: constraint name differs by provisioning path -
+    # "m19_runs_id_key" (alembic migration inline unique) or "ix_m19_runs_id" (Base.metadata.create_all unique index)
+    return any(token in message for token in ("unique constraint failed: m19_runs.id","m19_runs_id_key","ix_m19_runs_id"))
+
+
 class SqlRunStore:
-    def __init__(self,session_factory:sessionmaker=SessionLocal):self.sessions=session_factory;Base.metadata.create_all(engine)
+    def __init__(self,session_factory:sessionmaker=SessionLocal):self.sessions=session_factory;self._schema_ready=False
+    def _ensure_schema(self)->None:
+        # deferred from construction: no create_all / DB touch until the store is actually used;
+        # alembic migration 20261017_m19_runs owns these tables in deployed environments
+        if not self._schema_ready:Base.metadata.create_all(engine);self._schema_ready=True
     def create(self,tenant_id:str,run:RunOut,priority:int=0)->RunOut:
+        self._ensure_schema()
         at=_now();row=RunRow(tenant_id=tenant_id,id=run.id,state=run.state,stage=run.stage.value,payload=_payload(run),spent=run.spent,reserved=run.reserved,budget_cap=run.budget_cap,priority=priority,version=1,created_at=at,updated_at=at)
         try:
             with self.sessions.begin() as db:
                 db.add(row);db.add(RunEventRow(tenant_id=tenant_id,run_id=run.id,kind="created",version=1,payload={},at=at))
-        except IntegrityError:raise RuntimeError("run id unavailable") from None
+        except IntegrityError as error:
+            if _is_run_id_collision(error):raise RuntimeError("run id unavailable") from None
+            raise
         return run
     def get(self,tenant_id:str,run_id:str)->RunOut|None:
+        self._ensure_schema()
         with self.sessions() as db:
             r=db.scalar(select(RunRow).where(RunRow.tenant_id==tenant_id,RunRow.id==run_id));return _run(r) if r else None
     def list_events(self,tenant_id:str,run_id:str)->list[RunEventRow]:
+        self._ensure_schema()
         with self.sessions() as db:return [r for r in db.scalars(select(RunEventRow).where(RunEventRow.tenant_id==tenant_id,RunEventRow.run_id==run_id).order_by(RunEventRow.pk))]
     def reserve_budget(self,tenant_id:str,run_id:str,cost:float,new_state:str,new_stage:Stage,expected_stages:list[Stage]|None=None)->RunOut:
+        self._ensure_schema()
         """CAS: reserve only while spent+reserved+cost<=budget_cap AND (when given) the current
         stage is one of expected_stages; one conditional statement. Optimistic expected-stage check."""
         if not math.isfinite(cost) or cost<0:raise ValueError("cost must be finite and non-negative")
@@ -54,11 +72,13 @@ class SqlRunStore:
             db.add(RunEventRow(tenant_id=tenant_id,run_id=run_id,kind="budget_reserved",version=r.version,payload={"cost":cost},at=_now()))
             return _run(r)
     def next_queued(self,tenant_id:str,state:str="queued")->RunOut|None:
+        self._ensure_schema()
         """Queue-priority selector: highest priority first, FIFO tiebreak (created_at, id).
         Read-only selector; no worker or lease semantics are implied."""
         with self.sessions() as db:
             r=db.scalar(select(RunRow).where(RunRow.tenant_id==tenant_id,RunRow.state==state).order_by(RunRow.priority.desc(),RunRow.created_at,RunRow.id).limit(1));return _run(r) if r else None
     def release_budget(self,tenant_id:str,run_id:str,cost:float,expected_version:int,new_state:str,new_stage:Stage)->RunOut:
+        self._ensure_schema()
         """Explicit grounded release only - never called automatically on unknown outcomes.
         Conditional on expected_version and reserved>=cost; version bump and event are atomic."""
         if not math.isfinite(cost) or cost<0:raise ValueError("cost must be finite and non-negative")
@@ -71,6 +91,7 @@ class SqlRunStore:
             db.add(RunEventRow(tenant_id=tenant_id,run_id=run_id,kind="budget_released",version=r.version,payload={"cost":cost},at=_now()))
             return _run(r)
     def transition(self,tenant_id:str,run_id:str,expected_version:int,changes:dict,event_kind:str)->RunOut:
+        self._ensure_schema()
         """Optimistic expected-version conditional update plus one append-only event, atomically."""
         with self.sessions.begin() as db:
             res=db.execute(update(RunRow).where(RunRow.tenant_id==tenant_id,RunRow.id==run_id,RunRow.version==expected_version).values(**changes,version=expected_version+1,updated_at=_now()).execution_options(synchronize_session=False)).rowcount

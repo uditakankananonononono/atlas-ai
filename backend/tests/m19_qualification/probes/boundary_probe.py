@@ -21,7 +21,13 @@ async def fake_generate(prompt, provider, model): return ("", json.dumps(CANVAS)
 async def header_tenant(x_tenant: str = Header(default="tenant-a")):
     return TenantContext(tenant_id=x_tenant, actor_id=x_tenant)
 svc = Service(generate=fake_generate, approval_store=approvals, idempotency_store=None)
+from fastapi.exceptions import RequestValidationError
+from app.core.validation_errors import request_validation_error_handler
+# mirror the documented main.py integration anchor: the candidate ships a sanitized
+# RequestValidationError handler; the coordinator registers it in main.py. A bare app
+# (FastAPI default handler) cannot serialize NaN/inf error inputs and re-raises ValueError.
 app = FastAPI(); app.include_router(m19_routes.router)
+app.add_exception_handler(RequestValidationError, request_validation_error_handler)
 app.dependency_overrides[require_tenant] = header_tenant
 app.dependency_overrides[m19_routes.get_service] = lambda: svc
 c = TestClient(app)
