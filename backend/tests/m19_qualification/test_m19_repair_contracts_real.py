@@ -140,6 +140,22 @@ except ValueError:
     x5 = "ValueError (refused)"
 check("C4 idempotency_key without tenant refused", x5.startswith("ValueError"), x5)
 
+# ---- C5: per-instance isolation of the legacy tenantless dicts (no shared fallback across Service instances)
+svcB = Service(generate=rec_generate, approval_store=approvals, run_store=SqlRunStore())
+try:
+    svcB.get(run_legacy.id, None); xi = "ACCESSIBLE from independent instance (BAD - shared dict mutant)"
+except KeyError:
+    xi = "KeyError (per-instance)"
+check("C5 tenantless run from instance A unreachable on independent instance B", xi.startswith("KeyError"), xi)
+try:
+    svcB.request_preview(run_legacy.id, PreviewIn(artifacts=["a"], estimated_cost=1), None); xp = "ACCESSIBLE from independent instance (BAD)"
+except KeyError:
+    xp = "KeyError (per-instance)"
+check("C5 tenantless preview from instance A refused on independent instance B", xp.startswith("KeyError"), xp)
+check("C5 instance B legacy dicts are empty at construction", svcB._runs == {} and svcB._owners == {},
+      f"runs={len(svcB._runs)} owners={len(svcB._owners)}")
+check("C5 instance A state intact after B probes", svc.get(run_legacy.id, None).id == run_legacy.id, run_legacy.id)
+
 failed = [n for n, ok in results if not ok]
 print(f"TOTAL={len(results)} FAILED={len(failed)}")
 sys.exit(1 if failed else 0)
