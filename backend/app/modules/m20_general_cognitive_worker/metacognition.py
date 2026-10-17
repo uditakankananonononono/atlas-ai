@@ -412,9 +412,30 @@ class CounterfactualEngine:
         """alternatives: [{replaces_step: int, action: str, risk: str}].
         Returns per-alternative estimated outcome vs. the actual path."""
         actual_success = episode.outcome.value == "succeeded"
+        # Validate every alternative before any estimator runs: a bad entry is
+        # fail-atomic and never triggers early estimator side effects.
+        validated: list[tuple[dict[str, Any], Risk]] = []
+        for index, alt in enumerate(alternatives):
+            if not isinstance(alt, dict):
+                exc = ValueError(
+                    f"alternative {index} must be an object with replaces_step/action/risk fields, "
+                    f"got {type(alt).__name__}"
+                )
+                exc.alternative_validation = True
+                raise exc
+            risk_value = alt.get("risk", Risk.REVERSIBLE.value)
+            try:
+                risk = Risk(risk_value)
+            except ValueError:
+                valid = ", ".join(member.value for member in Risk)
+                exc = ValueError(
+                    f"alternative {index} has invalid risk {risk_value!r}; expected one of: {valid}"
+                )
+                exc.alternative_validation = True
+                raise exc from None
+            validated.append((alt, risk))
         results = []
-        for alt in alternatives:
-            risk = Risk(alt.get("risk", Risk.REVERSIBLE.value))
+        for alt, risk in validated:
             estimated = self.outcome_model.estimate(str(alt.get("action", "")), risk) if self.outcome_model else None
             results.append({
                 "replaces_step": alt.get("replaces_step"),
@@ -553,6 +574,22 @@ class FlowStateManager:
     def structure_work(self, tasks: list[dict[str, Any]], *, skill: float) -> list[dict[str, Any]]:
         """Order tasks so difficulty ramps through the flow channel: start at
         or just above current skill, then increase."""
+        # Caller-supplied task dicts: refuse non-object entries and
+        # non-real/non-finite/out-of-range difficulty with a coded error
+        # BEFORE sorting. The [0, 1] boundary is the documented contract of
+        # the difficulty consumer (assess() challenge domain, line ~533);
+        # bool difficulty stays accepted as its numeric value (previously
+        # accepted behavior preserved).
+        for task in tasks:
+            if not isinstance(task, dict):
+                raise ValueError("tasks must be objects")
+            difficulty = task.get("difficulty", 0.5)
+            if not isinstance(difficulty, (int, float)):
+                raise ValueError("task difficulty must be a real number")
+            if isinstance(difficulty, float) and not math.isfinite(difficulty):
+                raise ValueError("task difficulty must be finite")
+            if not 0.0 <= difficulty <= 1.0:
+                raise ValueError("task difficulty must be in [0, 1]")
         ordered = sorted(tasks, key=lambda t: abs(float(t.get("difficulty", 0.5)) - skill))
         result = []
         current_skill = skill
@@ -916,15 +953,36 @@ class DecisionFatigueGuard:
 
 def project_regret(options: dict[str, dict[str, float]]) -> dict[str, Any]:
     """Row 24: full per-option regret projection across scenarios."""
+    if not isinstance(options, dict):
+        raise ValueError("options must be a dict of option -> scenario payoffs")
     if not options:
         raise ValueError("options required")
+    for _name, _payoffs in options.items():
+        if not isinstance(_payoffs, dict) or not _payoffs:
+            raise ValueError(f"payoffs for {_name!r} must be a non-empty scenario dict")
+        for _scenario, _v in _payoffs.items():
+            _msg = f"payoff {_name!r}/{_scenario!r} must be a finite number"
+            if isinstance(_v, bool) or not isinstance(_v, (int, float)):
+                raise ValueError(_msg)
+            try:
+                _ok = math.isfinite(_v)
+            except OverflowError:
+                _ok = False
+            if not _ok:
+                raise ValueError(_msg)
+    _sets = [set(p) for p in options.values()]
+    if any(s != _sets[0] for s in _sets):
+        raise ValueError("all options must declare the same scenario set")
     scenarios = list(next(iter(options.values())).keys())
     table: dict[str, dict[str, float]] = {}
     for name, payoffs in options.items():
         table[name] = {}
         for scenario in scenarios:
             best = max(o[scenario] for o in options.values())
-            table[name][scenario] = best - payoffs[scenario]
+            regret = best - payoffs[scenario]
+            if isinstance(regret, float) and not math.isfinite(regret):
+                raise ValueError("derived regret exceeds finite representation")
+            table[name][scenario] = regret
     return {
         "regret_table": table,
         "max_regret": {name: max(r.values()) for name, r in table.items()},
@@ -934,12 +992,30 @@ def project_regret(options: dict[str, dict[str, float]]) -> dict[str, Any]:
 
 def quantify_sacrifice(chosen: dict[str, float], alternatives: list[dict[str, float]]) -> dict[str, Any]:
     """Row 25: what is sacrificed with this choice, ranked."""
+    if not isinstance(chosen, dict) or not isinstance(alternatives, list):
+        raise ValueError("chosen must be a dict and alternatives a list")
+    for _label, _entry in [("chosen", chosen)] + [(f"alternatives[{_i}]", _a) for _i, _a in enumerate(alternatives)]:
+        _msg = f"{_label} requires a finite numeric 'value'"
+        if not isinstance(_entry, dict) or "value" not in _entry:
+            raise ValueError(_msg)
+        _v = _entry["value"]
+        if isinstance(_v, bool) or not isinstance(_v, (int, float)):
+            raise ValueError(_msg)
+        try:
+            _ok = math.isfinite(_v)
+        except OverflowError:
+            _ok = False
+        if not _ok:
+            raise ValueError(_msg)
     ranked = sorted(alternatives, key=lambda a: a["value"], reverse=True)
     best = ranked[0] if ranked else None
+    cost = opportunity_cost(chosen["value"], [a["value"] for a in alternatives])
+    if isinstance(cost, float) and not math.isfinite(cost):
+        raise ValueError("derived opportunity cost exceeds finite representation")
     return {
         "chosen": chosen,
         "best_foregone": best,
-        "opportunity_cost": opportunity_cost(chosen["value"], [a["value"] for a in alternatives]),
+        "opportunity_cost": cost,
         "ranked_alternatives": ranked,
     }
 
@@ -949,8 +1025,26 @@ def sunk_cost_choice(options: list[dict[str, float]]) -> dict[str, Any]:
     changed the answer."""
     if not options:
         raise ValueError("options required")
+    for _i, _o in enumerate(options):
+        if not isinstance(_o, dict) or "name" not in _o or "forward_value" not in _o:
+            raise ValueError(f"options[{_i}] requires 'name' and 'forward_value' keys")
+        for _k in ("forward_value", "past_investment"):
+            if _k in _o:
+                _v = _o[_k]
+                _msg = f"options[{_i}][{_k!r}] must be a finite number"
+                if isinstance(_v, bool) or not isinstance(_v, (int, float)):
+                    raise ValueError(_msg)
+                try:
+                    _ok = math.isfinite(_v)
+                except OverflowError:
+                    _ok = False
+                if not _ok:
+                    raise ValueError(_msg)
+    from fractions import Fraction
     forward_best = max(options, key=lambda o: o["forward_value"])
-    naive_best = max(options, key=lambda o: o["forward_value"] + o.get("past_investment", 0.0))
+    # exact naive comparison: float summation can overflow to inf and invent
+    # influence; Fraction is exact, keeps first-wins ties, matches ordinary behavior
+    naive_best = max(options, key=lambda o: Fraction(o["forward_value"]) + Fraction(o.get("past_investment", 0.0)))
     influenced = naive_best["name"] != forward_best["name"]
     return {
         "recommended": forward_best["name"],
@@ -971,6 +1065,15 @@ class PlanningHorizonController:
     """Row 27: planning depth from uncertainty and time available."""
 
     def horizon(self, *, uncertainty: float, time_available_minutes: float) -> dict[str, Any]:
+        for _name, _value in (("uncertainty", uncertainty), ("time_available_minutes", time_available_minutes)):
+            if isinstance(_value, bool) or not isinstance(_value, (int, float)):
+                raise ValueError(f"{_name} must be a finite number, not {_value!r}")
+            try:
+                _finite = math.isfinite(_value)
+            except OverflowError:  # int too large to convert to float (e.g. 10**1000): refuse, never crash
+                raise ValueError(f"{_name} must be a finite number, not {_value!r}") from None
+            if not _finite:
+                raise ValueError(f"{_name} must be a finite number, not {_value!r}")
         if not 0.0 <= uncertainty <= 1.0:
             raise ValueError("uncertainty must be in [0, 1]")
         if time_available_minutes <= 0:
@@ -998,6 +1101,35 @@ class AbstractionShifter:
     """Row 28: the same plan at strategic, stream, and step levels."""
 
     def rollup(self, goal: str, plan: list[PlanNode], *, level: str) -> dict[str, Any]:
+        # same-plan representation must not silently drop or duplicate schema-valid
+        # nodes: refuse degenerate DAGs (duplicate ids, unknown refs, cycles) first
+        if not isinstance(plan, list) or any(not isinstance(n, PlanNode) for n in plan):
+            raise ValueError("plan must be a list of PlanNode")
+        ids = [n.id for n in plan]
+        if len(set(ids)) != len(ids):
+            raise ValueError("plan node ids must be unique")
+        known = set(ids)
+        for n in plan:
+            missing = [d for d in n.depends_on if d not in known]
+            if missing:
+                raise ValueError(f"plan node {n.id!r} depends on unknown ids {missing!r}")
+        children: dict[str, list[str]] = {nid: [] for nid in ids}
+        indegree = {nid: 0 for nid in ids}
+        for n in plan:
+            for d in n.depends_on:
+                children[d].append(n.id)
+                indegree[n.id] += 1
+        queue = [nid for nid, deg in indegree.items() if deg == 0]
+        seen = 0
+        while queue:
+            nid = queue.pop()
+            seen += 1
+            for c in children[nid]:
+                indegree[c] -= 1
+                if indegree[c] == 0:
+                    queue.append(c)
+        if seen != len(plan):
+            raise ValueError("plan dependency graph must be acyclic")
         if level == "strategy":
             return {"level": level, "goal": goal,
                     "summary": f"{len(plan)} steps, "
@@ -1019,10 +1151,16 @@ class AbstractionShifter:
 
     @staticmethod
     def _descendants(node: PlanNode, plan: list[PlanNode]) -> list[str]:
-        children = [n for n in plan if node.id in n.depends_on]
-        out = [c.title for c in children]
-        for child in children:
-            out.extend(AbstractionShifter._descendants(child, plan))
+        # iterative preorder matching the original recursion exactly (all direct
+        # children first, then each child's subtree in plan order); deep valid
+        # DAGs must not depend on the interpreter recursion limit
+        out: list[str] = []
+        stack = [node]
+        while stack:
+            current = stack.pop()
+            children = [n for n in plan if current.id in n.depends_on]
+            out.extend(c.title for c in children)
+            stack.extend(reversed(children))
         return out
 
 
@@ -1082,7 +1220,20 @@ class PerspectiveView:
 class PerspectiveSimulator:
     """Row 29: evaluate one proposal through typed persona lenses."""
 
+    # Numeric lens inputs are caller-supplied: refuse non-real/non-finite
+    # values with a coded error BEFORE any persona evaluation (bool stays
+    # accepted as its numeric value - previously accepted behavior preserved;
+    # huge ints compare fine and stay valid).
+    _NUMERIC_LENSES = ("evidence_count", "upside", "timeline_days")
+
     def evaluate(self, proposal: dict[str, Any]) -> list[PerspectiveView]:
+        for key in self._NUMERIC_LENSES:
+            if key in proposal:
+                value = proposal[key]
+                if not isinstance(value, (int, float)):
+                    raise ValueError(f"{key} must be a real number")
+                if isinstance(value, float) and not math.isfinite(value):
+                    raise ValueError(f"{key} must be finite")
         views = []
         for persona, lens in _PERSONAS.items():
             supports = [lens["support"]] if lens["support_when"](proposal) else []

@@ -215,59 +215,95 @@ class LocalKnowledgePipeline:
         # never a false version claim.
         rec=self.register(request.source)
         target=self._contained(request.source.source_id,f'v{version.number}')
-        if target.exists():
-            # In-memory versions are lost on restart while disk persists, so a
-            # fresh pipeline can recompute a version number whose directory
-            # already holds prior data. Refuse rather than overwrite, and never
-            # let failure cleanup remove data this attempt did not create.
-            raise KnowledgeError('version target already exists on disk; refusing to overwrite')
-        import uuid as _uuid
-        tmp=target.with_name(target.name+f'.tmp-{_uuid.uuid4().hex}')
+        sid=request.source.source_id
         import os as _os
+        if not sid or sid in ('.','..') or _os.sep in sid:
+            # The descriptor-anchored ingest below addresses the source dir by
+            # NAME relative to the held workspace descriptor, so the id must be
+            # a single component. The schema already restricts source_id to
+            # [A-Za-z0-9_.-]; this refuses ids built outside the schema rather
+            # than letting a separator resolve through extra components.
+            raise KnowledgeError('source id is not a single path component')
+        import uuid as _uuid
+        tmp_name=target.name+f'.tmp-{_uuid.uuid4().hex}'
+        tmp=target.with_name(tmp_name)
         dfd=None
-        # ONE unconditional finally owns the held descriptor's lifecycle:
+        wfd=None
+        # ONE unconditional finally owns the held descriptors' lifecycle:
         # whatever fails between acquisition and outcome - OSError or any
-        # unexpected exception - cannot leak it. The handlers keep the error
-        # state truthful: memory never claims a version the manifest does
-        # not record, and every cleanup attempt is ownership-checked and
-        # best-effort, never a completed rollback of on-disk state. Close
-        # errors remain ambiguous (carried).
+        # unexpected exception - cannot leak either. The handlers keep the
+        # error state truthful: memory never claims a version the manifest
+        # does not record, and every cleanup attempt is ownership-checked
+        # and best-effort, never a completed rollback of on-disk state.
+        # Close errors remain ambiguous (carried).
         try:
             renamed=False
             try:
+                # Every step is anchored to held directory descriptors: the
+                # source dir is created (when absent) and opened BY NAME
+                # relative to the held workspace descriptor with O_NOFOLLOW,
+                # so a source dir swapped to a symlink after the containment
+                # check fails closed here instead of redirecting the version
+                # write outside the workspace (the pre-repair
+                # tmp.mkdir(parents=True) followed such a swap). The existence
+                # check is lstat relative to the held source-dir descriptor:
+                # no symlink follow, no path re-resolution - ANY object at the
+                # target name refuses, including a dangling link that
+                # Path.exists() would report as absent.
+                root_fd=_os.open(self.workspace,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
+                try:
+                    try: _os.mkdir(sid,dir_fd=root_fd)
+                    except FileExistsError: pass
+                    wfd=_os.open(sid,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY,dir_fd=root_fd)
+                finally: _os.close(root_fd)
+                try: _os.lstat(target.name,dir_fd=wfd)
+                except FileNotFoundError: pass
+                else:
+                    # In-memory versions are lost on restart while disk
+                    # persists, so a fresh pipeline can recompute a version
+                    # number whose directory already holds prior data. Refuse
+                    # rather than overwrite, and never let failure cleanup
+                    # remove data this attempt did not create.
+                    raise KnowledgeError('version target already exists on disk; refusing to overwrite')
                 # Build the version in a private temp dir, then rename it into
-                # place. After open, the attempt HOLDS that dir: the descriptor
-                # pins its inode (a deleted-then-recreated replacement cannot
-                # reuse it) and anchors both the exclusive writes and the
-                # ownership check every destructive cleanup must pass - the
-                # pathname must still denote the SAME (dev,ino), a real
-                # directory, not a link; anything else is LEFT in place rather
-                # than deleted by mistake. The mkdir-to-open acquisition gap
-                # remains: a different real directory swapped in BEFORE open
-                # can be adopted. After-open replacement checks narrow the
-                # race, but do not atomically close check-to-rmtree (carried).
+                # place - both BY NAME relative to the held source-dir
+                # descriptor, so a swapped path component cannot redirect the
+                # mkdir, the open, or either end of the rename (the pre-repair
+                # rename(tmp,target) re-resolved both paths). After open, the
+                # attempt HOLDS the tmp dir: the descriptor pins its inode (a
+                # deleted-then-recreated replacement cannot reuse it) and
+                # anchors both the exclusive writes and the ownership check
+                # every destructive cleanup must pass. The post-open
+                # fstat-vs-lstat identity check narrows the mkdir-to-open
+                # adoption gap: a directory swapped in after this lstat is
+                # detected and refused. A swap between mkdir and that lstat is
+                # still adoptable (carried: narrowed, not closed), and
+                # components above the workspace are not pinned (carried).
                 # Once the rename lands, failure cleanup must remove the
                 # RENAMED target - tmp no longer denotes anything, and the
                 # held dirfd pins the same inode now living at target.
-                tmp.mkdir(parents=True)
-                dfd=_os.open(tmp,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
+                _os.mkdir(tmp_name,dir_fd=wfd)
+                dfd=_os.open(tmp_name,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY,dir_fd=wfd)
+                held=_os.fstat(dfd); seen=_os.lstat(tmp_name,dir_fd=wfd)
+                if (held.st_dev,held.st_ino)!=(seen.st_dev,seen.st_ino):
+                    raise KnowledgeError('version temp directory was replaced before adoption; refusing')
                 segments_blob=json.dumps([s.model_dump(mode='json') for s in segments],sort_keys=True).encode('utf-8')
                 self._write_version_files(dfd,raw,segments_blob)
                 # Durability ORDERING, not a general durability guarantee:
-                # the file data is already fsynced; fsync the held dirfd so
-                # the files' directory entries are durable before the rename
-                # moves them, then fsync the parent dir after the rename so
-                # the version's final name is durable BEFORE the manifest
-                # can record it. A crash can still orphan a v*.tmp-* dir
-                # (carried; no startup sweep), and fsync semantics depend on
-                # the filesystem/mount (carried). fsync errors are OSErrors
-                # and join the ordinary failure lifecycle below.
+                # the file data is already fsynced; fsync the held tmp dirfd
+                # so the files' directory entries are durable before the
+                # rename moves them, then fsync the held source-dir
+                # descriptor after the rename so the version's final name is
+                # durable BEFORE the manifest can record it (the pre-repair
+                # code re-opened the parent BY PATH for this fsync; the
+                # descriptor is already held here). A crash can still orphan
+                # a v*.tmp-* dir (carried; no startup sweep), and fsync
+                # semantics depend on the filesystem/mount (carried). fsync
+                # errors are OSErrors and join the ordinary failure lifecycle.
                 _os.fsync(dfd)
-                _os.rename(tmp,target)
+                _os.rename(tmp_name,target.name,src_dir_fd=wfd,dst_dir_fd=wfd)
                 renamed=True
-                parent_fd=_os.open(target.parent,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
-                try: _os.fsync(parent_fd)
-                finally: _os.close(parent_fd)
+                _os.fsync(wfd)
             except OSError:
                 # Post-rename the only object this attempt still owns on
                 # disk is the renamed target; cleaning tmp would do nothing
@@ -302,7 +338,7 @@ class LocalKnowledgePipeline:
             edge={'from':request.source.source_id,'to':digest,'relation':'has_version','version':version.number}
             try:
                 rec.versions.append(version); self.chunks.extend(new_chunks); self.edges.append(edge)
-                self._persist_manifest(rec)
+                self._persist_manifest(rec,dfd=wfd)
             except (OSError, ManifestOversizeError) as persist_exc:
                 # Persist failed AFTER memory mutation: roll the version state
                 # back so memory never claims a version the manifest does not
@@ -328,7 +364,7 @@ class LocalKnowledgePipeline:
                 # rollback: an unconfirmed restore leaves the version dir
                 # behind (carried), and a crash mid-sequence can leave
                 # either artifact (carried).
-                restore_ok=self._restore_manifest_confirmed(rec)
+                restore_ok=self._restore_manifest_confirmed(rec,dfd=wfd)
                 if restore_ok: self._cleanup_attempt(target,dfd)
                 if restore_ok and isinstance(persist_exc, ManifestOversizeError): raise persist_exc
                 if restore_ok:
@@ -344,7 +380,7 @@ class LocalKnowledgePipeline:
                 # object or an unconfirmed restore leaves the bytes in place.
                 # Best-effort, not a completed rollback.
                 self._rollback_claim(rec,version,new_chunks,edge,vbase,cbase,ebase)
-                restore_ok=self._restore_manifest_confirmed(rec)
+                restore_ok=self._restore_manifest_confirmed(rec,dfd=wfd)
                 if restore_ok: self._cleanup_attempt(target,dfd)
                 else:
                     raise KnowledgeError('manifest persistence failed and the pre-claim manifest could not be confirmed restored; the memory claim was removed but the on-disk manifest may still record the version, whose bytes were left in place') from persist_exc
@@ -357,6 +393,9 @@ class LocalKnowledgePipeline:
             # ambiguous (carried).
             if dfd is not None:
                 try: _os.close(dfd)
+                except BaseException: pass
+            if wfd is not None:
+                try: _os.close(wfd)
                 except BaseException: pass
         return version
     def _extract(self,raw:bytes,mime:str,kind:str)->list[Segment]:
@@ -423,8 +462,13 @@ class LocalKnowledgePipeline:
     def delete_verified(self,source_id:str)->dict:
         path=self._contained(source_id)
         if source_id not in self.records:raise KeyError(source_id)
-        shutil.rmtree(path,ignore_errors=True)
-        verified=not path.exists()
+        # Removal is anchored to descriptors (no pathname re-walk after the
+        # containment check) and verified by lstat of the name under the
+        # workspace; symlinks/files at the name are left in place. Open races
+        # (empty-dir swap before rmdir, components above the workspace) are
+        # documented in fs_safe and carried.
+        from .fs_safe import remove_child_tree
+        verified=path.parent==self.workspace and remove_child_tree(self.workspace,path.name)
         if verified:
             self.records.pop(source_id); self.chunks=[c for c in self.chunks if c.source_id!=source_id]; self.edges=[e for e in self.edges if e['from']!=source_id]
         # Truthful tracking: when the disk removal did not happen, memory
@@ -542,15 +586,19 @@ class LocalKnowledgePipeline:
         except BaseException: pass
     @staticmethod
     def _rmtree_if_owned(path:Path,dfd)->None:
-        # Destructive cleanup only while the pathname still denotes the
-        # attempt's OWN object: fstat on the HELD dirfd (which pins the
-        # created dir's inode against delete-then-recreate reuse) must
-        # match lstat of the path on (dev,ino), and the path must be a
-        # real directory - a symlink or a replaced object is LEFT in place.
-        # This matches the held descriptor, not proof of mkdir authorship:
-        # the mkdir-to-open acquisition gap remains. Errors from stat
-        # checks leave the path untouched; the check
-        # narrows but does not atomically close the replace race (carried).
+        # Destructive cleanup only for the attempt's OWN object. The check is
+        # fstat(held dirfd) == lstat(path) on (dev,ino) and a real directory;
+        # anything else is LEFT in place. The removal itself is then anchored
+        # to the HELD descriptor, not the pathname: entries are unlinked
+        # relative to the dirfd (O_NOFOLLOW, never following symlinks), so a
+        # path swapped to a foreign object AFTER the check cannot cause that
+        # object to be deleted - only the held inode's own entries go. The
+        # directory name is removed last through a parent descriptor only
+        # while it still denotes the same inode, and only when empty.
+        # Not closed (carried): the mkdir-to-open acquisition gap, a swap
+        # between the final name check and rmdir can remove only an EMPTY
+        # directory, a tree too deep for the interpreter recursion limit is left in place, errors are
+        # best-effort and nothing here is a completed rollback.
         import os as _os, stat as _stat
         if dfd is None: return
         try: want=_os.fstat(dfd)
@@ -559,15 +607,38 @@ class LocalKnowledgePipeline:
         except OSError: return
         if not _stat.S_ISDIR(st.st_mode): return
         if (st.st_dev,st.st_ino)!=(want.st_dev,want.st_ino): return
-        shutil.rmtree(path,ignore_errors=True)
-    def _restore_manifest_confirmed(self,rec:Record)->bool:
+        flags=_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY
+        def empty(fd):
+            try: names=[e.name for e in _os.scandir(fd)]
+            except OSError: return
+            for name in names:
+                try:
+                    s=_os.lstat(name,dir_fd=fd)
+                    if _stat.S_ISDIR(s.st_mode):
+                        sub=_os.open(name,flags,dir_fd=fd)
+                        try: empty(sub)
+                        finally: _os.close(sub)
+                        _os.rmdir(name,dir_fd=fd)
+                    else: _os.unlink(name,dir_fd=fd)
+                except OSError: continue
+        try: empty(dfd)
+        except RecursionError: return
+        try: pfd=_os.open(path.parent,flags)
+        except OSError: return
+        try:
+            s=_os.lstat(path.name,dir_fd=pfd)
+            if _stat.S_ISDIR(s.st_mode) and (s.st_dev,s.st_ino)==(want.st_dev,want.st_ino):
+                _os.rmdir(path.name,dir_fd=pfd)
+        except OSError: pass
+        finally: _os.close(pfd)
+    def _restore_manifest_confirmed(self,rec:Record,dfd=None)->bool:
         # A normal persist return is not confirmation. Read through the same
         # bounded regular-file reader and require the exact expected claims.
         # This is a point-in-time check, not a concurrent-writer transaction
         # or crash recovery guarantee. Failure keeps potentially referenced bytes.
         expected=[self._version_metadata(v) for v in rec.versions]
         try:
-            self._persist_manifest(rec)
+            self._persist_manifest(rec,dfd=dfd)
             raw=self._read_bounded_file(
                 self._contained(rec.source.source_id,'manifest.json'),
                 self.MANIFEST_MAX_BYTES,'restore confirmation failed',
@@ -585,10 +656,9 @@ class LocalKnowledgePipeline:
             row.update(metadata_version=1,created_at=v.created_at.astimezone(timezone.utc).isoformat(),mime_type=v.mime_type)
         return row
 
-    def _persist_manifest(self,rec:Record):
-        p=self._contained(rec.source.source_id); p.mkdir(parents=True,exist_ok=True)
-        import os as _os, uuid as _uuid
-        tmp=p/f'manifest.json.tmp-{_uuid.uuid4().hex}'
+    def _persist_manifest(self,rec:Record,dfd=None):
+        p=self._contained(rec.source.source_id)
+        if p.parent!=self.workspace: raise KnowledgeError('path escapes tenant workspace')
         # O_EXCL|O_NOFOLLOW: never write through a preexisting link or file,
         # uuid or not; a collision fails instead of truncating anything.
         blob=json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[self._version_metadata(v) for v in rec.versions]},sort_keys=True).encode('utf-8')
@@ -607,16 +677,20 @@ class LocalKnowledgePipeline:
         # (carried).
         if len(blob)>self.MANIFEST_MAX_BYTES:
             raise ManifestOversizeError(f'refusing to persist manifest: serialized manifest would exceed the manifest bound ({len(blob)} bytes)')
-        fd=_os.open(tmp,_os.O_WRONLY|_os.O_CREAT|_os.O_EXCL|_os.O_NOFOLLOW,0o600)
-        try:
-            view=memoryview(blob)
-            while view:
-                written=_os.write(fd,view)
-                if written<=0: raise OSError('short write persisting manifest')
-                view=view[written:]
-            _os.fsync(fd)
-        finally:_os.close(fd)
-        _os.replace(tmp,p/'manifest.json')
-        dir_fd=_os.open(p,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
-        try: _os.fsync(dir_fd)
-        finally: _os.close(dir_fd)
+        # Descriptor-anchored write (fs_safe): the source dir is opened
+        # O_NOFOLLOW under the workspace descriptor, the tmp file is created
+        # O_EXCL|O_NOFOLLOW inside that held descriptor, fsynced, replaced
+        # over manifest.json via the same descriptor, and the held directory
+        # is fsynced. A swapped pathname cannot redirect the write. A failed
+        # write unlinks only the tmp it created; the prior manifest is kept.
+        # When the caller holds the source dir open (ingest's claim and
+        # restore writes), the manifest goes to THAT directory: a replaced
+        # pathname cannot split the manifest from the bytes it records
+        # (real-dir-replacement split-state, pinned by
+        # test_m25_manifest_anchoring). Registration (no held descriptor)
+        # keeps the by-name route under the held workspace descriptor.
+        from .fs_safe import write_file_at_held_dir, write_file_in_child_dir
+        if dfd is not None:
+            write_file_at_held_dir(dfd,'manifest.json',blob)
+        else:
+            write_file_in_child_dir(self.workspace,p.name,'manifest.json',blob)

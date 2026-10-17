@@ -60,6 +60,7 @@ class ScheduleIn(BaseModel):
 
 
 class ScheduleEntryOut(BaseModel):
+    publish_target: dict[str, str] | None = None
     id: str
     plan_id: str
     platform: Platform

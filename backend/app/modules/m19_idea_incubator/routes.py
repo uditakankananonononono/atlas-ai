@@ -1,4 +1,5 @@
 from fastapi import APIRouter,Depends,HTTPException,Query,status
+from datetime import datetime,timezone
 from app.auth.context import TenantContext,require_tenant
 from app.core.approvals import approvals
 from app.core.providers import generate
@@ -7,14 +8,20 @@ from .schemas import *
 from .repository import SqlIdeaRepository
 from .ledger import ConflictError,LedgerService,ValidationError
 from .service import Service
+from .idempotency import IdempotencyConflictError,IdempotencyInProgressError,IdempotencyUnavailableError,IntakeIdempotencyStore
 router=APIRouter(prefix="/idea-incubator",tags=["idea-incubator"]);_service=None
 def get_service()->Service:
  global _service
- if _service is None:_service=Service(generate=generate,approval_store=approvals)
+ if _service is None:_service=Service(generate=generate,approval_store=approvals,idempotency_store=IntakeIdempotencyStore())
  return _service
 def get_ledger(t:TenantContext=Depends(require_tenant)):return LedgerService(SqlIdeaRepository(t.tenant_id),t.actor_id)
 @router.post("/ideas",response_model=RunOut,status_code=201)
-async def intake(request:IntakeIn,service:Service=Depends(get_service),t:TenantContext=Depends(require_tenant)):return await service.intake(request,t.tenant_id)
+async def intake(request:IntakeIn,service:Service=Depends(get_service),t:TenantContext=Depends(require_tenant)):
+ try:return await service.intake(request,t.tenant_id,idempotency_key=request.idempotency_key)
+ except IdempotencyConflictError as e:raise HTTPException(409,str(e)) from e
+ except IdempotencyInProgressError as e:raise HTTPException(409,str(e)) from e
+ except IdempotencyUnavailableError as e:raise HTTPException(410,str(e)) from e
+ except ValueError as e:raise HTTPException(422,str(e)) from e
 @router.get("/ideas/{run_id}",response_model=RunOut)
 def get(run_id:str,service:Service=Depends(get_service),t:TenantContext=Depends(require_tenant)):
  try:return service.get(run_id,t.tenant_id)
@@ -121,9 +128,9 @@ class LuxuryOutcomeRequest(BaseModel):
 def luxury_venture_outcome(idea_id:str,experiment_id:str,data:LuxuryOutcomeRequest,service:LedgerService=Depends(get_ledger)):
  try:
   summary=summarize_outcome(data.outcome)
-  updated=service.update_experiment(idea_id,experiment_id,ExperimentUpdate(status=ExperimentStatus(data.outcome.status),observed_value=data.outcome.observed_value,learnings=data.outcome.learnings))
   polarity=EvidencePolarity.SUPPORTS if data.outcome.status=='succeeded' else EvidencePolarity.CONTRADICTS if data.outcome.status=='failed' else EvidencePolarity.NEUTRAL
-  evidence=service.add_evidence(idea_id,EvidenceCreate(kind=data.evidence_kind,claim=data.outcome.learnings,source=', '.join(data.outcome.source_refs),polarity=polarity,strength=.9,confidence=.8,observed_at=updated.updated_at,metadata={'experiment_id':experiment_id,'target_met':summary['target_met']}))
+  evidence_data=EvidenceCreate(kind=data.evidence_kind,claim=data.outcome.learnings,source=', '.join(data.outcome.source_refs),polarity=polarity,strength=.9,confidence=.8,observed_at=datetime.now(timezone.utc),metadata={'experiment_id':experiment_id,'target_met':summary['target_met']})
+  updated,evidence=service.record_outcome(idea_id,experiment_id,ExperimentUpdate(status=ExperimentStatus(data.outcome.status),observed_value=data.outcome.observed_value,learnings=data.outcome.learnings),evidence_data)
   return {'experiment':updated,'evidence':evidence,'learning_summary':summary,'idea_stage_changed':False}
  except (LookupError,ConflictError,ValidationError,ValueError) as error:raise _error(error) from error
 

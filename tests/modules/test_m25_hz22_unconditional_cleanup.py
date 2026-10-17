@@ -70,10 +70,10 @@ def test_hz22_unexpected_persist_failure_rolls_back_memory_and_preserves_unconfi
     p = pipe(tmp_path)
     real_persist = LocalKnowledgePipeline._persist_manifest
     state = {'calls': 0}
-    def fail_second_persist(self, rec):
+    def fail_second_persist(self, rec, dfd=None):
         state['calls'] += 1
         if state['calls'] == 1:
-            return real_persist(self, rec)
+            return real_persist(self, rec, dfd=dfd)
         raise RuntimeError('unexpected persist failure')
     monkeypatch.setattr(LocalKnowledgePipeline, '_persist_manifest', fail_second_persist)
     before = fd_count()
@@ -95,10 +95,10 @@ def test_hz22_manifest_oserror_rollback_semantics_unchanged(tmp_path, monkeypatc
     p = pipe(tmp_path)
     real_persist = LocalKnowledgePipeline._persist_manifest
     state = {'calls': 0}
-    def fail_second_persist(self, rec):
+    def fail_second_persist(self, rec, dfd=None):
         state['calls'] += 1
         if state['calls'] == 1:
-            return real_persist(self, rec)
+            return real_persist(self, rec, dfd=dfd)
         raise OSError('persist failed')
     monkeypatch.setattr(LocalKnowledgePipeline, '_persist_manifest', fail_second_persist)
     before = fd_count()

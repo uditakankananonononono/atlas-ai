@@ -181,7 +181,8 @@ async def test_linkedin_publish_builds_organization_ugc_post():
 
         seen["body"] = json.loads(request.read())
         seen["protocol"] = request.headers.get("x-restli-protocol-version")
-        return httpx.Response(200, json={"id": "urn:li:share:777"})
+        # Official ugcPosts creation: 201 with the new post id in X-RestLi-Id.
+        return httpx.Response(201, headers={"x-restli-id": "urn:li:share:777"}, json={})
 
     adapter = LinkedInAdapter(
         access_token="li-token", organization_id="42", transport=httpx.MockTransport(handler)
@@ -225,7 +226,8 @@ async def test_tiktok_publish_uses_inbox_draft_flow():
 
         seen["url"] = str(request.url)
         seen["body"] = json.loads(request.read())
-        return httpx.Response(200, json={"data": {"publish_id": "v_inbox_123"}})
+        return httpx.Response(200, json={"data": {"publish_id": "v_inbox_123", "upload_url": "https://open-upload.tiktokapis.com/x"},
+                                         "error": {"code": "ok", "message": "", "log_id": "1"}})
 
     adapter = TikTokContentPostingAdapter(access_token="tt-token", transport=httpx.MockTransport(handler))
     result = await adapter.publish(
@@ -233,7 +235,7 @@ async def test_tiktok_publish_uses_inbox_draft_flow():
     )
     # The inbox flow is used and the result is marked draft-only: the human
     # finishes the post inside the TikTok app.
-    assert seen["url"].endswith("/v2/post/publish/inbox/video/upload/")
+    assert seen["url"].endswith("/v2/post/publish/inbox/video/init/")  # official init endpoint
     assert seen["body"]["source_info"] == {"source": "PULL_FROM_URL", "video_url": "https://cdn.example.com/v.mp4"}
     assert result.draft_only is True
     assert result.external_id == "v_inbox_123"

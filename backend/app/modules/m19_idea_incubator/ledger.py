@@ -43,14 +43,25 @@ class LedgerService:
         idea=self._idea(i)
         if idea.stage in {IdeaStage.APPROVED,IdeaStage.REJECTED}:raise ValidationError("terminal ideas cannot receive experiments")
         at=now();return self.repository.save_experiment(Experiment(id=str(uuid4()),idea_id=i,created_at=at,updated_at=at,**data.model_dump()))
-    def update_experiment(self,i,eid,data):
+    def _checked_experiment_update(self,i,eid,data):
         self._idea(i);item=next((x for x in self.repository.list_experiments(i) if x.id==eid),None)
         if not item:raise LookupError(eid)
         if item.status in TERMINAL:raise ConflictError("completed experiment results are immutable")
         if item.status==ExperimentStatus.PLANNED and data.status not in {ExperimentStatus.RUNNING,ExperimentStatus.CANCELLED}:raise ValidationError("a planned experiment must start or be cancelled")
         if item.status==ExperimentStatus.RUNNING and data.status not in TERMINAL:raise ValidationError("a running experiment must finish or be cancelled")
         if data.status in {ExperimentStatus.SUCCEEDED,ExperimentStatus.FAILED} and data.observed_value is None:raise ValidationError("observed_value is required")
-        return self.repository.save_experiment(item.model_copy(update={**data.model_dump(),"updated_at":now()}))
+        return item,item.model_copy(update={**data.model_dump(),"updated_at":now()})
+    def update_experiment(self,i,eid,data):
+        item,updated=self._checked_experiment_update(i,eid,data)
+        try:self.repository.save_experiment_cas(updated,item.status)
+        except RuntimeError as error:raise ConflictError(str(error)) from error
+        return updated
+    def record_outcome(self,i,eid,data,evidence_data):
+        item,updated=self._checked_experiment_update(i,eid,data)
+        evidence=Evidence(id=str(uuid4()),idea_id=i,created_at=now(),**evidence_data.model_dump())
+        try:self.repository.save_experiment_with_evidence(updated,item.status,evidence)
+        except RuntimeError as error:raise ConflictError(str(error)) from error
+        return updated,evidence
     def decide(self,i,data):
         idea=self._idea(i)
         if data.expected_version is not None and data.expected_version!=idea.version:raise ConflictError("idea changed; refresh before deciding")
@@ -62,6 +73,7 @@ class LedgerService:
             if not tests or tests[-1].outcome!=FeasibilityOutcome.PASS:raise ValidationError("approval requires a passing latest feasibility test")
             if evidence.net_score<=0:raise ValidationError("approval requires net-positive evidence")
             if any(x.status not in TERMINAL for x in experiments):raise ValidationError("approval requires finished experiments")
-        before=idea.stage;updated=idea.model_copy(update={"stage":data.to_stage,"version":idea.version+1,"updated_at":now()});self.repository.save_idea(updated,idea.version)
-        return self.repository.add_decision(Decision(id=str(uuid4()),idea_id=i,from_stage=before,to_stage=data.to_stage,rationale=data.rationale,actor_id=self.actor_id,metadata=data.metadata,decided_at=updated.updated_at,idea_version=updated.version))
+        before=idea.stage;updated=idea.model_copy(update={"stage":data.to_stage,"version":idea.version+1,"updated_at":now()});decision=Decision(id=str(uuid4()),idea_id=i,from_stage=before,to_stage=data.to_stage,rationale=data.rationale,actor_id=self.actor_id,metadata=data.metadata,decided_at=updated.updated_at,idea_version=updated.version)
+        try:return self.repository.save_idea_with_decision(updated,idea.version,decision)
+        except RuntimeError as error:raise ConflictError(str(error)) from error
     def dossier(self,i):return IdeaDossier(idea=self._idea(i),evidence=self.repository.list_evidence(i),evidence_summary=self.evidence_summary(i),feasibility_tests=self.repository.list_tests(i),experiments=self.repository.list_experiments(i),decisions=self.repository.list_decisions(i))

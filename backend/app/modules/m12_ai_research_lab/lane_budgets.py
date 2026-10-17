@@ -77,8 +77,16 @@ class BudgetLedger:
         self._store: SpendStore = store or InMemorySpendStore()
         self._clock = clock
         self._lock = threading.Lock()
+        self._owner = uuid.uuid4().hex   # identifies this ledger instance as hold owner
         # run_id -> reserved micro-dollars (not yet committed)
         self._reservations: Dict[str, int] = {}
+
+    @property
+    def durable_holds(self) -> bool:
+        """True only when the store gives atomic, crash-surviving holds. A store
+        without them falls back to per-process in-memory reservations."""
+        return all(callable(getattr(self._store, n, None)) for n in
+                   ("reserve_hold", "drop_hold", "list_holds", "book_and_drop_hold"))
 
     @property
     def policy(self) -> BudgetPolicy:
@@ -93,8 +101,35 @@ class BudgetLedger:
             self._store.spend_between(m0, m1),
         )
 
+    def _holds(self) -> Dict[str, int]:
+        """Open holds. A store with durable holds survives a process crash, so a
+        step whose effect may have started keeps counting against the cap."""
+        h: Dict[str, int] = {}
+        if self.durable_holds:
+            h.update(self._store.list_holds())
+        h.update(self._reservations)
+        return h
+
+    def _drop_hold(self, run_id: str, takeover: bool = False) -> None:
+        """Drop this ledger's own hold. A hold owned by another ledger instance is
+        left alone unless the caller is an explicit, authorized reconciliation."""
+        self._reservations.pop(run_id, None)
+        if self.durable_holds:
+            self._store.drop_hold(run_id, None if takeover else self._owner)
+
+    def _book(self, entry_id: str, run_id: str, amount: int) -> None:
+        ts = self._clock().isoformat()
+        if self.durable_holds:
+            # spend insert + own-hold delete in one transaction (no double count window)
+            self._store.book_and_drop_hold(entry_id, run_id, amount, ts, self._owner)
+            self._reservations.pop(run_id, None)
+        else:
+            # no atomic store: in-memory reservations only (documented fallback)
+            self._store.add_spend(entry_id, run_id, amount, ts)
+            self._reservations.pop(run_id, None)
+
     def _reserved_total(self) -> int:
-        return sum(self._reservations.values())
+        return sum(self._holds().values())
 
     def status(self) -> BudgetStatus:
         with self._lock:
@@ -133,7 +168,7 @@ class BudgetLedger:
     def _check_limits_locked(self, amount_micro: int, run_id: str) -> None:
         p = self._policy
         spent_day, spent_month = self._totals()
-        reserved_other = self._reserved_total() - self._reservations.get(run_id, 0)
+        reserved_other = self._reserved_total() - self._holds().get(run_id, 0)
         if p.per_run_limit_micro is not None and amount_micro > p.per_run_limit_micro:
             raise BudgetExceeded("per_run", amount_micro, p.per_run_limit_micro)
         if p.daily_limit_micro is not None:
@@ -147,14 +182,24 @@ class BudgetLedger:
 
     def reserve(self, run_id: str, estimated_micro: int) -> str:
         """Reserve an estimated amount for a run. Raises BudgetExceeded."""
+        if type(estimated_micro) is not int:
+            raise ValueError("estimated_micro must be an integer")
         if estimated_micro < 0:
             raise ValueError("estimated_micro must be non-negative")
         if not run_id:
             raise ValueError("run_id must be non-empty")
         with self._lock:
-            if run_id in self._reservations:
-                raise ValueError(f"run_id {run_id} already has an open reservation")
-            self._check_limits_locked(estimated_micro, run_id)
+            def check() -> None:
+                if run_id in self._holds():
+                    raise ValueError(f"run_id {run_id} already has an open reservation")
+                self._check_limits_locked(estimated_micro, run_id)
+
+            if self.durable_holds:
+                # Limit check and hold insert in ONE store transaction, so separate
+                # processes cannot both be admitted. Failure fails closed.
+                self._store.reserve_hold(run_id, estimated_micro, check, self._owner)
+            else:
+                check()
             self._reservations[run_id] = estimated_micro
         return run_id
 
@@ -164,16 +209,33 @@ class BudgetLedger:
         The committed amount may differ from the reservation (estimates are
         estimates); limits are re-checked against the actual amount.
         """
+        if type(actual_micro) is not int:
+            raise ValueError("actual_micro must be an integer")
         if actual_micro < 0:
             raise ValueError("actual_micro must be non-negative")
         with self._lock:
             self._check_limits_locked(actual_micro, run_id)
-            self._reservations.pop(run_id, None)
             entry_id = f"spend-{uuid.uuid4().hex[:16]}"
-            self._store.add_spend(entry_id, run_id, actual_micro, self._clock().isoformat())
+            self._book(entry_id, run_id, actual_micro)
         return entry_id
 
-    def release(self, run_id: str) -> None:
-        """Drop a reservation without spending (run aborted). Idempotent."""
+    def record_incurred(self, run_id: str, actual_micro: int) -> str:
+        """Book spend that has already happened, even past a limit.
+
+        Unlike commit(), limits are not enforced: the usage was consumed, so
+        refusing to book it would hide it. Clears the run's reservation. The
+        overrun stays visible through status() remaining values going negative.
+        """
+        if type(actual_micro) is not int or actual_micro < 0:
+            raise ValueError("actual_micro must be a nonnegative integer")
         with self._lock:
-            self._reservations.pop(run_id, None)
+            entry_id = f"spend-{uuid.uuid4().hex[:16]}"
+            self._book(entry_id, run_id, actual_micro)
+        return entry_id
+
+    def release(self, run_id: str, *, takeover: bool = False) -> None:
+        """Drop a reservation without spending (run aborted). Idempotent. Only the
+        owning ledger instance may drop a durable hold; takeover=True is for the
+        explicit reconcile path after an authorized claim takeover/retry."""
+        with self._lock:
+            self._drop_hold(run_id, takeover)

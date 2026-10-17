@@ -12,11 +12,11 @@ def test_unconfirmed_restore_keeps_bytes_and_reports_unknown(tmp_path, monkeypat
     p.register(req().source)
     original = p._persist_manifest
     calls = []
-    def persist(rec):
-        if not calls and not rec.versions: return original(rec)
+    def persist(rec, dfd=None):
+        if not calls and not rec.versions: return original(rec, dfd=dfd)
         calls.append(True)
         if len(calls) == 1:
-            original(rec)
+            original(rec, dfd=dfd)
             raise initial('post-replace fault')
         if restore == 'persist_failure': raise OSError('restore fault')
         if restore == 'corrupt': (tmp_path/'tenant-a'/'s1'/'manifest.json').write_text('{invalid')
@@ -35,9 +35,9 @@ def test_confirmed_restore_uses_bounded_reader_then_removes_bytes(tmp_path, monk
     original = p._persist_manifest
     read = p._read_bounded_file
     calls = []; reads = []
-    def persist(rec):
-        if not calls and not rec.versions: return original(rec)
-        calls.append(True); original(rec)
+    def persist(rec, dfd=None):
+        if not calls and not rec.versions: return original(rec, dfd=dfd)
+        calls.append(True); original(rec, dfd=dfd)
         if len(calls) == 1: raise initial('post-replace fault')
     def bounded(path, limit, *args):
         reads.append((path.name, limit)); return read(path, limit, *args)
@@ -54,11 +54,11 @@ def test_independent_unconfirmed_oserror_preserves_original_context(tmp_path,mon
     p=pipe(tmp_path);p.register(req().source)
     original=p._persist_manifest;calls=[]
     fault=OSError('original claim persistence fault')
-    def persist(rec):
-        if not calls and not rec.versions: return original(rec)
+    def persist(rec, dfd=None):
+        if not calls and not rec.versions: return original(rec, dfd=dfd)
         calls.append(True)
         if len(calls)==1:
-            original(rec)
+            original(rec, dfd=dfd)
             raise fault
         raise OSError('restore fault')
     monkeypatch.setattr(p,'_persist_manifest',persist)

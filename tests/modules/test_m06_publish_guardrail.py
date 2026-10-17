@@ -5,7 +5,8 @@ from app.modules.m06_social_media_manager.scheduler import STATUS_FAILED, STATUS
 from app.modules.m06_social_media_manager.service import MemorySocialRepository
 
 from tests.modules.test_m06_scheduler import (  # noqa: F401
-    NOW, FakeAdapter, FakeAdapterFactory, FakeDecisions, create_entry, make_plan, make_scheduler)
+    NOW, FakeAdapter, FakeAdapterFactory, FakeDecisions, create_entry, identity_target, make_plan, make_real_repository,
+    make_scheduler)
 
 
 def _approved(scheduler, decisions):
@@ -26,7 +27,7 @@ def test_publish_dispatched_through_gate_and_ledgered():
 
 def test_publish_refused_when_authority_rejects_adapter_never_called():
     adapter = FakeAdapter()
-    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    repo, decisions = make_real_repository(), FakeDecisions()
     sch = Scheduler(repository=repo, decisions=decisions, adapter_factory=FakeAdapterFactory(adapter),
                     clock=lambda: NOW, enforcer=GuardrailEnforcer(authority_check=lambda r, d: False))
     entry = _approved(sch, decisions)
@@ -38,7 +39,7 @@ def test_publish_refused_when_authority_rejects_adapter_never_called():
 
 def test_publish_refused_when_enforcer_has_no_authority_hook():
     adapter = FakeAdapter()
-    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    repo, decisions = make_real_repository(), FakeDecisions()
     sch = Scheduler(repository=repo, decisions=decisions, adapter_factory=FakeAdapterFactory(adapter),
                     clock=lambda: NOW, enforcer=GuardrailEnforcer())
     entry = _approved(sch, decisions)
@@ -48,7 +49,7 @@ def test_publish_refused_when_enforcer_has_no_authority_hook():
 
 def test_publish_refused_when_platform_terms_undeclared():
     adapter = FakeAdapter()
-    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    repo, decisions = make_real_repository(), FakeDecisions()
     sch = Scheduler(repository=repo, decisions=decisions, adapter_factory=FakeAdapterFactory(adapter),
                     clock=lambda: NOW,
                     outbound_declarations={"tos": {}, "rate_limits": {}, "consent": [], "recent_actions": []})
@@ -112,7 +113,7 @@ def test_every_publish_field_is_digest_bound(field):
 
 def test_explicit_empty_declarations_refuse_publish():
     adapter = FakeAdapter()
-    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    repo, decisions = make_real_repository(), FakeDecisions()
     scheduler = Scheduler(repository=repo, decisions=decisions,
                           adapter_factory=FakeAdapterFactory(adapter), clock=lambda: NOW,
                           outbound_declarations={})
@@ -149,7 +150,7 @@ def test_publish_callback_consumes_gate_action_not_entry_or_detached_request():
                           media_urls=["media"], alt_texts=["alt"], thread_chunks=["chunk"])
             return effect(action)
     adapter = FakeAdapter()
-    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    repo, decisions = make_real_repository(), FakeDecisions()
     scheduler = Scheduler(repository=repo, decisions=decisions, adapter_factory=FakeAdapterFactory(adapter),
                           clock=lambda: NOW, enforcer=Gate())
     _approved(scheduler, decisions)
@@ -167,15 +168,17 @@ def test_factory_and_request_share_canonical_platform_not_stale_entry():
             self.adapters = {p: FakeAdapter() for p in (Platform.TWITTER, Platform.LINKEDIN)}
         def for_platform(self, platform):
             self.selected.append(platform)
+            self.adapters[platform].selected_platform = platform.value
             return self.adapters[platform]
     class Gate:
         def dispatch_outbound(self, action, declarations, *, effect, **kwargs):
             # Contract probe: default authority would refuse this digest change.
             assert factory.selected == []
             action["platform"] = "linkedin"
+            action["publish_target"] = identity_target("linkedin")  # keep the account consistent with the drifted platform
             return effect(action)
     factory = Factory()
-    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    repo, decisions = make_real_repository(), FakeDecisions()
     scheduler = Scheduler(repository=repo, decisions=decisions, adapter_factory=factory,
                           clock=lambda: NOW, enforcer=Gate())
     _approved(scheduler, decisions)
@@ -196,9 +199,10 @@ def test_real_gate_refuses_platform_drift_before_factory_or_publish():
             self.adapter = FakeAdapter()
         def for_platform(self, platform):
             self.selected.append(platform)
+            self.adapter.selected_platform = platform.value
             return self.adapter
     factory = Factory()
-    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    repo, decisions = make_real_repository(), FakeDecisions()
     scheduler = Scheduler(repository=repo, decisions=decisions, adapter_factory=factory, clock=lambda: NOW)
     entry = _approved(scheduler, decisions)
     _mutate_after_bind(scheduler, lambda a: a.__setitem__("platform", "linkedin"))
@@ -219,3 +223,17 @@ def test_receipt_uses_request_platform_not_provider_result():
     records = scheduler.execute_due(NOW)
     assert adapter.published[0].platform == "twitter"
     assert records[0].platform == repo.list_publish_records()[0].platform == "twitter"
+
+
+def test_nondurable_memory_repository_fails_closed_before_adapter():
+    """MemorySocialRepository has no durable claim: the effect boundary must refuse, never publish."""
+    adapter = FakeAdapter()
+    repo, decisions = MemorySocialRepository(), FakeDecisions()
+    scheduler = Scheduler(repository=repo, decisions=decisions, adapter_factory=FakeAdapterFactory(adapter),
+                          clock=lambda: NOW)
+    from tests.modules.test_m06_scheduler import ScheduleStateError
+    entry = _approved(scheduler, decisions)
+    with pytest.raises(ScheduleStateError):
+        scheduler.execute_due(NOW)
+    assert adapter.published == []
+    assert repo.get_schedule(entry.id).status != STATUS_PUBLISHED

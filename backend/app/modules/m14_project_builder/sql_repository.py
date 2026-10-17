@@ -3,6 +3,7 @@ from __future__ import annotations
 from sqlalchemy import JSON,Integer,LargeBinary,String,Text,UniqueConstraint,select
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
+from .errors import ArtifactIdConflict,ProjectRevisionConflict
 from .schemas import ArtifactManifest,Budget,MilestoneView,ProjectPlan,ProjectView
 class ProjectRow(Base):
  __tablename__="m14_projects";__table_args__=(UniqueConstraint("tenant_id","id"),)
@@ -32,7 +33,7 @@ class SqlProjectRepository:
  def save(self,item:ProjectView,expected_revision:int|None=None):
   with self.sessions.begin() as db:
    row=db.scalar(select(ProjectRow).where(ProjectRow.tenant_id==self.tenant_id,ProjectRow.id==item.id))
-   if row and expected_revision is not None and row.revision!=expected_revision:raise RuntimeError("project revision conflict")
+   if row and expected_revision is not None and row.revision!=expected_revision:raise ProjectRevisionConflict("project revision conflict")
    data=dict(tenant_id=self.tenant_id,id=item.id,goal=item.goal,brief=item.brief,budget=item.budget.model_dump(mode="json"),status=item.status,revision=item.revision,plan=item.plan.model_dump(mode="json") if item.plan else None)
    if row is None:row=ProjectRow(**data);db.add(row)
    else:
@@ -53,7 +54,7 @@ class SqlProjectRepository:
  def save_artifact(self,project_id:str,manifest:ArtifactManifest,payload:bytes):
   with self.sessions.begin() as db:
    row=db.scalar(select(ArtifactRow).where(ArtifactRow.tenant_id==self.tenant_id,ArtifactRow.project_id==project_id,ArtifactRow.id==manifest.id))
-   if row is not None:raise RuntimeError("artifact id already exists")
+   if row is not None:raise ArtifactIdConflict("artifact id already exists")
    db.add(ArtifactRow(tenant_id=self.tenant_id,project_id=project_id,id=manifest.id,manifest=manifest.model_dump(mode="json"),payload=payload));db.flush()
  def list_artifacts(self,project_id:str):
   with self.sessions() as db:

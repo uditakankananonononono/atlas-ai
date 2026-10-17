@@ -60,10 +60,10 @@ def test_hz24_interleaved_appends_survive_rollback(tmp_path, monkeypatch):
     real_persist = LocalKnowledgePipeline._persist_manifest
     state = {'calls': 0}
     foreign = {}
-    def interleave_then_fail(self, rec):
+    def interleave_then_fail(self, rec, dfd=None):
         state['calls'] += 1
         if state['calls'] != 2:
-            return real_persist(self, rec)
+            return real_persist(self, rec, dfd=dfd)
         # Call 2 is the version-claim persist: interleave a foreign write,
         # then fail. Later calls (the best-effort restore rewrite) persist
         # for real so the surviving foreign state is what we assert.
@@ -124,11 +124,11 @@ def test_hz24_plain_rollback_removes_whole_claim(tmp_path, monkeypatch):
     p = pipe(tmp_path)
     real_persist = LocalKnowledgePipeline._persist_manifest
     state = {'calls': 0}
-    def fail_second_persist(self, rec):
+    def fail_second_persist(self, rec, dfd=None):
         state['calls'] += 1
         if state['calls'] == 2:
             raise OSError('persist failed')
-        return real_persist(self, rec)
+        return real_persist(self, rec, dfd=dfd)
     monkeypatch.setattr(LocalKnowledgePipeline, '_persist_manifest', fail_second_persist)
     before = fd_count()
     with pytest.raises(KnowledgeError, match='manifest persistence failed'):

@@ -25,6 +25,9 @@ from app.modules.m20_general_cognitive_worker.training_data_routes import mount_
 
 configure_telemetry()
 app = FastAPI(title="Atlas AI", version="0.1.0")
+from app.core.validation_errors import request_validation_error_handler
+from fastapi.exceptions import RequestValidationError
+app.add_exception_handler(RequestValidationError, request_validation_error_handler)
 app.add_middleware(ProductionBoundaryMiddleware,limit_per_minute=int(os.getenv("ATLAS_RATE_LIMIT_PER_MINUTE","120")))
 app.add_middleware(MetricsMiddleware)
 app.add_api_route("/metrics", scrape, methods=["GET"], include_in_schema=False)

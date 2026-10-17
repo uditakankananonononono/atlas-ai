@@ -65,7 +65,11 @@ _NEWSLETTER_RE = re.compile(
     re.IGNORECASE,
 )
 _ACADEMIC_SENDER_RE = re.compile(
-    r"(\.edu\b|\.ac\.|prof\.?|dr\.?|university|college|institute)", re.IGNORECASE
+    # "prof"/"dr" match only as title tokens (word boundary + not followed by
+    # another letter), so ordinary words like dropbox, android, drive, drip,
+    # or profile no longer mark the sender as academic.
+    r"(\.edu\b|\.ac\.|\bprof\.?(?![a-z])|\bdr\.?(?![a-z])|university|college|institute)",
+    re.IGNORECASE,
 )
 
 

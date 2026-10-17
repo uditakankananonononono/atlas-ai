@@ -134,6 +134,19 @@ def _key_words(text: str, limit: int = 4) -> list[str]:
 SPECS: dict[int, dict[str, Any]] = {}
 
 
+def _coerce_int(value: Any, field: str) -> int:
+    """Coded integer coercion for externally supplied fields.
+
+    Non-scalar or non-finite inputs raise ValueError (mapped to 422 by the
+    documented host route) instead of leaking TypeError/OverflowError.
+    Previously valid coercions (numeric strings, booleans) are preserved.
+    """
+    try:
+        return int(value)
+    except (TypeError, ValueError, OverflowError):
+        raise ValueError(f"{field} must be an integer") from None
+
+
 def _spec(row: int, method: str, family: str, required: list[str], **flags: Any) -> None:
     SPECS[row] = {"method": method, "family": family, "required": required, **flags}
 
@@ -468,7 +481,7 @@ def _m726(d: dict[str, Any]):
     stages = [S("takeaway_single", bool(takeaway) and len(takeaway) <= 200, "one memorable idea"),
               S("timing_budgeted", minutes > 0, f"{minutes} min -> ~{words} words at 130 wpm"),
               S("structure_outlined", _present(d.get("outline")), "five-part arc drafted"),
-              S("rehearsed_aloud", int(d.get("rehearsals", 0) or 0) >= 2, "two timed aloud runs")]
+              S("rehearsed_aloud", _coerce_int(d.get("rehearsals", 0) or 0, "rehearsals") >= 2, "two timed aloud runs")]
     return analysis, stages
 
 
@@ -757,7 +770,7 @@ def _m741(d: dict[str, Any]):
     items = d.get("agenda_items", [])
     untimed = [str(x.get("item", x)) if not isinstance(x, dict) else str(x.get("item")) for x in items
                if not (isinstance(x, dict) and x.get("minutes"))]
-    total = sum(int(x.get("minutes", 0)) for x in items if isinstance(x, dict))
+    total = sum(_coerce_int(x.get("minutes", 0), "agenda_items.minutes") for x in items if isinstance(x, dict))
     participants = [str(p) for p in d.get("participants", [])]
     speakers = {str(s) for s in d.get("speakers", [])}
     unheard = [p for p in participants if p not in speakers]
@@ -786,7 +799,7 @@ def _m742(d: dict[str, Any]):
     stages = [S("prompt_clear", bool(prompt), "one sharp prompt"),
               S("generation_unjudged", d.get("evaluation_started") is not True, "no judging during generation"),
               S("quiet_channel_offered", d.get("anonymous_channel") is True, "silent/anonymous path exists"),
-              S("quantity_reached", len(ideas) >= int(d.get("idea_target", 8) or 8), f"{len(ideas)} ideas"),
+              S("quantity_reached", len(ideas) >= _coerce_int(d.get("idea_target", 8) or 8, "idea_target"), f"{len(ideas)} ideas"),
               S("ideas_clustered", bool(clusters), f"{len(clusters)} clusters for the evaluation phase")]
     return analysis, stages
 
@@ -847,7 +860,7 @@ def _m746(d: dict[str, Any]):
     claim = str(d.get("claim", ""))
     sides = [str(s) for s in d.get("sides", [])]
     turns = d.get("turns", {})
-    turn_counts = {str(k): int(v) for k, v in turns.items()} if isinstance(turns, dict) else {}
+    turn_counts = {str(k): _coerce_int(v, "turns") for k, v in turns.items()} if isinstance(turns, dict) else {}
     equal = len(set(turn_counts.values())) <= 1 if turn_counts else False
     analysis = {"claim": claim, "sides": sides, "burden_of_proof": sides[0] if sides else None,
                 "turn_counts": turn_counts, "turns_equal": equal,

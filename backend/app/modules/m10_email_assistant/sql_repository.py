@@ -227,6 +227,22 @@ class SqlEmailRepository:
                 EmailMessageRow.thread_id == thread_id,
             ).order_by(EmailMessageRow.received_at.desc()).limit(limit)))
 
+    def sender_messages(self, sender: str, account_id: str, limit: int = 5) -> list[EmailMessageRow]:
+        """Account-scoped sender listing for the draft-reply context window.
+
+        tenant + account + exact sender, newest first. The LIMIT applies after
+        filtering, so this returns the true newest ``limit`` matches for the
+        mailbox - unlike a Python-side filter over the tenant-wide
+        list_messages, whose result is only a bounded subset of the tenant's
+        newest rows.
+        """
+        with self.sessions() as db:
+            return list(db.scalars(select(EmailMessageRow).where(
+                EmailMessageRow.tenant_id == self.tenant_id,
+                EmailMessageRow.account_id == account_id,
+                EmailMessageRow.sender == sender,
+            ).order_by(EmailMessageRow.received_at.desc()).limit(limit)))
+
     def sender_counts(self) -> dict[str, int]:
         with self.sessions() as db:
             rows = db.execute(

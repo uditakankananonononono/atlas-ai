@@ -28,7 +28,9 @@ def event(data:BillingEventIn,s:Service=Depends(get_service)):
 from fastapi import Request
 from .webhooks import verify_stripe_signature,StripeSignatureError
 @router.post('/cancel-proposals',response_model=ApprovalProposal,status_code=201)
-def cancel_proposal(data:CancelIn,t:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):return s.propose_cancel(t.tenant_id,data)
+def cancel_proposal(data:CancelIn,t:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):
+ try:return s.propose_cancel(t.tenant_id,data)
+ except PermissionError as e:raise HTTPException(403,str(e))
 @router.post('/invoice-proposals',response_model=ApprovalProposal,status_code=201)
 def invoice_proposal(data:InvoiceIn,t:TenantContext=Depends(require_tenant),s:Service=Depends(get_service)):return s.propose_invoice(t.tenant_id,data)
 @router.post('/approved/{approval_id}/execute')

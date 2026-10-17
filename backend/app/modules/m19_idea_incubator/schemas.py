@@ -7,13 +7,13 @@ from pydantic import BaseModel,Field,HttpUrl,field_validator
 # Existing autonomous-incubation contract.
 class Stage(str,Enum): INTAKE="intake";LANDSCAPE="landscape";VALIDATION="validation";WIREFRAME="wireframe";SCAFFOLD="scaffold";TEST="test";VIABILITY="viability";PREVIEW="preview"
 class IntakeIn(BaseModel):
-    one_liner:str=Field(min_length=3,max_length=1000);transcript:str|None=None;budget_cap:float=Field(default=25,ge=0);target_user:str|None=None;constraints:list[str]=Field(default_factory=list)
+    one_liner:str=Field(min_length=3,max_length=1000);transcript:str|None=None;budget_cap:float=Field(default=25,ge=0,allow_inf_nan=False);target_user:str|None=None;constraints:list[str]=Field(default_factory=list);idempotency_key:str|None=Field(default=None,min_length=1,max_length=200);priority:int=Field(default=0,ge=-2147483648,le=2147483647)
 class LeanCanvasOut(BaseModel):
     problem:list[str];customer_segments:list[str];unique_value_proposition:str;solution:list[str];channels:list[str];revenue_streams:list[str];cost_structure:list[str];key_metrics:list[str];unfair_advantage:str|None=None;riskiest_assumptions:list[str]
 class GateOut(BaseModel):
     stage:Stage;proceed:bool;reasons:list[str];missing_evidence:list[str];expected_cost:float=Field(ge=0);requires_approval:bool=False
 class RunOut(BaseModel): id:str;state:str;stage:Stage;canvas:LeanCanvasOut;gates:list[GateOut];spent:float=0;reserved:float=0;budget_cap:float
-class PreviewIn(BaseModel): artifacts:list[str];estimated_cost:float=Field(ge=0)
+class PreviewIn(BaseModel): artifacts:list[str];estimated_cost:float=Field(ge=0,allow_inf_nan=False);expected_stage:Stage|None=None
 class PackageIn(BaseModel): run_id:str;evidence:list[dict]=Field(default_factory=list);artifacts:list[str]=Field(default_factory=list)
 class PackageOut(BaseModel): executive_summary:str;recommendation:str;recommendation_confidence:float=Field(ge=0,le=1);market_claims:list[dict];technical_feasibility:list[str];prototype_artifacts:list[str];prototype_preview:HttpUrl|None=None;unresolved_risks:list[str];next_experiments:list[str]
 

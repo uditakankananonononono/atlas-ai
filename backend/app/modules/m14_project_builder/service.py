@@ -11,6 +11,8 @@ from typing import Awaitable,Callable,Protocol
 from uuid import uuid4
 from app.core.models import ApprovalRequest
 from app.core.providers import generate as byok_generate, ProviderError, ProviderOutcomeUnknown
+from pydantic import ValidationError
+from .errors import PlannerOutputInvalid
 from . import artifacts as artifact_engine
 from . import engineering as engineering_engine
 from . import exports as export_engine
@@ -63,6 +65,14 @@ class Service:
     def list(self,tenant_id:str,limit:int=100)->list[ProjectView]:
         if self._repository:return self._repository.list(limit=limit)
         return [p for (t,_),p in self._projects.items() if t==tenant_id][-limit:]
+    @staticmethod
+    def _planner_plan(project:ProjectView,text:str)->ProjectPlan:
+        """Build a plan from planner text; only planner-output faults become PlannerOutputInvalid."""
+        try:raw=json.loads(text)
+        except (ValueError,RecursionError) as exc:raise PlannerOutputInvalid() from exc
+        if not isinstance(raw,dict) or "goal" in raw or not all(isinstance(k,str) for k in raw):raise PlannerOutputInvalid()
+        try:return ProjectPlan(goal=project.goal,**raw)
+        except ValidationError as exc:raise PlannerOutputInvalid() from exc
     async def plan(self,project:ProjectView,provider:str="shared")->PlanResponse:
         prompt=("Return JSON only with tasks, assumptions, risks, quality_gates. Decompose the goal into a dependency DAG. "
                 "Every task uses exactly one specialist: literature, data, coder, analyst, writer. Include measurable acceptance criteria. "
@@ -73,9 +83,7 @@ class Service:
             raise
         except ProviderError as exc:
             raise PlannerUnavailable("Planner provider unavailable; configure a private provider or supply an authorized generation adapter") from exc
-        try:raw=json.loads(text)
-        except json.JSONDecodeError as exc:raise ValueError("planner returned invalid JSON") from exc
-        plan=ProjectPlan(goal=project.goal,**raw)
+        plan=self._planner_plan(project,text)
         roots={t.id for t in plan.tasks if not t.dependencies}
         for task in plan.tasks:task.status="ready" if task.id in roots else "blocked"
         project.plan=plan;project.status="planned";old=project.revision;project.revision+=1
@@ -269,10 +277,13 @@ class Service:
         prompt=("Return JSON only with tasks, assumptions, risks, quality_gates. Revise the existing plan to address the feedback. "
                 "Every task uses exactly one specialist: literature, data, coder, analyst, writer. Keep measurable acceptance criteria. "
                 f"Goal: {project.goal}\nCurrent plan: {project.plan.model_dump_json()}\nFeedback: {request.feedback}")
-        _,text=await self._generate(prompt,request.provider,None)
-        try:raw=json.loads(text)
-        except json.JSONDecodeError as exc:raise ValueError("planner returned invalid JSON") from exc
-        plan=ProjectPlan(goal=project.goal,**raw)
+        try:
+            _,text=await self._generate(prompt,request.provider,None)
+        except ProviderOutcomeUnknown:
+            raise
+        except ProviderError as exc:
+            raise PlannerUnavailable("Planner provider unavailable; configure a private provider or supply an authorized generation adapter") from exc
+        plan=self._planner_plan(project,text)
         roots={t.id for t in plan.tasks if not t.dependencies}
         for task in plan.tasks:task.status="ready" if task.id in roots else "blocked"
         project.plan=plan;project.status="planned";old=project.revision;project.revision+=1

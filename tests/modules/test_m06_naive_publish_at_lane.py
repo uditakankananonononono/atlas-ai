@@ -63,22 +63,37 @@ def test_schemas_reject_naive_but_accept_offset_and_z():
     assert ScheduleIn().publish_at is None
 
 
-def test_legacy_stored_naive_entry_is_still_treated_as_utc_when_due():
-    """Legacy provenance: rows saved before this guard may be naive; due-scan reads them as UTC."""
-    repo = MemorySocialRepository()
+def test_legacy_stored_naive_entry_refuses_instead_of_utc_guess():
+    """Rows saved before the guard may be naive. Execution refuses the whole batch: no guessed
+    timezone, no adapter call, no state change. Rescheduling with an explicit offset is the way out."""
+    from tests.modules.test_m06_scheduler import make_real_repository, record_review
+    repo = make_real_repository()
     dec, ad = Decisions(), Adapter()
     sch = Scheduler(repository=repo, decisions=dec, adapter_factory=Factory(ad), clock=lambda: NOW)
     plan = ContentPlan(id="q", brief="b", created_at=NOW,
                        drafts=[PlatformDraft(Platform.LINKEDIN, "article_post", "hello")])
-    e = sch.create_entries(plan, publish_at=NOW - timedelta(hours=1), approval_ids={Platform.LINKEDIN: "a1"})[0]
-    e.publish_at = datetime(2026, 10, 8, 11, 0)  # simulate legacy naive row
+    from tests.modules.test_m06_scheduler import identity_target
+    e = sch.create_entries(plan, publish_at=NOW - timedelta(hours=1), approval_ids={Platform.LINKEDIN: "a1"},
+                           publish_targets={Platform.LINKEDIN: identity_target(Platform.LINKEDIN)})[0]
+    e.publish_at = datetime(2026, 10, 8, 11, 0)  # simulate legacy naive row (would be 11:00Z if guessed)
     repo.save_schedule(e)
     dec.s["a1"] = "approved"
     sch.sync_decisions()
-    assert len(sch.execute_due(NOW)) == 1  # 11:00 naive == 11:00Z <= 12:00Z
-    e2 = sch.create_entries(plan, publish_at=NOW - timedelta(hours=1), approval_ids={Platform.LINKEDIN: "a2"})[0]
-    e2.publish_at = datetime(2026, 10, 8, 13, 0)
-    repo.save_schedule(e2)
+    with pytest.raises(NaivePublishTimeError):
+        sch.execute_due(NOW)
+    with pytest.raises(NaivePublishTimeError):
+        sch.execute_due(datetime(2026, 10, 8, 13, 0))  # naive scan clock also refused
+    assert ad.published == [] and repo.get_schedule(e.id).status == "approved"
+    # Control: an explicit-offset approved row with a matching reviewed snapshot still publishes
+    # once the naive row is out of the batch (explicit reschedule re-requires review).
+    sch.reschedule(e.id, NOW - timedelta(hours=1))
+    stale = repo.get_schedule(e.id)
+    assert stale.status == "awaiting_approval" and stale.approval_id == ""
+    stale.approval_id = "a2"
+    repo.save_schedule(stale)
     dec.s["a2"] = "approved"
+    dec.reviewed = {"a2": {"publish_snapshot": __import__(
+        "app.modules.m06_social_media_manager.review_binding", fromlist=["x"]).publish_snapshot(repo.get_schedule(e.id))}}
+    dec.reviewed_payload = lambda key: dec.reviewed.get(key)
     sch.sync_decisions()
-    assert sch.execute_due(NOW) == []  # 13:00Z in the future
+    assert len(sch.execute_due(NOW)) == 1 and len(ad.published) == 1

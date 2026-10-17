@@ -101,7 +101,7 @@ class NormalizedMetrics:
     detail: dict[str, Any] = field(default_factory=dict)
 
 
-def _check_response(platform: str, response: httpx.Response) -> dict[str, Any]:
+def _check_response(platform: str, response: httpx.Response, *, created_id_header: str | None = None) -> dict[str, Any]:
     """Map one HTTP response onto the error taxonomy; return parsed JSON."""
     if response.status_code in (401, 403):
         raise AdapterAuthError(f"{platform} rejected the injected credentials ({response.status_code})")
@@ -110,6 +110,11 @@ def _check_response(platform: str, response: httpx.Response) -> dict[str, Any]:
         raise AdapterRateLimitError(platform, float(retry) if retry else None)
     if response.is_error:
         raise AdapterResponseError(f"{platform} request failed ({response.status_code})")
+    if created_id_header is not None:
+        identifier = response.headers.get(created_id_header)
+        if response.status_code != 201 or not identifier or not identifier.strip() or len(identifier) > 512:
+            raise AdapterResponseError(f"{platform} did not return a valid creation receipt")
+        return {"id": identifier}
     try:
         body = response.json()
     except ValueError as error:
@@ -135,13 +140,14 @@ class _HttpLayer:
         headers: dict[str, str] | None = None,
         params: dict[str, Any] | None = None,
         json_body: dict[str, Any] | None = None,
+        created_id_header: str | None = None,
     ) -> dict[str, Any]:
         try:
             async with httpx.AsyncClient(timeout=self._timeout, transport=self._transport) as client:
                 response = await client.request(method, url, headers=headers, params=params, json=json_body)
         except httpx.HTTPError as error:
             raise AdapterError(f"{platform} transport failure: {error.__class__.__name__}") from error
-        return _check_response(platform, response)
+        return _check_response(platform, response, created_id_header=created_id_header)
 
 
 # -- Meta Graph API (Instagram business accounts) ----------------------------
@@ -192,6 +198,11 @@ class MetaGraphAdapter(_HttpLayer):
         return children, parent
 
     # Network execution -----------------------------------------------------
+
+    async def account_identity(self) -> dict[str, str]:
+        from .publish_targets import publish_target
+        _, account = self._require_credentials()
+        return publish_target("instagram", account)
 
     async def publish(self, request: PublishRequest) -> PublishResult:
         token, ig_user_id = self._require_credentials()
@@ -290,6 +301,15 @@ class XApiV2Adapter(_HttpLayer):
             payload["reply"] = {"in_reply_to_tweet_id": in_reply_to}
         return payload
 
+    async def account_identity(self) -> dict[str, str]:
+        from .publish_targets import publish_target
+        token = self._require_credentials()
+        body = await self._send("GET", f"{self.BASE}/users/me", platform="x",
+                                headers={"Authorization": f"Bearer {token}"})
+        if body.get("errors") or type(body.get("data")) is not dict:
+            raise AdapterAuthError("X authenticated account identity is unavailable")
+        return publish_target("twitter", body["data"].get("id"))
+
     async def publish(self, request: PublishRequest) -> PublishResult:
         token = self._require_credentials()
         headers = {"Authorization": f"Bearer {token}"}
@@ -380,6 +400,11 @@ class LinkedInAdapter(_HttpLayer):
             "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"},
         }
 
+    async def account_identity(self) -> dict[str, str]:
+        from .publish_targets import publish_target
+        _, account = self._require_credentials()
+        return publish_target("linkedin", account)
+
     async def publish(self, request: PublishRequest) -> PublishResult:
         token, _ = self._require_credentials()
         body = await self._send(
@@ -388,6 +413,7 @@ class LinkedInAdapter(_HttpLayer):
             platform="linkedin",
             headers={"Authorization": f"Bearer {token}", "X-Restli-Protocol-Version": "2.0.0"},
             json_body=self.build_ugc_post_payload(request),
+            created_id_header="x-restli-id",
         )
         return PublishResult(platform="linkedin", external_id=str(body.get("id", "")))
 
@@ -456,18 +482,36 @@ class TikTokContentPostingAdapter(_HttpLayer):
             "source_info": {"source": "PULL_FROM_URL", "video_url": video_url},
         }
 
+    async def account_identity(self) -> dict[str, str]:
+        from .publish_targets import publish_target
+        token = self._require_credentials()
+        body = await self._send("GET", f"{self.BASE}/user/info/", platform="tiktok",
+                                headers={"Authorization": f"Bearer {token}"},
+                                params={"fields": "open_id"})
+        error = body.get("error")
+        user = body.get("data", {}).get("user") if type(body.get("data")) is dict else None
+        if type(error) is not dict or error.get("code") != "ok" or type(user) is not dict:
+            raise AdapterAuthError("TikTok authenticated account identity is unavailable")
+        return publish_target("tiktok", user.get("open_id"))
+
     async def publish(self, request: PublishRequest) -> PublishResult:
         token = self._require_credentials()
         if not request.media_urls:
             raise AdapterResponseError("tiktok inbox upload needs a video URL to pull from")
         body = await self._send(
             "POST",
-            f"{self.BASE}/post/publish/inbox/video/upload/",
+            f"{self.BASE}/post/publish/inbox/video/init/",
             platform="tiktok",
             headers={"Authorization": f"Bearer {token}"},
             json_body=self.build_inbox_upload_payload(request.media_urls[0]),
         )
-        publish_id = str((body.get("data") or {}).get("publish_id", ""))
+        error = body.get("error")
+        data = body.get("data")
+        if not isinstance(error, dict) or error.get("code") != "ok" or not isinstance(data, dict):
+            raise AdapterResponseError("tiktok did not confirm a successful inbox upload")
+        publish_id = data.get("publish_id")
+        if type(publish_id) is not str or not publish_id.strip() or len(publish_id) > 64:
+            raise AdapterResponseError("tiktok did not return a valid inbox upload receipt")
         return PublishResult(platform="tiktok", external_id=publish_id, draft_only=True)
 
     async def fetch_metrics(self, since_days: int) -> dict[str, Any]:

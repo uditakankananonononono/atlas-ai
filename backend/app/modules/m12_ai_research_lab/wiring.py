@@ -1,7 +1,7 @@
 """Shipped Module 12 runtime using Atlas's configured model providers."""
 from __future__ import annotations
 from app.core.model_catalog import paid_allowed
-from app.core.providers import ProviderError, generate
+from app.core.providers import ProviderError, ProviderOutcomeUnknown, generate
 from .models import ModelCapability,ModelResult,TaskType
 from .router import ModelRouter
 from .service import Service
@@ -47,3 +47,18 @@ def build_dag_engine(service):
    raise WorkflowReviewRequired(error.result) from error
   return {'text':result.text,'model_id':result.model_id,'usage':result.usage,'metadata':result.metadata}
  return DagEngine(run)
+
+
+def workflow_error_response(error):
+ """Map a DagEngine RuntimeError to (http_status, detail). Unknown provider outcome is never a generic failure and never retried."""
+ if isinstance(error, WorkflowReviewRequired):
+  from dataclasses import asdict
+  return 422, {'state':'review_required','retry_allowed':False,'result':asdict(error.result),'downstream_executed':False}
+ seen=set(); cause=error
+ while cause is not None and id(cause) not in seen:
+  seen.add(id(cause))
+  if isinstance(cause, ProviderOutcomeUnknown):
+   return 409, {'state':'unknown','retry_allowed':False,'reason':'node outcome unknown; not retried',
+                'failed_node':getattr(error,'failed_node',None),'completed_nodes':sorted(getattr(error,'partial_results',{}) or {})}
+  cause=cause.__cause__
+ return 422, str(error)

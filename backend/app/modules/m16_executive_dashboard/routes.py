@@ -6,12 +6,19 @@ from .repository import SqlDashboardRepository,ViewVersionConflict
 from .schemas import *
 from .anomaly import AnomalyVerdict
 from .service import Service
+_MAX_SEQUENCE=2**63-1
+_MIN_SEQUENCE=-2**63
+def _check_cursor(cursor):
+    # A cursor outside the signed 64-bit range cannot be bound by sqlite (OverflowError, an
+    # unhandled 500); refuse it as a 422. In-range negatives mean "all events".
+    if cursor>_MAX_SEQUENCE or cursor<_MIN_SEQUENCE:raise HTTPException(422,"cursor out of range")
 router=APIRouter(prefix="/executive-dashboard",tags=["executive-dashboard"])
 def get_service(t:TenantContext=Depends(require_tenant)):return Service(SqlDashboardRepository(t.tenant_id,t.actor_id))
 @router.get("/snapshot",response_model=Snapshot)
 def snapshot(service:Service=Depends(get_service)):return service.snapshot()
 @router.get("/events",response_model=list[Event])
-def events(cursor:int=0,service:Service=Depends(get_service)):return service.events_after(cursor)
+def events(cursor:int=0,service:Service=Depends(get_service)):
+    _check_cursor(cursor);return service.events_after(cursor)
 @router.get("/approvals",response_model=list[Approval])
 def approvals(service:Service=Depends(get_service)):return service.pending_approvals()
 @router.post("/approvals/{approval_id}/decision",response_model=Approval)
@@ -211,10 +218,27 @@ def experiment_significance(experiment_id:str,alpha:float=0.05,service:Service=D
 router.include_router(planning_router)
 @router.get("/live")
 async def live(request:Request,cursor:int=0,service:Service=Depends(get_service)):
+    # EventSource reconnects to the same URL and, when it has a non-empty last
+    # event ID, adds a Last-Event-ID header carrying the id: of the last event it
+    # received (WHATWG HTML Standard 9.2.3/9.2.4). The spec leaves the header value
+    # as any UTF-8 string without NUL, LF or CR, so only the plain-digit ids this
+    # feed issues (event sequence numbers) are honored; every other value, and any
+    # value beyond the signed 64-bit range the sequence column can hold, is
+    # ignored. The resume point is the later of ?cursor and the header.
+    # ?cursor outside the signed 64-bit range cannot be bound by sqlite (OverflowError)
+    # and would raise inside the stream after the 200 was already sent; refuse it
+    # up front, above 2**63-1 and below -2**63. In-range negative cursors mean "all
+    # events" and keep their current behavior.
+    _check_cursor(cursor)
+    raw=(request.headers.get("last-event-id") or "").strip()
+    if raw.isascii() and raw.isdigit() and len(raw)<=19 and int(raw)<=_MAX_SEQUENCE:cursor=max(cursor,int(raw))
     async def stream():
+        # events_after opens and closes its own Session per call (the sqlite engine is
+        # created with check_same_thread=False), so it can run in a worker thread
+        # without sharing a connection; a blocking read no longer stalls the loop.
         nonlocal cursor
         while not await request.is_disconnected():
-            events=service.events_after(cursor)
+            events=await asyncio.to_thread(service.events_after,cursor)
             for event in events:cursor=event.sequence;yield f"id: {event.sequence}\nevent: {event.topic}\ndata: {event.model_dump_json()}\n\n"
             if not events:yield ": heartbeat\n\n"
             await asyncio.sleep(2)

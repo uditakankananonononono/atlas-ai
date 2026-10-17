@@ -21,7 +21,7 @@ from pydantic import BaseModel, Field
 from app.auth.context import TenantContext, require_tenant
 from app.core.providers import ProviderError
 
-from .adapters import PlatformCredentials, build_adapter
+from .adapters import AdapterError, PlatformCredentials, build_adapter
 from .analytics import ABTestStateError, ABTestNotFoundError, Analytics, SnapshotNotFoundError
 from .scheduler import (
     Scheduler,
@@ -100,6 +100,13 @@ class _ApprovalCenterLookup:
             return None
         status = request.status
         return getattr(status, "value", str(status))
+
+    def reviewed_payload(self, approval_id: str) -> dict | None:
+        request = self._approvals.get(approval_id, user_id=self._tenant_id)
+        if request is None or request.module_id != 6 or request.action_type != "schedule_post":
+            return None
+        status = getattr(request.status, "value", request.status)
+        return request.payload if status == "approved" else None
 
 
 class _EnvAdapterFactory:
@@ -230,6 +237,8 @@ def request_schedule(plan_id: str, request: ScheduleIn, service: Service = Depen
     try:
         return service.request_schedule(plan_id, request.publish_at, sponsored=request.sponsored,
                                         source=request.source, references=request.references or None)
+    except (AdapterError, ScheduleStateError) as error:
+        raise HTTPException(status_code=409, detail="publishing account could not be verified; reconnect or select the account before review") from error
     except NaivePublishTimeError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     except PlanNotFoundError as error:
@@ -251,6 +260,8 @@ def request_schedule_local(plan_id: str, request: ScheduleLocalIn, service: Serv
             plan_id, request.local_time, request.timezone, on_ambiguous=request.on_ambiguous,
             on_gap=request.on_gap, sponsored=request.sponsored, source=request.source,
             references=request.references or None)
+    except (AdapterError, ScheduleStateError) as error:
+        raise HTTPException(status_code=409, detail="publishing account could not be verified; reconnect or select the account before review") from error
     except LocalTimeError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     except PlanNotFoundError as error:
@@ -506,6 +517,21 @@ def attach_media(schedule_id: str, request: AttachMediaIn, scheduler: Scheduler 
         raise HTTPException(status_code=409, detail=str(error)) from error
 
 
+@router.post("/schedules/{schedule_id}/review", response_model=ApprovalRequest, status_code=201)
+def request_schedule_review(schedule_id: str, service: Service = Depends(get_service)) -> object:
+    """Fresh human approval for the exact current media, content and time."""
+    try:
+        return service.request_schedule_review(schedule_id)
+    except AdapterError as error:
+        raise HTTPException(status_code=409, detail="publishing account could not be verified; reconnect or select the account before review") from error
+    except (PlanNotFoundError, ScheduleNotFoundError) as error:
+        raise HTTPException(status_code=404, detail="schedule or plan not found") from error
+    except ScheduleStateError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except (ValueError, NaivePublishTimeError) as error:
+        raise HTTPException(status_code=422, detail="schedule requires valid content and an explicit publish time") from error
+
+
 @router.post("/schedules/sync", response_model=list[ScheduleEntryOut])
 def sync_decisions(scheduler: Scheduler = Depends(get_scheduler)) -> object:
     """Fold Approval Center decisions into entry state (worker entry point)."""
@@ -515,7 +541,13 @@ def sync_decisions(scheduler: Scheduler = Depends(get_scheduler)) -> object:
 @router.post("/schedules/execute-due", response_model=list[PublishRecordOut])
 def execute_due(scheduler: Scheduler = Depends(get_scheduler)) -> object:
     """The effect gate: publish due entries whose approval is still approved."""
-    return scheduler.execute_due()
+    try:
+        return scheduler.execute_due()
+    except NaivePublishTimeError as error:
+        raise HTTPException(
+            status_code=409,
+            detail="approved schedule has no explicit timezone; reschedule before execution",
+        ) from error
 
 
 @router.get("/schedules/{schedule_id}/publishes", response_model=list[PublishRecordOut])

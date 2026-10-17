@@ -25,18 +25,47 @@ from app.modules.m06_social_media_manager.scheduler import (
     ScheduleStateError,
     Scheduler,
 )
+from app.modules.m06_social_media_manager.review_binding import publish_snapshot
 from app.modules.m06_social_media_manager.service import MemorySocialRepository
 
 
 class FakeDecisions:
+    """Decision source that also reports the payload that was reviewed.
+
+    `reviewed` is filled by `create_entry` with the real publish snapshot taken
+    when the approval was filed, mirroring what the M00 approval stores.
+    """
+
     def __init__(self) -> None:
         self.statuses: dict[str, str] = {}
+        self.reviewed: dict[str, dict] = {}
 
     def status_of(self, approval_id: str) -> str | None:
         return self.statuses.get(approval_id)
 
+    def reviewed_payload(self, approval_id: str):
+        return self.reviewed.get(approval_id)
 
-class FakeAdapter:
+
+TEST_ACCOUNT_ID = "1234567890"
+
+
+def identity_target(platform) -> dict[str, str]:
+    """Exact synthetic provider account for tests; no provider call is made."""
+    return {"platform": getattr(platform, "value", platform), "account_id": TEST_ACCOUNT_ID}
+
+
+class IdentityAdapterMixin:
+    """Synthetic read-only account identity, bound to the platform the factory selected."""
+
+    selected_platform: str | None = None
+
+    async def account_identity(self) -> dict[str, str]:
+        assert self.selected_platform is not None, "factory must record the selected platform"
+        return identity_target(self.selected_platform)
+
+
+class FakeAdapter(IdentityAdapterMixin):
     def __init__(self) -> None:
         self.published: list = []
 
@@ -45,7 +74,7 @@ class FakeAdapter:
         return PublishResult(platform=request.platform, external_id="ext-1", url="https://x.example/1")
 
 
-class FailingAdapter:
+class FailingAdapter(IdentityAdapterMixin):
     async def publish(self, request) -> PublishResult:
         raise AdapterAuthError("token expired")
 
@@ -55,6 +84,7 @@ class FakeAdapterFactory:
         self.adapter = adapter
 
     def for_platform(self, platform: Platform):
+        self.adapter.selected_platform = platform.value
         return self.adapter
 
 
@@ -63,8 +93,25 @@ DUE = NOW - timedelta(hours=1)
 FUTURE = NOW + timedelta(hours=1)
 
 
-def make_scheduler(adapter=None) -> tuple[Scheduler, MemorySocialRepository, FakeDecisions]:
-    repository = MemorySocialRepository()
+def make_real_repository(tenant: str = "synthetic-owner"):
+    """Actual SqlSocialRepository on a temporary SQLite file (durable claim capable)."""
+    import tempfile
+    from pathlib import Path
+    from unittest.mock import patch
+
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+
+    from app.modules.m06_social_media_manager import sql_repository as storage
+
+    folder = tempfile.mkdtemp(prefix="m06-test-")
+    engine = create_engine("sqlite:///" + str(Path(folder) / "m06.db"))
+    with patch.object(storage, "engine", engine):
+        return storage.SqlSocialRepository(tenant, sessionmaker(bind=engine))
+
+
+def make_scheduler(adapter=None) -> tuple[Scheduler, "SqlSocialRepository", FakeDecisions]:
+    repository = make_real_repository()
     decisions = FakeDecisions()
     scheduler = Scheduler(
         repository=repository,
@@ -86,9 +133,18 @@ def make_plan(platform: Platform = Platform.TWITTER, text: str = "Launch thread"
 
 def create_entry(scheduler: Scheduler, plan: ContentPlan, publish_at=DUE, sponsored: bool = False):
     entries = scheduler.create_entries(
-        plan, publish_at=publish_at, approval_ids={plan.drafts[0].platform: "approval-1"}, sponsored=sponsored
+        plan, publish_at=publish_at, approval_ids={plan.drafts[0].platform: "approval-1"}, sponsored=sponsored,
+        publish_targets={plan.drafts[0].platform: identity_target(plan.drafts[0].platform)},
     )
+    record_review(scheduler, entries[0])
     return entries[0]
+
+
+def record_review(scheduler: Scheduler, entry, approval_id: str = "approval-1") -> None:
+    """File the reviewed snapshot the way a real approval would hold it."""
+    decisions = scheduler._decisions
+    if hasattr(decisions, "reviewed"):
+        decisions.reviewed[approval_id] = {"publish_snapshot": publish_snapshot(entry)}
 
 
 def test_full_success_path_approve_then_publish():
@@ -187,11 +243,21 @@ def test_instagram_fails_closed_without_rendered_media():
 
 def test_attach_media_unblocks_instagram_publish():
     adapter = FakeAdapter()
-    scheduler, _repository, decisions = make_scheduler(adapter)
+    scheduler, repository, decisions = make_scheduler(adapter)
     entry = create_entry(scheduler, make_plan(platform=Platform.INSTAGRAM, format="carousel"))
     decisions.statuses["approval-1"] = "approved"
     scheduler.sync_decisions()
     scheduler.attach_media(entry.id, ["https://cdn.example.com/1.jpg", "https://cdn.example.com/2.jpg"], ["a", "b"])
+    # Attaching media voids the old approval: nothing publishes on it.
+    assert scheduler.execute_due(NOW) == [] and adapter.published == []
+    stale = repository.get_schedule(entry.id)
+    assert stale.approval_id == "" and stale.failure == "review_required"
+    # A fresh review of the media-bearing payload is what unblocks publishing.
+    stale.approval_id = "approval-2"
+    repository.save_schedule(stale)
+    record_review(scheduler, repository.get_schedule(entry.id), "approval-2")
+    decisions.statuses["approval-2"] = "approved"
+    scheduler.sync_decisions()
     records = scheduler.execute_due(NOW)
     assert len(records) == 1
     assert adapter.published[0].media_urls == ("https://cdn.example.com/1.jpg", "https://cdn.example.com/2.jpg")
@@ -228,3 +294,11 @@ def test_sync_is_idempotent():
     decisions.statuses["approval-1"] = "approved"
     assert len(scheduler.sync_decisions()) == 1
     assert scheduler.sync_decisions() == []
+
+
+def attach_identity_scheduler(service):
+    """Give a Service a real Scheduler whose synthetic adapter reports an exact account (no network)."""
+    scheduler = Scheduler(repository=service._repository, decisions=FakeDecisions(),
+                          adapter_factory=FakeAdapterFactory(FakeAdapter()), clock=lambda: NOW)
+    service._scheduler = scheduler
+    return scheduler

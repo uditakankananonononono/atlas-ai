@@ -23,14 +23,24 @@ SECRET_KEYS = ("token", "secret", "password", "credential", "api_key", "authoriz
 
 
 class Decisions:
-    def __init__(self):
+    def __init__(self, store=None):
         self.s = {}
+        self._store = store
 
     def status_of(self, i):
         return self.s.get(i)
 
+    def reviewed_payload(self, i):
+        for item in (self._store.items if self._store else []):
+            if item.id == i:
+                return item.payload
+        return None
 
-class Adapter:
+
+from tests.modules.test_m06_scheduler import IdentityAdapterMixin
+
+
+class Adapter(IdentityAdapterMixin):
     def __init__(self):
         self.published = []
 
@@ -44,14 +54,19 @@ class Factory:
         self.a = a
 
     def for_platform(self, p):
+        self.a.selected_platform = p.value
         return self.a
 
 
 def _build():
     from tests.modules.test_m06_adaptation import _gate_service
     svc, store = _gate_service([(Platform.LINKEDIN, "article_post", SRC)])
-    repo = svc._repository
-    adapter, dec = Adapter(), Decisions()
+    from tests.modules.test_m06_scheduler import make_real_repository
+    memory = svc._repository
+    repo = make_real_repository()  # durable claim capable, real SQL schedule storage
+    repo.save_plan(memory.get_plan("p1"))
+    svc._repository = repo
+    adapter, dec = Adapter(), Decisions(store)
     sch = Scheduler(repository=repo, decisions=dec, adapter_factory=Factory(adapter), clock=lambda: NOW)
     svc._scheduler = sch
     return svc, store, sch, repo, adapter, dec

@@ -6,6 +6,19 @@ NAMES=["Marine Design","Toy Design","Game Design","Level Design","Puzzle Design"
 FEATURES={333+i:n for i,n in enumerate(NAMES)}
 PRODUCT={333,334};GAME=set(range(335,344));ACCESS=set(range(344,353));PROCESS=set(range(353,360))
 DISCLAIMER="Design decision support only. Validate with domain specialists, affected people, representative users, applicable standards, physical prototypes and measured tests before release."
+def _fnum(value:Any,field:str)->float:
+ """Coded float coercion for externally supplied fields; non-scalar input
+ raises ValueError (route maps to 422). Valid strings/numbers preserved;
+ non-finite floats keep their current accepted behavior."""
+ try:return float(value)
+ except (TypeError,ValueError):raise ValueError(f"{field} must be a number") from None
+def _inum(value:Any,field:str)->int:
+ """Coded int coercion for externally supplied fields; non-scalar or
+ non-finite input raises ValueError instead of TypeError/OverflowError."""
+ try:return int(value)
+ except (TypeError,ValueError,OverflowError):raise ValueError(f"{field} must be an integer") from None
+
+
 def _base(fid,d):
  if fid not in FEATURES:raise ValueError('feature_id must be 333-359')
  if not d.get('brief') or not d.get('decision_owner'):raise ValueError('brief and decision_owner are required')
@@ -15,13 +28,13 @@ def _product(fid,d):
  if not requirements or not hazards:raise ValueError('requirements and hazards are required')
  risks=[]
  for h in hazards:
-  severity=int(h.get('severity',0));likelihood=int(h.get('likelihood',0));controls=[c for c in d.get('controls',[]) if h.get('id') in c.get('addresses',[])];risks.append({'hazard_id':h.get('id'),'severity':severity,'likelihood':likelihood,'risk_score':severity*likelihood,'control_ids':[c.get('id') for c in controls],'residual_status':'requires_test'})
+  severity=_inum(h.get('severity',0),'hazards.severity');likelihood=_inum(h.get('likelihood',0),'hazards.likelihood');controls=[c for c in d.get('controls',[]) if h.get('id') in c.get('addresses',[])];risks.append({'hazard_id':h.get('id'),'severity':severity,'likelihood':likelihood,'risk_score':severity*likelihood,'control_ids':[c.get('id') for c in controls],'residual_status':'requires_test'})
  o.update({'requirements':requirements,'risk_register':risks,'controls':d.get('controls',[]),'materials':d.get('materials',[]),'environment_and_use':d.get('environment_and_use',{}),'verification_plan':d.get('verification_plan',[]),'boundary':'Concept and hazard analysis only. It is not naval architecture, stability certification, child-safety certification, manufacturing release or permission for physical use.'});return o
 def _game(fid,d):
  o=_base(fid,d);loops=d.get('gameplay_loops',[]);content=d.get('content_nodes',[]);playtests=d.get('playtests',[])
  if not loops or not content:raise ValueError('gameplay_loops and content_nodes are required')
- success=[float(x.get('completion_rate',0)) for x in playtests if 'completion_rate' in x];times=[float(x.get('duration_minutes',0)) for x in playtests if 'duration_minutes' in x]
- economy=d.get('economy',{});sources=sum(float(x.get('amount',0)) for x in economy.get('sources',[]));sinks=sum(float(x.get('amount',0)) for x in economy.get('sinks',[]))
+ success=[_fnum(x.get('completion_rate',0),'playtests.completion_rate') for x in playtests if 'completion_rate' in x];times=[_fnum(x.get('duration_minutes',0),'playtests.duration_minutes') for x in playtests if 'duration_minutes' in x]
+ economy=d.get('economy',{});sources=sum(_fnum(x.get('amount',0),'economy.sources.amount') for x in economy.get('sources',[]));sinks=sum(_fnum(x.get('amount',0),'economy.sinks.amount') for x in economy.get('sinks',[]))
  o.update({'gameplay_loops':loops,'content_nodes':content,'mechanics':d.get('mechanics',[]),'narrative_or_quests':d.get('narrative_or_quests',[]),'balance_metrics':{'mean_completion_rate':sum(success)/len(success) if success else None,'mean_duration_minutes':sum(times)/len(times) if times else None,'currency_net':sources-sinks},'player_segments':d.get('player_segments',[]),'accessibility_options':d.get('accessibility_options',[]),'boundary':'Prototype model, not proof of fun, fairness, learning or accessibility. Designers validate exploits, difficulty, retention pressure, monetization harms, age fit and diverse player experience through consented playtesting.'});return o
 def _access(fid,d):
  o=_base(fid,d);participants=d.get('participants',[]);needs=d.get('needs',[]);variants=d.get('variants',[])
@@ -39,7 +52,7 @@ def _process(fid,d):
  scores=[]
  criteria=d.get('criteria',[])
  for idea in ideas:
-  values=idea.get('scores',{});missing=[c.get('id') for c in criteria if c.get('id') not in values];scores.append({'idea_id':idea.get('id'),'scores':values,'missing_criteria':missing,'weighted_score':None if missing else sum(float(values[c['id']])*float(c.get('weight',1)) for c in criteria)})
+  values=idea.get('scores',{});missing=[c.get('id') for c in criteria if c.get('id') not in values];scores.append({'idea_id':idea.get('id'),'scores':values,'missing_criteria':missing,'weighted_score':None if missing else sum(_fnum(values[c['id']],'ideas.scores')*_fnum(c.get('weight',1),'criteria.weight') for c in criteria)})
  o.update({'stakeholders':stakeholders,'evidence':evidence,'ideas':scores,'criteria':criteria,'prototype_plan':d.get('prototype_plan',[]),'tests':d.get('tests',[]),'future_scenarios':d.get('future_scenarios',[]),'critique_or_abuse_cases':d.get('critique_or_abuse_cases',[]),'transition_pathways':d.get('transition_pathways',[]),'service_blueprint':d.get('service_blueprint',[]),'boundary':'Facilitation and comparison aid only. A sprint is not validation; speculative, critical and adversarial concepts are not forecasts or attack authorization. Stakeholders approve framing, tests, decisions and transition/service changes.'});return o
 def design_support_333_359(fid:int,data:dict[str,Any])->dict[str,Any]:
  if fid in PRODUCT:return _product(fid,data)
@@ -51,14 +64,14 @@ def design_support_333_359(fid:int,data:dict[str,Any])->dict[str,Any]:
 def _distinctive(fid:int,d:dict[str,Any],o:dict[str,Any])->dict[str,Any]:
  """Attach the method-specific decision instrument for each design discipline."""
  if fid==333:
-  disp=float(d.get('displacement_kg',0));vol=float(d.get('hull_volume_m3',0));o['marine_stability']={'displacement_kg':disp,'buoyancy_margin_kg':vol*1000-disp,'positive_margin':vol*1000>disp}
+  disp=_fnum(d.get('displacement_kg',0),'displacement_kg');vol=_fnum(d.get('hull_volume_m3',0),'hull_volume_m3');o['marine_stability']={'displacement_kg':disp,'buoyancy_margin_kg':vol*1000-disp,'positive_margin':vol*1000>disp}
  elif fid==334:
-  ages=d.get('age_range',[0,0]);parts=d.get('parts',[]);o['toy_safety']={'age_range':ages,'small_part_count':sum(float(x.get('diameter_mm',99))<31.7 for x in parts),'play_cycle_count':len(d.get('play_cycles',[]))}
+  ages=d.get('age_range',[0,0]);parts=d.get('parts',[]);o['toy_safety']={'age_range':ages,'small_part_count':sum(_fnum(x.get('diameter_mm',99),'parts.diameter_mm')<31.7 for x in parts),'play_cycle_count':len(d.get('play_cycles',[]))}
  elif fid==335:o['game_system']={'core_loop_minutes':d.get('core_loop_minutes'),'verbs':d.get('player_verbs',[]),'loop_to_goal_links':d.get('loop_to_goal_links',[])}
  elif fid==336:o['level_flow']={'critical_path':d.get('critical_path',[]),'optional_nodes':d.get('optional_nodes',[]),'checkpoint_gap_max':max(d.get('checkpoint_gaps_minutes',[0]))}
  elif fid==337:o['puzzle_model']={'givens':d.get('givens',[]),'inference_steps':d.get('inference_steps',[]),'solution_count':d.get('solution_count'),'unique_solution':d.get('solution_count')==1}
  elif fid==338:o['mechanic_model']={'inputs':d.get('inputs',[]),'state_changes':d.get('state_changes',[]),'feedback_latency_ms':d.get('feedback_latency_ms'),'counterplay':d.get('counterplay',[])}
- elif fid==339:o['economy_model']={'source_total':sum(float(x.get('amount',0)) for x in d.get('economy',{}).get('sources',[])),'sink_total':sum(float(x.get('amount',0)) for x in d.get('economy',{}).get('sinks',[])),'inflation_controls':d.get('inflation_controls',[])}
+ elif fid==339:o['economy_model']={'source_total':sum(_fnum(x.get('amount',0),'economy.sources.amount') for x in d.get('economy',{}).get('sources',[])),'sink_total':sum(_fnum(x.get('amount',0),'economy.sinks.amount') for x in d.get('economy',{}).get('sinks',[])),'inflation_controls':d.get('inflation_controls',[])}
  elif fid==340:o['narrative_graph']={'beats':d.get('beats',[]),'choice_consequences':d.get('choice_consequences',[]),'unresolved_threads':d.get('unresolved_threads',[])}
  elif fid==341:o['quest_graph']={'prerequisites':d.get('prerequisites',{}),'rewards':d.get('rewards',{}),'failure_recovery':d.get('failure_recovery',[])}
  elif fid==342:o['difficulty_curve']={'target':d.get('target_success_rates',[]),'observed':[x.get('completion_rate') for x in d.get('playtests',[])],'adaptive_bounds':d.get('adaptive_bounds')}

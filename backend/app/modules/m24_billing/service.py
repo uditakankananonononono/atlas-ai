@@ -25,7 +25,8 @@ class Service:
  async def execute_checkout(self,approval_id,tenant_id):
   view=self.repo.approval(approval_id)
   if not view or view["status"]!="approved" or view["payload"].get("tenant_id")!=tenant_id:raise PermissionError("approved tenant-bound billing action required")
-  plan=PLANS[view["payload"]["plan"]["id"]]
+  plan=PLANS.get((view["payload"].get("plan") or {}).get("id"))
+  if plan is None:raise ValueError("approved plan not in catalog")
   if view["payload"].get("commitment_preview"):
    from .precommit import verify_commitment_preview
    verified=verify_commitment_preview(view["payload"]["commitment_preview"],plan.model_dump(),checkout_supported=True)
@@ -82,7 +83,6 @@ class Service:
     environment='test',api_version=API_VERSION,actor='m24-worker')
    return await dispatcher.dispatch(operation['id'],tenant_id)
   else:raise ValueError("unsupported approved billing action")
-  self.repo.record_execution(approval_id,result);return result
  def entitlements(self,tenant_id):
   row=self.repo.tenant_billing(tenant_id);plan=PLANS.get(row.plan_id if row else "free",PLANS["free"]);status=(row.status if row else "active")
   active=status in {"trialing","active"};limits={"seats":plan.included_seats,"runs":plan.included_runs} if active else {"seats":0,"runs":0}

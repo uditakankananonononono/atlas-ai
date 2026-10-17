@@ -17,6 +17,7 @@ from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 
 from app.core.database import Base, SessionLocal, engine
 
+from .dispatch_claims import claim_sql_schedule, claim_table
 from .adapters import NormalizedMetrics
 from .marketing import MarketingArtifact
 from .analytics import ABTest, MetricsSnapshot
@@ -30,6 +31,9 @@ def _iso(value: datetime | None) -> str | None:
 
 def _dt(value: str | None) -> datetime | None:
     return datetime.fromisoformat(value) if value else None
+
+
+SocialDispatchClaims = claim_table(Base.metadata)
 
 
 class SocialPlanRow(Base):
@@ -69,7 +73,7 @@ def schedule_data(x: ScheduleEntry) -> dict:
         "thread_chunks": list(x.thread_chunks), "link": x.link, "sponsored": x.sponsored,
         "created_at": x.created_at.isoformat(), "decided_at": _iso(x.decided_at),
         "published_at": _iso(x.published_at), "external_id": x.external_id,
-        "external_url": x.external_url, "draft_only": x.draft_only, "failure": x.failure,
+        "external_url": x.external_url, "draft_only": x.draft_only, "failure": x.failure, "publish_target": x.publish_target,
     }
 
 def to_schedule(d: dict) -> ScheduleEntry:
@@ -81,6 +85,7 @@ def to_schedule(d: dict) -> ScheduleEntry:
         created_at=datetime.fromisoformat(d["created_at"]), decided_at=_dt(d.get("decided_at")),
         published_at=_dt(d.get("published_at")), external_id=d.get("external_id"),
         external_url=d.get("external_url"), draft_only=bool(d.get("draft_only")), failure=d.get("failure"),
+        publish_target=(dict(d["publish_target"]) if type(d.get("publish_target")) is dict else None),
     )
 
 def publish_record_data(x: PublishRecord) -> dict:
@@ -172,6 +177,9 @@ class SqlSocialRepository:
 
     # schedules + publish receipts
     def save_schedule(self,x): self._save(SocialScheduleRow,x.id,schedule_data(x),{"status":x.status}); return x
+    def claim_publish(self, expected):
+        return claim_sql_schedule(self.sessions, SocialScheduleRow.__table__,
+                                  SocialDispatchClaims, self.tenant_id, schedule_data(expected))
     def get_schedule(self,item_id): return self._get(SocialScheduleRow,item_id,to_schedule)
     def list_schedules(self,plan_id:str|None=None):
         entries=self._list(SocialScheduleRow,to_schedule)

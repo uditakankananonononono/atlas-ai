@@ -5,6 +5,14 @@ from hashlib import sha256
 from typing import Any
 NAMES=["Goal intake and acceptance criteria","Creative multi-path planning","Playful personality without deceptive behavior","Web and public-social research","Public image/code/idea extraction with attribution","Trend and inspiration synthesis","Software/tool identification","Approved software installation","Dependency management","Environment configuration preview","Multi-model AI orchestration","Vibecoding project generation","Iterative code review and refinement","Existing-system code integration","Owner-consented filesystem read","Approved filesystem write","Approved shell command execution","Approved service deployment","Repetitive-task automation","Background schedule management","Software experiment design","Hardware/IoT experiment planning","Simulation experiments","Prototype design","3D-printing workflow proposal","Atlas supervision and health monitoring","Atlas configuration proposal","Atlas module integration","Performance diagnosis","Patch generation and test execution","Bounded retry and alternate-path loop","Failure log and root-cause analysis","Transparent goal-plan-evidence-decision trace","No hidden chain-of-thought capture","Risk classification","Approval before installs","Approval before purchases","Approval before system changes","Approval before destructive commands","Approval before experiments with material risk","Approve/deny/modify plan flow","Real-time progress events","Completion summary and next steps","Paired local-PC endpoint","Consent and access revocation","Persistent resumable task state","Stop control and bounded resource budgets","Doraemon-style closest-feasible prototype framing","Website build workflow","Essay-topic research workflow","Atlas integration workflow"]
 FEATURES={279+i:n for i,n in enumerate(NAMES)}
+def _fnum(value:Any,field:str)->float:
+ """Coded float coercion for externally supplied fields; non-scalar input
+ raises ValueError (route maps to 422). Valid strings/numbers preserved;
+ non-finite floats keep their current accepted behavior."""
+ try:return float(value)
+ except (TypeError,ValueError):raise ValueError(f"{field} must be a number") from None
+
+
 ACTIONS=set(range(284,310))|{322,327,328,329};GATES=set(range(313,321))|{323,325};TRACE={279,280,281,282,283,310,311,312,321,324,326};PREF={4:'Voice Fine-Tuning',6:'Preference Ranking',9:'Human-in-the-Loop Reinforcement (Weekly)'}
 DISCLAIMER="Claire exposes concise decision evidence, not hidden chain-of-thought. Claims reflect recorded evidence only; external actions remain approval-gated and verified after execution."
 def _base(row,d):
@@ -32,7 +40,7 @@ def _gate(row,d):
  if not request.get('id') or not request.get('operation'):raise ValueError('approval_request id and operation are required')
  decision=request.get('decision','pending')
  if decision not in ('pending','approved','denied','modified','revoked'):raise ValueError('invalid approval decision')
- within=all(float(budget.get(k,0))<=float(budget.get('limits',{}).get(k,float('inf'))) for k in ('seconds','cost','attempts'))
+ within=all(_fnum(budget.get(k,0),f'budget.{k}')<=_fnum(budget.get('limits',{}).get(k,float('inf')),f'budget.limits.{k}') for k in ('seconds','cost','attempts'))
  o.update({'risk':d.get('risk',{}),'approval':{'id':request['id'],'operation':request['operation'],'preview':request.get('preview'),'decision':decision,'scope':request.get('scope'),'decided_by':request.get('decided_by'),'decided_at':request.get('decided_at')},'budget':budget,'within_budget':within,'stopped':bool(d.get('stop_requested')) or decision in ('denied','revoked') or not within,'revocations':d.get('revocations',[]),'progress_events':d.get('progress_events',[]),'boundary':'No action occurs from this review. Approval must match the exact operation/scope and remain unrevoked; stop, denial, revocation or exceeded budget blocks execution.'});return o
 def _trace(row,d):
  o=_base(row,d);evidence=_evidence(d.get('evidence',[]));criteria=[]
@@ -59,6 +67,6 @@ def preference_feedback_4_6_9(feature_id:int,data:dict[str,Any])->dict[str,Any]:
   purpose=str(x.get('purpose','')).lower()
   if 'detector evasion' in purpose or 'impersonat' in purpose:prohibited.append(x.get('id'))
  if prohibited:raise ValueError('detector evasion and impersonation are prohibited')
- candidates=data.get('candidates',[]);ranked=sorted(candidates,key=lambda x:(-float(x.get('score',0)),x.get('id','')))
- baseline=sum(float(x.get('baseline_score',0)) for x in holdout)/len(holdout);candidate=sum(float(x.get('candidate_score',0)) for x in holdout)/len(holdout);recommend=candidate>baseline and data.get('owner_decision')=='approved'
+ candidates=data.get('candidates',[]);ranked=sorted(candidates,key=lambda x:(-_fnum(x.get('score',0),'candidates.score'),x.get('id','')))
+ baseline=sum(_fnum(x.get('baseline_score',0),'holdout.baseline_score') for x in holdout)/len(holdout);candidate=sum(_fnum(x.get('candidate_score',0),'holdout.candidate_score') for x in holdout)/len(holdout);recommend=candidate>baseline and data.get('owner_decision')=='approved'
  return {'feature_id':feature_id,'concept':PREF[feature_id],'consent':consent,'provenance':provenance,'example_count':len(examples),'ranked_candidates':ranked,'holdout_evaluation':{'baseline':baseline,'candidate':candidate,'improved':candidate>baseline},'owner_decision':data.get('owner_decision','pending'),'activation_recommended':recommend,'behavior_mutated':False,'promotion_status':'proposal_not_activated' if recommend else 'blocked_pending_owner_approval_or_improvement','revert_token':sha256((str(feature_id)+consent['scope']).encode()).hexdigest()[:16],'boundary':'No silent behavior mutation. This handler only evaluates and records the proposal: nothing mutates, persists or activates here (behavior_mutated is always False; activation, when recommended, requires a separate real mutation path with scoped, unrevoked consent, provenance, holdout improvement and explicit owner approval). Never optimize for detector evasion or impersonation.'}

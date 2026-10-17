@@ -23,6 +23,7 @@ media is attached, instead of posting empty containers.
 from __future__ import annotations
 
 import asyncio
+from copy import deepcopy
 
 from app.runtime.guardrails.errors import GuardrailRefusal
 import uuid
@@ -33,17 +34,33 @@ from typing import Any, Callable, Protocol
 from .adapters import AdapterError, PublishRequest, PublishResult
 from .compliance import ComplianceIssue, is_blocking, split_x_thread, validate_draft
 from .models import ContentPlan, Platform
+from .review_binding import publish_snapshot, snapshot_matches
+from .publish_targets import valid_target
 
 # -- statuses ------------------------------------------------------------------
 
 STATUS_AWAITING_APPROVAL = "awaiting_approval"
 STATUS_APPROVED = "approved"
+STATUS_DISPATCHING = "dispatching"
 STATUS_DENIED = "denied"
 STATUS_PUBLISHED = "published"
 STATUS_FAILED = "failed"
 STATUS_CANCELLED = "cancelled"
 
 TERMINAL_STATUSES = {STATUS_PUBLISHED, STATUS_FAILED, STATUS_DENIED, STATUS_CANCELLED}
+LOCKED_STATUSES = TERMINAL_STATUSES | {STATUS_DISPATCHING}
+
+
+class _PublishTargetUnverified(Exception):
+    """Identity lookup could not prove the publishing account."""
+
+
+class _PublishTargetChanged(Exception):
+    """Current credentials select a different account than the reviewed one."""
+
+
+class _DispatchClaimLost(Exception):
+    """Another worker or a changed record won; never save this stale copy."""
 
 #: Platforms whose official APIs reject posts without media.
 MEDIA_REQUIRED_PLATFORMS = {"instagram", "tiktok"}
@@ -89,6 +106,7 @@ class ScheduleEntry:
     external_url: str | None = None
     draft_only: bool = False
     failure: str | None = None
+    publish_target: dict[str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -109,12 +127,16 @@ class ScheduleRepository(Protocol):
     def save_schedule(self, entry: ScheduleEntry) -> ScheduleEntry: ...
     def get_schedule(self, schedule_id: str) -> ScheduleEntry | None: ...
     def list_schedules(self, plan_id: str | None = None) -> list[ScheduleEntry]: ...
+    def claim_publish(self, expected: ScheduleEntry) -> bool: ...
     def save_publish_record(self, record: PublishRecord) -> PublishRecord: ...
     def list_publish_records(self, schedule_id: str | None = None) -> list[PublishRecord]: ...
 
 
 class ApprovalDecisionLookup(Protocol):
     """Read-only view of the shared Approval Center's decisions."""
+
+    def reviewed_payload(self, approval_id: str) -> dict | None:
+        """Return approved, tenant-checked M06 schedule_post payload, else None."""
 
     def status_of(self, approval_id: str) -> str | None:
         """Return 'pending' | 'approved' | 'denied' | 'expired', or None if unknown."""
@@ -153,7 +175,7 @@ class _ApprovalAuthority:
     Binds approval_id -> action digest just before dispatch; unbound refs, a
     non-approved decision or a digest mismatch reject (fail closed). Trusts the
     decision lookup (M00); it does not authenticate the approver or prove the
-    owner reviewed this digest. Edits before this execution-time bind are not detected.
+    owner reviewed this digest. Scheduler separately compares the stored M00 publish snapshot first.
     """
 
     def __init__(self, decisions) -> None:
@@ -212,6 +234,17 @@ class Scheduler:
         self._adapters = adapter_factory
         self._clock = clock or (lambda: datetime.now(timezone.utc))
 
+    def resolve_publish_target(self, platform: Platform) -> dict[str, str]:
+        """Read the target using current credentials; never perform a write."""
+        adapter = self._adapters.for_platform(platform)
+        identity = getattr(adapter, "account_identity", None)
+        if not callable(identity):
+            raise ScheduleStateError("adapter cannot resolve a publishing account")
+        target = asyncio.run(identity())
+        if not valid_target(platform.value, target):
+            raise ScheduleStateError("adapter returned an invalid publishing account")
+        return deepcopy(target)
+
     # -- entry creation ------------------------------------------------------
 
     def create_entries(
@@ -221,15 +254,23 @@ class Scheduler:
         publish_at: datetime,
         approval_ids: dict[Platform, str],
         sponsored: bool = False,
+        publish_targets: dict[Platform, dict[str, str]] | None = None,
+        draft_approval_ids: list[str] | None = None,
     ) -> list[ScheduleEntry]:
         """Persist one awaiting-approval entry per draft.
 
         All drafts are compliance-checked first; a single blocking finding
         aborts the whole batch before anything is persisted (fail closed).
         ``approval_ids`` maps each draft's platform to the approval request
-        already filed for it by the caller.
+        already filed for it by the caller. For repeated platforms, pass
+        draft_approval_ids in exact draft order; ambiguous ID reuse is refused.
         """
         require_aware(publish_at)
+        ids = (list(draft_approval_ids) if draft_approval_ids is not None
+               else [approval_ids.get(draft.platform) for draft in plan.drafts])
+        if (len(ids) != len(plan.drafts) or any(type(key) is not str or not key for key in ids)
+                or len(set(ids)) != len(ids)):
+            raise ScheduleStateError("each draft requires its own schedule_post approval")
         findings: list[ComplianceIssue] = []
         for draft in plan.drafts:
             issues = validate_draft(
@@ -245,7 +286,7 @@ class Scheduler:
             raise DraftComplianceError(findings)
 
         entries: list[ScheduleEntry] = []
-        for draft in plan.drafts:
+        for draft_index, draft in enumerate(plan.drafts):
             thread_chunks: list[str] = []
             if draft.platform == Platform.TWITTER and draft.format == "thread":
                 thread_chunks = split_x_thread(draft.post_copy)
@@ -258,9 +299,10 @@ class Scheduler:
                         format=draft.format,
                         text=draft.post_copy,
                         publish_at=publish_at,
-                        approval_id=approval_ids[draft.platform],
+                        approval_id=ids[draft_index],
                         thread_chunks=thread_chunks,
                         sponsored=sponsored,
+                        publish_target=deepcopy((publish_targets or {}).get(draft.platform)),
                     )
                 )
             )
@@ -271,8 +313,9 @@ class Scheduler:
     def attach_media(self, schedule_id: str, media_urls: list[str], alt_texts: list[str] | None = None) -> ScheduleEntry:
         """Attach rendered media URLs produced by the asset render pipeline."""
         entry = self._entry(schedule_id)
-        if entry.status in TERMINAL_STATUSES:
+        if entry.status in LOCKED_STATUSES:
             raise ScheduleStateError(f"cannot attach media to an entry in state {entry.status}")
+        self._invalidate_review(entry)
         entry.media_urls = list(media_urls)
         entry.alt_texts = list(alt_texts or [])
         return self._repository.save_schedule(entry)
@@ -283,7 +326,7 @@ class Scheduler:
         """Fold Approval Center decisions into entry state. Idempotent."""
         changed: list[ScheduleEntry] = []
         for entry in self._repository.list_schedules():
-            if entry.status != STATUS_AWAITING_APPROVAL:
+            if entry.status != STATUS_AWAITING_APPROVAL or not entry.approval_id:
                 continue
             decision = self._decisions.status_of(entry.approval_id)
             if decision == "approved":
@@ -300,13 +343,19 @@ class Scheduler:
     # -- execution gate ---------------------------------------------------------
 
     def due_entries(self, now: datetime | None = None) -> list[ScheduleEntry]:
-        """Approved entries whose publish time has arrived."""
-        moment = _aware(now or self._clock())
-        return [
-            entry
-            for entry in self._repository.list_schedules()
-            if entry.status == STATUS_APPROVED and _aware(entry.publish_at) <= moment
-        ]
+        """Approved entries due at an explicit instant, never a guessed timezone.
+
+        Historical/direct repository writes may contain naive times despite the
+        current creation guards. Validate the entire approved batch before any
+        dispatch can start; an ambiguous row requires explicit rescheduling.
+        Pending/terminal rows do not participate in the effect candidate batch.
+        """
+        moment = require_aware(now if now is not None else self._clock())
+        approved = [entry for entry in self._repository.list_schedules()
+                    if entry.status == STATUS_APPROVED]
+        for entry in approved:
+            require_aware(entry.publish_at)
+        return [entry for entry in approved if entry.publish_at <= moment]
 
     def execute_due(self, now: datetime | None = None) -> list[PublishRecord]:
         """Publish due entries - only after re-verifying each approval.
@@ -319,13 +368,25 @@ class Scheduler:
         """
         records: list[PublishRecord] = []
         for entry in self.due_entries(now):
-            if self._decisions.status_of(entry.approval_id) != "approved":
+            expected_entry = deepcopy(entry)
+            approval_id = entry.approval_id
+            if self._decisions.status_of(approval_id) != "approved":
                 entry.status = STATUS_DENIED
                 entry.decided_at = self._clock()
                 entry.failure = "approval was not in the approved state at execution time"
                 self._repository.save_schedule(entry)
                 continue
-            if entry.platform.value in MEDIA_REQUIRED_PLATFORMS and not entry.media_urls:
+            snapshot = publish_snapshot(entry)
+            lookup = getattr(self._decisions, "reviewed_payload", None)
+            try:
+                reviewed = lookup(approval_id) if callable(lookup) else None
+            except Exception:
+                reviewed = None
+            if not snapshot_matches(snapshot, reviewed) or not valid_target(snapshot["platform"], snapshot["publish_target"]):
+                self._invalidate_review(entry)
+                self._repository.save_schedule(entry)
+                continue
+            if snapshot["platform"] in MEDIA_REQUIRED_PLATFORMS and not snapshot["media_urls"]:
                 entry.status = STATUS_FAILED
                 entry.failure = (
                     f"{entry.platform.value} requires rendered media; the asset render pipeline "
@@ -335,14 +396,15 @@ class Scheduler:
                 continue
             try:
                 moment = _aware(self._clock())
-                action = {"id": f"{entry.id}-{int(moment.timestamp())}", "platform": entry.platform.value,
+                action = {"id": f"{entry.id}-{int(moment.timestamp())}", "platform": snapshot["platform"],
                           "kind": "post", "at": int(moment.timestamp()), "count": 1,
-                          "schedule_id": entry.id, "approval_id": entry.approval_id,
-                          "text": entry.text, "format": entry.format, "link": entry.link,
-                          "alt_texts": list(entry.alt_texts),
-                          "media_urls": list(entry.media_urls), "thread_chunks": list(entry.thread_chunks)}
+                          "schedule_id": entry.id, "approval_id": approval_id,
+                          "publish_target": deepcopy(snapshot["publish_target"]),
+                          "text": snapshot["text"], "format": snapshot["format"], "link": snapshot["link"],
+                          "alt_texts": list(snapshot["alt_texts"]),
+                          "media_urls": list(snapshot["media_urls"]), "thread_chunks": list(snapshot["thread_chunks"])}
                 from app.runtime.guardrails._fields import payload_sha256
-                self._authority.bind(entry.approval_id,
+                self._authority.bind(approval_id,
                                      payload_sha256({k: v for k, v in action.items() if k != "id"}))
                 def publish(a):
                     request = PublishRequest(
@@ -350,13 +412,37 @@ class Scheduler:
                         link=a["link"], media_urls=tuple(a["media_urls"]),
                         alt_texts=tuple(a["alt_texts"]), thread_chunks=tuple(a["thread_chunks"]))
                     adapter = self._adapters.for_platform(Platform(request.platform))
+                    identity = getattr(adapter, "account_identity", None)
+                    if not callable(identity):
+                        raise _PublishTargetUnverified()
+                    try:
+                        target = asyncio.run(identity())
+                    except AdapterError:
+                        raise _PublishTargetUnverified() from None
+                    if not valid_target(request.platform, target) or target != a["publish_target"]:
+                        raise _PublishTargetChanged()
+                    claim = getattr(self._repository, "claim_publish", None)
+                    if not callable(claim):
+                        raise ScheduleStateError("repository requires durable publish claims")
+                    if not claim(expected_entry):
+                        raise _DispatchClaimLost()
+                    entry.status = STATUS_DISPATCHING
+                    entry.failure = "publish_outcome_unconfirmed"
                     outcome = asyncio.run(adapter.publish(request))
                     # Return the actual request platform, never the entry or provider result label.
                     return request.platform, outcome
 
                 published_platform, result = self._enforcer.dispatch_outbound(
                     action, self._declarations, effect=publish,
-                    now=moment.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=entry.approval_id)
+                    now=moment.strftime("%Y-%m-%dT%H:%M:%SZ"), authority_ref=approval_id)
+            except (_PublishTargetChanged, _PublishTargetUnverified) as target_error:
+                self._invalidate_review(entry)
+                entry.failure = ("publish_target_unverified" if isinstance(target_error, _PublishTargetUnverified)
+                                 else "publish_target_changed")
+                self._repository.save_schedule(entry)
+                continue
+            except _DispatchClaimLost:
+                continue
             except GuardrailRefusal as refusal:
                 entry.status = STATUS_FAILED
                 entry.failure = f"guardrail refused publish: {refusal.code}"
@@ -393,7 +479,7 @@ class Scheduler:
 
     def cancel(self, schedule_id: str) -> ScheduleEntry:
         entry = self._entry(schedule_id)
-        if entry.status in TERMINAL_STATUSES:
+        if entry.status in LOCKED_STATUSES:
             raise ScheduleStateError(f"cannot cancel an entry in state {entry.status}")
         entry.status = STATUS_CANCELLED
         return self._repository.save_schedule(entry)
@@ -401,10 +487,19 @@ class Scheduler:
     def reschedule(self, schedule_id: str, publish_at: datetime) -> ScheduleEntry:
         require_aware(publish_at)
         entry = self._entry(schedule_id)
-        if entry.status in TERMINAL_STATUSES:
+        if entry.status in LOCKED_STATUSES:
             raise ScheduleStateError(f"cannot reschedule an entry in state {entry.status}")
+        self._invalidate_review(entry)
         entry.publish_at = publish_at
         return self._repository.save_schedule(entry)
+
+    @staticmethod
+    def _invalidate_review(entry):
+        # Old approval stays immutable in M00 but no longer authorizes this row.
+        entry.approval_id = ""
+        entry.status = STATUS_AWAITING_APPROVAL
+        entry.decided_at = None
+        entry.failure = "review_required"
 
     def get_entry(self, schedule_id: str) -> ScheduleEntry:
         return self._entry(schedule_id)

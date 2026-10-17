@@ -127,6 +127,8 @@ class BudgetPolicy:
     def __post_init__(self) -> None:
         for name in ("daily_limit_micro", "monthly_limit_micro", "per_run_limit_micro"):
             v = getattr(self, name)
+            if v is not None and type(v) is not int:
+                raise ValueError(f"{name} must be an integer or None")
             if v is not None and v <= 0:
                 raise ValueError(f"{name} must be positive or None")
         if not 0.0 < self.warn_fraction <= 1.0:

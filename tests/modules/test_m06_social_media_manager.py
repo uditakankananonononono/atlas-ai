@@ -61,7 +61,10 @@ async def failing_generate(prompt: str, provider: str, model: str | None = None)
 
 def make_service(generate=fake_generate) -> tuple[Service, FakeApprovalStore, FakeMetricsClient]:
     store, metrics = FakeApprovalStore(), FakeMetricsClient()
-    return Service(approval_store=store, generate=generate, metrics_client=metrics), store, metrics
+    from tests.modules.test_m06_scheduler import attach_identity_scheduler
+    service = Service(approval_store=store, generate=generate, metrics_client=metrics)
+    attach_identity_scheduler(service)  # scheduling now resolves the exact publishing account first
+    return service, store, metrics
 
 
 def make_client(service: Service) -> TestClient:

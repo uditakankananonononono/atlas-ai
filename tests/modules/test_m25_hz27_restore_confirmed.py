@@ -56,12 +56,14 @@ def test_hz27_durable_events_happen_in_order(tmp_path, monkeypatch):
         except OSError:
             events.append(('fsync', '<unknown>'))
         return real_fsync(fd)
-    def rec_rename(a, b):
-        events.append(('rename', str(a), str(b)))
-        return real_rename(a, b)
-    def rec_replace(a, b):
-        events.append(('replace', str(a), str(b)))
-        return real_replace(a, b)
+    def _res(path, fd):  # resolve dirfd-relative names for the order lock
+        return os.readlink(f'/proc/self/fd/{fd}') + '/' + str(path) if fd is not None else str(path)
+    def rec_rename(a, b, **kw):
+        events.append(('rename', _res(a, kw.get('src_dir_fd')), _res(b, kw.get('dst_dir_fd'))))
+        return real_rename(a, b, **kw)
+    def rec_replace(a, b, **kw):
+        events.append(('replace', _res(a, kw.get('src_dir_fd')), _res(b, kw.get('dst_dir_fd'))))
+        return real_replace(a, b, **kw)
     monkeypatch.setattr(os, 'fsync', rec_fsync)
     monkeypatch.setattr(os, 'rename', rec_rename)
     monkeypatch.setattr(os, 'replace', rec_replace)
@@ -92,9 +94,9 @@ def test_hz27_post_rename_failure_cleans_renamed_target(tmp_path, monkeypatch):
     # manifest references these bytes pre-claim, so removal is truthful.
     state = {'renamed': False, 'failed': False}
     real_rename, real_fsync = os.rename, os.fsync
-    def rename_watch(a, b):
+    def rename_watch(a, b, **kw):
         state['renamed'] = True
-        return real_rename(a, b)
+        return real_rename(a, b, **kw)
     src_dir = str(tmp_path / 'tenant-a' / 's1')
     def fail_parent_fsync(fd):
         try:
@@ -128,13 +130,13 @@ def test_hz27_unconfirmed_restore_preserves_referenced_bytes(tmp_path, monkeypat
     # not confirmed.
     state = {'renamed': False, 'claim_replaced': False}
     real_rename, real_replace, real_fsync = os.rename, os.replace, os.fsync
-    def rename_watch(a, b):
+    def rename_watch(a, b, **kw):
         state['renamed'] = True
-        return real_rename(a, b)
-    def replace_watch(a, b):
+        return real_rename(a, b, **kw)
+    def replace_watch(a, b, **kw):
         if state['renamed'] and str(b).endswith('manifest.json'):
             state['claim_replaced'] = True
-        return real_replace(a, b)
+        return real_replace(a, b, **kw)
     src_dir = str(tmp_path / 'tenant-a' / 's1')
     def fail_late_fsync(fd):
         try:
@@ -166,9 +168,9 @@ def test_hz27_confirmed_restore_still_removes_owned_target(tmp_path, monkeypatch
     # Passes on hz26 and hz27.
     state = {'renamed': False, 'failed': False}
     real_rename, real_fsync = os.rename, os.fsync
-    def rename_watch(a, b):
+    def rename_watch(a, b, **kw):
         state['renamed'] = True
-        return real_rename(a, b)
+        return real_rename(a, b, **kw)
     def fail_claim_file_fsync(fd):
         try:
             name = os.readlink(f'/proc/self/fd/{fd}')

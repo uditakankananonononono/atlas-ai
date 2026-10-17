@@ -185,3 +185,159 @@ describe("Layout saves are versioned",()=>{
     expect(apiMock.getView.mock.calls.length).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe("Social post approval review",()=>{
+  const social={id:"sp-1",module_id:6,action_type:"schedule_post",user_id:"t1",status:"pending",created_at:"2026-10-17T08:00:00Z",expires_at:null,decided_at:null,approved_by:null,
+    payload:{platform:"linkedin",copy:"Synthetic review text",publish_at:"2026-10-20T12:00:00+00:00",sponsored:false,publish_snapshot:{version:2,publish_target:{platform:"linkedin",account_id:"123"},plan_id:"p",platform:"linkedin",format:"article_post",text:"Synthetic review text",publish_at:"2026-10-20T12:00:00+00:00",media_urls:[],alt_texts:[],thread_chunks:[],link:null,sponsored:false}}};
+  beforeEach(()=>{apiMock.rerunSchedules.mockResolvedValue(card)});
+  it("lists M06 requests from M00, shows the exact account before any decision, and decides via M00 only on click",async()=>{
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[social]:[]);
+    apiMock.decideApprovalRequest.mockResolvedValue({...social,status:"approved",approved_by:"executive-dashboard"});
+    render(<ExecutiveDashboard/>);
+    await screen.findByText("Social posts in the approval center (1)");
+    expect(apiMock.approvalRequests).toHaveBeenCalledWith({status:"pending",module_id:6});
+    expect(apiMock.decideApprovalRequest).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button",{name:"Review"}));
+    const dialog=await screen.findByRole("dialog",{name:"Social publish approval"});
+    expect(dialog.textContent).toContain("123");expect(dialog.textContent).toContain("Synthetic review text");
+    expect(apiMock.decideApprovalRequest).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button",{name:"Approve"}));
+    await waitFor(()=>expect(apiMock.decideApprovalRequest).toHaveBeenCalledWith("/approval-center/requests/sp-1","approved"));
+  });
+  it("a legacy request without a snapshot never reaches the decision API on approve",async()=>{
+    const legacy={...social,payload:{platform:"linkedin",copy:"x",publish_at:"2026-10-20T12:00:00+00:00"}};
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[legacy]:[]);
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    expect(await screen.findByText(/Destination not verified/)).toBeTruthy();
+    await userEvent.click(screen.getByRole("button",{name:"Approve"}));
+    expect(apiMock.decideApprovalRequest).not.toHaveBeenCalled();
+  });
+  it("when a decision fails because the request was decided elsewhere, re-reads it and shows its real status",async()=>{
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[social]:[]);
+    apiMock.decideApprovalRequest.mockRejectedValue(new Error("POST /approval-center/requests/sp-1/decision failed: 409"));
+    apiMock.approvalRequest.mockResolvedValue({...social,status:"denied",approved_by:"other"});
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    await userEvent.click(await screen.findByRole("button",{name:"Approve"}));
+    const alert=await screen.findByRole("alert");
+    expect(alert.textContent).toContain("409");expect(alert.textContent).toContain("now denied");
+    await waitFor(()=>expect(screen.queryByRole("button",{name:"Approve"})).toBeNull());
+    expect(apiMock.approvalRequest).toHaveBeenCalledWith("/approval-center/requests/sp-1");
+  });
+  it("a server error with the request still pending keeps it pending and decidable",async()=>{
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[social]:[]);
+    apiMock.decideApprovalRequest.mockRejectedValue(new Error("POST /approval-center/requests/sp-1/decision failed: 500"));
+    apiMock.approvalRequest.mockResolvedValue(social);
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    await userEvent.click(await screen.findByRole("button",{name:"Approve"}));
+    expect((await screen.findByRole("alert")).textContent).toContain("500");
+    expect((screen.getByRole("button",{name:"Approve"}) as HTMLButtonElement).disabled).toBe(false);
+  });
+  it("unknown after-commit failure: decision fails and the re-read fails, so controls stay off until a status check succeeds",async()=>{
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[social]:[]);
+    apiMock.decideApprovalRequest.mockRejectedValue(new Error("POST /approval-center/requests/sp-1/decision failed: 504"));
+    apiMock.approvalRequest.mockRejectedValue(new Error("GET /approval-center/requests/sp-1 failed: 503"));
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    await userEvent.click(await screen.findByRole("button",{name:"Approve"}));
+    await screen.findByText(/Status unknown/);
+    const dlg=screen.getByRole("dialog",{name:"Social publish approval"});expect(dlg.textContent).toContain("unknown (last seen pending)");expect(dlg.textContent).not.toContain("No decision needed.");
+    expect(screen.queryByRole("button",{name:"Approve"})).toBeNull();expect(screen.queryByRole("button",{name:"Deny"})).toBeNull();
+    expect(apiMock.decideApprovalRequest).toHaveBeenCalledTimes(1);
+    await userEvent.click(screen.getByRole("button",{name:"Check status"}));
+    await waitFor(()=>expect(apiMock.approvalRequest).toHaveBeenCalledTimes(2));
+    expect(screen.getByText(/Status unknown/)).toBeTruthy();expect(screen.queryByRole("button",{name:"Approve"})).toBeNull();
+    apiMock.approvalRequest.mockResolvedValue({...social,status:"approved",approved_by:"executive-dashboard"});
+    await userEvent.click(screen.getByRole("button",{name:"Check status"}));
+    await waitFor(()=>expect(screen.queryByText(/Status unknown/)).toBeNull());
+    expect(screen.getByText(/now approved/)).toBeTruthy();expect(screen.queryByRole("button",{name:"Approve"})).toBeNull();
+    expect(apiMock.decideApprovalRequest).toHaveBeenCalledTimes(1);
+  });
+  it("a status check that finds the request still pending turns the controls back on",async()=>{
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[social]:[]);
+    apiMock.decideApprovalRequest.mockRejectedValue(new Error("timeout"));
+    apiMock.approvalRequest.mockRejectedValueOnce(new Error("down"));
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    await userEvent.click(await screen.findByRole("button",{name:"Approve"}));
+    await screen.findByText(/Status unknown/);
+    apiMock.approvalRequest.mockResolvedValue(social);
+    await userEvent.click(screen.getByRole("button",{name:"Check status"}));
+    expect((await screen.findByRole("button",{name:"Approve"}) as HTMLButtonElement).disabled).toBe(false);
+  });
+  it("the refreshed list no longer shows a request once it is decided",async()=>{
+    let decided=false;
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6&&!decided?[social]:[]);
+    apiMock.decideApprovalRequest.mockImplementation(async()=>{decided=true;return {...social,status:"approved",approved_by:"executive-dashboard"}});
+    render(<ExecutiveDashboard/>);
+    await screen.findByText("Social posts in the approval center (1)");
+    await userEvent.click(screen.getByRole("button",{name:"Review"}));
+    await userEvent.click(await screen.findByRole("button",{name:"Approve"}));
+    await waitFor(()=>expect(screen.queryByText(/Social posts in the approval center/)).toBeNull());
+    expect(screen.getByRole("dialog",{name:"Social publish approval"}).textContent).toContain("No decision needed.");
+  });
+  it("a slow older list read that finishes last cannot bring back a request a newer read already dropped",async()=>{
+    const held:Array<(rows:unknown[])=>void>=[];let tracking=false;
+    apiMock.approvalRequests.mockImplementation((q:{module_id?:number})=>q.module_id!==6?Promise.resolve([]):tracking?new Promise(res=>{held.push(res)}):Promise.resolve([social]));
+    apiMock.decideApprovalRequest.mockRejectedValue(new Error("POST failed: 504"));
+    apiMock.approvalRequest.mockRejectedValueOnce(new Error("GET failed: 503"));
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    tracking=true;
+    await userEvent.click(await screen.findByRole("button",{name:"Approve"}));
+    await screen.findByText(/Status unknown\. Decision/);
+    await waitFor(()=>expect(held.length).toBe(1));            // read A: older, still pending
+    apiMock.approvalRequest.mockResolvedValue({...social,status:"approved",approved_by:"executive-dashboard"});
+    await userEvent.click(screen.getByRole("button",{name:"Check status"}));
+    await waitFor(()=>expect(held.length).toBe(2));            // read B: newer
+    held[1]([]);                                               // newer read: request is no longer pending
+    await waitFor(()=>expect(screen.queryByText(/Social posts in the approval center/)).toBeNull());
+    held[0]([social]);                                         // older read finishes last, still showing it pending
+    await new Promise(r=>setTimeout(r,30));
+    expect(screen.queryByText(/Social posts in the approval center/)).toBeNull();
+  });
+  it("closing and reopening a request whose status is unknown keeps it held and never re-sends the decision",async()=>{
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[social]:[]);
+    apiMock.decideApprovalRequest.mockRejectedValue(new Error("POST failed: 504"));
+    apiMock.approvalRequest.mockRejectedValue(new Error("GET failed: 503"));
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    await userEvent.click(await screen.findByRole("button",{name:"Approve"}));
+    await screen.findByText(/Status unknown\. Decision/);
+    await userEvent.click(screen.getByRole("button",{name:"Close"}));
+    expect(screen.queryByRole("dialog",{name:"Social publish approval"})).toBeNull();
+    // reopen from the (stale, still-pending) list copy while detail reads are still down
+    await userEvent.click(screen.getByRole("button",{name:"Review"}));
+    await screen.findByText(/Status unknown\. Decision/);
+    expect(screen.queryByRole("button",{name:"Approve"})).toBeNull();expect(screen.queryByRole("button",{name:"Deny"})).toBeNull();
+    expect(apiMock.decideApprovalRequest).toHaveBeenCalledTimes(1);
+    // reopening read the detail on its own; once it works the real state replaces the stale copy
+    apiMock.approvalRequest.mockResolvedValue({...social,status:"approved",approved_by:"executive-dashboard"});
+    await userEvent.click(screen.getByRole("button",{name:"Check status"}));
+    await waitFor(()=>expect(screen.queryByText(/Status unknown\. Decision/)).toBeNull());
+    expect(screen.getByText(/now approved/)).toBeTruthy();expect(apiMock.decideApprovalRequest).toHaveBeenCalledTimes(1);
+  });
+  it("reopening an unknown request whose detail now reads pending re-enables the controls only after that fresh read",async()=>{
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[social]:[]);
+    apiMock.decideApprovalRequest.mockRejectedValue(new Error("timeout"));
+    apiMock.approvalRequest.mockRejectedValueOnce(new Error("down"));
+    render(<ExecutiveDashboard/>);
+    await userEvent.click(await screen.findByRole("button",{name:"Review"}));
+    await userEvent.click(await screen.findByRole("button",{name:"Approve"}));
+    await screen.findByText(/Status unknown\. Decision/);
+    await userEvent.click(screen.getByRole("button",{name:"Close"}));
+    apiMock.approvalRequest.mockResolvedValue(social);
+    await userEvent.click(screen.getByRole("button",{name:"Review"}));
+    expect((await screen.findByRole("button",{name:"Approve"}) as HTMLButtonElement).disabled).toBe(false);
+    expect(apiMock.decideApprovalRequest).toHaveBeenCalledTimes(1);
+  });
+  it("ignores non-publish M06 requests such as A/B tests",async()=>{
+    apiMock.approvalRequests.mockImplementation(async(q:{module_id?:number})=>q.module_id===6?[{...social,action_type:"ab_test"}]:[]);
+    render(<ExecutiveDashboard/>);
+    await screen.findByText("Agent 7 stalled");
+    await waitFor(()=>expect(apiMock.approvalRequests).toHaveBeenCalledWith({status:"pending",module_id:6}));
+    expect(screen.queryByText(/Social posts in the approval center/)).toBeNull();
+  });
+});

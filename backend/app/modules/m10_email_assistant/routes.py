@@ -9,9 +9,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.auth.context import TenantContext, require_tenant
 from app.core.approvals import approvals
+from app.core.database import SessionLocal
 from app.core.token_crypto import TokenCipher, TokenCryptoError
 
 from .gmail import HttpxGmailClient, UpstreamServiceError
+from .ltm import configured_email_ltm
 from .schemas import (
     EmailCategory,
     EmailDraftView,
@@ -26,6 +28,9 @@ from .schemas import (
 from .service import AccountNotFoundError, PubSubVerificationError, Service
 from .sql_repository import SqlEmailRepository
 
+from app.modules.m09_knowledge_workspace.repository import SqlGraphRepository
+from .graph_context import ACTOR_ID as GRAPH_ACTOR_ID, KnowledgeGraphIngestor, KnowledgeGraphReplyContext
+
 router = APIRouter(prefix="/email-assistant", tags=["email-assistant"])
 
 
@@ -35,6 +40,12 @@ async def get_service(tenant: TenantContext = Depends(require_tenant)) -> AsyncI
         cipher = TokenCipher(tenant.tenant_id)
     except TokenCryptoError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    graph_repository = SqlGraphRepository(tenant.tenant_id, GRAPH_ACTOR_ID)
+    try:
+        # Real bound store or a truthful 503: never a hidden absent capability.
+        ltm_store = configured_email_ltm(tenant.tenant_id, SessionLocal)
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     async with httpx.AsyncClient(timeout=30) as client:
         yield Service(
             SqlEmailRepository(tenant.tenant_id),
@@ -42,9 +53,12 @@ async def get_service(tenant: TenantContext = Depends(require_tenant)) -> AsyncI
             HttpxGmailClient(client),
             client,
             cipher=cipher,
+            graph_context=KnowledgeGraphReplyContext(graph_repository),
+            graph_ingest=KnowledgeGraphIngestor(graph_repository),
             google_client_id=os.getenv("ATLAS_GOOGLE_CLIENT_ID", ""),
             google_client_secret=os.getenv("ATLAS_GOOGLE_CLIENT_SECRET", ""),
             pubsub_verification_token=os.getenv("ATLAS_PUBSUB_VERIFICATION_TOKEN", ""),
+            ltm_store=ltm_store,
             review_state_capturer=_capture_review_state,
         )
 

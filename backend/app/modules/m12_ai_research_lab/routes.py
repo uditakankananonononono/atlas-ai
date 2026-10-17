@@ -37,11 +37,9 @@ async def run_workflow(body:WorkflowIn,tenant:TenantContext=Depends(require_tena
     try:return await engine.run(Workflow.from_yaml(body.yaml),{**body.inputs,"tenant_id":tenant.tenant_id})
     except WorkflowValidationError as error: raise HTTPException(422,str(error)) from error
     except RuntimeError as error:
-        from .wiring import WorkflowReviewRequired
-        if isinstance(error, WorkflowReviewRequired):
-            raise HTTPException(422, {'state':'review_required','retry_allowed':False,
-                                     'result':asdict(error.result),'downstream_executed':False}) from error
-        raise HTTPException(422, str(error)) from error
+        from .wiring import workflow_error_response
+        status,detail=workflow_error_response(error)
+        raise HTTPException(status, detail) from error
 
 from pydantic import BaseModel,Field
 from typing import Any,Literal

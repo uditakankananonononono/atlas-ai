@@ -7,6 +7,12 @@ import re
 from typing import Any
 ROWS=dict(enumerate('''Mixing|Mastering|Foley Creation|Voice Acting Direction|Podcast Production|Audiobook Narration|Radio Drama|Sound Installation Design|Interactive Art|Generative Art|Data Visualization|Infographic Design|Map Design|Scientific Illustration|Medical Illustration|Technical Drawing|Architectural Rendering|Interior Design|Landscape Design|Urban Planning|Fashion Design|Textile Design|Jewelry Design|Furniture Design|Industrial Design|Automotive Design|Aerospace Design'''.split('|'),306))
 class CreativeError(ValueError):pass
+def _fnum(value:Any,field:str)->float:
+ """Coded float coercion for externally supplied fields; non-scalar input
+ raises CreativeError (route maps to 422). Valid strings/numbers
+ preserved; non-finite floats keep their current accepted behavior."""
+ try:return float(value)
+ except (TypeError,ValueError):raise CreativeError(f"{field} must be a number") from None
 def slug(s):return re.sub('[^a-z0-9]+','_',s.lower()).strip('_')
 SPECS={
 306:('audio_post',['tracks','sample_rate','target_platform'],['gain_staging','pan','eq','dynamics','spatial_fx','automation','reference_check']),307:('audio_post',['mix','target_platform','loudness_standard'],['mix_qc','sequence','tonal_balance','dynamics','loudness','true_peak','codec_preview']),308:('sound_story',['cue_sheet','scene','recording_context'],['spot','prop_or_surface','performance','mic_perspective','sync','edit_layers']),309:('performance_direction',['script','character_bible','performer_constraints'],['intent','beats','subtext','physicality','pace','pronunciation','takes','consent']),310:('spoken_audio',['episodes','audience','distribution'],['format','research','run_of_show','record','edit','fact_check','mix','metadata','publish_approval']),311:('spoken_audio',['manuscript','rights_status','narration_style'],['text_prep','pronunciation_guide','character_voices','recording_blocks','pickup_log','proof_listen','mastering_spec']),312:('sound_story',['script','cast','rights_status'],['dramaturgy','casting','table_read','performance','foley','soundscape','edit','mix','credits']),313:('spatial_audio',['site','speaker_layout','experience_goal'],['site_acoustics','zones','routing','content','interaction','accessibility','safety','commissioning']),314:('interactive_media',['concept','inputs','outputs'],['interaction_loop','state_model','sensors','feedback','failure_modes','accessibility','privacy','exhibition']),315:('generative_media',['concept','system_rules','seed_policy'],['algorithm','parameters','constraints','variation','curation','provenance','export']),
@@ -26,7 +32,7 @@ def plan(row:int,p:dict[str,Any])->dict[str,Any]:
  for stage in stages:
   value=decisions.get(stage);workflow.append({'stage':stage,'decision':value,'status':'specified' if value not in (None,[],{}) else 'open'})
  if row==306:
-  sr=float(p['sample_rate'])
+  sr=_fnum(p['sample_rate'],'sample_rate')
   if sr not in (44100,48000,88200,96000):raise CreativeError('sample_rate must be a standard Hz value')
  if row==307 and not p.get('loudness_standard',{}).get('integrated_lufs'):raise CreativeError('mastering requires integrated_lufs target')
  if row==315 and not isinstance(p['seed_policy'],dict):raise CreativeError('seed_policy must describe reproducibility')
@@ -35,7 +41,7 @@ def plan(row:int,p:dict[str,Any])->dict[str,Any]:
   if enc.get('zero_required') and enc.get('axis_min',0)!=0:raise CreativeError('zero-baseline encoding requires axis_min=0')
  if row==318 and not p.get('geodata',{}).get('crs'):raise CreativeError('map geodata requires CRS')
  if row in (319,320) and not p.get('evidence_sources'):raise CreativeError('illustration requires evidence sources')
- if row==321 and any(float(x.get('tolerance',0))<0 for x in p.get('dimensions',[])):raise CreativeError('dimension tolerance cannot be negative')
+ if row==321 and any(_fnum(x.get('tolerance',0),'dimensions.tolerance')<0 for x in p.get('dimensions',[])):raise CreativeError('dimension tolerance cannot be negative')
  if row>=323 and not p.get('human_review',False):raise CreativeError('built/product/transport design requires human_review=true')
  safety=[]
  if row in (320,323,324,325,331,332):safety.append('qualified regulatory and safety review required')

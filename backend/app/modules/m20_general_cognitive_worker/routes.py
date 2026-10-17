@@ -504,7 +504,12 @@ def row14_counterfactual(request: CounterfactualRequest, service: Any = Depends(
     episode = service.episodic.get(request.episode_id)
     if episode is None:
         raise HTTPException(status_code=404, detail="episode not found")
-    return service.counterfactuals.simulate(episode, request.alternatives)
+    try:
+        return service.counterfactuals.simulate(episode, request.alternatives)
+    except ValueError as exc:
+        if not getattr(exc, "alternative_validation", False):
+            raise  # estimator/provider faults are not client input errors
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.post("/meta/temporal/compare")
@@ -531,7 +536,10 @@ def row17_flow_assess(request: FlowAssessRequest, service: Any = Depends(get_ser
 
 @router.post("/meta/flow/structure")
 def row17_flow_structure(request: FlowStructureRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
-    return {"structured": service.flow.structure_work(request.tasks, skill=request.skill)}
+    try:
+        return {"structured": service.flow.structure_work(request.tasks, skill=request.skill)}
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/reframe")
@@ -630,7 +638,10 @@ def row24_regret(request: RegretRequest) -> dict[str, Any]:
 @router.post("/meta/decisions/opportunity-cost")
 def row25_opportunity_cost(request: SacrificeRequest) -> dict[str, Any]:
     from .metacognition import quantify_sacrifice as _quantify
-    return _quantify(request.chosen, request.alternatives)
+    try:
+        return _quantify(request.chosen, request.alternatives)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.post("/meta/decisions/sunk-cost")
@@ -656,7 +667,23 @@ def row27_horizon(request: HorizonRequest, service: Any = Depends(get_service)) 
 @router.post("/meta/abstraction/rollup")
 def row28_rollup(request: RollupRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
     from .schemas import PlanNode as _PlanNode
-    plan = [_PlanNode(**n) for n in request.plan]
+    from pydantic import ValidationError as _ValidationError
+    plan: list[Any] = []
+    for n in request.plan:
+        if not isinstance(n, dict):
+            raise HTTPException(status_code=422,
+                                detail="plan entries must be objects")
+        try:
+            plan.append(_PlanNode(**n))
+        except _ValidationError as exc:
+            # structured field/type only: never echo raw caller values back
+            raise HTTPException(
+                status_code=422,
+                detail=[{"loc": list(e["loc"]), "type": e["type"]}
+                        for e in exc.errors()])
+        except TypeError:
+            raise HTTPException(status_code=422,
+                                detail="plan entries must be objects")
     try:
         return service.abstraction.rollup(request.goal, plan, level=request.level)
     except ValueError as exc:
@@ -665,7 +692,10 @@ def row28_rollup(request: RollupRequest, service: Any = Depends(get_service)) ->
 
 @router.post("/meta/perspectives")
 def row29_perspectives(request: PerspectivesRequest, service: Any = Depends(get_service)) -> dict[str, Any]:
-    views = service.perspectives.evaluate(request.proposal)
+    try:
+        views = service.perspectives.evaluate(request.proposal)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return {"perspectives": [v.__dict__ for v in views]}
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime
 from threading import RLock
-from sqlalchemy import JSON,DateTime,Float,Integer,String,Text,select
+from sqlalchemy import JSON,DateTime,Float,Integer,String,Text,select,update
 from sqlalchemy.orm import Mapped,mapped_column,sessionmaker
 from app.core.database import Base,SessionLocal,engine
 from .schemas import *
@@ -54,6 +54,29 @@ class SqlIdeaRepository:
             if r is None:r=ExperimentRow(tenant_id=self.tenant_id,id=x.id,idea_id=x.idea_id,created_at=x.created_at);db.add(r)
             r.payload=x.model_dump(mode="json",exclude={"id","idea_id","status","observed_value","learnings","created_at","updated_at"});r.status=x.status.value;r.observed_value=x.observed_value;r.learnings=x.learnings;r.updated_at=x.updated_at
         return x
+    def save_idea_with_decision(self,x,expected_version,d):
+        with self.sessions.begin() as db:
+            res=db.execute(update(IdeaRow).where(IdeaRow.tenant_id==self.tenant_id,IdeaRow.id==x.id,IdeaRow.version==expected_version).values(title=x.title,problem=x.problem,proposed_solution=x.proposed_solution,tags=x.tags,metadata_json=x.metadata,stage=x.stage.value,version=x.version,created_at=x.created_at,updated_at=x.updated_at).execution_options(synchronize_session=False)).rowcount
+            if res!=1:
+                if db.scalar(select(IdeaRow.pk).where(IdeaRow.tenant_id==self.tenant_id,IdeaRow.id==x.id)) is None:raise LookupError(x.id)
+                raise RuntimeError("idea changed; refresh before deciding")
+            db.add(DecisionRow(tenant_id=self.tenant_id,id=d.id,idea_id=d.idea_id,from_stage=d.from_stage.value,to_stage=d.to_stage.value,rationale=d.rationale,actor_id=d.actor_id,metadata_json=d.metadata,decided_at=d.decided_at,idea_version=d.idea_version))
+        return d
+    def save_experiment_cas(self,x,expected_status):
+        with self.sessions.begin() as db:
+            res=db.execute(update(ExperimentRow).where(ExperimentRow.tenant_id==self.tenant_id,ExperimentRow.id==x.id,ExperimentRow.status==expected_status.value).values(payload=x.model_dump(mode="json",exclude={"id","idea_id","status","observed_value","learnings","created_at","updated_at"}),status=x.status.value,observed_value=x.observed_value,learnings=x.learnings,updated_at=x.updated_at).execution_options(synchronize_session=False)).rowcount
+            if res!=1:
+                if db.scalar(select(ExperimentRow.pk).where(ExperimentRow.tenant_id==self.tenant_id,ExperimentRow.id==x.id)) is None:raise LookupError(x.id)
+                raise RuntimeError("experiment changed or already completed; refresh before updating")
+        return x
+    def save_experiment_with_evidence(self,x,expected_status,e):
+        with self.sessions.begin() as db:
+            res=db.execute(update(ExperimentRow).where(ExperimentRow.tenant_id==self.tenant_id,ExperimentRow.id==x.id,ExperimentRow.status==expected_status.value).values(payload=x.model_dump(mode="json",exclude={"id","idea_id","status","observed_value","learnings","created_at","updated_at"}),status=x.status.value,observed_value=x.observed_value,learnings=x.learnings,updated_at=x.updated_at).execution_options(synchronize_session=False)).rowcount
+            if res!=1:
+                if db.scalar(select(ExperimentRow.pk).where(ExperimentRow.tenant_id==self.tenant_id,ExperimentRow.id==x.id)) is None:raise LookupError(x.id)
+                raise RuntimeError("experiment changed or already completed; refresh before recording")
+            db.add(EvidenceRow(tenant_id=self.tenant_id,id=e.id,idea_id=e.idea_id,kind=e.kind.value,claim=e.claim,source=e.source,polarity=e.polarity.value,strength=e.strength,confidence=e.confidence,observed_at=e.observed_at,metadata_json=e.metadata,created_at=e.created_at))
+        return e
     def list_experiments(self,i):
         with self.sessions() as db:return [_experiment(r) for r in db.scalars(select(ExperimentRow).where(ExperimentRow.tenant_id==self.tenant_id,ExperimentRow.idea_id==i).order_by(ExperimentRow.created_at))]
     def add_decision(self,x):self._add(DecisionRow(tenant_id=self.tenant_id,id=x.id,idea_id=x.idea_id,from_stage=x.from_stage.value,to_stage=x.to_stage.value,rationale=x.rationale,actor_id=x.actor_id,metadata_json=x.metadata,decided_at=x.decided_at,idea_version=x.idea_version));return x
@@ -79,6 +102,28 @@ class MemoryIdeaRepository:
         for n,item in enumerate(items):
             if item.id==x.id:items[n]=deepcopy(x);return deepcopy(x)
         items.append(deepcopy(x));return deepcopy(x)
+    def save_idea_with_decision(self,x,expected_version,d):
+        with self.lock:
+            old=self.ideas.get(x.id)
+            if old is None:raise LookupError(x.id)
+            if old.version!=expected_version:raise RuntimeError("idea changed; refresh before deciding")
+            self.ideas[x.id]=deepcopy(x);self.decisions.setdefault(x.id,[]).append(deepcopy(d));return deepcopy(d)
+    def save_experiment_cas(self,x,expected_status):
+        with self.lock:
+            items=self.experiments.setdefault(x.idea_id,[])
+            for n,item in enumerate(items):
+                if item.id==x.id:
+                    if item.status!=expected_status:raise RuntimeError("experiment changed or already completed; refresh before updating")
+                    items[n]=deepcopy(x);return deepcopy(x)
+            raise LookupError(x.id)
+    def save_experiment_with_evidence(self,x,expected_status,e):
+        with self.lock:
+            items=self.experiments.setdefault(x.idea_id,[])
+            for n,item in enumerate(items):
+                if item.id==x.id:
+                    if item.status!=expected_status:raise RuntimeError("experiment changed or already completed; refresh before recording")
+                    items[n]=deepcopy(x);self.evidence.setdefault(x.idea_id,[]).append(deepcopy(e));return deepcopy(e)
+            raise LookupError(x.id)
     def list_experiments(self,i):return deepcopy(self.experiments.get(i,[]))
     def add_decision(self,x):return self._add(self.decisions,x)
     def list_decisions(self,i):return deepcopy(self.decisions.get(i,[]))

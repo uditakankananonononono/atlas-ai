@@ -2,6 +2,7 @@ from datetime import datetime
 from fastapi import APIRouter,Depends,HTTPException,Query
 from app.auth.context import TenantContext,require_tenant
 from .schemas import *
+from .errors import ArtifactIdConflict,PlannerOutputInvalid,ProjectRevisionConflict
 from .service import Service, PlannerUnavailable
 from app.core.providers import ProviderOutcomeUnknown
 from app.runtime.guardrails.errors import GuardrailRefusal
@@ -26,16 +27,20 @@ async def plan(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depe
     except KeyError as exc:raise HTTPException(404,str(exc)) from exc
     except PlannerUnavailable as exc:raise HTTPException(503,{'state':'unavailable','plan_created':False,'reason':str(exc)}) from exc
     except ProviderOutcomeUnknown as exc:raise HTTPException(409,{'state':'unknown','retry_allowed':False,'plan_created':False}) from exc
-    except Exception as exc:raise HTTPException(422,str(exc)) from exc
+    except PlannerOutputInvalid as exc:raise HTTPException(502,{'state':'invalid_planner_output','plan_created':False}) from exc
+    except ProjectRevisionConflict as exc:raise HTTPException(409,{'state':'revision_conflict','plan_created':False}) from exc
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.post("/projects/{project_id}/execution-proposals",response_model=ExecutionProposal,status_code=202)
 def propose(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.propose_execution(service.get(tenant_id,project_id))
     except KeyError as exc:raise HTTPException(404,str(exc)) from exc
+    except ProjectRevisionConflict as exc:raise HTTPException(409,{'state':'revision_conflict','proposal_created':False}) from exc
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.post("/projects/{project_id}/scope",response_model=ScopeView)
 def scope(project_id:str,request:ScopeRequest,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     project=_get_or_404(service,tenant_id,project_id)
     try:return service.scope_project(project,request)
+    except ProjectRevisionConflict as exc:raise HTTPException(409,{'state':'revision_conflict'}) from exc
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.post("/projects/{project_id}/milestones",response_model=list[MilestoneView])
 def create_milestones(project_id:str,request:MilestonePlanRequest,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
@@ -69,6 +74,7 @@ def replan_milestones(project_id:str,as_of:datetime|None=None,hours_per_day:floa
 def register_artifact(project_id:str,request:ArtifactRegisterRequest,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     project=_get_or_404(service,tenant_id,project_id)
     try:return service.register_artifact(project,request)
+    except ArtifactIdConflict as exc:raise HTTPException(409,{'state':'artifact_conflict'}) from exc
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.get("/projects/{project_id}/artifacts",response_model=list[ArtifactManifest])
 def get_artifacts(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
@@ -80,7 +86,8 @@ def validate_artifacts(project_id:str,tenant_id:str=Depends(tenant),service:Serv
 def generate_design(project_id:str,request:DesignRequest,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     project=_get_or_404(service,tenant_id,project_id)
     try:return service.generate_design(project,request)
-    except Exception as exc:raise HTTPException(422,str(exc)) from exc
+    except ArtifactIdConflict as exc:raise HTTPException(409,{'state':'artifact_conflict'}) from exc
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.get("/projects/{project_id}/designs",response_model=list[DesignListItem])
 def list_designs(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     try:return service.list_designs(_get_or_404(service,tenant_id,project_id))
@@ -99,6 +106,10 @@ def evaluate_quality(project_id:str,tenant_id:str=Depends(tenant),service:Servic
 async def feedback(project_id:str,request:FeedbackRequest,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):
     project=_get_or_404(service,tenant_id,project_id)
     try:return await service.apply_feedback(project,request)
+    except PlannerUnavailable as exc:raise HTTPException(503,{'state':'unavailable','revision_applied':False,'reason':str(exc)}) from exc
+    except ProviderOutcomeUnknown as exc:raise HTTPException(409,{'state':'unknown','retry_allowed':False,'revision_applied':False}) from exc
+    except PlannerOutputInvalid as exc:raise HTTPException(502,{'state':'invalid_planner_output','revision_applied':False}) from exc
+    except ProjectRevisionConflict as exc:raise HTTPException(409,{'state':'revision_conflict','revision_applied':False}) from exc
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
 @router.post("/projects/{project_id}/exports",response_model=ExportView,status_code=201)
 def export_project(project_id:str,tenant_id:str=Depends(tenant),service:Service=Depends(get_service)):

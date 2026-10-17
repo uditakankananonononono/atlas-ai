@@ -46,7 +46,13 @@ def effective_state(a:AgentStatus,now:datetime,stale_after:timedelta=STALE_AFTER
     if age>=stale_after and a.state==AgentState.RUNNING:return AgentState.STALLED
     return a.state
 def module_statuses(catalog:ModuleCatalog,agents:list[AgentStatus],pending_approvals:list[Approval],events_24h:list[Event],now:datetime)->list[ModuleStatus]:
-    agents_by_module={a.module_id:a for a in agents}
+    # Several agents may report for one module. The row shown must not depend on
+    # list order: take the agent with the newest heartbeat (agent_id breaks ties),
+    # so a long-dead agent cannot mask a live one or the reverse.
+    agents_by_module:dict[int,AgentStatus]={}
+    for a in agents:
+        cur=agents_by_module.get(a.module_id)
+        if cur is None or (a.last_heartbeat,a.agent_id)>(cur.last_heartbeat,cur.agent_id):agents_by_module[a.module_id]=a
     pending_by_module:dict[int,int]={}
     for a in pending_approvals:pending_by_module[a.module_id]=pending_by_module.get(a.module_id,0)+1
     events_by_module:dict[int,int]={}

@@ -104,6 +104,8 @@ def _gate_service(drafts):
 
     repo, store = MemorySocialRepository(), Store()
     svc = Service(approval_store=store, generate=gen, repository=repo)
+    from tests.modules.test_m06_scheduler import attach_identity_scheduler
+    attach_identity_scheduler(svc)
     repo.save_plan(ContentPlan(id="p1", brief=SOURCE, created_at=datetime.now(timezone.utc),
                                drafts=[PlatformDraft(p, f, c) for p, f, c in drafts]))
     return svc, store

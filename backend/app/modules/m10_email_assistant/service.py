@@ -2,7 +2,8 @@
 
 Spec reference: user directive, Module 10.
 - Gmail OAuth 2.0 connect, Google Cloud Pub/Sub push ingestion, embedding
-  into tenant storage (LTM seam via core.vector_store is integrator work).
+  into tenant storage (LTM seam: ltm.EmailLtmStore into
+  core.vector_store.memory_embeddings, wired by the integrator).
 - Seven-label categorisation (fine-tuned BERT pluggable; deterministic
   fallback), LLM action extraction with the spec output schema.
 - Drafting replies with a context window of recent related emails plus an
@@ -23,7 +24,7 @@ import asyncio
 import base64
 import json
 from datetime import datetime, timedelta, timezone
-from typing import Any, Awaitable, Callable, Protocol
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Protocol
 from uuid import uuid4
 
 import httpx
@@ -54,6 +55,9 @@ from .schemas import (
 )
 from .sql_repository import EmailMessageRow, SqlEmailRepository
 
+if TYPE_CHECKING:
+    from .ltm import EmailLtmStore
+
 
 class PubSubVerificationError(PermissionError):
     """Raised when a Pub/Sub push carries the wrong verification token."""
@@ -78,7 +82,11 @@ class ApprovalSink(Protocol):
     def put(self, item: ApprovalRequest, *, user_id: str | None = None) -> ApprovalRequest: ...
 
 
-GraphContextFn = Callable[[str], list[str]]  # module 9 seam: entity -> related facts
+# module 9 seam: (raw sender, gmail account id) -> related facts. Synchronous; runs in a
+# worker thread. Missing facts return []; operational failures raise (never masked as [])
+GraphContextFn = Callable[[str, str | None], list[str]]
+# module 9 writer seam: (gmail account id, raw message, message row id) -> None
+GraphIngestFn = Callable[[str, GmailRawMessage], None]
 
 CATEGORY_PRIORITY_WEIGHT = {
     EmailCategory.ACTION_REQUIRED: 5.0,
@@ -89,6 +97,9 @@ CATEGORY_PRIORITY_WEIGHT = {
     EmailCategory.NEWSLETTER: 0.5,
     EmailCategory.SPAM: 0.0,
 }
+
+
+GRAPH_SKIP_LABELS = frozenset({"SENT", "SPAM", "TRASH", "DRAFT"})
 
 
 class Service:
@@ -105,11 +116,13 @@ class Service:
         pubsub_verification_token: str,
         classifier: EmailClassifier | None = None,
         embedder: Embedder | None = None,
+        ltm_store: EmailLtmStore | None = None,
         llm_generate: GenerateFn = generate,
         graph_context: GraphContextFn | None = None,
         llm_provider: str = "openai",
         llm_model: str | None = None,
         review_state_capturer: Callable[[str], Any] | None = None,
+        graph_ingest: GraphIngestFn | None = None,
     ) -> None:
         self.repository = repository
         self.tenant_id = str(getattr(repository, "tenant_id", "")).strip()
@@ -124,6 +137,10 @@ class Service:
         self.pubsub_verification_token = pubsub_verification_token
         self.classifier = classifier or configured_classifier()
         self.embedder = embedder or NullEmbedder()
+        # Tenant+account-scoped LTM (core.vector_store) seam. None means LTM
+        # storage is not configured: ingestion still lands in the module
+        # tables and nothing claims LTM storage that did not happen.
+        self.ltm_store = ltm_store
         self.llm_generate = llm_generate
         self.graph_context = graph_context
         self.llm_provider = llm_provider
@@ -131,6 +148,8 @@ class Service:
         # Snapshots what the reviewer will see (live thread + draft) into M00 so
         # consume can refuse the send if anything changes before it goes out.
         self.review_state_capturer = review_state_capturer
+        # module 9 writer: account-scoped CONTACT/EMAIL nodes; None means no graph writes
+        self.graph_ingest = graph_ingest
 
     # -- OAuth connect -----------------------------------------------------
     def authorization_url(self, redirect_uri: str, state: str) -> str:
@@ -220,6 +239,19 @@ class Service:
         )
 
     async def _ingest_message(self, account_id: str, raw: GmailRawMessage) -> bool:
+        """Ingest one message, then record it in the knowledge graph. The graph write runs
+        after drafting so a draft's graph context is prior history, not the mail itself."""
+        try:
+            drafted = await self._ingest_message_core(account_id, raw)
+        except BaseException as exc:
+            self._note_graph_skipped_after_core_failure(account_id, raw, exc)
+            raise
+        # Only after the core ingest (LTM, module rows, draft) succeeded; an exception there
+        # skips the graph write, so nothing is claimed for mail that did not land.
+        await self._graph_ingest(account_id, raw)
+        return drafted
+
+    async def _ingest_message_core(self, account_id: str, raw: GmailRawMessage) -> bool:
         """Store, classify, extract, embed, and (when actionable) draft.
         Returns True when a reply draft was proposed."""
         classification: Classification = self.classifier.classify(
@@ -241,6 +273,20 @@ class Service:
             datetime.fromtimestamp(raw.received_at, tz=timezone.utc) if raw.received_at else None
         )
         message_id = str(uuid4())
+        if self.ltm_store is not None:
+            # Spec: incoming emails are ingested, embedded, and stored in the
+            # LTM. This runs before any module row becomes durable so an
+            # embedding or storage failure leaves nothing behind: the next
+            # Pub/Sub retry reprocesses the message cleanly (the LTM upsert is
+            # idempotent on deterministic ids) and can never duplicate saved
+            # mail, action items, or proposed drafts.
+            await self.ltm_store.store_message(
+                account_id=account_id,
+                gmail_id=raw.gmail_id,
+                subject=raw.subject,
+                body_text=raw.body_text,
+                thread_id=raw.thread_id,
+            )
         self.repository.save_message(
             message_id=message_id, account_id=account_id, gmail_id=raw.gmail_id,
             thread_id=raw.thread_id, history_id=raw.history_id, subject=raw.subject,
@@ -282,10 +328,9 @@ class Service:
         actions: list[ActionItem],
         account_id: str | None = None,
     ) -> EmailDraftView:
-        context = self._context_window(raw)
+        context = self._context_window(raw, account_id=account_id)
         action_lines = "\n".join(f"- {a.action}" for a in actions) or "- (none extracted)"
-        graph_facts: list[str] = self.graph_context(raw.sender) if self.graph_context else []
-        graph_block = "\n".join(f"- {fact}" for fact in graph_facts) or "- (none)"
+        graph_block = await self._graph_block(message_id, raw.sender, account_id)
         prompt = (
             "Draft a concise, truthful reply to this email. Do not send it. Do not invent "
             "facts or commitments. Return exactly 'Subject: ...' followed by the body.\n"
@@ -336,14 +381,77 @@ class Service:
             subject=subject, body=body, model=model, account_id=account_id, created_at=datetime.now(timezone.utc),
         )
 
-    def _context_window(self, raw: GmailRawMessage, max_chars: int = 6000) -> str:
-        """Recent related emails: same thread first, then same sender."""
+    def _note_graph_skipped_after_core_failure(self, account_id: str, raw: GmailRawMessage,
+                                               exc: BaseException) -> None:
+        """Core ingest failed, so no graph write was attempted. When the message row did
+        persist, record that the graph is missing it (audit only: no new draft or provider
+        retry is triggered, the original exception still propagates). Never logs bodies."""
+        if self.graph_ingest is None or GRAPH_SKIP_LABELS.intersection(raw.labels):
+            return
+        try:
+            persisted = self.repository.has_message(raw.gmail_id, account_id)
+            event = "graph_not_written_after_core_failure" if persisted else None
+        except Exception:
+            event = "graph_not_written_core_failure_persistence_unknown"
+        if event:
+            self._log_graph_failure(raw.gmail_id, event, exc)
+
+    async def _graph_ingest(self, account_id: str, raw: GmailRawMessage) -> None:
+        """Write account-scoped CONTACT/EMAIL nodes. Failure is logged, never fatal."""
+        if self.graph_ingest is None or GRAPH_SKIP_LABELS.intersection(raw.labels):
+            return
+        try:
+            await asyncio.to_thread(self.graph_ingest, account_id, raw)
+        except Exception as exc:
+            self._log_graph_failure(raw.gmail_id, "graph_ingest_failed", exc)
+
+    def _log_graph_failure(self, message_id: str, event: str, exc: Exception) -> None:
+        log_event = getattr(self.repository, "log_event", None)
+        if log_event:
+            try:
+                log_event("email_message", message_id, event,
+                          {"error_type": type(exc).__name__, "account_scoped": True})
+            except Exception:  # audit failure must not mask the original effect or error
+                pass
+
+    async def _graph_block(self, message_id: str, sender: str, account_id: str | None) -> str:
+        """Knowledge-graph lines for the prompt. "(none)" means the lookup ran and found
+        nothing; a lookup failure is logged and shown as unavailable, never as "(none)"."""
+        if not self.graph_context:
+            return "- (none)"
+        try:
+            facts = await asyncio.to_thread(self.graph_context, sender, account_id)
+        except Exception as exc:
+            self._log_graph_failure(message_id, "graph_context_failed", exc)
+            return "- (unavailable: knowledge-graph lookup failed)"
+        return "\n".join(f"- {fact}" for fact in facts) or "- (none)"
+
+    def _context_window(
+        self, raw: GmailRawMessage, max_chars: int = 6000, *, account_id: str | None = None
+    ) -> str:
+        """Recent related emails: same thread first, then same sender.
+
+        Both thread and sender rows are validated against the account being
+        drafted from: repository listings are tenant-wide (thread_messages is
+        tenant+thread only), so an unscoped listing can surface another
+        connected account's mail into the LLM prompt. With no account context
+        the window fails closed. The sender half uses the account-scoped
+        repository.sender_messages (newest first, LIMIT applied after
+        filtering); it is a bounded recent sample, not an exhaustive history
+        search.
+        """
+        if account_id is None:
+            return "(no prior context)"
         pieces: list[str] = []
         total = 0
         seen = {raw.gmail_id}
         rows: list[EmailMessageRow] = []
         if raw.thread_id:
-            rows.extend(self.repository.thread_messages(raw.thread_id, limit=5))
+            rows.extend(
+                row for row in self.repository.thread_messages(raw.thread_id, limit=5)
+                if row.account_id == account_id
+            )
+        rows.extend(self.repository.sender_messages(raw.sender, account_id, limit=5))
         for row in rows:
             if row.gmail_id in seen:
                 continue

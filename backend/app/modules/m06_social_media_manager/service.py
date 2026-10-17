@@ -44,9 +44,10 @@ from .adapters import (
     XApiV2Adapter,
 )
 from .analytics import ABTest
-from .compliance import ComplianceIssue, is_blocking, validate_draft
+from .compliance import ComplianceIssue, is_blocking, validate_draft, split_x_thread
 from .local_time import ResolvedLocalTime, resolve_local
 from .scheduler import Scheduler, ScheduleEntry, require_aware
+from .review_binding import publish_snapshot
 
 # Signature of the shared BYOK generator (app.core.providers.generate).
 GenerateFn = Callable[..., Awaitable[tuple[str, str]]]
@@ -436,6 +437,11 @@ class Service:
         if blocking:
             raise DraftComplianceError(blocking)
         moment = publish_at or datetime.now(timezone.utc)
+        if self._scheduler is None:
+            from .scheduler import ScheduleStateError
+            raise ScheduleStateError("scheduler required to resolve publishing accounts")
+        targets = {draft.platform: self._scheduler.resolve_publish_target(draft.platform)
+                   for draft in plan.drafts}
         requests = [
             self._file_approval(
                 action_type="schedule_post",
@@ -446,6 +452,12 @@ class Service:
                     "copy": draft.post_copy,
                     "publish_at": moment.isoformat(),
                     "api": self._official_api_name(draft.platform),
+                    "publish_snapshot": publish_snapshot(ScheduleEntry(
+                        id="", plan_id=plan.id, platform=draft.platform,
+                        format=draft.format, text=draft.post_copy, publish_at=moment,
+                        approval_id="", sponsored=sponsored, publish_target=targets[draft.platform],
+                        thread_chunks=(split_x_thread(draft.post_copy)
+                                       if draft.platform == Platform.TWITTER and draft.format == "thread" else []))),
                     "sponsored": sponsored,
                     "adaptation_parity": {cid: row.get(draft.platform.value) for cid, row in adaptation["parity"].items()},
                 },
@@ -455,13 +467,48 @@ class Service:
         if self._scheduler is not None:
             approval_ids = {draft.platform: request.id for draft, request in zip(plan.drafts, requests)}
             entries = self._scheduler.create_entries(
-                plan, publish_at=moment, approval_ids=approval_ids, sponsored=sponsored
+                plan, publish_at=moment, approval_ids=approval_ids, sponsored=sponsored, publish_targets=targets,
+                draft_approval_ids=[request.id for request in requests]
             )
             for request, entry in zip(requests, entries):
                 request.payload["schedule_id"] = entry.id
         plan.status = "pending_approval"
         self._repository.save_plan(plan)
         return requests
+
+    def request_schedule_review(self, schedule_id: str) -> ApprovalRequest:
+        """File fresh review of the exact current payload after media/time edits.
+
+        Never publishes. Previous M00 requests remain immutable history.
+        """
+        if self._scheduler is None:
+            raise ValueError("scheduler is not configured")
+        entry = self._scheduler.get_entry(schedule_id)
+        from .scheduler import LOCKED_STATUSES, ScheduleStateError
+        if entry.status in LOCKED_STATUSES:
+            raise ScheduleStateError("dispatching or terminal schedule cannot be re-reviewed")
+        self.get_plan(entry.plan_id)
+        from dataclasses import replace
+        target = self._scheduler.resolve_publish_target(entry.platform)
+        snapshot = publish_snapshot(replace(entry, publish_target=target))
+        issues = validate_draft(entry.platform.value, entry.format, entry.text,
+                                sponsored=entry.sponsored, media_count=len(entry.media_urls),
+                                alt_texts=len(entry.alt_texts))
+        blocking = [issue for issue in issues if issue.severity == "error"]
+        if blocking:
+            raise DraftComplianceError(blocking)
+        request = self._file_approval(action_type="schedule_post", payload={
+            "schedule_id":entry.id,"plan_id":entry.plan_id,"platform":entry.platform.value,
+            "format":entry.format,"copy":entry.text,"publish_at":snapshot["publish_at"],
+            "api":self._official_api_name(entry.platform),"sponsored":entry.sponsored,
+            "publish_snapshot":snapshot})
+        entry.publish_target=target
+        entry.approval_id=request.id
+        entry.status="awaiting_approval"
+        entry.decided_at=None
+        entry.failure=None
+        self._repository.save_schedule(entry)
+        return request
 
     def request_schedule_local(
         self, plan_id: str, local_time: datetime, timezone_name: str, *, on_ambiguous: str = "reject",

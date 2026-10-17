@@ -9,6 +9,8 @@ import {WriteSequencer} from "./executive-dashboard/write-ordering";
 import RerunScheduleCard from "./executive-dashboard/RerunScheduleCard";
 import RerunApprovalPanel,{RerunApprovalState} from "./executive-dashboard/RerunApprovalPanel";
 import OutreachApprovalPanel,{OUTREACH_MODULE_ID,OutreachApprovalState} from "./executive-dashboard/OutreachApprovalPanel";
+import SocialPublishApprovalPanel,{SocialPublishApprovalState} from "./executive-dashboard/SocialPublishApprovalPanel";
+import {SOCIAL_MODULE_ID,SOCIAL_PUBLISH_ACTIONS,parsePublishSnapshot} from "./executive-dashboard/social-publish-snapshot";
 type Api=ReturnType<typeof dashboardApi>;
 const severityStyle:Record<string,string>={critical:"border-red-500 text-red-300",warning:"border-amber-500 text-amber-300",info:"border-slate-600 text-slate-300"};
 const agentStyle:Record<string,string>={running:"text-emerald-400",idle:"text-slate-400",stalled:"text-amber-400",offline:"text-red-400"};
@@ -51,6 +53,43 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
   const [outreachRequests,setOutreachRequests]=useState<ApprovalCenterRequest[]>([]);
   const [outreach,setOutreach]=useState<OutreachApprovalState|null>(null);const [outreachBusy,setOutreachBusy]=useState(false);
   const loadOutreachRequests=useCallback(()=>api.approvalRequests({status:"pending",module_id:OUTREACH_MODULE_ID}).then(setOutreachRequests,()=>setOutreachRequests([])),[api]);
+  const [socialRequests,setSocialRequests]=useState<ApprovalCenterRequest[]>([]);
+  const [social,setSocial]=useState<SocialPublishApprovalState|null>(null);const [socialBusy,setSocialBusy]=useState(false);
+  const socialLoadSeq=useRef(0);
+  // Only the newest list read may update the list, so a slow read started before a decision cannot restore a decided row.
+  const loadSocialRequests=useCallback(()=>{const seq=++socialLoadSeq.current;return api.approvalRequests({status:"pending",module_id:SOCIAL_MODULE_ID}).then(
+    rows=>{if(seq===socialLoadSeq.current)setSocialRequests(rows.filter(x=>SOCIAL_PUBLISH_ACTIONS.includes(x.action_type)&&x.status==="pending"))},
+    ()=>{if(seq===socialLoadSeq.current)setSocialRequests([])})},[api]);
+  const socialPath=(id:string)=>`/approval-center/requests/${encodeURIComponent(id)}`;
+  // Ids whose decision call failed and whose status has not been re-read since. Closing and reopening must not reset these to the stale list copy.
+  const socialUnknown=useRef(new Set<string>()).current;
+  async function recheckSocial(id:string){
+    setSocialBusy(true);
+    try{const fresh=await api.approvalRequest(socialPath(id));socialUnknown.delete(id);setSocial(prev=>prev&&prev.request.id===id?{request:fresh,unknown:false,error:fresh.status==="pending"?null:`This request is now ${fresh.status}; nothing more to decide.`}:prev);loadSocialRequests()}
+    catch(e){setSocial(prev=>prev&&prev.request.id===id?{...prev,unknown:true,error:`Could not read the request status: ${e instanceof Error?e.message:"unavailable"}`}:prev)}
+    finally{setSocialBusy(false)}
+  }
+  function openSocial(request:ApprovalCenterRequest){
+    if(socialUnknown.has(request.id)){setSocial({request,unknown:true,error:"A previous decision on this request could not be confirmed. Reading its current status."});void recheckSocial(request.id)}
+    else setSocial({request,error:null});
+  }
+  async function decideSocial(decision:"approved"|"denied"){
+    if(!social||social.unknown||socialUnknown.has(social.request.id))return;
+    if(decision==="approved"&&!parsePublishSnapshot(social.request.payload as Record<string,unknown>).ok)return;
+    const id=social.request.id;setSocialBusy(true);
+    try{const updated=await api.decideApprovalRequest(socialPath(id),decision);socialUnknown.delete(id);setSocial(prev=>prev&&prev.request.id===id?{request:updated,error:null,unknown:false}:prev);loadSocialRequests()}
+    catch(e){
+      const message=e instanceof Error?e.message:"decision failed";
+      // The call may have committed before failing (timeout, 5xx) or lost a race: only a successful re-read tells which.
+      let fresh:ApprovalCenterRequest|null=null;try{fresh=await api.approvalRequest(socialPath(id))}catch{}
+      if(fresh)socialUnknown.delete(id);else socialUnknown.add(id);
+      setSocial(prev=>prev&&prev.request.id===id?(fresh
+        ?{request:fresh,unknown:false,error:fresh.status!=="pending"?`${message}. This request is now ${fresh.status}; nothing more to decide.`:message}
+        :{...prev,unknown:true,error:`${message}. The request's current status could not be confirmed.`}):prev);
+      loadSocialRequests();
+    }
+    finally{setSocialBusy(false)}
+  }
   async function openOutreach(request:ApprovalCenterRequest){
     setOutreach({request,timeline:null,timelineError:null,liveCadence:null,error:null});
     const p=request.payload as Record<string,unknown>;const contactId=typeof p.contact_id==="string"?p.contact_id:"";const messageId=typeof p.message_id==="string"?p.message_id:"";
@@ -74,9 +113,9 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
       sequencer.reconcile("view",v.version);setView(v);setKpis(k);setModules(m);setBlockers(b);setApprovals(a);setDigest(d);setSnapshot(s);setError(null);
       // fetched separately so an M04 outage never blanks the other cards
       api.rerunSchedules().then(setRerunCard,()=>setRerunCard(null));
-      loadOutreachRequests();
+      loadOutreachRequests();loadSocialRequests();
     }catch(e){setError(e instanceof Error?e.message:"dashboard refresh failed")}
-  },[api,loadOutreachRequests,sequencer]);
+  },[api,loadOutreachRequests,loadSocialRequests,sequencer]);
   useEffect(()=>{refresh();const timer=window.setInterval(refresh,30000);return()=>window.clearInterval(timer)},[refresh]);
   useEffect(()=>{
     let stop=startApprovalStream(`${apiBase}/approval-center/events`,refresh,setStreamState);
@@ -129,7 +168,8 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     approvals:()=><section key="approvals"><div className="flex items-center justify-between"><h2 className="text-lg font-semibold">Approval queue ({approvals.length})</h2>{selected.size>0&&<div className="flex gap-2 text-sm"><button onClick={()=>decideBulk(true)} className="rounded bg-emerald-500 px-3 py-1 text-slate-950">Approve {selected.size}</button><button onClick={()=>decideBulk(false)} className="rounded bg-slate-700 px-3 py-1">Reject {selected.size}</button></div>}</div>
       {skippedNote&&<p className="mt-1 text-xs text-amber-300">{skippedNote}</p>}
       <div className="mt-2 space-y-2">{approvals.map(a=><article key={a.id} className="rounded-xl bg-slate-900 p-4"><div className="flex items-start gap-3"><input type="checkbox" checked={selected.has(a.id)} onChange={()=>toggleSelect(a.id)} className="mt-1" aria-label={`select ${a.title}`}/><div className="flex-1"><div className="flex justify-between"><strong>{a.title}</strong><span className="text-xs uppercase text-amber-300">{a.risk}</span></div><p className="mt-1 text-sm text-slate-300">{a.summary}</p><p className="mt-1 text-xs text-slate-500">module {a.module_id}{a.expires_at?` · expires ${new Date(a.expires_at).toLocaleString()}`:""}</p><div className="mt-3 flex gap-2"><button onClick={()=>decideOne(a.id,true)} className="rounded bg-emerald-500 px-3 py-1 text-slate-950">Approve</button><button onClick={()=>decideOne(a.id,false)} className="rounded bg-slate-700 px-3 py-1">Reject</button></div></div></div></article>)}{approvals.length===0&&<p className="text-sm text-slate-500">Queue is clear.</p>}</div>
-      {outreachRequests.length>0&&<div className="mt-4"><h3 className="text-sm font-semibold">Outreach sends in the approval center ({outreachRequests.length})</h3><ul className="mt-2 space-y-2">{outreachRequests.map(r=>{const p=r.payload as Record<string,unknown>;return <li key={r.id} className="flex items-center justify-between rounded-xl bg-slate-900 p-3 text-sm"><span>{String(p.subject??r.action_type)} <span className="text-slate-400">to {String(p.recipient??"")}</span></span><button onClick={()=>openOutreach(r)} className="rounded border border-cyan-400 px-3 py-1">Review</button></li>})}</ul></div>}</section>,
+      {outreachRequests.length>0&&<div className="mt-4"><h3 className="text-sm font-semibold">Outreach sends in the approval center ({outreachRequests.length})</h3><ul className="mt-2 space-y-2">{outreachRequests.map(r=>{const p=r.payload as Record<string,unknown>;return <li key={r.id} className="flex items-center justify-between rounded-xl bg-slate-900 p-3 text-sm"><span>{String(p.subject??r.action_type)} <span className="text-slate-400">to {String(p.recipient??"")}</span></span><button onClick={()=>openOutreach(r)} className="rounded border border-cyan-400 px-3 py-1">Review</button></li>})}</ul></div>}
+      {socialRequests.length>0&&<div className="mt-4"><h3 className="text-sm font-semibold">Social posts in the approval center ({socialRequests.length})</h3><ul className="mt-2 space-y-2">{socialRequests.map(r=>{const p=r.payload as Record<string,unknown>;return <li key={r.id} className="flex items-center justify-between rounded-xl bg-slate-900 p-3 text-sm"><span>{String(p.platform??r.action_type)} <span className="text-slate-400">awaiting review</span></span><button onClick={()=>openSocial(r)} className="rounded border border-cyan-400 px-3 py-1">Review</button></li>})}</ul></div>}</section>,
     timeline:()=>snapshot?.data?.timeline?.length?<section key="timeline"><h2 className="text-lg font-semibold">Timeline</h2><ul className="mt-2 space-y-1 text-sm">{snapshot.data.timeline.map((t,i)=><li key={String(t.id??i)} className="flex justify-between rounded bg-slate-900 p-2"><span>{String(t.title??t.id)}{Boolean(t.critical)&&<span className="ml-2 text-xs text-cyan-400">critical</span>}{Boolean(t.at_risk)&&<span className="ml-2 text-xs text-red-400">at risk</span>}</span><span className="text-xs text-slate-500">{Math.round(Number(t.progress??0)*100)}%</span></li>)}</ul></section>:null,
   };
   const widgets=(view?.widgets??[]).filter(w=>w.visible).sort((a,b)=>a.position-b.position);
@@ -142,6 +182,7 @@ export default function ExecutiveDashboard({apiBase="/api/v1"}:{apiBase?:string}
     {widgets.map(w=>{const render=sections[w.kind];return render?<div key={w.id}>{render()}</div>:null})}
     <DrilldownPanel data={drilldown} onClose={()=>setDrilldown(null)}/>
     <OutreachApprovalPanel state={outreach} busy={outreachBusy} onDecide={decideOutreach} onClose={()=>setOutreach(null)}/>
+    <SocialPublishApprovalPanel state={social} busy={socialBusy} onDecide={decideSocial} onClose={()=>setSocial(null)} onRecheck={()=>social&&void recheckSocial(social.request.id)}/>
     <RerunApprovalPanel state={rerunApproval} busy={rerunBusy} onDecide={decideRerun} onClose={()=>setRerunApproval(null)}/>
   </main>;
 }

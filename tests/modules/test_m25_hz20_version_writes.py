@@ -40,12 +40,15 @@ def test_hz20_planted_source_bin_link_cannot_redirect_write(tmp_path, monkeypatc
     # opened tmp dirfd and refuses. The mkdir mock replays the race
     # deterministically (symlink shape only).
     escaped = tmp_path / 'escaped.bin'
-    real_mkdir = Path.mkdir
-    def planting_mkdir(self, *a, **kw):
-        real_mkdir(self, *a, **kw)
-        if self.name.startswith('v1.tmp-'):
-            (self / 'source.bin').symlink_to(escaped)
-    monkeypatch.setattr(Path, 'mkdir', planting_mkdir)
+    # Seam re-anchored to the descriptor-based ingest: tmp is created via
+    # os.mkdir(dir_fd=...), so the symlink is planted through that call.
+    real_mkdir = os.mkdir
+    def planting_mkdir(*a, **kw):
+        real_mkdir(*a, **kw)
+        if str(a[0]).startswith('v1.tmp-') and 'dir_fd' in kw:
+            d = Path(os.readlink(f"/proc/self/fd/{kw['dir_fd']}")) / str(a[0])
+            (d / 'source.bin').symlink_to(escaped)
+    monkeypatch.setattr(os, 'mkdir', planting_mkdir)
     p = pipe(tmp_path)
     with pytest.raises(OSError):
         p.ingest(req())
@@ -59,13 +62,14 @@ def test_hz20_tmp_swapped_to_symlink_cannot_redirect_write(tmp_path, monkeypatch
     # refuses before any write. The mkdir mock replays the swap.
     outside = tmp_path / 'outside'
     outside.mkdir()
-    real_mkdir = Path.mkdir
-    def swapping_mkdir(self, *a, **kw):
-        real_mkdir(self, *a, **kw)
-        if self.name.startswith('v1.tmp-'):
-            shutil.rmtree(self)
-            os.symlink(outside, self)
-    monkeypatch.setattr(Path, 'mkdir', swapping_mkdir)
+    real_mkdir = os.mkdir
+    def swapping_mkdir(*a, **kw):
+        real_mkdir(*a, **kw)
+        if str(a[0]).startswith('v1.tmp-') and 'dir_fd' in kw:
+            d = Path(os.readlink(f"/proc/self/fd/{kw['dir_fd']}")) / str(a[0])
+            shutil.rmtree(d)
+            os.symlink(outside, d)
+    monkeypatch.setattr(os, 'mkdir', swapping_mkdir)
     p = pipe(tmp_path)
     with pytest.raises(OSError):
         p.ingest(req())

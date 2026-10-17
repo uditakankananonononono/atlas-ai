@@ -70,10 +70,10 @@ def test_hz21_target_replacement_is_not_rolled_back(tmp_path, monkeypatch):
     real_persist = LocalKnowledgePipeline._persist_manifest
     state = {'calls': 0}
     marker = {}
-    def fail_second_persist(self, rec):
+    def fail_second_persist(self, rec, dfd=None):
         state['calls'] += 1
         if state['calls'] == 1:
-            return real_persist(self, rec)
+            return real_persist(self, rec, dfd=dfd)
         target = tmp_path / 'tenant-a' / 's1' / 'v1'
         shutil.rmtree(target)
         target.mkdir()

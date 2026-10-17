@@ -37,14 +37,26 @@ class FakeApprovalStore:
 
 
 class FakeDecisions:
-    def __init__(self) -> None:
+    """Statuses are test-controlled; reviewed payload comes from the actually filed approval."""
+
+    def __init__(self, store: "FakeApprovalStore | None" = None) -> None:
         self.statuses: dict[str, str] = {}
+        self._store = store
 
     def status_of(self, approval_id: str) -> str | None:
         return self.statuses.get(approval_id)
 
+    def reviewed_payload(self, approval_id: str):
+        for item in (self._store.items if self._store else []):
+            if item.id == approval_id and self.statuses.get(approval_id) == "approved":
+                return item.payload
+        return None
 
-class FakeAdapter:
+
+from tests.modules.test_m06_scheduler import IdentityAdapterMixin
+
+
+class FakeAdapter(IdentityAdapterMixin):
     def __init__(self) -> None:
         self.published: list = []
 
@@ -58,6 +70,7 @@ class FakeAdapterFactory:
         self.adapter = adapter
 
     def for_platform(self, platform):
+        self.adapter.selected_platform = platform.value
         return self.adapter
 
 
@@ -71,8 +84,11 @@ async def fake_generate(prompt, provider, model=None) -> tuple[str, str]:
 
 
 def make_client(copy: str | None = None):
-    repository = MemorySocialRepository()
-    store, decisions, adapter = FakeApprovalStore(), FakeDecisions(), FakeAdapter()
+    from tests.modules.test_m06_scheduler import make_real_repository
+
+    repository = make_real_repository()
+    store, adapter = FakeApprovalStore(), FakeAdapter()
+    decisions = FakeDecisions(store)
 
     async def generate(prompt, provider, model=None):
         if copy is None:
@@ -163,14 +179,25 @@ def test_cancel_reschedule_and_attach_media_routes():
     plan = make_plan(client, ["instagram"])
     request = client.post(f'/api/v1/social-media-manager/plans/{plan["id"]}/schedule', json={"publish_at": DUE}).json()[0]
     entry_id = request["payload"]["schedule_id"]
-    moved = client.post(f"/api/v1/social-media-manager/schedules/{entry_id}/reschedule", json={"publish_at": "2026-09-21T09:00:00+00:00"})
+    base = "/api/v1/social-media-manager/schedules"
+    moved = client.post(f"{base}/{entry_id}/reschedule", json={"publish_at": "2026-09-21T09:00:00+00:00"})
     assert moved.status_code == 200
-    # Instagram needs rendered media before the gate will publish.
+    # A time edit voids the old approval: even if it is approved, it no longer authorizes this row.
     decisions.statuses[request["id"]] = "approved"
-    client.post("/api/v1/social-media-manager/schedules/sync")
-    client.post(f"/api/v1/social-media-manager/schedules/{entry_id}/reschedule", json={"publish_at": DUE})
-    assert client.post("/api/v1/social-media-manager/schedules/execute-due").json() == []
-    assert client.get(f"/api/v1/social-media-manager/schedules/{entry_id}").json()["status"] == "failed"
+    client.post(f"{base}/sync")
+    client.post(f"{base}/{entry_id}/reschedule", json={"publish_at": DUE})
+    assert client.post(f"{base}/execute-due").json() == []
+    voided = client.get(f"{base}/{entry_id}").json()
+    assert voided["status"] == "awaiting_approval" and voided["approval_id"] == ""
+    # Fresh review of the exact current payload; approved. Instagram still needs rendered media.
+    review = client.post(f"{base}/{entry_id}/review")
+    assert review.status_code == 201
+    decisions.statuses[review.json()["id"]] = "approved"
+    client.post(f"{base}/sync")
+    assert client.post(f"{base}/execute-due").json() == []
+    assert client.get(f"{base}/{entry_id}").json()["status"] == "failed"
+    assert "rendered media" in client.get(f"{base}/{entry_id}").json()["failure"]
+    assert adapter.published == []
     # A cancelled entry rejects media attachment with 409.
     client2, _s2, _d2, _a2, _r2 = make_client()
     plan2 = make_plan(client2, ["instagram"])

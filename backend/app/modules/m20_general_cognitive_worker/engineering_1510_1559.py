@@ -217,7 +217,14 @@ def _reltest(d):
     return {'units':n,'failures':failures,'confidence':conf,'zero_failure_reliability_lower_bound':r0,'equation':'R_lower=(1-confidence)^(1/n), zero-failure case only','assumptions':['independent identical Bernoulli trials','common stated test duration and conditions','complete supplied failures and sample counts'],'test_executed':False,'observations_independently_verified':False}
 
 def _alt(d):
-    ea=_num(d,'activation_energy_ev',positive=True); tuse=_num(d,'use_temperature_k',positive=True); ttest=_num(d,'test_temperature_k',positive=True); kb=8.617333262e-5; af=math.exp(ea/kb*(1/tuse-1/ttest))
+    ea=_num(d,'activation_energy_ev',positive=True); tuse=_num(d,'use_temperature_k',positive=True); ttest=_num(d,'test_temperature_k',positive=True); kb=8.617333262e-5
+    ex=ea/kb*(1/tuse-1/ttest)
+    try:
+        af=math.exp(ex)
+    except OverflowError:
+        # exact representability boundary: refuse only inputs whose result is
+        # not representable; every previously representable input is preserved
+        raise ValueError('acceleration factor outside representable range') from None
     return {'acceleration_factor':af,'model':'Arrhenius','activation_energy_ev':ea,'use_temperature_k':tuse,'test_temperature_k':ttest,'mechanism_equivalence_must_be_validated':True}
 
 def _env(d,kind): return {'test_type':kind,'profiles':d.get('profiles',[]),'specimen_count':d.get('specimen_count'),'preconditioning':d.get('preconditioning',[]),'measurements':d.get('measurements',[]),'acceptance_criteria':d.get('acceptance_criteria',[]),'test_executed':False}
