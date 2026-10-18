@@ -91,7 +91,11 @@ def _operation(row, x):
   predicted=_number(x['predicted'],'predicted');observed=_number(x['observed'],'observed');rate=_number(x.get('learning_rate',.5),'learning_rate',0,1);err=observed-predicted;return {'prediction_error':err,'revised_estimate':predicted+rate*err,'transition':'prior_model->evidence_checked->revised_model'}
  if row==880:
   prior=_score(x,'prior_confidence');return {'prior_confidence':prior,'revised_confidence':None,'revision':None,'status':'belief_revision_model_unavailable','capability_executed':False}
- if row==881:return {'comparative_fit':{t:round(sum(map(float,s))/len(s),4) for t,s in x.get('theory_scores',{}).items()},'preferred_theory':max(x.get('theory_scores',{}),key=lambda t:sum(x['theory_scores'][t]))}
+ if row==881:
+  theory_scores=x.get('theory_scores',{})
+  if not isinstance(theory_scores,dict) or not theory_scores:raise CognitiveLearningError('theory_scores must be a non-empty object')
+  try:return {'comparative_fit':{t:round(sum(map(float,s))/len(s),4) for t,s in theory_scores.items()},'preferred_theory':max(theory_scores,key=lambda t:sum(theory_scores[t]))}
+  except (TypeError,ValueError,ZeroDivisionError) as exc:raise CognitiveLearningError(f'invalid theory_scores: {exc}')from exc
  if row==882:return {'initial_conception':x['initial_conception'],'reconstructed_conception':x['reconstructed_conception'],'transfer_accuracy':_score(x,'transfer_accuracy')}
  if row==883:return {'explanation_gaps':x.get('audience_questions',[]),'teach_back_revision':x.get('revised_explanation'),'comprehension_gain':_score(x,'post_score')-_score(x,'pre_score')}
  if row==884:return {'attempt_delta':_score(x,'later_score')-_score(x,'first_score'),'next_task':x.get('next_attempt')}
@@ -130,16 +134,27 @@ def execute(row:int,payload:dict[str,Any])->dict[str,Any]:
  if row not in ROWS:raise CognitiveLearningError('unsupported capability')
  tenant=_need(payload,'tenant_id');actor=_need(payload,'actor_id')
  refs=payload.get('references',[])
- if any(r.get('tenant_id')!=tenant or r.get('actor_id') not in (None,actor) for r in refs):raise CognitiveLearningError('cross-tenant or cross-actor reference denied')
- sources=_source(payload);inputs=_need(payload,'inputs')
+ if not isinstance(refs,list):raise CognitiveLearningError('references must be a list of objects')
+ for r in refs:
+  if not isinstance(r,dict):raise CognitiveLearningError('references entries must be objects')
+  if r.get('tenant_id')!=tenant or r.get('actor_id') not in (None,actor):raise CognitiveLearningError('cross-tenant or cross-actor reference denied')
+ try:sources=_source(payload)
+ except (TypeError,AttributeError) as exc:raise CognitiveLearningError(f'invalid source structure: {exc}')from exc
+ inputs=_need(payload,'inputs')
  if not isinstance(inputs,dict):raise CognitiveLearningError('inputs must be an object')
  stages=STAGES[row];artifacts=_typed_map(row,payload,stages)
  if row==860 and not any(s.get('kind') in ('primary','secondary') for s in sources):raise CognitiveLearningError('historical thinking requires source kind primary or secondary')
  if row in (871,875,876):
-  edges=inputs[{871:'typed_links',875:'relations',876:'typed_edges'}[row]]
-  if edges and any(not e.get('type') for e in edges):raise CognitiveLearningError('knowledge edges require relation type')
+  try:
+   edges=inputs[{871:'typed_links',875:'relations',876:'typed_edges'}[row]]
+   if edges and any(not e.get('type') for e in edges):raise CognitiveLearningError('knowledge edges require relation type')
+  except KeyError as exc:raise CognitiveLearningError(f'missing required input key: {exc.args[0]!r}')from exc
+  except (TypeError,AttributeError) as exc:raise CognitiveLearningError(f'invalid knowledge edge structure: {exc}')from exc
  if row in (890,891) and not payload.get('ethical_review',False):raise CognitiveLearningError('conditioning design requires ethical_review=true')
  if row==908 and inputs.get('credential_boundary') is True:raise CognitiveLearningError('credential_boundary must describe limits, not claim a credential')
- result=_operation(row,inputs);gaps=[x['stage'] for x in artifacts if x['status']=='evidence_gap']
+ try:result=_operation(row,inputs)
+ except KeyError as exc:raise CognitiveLearningError(f'missing required input key: {exc.args[0]!r}')from exc
+ except (TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise CognitiveLearningError(f'invalid input structure: {exc}')from exc
+ gaps=[x['stage'] for x in artifacts if x['status']=='evidence_gap']
  return {'row_id':row,'capability':ROWS[row],'key':KEYS[row],'family':FAMILY[row],'scope':{'tenant_id':tenant,'actor_id':actor},'mechanism':KEYS[row],'result':result,'workflow':artifacts,'complete':False,'input_stage_coverage_complete':not gaps,'capability_executed':False,'evidence_gaps':gaps,'sources':sources,'learner_agency':{'opt_out':payload.get('opt_out',True),'goals':payload.get('learner_goals',[]),'access_needs':payload.get('access_needs',[])},'assessment':{'criteria':payload.get('criteria',[]),'results':payload.get('results',[]),'grade_or_credential_awarded':False},'evaluation':{'stage_coverage':round((len(artifacts)-len(gaps))/max(1,len(artifacts)),4),'independent_verification_required':True},'uncertainty':{'level':'unquantified','unresolved_stages':gaps,'confidence_claimed':False},'status':'supplied_input_diagnostics_only','method_limitations':'Deterministic transforms, supplied-score arithmetic, hand-written heuristics or templates. No execution or verification of the named cognitive/learning ability.','actions_taken':[],'boundary':'Learning support only. No hidden-state inference, credentials, enrollment, external effects, or education-record changes.'}
 def capabilities():return [{'row_id':i,'key':KEYS[i],'name':ROWS[i],'family':FAMILY[i],'stages':STAGES[i],'status':'supplied_input_diagnostics_only','capability_executed':False} for i in ROWS]
