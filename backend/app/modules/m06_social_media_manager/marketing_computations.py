@@ -4,7 +4,7 @@ from typing import Any, Callable
 
 def _n(d,k,default=0.0):
  try:return float(d.get(k,default))
- except (TypeError,ValueError):raise ValueError(f"{k} must be numeric")
+ except (TypeError,ValueError,OverflowError,RuntimeError):raise ValueError(f"{k} must be numeric")
 def _ratio(a,b):return a/b if b else None
 def _base(d):
  facts=d.get('facts') or {}; goals=d.get('goals') or []
@@ -141,6 +141,19 @@ def automation(d):
  return {'workflows':analyzed,'triggers':[x.get('trigger') for x in flows],'personalization':f.get('personalization',[]),'guardrails':['consent','frequency cap','unsubscribe','human activation'],'total_estimated_incremental_value':sum(x['estimated_incremental_value'] for x in analyzed)}
 
 ENGINES:dict[str,Callable[[dict],dict]]={'segmentation':segmentation,'targeting':targeting,'positioning':positioning,'brand-architecture':brand_architecture,'brand-voice':brand_voice,'messaging-framework':messaging,'copywriting':copywriting,'content-strategy':content_strategy,'editorial-calendar':editorial,'seo-optimization':seo,'keyword-research':keywords,'link-building':links,'technical-seo':technical_seo,'local-seo':local_seo,'content-marketing':content_marketing,'thought-leadership':thought,'public-relations':pr,'media-relations':media,'crisis-communication':crisis,'social-media-strategy':social,'community-management':community,'influencer-marketing':influencer,'affiliate-marketing':affiliate,'referral-program':referral,'email-marketing':email,'marketing-automation':automation}
+def _guarded(slug:str,fn:Callable[[dict],dict])->Callable[[dict],dict]:
+ # hostile caller dunders and structural junk may raise AttributeError/
+ # RuntimeError/custom exception classes from engine .get/iteration sites;
+ # code every Exception (never BaseException) with a pinned slug-prefixed
+ # message while module-raised ValueErrors pass through verbatim
+ def g(data):
+  try:return fn(data)
+  except ValueError:raise
+  except Exception as exc:raise ValueError(f'{slug}: invalid field value: {exc}')from exc
+ g.__name__=fn.__name__;g.__doc__=fn.__doc__
+ return g
+ENGINES={k:_guarded(k,v) for k,v in ENGINES.items()}
+for _v in ENGINES.values():globals()[_v.__name__]=_v
 def compute(slug:str,data:dict)->dict:
  if slug not in ENGINES:raise ValueError(f'unknown marketing engine: {slug}')
  return ENGINES[slug](data)

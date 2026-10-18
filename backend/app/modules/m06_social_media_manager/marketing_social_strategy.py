@@ -75,7 +75,7 @@ def _norm_str(value: Any, what: str) -> str:
 def _num(facts: dict[str, Any], key: str) -> float | None:
     try:
         return float(facts[key])
-    except (KeyError, TypeError, ValueError):
+    except (KeyError, TypeError, ValueError, OverflowError, RuntimeError):
         return None
 
 

@@ -53,66 +53,66 @@ def learning(row,p):
  objective=req(p,'objective',str);out={'objective':objective,'learner_control':True,'feedback_is_actionable':True}
  if row==810:
   try:out.update(schedule_reviews(p))
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==811:
   try:out.update(interleave(p))
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==812:
   try:out['recall']=recall_practice(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==813:
   try:out['prompts']=[f'Why is {x} true, and under what conditions?' for x in p.get('claims',[objective])]
   except TypeError as exc:raise LearningReasoningError(f'claims must be an iterable of claim texts: {exc}')from exc
  if row==814:out['self_explanation_prompts']=['What principle applies?','Why is this step valid?','How does it connect to the goal?','What remains uncertain?']
  if row in (813,814):
   try:out['explanation_practice']=explanation_practice('elaborative_interrogation' if row==813 else 'self_explanation',p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (815,816):
   try:out['representation_pack' if row==815 else 'example_pack']=(dual_pack if row==815 else example_pack)(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (817,818):
   try:out['arithmetic_work']=arithmetic_work('worked_examples' if row==817 else 'problem_solving',p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==819:
   try:out['practice_plan']=deliberate_practice(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (820,825):
   try:out['objective_plan']=objective_plan(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (821,822):
   try:out.update(progress_support(p))
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==823:
   try:out['calibration']=calibrate_attempts(req(p,'attempts',list))
-  except ValueError as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
   out['calibration_required']=True
   out['scope']='Measured strategy calibration, not full metacognition'
  if row==824:
   try:out['regulated_cycle']=regulated_cycle(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==826:
   try:out['progress']=measure_progress(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (827,828):
   try:out['rubric_assessment']=anchored_assess('self' if row==827 else 'peer',p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (829,830,831):
   try:out['assessment_design']=assess(row,p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==832:
   try:out['activation']=activate(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  return out
 def transfer(row,p):
  if row in (836,837):
   try:return {'analogy_check' if row==836 else 'case_reuse':(checked_analogy if row==836 else checked_case)(p)}
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (834,835):
   try:return {'near_far_transfer':near_far_compare('near_transfer' if row==834 else 'far_transfer',p)}
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==833:
   try:return {'transfer_evidence':checked_transfer(p)}
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  source=req(p,'source_case',dict);target=req(p,'target_case',dict);sf=set(source.get('features',[]));tf=set(target.get('features',[]));shared=sorted(sf&tf);diff=sorted(sf^tf);out={'source_case':source,'target_case':target,'shared_features':shared,'differing_features':diff}
  if row in (833,834,835):out['transfer_type']='near' if row==834 else 'far' if row==835 else p.get('transfer_type','unspecified');out['bridge_prompts']=['What deep structure is shared?','What changes in the target?','When would the source rule fail?'];out['requires_independent_target_performance']=True
  if row==836:out['analogy']={'correspondences':p.get('correspondences',[]),'surface_similarity_is_insufficient':True,'candidate_inferences':p.get('candidate_inferences',[]),'validate_in_target':True}
@@ -122,13 +122,13 @@ def reasoning(row,p):
  premises=p.get('premises',[]);out={'premises':premises,'assumptions':p.get('assumptions',[]),'uncertainties':p.get('uncertainties',[]),'conclusion_status':'candidate until checked'}
  if row==838:
   try:out.update(forward(p))
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==839:
   try:out['model']=models(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==840:
   try:out['qualitative_graph']=qualitative_graph(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==841:
   vals=req(p,'values',list)
   try:nums=[float(x) for x in vals]
@@ -136,16 +136,16 @@ def reasoning(row,p):
   out['quantitative']={'count':len(nums),'sum':sum(nums),'mean':sum(nums)/len(nums),'range':max(nums)-min(nums),'units':p.get('units'),'significant_digits_not_invented':True}
  if row==842:
   try:out['spatial']=solve_spatial(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==843:
   try:out['temporal']=temporal(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==844:
   try:out['causal']=causal_effect(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==845:
   try:out['counterfactual']=counterfactual(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==846:
   try:prior=float(p.get('prior',.5));likelihood=float(p.get('likelihood_given_h',.5));alt=float(p.get('likelihood_given_not_h',.5))
   except (TypeError,OverflowError) as exc:raise LearningReasoningError(f'prior and likelihoods must be real numbers: {exc}')from exc
@@ -154,39 +154,47 @@ def reasoning(row,p):
   out['bayes']={'prior':prior,'posterior':prior*likelihood/den,'likelihoods':[likelihood,alt],'status':'supplied_probability_bayes_calculation','assumptions_verified':False,'real_world_truth_verified':False}
  if row==847:
   try:out['fuzzy']=infer(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (848,849):
   try:out['defaults']=default_inference(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==850:
   try:out['abduction']=abductive_search(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==851:
   try:out['induction']=induce(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==852:
   try:out['deduction']=argument_validity(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==853:
   try:out['transduction']=transduce(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (854,855):
   try:out['dialectic_check'if row==854 else 'integration_check']=claim_integration('dialectical_reasoning'if row==854 else 'integrative_thinking',p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  return out
 def inquiry(row,p):
  problem=req(p,'problem',str);out={'problem':problem,'evidence':p.get('evidence',[]),'iteration_required':True}
  if row==856:
   try:out['stock_flow_simulation']=stock_flow(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row in (857,858):
   try:out['design_check'if row==857 else 'algorithm_run']=(design_check if row==857 else algorithm_run)(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==859:
   try:out['scientific_check']=scientific_check(p)
-  except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
+  except (ValueError,KeyError,TypeError,AttributeError,IndexError,OverflowError,ZeroDivisionError) as exc:raise LearningReasoningError(str(exc)) from exc
  return out
 def execute(method,payload):
+ try:return _execute(method,payload)
+ except LearningReasoningError:raise
+ # hostile caller dunders may raise RuntimeError or arbitrary custom exception
+ # classes at dispatch-level leaves (source fields, tenant_id, resource_refs,
+ # units, values.N, completeness scan); code every Exception (never
+ # BaseException) through the same LearningReasoningError envelope
+ except Exception as exc:raise LearningReasoningError(str(exc)) from exc
+def _execute(method,payload):
  if not isinstance(payload,dict):raise LearningReasoningError('payload must be an object')
  tenant=str(payload.get('tenant_id','default')).strip() if isinstance(payload,dict) else ''
  if not tenant:raise LearningReasoningError('tenant_id must not be empty')

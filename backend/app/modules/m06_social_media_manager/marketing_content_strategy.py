@@ -50,7 +50,7 @@ def _dedupe(items: list[str]) -> list[str]:
 def _num(value: Any) -> float | None:
     try:
         return float(value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError, RuntimeError):
         return None
 
 
