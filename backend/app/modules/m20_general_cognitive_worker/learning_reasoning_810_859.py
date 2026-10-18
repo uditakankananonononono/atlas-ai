@@ -60,7 +60,9 @@ def learning(row,p):
  if row==812:
   try:out['recall']=recall_practice(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
- if row==813:out['prompts']=[f'Why is {x} true, and under what conditions?' for x in p.get('claims',[objective])]
+ if row==813:
+  try:out['prompts']=[f'Why is {x} true, and under what conditions?' for x in p.get('claims',[objective])]
+  except TypeError as exc:raise LearningReasoningError(f'claims must be an iterable of claim texts: {exc}')from exc
  if row==814:out['self_explanation_prompts']=['What principle applies?','Why is this step valid?','How does it connect to the goal?','What remains uncertain?']
  if row in (813,814):
   try:out['explanation_practice']=explanation_practice('elaborative_interrogation' if row==813 else 'self_explanation',p)
@@ -128,7 +130,10 @@ def reasoning(row,p):
   try:out['qualitative_graph']=qualitative_graph(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==841:
-  vals=req(p,'values',list);nums=[float(x) for x in vals];out['quantitative']={'count':len(nums),'sum':sum(nums),'mean':sum(nums)/len(nums),'range':max(nums)-min(nums),'units':p.get('units'),'significant_digits_not_invented':True}
+  vals=req(p,'values',list)
+  try:nums=[float(x) for x in vals]
+  except (TypeError,OverflowError) as exc:raise LearningReasoningError(f'values must contain only real numbers: {exc}')from exc
+  out['quantitative']={'count':len(nums),'sum':sum(nums),'mean':sum(nums)/len(nums),'range':max(nums)-min(nums),'units':p.get('units'),'significant_digits_not_invented':True}
  if row==842:
   try:out['spatial']=solve_spatial(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
@@ -142,7 +147,9 @@ def reasoning(row,p):
   try:out['counterfactual']=counterfactual(p)
   except (ValueError,KeyError,TypeError) as exc:raise LearningReasoningError(str(exc)) from exc
  if row==846:
-  prior=float(p.get('prior',.5));likelihood=float(p.get('likelihood_given_h',.5));alt=float(p.get('likelihood_given_not_h',.5));den=prior*likelihood+(1-prior)*alt
+  try:prior=float(p.get('prior',.5));likelihood=float(p.get('likelihood_given_h',.5));alt=float(p.get('likelihood_given_not_h',.5))
+  except (TypeError,OverflowError) as exc:raise LearningReasoningError(f'prior and likelihoods must be real numbers: {exc}')from exc
+  den=prior*likelihood+(1-prior)*alt
   if not all(0<=x<=1 for x in (prior,likelihood,alt)) or not den:raise LearningReasoningError('invalid probabilities')
   out['bayes']={'prior':prior,'posterior':prior*likelihood/den,'likelihoods':[likelihood,alt],'status':'supplied_probability_bayes_calculation','assumptions_verified':False,'real_world_truth_verified':False}
  if row==847:
@@ -183,7 +190,10 @@ def execute(method,payload):
  if not isinstance(payload,dict):raise LearningReasoningError('payload must be an object')
  tenant=str(payload.get('tenant_id','default')).strip() if isinstance(payload,dict) else ''
  if not tenant:raise LearningReasoningError('tenant_id must not be empty')
- for ref in payload.get('resource_refs',[]):
+ refs=payload.get('resource_refs',[])
+ if not isinstance(refs,list):raise LearningReasoningError('resource_refs must be a list of objects')
+ for ref in refs:
+  if not isinstance(ref,dict):raise LearningReasoningError('resource_refs entries must be objects')
   if str(ref.get('tenant_id','')).strip()!=tenant:raise LearningReasoningError('cross-tenant resource reference rejected')
  key=slug(method);row=KEYS.get(key)
  if row is None:raise LearningReasoningError(f'unknown method: {method}')

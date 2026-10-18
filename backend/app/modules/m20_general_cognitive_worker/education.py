@@ -100,14 +100,17 @@ def _design(cap:Capability,p:dict[str,Any]) -> dict[str,Any]:
     mapped=[]
     for a in assessments:
         if not isinstance(a,dict) or not a.get("name"): raise EducationError("each assessment needs a name")
-        ids=[str(x) for x in a.get("objective_ids",[])]
+        try: ids=[str(x) for x in a.get("objective_ids",[])]
+        except TypeError: raise EducationError("assessment objective_ids must be iterable")
         mapped.append({"name":a["name"],"kind":a.get("kind","formative"),"objective_ids":ids,
                        "valid_objective_ids":[x for x in ids if x in {o['id'] for o in objectives}]})
     gaps=[o["id"] for o in objectives if not any(o["id"] in a["valid_objective_ids"] for a in mapped)]
     durations=p.get("duration_minutes",60)
     if not isinstance(durations,(int,float)) or durations<=0: raise EducationError("duration_minutes must be positive")
+    try: durations=float(durations)
+    except OverflowError: raise EducationError("duration_minutes too large")
     allocation=[]
-    remaining=float(durations)
+    remaining=durations
     for index, stage in enumerate(cap.stages):
         minutes = round(remaining, 1) if index == len(cap.stages)-1 else round(float(durations)/len(cap.stages), 1)
         allocation.append({"stage":stage,"minutes":minutes})
@@ -118,8 +121,17 @@ def _design(cap:Capability,p:dict[str,Any]) -> dict[str,Any]:
     if cap.row_id==1411: out["objective_quality"]={"observable":sum(o['observable'] for o in objectives),"total":len(objectives),"needs_revision":[o['id'] for o in objectives if not o['observable']]}
     if cap.row_id==1413:
         criteria=_require(p,"criteria",list); levels=p.get("levels",["exceeds","meets","developing","beginning"])
-        out["rubric"]=[{"criterion":c if isinstance(c,str) else c.get("name"),"weight":(c.get("weight",1) if isinstance(c,dict) else 1),"levels":levels} for c in criteria]
-        total=sum(x["weight"] for x in out["rubric"]); out["normalized_weights"]=[{"criterion":x["criterion"],"weight":round(x["weight"]/total,4)} for x in out["rubric"]]
+        rubric=[]
+        for c in criteria:
+            if isinstance(c,str): name,weight=c,1
+            elif isinstance(c,dict): name,weight=c.get("name"),c.get("weight",1)
+            else: raise EducationError("each criterion must be text or object")
+            if not isinstance(weight,(int,float)): raise EducationError("criterion weight must be a number")
+            rubric.append({"criterion":name,"weight":weight,"levels":levels})
+        out["rubric"]=rubric
+        total=sum(x["weight"] for x in out["rubric"])
+        if total==0: raise EducationError("criterion weights must not sum to zero")
+        out["normalized_weights"]=[{"criterion":x["criterion"],"weight":round(x["weight"]/total,4)} for x in out["rubric"]]
     if cap.row_id==1417: out["syllabus_sections"]=["course_description","learning_outcomes","schedule","assessment_and_grading","accessibility","academic_integrity","support_and_communication"]
     return out
 
@@ -132,13 +144,16 @@ def _inclusion(cap:Capability,p:dict[str,Any])->dict[str,Any]:
          "choice_architecture":{"engagement":["interest_choice","collaboration_or_independent"],"representation":["text","audio_or_captioned_video","worked_example"],"action_expression":["written","oral","demonstration"]},
          "privacy":"Use pseudonymous learner IDs; do not infer protected traits."}
     if cap.row_id==1425:
-        score=float(p.get("mastery",0)); low=float(p.get("support_below",.6)); high=float(p.get("advance_at",.85))
+        try: score=float(p.get("mastery",0)); low=float(p.get("support_below",.6)); high=float(p.get("advance_at",.85))
+        except (TypeError,ValueError,OverflowError,RuntimeError): raise EducationError("mastery and thresholds must be real numbers")
         if not 0<=score<=1 or not 0<=low<high<=1: raise EducationError("mastery and thresholds must be in [0,1], low < high")
         out["adaptation"]="scaffold" if score<low else "advance" if score>=high else "practice"; out["mastery"]=score
     if cap.row_id==1426: out["tutor_loop"]=["diagnose_from_evidence","select_hint_not_answer","elicit_explanation","update_model","offer_human_help"]
     if cap.row_id==1427: out["fading_plan"]=[{"step":"model","support":1.0},{"step":"prompt","support":.66},{"step":"cue","support":.33},{"step":"independent","support":0.0}]
     if cap.row_id==1428:
-        independent=set(p.get("independent_skills",[])); assisted=set(p.get("assisted_skills",[])); out["zpd_candidates"]=sorted(assisted-independent)
+        try:
+            independent=set(p.get("independent_skills",[])); assisted=set(p.get("assisted_skills",[])); out["zpd_candidates"]=sorted(assisted-independent)
+        except TypeError: raise EducationError("skill lists must be hashable, mutually comparable entries")
     if cap.row_id==1429: out["apprenticeship_cycle"]=list(cap.stages)
     return out
 
@@ -156,10 +171,15 @@ def _delivery(cap:Capability,p:dict[str,Any])->dict[str,Any]:
     if not isinstance(constraints,dict): raise EducationError("constraints must be an object")
     out={"units":units,"constraints":constraints,"delivery_plan":[],"accessibility":["captions_or_transcript","keyboard_access","downloadable_low_bandwidth_option"],"continuity":["asynchronous_equivalent","timezone_window","technical_support"]}
     for i,u in enumerate(units):
-        title=u if isinstance(u,str) else u.get("title")
+        if isinstance(u,str): title=u
+        elif isinstance(u,dict): title=u.get("title")
+        else: raise EducationError(f"units[{i}] must be text or object")
         out["delivery_plan"].append({"unit":title,"before":"short preparation","live_or_connected":"active application","after":"feedback and reflection"})
     if cap.row_id==1445: out["mooc_operations"]={"cohort_scale":p.get("cohort_scale"),"peer_review_calibration":True,"forum_moderation":True,"identity_optional_except_credentials":True}
-    if cap.row_id==1446: out["micro_units"]=[{"unit":x["unit"],"target_minutes":min(10,int(p.get("target_minutes",7))),"retrieval_check":True} for x in out["delivery_plan"]]
+    if cap.row_id==1446:
+        try: target_minutes=int(p.get("target_minutes",7))
+        except (TypeError,ValueError,OverflowError,RuntimeError): raise EducationError("target_minutes must be an integer")
+        out["micro_units"]=[{"unit":x["unit"],"target_minutes":min(10,target_minutes),"retrieval_check":True} for x in out["delivery_plan"]]
     if cap.row_id==1447: out["mobile_requirements"]=["responsive","offline_resume","touch_target_44px","data_saver","no_notification_dark_patterns"]
     return out
 
@@ -174,12 +194,16 @@ def _immersive(cap:Capability,p:dict[str,Any])->dict[str,Any]:
     if cap.row_id==1453: out["reality_continuum"]=["physical","augmented","virtual"]
     return out
 
+def _is_attempt(event:dict[str,Any])->bool:
+    try: return event["event_type"]=="attempt"
+    except RuntimeError: raise EducationError("event_type must be comparable")
+
 def _events(p:dict[str,Any])->list[dict[str,Any]]:
     events=_require(p,"events",list)
     clean=[]
     for i,e in enumerate(events):
         if not isinstance(e,dict) or not e.get("learner_id") or not e.get("skill") or not e.get("event_type"): raise EducationError(f"events[{i}] missing learner_id, skill, or event_type")
-        if e["event_type"]=="attempt" and type(e.get("correct")) is not bool:
+        if _is_attempt(e) and type(e.get("correct")) is not bool:
             raise EducationError(f"events[{i}].correct must be an explicit boolean for an attempt")
         clean.append(e)
     return clean
@@ -190,18 +214,29 @@ def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
     events=_events(p); grouped={}
     for e in events:
         key=(str(e["learner_id"]),str(e["skill"])); g=grouped.setdefault(key,{"attempts":0,"correct":0,"durations":[]})
-        if e["event_type"]=="attempt": g["attempts"]+=1; g["correct"]+=int(bool(e.get("correct")))
+        if _is_attempt(e): g["attempts"]+=1; g["correct"]+=int(bool(e.get("correct")))
         if isinstance(e.get("duration_seconds"),(int,float)) and e["duration_seconds"]>=0:g["durations"].append(e["duration_seconds"])
     summaries=[]
     for (learner,skill),g in sorted(grouped.items()):
-        summaries.append({"learner_id":learner,"skill":skill,"attempts":g["attempts"],"accuracy":round(g["correct"]/g["attempts"],4) if g["attempts"] else None,"mean_duration_seconds":round(sum(g["durations"])/len(g["durations"]),2) if g["durations"] else None})
+        mean_duration=None
+        if g["durations"]:
+            try: mean_duration=round(sum(g["durations"])/len(g["durations"]),2)
+            except OverflowError: raise EducationError("duration_seconds values too large")
+        summaries.append({"learner_id":learner,"skill":skill,"attempts":g["attempts"],"accuracy":round(g["correct"]/g["attempts"],4) if g["attempts"] else None,"mean_duration_seconds":mean_duration})
     out={"summaries":summaries,"event_count":len(events),"limitations":["observed activity is not learning itself","missing events can bias results","do not use alone for high-stakes decisions"]}
     if cap.row_id==1456:
-        min_support=int(p.get("min_support",2)); counts={};
-        for e in events: counts[e["event_type"]]=counts.get(e["event_type"],0)+1
-        out["frequent_patterns"]=[{"event_type":k,"support":v} for k,v in sorted(counts.items()) if v>=min_support]
+        try: min_support=int(p.get("min_support",2))
+        except (TypeError,ValueError,OverflowError,RuntimeError): raise EducationError("min_support must be an integer")
+        counts={}
+        for e in events:
+            try: counts[e["event_type"]]=counts.get(e["event_type"],0)+1
+            except TypeError: raise EducationError("event_type must be hashable for pattern mining")
+        try: ordered=sorted(counts.items())
+        except TypeError: raise EducationError("event types must be mutually comparable for pattern mining")
+        out["frequent_patterns"]=[{"event_type":k,"support":v} for k,v in ordered if v>=min_support]
     if cap.row_id in (1457,1458):
-        prior=float(p.get("prior_mastery",.2)); learn=float(p.get("learn_rate",.1)); slip=float(p.get("slip",.1)); guess=float(p.get("guess",.2))
+        try: prior=float(p.get("prior_mastery",.2)); learn=float(p.get("learn_rate",.1)); slip=float(p.get("slip",.1)); guess=float(p.get("guess",.2))
+        except (TypeError,ValueError,OverflowError,RuntimeError): raise EducationError("BKT probabilities must be real numbers")
         if not all(math.isfinite(x) and 0<=x<=1 for x in (prior,learn,slip,guess)): raise EducationError("BKT probabilities must be in [0,1]")
         out["model_assumptions"]={"prior_mastery":prior,"learn_rate":learn,"slip":slip,"guess":guess,
             "parameter_source":("caller" if all(k in p for k in ("prior_mastery","learn_rate","slip","guess")) else
@@ -210,7 +245,7 @@ def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
         traces=[]
         for key in sorted(grouped):
             m=prior
-            for e in [x for x in events if (str(x['learner_id']),str(x['skill']))==key and x['event_type']=='attempt']:
+            for e in [x for x in events if (str(x['learner_id']),str(x['skill']))==key and _is_attempt(x)]:
                 correct=bool(e.get("correct")); likelihood=m*(1-slip)+(1-m)*guess if correct else m*slip+(1-m)*(1-guess)
                 posterior=(m*(1-slip)/likelihood) if correct and likelihood else (m*slip/likelihood if likelihood else m)
                 m=posterior+(1-posterior)*learn
@@ -219,10 +254,16 @@ def _analytics(cap:Capability,p:dict[str,Any])->dict[str,Any]:
     if cap.row_id==1459:
         allowed={"self_report","voluntary_check_in","interaction_signal"}; signals=[]
         for e in events:
-            if e["event_type"] in allowed:
+            try: matches_allowed=e["event_type"] in allowed
+            except (TypeError,RuntimeError): raise EducationError("event_type must be hashable for affect signals")
+            if matches_allowed:
                 signals.append({"learner_id":e["learner_id"],"signal":e["event_type"],"value":e.get("value"),"confidence":e.get("confidence"),"interpretation":"uncertain"})
         out["affect_signals"]=signals; out["prohibited"]=["facial emotion diagnosis","mental health diagnosis","punitive action","protected-trait inference"]; out["response"]="Offer an optional check-in or support; never label emotion as fact."
     return out
+
+def _mooc_channel_load(p:dict[str,Any])->float:
+    try: return float(p.get("cohort_scale") or 0)/max(1,int(p.get("moderation_channels",1)))
+    except (TypeError,ValueError,OverflowError,RuntimeError): raise EducationError("cohort_scale and moderation_channels must be numbers")
 
 def _distinctive(cap:Capability,p:dict[str,Any],result:dict[str,Any])->dict[str,Any]:
     """Compute one auditable, row-specific pedagogy measure from supplied evidence."""
@@ -231,62 +272,70 @@ def _distinctive(cap:Capability,p:dict[str,Any],result:dict[str,Any])->dict[str,
     assessments=result.get("assessments",[]); mapped=sum(bool(a.get("valid_objective_ids")) for a in assessments)
     supports=result.get("supports",[]); units=result.get("units",[]); events=p.get("events",[])
     computations={
-      "curriculum_design":("curriculum_alignment_rate",1-len(result.get("unassessed_objective_ids",[]))/max(1,n_obj),"1 - unassessed objectives / objectives"),
-      "learning_objective_writing":("observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives"),
-      "assessment_design":("assessment_mapping_precision",sum(len(a.get("valid_objective_ids",[])) for a in assessments)/max(1,sum(len(a.get("objective_ids",[])) for a in assessments)),"valid objective links / all assessment links"),
-      "rubric_creation":("rubric_weight_concentration",sum(x["weight"]**2 for x in result.get("normalized_weights",[])),"sum of squared normalized criterion weights"),
-      "lesson_planning":("minutes_per_instructional_stage",float(p.get("duration_minutes",60))/stages,"duration minutes / lesson stages"),
-      "unit_planning":("objectives_per_unit_stage",n_obj/stages,"objectives / unit stages"),
-      "course_design":("course_assessment_coverage",mapped/max(1,len(assessments)),"assessments with valid mappings / assessments"),
-      "syllabus_creation":("syllabus_planned_minutes",sum(x.get("minutes",0) for x in result.get("sequence",[])),"sum of minutes allocated across syllabus design stages"),
-      "instructional_design":("instructional_evidence_density",(n_obj+len(assessments))/stages,"objectives plus assessments / design stages"),
-      "addie_model":("addie_minutes_per_phase",float(p.get("duration_minutes",60))/5,"duration minutes / five ADDIE phases"),
-      "sam_model":("sam_iteration_capacity",float(p.get("duration_minutes",60))/4,"duration minutes / four SAM stages"),
-      "backward_design":("backward_alignment_rate",mapped/max(1,n_obj),"mapped assessments / desired-result objectives"),
-      "universal_design_for_learning":("udl_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives under UDL review"),
-      "differentiated_instruction":("support_to_objective_ratio",len(supports)/max(1,n_obj),"declared supports / objectives"),
-      "personalized_learning":("learner_choice_density",sum(len(v) for v in result.get("choice_architecture",{}).values())/max(1,n_obj),"learner choices / objectives"),
-      "adaptive_learning":("mastery_distance_to_advance",round(float(p.get("advance_at",.85))-float(p.get("mastery",0)),6),"advance threshold - observed mastery"),
-      "intelligent_tutoring":("tutor_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives for tutoring loop"),
-      "scaffolding":("scaffold_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives receiving faded scaffolds"),
-      "zone_of_proximal_development":("zpd_skill_count",len(result.get("zpd_candidates",[])),"assisted skills minus independently demonstrated skills"),
-      "cognitive_apprenticeship":("apprenticeship_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives in apprenticeship cycle"),
-      "situated_learning":("situated_artifact_density",len(result.get("learner_artifacts",[]))/stages,"authentic-context artifacts / learning-cycle stages"),
-      "anchored_instruction":("anchor_transfer_ratio",len(result.get("learner_artifacts",[]))/max(1,len(str(p.get("challenge"," ")).split())),"artifacts / anchor challenge words"),
-      "problem_based_learning":("pbl_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives in PBL inquiry"),
-      "project_based_learning":("project_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / project objectives"),
-      "inquiry_based_learning":("inquiry_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / inquiry objectives"),
-      "discovery_learning":("discovery_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / discovery objectives"),
-      "experiential_learning":("experiential_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / experiential objectives"),
-      "service_learning":("service_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / service-learning objectives"),
-      "cooperative_learning":("accountable_role_count",len(result.get("roles",[])),"assigned roles with individual accountability"),
-      "collaborative_learning":("collaboration_artifact_rate",len(result.get("learner_artifacts",[]))/stages,"coauthored artifacts / collaboration stages"),
-      "peer_instruction":("peer_instruction_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / peer-instruction objectives"),
-      "flipped_classroom":("connected_touchpoints_per_unit",3*len(units),"before + connected + after touchpoints per unit"),
-      "blended_learning":("modality_continuity_ratio",len(result.get("continuity",[]))/max(1,len(units)),"continuity provisions / units"),
-      "online_learning":("online_accessibility_per_unit",len(result.get("accessibility",[]))/max(1,len(units)),"accessibility provisions / online units"),
-      "distance_education":("distance_support_density",(len(result.get("continuity",[]))+len(result.get("accessibility",[])))/max(1,len(units)),"continuity plus accessibility provisions / units"),
-      "moocs":("learners_per_moderation_channel",float(p.get("cohort_scale") or 0)/max(1,int(p.get("moderation_channels",1))),"cohort scale / moderation channels"),
-      "microlearning":("microlearning_total_minutes",sum(x["target_minutes"] for x in result.get("micro_units",[])),"sum of bounded micro-unit minutes"),
-      "mobile_learning":("mobile_resilience_per_unit",len(result.get("mobile_requirements",[]))/max(1,len(units)),"mobile resilience requirements / units"),
-      "game_based_learning":("mechanic_alignment_score",int(result.get("alignment",{}).get("mechanic_practices_objective",False)),"1 when mechanic has supplied objective-alignment rationale"),
-      "gamification":("autonomy_choice_count",len(result.get("motivation_design",{}).get("autonomy",[])),"meaningful learner choices, excluding coercive rewards"),
-      "simulation_based_learning":("simulation_mechanic_specificity",len(str(result.get("mechanic","")).split()),"words in caller-supplied simulation mechanic"),
-      "virtual_reality_learning":("vr_observable_objective",int(result.get("objective",{}).get("observable",False)),"1 when the VR objective begins with an observable verb"),
-      "augmented_reality_learning":("ar_observable_objective",int(result.get("objective",{}).get("observable",False)),"1 when the AR objective begins with an observable verb"),
-      "mixed_reality_learning":("mr_observable_objective",int(result.get("objective",{}).get("observable",False)),"1 when the mixed-reality objective begins with an observable verb"),
-      "artificial_intelligence_in_education":("ai_use_case_specificity",len(str(result.get("use_case","")).split()),"words in caller-supplied AI education use case"),
-      "learning_analytics":("attempt_weighted_accuracy",sum(int(bool(e.get("correct"))) for e in events if e.get("event_type")=="attempt")/max(1,sum(e.get("event_type")=="attempt" for e in events)),"correct attempts / recorded attempts"),
-      "educational_data_mining":("frequent_pattern_count",len(result.get("frequent_patterns",[])),"event types meeting caller-supplied minimum support"),
-      "student_modeling":("mean_modeled_mastery",sum(x["mastery_probability"] for x in result.get("knowledge_state",[]))/max(1,len(result.get("knowledge_state",[]))),"mean bounded formative mastery probability"),
-      "knowledge_tracing":("knowledge_trace_span",(max((x["mastery_probability"] for x in result.get("knowledge_state",[])),default=0)-min((x["mastery_probability"] for x in result.get("knowledge_state",[])),default=0)),"maximum minus minimum traced mastery probability"),
-      "affect_detection":("voluntary_signal_rate",len(result.get("affect_signals",[]))/max(1,len(events)),"voluntary non-diagnostic signals / all events"),
+      "curriculum_design":lambda:("curriculum_alignment_rate",1-len(result.get("unassessed_objective_ids",[]))/max(1,n_obj),"1 - unassessed objectives / objectives"),
+      "learning_objective_writing":lambda:("observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives"),
+      "assessment_design":lambda:("assessment_mapping_precision",sum(len(a.get("valid_objective_ids",[])) for a in assessments)/max(1,sum(len(a.get("objective_ids",[])) for a in assessments)),"valid objective links / all assessment links"),
+      "rubric_creation":lambda:("rubric_weight_concentration",sum(x["weight"]**2 for x in result.get("normalized_weights",[])),"sum of squared normalized criterion weights"),
+      "lesson_planning":lambda:("minutes_per_instructional_stage",float(p.get("duration_minutes",60))/stages,"duration minutes / lesson stages"),
+      "unit_planning":lambda:("objectives_per_unit_stage",n_obj/stages,"objectives / unit stages"),
+      "course_design":lambda:("course_assessment_coverage",mapped/max(1,len(assessments)),"assessments with valid mappings / assessments"),
+      "syllabus_creation":lambda:("syllabus_planned_minutes",sum(x.get("minutes",0) for x in result.get("sequence",[])),"sum of minutes allocated across syllabus design stages"),
+      "instructional_design":lambda:("instructional_evidence_density",(n_obj+len(assessments))/stages,"objectives plus assessments / design stages"),
+      "addie_model":lambda:("addie_minutes_per_phase",float(p.get("duration_minutes",60))/5,"duration minutes / five ADDIE phases"),
+      "sam_model":lambda:("sam_iteration_capacity",float(p.get("duration_minutes",60))/4,"duration minutes / four SAM stages"),
+      "backward_design":lambda:("backward_alignment_rate",mapped/max(1,n_obj),"mapped assessments / desired-result objectives"),
+      "universal_design_for_learning":lambda:("udl_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives under UDL review"),
+      "differentiated_instruction":lambda:("support_to_objective_ratio",len(supports)/max(1,n_obj),"declared supports / objectives"),
+      "personalized_learning":lambda:("learner_choice_density",sum(len(v) for v in result.get("choice_architecture",{}).values())/max(1,n_obj),"learner choices / objectives"),
+      "adaptive_learning":lambda:("mastery_distance_to_advance",round(float(p.get("advance_at",.85))-float(p.get("mastery",0)),6),"advance threshold - observed mastery"),
+      "intelligent_tutoring":lambda:("tutor_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives for tutoring loop"),
+      "scaffolding":lambda:("scaffold_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives receiving faded scaffolds"),
+      "zone_of_proximal_development":lambda:("zpd_skill_count",len(result.get("zpd_candidates",[])),"assisted skills minus independently demonstrated skills"),
+      "cognitive_apprenticeship":lambda:("apprenticeship_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives in apprenticeship cycle"),
+      "situated_learning":lambda:("situated_artifact_density",len(result.get("learner_artifacts",[]))/stages,"authentic-context artifacts / learning-cycle stages"),
+      "anchored_instruction":lambda:("anchor_transfer_ratio",len(result.get("learner_artifacts",[]))/max(1,len(str(p.get("challenge"," ")).split())),"artifacts / anchor challenge words"),
+      "problem_based_learning":lambda:("pbl_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / objectives in PBL inquiry"),
+      "project_based_learning":lambda:("project_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / project objectives"),
+      "inquiry_based_learning":lambda:("inquiry_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / inquiry objectives"),
+      "discovery_learning":lambda:("discovery_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / discovery objectives"),
+      "experiential_learning":lambda:("experiential_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / experiential objectives"),
+      "service_learning":lambda:("service_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / service-learning objectives"),
+      "cooperative_learning":lambda:("accountable_role_count",len(result.get("roles",[])),"assigned roles with individual accountability"),
+      "collaborative_learning":lambda:("collaboration_artifact_rate",len(result.get("learner_artifacts",[]))/stages,"coauthored artifacts / collaboration stages"),
+      "peer_instruction":lambda:("peer_instruction_observable_objective_rate",sum(o.get("observable",False) for o in objectives)/max(1,n_obj),"observable objectives / peer-instruction objectives"),
+      "flipped_classroom":lambda:("connected_touchpoints_per_unit",3*len(units),"before + connected + after touchpoints per unit"),
+      "blended_learning":lambda:("modality_continuity_ratio",len(result.get("continuity",[]))/max(1,len(units)),"continuity provisions / units"),
+      "online_learning":lambda:("online_accessibility_per_unit",len(result.get("accessibility",[]))/max(1,len(units)),"accessibility provisions / online units"),
+      "distance_education":lambda:("distance_support_density",(len(result.get("continuity",[]))+len(result.get("accessibility",[])))/max(1,len(units)),"continuity plus accessibility provisions / units"),
+      "moocs":lambda:("learners_per_moderation_channel",_mooc_channel_load(p),"cohort scale / moderation channels"),
+      "microlearning":lambda:("microlearning_total_minutes",sum(x["target_minutes"] for x in result.get("micro_units",[])),"sum of bounded micro-unit minutes"),
+      "mobile_learning":lambda:("mobile_resilience_per_unit",len(result.get("mobile_requirements",[]))/max(1,len(units)),"mobile resilience requirements / units"),
+      "game_based_learning":lambda:("mechanic_alignment_score",int(result.get("alignment",{}).get("mechanic_practices_objective",False)),"1 when mechanic has supplied objective-alignment rationale"),
+      "gamification":lambda:("autonomy_choice_count",len(result.get("motivation_design",{}).get("autonomy",[])),"meaningful learner choices, excluding coercive rewards"),
+      "simulation_based_learning":lambda:("simulation_mechanic_specificity",len(str(result.get("mechanic","")).split()),"words in caller-supplied simulation mechanic"),
+      "virtual_reality_learning":lambda:("vr_observable_objective",int(result.get("objective",{}).get("observable",False)),"1 when the VR objective begins with an observable verb"),
+      "augmented_reality_learning":lambda:("ar_observable_objective",int(result.get("objective",{}).get("observable",False)),"1 when the AR objective begins with an observable verb"),
+      "mixed_reality_learning":lambda:("mr_observable_objective",int(result.get("objective",{}).get("observable",False)),"1 when the mixed-reality objective begins with an observable verb"),
+      "artificial_intelligence_in_education":lambda:("ai_use_case_specificity",len(str(result.get("use_case","")).split()),"words in caller-supplied AI education use case"),
+      "learning_analytics":lambda:("attempt_weighted_accuracy",sum(int(bool(e.get("correct"))) for e in events if e.get("event_type")=="attempt")/max(1,sum(e.get("event_type")=="attempt" for e in events)),"correct attempts / recorded attempts"),
+      "educational_data_mining":lambda:("frequent_pattern_count",len(result.get("frequent_patterns",[])),"event types meeting caller-supplied minimum support"),
+      "student_modeling":lambda:("mean_modeled_mastery",sum(x["mastery_probability"] for x in result.get("knowledge_state",[]))/max(1,len(result.get("knowledge_state",[]))),"mean bounded formative mastery probability"),
+      "knowledge_tracing":lambda:("knowledge_trace_span",(max((x["mastery_probability"] for x in result.get("knowledge_state",[])),default=0)-min((x["mastery_probability"] for x in result.get("knowledge_state",[])),default=0)),"maximum minus minimum traced mastery probability"),
+      "affect_detection":lambda:("voluntary_signal_rate",len(result.get("affect_signals",[]))/max(1,len(events)),"voluntary non-diagnostic signals / all events"),
     }
-    name,value,formula=computations[k]
+    try: name,value,formula=computations[k]()
+    except (TypeError,ValueError,OverflowError,ZeroDivisionError,RuntimeError,KeyError,AttributeError): raise EducationError(f"distinctive computation inputs for {k} must be usable numbers and collections")
     if not isinstance(value,(int,float)) or not math.isfinite(float(value)): raise EducationError(f"{name} is not finite")
     return {"name":name,"value":round(float(value),6),"formula":formula,"inputs":"caller supplied only","educator_review_required":True,"privacy":"pseudonymous aggregates; no protected-trait inference"}
 
+def _observed(v:Any)->bool:
+    """Presence check that never calls caller-controlled __eq__ (hostile objects)."""
+    if v is None: return False
+    if isinstance(v,(list,dict)) and not v: return False
+    return True
+
 def execute(capability:str,payload:dict[str,Any])->dict[str,Any]:
+    if not isinstance(capability,str): raise EducationError(f"unknown capability: {capability}")
     key=_slug(capability); row=NAME_TO_ROW.get(key)
     if row is None: raise EducationError(f"unknown capability: {capability}")
     if not isinstance(payload,dict): raise EducationError("payload must be an object")
@@ -298,7 +347,7 @@ def execute(capability:str,payload:dict[str,Any])->dict[str,Any]:
     result["distinctive_computation"]=_distinctive(cap,payload,result)
     evaluation={
         "criteria":list(cap.evidence),
-        "observed_evidence":sorted(k for k,v in result.items() if v not in (None,[],{})),
+        "observed_evidence":sorted(k for k,v in result.items() if _observed(v)),
         "open_questions":list(payload.get("open_questions",[])),
         "reviewer":"qualified educator and affected learner",
     }
@@ -315,7 +364,7 @@ _original_execute = execute
 from app.core.depth_quality import attach_quality as _attach_quality
 
 def execute(capability:str|int,payload:dict[str,Any],*,tenant_id:str="local",actor_id:str="local")->dict[str,Any]:
-    if not tenant_id.strip() or not actor_id.strip(): raise EducationError("tenant_id and actor_id are required")
+    if not isinstance(tenant_id,str) or not isinstance(actor_id,str) or not tenant_id.strip() or not actor_id.strip(): raise EducationError("tenant_id and actor_id are required")
     out=_original_execute(capability,payload)
     out["scope"]={"tenant_id":tenant_id,"actor_id":actor_id}
     evidence=[x for key in ('sources','evidence','learner_evidence') for x in payload.get(key,[]) if isinstance(x,dict)]
