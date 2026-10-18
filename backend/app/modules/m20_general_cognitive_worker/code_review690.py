@@ -29,6 +29,57 @@ class SelfApprovalError(CodeReviewError):
 _HUNK = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
 
 
+_ESCAPES = {"a": 7, "b": 8, "f": 12, "n": 10, "r": 13, "t": 9, "v": 11, "\\": 92, '"': 34}
+
+
+def _header_path(rest: str) -> str:
+    """Path from the text after `+++ `, as written by git or `diff -u`.
+
+    Git C-quotes names with special characters ("..." with \\ \" \t \n and octal
+    escapes for UTF-8 bytes); the closing quote may be followed by a TAB and a
+    timestamp. An unquoted name ends at the first TAB (git quotes real tabs, so a
+    raw TAB is the `diff -u` timestamp separator).
+    """
+    if not rest.startswith('"'):
+        return rest.split("\t")[0].strip()
+    out = bytearray()
+    i, n = 1, len(rest)
+    while i < n:
+        c = rest[i]
+        if c == '"':
+            tail = rest[i + 1:]
+            if tail and not tail.startswith("\t"):
+                raise CodeReviewError("malformed quoted path in file header")
+            try:
+                return out.decode("utf-8")
+            except UnicodeDecodeError:
+                # Lossy replacement would let distinct byte names collapse to one
+                # string; the route layer is text-only (rejects surrogates), so refuse.
+                raise CodeReviewError("quoted path is not valid UTF-8") from None
+        if c == "\\":
+            i += 1
+            if i >= n:
+                break
+            e = rest[i]
+            if e in "01234567":
+                j = i
+                while j < n and j < i + 3 and rest[j] in "01234567":
+                    j += 1
+                v = int(rest[i:j], 8)
+                if v > 255:
+                    raise CodeReviewError("malformed quoted path in file header")
+                out.append(v)
+                i = j
+                continue
+            if e not in _ESCAPES:
+                raise CodeReviewError("malformed quoted path in file header")
+            out.append(_ESCAPES[e])
+        else:
+            out.extend(c.encode("utf-8"))
+        i += 1
+    raise CodeReviewError("malformed quoted path in file header")
+
+
 def parse_unified_diff(text: str) -> list[dict[str, Any]]:
     if not isinstance(text, str) or "@@" not in text:
         raise CodeReviewError("diff must be a unified diff containing at least one hunk")
@@ -46,7 +97,7 @@ def parse_unified_diff(text: str) -> list[dict[str, Any]]:
             hunk = None  # hunk fully consumed: next lines are file headers
         if raw.startswith("+++ ") and hunk is None:
             close(); hunk = None
-            p = raw[4:].strip()
+            p = _header_path(raw[4:])
             p = p[2:] if p.startswith("b/") else p
             cur = {"path": p, "added": [], "removed": 0}
             files.append(cur)
