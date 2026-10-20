@@ -1,0 +1,4 @@
+odors 109 receptors 37
+0.5 {'real_raw': 0.449, 'real_exp': 0.899, 'iid_raw': 0.901, 'iid_exp': 1.0}
+1.0 {'real_raw': 0.421, 'real_exp': 0.694, 'iid_raw': 0.824, 'iid_exp': 0.953}
+1.5 {'real_raw': 0.375, 'real_exp': 0.528, 'iid_raw': 0.677, 'iid_exp': 0.739}
