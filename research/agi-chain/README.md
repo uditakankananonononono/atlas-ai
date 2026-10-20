@@ -12,3 +12,4 @@ Status of this folder, stated plainly:
 - c27/c27door.py, c27door.out, door_response_matrix.csv (DoOR master data, about 296 KB)
 - c28/c28prune.py, c28prune.out
 - c29/c29mut.py, prior-art-c29.log
+- c30/c30wta.py, c30wta.out, prior-art-c30.log: k-WTA vs fixed threshold. Negative, firsts 0. WTA wins at every correlation and is gain invariant by construction.
