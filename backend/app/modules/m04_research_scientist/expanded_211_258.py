@@ -48,7 +48,13 @@ def run(row:int,d:dict[str,Any])->dict[str,Any]:
  elif row in {228,229}:r=_code(d,'python' if row==228 else 'r')
  elif row==230:r=_adapter('scanpy/scverse',d)
  elif row==231:_need(d,'image_digest','command','resource_limits');r={'image_digest':d['image_digest'],'command':d['command'],'resource_limits':d['resource_limits'],'network':d.get('network','disabled'),'mounts':d.get('mounts',[]),'executed':False,'approval_required':True}
- elif row==232:_need(d,'results');r={'results':d['results'],'interpretations':d.get('interpretations',[]),'alternative_explanations':d.get('alternative_explanations',[]),'limitations':d.get('limitations',[]),'causality_not_inferred':True}
+ elif row==232:
+  _need(d,'results')
+  if d.get('interpretations'):r={'results':d['results'],'interpretations':d['interpretations'],'alternative_explanations':d.get('alternative_explanations',[]),'limitations':d.get('limitations',[]),'causality_not_inferred':True}
+  else:
+   # caller interpretations win only when non-empty; otherwise derive deterministic descriptive stats from numeric results (deliberate change from legacy empty-echo, pinned by test); fails closed ValueError when results are not numeric-derivable
+   from .stats import descriptive_stats
+   r={'results':d['results'],'interpretations':[],'alternative_explanations':d.get('alternative_explanations',[]),'limitations':d.get('limitations',[]),'descriptive_stats':descriptive_stats(d['results']),'interpretation_heuristic':True,'causality_not_inferred':True}
  elif row==233:_need(d,'data','plot_spec');r={'plot_spec':d['plot_spec'],'data_columns':list(d['data'].keys()) if isinstance(d['data'],dict) else [],'alt_text':d.get('alt_text'),'rendered':False}
  elif row==234:_need(d,'sections','citations');r={'latex_sections':d['sections'],'citations':d['citations'],'unresolved_citation_keys':d.get('unresolved_citation_keys',[]),'compiled':False}
  elif row==235:_need(d,'manuscript','journals');r={'ranked':[dict(x,score=sum(float(x.get(k,0)) for k in ('scope_fit','method_fit','audience_fit'))) for x in d['journals']],'manuscript':d['manuscript'],'submission_guaranteed':False}
