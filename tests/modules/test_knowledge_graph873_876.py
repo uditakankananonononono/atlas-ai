@@ -44,6 +44,19 @@ def test_unknown_edge_and_duplicate_refused():
     with pytest.raises(ValueError):graph_paths(p)
 
 
+def test_duplicate_knowledge_item_id_refused():
+    p={'knowledge_items':[{'id':'a','facets':{'topic':['biology']}},{'id':'a','facets':{'topic':['cs']}}],'facet_queries':[]}
+    with pytest.raises(ValueError):facet_retrieval(p)
+
+
+def test_facet_count_boundary_32_accepted_33_refused():
+    ok={'knowledge_items':[{'id':'a','facets':{('f%02d'%i):['v'] for i in range(32)}}],'facet_queries':[]}
+    out=facet_retrieval(ok)
+    assert out['queries']==[]
+    over={'knowledge_items':[{'id':'a','facets':{('f%02d'%i):['v'] for i in range(33)}}],'facet_queries':[]}
+    with pytest.raises(ValueError):facet_retrieval(over)
+
+
 def test_existing_row_dispatches_without_new_route():
     p={'tenant_id':'t','actor_id':'a','sources':[{'source_id':'s','observed_at':'2026-10-13'}],'inputs':graph()}
     out=execute(876,p)
