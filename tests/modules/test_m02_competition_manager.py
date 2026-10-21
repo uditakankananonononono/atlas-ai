@@ -28,6 +28,16 @@ class Browser:
         if self.fail: raise RuntimeError("browser failure")
         return {"receipt": "ABC123"}
 
+class EvidenceVerifier:
+    def __init__(self, answer=True): self.answer = answer
+    def verify(self, action, evidence): return self.answer
+
+def success_receipt(action):
+    return {"action_id": action.id, "payload_digest": action.approved_digest,
+            "outcome": "confirmed_success", "attempt_terminal": True,
+            "source": "browser_readback", "external_reference": "receipt-1",
+            "evidence": "portal readback captured"}
+
 class ParserTests(unittest.TestCase):
     def test_grounded_extraction_and_rubric(self):
         facts = parse_competition_document(DOC, "rules-v1", url="https://example.test/rules")
@@ -80,9 +90,21 @@ class WorkflowTests(unittest.TestCase):
         with self.assertRaises(PermissionError): self.manager.approve_action(staged.id, "wrong", Verifier())
         approved = self.manager.approve_action(staged.id, "approval-1", Verifier())
         self.assertEqual(approved.state, ActionState.APPROVED)
-        browser = Browser(); finished = self.manager.execute_action(staged.id, browser)
-        self.assertEqual(finished.state, ActionState.SUCCEEDED)
-        self.assertEqual(finished.result["receipt"], "ABC123")
+        browser = Browser(); returned = self.manager.execute_action(staged.id, browser)
+        # New contract: an executor return value is retained but is NOT
+        # independent site confirmation, so the attempt is EXECUTOR_RETURNED
+        # (not SUCCEEDED) and the workspace stays STAGED until verified
+        # reconciliation. (Old expectations SUCCEEDED/SUBMITTED replaced.)
+        self.assertEqual(returned.state, ActionState.EXECUTOR_RETURNED)
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+        # Kept guards: return value retained; executor invoked exactly once.
+        self.assertEqual(returned.result["receipt"], "ABC123")
+        self.assertEqual(len(browser.calls), 1)
+        # Kept end-to-end guard, new mechanism: verified reconciliation drives
+        # the action to SUCCEEDED and the workspace to SUBMITTED.
+        action = self.repo.get_action(staged.id)
+        reconciled = self.manager.reconcile_action(staged.id, success_receipt(action), EvidenceVerifier())
+        self.assertEqual(reconciled.state, ActionState.SUCCEEDED)
         self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.SUBMITTED)
         self.assertEqual(len(browser.calls), 1)
 
@@ -96,13 +118,36 @@ class WorkflowTests(unittest.TestCase):
     def test_browser_failure_recorded(self):
         self.make_ready(); staged = self.manager.stage_browser_action(self.ws.id, "fill_form", "https://example.test/apply", {})
         self.manager.approve_action(staged.id, "approval-1", Verifier())
-        with self.assertRaises(RuntimeError): self.manager.execute_action(staged.id, Browser(fail=True))
+        browser = Browser(fail=True)
+        # Kept guard: the executor exception still propagates to the caller.
+        with self.assertRaises(RuntimeError): self.manager.execute_action(staged.id, browser)
         failed = self.repo.get_action(staged.id)
-        self.assertEqual(failed.state, ActionState.FAILED); self.assertEqual(failed.error, "browser failure")
+        # New contract: an executor raise can occur AFTER an external effect, so
+        # the attempt is OUTCOME_UNKNOWN (not known FAILED) and the stored error
+        # is a fixed sanitized marker, never the raw provider error.
+        self.assertEqual(failed.state, ActionState.OUTCOME_UNKNOWN)
+        self.assertEqual(failed.error, "executor raised; external outcome requires reconciliation")
+        self.assertNotIn("browser failure", failed.error)
+        # Kept guards: recorded in the lane repository (in-memory; not production durability).
+        with self.assertRaises(PermissionError): self.manager.execute_action(staged.id, browser)
+        self.assertEqual(len(browser.calls), 1)
+        # Kept terminal-state guard, new mechanism: verified no-effect evidence
+        # reconciles the attempt to terminal FAILED.
+        receipt = success_receipt(failed); receipt["outcome"] = "confirmed_no_effect"
+        resolved = self.manager.reconcile_action(staged.id, receipt, EvidenceVerifier())
+        self.assertEqual(resolved.state, ActionState.FAILED)
 
     def test_status_monitor_history_and_terminal_guard(self):
         self.make_ready(); staged = self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {})
         self.manager.approve_action(staged.id, "approval-1", Verifier()); self.manager.execute_action(staged.id, Browser())
+        # New contract: observations cannot advance a workspace through
+        # submission; a SUBMITTED observation before reconciliation is refused.
+        with self.assertRaises(PermissionError):
+            self.manager.record_status_observation(StatusObservation(self.ws.id, ApplicationStatus.SUBMITTED, "portal", datetime(2026,11,2,tzinfo=timezone.utc), "Portal receipt"))
+        action = self.repo.get_action(staged.id)
+        self.manager.reconcile_action(staged.id, success_receipt(action), EvidenceVerifier())
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.SUBMITTED)
+        # Kept guards (unchanged contract): observation history + terminal guard.
         accepted = StatusObservation(self.ws.id, ApplicationStatus.ACCEPTED, "portal", datetime(2026,11,2,tzinfo=timezone.utc), "Portal says accepted", "ABC")
         ws = self.manager.record_status_observation(accepted)
         self.assertEqual(ws.status, ApplicationStatus.ACCEPTED); self.assertEqual(self.manager.status_history(ws.id), [accepted])
@@ -110,10 +155,21 @@ class WorkflowTests(unittest.TestCase):
             self.manager.record_status_observation(StatusObservation(ws.id, ApplicationStatus.REJECTED, "email", datetime(2026,11,3,tzinfo=timezone.utc), "Rejected"))
 
     def test_invalid_transition_and_http_only_url(self):
-        with self.assertRaises(ValueError): self.manager.transition(self.ws.id, ApplicationStatus.SUBMITTED)
+        # Kept guard, stronger class: callers can never self-declare submission.
+        # It is now refused categorically (PermissionError, not ValueError)
+        # because submission requires verified action reconciliation.
+        with self.assertRaises(PermissionError): self.manager.transition(self.ws.id, ApplicationStatus.SUBMITTED)
+        # Kept guard: invalid non-submission transitions still raise ValueError.
+        with self.assertRaises(ValueError): self.manager.transition(self.ws.id, ApplicationStatus.ACCEPTED)
         self.make_ready()
+        # Kept guard: https-only staging (unchanged contract).
         with self.assertRaisesRegex(ValueError, "https"):
             self.manager.stage_browser_action(self.ws.id, "fill_form", "http://unsafe.test", {})
+        # Kept guard, extended: even from STAGED, where SUBMITTED is otherwise
+        # a listed transition, manual submission is refused.
+        self.manager.stage_browser_action(self.ws.id, "submit_application", "https://example.test/apply", {})
+        self.assertEqual(self.repo.get_workspace(self.ws.id).status, ApplicationStatus.STAGED)
+        with self.assertRaises(PermissionError): self.manager.transition(self.ws.id, ApplicationStatus.SUBMITTED)
 
 if __name__ == "__main__": unittest.main()
 

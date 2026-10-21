@@ -37,6 +37,8 @@ class ActionState(str, Enum):
     APPROVAL_REQUIRED = "approval_required"
     APPROVED = "approved"
     EXECUTING = "executing"
+    EXECUTOR_RETURNED = "executor_returned"
+    OUTCOME_UNKNOWN = "outcome_unknown"
     SUCCEEDED = "succeeded"
     FAILED = "failed"
     CANCELLED = "cancelled"
@@ -102,6 +104,8 @@ class StagedBrowserAction:
     approved_digest: Optional[str] = None
     result: Optional[dict[str, Any]] = None
     error: Optional[str] = None
+    version: int = 1
+    reconciliation: Optional[dict[str, Any]] = None
     created_at: datetime = field(default_factory=utcnow)
     updated_at: datetime = field(default_factory=utcnow)
 

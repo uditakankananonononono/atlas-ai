@@ -13,7 +13,7 @@ class NotFoundError(KeyError): pass
 class CompetitionRepository(Protocol):
     def save_workspace(self, workspace: ApplicationWorkspace, expected_version: int | None = None) -> ApplicationWorkspace: ...
     def get_workspace(self, workspace_id: str) -> ApplicationWorkspace: ...
-    def save_action(self, action: StagedBrowserAction) -> StagedBrowserAction: ...
+    def save_action(self, action: StagedBrowserAction, expected_version: int | None = None) -> StagedBrowserAction: ...
     def get_action(self, action_id: str) -> StagedBrowserAction: ...
 
 
@@ -39,8 +39,14 @@ class InMemoryCompetitionRepository:
             try: return deepcopy(self._workspaces[workspace_id])
             except KeyError: raise NotFoundError(workspace_id)
 
-    def save_action(self, action: StagedBrowserAction) -> StagedBrowserAction:
+    def save_action(self, action: StagedBrowserAction, expected_version: int | None = None) -> StagedBrowserAction:
         with self._lock:
+            old = self._actions.get(action.id)
+            if expected_version is not None:
+                actual = old.version if old else 0
+                if actual != expected_version:
+                    raise ConflictError(f"action version is {actual}, expected {expected_version}")
+                action.version = actual + 1
             self._actions[action.id] = deepcopy(action)
             return deepcopy(action)
 

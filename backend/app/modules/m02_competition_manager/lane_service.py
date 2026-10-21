@@ -15,6 +15,11 @@ class ApprovalVerifier(Protocol):
     def verify(self, approval_id: str, *, action_id: str, payload_digest: str) -> bool: ...
 
 
+class OutcomeEvidenceVerifier(Protocol):
+    """Must independently check terminal attempt, exact subject and readback."""
+    def verify(self, action: StagedBrowserAction, evidence: dict[str, Any]) -> bool: ...
+
+
 class BrowserExecutor(Protocol):
     def execute(self, action: str, target_url: str, payload: Mapping[str, Any]) -> dict[str, Any]: ...
 
@@ -83,6 +88,8 @@ class CompetitionManager:
         return self.repo.save_workspace(ws, expected_version=version)
 
     def transition(self, workspace_id: str, status: ApplicationStatus) -> ApplicationWorkspace:
+        if status == ApplicationStatus.SUBMITTED:
+            raise PermissionError("submission requires verified action reconciliation")
         ws = self.repo.get_workspace(workspace_id); version = ws.version
         if status not in _ALLOWED_TRANSITIONS[ws.status]: raise ValueError(f"invalid transition {ws.status.value} -> {status.value}")
         if status == ApplicationStatus.READY and not ws.required_complete(): raise ValueError("required checklist items are incomplete")
@@ -106,27 +113,88 @@ class CompetitionManager:
         if action.state != ActionState.APPROVAL_REQUIRED: raise ValueError("action is not awaiting approval")
         if not verifier.verify(approval_id, action_id=action.id, payload_digest=action.payload_digest): raise PermissionError("approval is invalid or out of scope")
         action.approval_id = approval_id; action.approved_digest = action.payload_digest; action.state = ActionState.APPROVED; action.updated_at = utcnow()
-        return self.repo.save_action(action)
+        return self.repo.save_action(action, expected_version=action.version)
 
     def execute_action(self, action_id: str, executor: BrowserExecutor) -> StagedBrowserAction:
         action = self.repo.get_action(action_id)
         if action.state != ActionState.APPROVED: raise PermissionError("approved action required")
         current = payload_digest(action.action, action.target_url, action.payload)
         if current != action.approved_digest: raise PermissionError("action changed after approval")
-        action.state = ActionState.EXECUTING; action.updated_at = utcnow(); self.repo.save_action(action)
+        # Preflight bookkeeping eligibility before any external call. This is
+        # not a lock across external execution; later conflicts remain possible.
+        ws = self.repo.get_workspace(action.application_id)
+        if ws.status != ApplicationStatus.STAGED: raise ValueError("workspace is no longer staged")
+        action.state = ActionState.EXECUTING; action.updated_at = utcnow()
+        action = self.repo.save_action(action, expected_version=action.version)
         try:
-            action.result = executor.execute(action.action, action.target_url, action.payload)
-            action.state = ActionState.SUCCEEDED
-            if action.action == "submit_application":
-                ws = self.repo.get_workspace(action.application_id); version = ws.version
-                if ws.status != ApplicationStatus.STAGED: raise ValueError("workspace is no longer staged")
-                ws.status = ApplicationStatus.SUBMITTED; ws.updated_at = utcnow(); self.repo.save_workspace(ws, expected_version=version)
-        except Exception as exc:
-            action.state = ActionState.FAILED; action.error = str(exc); action.updated_at = utcnow(); self.repo.save_action(action); raise
-        action.updated_at = utcnow(); return self.repo.save_action(action)
+            result = executor.execute(action.action, action.target_url, action.payload)
+        except Exception:
+            # Timeout/disconnect can occur AFTER a submit click. Never relabel
+            # it known failure or expose raw provider error/credentials.
+            action.state = ActionState.OUTCOME_UNKNOWN
+            action.error = "executor raised; external outcome requires reconciliation"
+            action.updated_at = utcnow()
+            self.repo.save_action(action, expected_version=action.version)
+            raise
+        # A return value is retained, but is not independent site confirmation.
+        # If this write fails, persisted EXECUTING remains non-retryable and can
+        # be reconciled with independent evidence; never replay the executor.
+        action.result = result
+        action.state = ActionState.EXECUTOR_RETURNED; action.updated_at = utcnow()
+        return self.repo.save_action(action, expected_version=action.version)
+
+    def reconcile_action(self, action_id: str, evidence: dict[str, Any], verifier: OutcomeEvidenceVerifier) -> StagedBrowserAction:
+        """Resolve an existing attempt using independently checked evidence.
+
+        Caller supplies an evidence-verifier adapter, not a boolean assertion.
+        Verifier MUST establish that the attempt is terminal and bind the
+        source readback to this exact target/subject. No-effect evidence must
+        exclude an in-flight request or an eventually committed submission.
+        Merely not seeing a submission is not confirmed_no_effect.
+        No executor or approval re-consumption occurs. A confirmed failure also
+        stays non-retryable: a new attempt needs a separately reviewed action.
+        This lane repository is in-memory by default, NOT production durability.
+        """
+        from copy import deepcopy
+        action = self.repo.get_action(action_id)
+        if action.state not in {ActionState.EXECUTING, ActionState.OUTCOME_UNKNOWN, ActionState.EXECUTOR_RETURNED}:
+            raise ValueError("action is not awaiting reconciliation")
+        if payload_digest(action.action,action.target_url,action.payload) != action.approved_digest:
+            raise PermissionError("action changed since approved attempt")
+        receipt = deepcopy(evidence)
+        if (receipt.get('action_id') != action.id or receipt.get('payload_digest') != action.approved_digest
+                or receipt.get('attempt_terminal') is not True
+                or receipt.get('outcome') not in {'confirmed_success','confirmed_no_effect'}
+                or receipt.get('source') not in {'browser_readback','official_api','confirmation_email'}
+                or not isinstance(receipt.get('external_reference'),str) or not receipt['external_reference'].strip()
+                or not isinstance(receipt.get('evidence'),str) or not receipt['evidence'].strip()):
+            raise ValueError("action-bound confirmation evidence is required")
+        if verifier.verify(deepcopy(action),deepcopy(receipt)) is not True:
+            raise PermissionError("confirmation evidence was not verified")
+        action.reconciliation = receipt
+        action.state = ActionState.SUCCEEDED if receipt['outcome']=='confirmed_success' else ActionState.FAILED
+        action.error = None; action.updated_at = utcnow()
+        action = self.repo.save_action(action, expected_version=action.version)
+        if action.state == ActionState.SUCCEEDED and action.action == 'submit_application':
+            self.reconcile_workspace(action.id)
+        return action
+
+    def reconcile_workspace(self, action_id: str) -> ApplicationWorkspace:
+        """Retry bookkeeping ONLY. Never rerun an external action."""
+        action = self.repo.get_action(action_id)
+        if action.state != ActionState.SUCCEEDED or not action.reconciliation:
+            raise PermissionError("verified success required")
+        if action.action != 'submit_application':raise ValueError("not a submission")
+        ws = self.repo.get_workspace(action.application_id)
+        if ws.status == ApplicationStatus.SUBMITTED:return ws
+        if ws.status != ApplicationStatus.STAGED:raise ValueError("workspace no longer staged; confirmed effect retained")
+        version=ws.version; ws.status=ApplicationStatus.SUBMITTED; ws.updated_at=utcnow()
+        return self.repo.save_workspace(ws,expected_version=version)
 
     def record_status_observation(self, observation: StatusObservation) -> ApplicationWorkspace:
         ws = self.repo.get_workspace(observation.application_id)
+        if observation.status == ApplicationStatus.SUBMITTED and ws.status != ApplicationStatus.SUBMITTED:
+            raise PermissionError("submission requires verified action reconciliation")
         history = self._observations.setdefault(ws.id, [])
         if history and observation.observed_at < history[-1].observed_at: raise ValueError("stale status observation")
         if ws.status in TERMINAL_STATUSES and observation.status != ws.status: raise ValueError("terminal status cannot change")
