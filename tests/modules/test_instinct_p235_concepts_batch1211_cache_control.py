@@ -90,11 +90,21 @@ EXPECT_DOC_SHA = 'c7725c9d357dfdbb6df1c2b0b6a620d75bef7800f96ca0e52d793a5fcd5083
 EXPECT_LEDGER = 'RFC 9111, 4 records:\n- ID 7695 (Rejected, Technical, Section 4.3.2)\n- ID 9004 (Reported, Technical, Section 3.5)\n- ID 9166 (Held for Document Update, Technical, Section 5.2.3)\n- ID 9185 (Reported, Technical, Section 4.3.4)\nRFC 7234, 5 records (obsoleted by RFC 9111, not relied on):\n- ID 4479 (Rejected, Editorial, Section 5.3)\n- ID 4616 (Rejected, Editorial, GLOBAL)\n- ID 4674 (Verified, Editorial, Section 5.4)\n- ID 5564 (Rejected, Technical, Section 4.2.4)\n- ID 6279 (Held for Document Update, Technical, Section 4.2.4)\n'
 EXPECT_NREFUSALS = 167
 EXPECT_NSUCCESSES = 52
-import signal,sys
-def _boom(n,f):
-    sys.stderr.write('P235 b1211 TIMEOUT\n');signal.alarm(1);sys.exit(3)
-signal.signal(signal.SIGALRM,_boom)
-signal.alarm(30)
+import signal
+def _boom(n, f):
+    raise TimeoutError('P235 b1211 TIMEOUT')
+signal.signal(signal.SIGALRM, _boom)
+
+
+@pytest.fixture(autouse=True)
+def _hang_guard():
+    old = signal.signal(signal.SIGALRM, _boom)
+    signal.alarm(30)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, old)
 PC = 'parse_cache_control'
 FF = 'format_cache_control'
 REFUSALS = []
