@@ -552,27 +552,28 @@ def test_absent_registry_fallback_literal_and_reraise_paths():
             _logged_load()
         assert not isinstance(e.value, ModuleNotFoundError)
 
-        class Loader:
-            def create_module(self, spec):
-                return None
+        for other in ('app', 'aaa_other', 'app.modules.instinct_doc', 'zzz_other'):
+            class Loader:
+                def create_module(self, spec):
+                    return None
 
-            def exec_module(self, module):
-                raise ModuleNotFoundError('inner', name='zzz_other')
+                def exec_module(self, module):
+                    raise ModuleNotFoundError('inner', name=other)
 
-        class Finder:
-            def find_spec(self, name, path=None, target=None):
-                if name == REG:
-                    return importlib.util.spec_from_loader(name, Loader())
+            class Finder:
+                def find_spec(self, name, path=None, target=None):
+                    if name == REG:
+                        return importlib.util.spec_from_loader(name, Loader())
 
-        del sys.modules[REG]
-        sys.meta_path.insert(0, Finder())
-        try:
-            with pytest.raises(ModuleNotFoundError) as e:
-                _logged_load(lambda n, *a, **k: None)
-            assert e.value.name == 'zzz_other'
-            assert LAST == EXPECT_LOG
-        finally:
-            sys.meta_path.pop(0)
+            sys.modules.pop(REG, None)
+            sys.meta_path.insert(0, Finder())
+            try:
+                with pytest.raises(ModuleNotFoundError) as e:
+                    _logged_load(lambda n, *a, **k: None)
+                assert e.value.name == other
+                assert LAST == EXPECT_LOG
+            finally:
+                sys.meta_path.pop(0)
         good = types.ModuleType(REG)
         good.make_fail = lambda name: (lambda code: (_ for _ in ()).throw(ValueError('X:%s:%s' % (name, code))))
         sys.modules[REG] = good
