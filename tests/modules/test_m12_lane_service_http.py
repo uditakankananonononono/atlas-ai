@@ -84,7 +84,7 @@ def test_workflow_run_persists_manifest_and_budget(tmp_path):
             {"step_id": "prep", "kind": "echo", "params": {"x": 1}},
             {"step_id": "gen", "kind": "llm", "params": {"prompt": "world"},
              "depends_on": ["prep"],
-             "route_requirements": {"required_capabilities": ["chat"]}},
+             "route_requirements": {"required_capabilities": ["chat"], "estimated_input_tokens": 1000, "estimated_output_tokens": 1000}},
         ],
     })
     assert r.status_code == 200, r.text
@@ -158,7 +158,7 @@ def test_run_diff_endpoint(tmp_path):
         r = c.post("/lab/workflows/run", json={
             "name": "demo", "run_id": run_id,
             "steps": [{"step_id": "gen", "kind": "llm", "params": {"prompt": prompt},
-                       "route_requirements": {"required_capabilities": ["chat"]}}],
+                       "route_requirements": {"required_capabilities": ["chat"], "estimated_input_tokens": 1000, "estimated_output_tokens": 1000}}],
         })
         assert r.status_code == 200, r.text
     r = c.get("/lab/runs/ra/diff/rb")

@@ -31,7 +31,7 @@ def routed_engine(executor, store=None, ledger=None):
                          ledger=ledger, state_store=store)
     wf = Workflow("w", (WorkflowStep("a", "echo"),
                         WorkflowStep("b", "send", depends_on=("a",), max_retries=3,
-                                     route_requirements=TaskRequirements())))
+                                     route_requirements=TaskRequirements(estimated_input_tokens=1000, estimated_output_tokens=1000))))
     return eng, ledger, wf
 
 
@@ -399,7 +399,7 @@ def test_http_resume_false_cannot_reexecute_unknown_step(tmp_path):
     c = TestClient(app)
     body = {"name": "w", "run_id": "h1", "steps": [
         {"step_id": "s", "kind": "send", "max_retries": 3,
-         "route_requirements": {"required_capabilities": ["chat"]}}]}
+         "route_requirements": {"required_capabilities": ["chat"], "estimated_input_tokens": 1000, "estimated_output_tokens": 1000}}]}
     r1 = c.post("/lab/workflows/run", json=body)
     assert r1.status_code == 200 and r1.json()["status"] == "failed"
     assert r1.json()["steps"][0]["status"] == "unknown_outcome"

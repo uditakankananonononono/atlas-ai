@@ -116,7 +116,7 @@ def test_routing_and_budget_integration_records_exact_cost():
         return "answer"
 
     wf = Workflow("w", (
-        WorkflowStep("gen", "llm", route_requirements=TaskRequirements()),
+        WorkflowStep("gen", "llm", route_requirements=TaskRequirements(estimated_input_tokens=1000, estimated_output_tokens=1000)),
     ))
     eng = WorkflowEngine({"llm": llm}, router=router, ledger=ledger)
     res = eng.run(wf, run_id="rb")

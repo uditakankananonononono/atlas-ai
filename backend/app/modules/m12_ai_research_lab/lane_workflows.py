@@ -398,6 +398,23 @@ class WorkflowEngine:
                     )
                 model = decision.chosen
                 if self._ledger is not None:
+                    # Fail closed: a priced model under any spend limit needs a
+                    # nonzero cost estimate, otherwise the hold is zero and the
+                    # step runs effectively unmetered. Free models and unlimited
+                    # policies are unaffected. Refused before claim and effect.
+                    pol = self._ledger.policy
+                    limited = (pol.daily_limit_micro is not None
+                               or pol.monthly_limit_micro is not None
+                               or pol.per_run_limit_micro is not None)
+                    priced = (model.cost_per_1k_input_micro > 0
+                              or model.cost_per_1k_output_micro > 0)
+                    if limited and priced and decision.estimated_cost_micro <= 0:
+                        return self._fail(
+                            run_id, workflow, records, journal, completed, total_cost,
+                            step.step_id,
+                            "budget reservation refused: priced model under a spend limit "
+                            "has no cost estimate (set estimated_input_tokens/estimated_output_tokens)",
+                        )
                     budget_key = self._budget_key(run_id, step.step_id)
                     try:
                         self._ledger.reserve(budget_key, decision.estimated_cost_micro)
