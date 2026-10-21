@@ -17,9 +17,21 @@ class Tests(unittest.TestCase):
         self.assertEqual(r['unknown_incentive_action_ids'],['report'])
         self.assertEqual(r['declared_class_counts'],{'monitoring':0,'bonding':1,'deductible':0})
         self.assertFalse(r['controls_effective_verified'])
+    def test_mixed_presence_flag_is_false(self):
+        d=request();d['controls']=[{'action_id':'maintain','class':c,'source_ref':'clause'} for c in ['monitoring','bonding','deductible']]
+        r=m.inventory(d)
+        self.assertEqual(r['declared_class_counts'],{'monitoring':1,'bonding':1,'deductible':1})
+        self.assertFalse(r['all_declared_classes_present'])
     def test_complete_presence_is_not_effectiveness(self):
         d=request();d['controls']=[{'action_id':a['id'],'class':c,'source_ref':'clause'} for a in d['actions'] for c in ['monitoring','bonding','deductible']]
         r=m.inventory(d);self.assertTrue(r['all_declared_classes_present']);self.assertFalse(r['controls_effective_verified'])
+    def test_controls_sorted_by_action_then_class(self):
+        d={'source_ref':'deal-2','actions':[{'id':'zeta','observable':True,'incentive':'aligned'},{'id':'alpha','observable':True,'incentive':'aligned'}],
+           'controls':[{'action_id':'zeta','class':'bonding','source_ref':'c1'},{'action_id':'alpha','class':'monitoring','source_ref':'c2'},
+                       {'action_id':'zeta','class':'monitoring','source_ref':'c3'},{'action_id':'alpha','class':'deductible','source_ref':'c4'}]}
+        r=m.inventory(d)
+        self.assertEqual([(c['action_id'],c['class']) for c in r['controls']],
+                         [('alpha','deductible'),('alpha','monitoring'),('zeta','bonding'),('zeta','monitoring')])
     def test_deterministic_no_alias(self):
         d=request();snap=copy.deepcopy(d);r=m.inventory(d)
         d['actions'].reverse();d['controls'].reverse();self.assertEqual(r,m.inventory(d))
