@@ -88,7 +88,7 @@ _NOT_CLAIMED = ('Age (5.1), Expires (5.3), Pragma (5.4) and Warning (5.5), and e
 _ADJACENT = ('a directive known only in the other role is parsed as an extension directive and kept, because a proxy passes directives through and a cache ignores what it does not recognize (5.2.3)', 'duplicate directives are kept in order: the RFC does not state a rule for them', 'recipients accept both the token and the quoted-string form of a defined argument (5.2); the formatter generates the required form (token for delta-seconds, quoted for field-name lists)', 'leading zeros in delta-seconds are accepted (1*DIGIT) and the formatter writes the minimal decimal form')
 EXPECT_DOC_SHA = 'c7725c9d357dfdbb6df1c2b0b6a620d75bef7800f96ca0e52d793a5fcd5083e5'
 EXPECT_LEDGER = 'RFC 9111, 4 records:\n- ID 7695 (Rejected, Technical, Section 4.3.2)\n- ID 9004 (Reported, Technical, Section 3.5)\n- ID 9166 (Held for Document Update, Technical, Section 5.2.3)\n- ID 9185 (Reported, Technical, Section 4.3.4)\nRFC 7234, 5 records (obsoleted by RFC 9111, not relied on):\n- ID 4479 (Rejected, Editorial, Section 5.3)\n- ID 4616 (Rejected, Editorial, GLOBAL)\n- ID 4674 (Verified, Editorial, Section 5.4)\n- ID 5564 (Rejected, Technical, Section 4.2.4)\n- ID 6279 (Held for Document Update, Technical, Section 4.2.4)\n'
-EXPECT_NREFUSALS = 166
+EXPECT_NREFUSALS = 167
 EXPECT_NSUCCESSES = 52
 import signal,sys
 def _boom(n,f):
@@ -195,7 +195,7 @@ for arg in (('x', 1), ('token',), ('token', 'v', 'w'), ('token', 5), ('token', '
     REFUSALS.append((FF, ((TT, R, (('a', arg),)),), D + 'tree.argument'))
 for arg in (('delta', '5'), ('delta', True), ('delta', IS(5)), ('delta', -1), ('delta', 21474836481)):
     REFUSALS.append((FF, ((TT, R, (('max-age', arg),)),), D + 'tree.delta'))
-for arg in (('names', []), ('names', ['x']), ('names', 'x'), ('names', ()), ('names', (5,)), ('names', ('a b',)), ('names', (SS('a'),)), ('names', ('a', 5))):
+for arg in (('names', []), ('names', ['x']), ('names', 'x'), ('names', 5), ('names', ()), ('names', (5,)), ('names', ('a b',)), ('names', (SS('a'),)), ('names', ('a', 5))):
     REFUSALS.append((FF, ((TT, S, (('no-cache', arg),)),), D + 'tree.names'))
 REFUSALS.append((FF, ((TT, R, (('x' * 4000, None), ('y' * 5000, None))),), D + 'tree.size'))
 REFUSALS.append((FF, ((TT, R, (('x', ('token', 'v' * 8191)),)),), D + 'tree.size'))
