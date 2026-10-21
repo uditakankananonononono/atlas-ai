@@ -1172,8 +1172,8 @@ def test_additive_current_exact_operation_inventory(env):
     assert len(BATCH2_INVENTORY) == BATCH2_TOTAL_ROUTES == 246
     assert len(PRE_FINAL_REACHABLE) == 77
     assert len(FINAL_REACHABLE_ADDITIONS) == 21
-    assert len(REACHABLE) == 107
-    assert FINAL_TOTAL_ROUTES == 276
+    assert len(REACHABLE) == 108  # 107 + row1960 graph-of-thought search mount
+    assert FINAL_TOTAL_ROUTES == 277  # 276 + row1960 graph-of-thought search mount
     assert FINAL_NOT_BOUND == BATCH2_NOT_BOUND == CURRENT_NOT_BOUND == NOT_BOUND
     assert sum(FINAL_NOT_BOUND.values()) == 169
     assert FINAL_TOTAL_ROUTES == len(REACHABLE) + sum(FINAL_NOT_BOUND.values())
@@ -1228,4 +1228,10 @@ ROW704_MOUNTED_OPERATIONS = {
 }
 REACHABLE = {**REACHABLE, **ROW704_MOUNTED_OPERATIONS}
 FINAL_INVENTORY = tuple(sorted((*FINAL_INVENTORY, *ROW704_MOUNTED_OPERATIONS)))
+FINAL_TOTAL_ROUTES = TOTAL_ROUTES = len(FINAL_INVENTORY)
+
+# Row1960 practitioner Graph-of-Thought mount adds one authenticated operation.
+GOT1960_OPERATION = ('post', '/api/v1/api/modules/20/cognitive-1960-2009/graph-of-thought/search')
+REACHABLE = {**REACHABLE, GOT1960_OPERATION: 422}
+FINAL_INVENTORY = tuple(sorted((*FINAL_INVENTORY, GOT1960_OPERATION)))
 FINAL_TOTAL_ROUTES = TOTAL_ROUTES = len(FINAL_INVENTORY)
