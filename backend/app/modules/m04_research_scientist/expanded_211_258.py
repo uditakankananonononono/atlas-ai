@@ -15,7 +15,17 @@ def _surveil(row,d):
  _need(d,'query','papers');ps=_papers(d);seen=set(d.get('seen_ids',[]));new=[p for p in ps if (p['doi'] or p['id'] or p['url']) not in seen]
  return {'provider':SURVEILLANCE[row],'query':d['query'],'new_papers':new,'deduplicated_count':len(ps)-len(new),'cursor':d.get('cursor'),'network_fetch_performed':False}
 def _summary(d):
- _need(d,'paper','sections');return {'paper_id':d['paper'].get('id'),'objective':d['sections'].get('objective'),'methods':d['sections'].get('methods'),'findings':d['sections'].get('findings'),'limitations':d['sections'].get('limitations'),'claims_need_source_check':True}
+ _need(d,'paper')
+ if not isinstance(d['paper'],dict):raise ValueError('paper must be an object')
+ # caller sections win only when non-empty; an empty dict is treated as absent and falls back to derivation (deliberate change from legacy None-field pass-through, pinned by test)
+ s=d.get('sections')
+ if s:
+  if not isinstance(s,dict):raise ValueError('sections must be an object')
+  return {'paper_id':d['paper'].get('id'),'objective':s.get('objective'),'methods':s.get('methods'),'findings':s.get('findings'),'limitations':s.get('limitations'),'claims_need_source_check':True}
+ _need(d['paper'],'abstract')
+ from .summarize import extract_sections
+ s=extract_sections(d['paper']['abstract'])
+ return {'paper_id':d['paper'].get('id'),'objective':s['objective'],'methods':s['methods'],'findings':s['findings'],'limitations':s['limitations'],'sections_derived':True,'extraction_heuristic':True,'claims_need_source_check':True}
 def _embedding(d):
  _need(d,'papers','vectors');
  if len(d['papers'])!=len(d['vectors']):raise ValueError('papers and vectors length mismatch')
@@ -42,7 +52,14 @@ def run(row:int,d:dict[str,Any])->dict[str,Any]:
  elif row==219:r=_clusters(d)
  elif row in {220,221}:r=_gaps(d)
  elif row in {222,223}:r=_hyp(d)|({'iterations':d.get('iterations',[]),'max_iterations':int(d.get('max_iterations',5))} if row==223 else {})
- elif row==224:_need(d,'paper');r={'methods':d['paper'].get('methods'),'findings':d['paper'].get('findings'),'limitations':d['paper'].get('limitations'),'verbatim_evidence':d.get('verbatim_evidence',[])}
+ elif row==224:
+  _need(d,'paper');p=d['paper']
+  if not isinstance(p,dict):raise ValueError('paper must be an object')
+  if p.get('methods') or p.get('findings'):r={'methods':p.get('methods'),'findings':p.get('findings'),'limitations':p.get('limitations'),'verbatim_evidence':d.get('verbatim_evidence',[])}
+  else:
+   if not p.get('abstract'):raise ValueError('paper.methods/findings or paper.abstract required')
+   from .summarize import extract_sections
+   s=extract_sections(p['abstract']);r={'methods':s['methods'],'findings':s['findings'],'limitations':s['limitations'],'verbatim_evidence':d.get('verbatim_evidence',[]),'extraction_heuristic':True}
  elif row==225:_need(d,'components');r={'proposals':[{'components':x.get('components',[]),'novelty_search_required':True,'mechanism':x.get('mechanism'),'test':x.get('test')} for x in d['components']]}
  elif row in {226,227}:_need(d,'dataset','experiment');r={'registry':'Hugging Face' if row==226 else 'Kaggle','dataset':d['dataset'],'license':d.get('license'),'experiment':d['experiment'],'public_access_verified':bool(d.get('public_access_verified')),'executed':False}
  elif row in {228,229}:r=_code(d,'python' if row==228 else 'r')
