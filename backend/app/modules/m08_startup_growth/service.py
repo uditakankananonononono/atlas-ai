@@ -78,7 +78,7 @@ class Service:
         for method,route,path in endpoints:
             operations=paths.setdefault(route,{})
             if method.lower() in operations:raise ValueError(f"duplicate operation {method} {route}; router prefixes must be resolved explicitly")
-            operations[method.lower()]={"summary":f"Discovered in {path}","responses":{"200":{"description":"Success"}}}
+            operations[method.lower()]={"summary":f"Discovered in {path}","responses":{"default":{"description":"Unspecified: statically discovered route; no status, schema, or runtime behavior observed"}}}
         openapi={"openapi":"3.1.0","info":{"title":data.title,"version":"0.1.0"},"paths":paths}
         files={"openapi.json":json.dumps(openapi,indent=2),"redoc.html":'<redoc spec-url="openapi.json"></redoc><script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>',"USER_MANUAL.md":"# "+data.title+"\n\n"+"\n".join(f"- {x}" for x in data.feature_list)+"\n","TECHNICAL_BLOG.md":"# How "+data.title+" works\n\nThis article is grounded in the supplied code snapshot.\n\n"+"\n".join(f"- `{p}`" for p in sorted(data.code_files)),"evidence.json":json.dumps({"code_files":{p:sha256(c.encode()).hexdigest() for p,c in data.code_files.items()},"discovered_endpoints":endpoints,"completeness":"partial_static_inventory","limitations":warnings},indent=2)}
         allowed={"openapi":{"openapi.json"},"redoc":{"redoc.html","openapi.json"},"user_manual":{"USER_MANUAL.md"},"technical_blog":{"TECHNICAL_BLOG.md"}};keep={"evidence.json"}|set().union(*(allowed[o] for o in data.outputs));return self._store(data.project_id,"documentation",{k:v for k,v in files.items() if k in keep})
