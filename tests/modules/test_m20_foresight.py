@@ -144,6 +144,80 @@ def test_row44_planning_fallacy_correction():
     assert fresh["corrected"] == 5.0 and fresh["samples"] == 0
 
 
+def test_row35_exact_slot_count_cap_and_seeded_draw():
+    """Mutation survivors: dropping the epsilon cap (min with round(slots*eps))
+    and exact seeded draw order. Many-gaps case separates cap from pool size."""
+    import random as _r
+    gaps = [f"gap{i}" for i in range(10)]
+    engine = SerendipityEngine(epsilon=0.4)
+    slots = engine.plan(gaps, available_slots=10, seed=7)
+    assert len(slots) == 4  # round(10 * 0.4): cap binds below len(gaps)=10
+    pool = list(gaps)
+    _r.Random(7).shuffle(pool)
+    assert [s.source_gap for s in slots] == pool[:4]
+    assert [s.slot_index for s in slots] == [0, 1, 2, 3]
+
+
+def test_row41_exact_blend_values_and_zero_sample_floor():
+    """Mutation survivor: dropping the max(n_factor, 0.1) floor survives
+    inequality-only checks. Pin exact weights, including the zero-sample floor."""
+    integ = BaseRateIntegrator()
+    zero = integ.integrate(base_rate=0.1, case_estimate=0.9,
+                           evidence_reliability=0.8, sample_size=0)
+    assert zero.weight_on_case == pytest.approx(0.08)  # 0.8 * floor(0.1)
+    assert zero.adjusted == pytest.approx(0.08 * 0.9 + 0.92 * 0.1)
+    mid = integ.integrate(base_rate=0.1, case_estimate=0.9,
+                          evidence_reliability=0.5, sample_size=5)
+    assert mid.weight_on_case == pytest.approx(0.25)  # 0.5 * (1 / (1 + 5/5))
+    assert mid.adjusted == pytest.approx(0.3)
+    small = integ.integrate(base_rate=0.1, case_estimate=0.9,
+                            evidence_reliability=0.6, sample_size=1)
+    w = 0.6 * ((1 / 5) / (1 + 1 / 5))
+    assert small.weight_on_case == pytest.approx(w)
+    assert small.adjusted == pytest.approx(w * 0.9 + (1 - w) * 0.1)
+
+
+def test_row42_exact_matches_order_and_distribution():
+    """Mutation survivors: ascending similarity sort and unnormalized
+    similarity both survive the loose distribution checks. Pin the exact
+    matched set, order, and statistics; a 1-token-overlap case must NOT match."""
+    fc = ReferenceClassForecaster(min_similar=2, min_overlap=0.15)
+    fc.add_case("backend api migration project", 30.0, label="api")
+    fc.add_case("backend service migration effort", 45.0, label="service")
+    fc.add_case("backend data migration project", 60.0, label="data")
+    fc.add_case("backend completely different long documents with several tokens",
+                99.0, label="irrelevant")  # jaccard 1/10 < 0.15
+    fc.add_case("frontend redesign", 5.0, label="frontend")
+    out = fc.forecast("backend migration project")
+    assert out is not None
+    assert out.matched_cases == ["api", "data", "service"]  # sim desc, stable ties
+    assert out.n_cases == 3
+    assert out.mean == pytest.approx(45.0)
+    assert out.median == pytest.approx(45.0)
+    assert out.p25 == pytest.approx(30.0) and out.p75 == pytest.approx(45.0)
+
+
+def test_row42_min_overlap_boundary_inclusive():
+    """Peer audit pin: similarity exactly AT min_overlap must be INCLUDED
+    (`sim >= min_overlap`). Boundary case has exact Jaccard 3/20 == 0.15;
+    `>=` -> `>` survives all looser checks but drops the boundary case here."""
+    fc = ReferenceClassForecaster(min_similar=1, min_overlap=0.15)
+    fc.add_case("alpha beta gamma delta epsilon zeta", 10.0, label="hit")  # 3/6 = 0.5
+    fc.add_case(
+        "alpha beta gamma eta theta iota kappa lambda mu nu xi omicron "
+        "pi rho sigma tau upsilon phi chi psi", 100.0, label="edge")  # 3/20 = 0.15
+    fc.add_case("alpha omega aleph beth gimel daleth he waw zayin heth",
+                999.0, label="miss")  # 1/12 < 0.15
+    assert 3 / 20 == 0.15  # boundary is exact, not approximate
+    out = fc.forecast("alpha beta gamma")
+    assert out is not None
+    assert out.matched_cases == ["hit", "edge"]  # boundary included, miss excluded
+    assert out.n_cases == 2
+    assert out.mean == pytest.approx(55.0)
+    assert out.median == pytest.approx(55.0)
+    assert out.p25 == pytest.approx(10.0) and out.p75 == pytest.approx(10.0)
+
+
 def test_row45_optimism_calibration_direction():
     cal = OptimismCalibrator(min_samples=3)
     for _ in range(4):
