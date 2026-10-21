@@ -39,7 +39,49 @@ def run(r:str,d:dict[str,Any])->dict[str,Any]:
   else:
    criteria=d.get('criteria',[])
    if not criteria:raise AtomicError('criteria required')
-   scores={x['id']:sum(float(x.get('scores',{}).get(c['id'],0))*float(c.get('weight',1)) for c in criteria) for x in opts};best=max(scores,key=scores.get);o['result']={'intuition_candidate':fast['id'],'analytic_scores':scores,'caller_weight_ranked_choice':best,'same_as_salience_candidate':best==fast['id'],'choice_independently_validated':False}
+   scores={x['id']:sum(float(x.get('scores',{}).get(c['id'],0))*float(c.get('weight',1)) for c in criteria) for x in opts};best=max(scores,key=scores.get)
+   def _sc(x,c):return float(x.get('scores',{}).get(c['id'],0))
+   # Confirmation channels (Extra doc row 50). NOT independent validation and
+   # NOT robustness over all weight perturbations: choice_uniform_pareto_confirmed
+   # means only that the caller-weight-ranked choice is confirmed by at least
+   # one of two specific channels - the uniform-weight rescore (all caller
+   # weights dropped) and the Pareto-dominance channel - both computed from the
+   # SAME caller-provided option scores. No new evidence or ground truth
+   # enters; other weight perturbations are untested. Legacy semantics kept:
+   # duplicate option ids are accepted and collapse in the score dicts (last
+   # wins), so best/uchoice name the collapsed id and the rescore channel can
+   # confirm only that collapsed id; negative criterion weights are accepted
+   # and affect analytic_scores and caller_weight_ranked_choice only - the
+   # uniform channel ignores caller weights entirely. A single option never
+   # reaches here (len(opts)<2 raises).
+   uniform={x['id']:sum(_sc(x,c) for c in criteria) for x in opts}
+   _umax=max(uniform.values());uniform_tie=sum(1 for v in uniform.values() if v==_umax)>1
+   uchoice=max(uniform,key=uniform.get)  # on a uniform tie: first-tied, deterministic but arbitrary; rescore channel inconclusive
+   _others=lambda x:[y for y in opts if y['id']!=x['id']]
+   # Pareto channel (textbook pairwise): x must weakly beat every competitor
+   # on every criterion AND strictly beat each competitor on at least one
+   # criterion. Vacuous case: all() over an empty competitor set is True, so
+   # when every option shares one id (duplicate ids), every option enters
+   # dominant; the len(dominant)==1 uniqueness guard below then yields
+   # dom=None (no unique dominant), which the duplicate-id pin locks in.
+   # Weakening "strict over each" to "strict over any" coincides with this
+   # textbook rule on distinct-id option sets (a weakly-dominated competitor
+   # that is not strictly dominated equals x elementwise and mirrors x into
+   # dominant, breaking len==1 either way). It DIFFERS for duplicate-id
+   # mixed vectors, where by-id exclusion is asymmetric. Executed exhaustive
+   # check, exact domain: 3 ordered options, score vectors in {0,1,2}^2 over
+   # criteria q,c - distinct ids a,b,c (729 vector triples): 0 differences
+   # for both the weakened and the strict-clause-dropped rules; duplicate
+   # ids in {a,b} (18^3 = 5832 option triples): 324 weakened-rule
+   # differences, 540 full-drop differences. The textbook rule is kept;
+   # test_row50_duplicate_id_mixed_vectors_no_unique_dominant pins the
+   # weakened case, test_row50_duplicate_id_weak_only_dominance_is_not_enough
+   # pins the full-drop case.
+   dominant=[x['id'] for x in opts if all(all(_sc(x,c)>=_sc(y,c) for c in criteria) and any(_sc(x,c)>_sc(y,c) for c in criteria) for y in _others(x))]
+   dom=dominant[0] if len(dominant)==1 else None
+   rescore_confirms=not uniform_tie and uchoice==best
+   confirmed=rescore_confirms or dom==best
+   o['result']={'intuition_candidate':fast['id'],'analytic_scores':scores,'caller_weight_ranked_choice':best,'uniform_weight_choice':uchoice,'uniform_tie':uniform_tie,'pareto_dominant':dom,'weight_sensitive':uchoice!=best,'same_as_salience_candidate':best==fast['id'],'choice_uniform_pareto_confirmed':confirmed,'robustness_channels':['uniform_weight_rescore','pareto_dominance'],'channels_independent_of_caller_weights':True}
  elif r in ('21.1','21.2'):
   models=d.get('models',[])
   if len(models)<2:raise AtomicError('competing models required')

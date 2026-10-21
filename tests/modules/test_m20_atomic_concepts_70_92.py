@@ -23,7 +23,7 @@ def test_flow_picks_challenge_skill_match_and_protects_bounded_block():
 def test_bias_is_signal_not_diagnosis_and_mitigation_does_not_rewrite():
  x=run('19.1',D('19.1'))['result']['flags'][0];assert {'confirmation-risk','base-rate-omission','small-sample-risk'}<=set(x['signals']) and x['not_a_bias_diagnosis'];assert not run('19.3',D('19.3'))['result']['automatic_rewrite']
 def test_fast_intuition_is_unvalidated_then_slow_check_can_disagree():
- assert run('20.1',D('20.1'))['result']['candidate']=='a';x=run('20.2',D('20.2'))['result'];assert x['caller_weight_ranked_choice']=='b' and not x['same_as_salience_candidate'] and not x['choice_independently_validated']
+ assert run('20.1',D('20.1'))['result']['candidate']=='a';x=run('20.2',D('20.2'))['result'];assert x['caller_weight_ranked_choice']=='b' and not x['same_as_salience_candidate'] and x['choice_uniform_pareto_confirmed']  # b Pareto-dominates a on the only criterion; uniform/Pareto confirmation channels built 2026-10-21 (Extra doc row 50)
 def test_bayesian_model_update_retains_competitors():
  x=run('21.2',D('21.2'))['result'];assert x['posteriors']['b']==.8 and x['models_retained']
 def test_terminal_values_are_not_rewritten_and_proposals_not_applied():
