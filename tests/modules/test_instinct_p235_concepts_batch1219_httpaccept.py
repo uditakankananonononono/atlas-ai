@@ -1031,7 +1031,7 @@ def test_fixture_autouse_hook_is_installed_and_sees_module_names():
 
 
 @pytest.fixture(autouse=True)
-def _module_never_imports_at_call_time():
+def _module_never_imports_at_call_time(monkeypatch):
     """Every test drives the module through the hook: any import executed by the module's own code after load fails the test."""
     real = builtins.__import__
     seen = []
@@ -1040,12 +1040,8 @@ def _module_never_imports_at_call_time():
         if g is not None and g.get('__name__') == m.__name__:
             seen.append((n, tuple(fromlist or ()), level))
         return real(n, g, l, fromlist, level)
-    builtins.__import__ = hook
-    try:
-        yield
-    finally:
-        if builtins.__import__ is hook:
-            builtins.__import__ = real
+    monkeypatch.setattr(builtins, '__import__', hook)
+    yield
     assert seen == []
 
 

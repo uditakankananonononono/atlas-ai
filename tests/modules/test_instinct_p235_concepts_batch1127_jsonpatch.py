@@ -37,7 +37,7 @@ def load_module():
     snap_find = iu.find_spec
     m = _import_module_fresh()
     yield
-    assert builtins.__import__ is snap_import, 'builtins.__import__ leaked by this module'
+    assert builtins.__import__ == snap_import, 'builtins.__import__ leaked by this module'
     assert iu.find_spec is snap_find, 'find_spec leaked by this module'
 
 
@@ -163,6 +163,29 @@ class _StrSub(str):
 # ================= reference model, written independently of the module =================
 import copy
 import random
+from unittest import mock as _um
+
+
+_IMPORT_PATCHES = []
+
+
+def _start_import(mod, fn):
+    p = _um.patch.object(mod, '__import__', fn)
+    p.start()
+    _IMPORT_PATCHES.append(p)
+
+
+def _stop_import():
+    if _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
+
+@pytest.fixture(autouse=True)
+def _release_import_patches():
+    yield
+    while _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
 
 _R_PTR = re.compile(r'(?:/(?:[^/~]|~[01])*)*')
 _R_IDX = re.compile(r'0|[1-9][0-9]{0,9}', re.A)
@@ -1399,19 +1422,19 @@ def _exec_guarded(import_exc=None, import_result=_MISSING, spec_result=None, spe
         return spec_result
 
     ns = {'__name__': 'guarded_probe'}
-    builtins.__import__ = fake_import
+    _start_import(builtins, fake_import)
     iu.find_spec = fake_find
     try:
         exec(compile(src, str(path), 'exec'), ns)
     finally:
-        assert builtins.__import__ is fake_import, '__import__ clobbered mid-probe'
+        assert builtins.__import__ == fake_import, '__import__ clobbered mid-probe'
         assert iu.find_spec is fake_find, 'find_spec clobbered mid-probe'
-        builtins.__import__ = real_import
+        _stop_import()
         iu.find_spec = real_find
         sys.modules.pop(REG, None)
         if saved is not _MISSING:
             sys.modules[REG] = saved
-    assert builtins.__import__ is real_import and iu.find_spec is real_find
+    assert builtins.__import__ == real_import and iu.find_spec is real_find
     return ns, seen, full_calls
 
 
@@ -1546,7 +1569,7 @@ def _import_names_while_exec(import_exc=None):
     ns = {'__name__': 'pin_import_order'}
     absent = object()
     saved = sys.modules.pop(REG, absent)  # a preseeded stub (spec None) must not reach find_spec
-    builtins.__import__ = hook
+    _start_import(builtins, hook)
     try:
         try:
             exec(compile(src, str(path), 'exec'), ns)
@@ -1554,12 +1577,12 @@ def _import_names_while_exec(import_exc=None):
         except ModuleNotFoundError as e:
             err = e
     finally:
-        assert builtins.__import__ is hook, '__import__ clobbered mid-probe'
-        builtins.__import__ = real_import
+        assert builtins.__import__ == hook, '__import__ clobbered mid-probe'
+        _stop_import()
         sys.modules.pop(REG, None)
         if saved is not absent:
             sys.modules[REG] = saved
-    assert builtins.__import__ is real_import
+    assert builtins.__import__ == real_import
     return seen, err, ns
 
 
@@ -1603,7 +1626,7 @@ def test_env_guard_import_machinery_untouched():
     real = builtins.__import__
     find = iu.find_spec
     _exec_guarded(import_exc=_mnfe(REG), spec_result=None)
-    assert builtins.__import__ is real and iu.find_spec is find
+    assert builtins.__import__ == real and iu.find_spec is find
     __import__('json')
 
 
@@ -1691,7 +1714,7 @@ def _spy_world(import_exc=None, import_result=_MISSING, spec_result=None):
     saved = sys.modules.pop(REG, _MISSING)
     ns = {'__name__': 'guarded_probe'}
     raised = None
-    builtins.__import__ = fake_import
+    _start_import(builtins, fake_import)
     iu.find_spec = spy
     try:
         try:
@@ -1699,12 +1722,12 @@ def _spy_world(import_exc=None, import_result=_MISSING, spec_result=None):
         except BaseException as e:
             raised = e
     finally:
-        builtins.__import__ = real_import
+        _stop_import()
         iu.find_spec = real_find
         sys.modules.pop(REG, None)
         if saved is not _MISSING:
             sys.modules[REG] = saved
-    assert builtins.__import__ is real_import and iu.find_spec is real_find
+    assert builtins.__import__ == real_import and iu.find_spec is real_find
     return raised, ns, calls
 
 
@@ -2025,17 +2048,17 @@ def test_no_import_on_every_refusal_site_and_every_return_site():
     prev = sys.gettrace()
     cases = _site_cases()
     for fn, code, args in cases:
-        builtins.__import__ = hook
+        _start_import(builtins, hook)
         sys.settrace(tracer)
         try:
             with pytest.raises(Exception) as e:
                 getattr(m, fn)(*args)
         finally:
             sys.settrace(prev)
-            builtins.__import__ = real
+            _stop_import()
         assert str(e.value) == _pfx() + '%s:%s' % (fn, code)
     assert calls == []
-    builtins.__import__ = hook
+    _start_import(builtins, hook)
     sys.settrace(tracer)
     try:
         _ok_calls()
@@ -2060,7 +2083,7 @@ def test_no_import_on_every_refusal_site_and_every_return_site():
         m.patch_apply({'a': 1}, [{'op': 'move', 'from': '/a', 'path': '/a'}])
     finally:
         sys.settrace(prev)
-        builtins.__import__ = real
+        _stop_import()
     assert calls == []
     assert want <= reached, sorted(want - reached)
 
@@ -2073,14 +2096,14 @@ def test_import_log_pin_no_import_during_any_function_call():
         calls.append(a[:1])
         return real(*a, **k)
 
-    builtins.__import__ = hook
+    _start_import(builtins, hook)
     try:
         _ok_calls()
         for fn, code, args in _site_cases():
             with pytest.raises(ValueError):
                 getattr(m, fn)(*args)
     finally:
-        builtins.__import__ = real
+        _stop_import()
     assert calls == []
 
 

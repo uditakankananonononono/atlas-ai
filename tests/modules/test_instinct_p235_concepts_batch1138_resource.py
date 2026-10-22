@@ -9,6 +9,29 @@ import signal
 import sys
 import types
 import pytest
+from unittest import mock as _um
+
+
+_IMPORT_PATCHES = []
+
+
+def _start_import(mod, fn):
+    p = _um.patch.object(mod, '__import__', fn)
+    p.start()
+    _IMPORT_PATCHES.append(p)
+
+
+def _stop_import():
+    if _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
+
+@pytest.fixture(autouse=True)
+def _release_import_patches():
+    yield
+    while _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
 
 REG = 'app.modules.instinct_doc.p235_concepts_registry'
 SCOPE = 'PARTIAL: RFC 8707 resource parameter syntax over caller-supplied str values, URI shape only, no authority or path grammar, no policy'
@@ -43,7 +66,7 @@ def reg_guard(monkeypatch):
     monkeypatch.undo()
     ok = ((REG in sys.modules) == present and sys.modules.get(REG) is old
           and builtins.__import__ is real_import and iu.find_spec is real_fs)
-    builtins.__import__ = real_import
+    _stop_import()
     iu.find_spec = real_fs
     if present:
         sys.modules[REG] = old
@@ -953,13 +976,13 @@ def _exec_logged(log, registry):
             return None
         return real_fs(*a, **k)
 
-    builtins.__import__ = hooked
+    _start_import(builtins, hooked)
     iu.find_spec = fs
     ns = {'__name__': 'b1138_logged'}
     try:
         exec(compile(src, 'm', 'exec'), ns)
     finally:
-        builtins.__import__ = real_import
+        _stop_import()
         iu.find_spec = real_fs
     return ns, seen, marker
 
@@ -1010,13 +1033,13 @@ def _exec_raising(log, name_, exc, fs=None):
             raise exc
         return real_import(name, globals, locals, fromlist, level)
 
-    builtins.__import__ = hooked
+    _start_import(builtins, hooked)
     if fs is not None:
         iu.find_spec = fs
     try:
         exec(compile(src, 'm', 'exec'), {'__name__': name_})
     finally:
-        builtins.__import__ = real_import
+        _stop_import()
         iu.find_spec = real_fs
     return seen
 
@@ -1044,12 +1067,12 @@ def test_foreign_module_not_found_reraises_with_exact_log_and_no_find_spec(undo_
             raise exc
         return real_import(name, globals, locals, fromlist, level)
     _pop(undo_log, sys.modules, REG)
-    builtins.__import__ = hooked
+    _start_import(builtins, hooked)
     try:
         with pytest.raises(ModuleNotFoundError):
             exec(compile(pathlib.Path(m.__file__).read_text(), 'm', 'exec'), {'__name__': 'b1138_foreign2'})
     finally:
-        builtins.__import__ = real_import
+        _stop_import()
     assert log2 == LOG
 
 
@@ -1098,13 +1121,13 @@ def test_find_spec_none_means_fallback_and_object_means_reraise_identity(undo_lo
         if a and a[0] == REG:
             return None
         return real_fs(*a, **k)
-    builtins.__import__ = hooked
+    _start_import(builtins, hooked)
     iu.find_spec = fs
     try:
         ns = {'__name__': 'b1138_fb'}
         exec(compile(src, 'm', 'exec'), ns)
     finally:
-        builtins.__import__ = real_import
+        _stop_import()
         iu.find_spec = real_fs
     assert ns['make_fail'].__qualname__ == 'make_fail'
 
@@ -1149,7 +1172,7 @@ def test_import_freedom_across_all_public_functions_and_branches(undo_log):
             calls.append((name, tuple(fromlist) if fromlist else None, level))
             return real_import(name, globals, locals, fromlist, level)
 
-        builtins.__import__ = spy
+        _start_import(builtins, spy)
         try:
             _call_everything(ns)
             assert ns['resource_check']('https://a/b?c') == ('https', True)
@@ -1164,7 +1187,7 @@ def test_import_freedom_across_all_public_functions_and_branches(undo_log):
             assert ns['error_code_class']('invalid_target') == 'invalid_target'
             assert ns['error_code_class']('other_code') == 'other'
         finally:
-            builtins.__import__ = real_import
+            _stop_import()
         assert calls == [], (world, calls)
         assert sorted(k for k in ns if k != '__builtins__') == before
         if world != 'live':

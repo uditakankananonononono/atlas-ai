@@ -14,6 +14,29 @@ import pytest
 
 sys.path.insert(0, 'backend')
 from app.modules.instinct_doc import p235_concepts_batch1220_hostnames as m
+from unittest import mock as _um
+
+
+_IMPORT_PATCHES = []
+
+
+def _start_import(mod, fn):
+    p = _um.patch.object(mod, '__import__', fn)
+    p.start()
+    _IMPORT_PATCHES.append(p)
+
+
+def _stop_import():
+    if _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
+
+@pytest.fixture(autouse=True)
+def _release_import_patches():
+    yield
+    while _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
 
 MODNAME = 'app.modules.instinct_doc.p235_concepts_batch1220_hostnames'
 REG = 'app.modules.instinct_doc.p235_concepts_registry'
@@ -354,11 +377,11 @@ def _logged_load(fs=None):
     calls = []
     real_fs = importlib.util.find_spec
     importlib.util.find_spec = fs if fs is not None else (lambda n, *a, **k: calls.append(n) or real_fs(n, *a, **k))
-    builtins.__import__ = spy
+    _start_import(builtins, spy)
     try:
         mod = _load()
     finally:
-        builtins.__import__ = real
+        _stop_import()
         importlib.util.find_spec = real_fs
     return mod, log, calls
 
@@ -441,13 +464,13 @@ def test_absent_registry_fallback_literal_and_reraise_paths():
 
 def test_no_import_on_any_call_path():
     real = builtins.__import__
-    builtins.__import__ = _no_import_hook
+    _start_import(builtins, _no_import_hook)
     try:
         _run_everything()
         assert m.split_hname('a.b') == ('a', 'b')
         assert m.hname_equal('A.B', 'a.b') is True
     finally:
-        builtins.__import__ = real
+        _stop_import()
 
 
 def test_no_import_at_any_line_and_every_line_reached():
@@ -473,7 +496,7 @@ def test_no_import_at_any_line_and_every_line_reached():
             hit.add((frame.f_code.co_name, frame.f_lineno))
         return tracer
 
-    builtins.__import__ = _no_import_hook
+    _start_import(builtins, _no_import_hook)
     sys.settrace(tracer)
     try:
         _run_everything()
@@ -483,7 +506,7 @@ def test_no_import_at_any_line_and_every_line_reached():
         assert m.is_hname('1.2.3.4') is False and m.is_hname('3com') is True
     finally:
         sys.settrace(None)
-        builtins.__import__ = real
+        _stop_import()
     missing = []
     for name, lines in want.items():
         for ln in sorted(lines):

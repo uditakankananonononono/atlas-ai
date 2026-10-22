@@ -7,6 +7,29 @@ import signal
 import sys
 import types
 import pytest
+from unittest import mock as _um
+
+
+_IMPORT_PATCHES = []
+
+
+def _start_import(mod, fn):
+    p = _um.patch.object(mod, '__import__', fn)
+    p.start()
+    _IMPORT_PATCHES.append(p)
+
+
+def _stop_import():
+    if _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
+
+@pytest.fixture(autouse=True)
+def _release_import_patches():
+    yield
+    while _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
 
 REG = 'app.modules.instinct_doc.p235_concepts_registry'
 
@@ -97,14 +120,14 @@ def _exec_with(log, import_exc=None, find_spec_exc=None, present=False,
             return object() if present else None
         return real_fs(*a, **k)
 
-    builtins.__import__ = blocked
+    _start_import(builtins, blocked)
     iu.find_spec = fs
     try:
         ns = {'__name__': 'b1242_exec'}
         exec(compile(src, 'm', 'exec'), ns)
         return ns
     finally:
-        builtins.__import__ = real_import
+        _stop_import()
         iu.find_spec = real_fs
 
 
@@ -189,7 +212,7 @@ def test_import_log_is_exactly_pinned_in_all_four_registry_worlds(
                 return object() if kind == 'resurrect' else None
             return real_fs(name, *a, **k)
 
-        builtins.__import__ = hooked
+        _start_import(builtins, hooked)
         iu.find_spec = fs
         try:
             ns = {'__name__': 'b1242_world'}
@@ -199,7 +222,7 @@ def test_import_log_is_exactly_pinned_in_all_four_registry_worlds(
                 return None, ilog
             return ns, ilog
         finally:
-            builtins.__import__ = real_import
+            _stop_import()
             iu.find_spec = real_fs
 
     expected = [('importlib.util', ('find_spec',)), (REG, ('make_fail',))]
@@ -238,14 +261,14 @@ def _hooked_ns(src, kind='absent'):
         return real(name, g, l, fromlist, level)
 
     real_fs = iu.find_spec
-    builtins.__import__ = hook
+    _start_import(builtins, hook)
     iu.find_spec = lambda name, *a, **k: (
         None if name == REG else real_fs(name, *a, **k))
     try:
         ns = {'__name__': 'b1242_hooked'}
         exec(compile(src, 'm', 'exec'), ns)
     finally:
-        builtins.__import__ = real
+        _stop_import()
         iu.find_spec = real_fs
     del log[:]
     return ns, log
@@ -258,11 +281,11 @@ def _drive(ns, log):
         log.append(name)
         return real(name, *a, **k)
 
-    builtins.__import__ = hook
+    _start_import(builtins, hook)
     try:
         return _run_all(ns)
     finally:
-        builtins.__import__ = real
+        _stop_import()
 
 
 def test_every_refusal_code_of_every_function_is_driven():
@@ -899,7 +922,7 @@ def test_find_spec_call_count_table_per_world(undo_log):
                 return object() if world == 'foreign_found' else None
             return real_fs(name, *a, **k)
 
-        builtins.__import__ = blocked
+        _start_import(builtins, blocked)
         iu.find_spec = fs
         try:
             if outcome == 'ok':
@@ -922,7 +945,7 @@ def test_find_spec_call_count_table_per_world(undo_log):
                 if world == 'import_error':
                     assert type(caught.value) is ImportError
         finally:
-            builtins.__import__ = real_import
+            _stop_import()
             iu.find_spec = real_fs
         assert calls == [REG] * expected, (world, calls)
 

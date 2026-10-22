@@ -16,6 +16,29 @@ import urllib.request
 import pytest
 
 from app.modules.instinct_doc import p235_concepts_batch1218_langtag as m
+from unittest import mock as _um
+
+
+_IMPORT_PATCHES = []
+
+
+def _start_import(mod, fn):
+    p = _um.patch.object(mod, '__import__', fn)
+    p.start()
+    _IMPORT_PATCHES.append(p)
+
+
+def _stop_import():
+    if _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
+
+@pytest.fixture(autouse=True)
+def _release_import_patches():
+    yield
+    while _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
 
 REG = 'app.modules.instinct_doc.p235_concepts_registry'
 STUB_WORLD = importlib.util.find_spec(REG) is not None
@@ -183,7 +206,7 @@ def _env_guard():
     before_imp = builtins.__import__
     before_path = list(sys.path)
     yield
-    assert builtins.__import__ is before_imp
+    assert builtins.__import__ == before_imp
     assert sys.path == before_path
     assert (m.CLAIMS, m.MAX_TAG, m._GRAND['i-ami'], len(m._GRAND)) == before_mod
 
@@ -902,11 +925,11 @@ def _record():
     def hook(name, *a, **k):
         log.append(name)
         return real(name, *a, **k)
-    builtins.__import__ = hook
+    _start_import(builtins, hook)
     try:
         yield log
     finally:
-        builtins.__import__ = real
+        _stop_import()
 
 
 def test_the_recorder_restores_the_import_hook_even_when_the_block_raises():
@@ -916,7 +939,7 @@ def test_the_recorder_restores_the_import_hook_even_when_the_block_raises():
             exec('import hmac')
             assert log[0] == 'hmac'
             raise RuntimeError('boom')
-    assert builtins.__import__ is real
+    assert builtins.__import__ == real
 
 
 def test_the_import_recorder_sees_a_function_level_import():
@@ -926,11 +949,11 @@ def test_the_import_recorder_sees_a_function_level_import():
     def hook(name, *a, **k):
         log_holder.append(name)
         return real(name, *a, **k)
-    builtins.__import__ = hook
+    _start_import(builtins, hook)
     try:
         exec('import hmac')
     finally:
-        builtins.__import__ = real
+        _stop_import()
     assert log_holder[0] == 'hmac' and len(log_holder) >= 1
 
 

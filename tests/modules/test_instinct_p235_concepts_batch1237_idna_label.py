@@ -9,6 +9,29 @@ import sys
 import tempfile
 import types
 import pytest
+from unittest import mock as _um
+
+
+_IMPORT_PATCHES = []
+
+
+def _start_import(mod, fn):
+    p = _um.patch.object(mod, '__import__', fn)
+    p.start()
+    _IMPORT_PATCHES.append(p)
+
+
+def _stop_import():
+    if _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
+
+@pytest.fixture(autouse=True)
+def _release_import_patches():
+    yield
+    while _IMPORT_PATCHES:
+        _IMPORT_PATCHES.pop().stop()
+
 
 REG = 'app.modules.instinct_doc.p235_concepts_registry'
 
@@ -420,7 +443,7 @@ def test_no_import_on_any_public_call():
                 + [(fn, d) for fn, code, d in
                    _refusal_corpus()]):
             log = []
-            builtins.__import__ = hook
+            _start_import(builtins, hook)
             try:
                 try:
                     getattr(m, fn_name)(*args)
@@ -434,7 +457,7 @@ def test_no_import_on_any_public_call():
                 is_valid(*args)
                 is_valid(0)
             finally:
-                builtins.__import__ = real
+                _stop_import()
             assert log == [], (fn_name, args, log)
     finally:
         sys.settrace(None)
@@ -490,14 +513,14 @@ def test_registry_guard_reraises_foreign_import_error():
         return real_find_spec(name, *k, **kw)
 
     src = pathlib.Path(m.__file__).read_text()
-    _b.__import__ = bogus_import
+    _start_import(_b, bogus_import)
     _iu.find_spec = no_spec
     try:
         mod = types.ModuleType('fresh_b1237')
         with pytest.raises(ModuleNotFoundError):
             exec(compile(src, 'fresh_b1237', 'exec'), mod.__dict__)
     finally:
-        _b.__import__ = real_import
+        _stop_import()
         _iu.find_spec = real_find_spec
 
 
@@ -554,13 +577,13 @@ def test_find_spec_called_with_exact_registry_name_once():
         calls.append(name)
         return None
 
-    builtins.__import__ = bogus_import
+    _start_import(builtins, bogus_import)
     _iu.find_spec = spy_find_spec
     try:
         mod = types.ModuleType('fresh_b1237_spy')
         exec(compile(src, 'fresh_b1237_spy', 'exec'), mod.__dict__)
     finally:
-        builtins.__import__ = real_import
+        _stop_import()
         _iu.find_spec = real_find_spec
     assert calls == [REG], calls
     # the fallback engaged and works
